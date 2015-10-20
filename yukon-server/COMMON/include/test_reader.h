@@ -4,7 +4,7 @@
 #include "utility.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-
+#include <boost/format.hpp>
 namespace Cti {
 namespace Test {
 
@@ -30,27 +30,91 @@ template <class T>
 class TestReader : public Cti::RowReader
 {
 private:
-    T _columnNames;
-    std::vector<T> _values;
+    std::vector<std::string> _columnNames;
+    std::vector<std::vector<std::string>> _values;
 
     int _currentRow;
     int _currentColumn;
 
 public:
 
+    /**
+     *  Legacy constructor for those who want to construct their test DB using a vector of StringRows.
+     */
     TestReader(T &columnNames, std::vector<T> &values)
     {
         _currentColumn = 0;
         _currentRow = -1;
+
+        // Copy column names from the T to our vector of strings
+        for(int i = 0; i < columnNames.size(); ++i)
+        {
+            _columnNames.push_back(columnNames[i]);
+        }
+
+        for(int i = 0; i < values.size(); ++i)
+        {
+            std::vector<std::string> newVec;
+            for(int j = 0; j < values[i].size(); ++j)
+            {
+                newVec.push_back(values[i][j]);
+            }
+            _values.push_back(newVec);
+        }
+    }
+
+    /**
+     *  Constructor for those who want to construct their test DB using << to add data.
+     */
+    TestReader(std::vector<std::string> columnNames, int size = 1)
+    {
+        _currentColumn = 0;
+        _currentRow = 0;
         _columnNames = columnNames;
-        _values = values;
+        _values = std::vector<std::vector<std::string>>(size);
+    }
+
+    /**
+     *  Constructor taking a list of rows.  The first element of each vector in 
+     *  the column name, the remaining elements are the rows.
+     */
+    TestReader(std::initializer_list<std::vector<std::string>> rows)
+    {
+        _currentColumn = 0;
+        _currentRow = 0;
+        _columnNames = std::vector<std::string>();
+        _values = std::vector<std::vector<std::string>>();
+        _values.push_back(std::vector<std::string>());
+
+        for(std::vector<std::string> pair : rows)
+        {
+            auto row_itr = pair.begin();
+            auto value_itr = _values.begin();
+
+            // Grab the first string as the row name
+            _columnNames.push_back(*row_itr++);
+
+            // The rest are values
+            while(row_itr != pair.end())
+            {
+                (*value_itr++).push_back(*row_itr++);
+            }
+        }
     }
 
     ~TestReader() { }
 
     bool setCommandText(const std::string &command) { return true; }
     bool isValid() { return true; }
-    bool execute() { return true; }
+    
+    /**
+     *  Bring us to the first record in our mock DB
+     */
+    bool execute() { 
+        _currentColumn = 0;
+        _currentRow = 0;
+        return true; 
+    }
 
     bool isNull()
     {
@@ -67,6 +131,9 @@ public:
         }
     }
 
+    /**
+     *  Simulate reading the next row.
+     */
     bool operator()()
     {
         _currentColumn = 0;
@@ -74,11 +141,17 @@ public:
         return _currentRow < _values.size();
     }
 
+    /**
+     *  Access the column by character string name
+     */
     RowReader &operator[](const char *columnName)
     {
         return this->operator[](std::string(columnName));
     }
 
+    /**
+     *  Access the column by std::string name
+     */
     RowReader &operator[](const std::string &columnName)
     {
         bool found = false;
@@ -98,35 +171,32 @@ public:
 
         if( !found )
         {
-            throw;
+            throw std::invalid_argument("Column " + columnName + " not found.");
         }
 
         return *this;
     }
 
+    /**
+     *  Access a column by column number
+     */
     RowReader &operator[](int columnNumber) { _currentColumn = columnNumber; return *this; } // 0 based
 
     RowReader &operator>>(bool &operand)
     {
-        bool found = false;
+        checkBounds();
 
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
+        if( _values[_currentRow][_currentColumn] == getTrueString() )
         {
-            if( _values[_currentRow][_currentColumn] == getTrueString() )
-            {
-                operand = true;
-                found = true;
-            }
-            else if( _values[_currentRow][_currentColumn] == getFalseString() )
-            {
-                operand = false;
-                found = true;
-            }
+            operand = true;
         }
-
-        if( !found )
+        else if( _values[_currentRow][_currentColumn] == getFalseString() )
         {
-            throw;
+            operand = false;
+        }
+        else
+        {
+            throw std::invalid_argument("Value " + _values[_currentRow][_currentColumn] + " not True or False.");
         }
 
         _currentColumn++;
@@ -140,21 +210,16 @@ public:
     RowReader &operator>>(UINT &operand)           { operand = getNextIntegerValue(); return *this;  }
     RowReader &operator>>(UCHAR &operand)          { operand = getNextIntegerValue(); return *this;  }
     RowReader &operator>>(unsigned long &operand)  { operand = getNextIntegerValue(); return *this;  }
-    RowReader &operator>>(long long &operand)        { operand = getNextIntegerValue(); return *this;  }
+    RowReader &operator>>(long long &operand)      { operand = getNextIntegerValue(); return *this;  }
 
     RowReader &operator>>(double &operand)         { operand = getNextFloatValue();   return *this;  }
     RowReader &operator>>(float &operand)          { operand = getNextFloatValue();   return *this;  }
 
     RowReader &operator>>(CtiTime &operand)
     {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = CtiTime::now();
-        }
-        else
-        {
-            throw;
-        }
+        checkBounds();
+
+        operand = CtiTime::now();
 
         _currentColumn++;
         return *this;
@@ -162,14 +227,8 @@ public:
 
     RowReader &operator>>(boost::posix_time::ptime &operand)
     {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = boost::posix_time::from_time_t(CtiTime::now().seconds());
-        }
-        else
-        {
-            throw;
-        }
+        checkBounds();
+        operand = boost::posix_time::from_time_t(CtiTime::now().seconds());
 
         _currentColumn++;
         return *this;
@@ -177,14 +236,8 @@ public:
 
     RowReader &operator>>(std::string &operand)
     {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = _values[_currentRow][_currentColumn];
-        }
-        else
-        {
-            throw;
-        }
+        checkBounds();
+        operand = _values[_currentRow][_currentColumn];
 
         _currentColumn++;
         return *this;
@@ -215,20 +268,146 @@ public:
     }
 
     // inputs for variable binding
-    RowReader &operator<<(const bool operand) { return *this; }
-    RowReader &operator<<(const short operand) { return *this; }
-    RowReader &operator<<(const unsigned short operand) { return *this; }
-    RowReader &operator<<(const long operand) { return *this; }
-    RowReader &operator<<(const INT operand) { return *this; }
-    RowReader &operator<<(const UINT operand) { return *this; }
-    RowReader &operator<<(const unsigned long operand) { return *this; }
-    RowReader &operator<<(const long long operand) { return *this; }
-    RowReader &operator<<(const double operand) { return *this; }
-    RowReader &operator<<(const float operand) { return *this; }
-    RowReader &operator<<(const CtiTime &operand) { return *this; }
-    RowReader &operator<<(const boost::posix_time::ptime &operand) { return *this; }
-    RowReader &operator<<(const std::string &operand) { return *this; }
-    RowReader &operator<<(const char *operand) { return *this; }
+    RowReader &operator<<(const bool operand) {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const short operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const unsigned short operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const long operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const INT operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const UINT operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const unsigned long operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const long long operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const double operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const float operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const CtiTime &operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand.asString();
+
+        _currentColumn++;
+        return *this;
+    }
+
+    RowReader &operator<<(const boost::posix_time::ptime &operand)
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = to_simple_string(operand);
+
+        _currentColumn++;
+        return *this;
+    }
+
+    // Write a string field into our mock DB
+    RowReader &operator<<(const std::string &operand) 
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+    
+        _currentColumn++;
+        return *this;
+    }
+
+    // Write a char array field into our mock DB
+    RowReader &operator<<(const char *operand) 
+    {
+        checkAndExtend();
+        // Replace the field to the vector
+        _values[_currentRow][_currentColumn] = operand;
+
+        _currentColumn++;
+        return *this;
+    }
 
     std::string asString() { return "UNIMPLEMENTED" }
 
@@ -252,14 +431,9 @@ private:
     int getNextIntegerValue()
     {
         int retVal = 0;
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            retVal = atoi(_values[_currentRow][_currentColumn].c_str());
-        }
-        else
-        {
-            throw;
-        }
+
+        checkBounds();
+        retVal = atoi(_values[_currentRow][_currentColumn].c_str());
 
         _currentColumn++;
         return retVal;
@@ -269,18 +443,46 @@ private:
     double getNextFloatValue()
     {
         double retVal = 0;
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            retVal = atof(_values[_currentRow][_currentColumn].c_str());
-        }
-        else
-        {
-            throw;
-        }
+
+        checkBounds();
+        retVal = atof(_values[_currentRow][_currentColumn].c_str());
 
         _currentColumn++;
         return retVal;
     }
+
+    void checkBounds()
+    {
+        if(_currentRow >= _values.size())
+        {
+            throw std::out_of_range(str(boost::format("Current row out of bounds (%1% >= %2%)") % _currentRow % _values.size()));
+        }
+        if(_currentColumn >= _columnNames.size())
+        {
+            throw std::out_of_range(str(boost::format("Current column out of bounds (%1% >= %2%)") % _currentColumn % _columnNames.size()));
+        }
+    }
+
+    void checkAndExtend()
+    {
+        if(_currentColumn >= _columnNames.size())
+        {
+            throw std::out_of_range(str(boost::format("Current column out of bounds (%1% >= %2%)") % _currentColumn % _columnNames.size()));
+        }
+
+        if(_currentRow > _values.size())
+        {
+            // Add a new row to the template
+            _values.push_back(std::vector<std::string>());
+            _values[_currentRow].resize(_columnNames.size());
+        }
+
+        if(_currentColumn >= _values[_currentRow].size())
+        {
+            _values[_currentRow].resize(_columnNames.size());
+        }
+    }
+
 };
 
 }// namespace test

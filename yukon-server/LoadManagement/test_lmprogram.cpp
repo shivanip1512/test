@@ -2106,18 +2106,47 @@ BOOST_AUTO_TEST_CASE(test_util_fit_to_window)
 BOOST_AUTO_TEST_CASE(test_timed_notification_setup)
 {
     {
-        typedef Cti::Test::StringRow<33> LMProgramDirectRow;
-        typedef Cti::Test::TestReader<LMProgramDirectRow> LMProgramDirectReader;
+        typedef Cti::Test::TestReader<std::vector<std::string>> LMProgramDirectReader;
 
-        LMProgramDirectRow columnNames =   {"paobjectid", "category", "paoclass", "paoname", "type", "description", "disableflag", "controltype", "constraintid", "constraintname", "availableweekdays", "maxhoursdaily", "maxhoursmonthly", "maxhoursseasonal", "maxhoursannually", "minactivatetime", "minrestarttime", "maxdailyops", "maxactivatetime", "holidayscheduleid", "seasonscheduleid",  "programstate",                         "pointid",                              "heading", "messageheader", "messagefooter", "triggeroffset", "restoreoffset", "notifyactiveoffset", "notifyinactiveoffset", "notifyadjust", "currentgearnumber",                    "notifyschedule"};
-        LMProgramDirectRow columnValues1 = {"1234567890", "category", "paoclass", "paoname", "type", "description", "N",           "controltype", "1",            "constraintname", "availableweekdays", "0",             "0",               "0",                "0",                "0",               "0",              "0",           "0",               "0",                 "0",                 LMProgramDirectReader::getNullString(), LMProgramDirectReader::getNullString(), "heading", "messageheader", "messagefooter", "triggeroffset", "restoreoffset", "600",                "-600",                 "notifyadjust", LMProgramDirectReader::getNullString(), "-1"};
+        // Create test DB record
+        LMProgramDirectReader reader({
+            {"paobjectid", "1234567890"},
+            {"category", "category"},
+            {"paoclass", "paoclass"},
+            {"paoname", "paoname"},
+            {"type", "type"},
+            {"description", "description"},
+            {"disableflag", "N"},
+            {"controltype", "controltype"},
+            {"constraintid", "1"},
+            {"constraintname", "constraintname"},
+            {"availableweekdays", "availableweekdays"},
+            {"maxhoursdaily", "0"},
+            {"maxhoursmonthly", "0"},
+            {"maxhoursseasonal", "0"},
+            {"maxhoursannually", "0"},
+            {"minactivatetime", "0"},
+            {"minrestarttime", "0"},
+            {"maxdailyops", "0"},
+            {"maxactivatetime", "0"},
+            {"holidayscheduleid", "0"},
+            {"seasonscheduleid", "0"},
+            {"programstate", LMProgramDirectReader::getNullString()},
+            {"pointid", LMProgramDirectReader::getNullString()},
+            {"heading", "heading"},
+            {"messageheader", "messageheader"},
+            {"messagefooter", "messagefooter"},
+            {"triggeroffset", "triggeroffset"},
+            {"restoreoffset", "restoreoffset"},
+            {"notifyactiveoffset", "600"},
+            {"notifyinactiveoffset", "-600"},
+            {"notifyadjust", "notifyadjust"},
+            {"currentgearnumber", LMProgramDirectReader::getNullString()},
+            {"notifyschedule", "-1"}
+        });
 
-        std::vector<LMProgramDirectRow> rowVec;
-        rowVec.push_back( columnValues1 );
+        reader.execute();           // Read first record
 
-        LMProgramDirectReader reader(columnNames, rowVec);
-
-        reader();
         CtiLMProgramDirectSPtr lmProgram = CtiLMProgramDirectSPtr(CTIDBG_new CtiLMProgramDirect(reader));
 
         CtiTime start = CtiTime::now();
@@ -2136,18 +2165,47 @@ BOOST_AUTO_TEST_CASE(test_timed_notification_setup)
     }
 
     {
-        typedef Cti::Test::StringRow<33> LMProgramDirectRow;
-        typedef Cti::Test::TestReader<LMProgramDirectRow> LMProgramDirectReader;
+        typedef Cti::Test::TestReader<std::vector<std::string>> LMProgramDirectReader;
 
-        LMProgramDirectRow columnNames =   {"paobjectid", "category", "paoclass", "paoname", "type", "description", "disableflag", "controltype", "constraintid", "constraintname", "availableweekdays", "maxhoursdaily", "maxhoursmonthly", "maxhoursseasonal", "maxhoursannually", "minactivatetime", "minrestarttime", "maxdailyops", "maxactivatetime", "holidayscheduleid", "seasonscheduleid",  "programstate",                         "pointid",                              "heading", "messageheader", "messagefooter", "triggeroffset", "restoreoffset", "notifyactiveoffset", "notifyinactiveoffset", "notifyadjust", "currentgearnumber",                   "notifyschedule"};
-        LMProgramDirectRow columnValues1 = {"1234567890", "category", "paoclass", "paoname", "type", "description", "N",           "controltype", "1",            "constraintname", "availableweekdays", "0",             "0",               "0",                "0",                "0",               "0",              "0",           "0",               "0",                 "0",                 LMProgramDirectReader::getNullString(), LMProgramDirectReader::getNullString(), "heading", "messageheader", "messagefooter", "triggeroffset", "restoreoffset", "600",                "600",                 "notifyadjust", LMProgramDirectReader::getNullString(), "-1"};
+        // Create test DB record
+        LMProgramDirectReader reader({
+            {"paobjectid", "paobjectid"}, 
+            {"category", "category"},
+            {"paoclass", "paoclass"},
+            {"paoname", "paoname"},
+            {"type", "type"},
+            {"description", "description"},
+            {"disableflag", "N"},
+            {"controltype", "controltype"},
+            {"constraintid", "1"},
+            {"constraintname", "constraintname"},
+            {"availableweekdays", "availableweekdays"},
+            {"maxhoursdaily", "0"},
+            {"maxhoursmonthly", "0"},
+            {"maxhoursseasonal", "0"},
+            {"maxhoursannually", "0"},
+            {"minactivatetime", "0"},
+            {"minrestarttime", "0"},
+            {"maxdailyops", "0"},
+            {"maxactivatetime", "0"},
+            {"holidayscheduleid", "0"},
+            {"seasonscheduleid", "0"},
+            {"programstate", LMProgramDirectReader::getNullString()},
+            {"pointid", LMProgramDirectReader::getNullString()},
+            {"heading", "heading"},
+            {"messageheader", "messageheader"},
+            {"messagefooter", "messagefooter"},
+            {"triggeroffset", "triggeroffset"},
+            {"restoreoffset", "restoreoffset"},
+            {"notifyactiveoffset", "600"},
+            {"notifyinactiveoffset", "600"},
+            {"notifyadjust", "notifyadjust"},
+            {"currentgearnumber", LMProgramDirectReader::getNullString()},
+            {"notifyschedule", "-1"}
+        });
 
-        std::vector<LMProgramDirectRow> rowVec;
-        rowVec.push_back( columnValues1 );
+        reader.execute();           // Read first record
 
-        LMProgramDirectReader reader(columnNames, rowVec);
-
-        reader();
         CtiLMProgramDirectSPtr lmProgram = CtiLMProgramDirectSPtr(CTIDBG_new CtiLMProgramDirect(reader));
 
         CtiTime start = CtiTime::now();
