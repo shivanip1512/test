@@ -121,53 +121,33 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterv
 
     struct IntervalSettings
     {
-        boost::optional<unsigned>   voltageAveragingInterval,
-                                    loadProfileInterval;
+        boost::optional<unsigned> voltageAveragingInterval,
+                                  voltageDataStreamingInterval;
 
         bool operator==( const IntervalSettings & rhs ) const
         {
-            return voltageAveragingInterval == rhs.voltageAveragingInterval && loadProfileInterval == rhs.loadProfileInterval;
+            return voltageAveragingInterval == rhs.voltageAveragingInterval && voltageDataStreamingInterval == rhs.voltageDataStreamingInterval;
         }
     }
     configSettings,
     paoSettings;
 
+    try
     {
-        const std::string             configKey( Config::RfnStrings::voltageAveragingInterval );
-        const boost::optional<long>   configValue = deviceConfig->findValue<long>( configKey );
-
-        if ( ! configValue  )
-        {
-            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing value for config key \""<< configKey <<"\"");
-            return ClientErrors::NoConfigData;
-        }
-
-        if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-        {
-            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\"");
-            return ClientErrors::InvalidConfigData;
-        }
-
-        configSettings.voltageAveragingInterval = static_cast<unsigned>( *configValue );
+        configSettings.voltageAveragingInterval = getConfigData<unsigned>(deviceConfig, Config::RfnStrings::voltageAveragingInterval);
+        configSettings.voltageDataStreamingInterval = getConfigData<unsigned>(deviceConfig, Config::RfnStrings::voltageDataStreamingIntervalMinutes);
     }
-
+    catch( const InvalidConfigDataException &e )
     {
-        const std::string           configKey( Config::RfnStrings::profileInterval );
-        const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \"" << getName() << "\"");
 
-        if ( ! configValue  )
-        {
-            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing value for config key \""<< configKey <<"\"");
-            return ClientErrors::NoConfigData;
-        }
+        return ClientErrors::InvalidConfigData;
+    }
+    catch( const MissingConfigDataException &e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \"" << getName() << "\"");
 
-        if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-        {
-            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\"");
-            return ClientErrors::InvalidConfigData;
-        }
-
-        configSettings.loadProfileInterval = static_cast<unsigned>( *configValue );
+        return ClientErrors::NoConfigData;
     }
 
     {
@@ -184,7 +164,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterv
 
         if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, pao_value ) )
         {
-            paoSettings.loadProfileInterval = static_cast<unsigned>( pao_value );
+            paoSettings.voltageDataStreamingInterval = static_cast<unsigned>(pao_value);
         }
     }
 
@@ -203,8 +183,11 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterv
         }
     }
 
-    rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>( *configSettings.voltageAveragingInterval,
-                                                                                                   *configSettings.loadProfileInterval ) );
+    rfnRequests.push_back(
+            boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>(
+                    *configSettings.voltageAveragingInterval,
+                    *configSettings.voltageDataStreamingInterval));
+
     return ClientErrors::None;
 }
 

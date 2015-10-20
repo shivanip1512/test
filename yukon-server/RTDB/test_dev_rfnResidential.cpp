@@ -1729,16 +1729,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_device )
                     // set TOU enabled
                     ( RfnStrings::touEnabled, "true" )))
 
-            // demand interval
-            ( CategoryDefinition(
-                "demand", map_list_of
-                    ( RfnStrings::demandInterval,  "1" )))
-
-            // profile recording interval
-            ( CategoryDefinition(
-                "profile", map_list_of
-                    ( RfnStrings::profileInterval, "2" )))
-
             // temperature alarming config
             ( CategoryDefinition(
                 "rfnTempAlarm", map_list_of
@@ -1763,20 +1753,16 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_device )
             ( 0 )   // no config data                   -> no request
             ( 1 )   // add demand freeze day config     -> +1 request
             ( 3 )   // add TOU config                   -> +2 request
-            ( 3 )   // add demand config                -> +0 request
-            ( 3 )   // add profile config               -> +1 request
             ( 4 )   // add temperature alarming config  -> +1 request
             ( 6 )   // add channel config               -> +2 request
             ;
 
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(false) )              // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true) )               // add demand freeze day config     -> 5 error messages + 1 config sent message
-            ( list_of<bool>(true)(true)(true) )                     // add TOU config                   -> 3 error messages + 3 config sent message
-            ( list_of<bool>(true)(true)(true) )                     // add demand config                -> 3 error messages + 3 config sent message
-            ( list_of<bool>(true)(true)(true) )                     // add profile config               -> 2 error messages + 4 config sent message
-            ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
-            ( list_of<bool>(true) )                                 // add channel config               -> 6 config sent message
+            ( list_of<bool>(true)(true)(true)(false) )              // no config data                   -> 4 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true) )               // add demand freeze day config     -> 3 error messages
+            ( list_of<bool>(true)(true)(true) )                     // add TOU config                   -> 2 error messages
+            ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages
+            ( list_of<bool>(true) )                                 // add channel config               -> config sent successfully
             ;
 
     std::vector<int> requestMsgsRcv;
@@ -1920,16 +1906,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_groupMessageCoun
 
                     // set TOU enabled
                     ( RfnStrings::touEnabled, "true" )))
-
-            // voltage averaging config
-            ( CategoryDefinition(
-                "demand", map_list_of
-                    ( RfnStrings::demandInterval,  "1" )))
-
-            // profile recording interval
-            ( CategoryDefinition(
-                "profile", map_list_of
-                    ( RfnStrings::profileInterval, "2" )))
 
             // temperature alarming config
             ( CategoryDefinition(
@@ -2218,15 +2194,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_disconnect_m
                     // set TOU enabled
                     ( RfnStrings::touEnabled, "true" )))
 
-            ( CategoryDefinition( // voltage averaging config
-                "demand", map_list_of
-                    ( RfnStrings::demandInterval,  "1" )))
-
-            // profile recording interval
-            ( CategoryDefinition(
-                "profile", map_list_of
-                    ( RfnStrings::profileInterval, "2" )))
-
             ( CategoryDefinition( // temperature alarming config
                 "rfnTempAlarm", map_list_of
                     ( RfnStrings::TemperatureAlarmEnabled,           "true" )
@@ -2250,22 +2217,18 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_disconnect_m
             ( 1 )   // add remote disconnect config     -> +1 request
             ( 2 )   // add demand freeze day config     -> +1 request
             ( 4 )   // add TOU config                   -> +1 request
-            ( 4 )   // add demand config                -> +0 request
-            ( 4 )   // add profile config               -> +1 request
             ( 5 )   // add temperature alarming config  -> +1 request
             ( 7 )   // add channel config               -> +2 request
             ;
 
 
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(true)(false) )                // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add remote disconnect config     -> 6 error messages + 1 config sent message
-            ( list_of<bool>(true)(true)(true)(true) )                       // add demand freeze day config     -> 5 error messages + 2 config sent message
-            ( list_of<bool>(true)(true)(true) )                             // add TOU config                   -> 3 error messages + 4 config sent message
-            ( list_of<bool>(true)(true)(true) )                             // add demand config                -> 3 error messages + 4 config sent message
-            ( list_of<bool>(true)(true)(true) )                             // add profile config               -> 2 error messages + 5 config sent message
-            ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
-            ( list_of<bool>(true) )                                         // add channel config               -> 7 config sent message
+            ( list_of<bool>(true)(true)(true)(true)(false) )                // no config data                   -> 5 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add remote disconnect config     -> 4 error messages
+            ( list_of<bool>(true)(true)(true)(true) )                       // add demand freeze day config     -> 3 error messages
+            ( list_of<bool>(true)(true)(true) )                             // add TOU config                   -> 2 error messages
+            ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages
+            ( list_of<bool>(true) )                                         // add channel config               -> config sent successfully
             ;
 
     std::vector<int> requestMsgsRcv;
