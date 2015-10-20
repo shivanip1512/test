@@ -32,7 +32,8 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     _title(title),
     _outthread( WorkerThread::Function([this]{ outThreadFunc(); })
             .name( boost::replace_all_copy( title, " ", "" ) + "_outThread" ) // use the title and remove all white spaces to set the thread name
-            .priority( THREAD_PRIORITY_HIGHEST ))
+            .priority( THREAD_PRIORITY_HIGHEST )),
+            _sendStart(CtiTime::not_a_time)
 {
     // create message listener and register function and caller
     _messageListener.reset(
@@ -230,8 +231,10 @@ void CtiConnection::sendMessage( const CtiMessage& msg )
     bytes_msg->writeBytes( obytes );
     bytes_msg->setCMSType( msgType );
 
+    _sendStart = CtiTime();             // Mark when the send started
     // send the message
     _producer->send( bytes_msg.get() );
+    _sendStart = CtiTime::not_a_time;   // Mark send as complete
 }
 
 /**
@@ -510,7 +513,11 @@ YukonError_t CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMill
     }
     else
     {
-        _outQueue.putQueue( msg.release() ); // wait forever
+        while(!_outQueue.putQueue(msg.get(), 30000))
+        {
+            CTILOG_ERROR(dout, who() << " - message was NOT able to be queued within 30 seconds");
+        }  // wait forever
+        msg.release();
     }
 
     return ClientErrors::None;
@@ -524,6 +531,11 @@ YukonError_t CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMill
 CtiMessage* CtiConnection::ReadConnQue( UINT Timeout )
 {
     CtiMessage *Msg = 0;
+
+    if( _sendStart != CtiTime::not_a_time && _sendStart > 30 * 1000)
+    {
+        CTILOG_ERROR(dout, who() << " - send queue thread has send outstanding for more than 30 seconds");
+    }
 
     if( _inQueue )
     {

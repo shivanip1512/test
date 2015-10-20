@@ -94,6 +94,8 @@ protected:
         };
     };
 
+    CtiTime _sendStart;
+
     void sendMessage( const CtiMessage& message );
     void receiveAllMessages();
 
