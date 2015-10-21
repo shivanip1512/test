@@ -2,7 +2,6 @@ package com.cannontech.amr.deviceread.dao;
 
 import java.util.Set;
 
-import com.cannontech.amr.deviceread.dao.impl.DeviceCommandServiceImpl.CompletionCallback;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
@@ -11,7 +10,6 @@ import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-
 public interface DeviceCommandService {
 
     /**
@@ -19,7 +17,7 @@ public interface DeviceCommandService {
      * If command is not provided looks up commands by attributes.
      * RF devices and devices that do not support COMMANDER_REQUESTS tag will be marked as unsupported.
      */
-    CompletionCallback execute(Set<SimpleDevice> devices,
-            Set<? extends Attribute> attributes, String command, DeviceRequestType type, LiteYukonUser user,
-            RetryParameters retryParameters, CommandCompletionCallbackAdapter<CommandRequestDevice> callback);
+    CompletionCallback execute(Set<SimpleDevice> devices, Set<? extends Attribute> attributes, String command,
+            DeviceRequestType type, LiteYukonUser user, RetryParameters retryParameters,
+            CommandCompletionCallbackAdapter<CommandRequestDevice> callback);
 }

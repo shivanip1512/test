@@ -7,8 +7,8 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.deviceread.dao.CompletionCallback;
 import com.cannontech.amr.deviceread.dao.DeviceCommandService;
-import com.cannontech.amr.deviceread.dao.impl.DeviceCommandServiceImpl.CompletionCallback;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
@@ -53,7 +53,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 
         int jobId = getJob().getId();
         log.info("Stopping job id=" + jobId);
-        long commandsCancelled = completionCallback.cancelExecution();
+        long commandsCancelled = completionCallback.cancelExecution(getUserContext().getYukonUser());
         log.info("Stopped job id=" + jobId + ". " + commandsCancelled + " commands were cancelled.");
     }
 
