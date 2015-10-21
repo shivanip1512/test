@@ -154,7 +154,7 @@
                 if (!extraCheck) setTimeout(_checkStatus, _checkStatusTime);
             }).fail(function(data) {
                 if (!extraCheck) setTimeout(_checkStatus, _checkStatusTime);
-                var errorMsg = 'Failed trying to recieve the point injection status. Trying again in five seconds.';
+                var errorMsg = 'Failed trying to receive the point injection status. Trying again in five seconds.';
                 $('#taskStatusMessage').addMessage({message:errorMsg, messageClass:'error'}).show();
             });
           },
