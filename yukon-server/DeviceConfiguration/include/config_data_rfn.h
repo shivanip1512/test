@@ -43,7 +43,7 @@ struct IM_EX_CONFIG RfnStrings
 
     static const std::string voltageAveragingInterval;
     static const std::string demandInterval;
-    static const std::string profileInterval;
+    static const std::string voltageDataStreamingIntervalMinutes;
 
     static const std::string demandFreezeDay;
 
