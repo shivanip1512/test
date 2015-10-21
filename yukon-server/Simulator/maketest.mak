@@ -196,8 +196,8 @@ ccu_simulator.obj:	precompiled.h SimulatorUtils.h types.h Simulator.h \
 		streamSocketConnection.h streamConnection.h netports.h \
 		timing_util.h immutable.h socket_helper.h win_helper.h \
 		CommsBehavior.h portlogger.h CcuIDLC.h Ccu721.h ctidate.h \
-		DelayBehavior.h BchBehavior.h cparms.h configkey.h \
-		configval.h StreamSocketListener.h module_util.h \
+		DelayBehavior.h BchBehavior.h cparms.h \
+		StreamSocketListener.h module_util.h \
 		database_reader.h database_connection.h dbaccess.h \
 		row_reader.h
 comminterface.obj:	precompiled.h CommInterface.h \
@@ -241,7 +241,7 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		utility.h queues.h cticalls.h yukon.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h critical_section.h DeviceMemoryManager.h \
 		BehaviorCollection.h MctBehavior.h ScopedLogger.h cparms.h \
-		configkey.h configval.h guard.h FrozenReadParityBehavior.h \
+		guard.h FrozenReadParityBehavior.h \
 		FrozenPeakTimestampBehavior.h RandomConsumptionBehavior.h \
 		InvalidUsageReadingBehavior.h
 plcinfrastructure.obj:	precompiled.h plcinfrastructure.h Mct410.h \

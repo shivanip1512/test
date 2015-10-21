@@ -125,7 +125,7 @@ test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		exception_helper.h msg_pdata.h message.h collectable.h \
 		ptconnect.h con_mgr.h connection_server.h connection.h \
 		msg_multi.h msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h \
-		configkey.h configval.h connection_base.h worker_thread.h \
+		connection_base.h worker_thread.h \
 		timing_util.h connection_listener.h server_b.h \
 		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
 		database_connection.h tbl_pt_limit.h rtdb.h \
@@ -146,7 +146,7 @@ test_vangogh.obj:	ctivangogh.h con_mgr.h connection_server.h \
 		connection.h dlldefs.h message.h ctitime.h ctidbgmem.h \
 		collectable.h loggable.h msg_multi.h msg_pdata.h yukon.h \
 		types.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
-		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
+		mutex.h queue.h cparms.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		critical_section.h readers_writer_lock.h guard.h \

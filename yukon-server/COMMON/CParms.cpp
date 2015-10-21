@@ -9,6 +9,7 @@
 #include "shlwapi.h"
 #include "encryption.h"
 #include "logManager.h"
+#include "std_helper.h"
 
 using namespace std;
 
@@ -16,12 +17,6 @@ CtiConfigParameters::CtiConfigParameters() :
 RefreshRate(900),
 LastRefresh(::time(NULL))
 {
-}
-
-CtiConfigParameters::~CtiConfigParameters()
-{
-    CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-    mHash.clear();
 }
 
 void CtiConfigParameters::setYukonBase(const string& strName)
@@ -104,8 +99,7 @@ int CtiConfigParameters::RefreshConfigParameters()
 
                                 if ( processed.first )
                                 {
-                                    mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), 
-                                        string(processed.second) ));
+                                    mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), processed.second ));
                                     if( !p.second )
                                     {
                                         cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << endl;
@@ -218,8 +212,6 @@ BOOL CtiConfigParameters::isOpt(const string& key)
 
 bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValue)
 {
-    string   Value;
-
     checkForRefresh();
 
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
@@ -253,39 +245,23 @@ string
 CtiConfigParameters::getValueAsString(const string& key, const string& defaultval)
 {
     BOOL           bRet = TRUE;
-    
-    string retStr = defaultval;      // A Null string.
-
     checkForRefresh();
 
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
 
-    mHash_itr2 itr = mHash.find(key);
-
-    if( itr != mHash.end() )
-    {
-        retStr = (*itr).second;
-    }
-    return retStr;
+    return Cti::mapFindOrDefault(mHash, key, defaultval);
 }
 
 string
 CtiConfigParameters::getValueAsPath(const string& key, const string& defaultval)
 {
-    BOOL           bRet = TRUE;
-
     string retStr = defaultval;      // A Null string.
 
     checkForRefresh();
 
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
 
-    mHash_itr2 itr = mHash.find(key);
-
-    if( itr != mHash.end() )
-    {
-        retStr = (*itr).second;
-    }
+    retStr = Cti::mapFindOrDefault(mHash, key, defaultval);
 
     if( PathIsRelative(retStr.c_str()) )
     {

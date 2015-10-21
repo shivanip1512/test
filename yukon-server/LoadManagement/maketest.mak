@@ -172,8 +172,8 @@ test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
 		optional.h macro_offset.h msg_cmd.h row_reader.h \
 		database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h readers_writer_lock.h connection_base.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h \
+		readers_writer_lock.h connection_base.h \
 		worker_thread.h test_reader.h lmgroupecobee.h \
 		GroupControlInterface.h ecobeeControlInterface.h \
 		ecobeeCycleGear.h lmprogramdirect.h lmprogramdirectgear.h \
@@ -190,7 +190,7 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h readers_writer_lock.h \
+		cparms.h readers_writer_lock.h \
 		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
 		lmprogramcontrolwindow.h lmutility.h lmconstraint.h \
 		lmmessage.h ConstraintViolation.h executor.h msg_server_req.h \
@@ -207,8 +207,8 @@ test_lmthermostatgear.obj:	lmutility.h CtiTime.h dlldefs.h ctidate.h \
 		dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h readers_writer_lock.h connection_base.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h \
+		readers_writer_lock.h connection_base.h \
 		worker_thread.h test_reader.h lmProgramThermostatGear.h \
 		lmprogramdirectgear.h lmGroupExpresscom.h \
 		BeatThePeakControlInterface.h BeatThePeakAlertLevel.h

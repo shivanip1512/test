@@ -157,7 +157,7 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		worker_thread.h timing_util.h fdrinterface.h message.h \
 		collectable.h msg_dbchg.h connection_client.h connection.h \
 		msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h connection_base.h \
+		cparms.h connection_base.h \
 		fdrdebuglevel.h msg_cmd.h socket_helper.h win_helper.h \
 		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
 		dnp_object_time.h prot_dnpSlave.h dnp_application.h \
@@ -168,7 +168,7 @@ test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		ctitime.h ctidbgmem.h collectable.h loggable.h msg_dbchg.h \
 		yukon.h types.h connection_client.h connection.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
-		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
+		mutex.h queue.h cparms.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		critical_section.h readers_writer_lock.h guard.h \
@@ -182,8 +182,8 @@ test_fdrtextimport.obj:	fdrtextimport.h dlldefs.h fdrtextfilebase.h \
 		fdrinterface.h message.h ctitime.h ctidbgmem.h collectable.h \
 		loggable.h msg_dbchg.h yukon.h types.h connection_client.h \
 		connection.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h configkey.h \
-		configval.h logger.h streamBuffer.h string_util.h \
+		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h \
+		logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
@@ -196,8 +196,8 @@ test_fdrtristatesub.obj:	fdrTriStateSub.h dlldefs.h fdrftpinterface.h \
 		fdrinterface.h message.h ctitime.h ctidbgmem.h collectable.h \
 		loggable.h msg_dbchg.h yukon.h types.h connection_client.h \
 		connection.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h configkey.h \
-		configval.h logger.h streamBuffer.h string_util.h \
+		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h \
+		logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \

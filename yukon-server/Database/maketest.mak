@@ -347,8 +347,8 @@ tbl_lmg_point.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		critical_section.h tbl_lmg_point.h dbmemobject.h dllbase.h \
 		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
 		row_reader.h
-tbl_lmg_sa205105.obj:	precompiled.h cparms.h dlldefs.h configkey.h \
-		configval.h logger.h streamBuffer.h loggable.h string_util.h \
+tbl_lmg_sa205105.obj:	precompiled.h cparms.h dlldefs.h \
+		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
 		numstr.h critical_section.h tbl_lmg_sa205105.h dbmemobject.h \

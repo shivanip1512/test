@@ -112,7 +112,7 @@ exe_pcreq.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		server_b.h con_mgr.h connection_server.h connection.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		msg_reg.h queue.h cparms.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		connection_listener.h dllbase.h smartmap.h msg_pcrequest.h \
 		mgr_device.h rtdb.h dev_base.h cmdparse.h ctitokenizer.h \
@@ -149,7 +149,7 @@ mgr_rfn_request.obj:	precompiled.h mgr_rfn_request.h dlldefs.h \
 		pt_base.h tbl_pt_base.h pointdefs.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h readers_writer_lock.h \
+		cparms.h readers_writer_lock.h \
 		connection_base.h worker_thread.h xfer.h exceptions.h \
 		rfn_asid.h rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h \
 		RfnE2eMsg.h RfnE2eDataConfirmMsg.h NetworkManagerMessaging.h \
@@ -172,7 +172,7 @@ pilserver.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
 		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h pointdefs.h dev_grp.h cparms.h \
-		configkey.h configval.h msg_lmcontrolhistory.h \
+		msg_lmcontrolhistory.h \
 		msg_pcrequest.h msg_pdata.h msg_multi.h pt_status.h \
 		tbl_pt_status.h tbl_pt_status_control.h tbl_pt_control.h \
 		pt_analog.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
@@ -230,7 +230,7 @@ test_mgr_rfn_request.obj:	mgr_rfn_request.h dlldefs.h \
 		pt_base.h tbl_pt_base.h pointdefs.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h readers_writer_lock.h \
+		cparms.h readers_writer_lock.h \
 		connection_base.h worker_thread.h xfer.h exceptions.h \
 		rfn_asid.h rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h \
 		RfnE2eMsg.h RfnE2eDataConfirmMsg.h NetworkManagerMessaging.h \
@@ -245,7 +245,7 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		macro_offset.h server_b.h con_mgr.h connection_server.h \
 		connection.h message.h collectable.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h readers_writer_lock.h \
+		cparms.h readers_writer_lock.h \
 		connection_base.h worker_thread.h connection_listener.h \
 		dllbase.h smartmap.h msg_pcrequest.h mgr_device.h rtdb.h \
 		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \

@@ -119,7 +119,7 @@ test_mgr_rfn_request.obj:	mgr_rfn_request.h dlldefs.h dev_rfn.h \
 		pt_base.h tbl_pt_base.h pointdefs.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h readers_writer_lock.h \
+		cparms.h readers_writer_lock.h \
 		connection_base.h worker_thread.h xfer.h exceptions.h \
 		rfn_asid.h rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h \
 		RfnE2eMsg.h RfnE2eDataConfirmMsg.h NetworkManagerMessaging.h \
@@ -134,7 +134,7 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		macro_offset.h server_b.h con_mgr.h connection_server.h \
 		connection.h message.h collectable.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h readers_writer_lock.h \
+		cparms.h readers_writer_lock.h \
 		connection_base.h worker_thread.h connection_listener.h \
 		dllbase.h smartmap.h msg_pcrequest.h mgr_device.h rtdb.h \
 		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \

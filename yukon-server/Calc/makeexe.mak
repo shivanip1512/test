@@ -213,7 +213,7 @@ calclogicsvc.obj:	precompiled.h id_calc.h module_util.h dlldefs.h \
 		pointtypes.h msg_cmd.h msg_reg.h msg_signal.h msg_ptreg.h \
 		msg_dbchg.h numstr.h logManager.h logger.h streamBuffer.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
-		queues.h constants.h cparms.h configkey.h configval.h \
+		queues.h constants.h cparms.h \
 		database_connection.h guard.h database_reader.h row_reader.h \
 		ThreadStatusKeeper.h thread_register_data.h boost_time.h \
 		thread_monitor.h smartmap.h readers_writer_lock.h queue.h \
@@ -229,7 +229,7 @@ calcthread.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h \
 		collectable.h loggable.h msg_multi.h msg_pdata.h pointdefs.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h utility.h queues.h constants.h numstr.h guard.h \
-		cparms.h configkey.h configval.h mgr_holiday.h ctidate.h \
+		cparms.h mgr_holiday.h ctidate.h \
 		mutex.h ThreadStatusKeeper.h thread_register_data.h \
 		boost_time.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h queue.h thread.h calcthread.h calc.h \
@@ -246,8 +246,8 @@ calcworkerthread.obj:	precompiled.h CalcWorkerThread.h worker_thread.h \
 calc_logic.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h yukon.h ctidbgmem.h \
 		critical_section.h CServiceConfig.h rtdb.h utility.h \
-		ctitime.h queues.h constants.h numstr.h cparms.h configkey.h \
-		configval.h calclogicsvc.h connection_client.h connection.h \
+		ctitime.h queues.h constants.h numstr.h cparms.h \
+		calclogicsvc.h connection_client.h connection.h \
 		message.h collectable.h loggable.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h mutex.h \
 		queue.h logger.h streamBuffer.h string_util.h \
@@ -262,12 +262,12 @@ log.obj:	precompiled.h connection_client.h connection.h dlldefs.h \
 		message.h ctitime.h ctidbgmem.h collectable.h loggable.h \
 		msg_multi.h msg_pdata.h yukon.h types.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h \
-		configkey.h configval.h logger.h streamBuffer.h string_util.h \
+		logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
 		worker_thread.h timing_util.h amq_constants.h msg_cmd.h
-lurk.obj:	precompiled.h cparms.h dlldefs.h configkey.h configval.h \
+lurk.obj:	precompiled.h cparms.h dlldefs.h \
 		message.h ctitime.h ctidbgmem.h collectable.h loggable.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		yukon.h types.h pointdefs.h pointtypes.h msg_ptreg.h \
@@ -277,8 +277,8 @@ lurk.obj:	precompiled.h cparms.h dlldefs.h configkey.h configval.h \
 		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		amq_constants.h msg_cmd.h msg_dbchg.h
-newval.obj:	precompiled.h queue.h cparms.h dlldefs.h configkey.h \
-		configval.h logger.h streamBuffer.h loggable.h string_util.h \
+newval.obj:	precompiled.h queue.h cparms.h dlldefs.h \
+		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
 		numstr.h critical_section.h netports.h message.h \
@@ -288,8 +288,8 @@ newval.obj:	precompiled.h queue.h cparms.h dlldefs.h configkey.h \
 		dsm2err.h words.h optional.h macro_offset.h msg_ptreg.h \
 		connection_client.h connection.h readers_writer_lock.h \
 		connection_base.h worker_thread.h amq_constants.h
-newvalrng.obj:	precompiled.h queue.h cparms.h dlldefs.h configkey.h \
-		configval.h logger.h streamBuffer.h loggable.h string_util.h \
+newvalrng.obj:	precompiled.h queue.h cparms.h dlldefs.h \
+		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
 		numstr.h critical_section.h netports.h message.h \

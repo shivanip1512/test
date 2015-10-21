@@ -167,8 +167,8 @@ test_mc_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		row_reader.h mc.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h mc_script.h test_mc_serialization.h \
 		test_serialization.h test_serialization_helper.h \
-		connection_server.h connection.h queue.h cparms.h configkey.h \
-		configval.h readers_writer_lock.h connection_base.h \
+		connection_server.h connection.h queue.h cparms.h \
+		readers_writer_lock.h connection_base.h \
 		worker_thread.h connection_listener.h
 test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		logger.h streamBuffer.h loggable.h string_util.h \

@@ -102,7 +102,6 @@ private:
 public:
 
    CtiConfigParameters();
-   virtual ~CtiConfigParameters();
 
    void setYukonBase(const std::string& strName);
 

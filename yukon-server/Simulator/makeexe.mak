@@ -191,8 +191,8 @@ ccu_simulator.obj:	precompiled.h SimulatorUtils.h types.h Simulator.h \
 		streamSocketConnection.h streamConnection.h netports.h \
 		timing_util.h immutable.h socket_helper.h win_helper.h \
 		CommsBehavior.h portlogger.h CcuIDLC.h Ccu721.h ctidate.h \
-		DelayBehavior.h BchBehavior.h cparms.h configkey.h \
-		configval.h StreamSocketListener.h module_util.h \
+		DelayBehavior.h BchBehavior.h cparms.h \
+		StreamSocketListener.h module_util.h \
 		database_reader.h database_connection.h dbaccess.h \
 		row_reader.h
 comminterface.obj:	precompiled.h CommInterface.h \
@@ -250,7 +250,7 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		pt_base.h tbl_pt_base.h pointdefs.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h readers_writer_lock.h \
+		cparms.h readers_writer_lock.h \
 		connection_base.h worker_thread.h xfer.h exceptions.h \
 		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
 		cmd_device.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \

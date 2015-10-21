@@ -113,7 +113,7 @@ mgr_device_scannable.obj:	precompiled.h mgr_device_scannable.h \
 		readers_writer_lock.h dev_single.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h connection_base.h \
+		cparms.h connection_base.h \
 		worker_thread.h xfer.h exceptions.h dev_carrier.h \
 		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
 		cmd_dlc.h cmd_device.h tbl_metergrp.h vcomdefs.h \
@@ -132,8 +132,8 @@ scanmain.obj:	precompiled.h ctitime.h dlldefs.h scansvc.h cservice.h \
 		module_util.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
 		queues.h constants.h numstr.h thread_monitor.h smartmap.h \
-		readers_writer_lock.h guard.h cparms.h configkey.h \
-		configval.h queue.h thread.h mutex.h thread_register_data.h \
+		readers_writer_lock.h guard.h cparms.h \
+		queue.h thread.h mutex.h thread_register_data.h \
 		boost_time.h connection_base.h
 scanner.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h yukon.h ctidbgmem.h critical_section.h \
@@ -155,7 +155,7 @@ scanner.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h dlldefs.h \
 		mgr_dyn_paoinfo.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
 		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
 		connection.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h connection_base.h worker_thread.h \
+		connection_base.h worker_thread.h \
 		xfer.h exceptions.h dev_mct.h dev_carrier.h dev_dlcbase.h \
 		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
 		cmd_device.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \

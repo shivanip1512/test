@@ -114,7 +114,7 @@ test_gen_reply.obj:	trx_711.h trx_info.h logger.h dlldefs.h \
 		module_util.h tbl_port_base.h tbl_paoexclusion.h xfer.h \
 		dev_base.h dev_exclusion.h tbl_base.h tbl_scanrate.h \
 		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h pointdefs.h cparms.h configkey.h configval.h
+		tbl_pt_base.h pointdefs.h cparms.h
 test_lantronixencryption.obj:	encryption_lantronix.h EncodingFilter.h
 test_paostatisticsrecord.obj:	PaoStatisticsRecord.h ctitime.h \
 		dlldefs.h yukon.h types.h ctidbgmem.h ctidate.h

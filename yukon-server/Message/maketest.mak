@@ -141,8 +141,8 @@ capcontroloperationmessage.obj:	precompiled.h CtiTime.h dlldefs.h \
 connection.obj:	precompiled.h collectable.h connection.h dlldefs.h \
 		message.h ctitime.h ctidbgmem.h loggable.h msg_multi.h \
 		msg_pdata.h yukon.h types.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h configkey.h \
-		configval.h logger.h streamBuffer.h string_util.h \
+		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h \
+		logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
@@ -157,7 +157,7 @@ connection_client.obj:	precompiled.h connection_client.h connection.h \
 		dlldefs.h message.h ctitime.h ctidbgmem.h collectable.h \
 		loggable.h msg_multi.h msg_pdata.h yukon.h types.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h mutex.h \
-		queue.h cparms.h configkey.h configval.h logger.h \
+		queue.h cparms.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		critical_section.h readers_writer_lock.h guard.h \
@@ -167,7 +167,7 @@ connection_listener.obj:	precompiled.h connection_listener.h dlldefs.h \
 		critical_section.h connection.h message.h ctitime.h \
 		ctidbgmem.h collectable.h loggable.h msg_multi.h msg_pdata.h \
 		yukon.h types.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h mutex.h queue.h cparms.h configkey.h configval.h \
+		msg_reg.h mutex.h queue.h cparms.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h utility.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h readers_writer_lock.h guard.h \
@@ -177,7 +177,7 @@ connection_server.obj:	precompiled.h connection_server.h connection.h \
 		dlldefs.h message.h ctitime.h ctidbgmem.h collectable.h \
 		loggable.h msg_multi.h msg_pdata.h yukon.h types.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h mutex.h \
-		queue.h cparms.h configkey.h configval.h logger.h \
+		queue.h cparms.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		critical_section.h readers_writer_lock.h guard.h \
@@ -189,8 +189,8 @@ dispatchconnection.obj:	precompiled.h DispatchConnection.h \
 		connection_client.h connection.h dlldefs.h message.h \
 		ctitime.h ctidbgmem.h collectable.h loggable.h msg_multi.h \
 		msg_pdata.h yukon.h types.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h configkey.h \
-		configval.h logger.h streamBuffer.h string_util.h \
+		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h \
+		logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
@@ -201,7 +201,7 @@ dispatchpointdatarequest.obj:	precompiled.h DispatchPointDataRequest.h \
 		ctitime.h dlldefs.h collectable.h loggable.h \
 		DispatchConnection.h connection_client.h connection.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h mutex.h queue.h cparms.h configkey.h configval.h \
+		msg_reg.h mutex.h queue.h cparms.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h utility.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h critical_section.h readers_writer_lock.h \
@@ -379,7 +379,7 @@ pointdatarequestfactory.obj:	precompiled.h PointDataRequestFactory.h \
 		dlldefs.h DispatchConnection.h connection_client.h \
 		connection.h message.h collectable.h loggable.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
-		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
+		mutex.h queue.h cparms.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		critical_section.h readers_writer_lock.h guard.h \
@@ -433,8 +433,8 @@ server_client_serialization_test.obj:	precompiled.h message.h \
 		msg_queuedata.h Msg_reg.h msg_requestcancel.h \
 		msg_server_req.h msg_server_resp.h msg_signal.h msg_tag.h \
 		msg_trace.h test_serialization.h test_serialization_helper.h \
-		connection_server.h connection.h queue.h cparms.h configkey.h \
-		configval.h readers_writer_lock.h connection_base.h \
+		connection_server.h connection.h queue.h cparms.h \
+		readers_writer_lock.h connection_base.h \
 		worker_thread.h connection_listener.h logManager.h \
 		module_util.h std_helper.h
 streamamqconnection.obj:	precompiled.h streamAmqConnection.h \
@@ -447,8 +447,8 @@ streamamqconnection.obj:	precompiled.h streamAmqConnection.h \
 		RfnBroadcastReplyMessage.h millisecond_timer.h win_helper.h \
 		dsm2.h dsm2err.h words.h optional.h macro_offset.h
 test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
-		collectable.h loggable.h queue.h cparms.h configkey.h \
-		configval.h logger.h streamBuffer.h string_util.h \
+		collectable.h loggable.h queue.h cparms.h \
+		logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		yukon.h types.h os2_2w32.h constants.h numstr.h \
 		critical_section.h
@@ -460,7 +460,7 @@ test_pointdatarequest.obj:	PointDataRequestFactory.h \
 		dlldefs.h DispatchConnection.h connection_client.h \
 		connection.h message.h collectable.h loggable.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
-		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
+		mutex.h queue.h cparms.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		critical_section.h readers_writer_lock.h guard.h \
@@ -480,7 +480,7 @@ test_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		msg_requestcancel.h msg_server_req.h msg_server_resp.h \
 		msg_signal.h msg_tag.h msg_trace.h test_serialization.h \
 		test_serialization_helper.h connection_server.h connection.h \
-		queue.h cparms.h configkey.h configval.h \
+		queue.h cparms.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		connection_listener.h
 #ENDUPDATE#

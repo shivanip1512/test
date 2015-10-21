@@ -140,7 +140,7 @@ connection.obj:	precompiled.h collectable.h connection.h dlldefs.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h readers_writer_lock.h \
+		readers_writer_lock.h \
 		critical_section.h connection_base.h amq_util.h
 connection_base.obj:	precompiled.h mutex.h dlldefs.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -154,7 +154,7 @@ connection_client.obj:	precompiled.h connection_client.h connection.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h configkey.h configval.h readers_writer_lock.h \
+		boostutil.h readers_writer_lock.h \
 		critical_section.h connection_base.h amq_constants.h \
 		amq_util.h
 connection_listener.obj:	precompiled.h connection_listener.h dlldefs.h \
@@ -166,7 +166,7 @@ connection_listener.obj:	precompiled.h connection_listener.h dlldefs.h \
 		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_connection.h dbaccess.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
+		row_reader.h boost_time.h boostutil.h \
 		readers_writer_lock.h connection_base.h amq_constants.h \
 		amq_util.h
 connection_server.obj:	precompiled.h connection_server.h connection.h \
@@ -178,7 +178,7 @@ connection_server.obj:	precompiled.h connection_server.h connection.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h configkey.h configval.h readers_writer_lock.h \
+		boostutil.h readers_writer_lock.h \
 		critical_section.h connection_base.h connection_listener.h \
 		amq_constants.h amq_util.h
 controlhistoryassociationresponse.obj:	precompiled.h \
@@ -193,7 +193,7 @@ dispatchconnection.obj:	precompiled.h DispatchConnection.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h readers_writer_lock.h \
+		readers_writer_lock.h \
 		critical_section.h connection_base.h MessageListener.h \
 		msg_cmd.h amq_constants.h
 dispatchpointdatarequest.obj:	precompiled.h DispatchPointDataRequest.h \
@@ -206,7 +206,7 @@ dispatchpointdatarequest.obj:	precompiled.h DispatchPointDataRequest.h \
 		string_utility.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_connection.h dbaccess.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
+		row_reader.h boost_time.h boostutil.h \
 		readers_writer_lock.h critical_section.h connection_base.h \
 		PointDataRequest.h msg_signal.h
 dll_msg.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
@@ -350,7 +350,7 @@ pointdatarequestfactory.obj:	precompiled.h PointDataRequestFactory.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h readers_writer_lock.h \
+		readers_writer_lock.h \
 		critical_section.h connection_base.h MessageListener.h \
 		DispatchPointDataRequest.h
 porterresponsemessage.obj:	precompiled.h PorterResponseMessage.h \
@@ -383,7 +383,7 @@ server_client_serialization_test.obj:	precompiled.h message.h \
 		connection_server.h connection.h exchange.h string_utility.h \
 		queue.h cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h readers_writer_lock.h \
+		readers_writer_lock.h \
 		critical_section.h connection_base.h connection_listener.h \
 		std_helper.h
 test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
@@ -392,7 +392,7 @@ test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		macro_offset.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h configkey.h configval.h logger.h thread.h \
+		boostutil.h logger.h thread.h \
 		CtiPCPtrQueue.h string_utility.h
 test_multi_msg.obj:	msg_multi.h collectable.h dlldefs.h msg_pdata.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
@@ -408,7 +408,7 @@ test_pointdatarequest.obj:	PointDataRequestFactory.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h readers_writer_lock.h \
+		readers_writer_lock.h \
 		critical_section.h connection_base.h MessageListener.h \
 		DispatchPointdataRequest.h amq_constants.h
 test_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
@@ -425,7 +425,7 @@ test_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		test_serialization_helper.h connection_server.h connection.h \
 		exchange.h string_utility.h queue.h cparms.h rwutil.h \
 		database_connection.h dbaccess.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
+		row_reader.h boost_time.h boostutil.h \
 		readers_writer_lock.h critical_section.h connection_base.h \
 		connection_listener.h
 #ENDUPDATE#
