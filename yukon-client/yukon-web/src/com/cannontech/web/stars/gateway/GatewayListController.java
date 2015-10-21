@@ -119,7 +119,7 @@ public class GatewayListController {
         }
         model.addAttribute("certUpdates", certUpdates);
         helper.addText(model, userContext);
-        boolean enableNMGatewayVersion = true;
+        boolean enableNMGatewayVersion = false;
         Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
         if (nmCompatibility != null && nmCompatibility >= 7.0) {
             enableNMGatewayVersion = true;

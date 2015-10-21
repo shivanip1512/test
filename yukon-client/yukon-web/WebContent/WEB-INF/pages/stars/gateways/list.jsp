@@ -94,9 +94,10 @@
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
                         <c:if test="${enableNMGatewayVersion}">
-                            <td class="js-gw-rv">${gateway.releaseVersion}
-                                <c:if test="${not gateway.isReleaseUpgradeVersionSame()}">
-                                   <span><i class="icon right icon-download"></i><i:inline key=".firmwareUpdateAvailable"/></span> 
+                            <td class="js-gw-rv">${fn:escapeXml(gateway.data.releaseVersion)}
+                                <c:if test="${not gateway.upgradeAvailable}">
+                                   <span><cti:icon icon="icon-download"/>
+                                  <i:inline key=".firmwareUpdateAvailable"/></span> 
                                 </c:if>
                             </td>
                         </c:if>
