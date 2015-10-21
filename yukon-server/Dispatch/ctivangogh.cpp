@@ -633,12 +633,12 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
 
         validateConnections();        // Make sure nobody has disappeared on us since the last registration
 
-        CTILOG_INFO(dout, "Pre Point Mgr Insert " << reinterpret_cast<size_t>(pCM.get()) << ", use_count=" << pCM.use_count());
+        CTILOG_DEBUG(dout, "Pre Point Mgr Insert " << reinterpret_cast<size_t>(pCM.get()) << ", use_count=" << pCM.use_count());
         PointMgr.InsertConnectionManager(pCM, aReg, 
             ((gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION) ? 
             CtiPointClientManager::DebugPrint::True : 
             CtiPointClientManager::DebugPrint::False));
-        CTILOG_INFO(dout, "Post Point Mgr Insert " << reinterpret_cast<size_t>(pCM.get()) << ", use_count=" << pCM.use_count());
+        CTILOG_DEBUG(dout, "Post Point Mgr Insert " << reinterpret_cast<size_t>(pCM.get()) << ", use_count=" << pCM.use_count());
 
 
         if(!(aReg.getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS)))
