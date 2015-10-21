@@ -21,11 +21,6 @@ LastRefresh(::time(NULL))
 CtiConfigParameters::~CtiConfigParameters()
 {
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-
-    for( mHash_itr2 itr = mHash.begin(); itr != mHash.end(); itr++ )
-    {
-        delete (*itr).second;
-    }
     mHash.clear();
 }
 
@@ -68,10 +63,6 @@ int CtiConfigParameters::RefreshConfigParameters()
 
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
 
-    for( mHash_itr2 itr = mHash.begin(); itr != mHash.end(); itr++ )
-    {
-        delete (*itr).second;
-    }
     mHash.clear();
 
     if( FileName.empty() )
@@ -113,14 +104,12 @@ int CtiConfigParameters::RefreshConfigParameters()
 
                                 if ( processed.first )
                                 {
-                                    CtiConfigValue *Val = new CtiConfigValue( processed.second );
-                                    mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), Val) );
+                                    mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), 
+                                        string(processed.second) ));
                                     if( !p.second )
                                     {
                                         cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << endl;
                                         cout << "\t" << chKey << " : " << getValueAsString(string(chKey)) << endl;
-                                        //delete Key;
-                                        delete Val;
                                     }
                                 }
                                 else
@@ -157,7 +146,7 @@ void
 CtiConfigParameters::Dump()
 {
     string Key;
-    CtiConfigValue   *Value;
+    string Value;
 
     checkForRefresh();
 
@@ -169,9 +158,9 @@ CtiConfigParameters::Dump()
         for( mHash_itr2 iter = mHash.begin(); iter != mHash.end(); iter++ )
         {
             Key = (*iter).first;
-            Value = (CtiConfigValue*)(*iter).second;
+            Value = (*iter).second;
 
-            cout << setiosflags(ios::left) << setw(30) << Key << " : " << setw(40) << Value->getValue() << endl;
+            cout << setiosflags(ios::left) << setw(30) << Key << " : " << setw(40) << Value << endl;
         }
     }
     else
@@ -214,8 +203,6 @@ std::pair< bool, std::string > CtiConfigParameters::preprocessValue( char * chVa
 
 BOOL CtiConfigParameters::isOpt(const string& key)
 {
-    CtiConfigValue   *Value;
-
     checkForRefresh();
 
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
@@ -231,8 +218,7 @@ BOOL CtiConfigParameters::isOpt(const string& key)
 
 bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValue)
 {
-    //CtiConfigKey     Key(key);
-    CtiConfigValue   *Value;
+    string   Value;
 
     checkForRefresh();
 
@@ -240,7 +226,7 @@ bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValu
 
     mHash_itr2 itr = mHash.find(key);
 
-    if( (itr != mHash.end()) && ciStringEqual((*itr).second->getValue(),isEqualThisValue) )
+    if( (itr != mHash.end()) && ciStringEqual((*itr).second,isEqualThisValue) )
         return true;
     else
         return false;
@@ -267,9 +253,7 @@ string
 CtiConfigParameters::getValueAsString(const string& key, const string& defaultval)
 {
     BOOL           bRet = TRUE;
-    //CtiConfigKey   Key(key);
-    CtiConfigValue *Value;
-
+    
     string retStr = defaultval;      // A Null string.
 
     checkForRefresh();
@@ -280,8 +264,7 @@ CtiConfigParameters::getValueAsString(const string& key, const string& defaultva
 
     if( itr != mHash.end() )
     {
-        Value = (CtiConfigValue*)(*itr).second;
-        retStr = Value->getValue();
+        retStr = (*itr).second;
     }
     return retStr;
 }
@@ -290,8 +273,6 @@ string
 CtiConfigParameters::getValueAsPath(const string& key, const string& defaultval)
 {
     BOOL           bRet = TRUE;
-    //CtiConfigKey   Key(key);
-    CtiConfigValue *Value;
 
     string retStr = defaultval;      // A Null string.
 
@@ -303,8 +284,7 @@ CtiConfigParameters::getValueAsPath(const string& key, const string& defaultval)
 
     if( itr != mHash.end() )
     {
-        Value = (CtiConfigValue*)(*itr).second;
-        retStr = Value->getValue();
+        retStr = (*itr).second;
     }
 
     if( PathIsRelative(retStr.c_str()) )

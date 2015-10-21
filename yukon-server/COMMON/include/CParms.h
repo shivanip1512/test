@@ -1,8 +1,6 @@
 #pragma once
 
 #include "dlldefs.h"
-#include "configkey.h"
-#include "configval.h"
 
 #include <windows.h>
 
@@ -85,7 +83,7 @@ class IM_EX_CTIBASE CtiConfigParameters
 {
 private:
 
-    typedef std::map<std::string,CtiConfigValue*> ConfigValueMap;
+    typedef std::map<std::string,std::string> ConfigValueMap;
 
     typedef ConfigValueMap::iterator mHash_itr2;
     typedef std::pair<mHash_itr2,bool> mHash_pair2;

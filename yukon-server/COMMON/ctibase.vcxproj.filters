@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -22,12 +22,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cmdparse.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="configkey.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="configval.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="counter.cpp">
@@ -249,6 +243,9 @@
     <ClCompile Include="xml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\precompiled.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AttributeService.h">
@@ -273,12 +270,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\COLOR.H">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ConfigKey.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ConfigVal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\constants.h">
