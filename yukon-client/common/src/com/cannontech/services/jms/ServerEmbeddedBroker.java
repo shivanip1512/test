@@ -6,9 +6,12 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.region.policy.PendingQueueMessageStoragePolicy;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
+import org.apache.activemq.broker.region.policy.VMPendingQueueMessageStoragePolicy;
 import org.apache.activemq.command.ActiveMQTempQueue;
+import org.apache.activemq.plugin.StatisticsBrokerPlugin;
 import org.apache.log4j.Logger;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
@@ -27,10 +30,19 @@ public class ServerEmbeddedBroker {
     private static final String localhostConnector = "tcp://localhost:61616";
     private static final String anyhostConnector = "tcp://0.0.0.0:61616";
 
-    private long memoryUsageLimit = DEFAULT_MEMORY_USAGE_LIMIT;
-    private long tempQueueMemoryUsageLimit = DEFAULT_TEMPQUEUE_MEMORY_USAGE_LIMIT;
-    private long waitForStartMillis = DEFAULT_WAIT_FOR_START_MILLIS;
+    private long memoryUsageLimit = 
+            Long.getLong("com.cannontech.services.jms.ServerEmbeddedBroker.memory.usage.limit", 
+                         DEFAULT_MEMORY_USAGE_LIMIT);
+    
+    private long tempQueueMemoryUsageLimit = 
+            Long.getLong("com.cannontech.services.jms.ServerEmbeddedBroker.tempqueue.memory.usage.limit", 
+                         DEFAULT_TEMPQUEUE_MEMORY_USAGE_LIMIT);
+    
+    private long waitForStartMillis = 
+            Long.getLong("com.cannontech.services.jms.ServerEmbeddedBroker.wait.for.start", 
+                         DEFAULT_WAIT_FOR_START_MILLIS);
 
+    BrokerServiceMonitor monitor=new BrokerServiceMonitor();
     /**
      * @param name name used for the broker, mostly for debug
      * @param listenerHost something like "tcp://localhost:61616"
@@ -62,7 +74,9 @@ public class ServerEmbeddedBroker {
             broker.setBrokerName(name);
 
             broker.setUseJmx(true);
-
+            
+            new StatisticsBrokerPlugin().installPlugin(broker.getBroker());
+            
             broker.addConnector(listenerHost);
             if (!listenerHost.equals(anyhostConnector) && !listenerHost.equals(localhostConnector)) {
                 log.info("Specified listener (" + listenerHost + ") doesn't include localhost:61616, adding localhost to broker.");
@@ -74,16 +88,27 @@ public class ServerEmbeddedBroker {
                 }
             }
 
+            log.info("memoryUsageLimit = "+memoryUsageLimit);
+            log.info("tempQueueMemoryUsageLimit = "+tempQueueMemoryUsageLimit);
+
             broker.getSystemUsage().getMemoryUsage().setLimit(memoryUsageLimit);
             PolicyEntry policyEntry= new PolicyEntry();
             policyEntry.setMemoryLimit(tempQueueMemoryUsageLimit);
             policyEntry.setProducerFlowControl(true);
+            
+            // Force a vmQueueCursor as per http://activemq.apache.org/producer-flow-control.html
+            PendingQueueMessageStoragePolicy pendingQueuePolicy=new VMPendingQueueMessageStoragePolicy();
+            policyEntry.setPendingQueuePolicy(pendingQueuePolicy);
+            
             PolicyMap map = new PolicyMap();
             map.put(new ActiveMQTempQueue("*") , policyEntry);
             broker.setDestinationPolicy(map);
 
             broker.start();
 
+            monitor.setBroker(broker.getBroker());
+            monitor.start();
+            
         } catch (Exception e) {
             log.warn("Caught exception starting server broker", e);
             throw new RuntimeException("Unable to start broker", e);
