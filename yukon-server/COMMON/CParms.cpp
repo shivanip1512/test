@@ -42,8 +42,6 @@ int CtiConfigParameters::RefreshConfigParameters()
     const unsigned MAX_CONFIG_VALUE  = MAX_CONFIG_BUFFER - MAX_CONFIG_KEY;
 
     int   i;
-    char  key;
-    char  valstr[80];
 
     char        Buffer[MAX_CONFIG_BUFFER];
     char        chKey[MAX_CONFIG_KEY];
@@ -244,7 +242,6 @@ bool CtiConfigParameters::isTrue(const string &key, bool defaultval)
 string
 CtiConfigParameters::getValueAsString(const string& key, const string& defaultval)
 {
-    BOOL           bRet = TRUE;
     checkForRefresh();
 
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
@@ -353,7 +350,6 @@ int main(int argc, char **argv)
 void CtiConfigParameters::HeadAndTail(char *source, char *dest, size_t len)
 {
     int      i, j;
-    char     *pch;
 
     dest[0] = '\0';
 
