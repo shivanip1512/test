@@ -20,8 +20,8 @@ public class BrokerServiceMonitor extends Thread {
     
     /** Time period for checking on the queue depths from the Java System Properties */
     private Duration reportingPeriod = Duration.standardSeconds(
-            Integer.getInteger("com.cannontech.services.jms.BrokerServiceMonitor.reportingPeriod", 
-                         5 * 60));
+            Integer.getInteger("com.cannontech.services.jms.BrokerServiceMonitor.reportingPeriodSeconds", 
+                         5 /* minutes */ * 60 /* Seconds/Minute */));
     
     @Override
     public void run() {
