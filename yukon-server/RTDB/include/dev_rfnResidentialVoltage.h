@@ -37,7 +37,8 @@ protected:
     YukonError_t executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
 
     void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand          & cmd ) override;
-    void handleCommandResult( const Commands::RfnLoadProfileSetRecordingCommand          & cmd ) override;
+    void handleCommandResult( const Commands::RfnLoadProfileSetTemporaryRecordingCommand & cmd ) override;
+    void handleCommandResult( const Commands::RfnLoadProfileSetPermanentRecordingCommand & cmd ) override;
 
 public:
 

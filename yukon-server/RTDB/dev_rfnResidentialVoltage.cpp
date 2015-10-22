@@ -418,7 +418,8 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageProfile( CtiReq
 {
     // putconfig voltage profile enable|disable
 
-    using Commands::RfnLoadProfileSetRecordingCommand;
+    using Commands::RfnLoadProfileRecordingCommand;
+    using Commands::RfnLoadProfileSetTemporaryRecordingCommand;
 
     //
     // enable|disable recording
@@ -426,10 +427,10 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageProfile( CtiReq
 
     if( parse.isKeyValid("voltage_profile_enable") )
     {
-        RfnLoadProfileSetRecordingCommand::RecordingOption option = (parse.getiValue("voltage_profile_enable")) ? RfnLoadProfileSetRecordingCommand::EnableRecording
-                                                                                                                : RfnLoadProfileSetRecordingCommand::DisableRecording;
+        RfnLoadProfileRecordingCommand::RecordingOption option = (parse.getiValue("voltage_profile_enable")) ? RfnLoadProfileRecordingCommand::EnableRecording
+                                                                                                             : RfnLoadProfileRecordingCommand::DisableRecording;
 
-        rfnRequests.push_back( boost::make_shared<RfnLoadProfileSetRecordingCommand>( option ));
+        rfnRequests.push_back( boost::make_shared<RfnLoadProfileSetTemporaryRecordingCommand>( option ));
 
         return ClientErrors::None;
     }
@@ -526,10 +527,9 @@ void RfnResidentialVoltageDevice::handleCommandResult( const Commands::RfnLoadPr
     }
 }
 
-
-void RfnResidentialVoltageDevice::handleCommandResult(const Commands::RfnLoadProfileSetRecordingCommand & cmd)
+void RfnResidentialVoltageDevice::handleCommandResult(const Commands::RfnLoadProfileSetTemporaryRecordingCommand & cmd)
 {
-    if( cmd.recordingOption == Commands::RfnLoadProfileSetRecordingCommand::EnableRecording )
+    if( cmd.recordingOption == Commands::RfnLoadProfileRecordingCommand::EnableRecording )
     {
         setDynamicInfo(
             CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil,
@@ -538,6 +538,20 @@ void RfnResidentialVoltageDevice::handleCommandResult(const Commands::RfnLoadPro
     else
     {
         purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil);
+    }
+}
+
+void RfnResidentialVoltageDevice::handleCommandResult(const Commands::RfnLoadProfileSetPermanentRecordingCommand & cmd)
+{
+    if( cmd.recordingOption == Commands::RfnLoadProfileRecordingCommand::EnableRecording )
+    {
+//        setDynamicInfo(
+//            CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil,
+//            CtiTime::now().addDays(14));
+    }
+    else
+    {
+//        purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil);
     }
 }
 

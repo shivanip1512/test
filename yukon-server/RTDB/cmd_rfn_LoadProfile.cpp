@@ -30,7 +30,22 @@ const std::map<unsigned char, std::string>  loadProfileStateResolver {
 RfnLoadProfileCommand::LongTlvList RfnLoadProfileCommand::longTlvs {
     TlvType_VoltageProfileConfiguration,
     TlvType_LoadProfileState,
-    TlvType_GetProfilePointsResponse };
+    TlvType_GetProfilePointsResponse,
+    TlvType_PermanentLoadProfileRecordingState,
+    TlvType_TemporaryLoadProfileRecordingState
+};
+
+
+const std::map<RfnLoadProfileCommand::Operation, RfnLoadProfileCommand::Response>  RfnLoadProfileCommand::loadProfileResponseResolver
+{
+    { Operation_SetConfiguration,                    Response_SetConfiguration             },
+    { Operation_GetConfiguration,                    Response_GetConfiguration             },
+    { Operation_DisableLoadProfileRecording,         Response_DisableLoadProfileRecording  },
+    { Operation_EnableTemporaryLoadProfileRecording, Response_EnableLoadProfileRecording   },
+    { Operation_GetLoadProfileRecordingState,        Response_GetLoadProfileRecordingState },
+    { Operation_GetLoadProfilePoints,                Response_GetLoadProfilePoints         },
+    { Operation_EnablePermanentLoadProfileRecording, Response_EnableLoadProfileRecording   }
+};
 
 
 //
@@ -82,7 +97,14 @@ RfnCommandResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
     validate( Condition( response[0] == CommandCode_Response, ClientErrors::InvalidData )
             << "Invalid Response Command Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
 
-    validate( Condition( response[1] == _operation, ClientErrors::InvalidData )
+    // Look up our expected Response type given our operation type
+
+    boost::optional<Response> expectedResponseCode = mapFind( loadProfileResponseResolver, _operation );
+
+    validate( Condition( !! expectedResponseCode, ClientErrors::InvalidData )
+            << "Invalid Operation Code (" << CtiNumStr(response[1]).xhex(2) << ")" );
+
+    validate( Condition( response[1] == *expectedResponseCode, ClientErrors::InvalidData )
             << "Invalid Operation Code (" << CtiNumStr(response[1]).xhex(2) << ")" );
 
     boost::optional<std::string> status = mapFind( loadProfileStatusResolver, response[2] );
@@ -268,6 +290,12 @@ auto RfnLoadProfileGetRecordingCommand::getRecordingOption() const -> boost::opt
 }
 
 
+auto RfnLoadProfileGetRecordingCommand::getEndTime() const -> boost::optional<CtiTime>
+{
+    return _endTime;
+}
+
+
 RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand(const CtiTime now,
                                                                    const RfnResponsePayload & response )
 {
@@ -280,47 +308,116 @@ RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand(const CtiTime 
 
     const TypeLengthValue & tlv = tlvs[0];
 
-    validate( Condition( tlv.type == TlvType_LoadProfileState, ClientErrors::InvalidData )
+    validate( Condition( tlv.type == TlvType_LoadProfileState ||
+                         tlv.type == TlvType_PermanentLoadProfileRecordingState ||
+                         tlv.type == TlvType_TemporaryLoadProfileRecordingState, ClientErrors::InvalidData )
             << "Invalid TLV type (" << tlv.type << " != " << TlvType_LoadProfileState << ")" );
 
-    validate( Condition( tlv.value.size() == 1, ClientErrors::InvalidData )
-            << "Invalid TLV length (" << tlv.value.size() << ")" );
+    switch ( tlv.type )
+    {
+        case TlvType_PermanentLoadProfileRecordingState:
+        {
+            validate( Condition( tlv.value.size() == 0, ClientErrors::InvalidData )
+                    << "Invalid TLV length (" << tlv.value.size() << ")" );
 
-    boost::optional<std::string> state = Cti::mapFind( loadProfileStateResolver, tlv.value[0] );
+            _option = EnableRecording;
 
-    validate( Condition( !! state, ClientErrors::InvalidData )
-            << "Invalid State (" << tlv.value[0] << ")" );
+            result.description += "\nCurrent State: Enabled (Permanent)";
 
-    _option = tlv.value[0] ? EnableRecording : DisableRecording;
+            break;
+        }
 
+        case TlvType_TemporaryLoadProfileRecordingState:
+        {
+            validate( Condition( tlv.value.size() == 4, ClientErrors::InvalidData )
+                    << "Invalid TLV length (" << tlv.value.size() << ")" );
 
-    result.description += "\nCurrent State: " + *state + " (" + CtiNumStr(tlv.value[0]) + ")";
+            _option  = EnableRecording;
+            _endTime = CtiTime( getValueFromBits_bEndian( tlv.value, 0, 32 ) );
+
+            result.description += "\nCurrent State: Enabled (Temporary)";
+            result.description += "\nEnd Time: " + _endTime->asString();
+
+            break;
+        }
+
+        case TlvType_LoadProfileState:
+        default:
+        {
+            validate( Condition( tlv.value.size() == 1, ClientErrors::InvalidData )
+                    << "Invalid TLV length (" << tlv.value.size() << ")" );
+
+            boost::optional<std::string> state = Cti::mapFind( loadProfileStateResolver, tlv.value[0] );
+
+            validate( Condition( !! state, ClientErrors::InvalidData )
+                    << "Invalid State (" << tlv.value[0] << ")" );
+
+            _option = tlv.value[0] ? EnableRecording : DisableRecording;
+
+            result.description += "\nCurrent State: " + *state + " (" + CtiNumStr(tlv.value[0]) + ")";
+
+            break;
+        }
+    }
 
     return result;
 }
 
 
 //
-// Load Profile Set Recording State
+// Load Profile Set Temporary Recording State
 //
 
-RfnLoadProfileSetRecordingCommand::RfnLoadProfileSetRecordingCommand( const RecordingOption option )
+RfnLoadProfileSetTemporaryRecordingCommand::RfnLoadProfileSetTemporaryRecordingCommand( const RecordingOption option )
     :   RfnLoadProfileRecordingCommand( option == EnableRecording
-                                                  ? Operation_EnableLoadProfileRecording
+                                                  ? Operation_EnableTemporaryLoadProfileRecording
                                                   : Operation_DisableLoadProfileRecording ),
         recordingOption(option)
 {
 }
 
 
-void RfnLoadProfileSetRecordingCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+void RfnLoadProfileSetTemporaryRecordingCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
 {
     rh.handleCommandResult(*this);
 }
 
 
-RfnCommandResult RfnLoadProfileSetRecordingCommand::decodeCommand( const CtiTime now,
-                                                                   const RfnResponsePayload & response )
+RfnCommandResult RfnLoadProfileSetTemporaryRecordingCommand::decodeCommand( const CtiTime now,
+                                                                            const RfnResponsePayload & response )
+{
+    RfnCommandResult result = decodeResponseHeader( now, response );
+
+    const TlvList tlvs = getTlvsFromPayload( response );
+
+    validate( Condition( tlvs.size() == 0, ClientErrors::InvalidData )
+            << "Invalid TLV count (" << tlvs.size() << ")" );
+
+    return result;
+}
+
+
+//
+// Load Profile Set Permanent Recording State
+//
+
+RfnLoadProfileSetPermanentRecordingCommand::RfnLoadProfileSetPermanentRecordingCommand( const RecordingOption option )
+    :   RfnLoadProfileRecordingCommand( option == EnableRecording
+                                                  ? Operation_EnablePermanentLoadProfileRecording
+                                                  : Operation_DisableLoadProfileRecording ),
+        recordingOption(option)
+{
+}
+
+
+void RfnLoadProfileSetPermanentRecordingCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
+
+RfnCommandResult RfnLoadProfileSetPermanentRecordingCommand::decodeCommand( const CtiTime now,
+                                                                            const RfnResponsePayload & response )
 {
     RfnCommandResult result = decodeResponseHeader( now, response );
 

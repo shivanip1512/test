@@ -29,20 +29,33 @@ protected:
 
     enum Operation
     {
-        Operation_SetConfiguration              = 0x00,
-        Operation_GetConfiguration              = 0x01,
-        Operation_DisableLoadProfileRecording   = 0x02,
-        Operation_EnableLoadProfileRecording    = 0x03,
-        Operation_GetLoadProfileRecordingState  = 0x04,
-        Operation_GetLoadProfilePoints          = 0x05
+        Operation_SetConfiguration                    = 0x00,
+        Operation_GetConfiguration                    = 0x01,
+        Operation_DisableLoadProfileRecording         = 0x02,
+        Operation_EnableTemporaryLoadProfileRecording = 0x03,
+        Operation_GetLoadProfileRecordingState        = 0x04,
+        Operation_GetLoadProfilePoints                = 0x05,
+        Operation_EnablePermanentLoadProfileRecording = 0x06
+    };
+
+    enum Response
+    {
+        Response_SetConfiguration             = 0x00,
+        Response_GetConfiguration             = 0x01,
+        Response_DisableLoadProfileRecording  = 0x02,
+        Response_EnableLoadProfileRecording   = 0x03,
+        Response_GetLoadProfileRecordingState = 0x04,
+        Response_GetLoadProfilePoints         = 0x05
     };
 
     enum TlvType
     {
-        TlvType_VoltageProfileConfiguration     = 0x01,
-        TlvType_LoadProfileState                = 0x02,
-        TlvType_GetProfilePointsResponse        = 0x03,
-        TlvType_GetProfilePointsRequest         = 0x04
+        TlvType_VoltageProfileConfiguration         = 0x01,
+        TlvType_LoadProfileState                    = 0x02,
+        TlvType_GetProfilePointsResponse            = 0x03,
+        TlvType_GetProfilePointsRequest             = 0x04,
+        TlvType_PermanentLoadProfileRecordingState  = 0x05,
+        TlvType_TemporaryLoadProfileRecordingState  = 0x06
     };
 
     RfnLoadProfileCommand( const Operation operation );
@@ -65,6 +78,8 @@ protected:
     TlvList getTlvsFromPayload( const RfnResponsePayload & response );
 
     static LongTlvList longTlvs;
+
+    static const std::map<Operation, Response>  loadProfileResponseResolver;
 
 public:
 
@@ -171,23 +186,43 @@ public:
                                             const RfnResponsePayload & response );
 
     boost::optional<RecordingOption> getRecordingOption() const;
+    boost::optional<CtiTime>         getEndTime() const;
 
 private:
 
     boost::optional<RecordingOption> _option;
+    boost::optional<CtiTime>         _endTime;
 };
 
 
 /**
- * Load Profile Recording Set State
+ * Load Profile Recording Set Temporary Recording State
  */
-class IM_EX_DEVDB RfnLoadProfileSetRecordingCommand : public RfnLoadProfileRecordingCommand
+class IM_EX_DEVDB RfnLoadProfileSetTemporaryRecordingCommand : public RfnLoadProfileRecordingCommand
 {
 public:
 
     virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
-    RfnLoadProfileSetRecordingCommand( const RecordingOption option );
+    RfnLoadProfileSetTemporaryRecordingCommand( const RecordingOption option );
+
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response );
+
+    const RecordingOption recordingOption;
+};
+
+
+/**
+ * Load Profile Recording Set Permanent Recording State
+ */
+class IM_EX_DEVDB RfnLoadProfileSetPermanentRecordingCommand : public RfnLoadProfileRecordingCommand
+{
+public:
+
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
+    RfnLoadProfileSetPermanentRecordingCommand( const RecordingOption option );
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
