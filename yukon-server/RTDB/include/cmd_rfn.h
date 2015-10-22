@@ -120,6 +120,7 @@ protected:
     //
     virtual unsigned char getCommandCode() const = 0;
     virtual unsigned char getOperation() const = 0;
+    virtual unsigned char getExpectedResponseCode() const;
     virtual Bytes         getCommandData() = 0;
 
     virtual Bytes         getCommandHeader();

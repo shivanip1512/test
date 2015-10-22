@@ -586,6 +586,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
                                               "\nCurrent State: Disabled (0)" );
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::DisableRecording, command.getRecordingOption() );
+
+        BOOST_CHECK_EQUAL( false, command.isPermanentEnabled() );
+        BOOST_CHECK_EQUAL( false, command.isTemporaryEnabled() );
     }
 
     // decode -- success response -- enabled -- old firmware style
@@ -599,6 +602,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
                                               "\nCurrent State: Enabled (1)" );
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
+
+        BOOST_CHECK_EQUAL( false, command.isPermanentEnabled() );
+        BOOST_CHECK_EQUAL( true,  command.isTemporaryEnabled() );
     }
 
     // decode -- success response -- enabled -- new firmware - permanent
@@ -612,6 +618,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
                                             "\nCurrent State: Enabled (Permanent)" );
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
+
+        BOOST_CHECK_EQUAL( true,  command.isPermanentEnabled() );
+        BOOST_CHECK_EQUAL( false, command.isTemporaryEnabled() );
     }
 
     // decode -- success response -- enabled -- new firmware - temporary
@@ -629,6 +638,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
         BOOST_CHECK_EQUAL( CtiTime( 1445470742 ), command.getEndTime() );
+
+        BOOST_CHECK_EQUAL( false, command.isPermanentEnabled() );
+        BOOST_CHECK_EQUAL( true,  command.isTemporaryEnabled() );
     }
 
     // decode -- failure response

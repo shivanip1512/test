@@ -38,16 +38,6 @@ protected:
         Operation_EnablePermanentLoadProfileRecording = 0x06
     };
 
-    enum Response
-    {
-        Response_SetConfiguration             = 0x00,
-        Response_GetConfiguration             = 0x01,
-        Response_DisableLoadProfileRecording  = 0x02,
-        Response_EnableLoadProfileRecording   = 0x03,
-        Response_GetLoadProfileRecordingState = 0x04,
-        Response_GetLoadProfilePoints         = 0x05
-    };
-
     enum TlvType
     {
         TlvType_VoltageProfileConfiguration         = 0x01,
@@ -79,7 +69,7 @@ protected:
 
     static LongTlvList longTlvs;
 
-    static const std::map<Operation, Response>  loadProfileResponseResolver;
+    virtual unsigned char getExpectedResponseCode() const override;
 
 public:
 
@@ -188,10 +178,16 @@ public:
     boost::optional<RecordingOption> getRecordingOption() const;
     boost::optional<CtiTime>         getEndTime() const;
 
+    bool isPermanentEnabled() const;
+    bool isTemporaryEnabled() const;
+
 private:
 
     boost::optional<RecordingOption> _option;
     boost::optional<CtiTime>         _endTime;
+
+    bool _isPermanentEnabled,
+         _isTemporaryEnabled;
 };
 
 
