@@ -1103,7 +1103,6 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
             {
                 INT hh = 0;
                 INT mm = 0;
-                INT ofm = 0;      // Offset from Midnight in seconds.
 
                 if(!(valStr = matchRegex(temp2, "[0-9]?[0-9]:")).empty())
                 {
@@ -1396,8 +1395,6 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
     std::string   temp2;
     std::string   token;
 
-    char *p;
-
     static const boost::regex   re_reading         ("reading " + str_floatnum);
     static const boost::regex   re_kyzoffset       ("kyz *" + str_num);   //  if there's a kyz offset specified
     static const boost::regex   re_analog_offset   ("analog " + str_num + " -?" + str_floatnum);
@@ -1515,7 +1512,6 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
     std::string CmdStr(_CmdStr);
     std::string   temp2;
     std::string   token;
-    unsigned int flag = 0;
     static const boost::regex   re_offsetvalue("offset " + str_num + " value -?" + str_num);
 
     CtiTokenizer   tok(CmdStr);
@@ -1662,7 +1658,6 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     static const boost::regex    re_dnp("dnp " + str_num);
     static const boost::regex    re_dnp_address("dnp address");
 
-    int roleNum, channel;
     CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
@@ -2753,7 +2748,6 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
         if(containsString(CmdStr, " phasedetect"))
         {
             std::string val;
-            INT setpoint = 0;
             _cmd["phasedetect"] = CtiParseValue("TRUE");
 
             if(!(temp2 = matchRegex(CmdStr, " clear")).empty())
@@ -2884,7 +2878,6 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
             {
                 CtiTokenizer cmdtok(token);
                 std::string rawData;
-                int rawloc;
 
                 //  go past "raw"
                 cmdtok(" =");
@@ -2916,9 +2909,6 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
         {
             if(!(token = matchRegex(CmdStr, re_channel)).empty())
             {
-                int channel, input;
-                float multiplier;
-
                 CtiTokenizer cmdtok(token);
 
                 //  channel /n/ (ied|2-wire|3-wire|none) [input /n/] [multiplier n.nn]
@@ -2991,7 +2981,6 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
             {
                 CtiTokenizer cmdtok(token);
                 std::string rawData;
-                int rawloc;
 
                 //  go past "role"
                 cmdtok();
@@ -3908,7 +3897,6 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                                       "( *(([ =]+)?(0x)?)?[0-9a-f]+)?")).empty())
             {
                 int   i;
-                int   val;
                 char *ptr = NULL;
 
                 std::string      rawStr;     // This is to contain the raw bytes
@@ -4050,8 +4038,6 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const string &_CmdStr)
     std::string CmdStr(_CmdStr);
     std::string   temp2;
     std::string   token;
-    unsigned int flag = 0;
-    char *p;
 
     CtiTokenizer   tok(CmdStr);
 
@@ -4104,7 +4090,6 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const string &_CmdStr)
 void  CtiCommandParser::doParsePutStatusVersacom(const string &_CmdStr)
 {
     std::string CmdStr(_CmdStr);
-    char *p;
 
     char        tbuf[60];
 
@@ -4179,7 +4164,6 @@ void  CtiCommandParser::doParsePutStatusVersacom(const string &_CmdStr)
 void  CtiCommandParser::doParsePutStatusFisherP(const string &_CmdStr)
 {
     std::string CmdStr(_CmdStr);
-    char *p;
     char        tbuf[60];
 
     std::string   token;
@@ -4648,8 +4632,6 @@ void CtiCommandParser::doParseGetValueExpresscom(const string &_CmdStr)
 void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
 {
     std::string CmdStr(_CmdStr);
-    UINT        flag   = 0;
-    UINT        offset = 0;
     INT         iValue = 0;
     DOUBLE      dValue = 0.0;
 
@@ -5038,8 +5020,6 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     std::string CmdStr(_CmdStr);
     CHAR *p;
     INT         _num;
-    UINT        flag   = 0;
-    UINT        offset = 0;
     UINT        iValue = 0;
     CHAR        tbuf[80];
 
@@ -5901,9 +5881,6 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
 {
     std::string CmdStr(_CmdStr);
     CHAR        tbuf[80];
-    UINT        flag   = 0;
-    UINT        offset = 0;
-    UINT        iValue = 0;
 
     std::string   str;
     std::string   temp;
@@ -5994,7 +5971,6 @@ void CtiCommandParser::doParsePutConfigThermostatSchedule(const string &_CmdStr)
 
     {
         INT key;
-        bool inc = true;
 
         token = tok(" ,");              // Prime it up.. Shoud be a putconfig.
 
@@ -6151,12 +6127,7 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(CtiTokenizer &tok, 
 void CtiCommandParser::doParseControlSA(const string &_CmdStr)
 {
     std::string CmdStr(_CmdStr);
-    UINT        flag   = 0;
-    UINT        offset = 0;
     INT         iValue = 0;
-
-    CHAR        *p;
-    CHAR        tbuf[80];
 
     std::string   temp;
     std::string   valStr;
@@ -6764,11 +6735,7 @@ void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
 void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
 {
     std::string CmdStr(_CmdStr);
-    CHAR *p;
-    UINT        flag   = 0;
-    UINT        offset = 0;
     UINT        iValue = 0;
-    CHAR        tbuf[80];
 
     std::string   str;
     std::string   temp;

@@ -88,9 +88,6 @@ void FileInterface::stop()
 ---------------------------------------------------------------------------*/
 void FileInterface::_watch()
 {
-    DWORD dwWaitStatus;
-    HANDLE dwChangeHandle;
-
     try
     {
         //The find functions work in the current directory

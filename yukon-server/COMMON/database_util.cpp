@@ -174,7 +174,7 @@ void executeUpsert(DatabaseConnection &conn,
 
             executeWriter(inserter, file, line, logDebug);
         }
-        catch( PrimaryKeyViolationException& ex )
+        catch( PrimaryKeyViolationException& /*ex*/ )
         {
             if( logDebug == LogDebug::Enable )
             {

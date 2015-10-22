@@ -32,7 +32,7 @@ CtiDate parseDateString(std::string date_str)
             //    on CtiDate() resetting itself to 1/1/1970
             return CtiDate(day, month, year);
         }
-        catch( boost::bad_lexical_cast &ex )
+        catch( boost::bad_lexical_cast &/*ex*/ )
         {
         }
     }
@@ -72,7 +72,7 @@ boost::optional<TimeParts> parseTimeString(std::string time_str)
                 }
             }
         }
-        catch( boost::bad_lexical_cast &ex )
+        catch( boost::bad_lexical_cast &/*ex*/ )
         {
         }
     }

@@ -34,7 +34,6 @@ IM_EX_CTIBASE INT GetRequestCount(HCTIQUEUE QueueHandle, ULONG RequestID, ULONG 
 {
     int retVal = ClientErrors::None;
     Count = 0;
-    QUEUEENT *Entry = NULL;
 
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))

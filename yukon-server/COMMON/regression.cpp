@@ -166,7 +166,6 @@ double CtiRegression::regression( double xprojection ) const
 bool CtiRegression::linearConstantIntervalRegression( double &slope, double &intercept )
 {
     bool retVal = false;
-    double y = 0.0;
     double xtemp;
 
     double sum_x = 0.0;

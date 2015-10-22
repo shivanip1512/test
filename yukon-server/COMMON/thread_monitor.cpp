@@ -109,7 +109,6 @@ CtiThreadMonitor::~CtiThreadMonitor()
 
 void CtiThreadMonitor::run( void )
 {
-    int cnt = 0;
     long snooze = 1000;
 
     CTILOG_INFO(dout, "Monitor Startup");

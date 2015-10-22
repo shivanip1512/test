@@ -39,7 +39,7 @@ USHORT  IM_EX_CTIBASE NCrcCalc_C(const BYTE* pStr, ULONG cnt)
    //int    i;
    int     index;
    USHORT  accum = 0xFFFF;
-   USHORT  t1=0, t2=0, t3=0;
+   USHORT  t1=0, t2=0;
    BYTE ch;
    static  USHORT table[] = {   0x0000,
       0x1081,

@@ -89,7 +89,6 @@ inline std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, int addrl
 
     if( getnameinfo( addr, addrlen, host, sizeof(host), 0, 0, NI_NUMERICHOST ) != 0 )
     {
-        int err_code = WSAGetLastError();
         return std::string();   // on error, return an empty string
     }
 

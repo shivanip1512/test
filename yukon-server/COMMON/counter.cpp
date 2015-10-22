@@ -64,7 +64,6 @@ void CtiCounter::set( int index, int val )
 
 void CtiCounter::reset( int index )
 {
-    int retVal;
     CtiLockGuard<CtiMutex> guard(_counterMapMux);
 
     _counterMap[index] = 0;
@@ -72,7 +71,6 @@ void CtiCounter::reset( int index )
 
 void CtiCounter::resetAll()
 {
-    int retVal;
     CtiLockGuard<CtiMutex> guard(_counterMapMux);
 
     if(!_counterMap.empty()) _counterMap.clear();

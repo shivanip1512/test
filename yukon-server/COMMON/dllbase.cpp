@@ -111,7 +111,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 DLLEXPORT void InitYukonBaseGlobals(void)
 {
     string str;
-    int int_val;
 
     if( !(str = gConfigParms.getValueAsString("DB_DEBUGLEVEL")).empty() )
     {

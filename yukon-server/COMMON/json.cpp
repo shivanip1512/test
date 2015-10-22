@@ -22,7 +22,7 @@ void parseJsonFiles()
     {
         json::Reader::Read(root, stream);
     }
-    catch( json::Reader::ParseException & ex )
+    catch( json::Reader::ParseException & /*ex*/ )
     {
     }
 

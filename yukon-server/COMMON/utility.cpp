@@ -804,9 +804,7 @@ INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, CtiPointType_t type
 
 string& traceBuffer(string &str, BYTE *Message, ULONG Length)
 {
-    INT status = ClientErrors::None;
     ULONG i;
-    ULONG offset = 0;
 
     /* loop through all of the characters */
     for(i = 0; i < Length; i++)
