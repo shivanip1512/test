@@ -6,10 +6,8 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.region.policy.PendingQueueMessageStoragePolicy;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
-import org.apache.activemq.broker.region.policy.VMPendingQueueMessageStoragePolicy;
 import org.apache.activemq.command.ActiveMQTempQueue;
 import org.apache.activemq.plugin.StatisticsBrokerPlugin;
 import org.apache.log4j.Logger;
@@ -31,15 +29,15 @@ public class ServerEmbeddedBroker {
     private static final String anyhostConnector = "tcp://0.0.0.0:61616";
 
     private long memoryUsageLimit = 
-            Long.getLong("com.cannontech.services.jms.ServerEmbeddedBroker.memory.usage.limit", 
+            Long.getLong("com.cannontech.services.jms.ServerEmbeddedBroker.memoryUsageLimit", 
                          DEFAULT_MEMORY_USAGE_LIMIT);
     
     private long tempQueueMemoryUsageLimit = 
-            Long.getLong("com.cannontech.services.jms.ServerEmbeddedBroker.tempqueue.memory.usage.limit", 
+            Long.getLong("com.cannontech.services.jms.ServerEmbeddedBroker.tempqueueMemoryUsageLimit", 
                          DEFAULT_TEMPQUEUE_MEMORY_USAGE_LIMIT);
     
     private long waitForStartMillis = 
-            Long.getLong("com.cannontech.services.jms.ServerEmbeddedBroker.wait.for.start", 
+            Long.getLong("com.cannontech.services.jms.ServerEmbeddedBroker.waitForStart", 
                          DEFAULT_WAIT_FOR_START_MILLIS);
 
     BrokerServiceMonitor monitor=new BrokerServiceMonitor();
@@ -75,8 +73,6 @@ public class ServerEmbeddedBroker {
 
             broker.setUseJmx(true);
             
-            new StatisticsBrokerPlugin().installPlugin(broker.getBroker());
-            
             broker.addConnector(listenerHost);
             if (!listenerHost.equals(anyhostConnector) && !listenerHost.equals(localhostConnector)) {
                 log.info("Specified listener (" + listenerHost + ") doesn't include localhost:61616, adding localhost to broker.");
@@ -95,11 +91,6 @@ public class ServerEmbeddedBroker {
             PolicyEntry policyEntry= new PolicyEntry();
             policyEntry.setMemoryLimit(tempQueueMemoryUsageLimit);
             policyEntry.setProducerFlowControl(true);
-            
-            // Force a vmQueueCursor as per http://activemq.apache.org/producer-flow-control.html
-            PendingQueueMessageStoragePolicy pendingQueuePolicy=new VMPendingQueueMessageStoragePolicy();
-            policyEntry.setPendingQueuePolicy(pendingQueuePolicy);
-            
             PolicyMap map = new PolicyMap();
             map.put(new ActiveMQTempQueue("*") , policyEntry);
             broker.setDestinationPolicy(map);

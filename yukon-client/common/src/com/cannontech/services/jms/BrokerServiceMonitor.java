@@ -7,6 +7,7 @@ import org.apache.activemq.broker.region.DestinationStatistics;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.usage.MemoryUsage;
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 
 import com.cannontech.clientutils.YukonLogManager;
 
@@ -18,9 +19,9 @@ public class BrokerServiceMonitor extends Thread {
     private BrokerService brokerService;
     
     /** Time period for checking on the queue depths from the Java System Properties */
-    private int statusTime = 
-            Integer.getInteger("com.cannontech.services.jms.BrokerServiceMonitor.statusTime", 
-                         5 * 60 * 1000);
+    private Duration reportingPeriod = Duration.standardSeconds(
+            Integer.getInteger("com.cannontech.services.jms.BrokerServiceMonitor.reportingPeriod", 
+                         5 * 60));
     
     @Override
     public void run() {
@@ -46,7 +47,7 @@ public class BrokerServiceMonitor extends Thread {
                 }
                 
                 log.info("Free memory: "+Runtime.getRuntime().freeMemory());
-                Thread.sleep(statusTime);
+                Thread.sleep(reportingPeriod.getMillis());
             } catch (Exception e) {
                 log.warn("caught exception in run", e);
             }
