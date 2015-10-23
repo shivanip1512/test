@@ -583,9 +583,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
-                                              "\nCurrent State: Disabled (0)" );
+                                            "\nCurrent State: Disabled (0)" );
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::DisableRecording, command.getRecordingOption() );
+
+        BOOST_CHECK( ! command.getEndTime() );
 
         BOOST_CHECK_EQUAL( false, command.isPermanentEnabled() );
         BOOST_CHECK_EQUAL( false, command.isTemporaryEnabled() );
@@ -599,9 +601,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
-                                              "\nCurrent State: Enabled (1)" );
+                                            "\nCurrent State: Enabled (1)" );
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
+
+        BOOST_CHECK( ! command.getEndTime() );
 
         BOOST_CHECK_EQUAL( false, command.isPermanentEnabled() );
         BOOST_CHECK_EQUAL( true,  command.isTemporaryEnabled() );
@@ -618,6 +622,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
                                             "\nCurrent State: Enabled (Permanent)" );
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
+
+        BOOST_CHECK( ! command.getEndTime() );
 
         BOOST_CHECK_EQUAL( true,  command.isPermanentEnabled() );
         BOOST_CHECK_EQUAL( false, command.isTemporaryEnabled() );
@@ -637,6 +643,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
                                             "\nEnd Time: 10/21/2015 18:39:02" );
 
         BOOST_CHECK_EQUAL( RfnLoadProfileRecordingCommand::EnableRecording, command.getRecordingOption() );
+
         BOOST_CHECK_EQUAL( CtiTime( 1445470742 ), command.getEndTime() );
 
         BOOST_CHECK_EQUAL( false, command.isPermanentEnabled() );
@@ -675,7 +682,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) )
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (1 != 2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (1)" ) )
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (2)" ) )
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid State (3)" ) );
 

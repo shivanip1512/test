@@ -321,10 +321,8 @@ RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand(const CtiTime 
 
     const TypeLengthValue & tlv = tlvs[0];
 
-    validate( Condition( tlv.type == TlvType_LoadProfileState ||
-                         tlv.type == TlvType_PermanentLoadProfileRecordingState ||
-                         tlv.type == TlvType_TemporaryLoadProfileRecordingState, ClientErrors::InvalidData )
-            << "Invalid TLV type (" << tlv.type << " != " << TlvType_LoadProfileState << ")" );
+    _option  = boost::none;
+    _endTime = boost::none;
 
     _isPermanentEnabled = false;
     _isTemporaryEnabled = false;
@@ -362,7 +360,6 @@ RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand(const CtiTime 
         }
 
         case TlvType_LoadProfileState:
-        default:
         {
             validate( Condition( tlv.value.size() == 1, ClientErrors::InvalidData )
                     << "Invalid TLV length (" << tlv.value.size() << ")" );
@@ -379,6 +376,14 @@ RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand(const CtiTime 
             result.description += "\nCurrent State: " + *state + " (" + CtiNumStr(tlv.value[0]) + ")";
 
             break;
+        }
+
+        default:
+        {
+            validate( Condition( tlv.type == TlvType_LoadProfileState ||
+                                 tlv.type == TlvType_PermanentLoadProfileRecordingState ||
+                                 tlv.type == TlvType_TemporaryLoadProfileRecordingState, ClientErrors::InvalidData )
+                    << "Invalid TLV type (" << tlv.type << ")" );
         }
     }
 
