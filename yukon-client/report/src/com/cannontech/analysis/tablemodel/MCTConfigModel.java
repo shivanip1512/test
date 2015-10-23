@@ -54,14 +54,13 @@ public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow>
         sql.append("   DLP.LoadProfileDemandRate AS ProfileRate, DC.Name AS ConfigName, ");
         sql.append("   DCI.ItemValue AS ConfigDemandRate, DCI2.ItemValue AS ConfigProfileRate");
         sql.append("FROM YukonPaObject YP");
-        sql.append("   JOIN DeviceLoadProfile DLP ON YP.PaObjectId = DLP.DeviceId");
+        sql.append("   JOIN DeviceLoadProfile DLP ON YP.PAObjectID = DLP.DEVICEID");
         sql.append("      AND (YP.Type LIKE 'MCT-430%' OR YP.Type LIKE 'MCT-470%')");
-        sql.append("   LEFT JOIN DeviceConfigurationDeviceMap DCM ON DCM.DeviceId = YP.PaObjectId");
-        sql.append("   LEFT JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCM.DeviceConfigurationId");
-        sql.append("   LEFT JOIN DeviceConfigCategoryMap CM ON CM.DeviceConfigurationId = DC.DeviceConfigurationId");
-        sql.append("   LEFT JOIN DeviceConfigCategoryItem DCI ON DCI.DeviceConfigCategoryId = CM.DeviceConfigCategoryId");
+        sql.append("   LEFT JOIN DeviceConfigurationDeviceMap DCM ON DCM.DeviceId = YP.paobjectid");
+        sql.append("   LEFT JOIN DeviceConfiguration DC ON DC.DeviceConfigurationID = DCM.DeviceConfigurationId");
+        sql.append("   LEFT JOIN DeviceConfigCategoryItem DCI ON DC.DeviceConfigurationID = DCI.DeviceConfigCategoryId");
         sql.append("      AND DCI.ItemName = 'demandInterval'");
-        sql.append("   LEFT JOIN DeviceConfigCategoryItem DCI2 ON DCI2.DeviceConfigCategoryId = CM.DeviceConfigCategoryId");
+        sql.append("   LEFT JOIN DeviceConfigCategoryItem DCI2 ON DCI2.DeviceConfigCategoryId = DCM.DeviceConfigurationId");
         sql.append("      AND DCI2.ItemName = 'loadProfileInterval1'");
         
         jdbcTemplate.query(sql, new RowCallbackHandler() {
