@@ -160,6 +160,8 @@ void read_success(CtiFIFOQueue<T> &q, T compare)
     T *element = q.getQueue(50);
 
     BOOST_CHECK_EQUAL(*element, compare);
+
+    delete element;
 }
 
 template <class T>
