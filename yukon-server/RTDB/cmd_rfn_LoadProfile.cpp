@@ -153,12 +153,6 @@ RfnVoltageProfileGetConfigurationCommand::RfnVoltageProfileGetConfigurationComma
 }
 
 
-void RfnVoltageProfileGetConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
-
 RfnCommandResult RfnVoltageProfileGetConfigurationCommand::decodeCommand( const CtiTime now,
                                                                           const RfnResponsePayload & response )
 {
@@ -227,11 +221,6 @@ RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationComma
 }
 
 
-void RfnVoltageProfileSetConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
 RfnLoadProfileCommand::TlvList RfnVoltageProfileSetConfigurationCommand::getTlvs()
 {
     TypeLengthValue tlv = TypeLengthValue::makeLongTlv(TlvType_VoltageProfileConfiguration);
@@ -276,12 +265,6 @@ RfnLoadProfileGetRecordingCommand::RfnLoadProfileGetRecordingCommand()
         _isPermanentEnabled( false ),
         _isTemporaryEnabled( false )
 {
-}
-
-
-void RfnLoadProfileGetRecordingCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
 }
 
 
@@ -404,12 +387,6 @@ RfnLoadProfileSetTemporaryRecordingCommand::RfnLoadProfileSetTemporaryRecordingC
 }
 
 
-void RfnLoadProfileSetTemporaryRecordingCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
-
 RfnCommandResult RfnLoadProfileSetTemporaryRecordingCommand::decodeCommand( const CtiTime now,
                                                                             const RfnResponsePayload & response )
 {
@@ -434,12 +411,6 @@ RfnLoadProfileSetPermanentRecordingCommand::RfnLoadProfileSetPermanentRecordingC
                                                   : Operation_DisableLoadProfileRecording ),
         recordingOption(option)
 {
-}
-
-
-void RfnLoadProfileSetPermanentRecordingCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
 }
 
 

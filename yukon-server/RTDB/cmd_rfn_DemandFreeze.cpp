@@ -119,12 +119,6 @@ RfnDemandFreezeConfigurationCommand::RfnDemandFreezeConfigurationCommand( const 
 }
 
 
-void RfnDemandFreezeConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
-
 RfnCommand::Bytes RfnDemandFreezeConfigurationCommand::getCommandData()
 {
     RfnCommand::Bytes   data;
@@ -188,12 +182,6 @@ RfnCommandResult RfnImmediateDemandFreezeCommand::decodeCommand( const CtiTime n
 RfnGetDemandFreezeInfoCommand::RfnGetDemandFreezeInfoCommand()
     :   RfnDemandFreezeCommand( Operation_GetDemandFreezeInfo )
 {
-}
-
-
-void RfnGetDemandFreezeInfoCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
 }
 
 

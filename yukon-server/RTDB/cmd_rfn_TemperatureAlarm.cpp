@@ -21,12 +21,6 @@ RfnTemperatureAlarmCommand::RfnTemperatureAlarmCommand( const Operation operatio
 }
 
 
-void RfnTemperatureAlarmCommand::invokeResultHandler( ResultHandler & rh ) const
-{
-    rh.handleCommandResult( *this );
-}
-
-
 // Event manager message
 auto RfnTemperatureAlarmCommand::getApplicationServiceId() const -> ASID
 {

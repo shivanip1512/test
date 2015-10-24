@@ -47,12 +47,6 @@ unsigned short RfDaReadDnpSlaveAddressCommand::getDnpSlaveAddress() const
 }
 
 
-void RfDaReadDnpSlaveAddressCommand::invokeResultHandler( ResultHandler & rh ) const
-{
-    rh.handleCommandResult( *this );
-}
-
-
 RfnCommandResult RfDaReadDnpSlaveAddressCommand::decodeCommand( const CtiTime now,
                                                                  const RfnResponsePayload & response )
 {

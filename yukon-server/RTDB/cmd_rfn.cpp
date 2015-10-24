@@ -8,11 +8,6 @@ namespace Devices {
 namespace Commands {
 
 
-void RfnCommand::invokeResultHandler(ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
 // Construct a byte vector request
 RfnCommand::RfnRequestPayload RfnCommand::executeCommand(const CtiTime now)
 {

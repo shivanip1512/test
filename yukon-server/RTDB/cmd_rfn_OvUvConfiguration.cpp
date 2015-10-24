@@ -112,12 +112,6 @@ RfnCommand::Bytes RfnSetOvUvAlarmProcessingStateCommand::getCommandData()
 }
 
 
-void RfnSetOvUvAlarmProcessingStateCommand::invokeResultHandler(ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
-
 ////////////////////////
 ///
 
@@ -137,12 +131,6 @@ RfnSetOvUvNewAlarmReportIntervalCommand::RfnSetOvUvNewAlarmReportIntervalCommand
 RfnCommand::Bytes RfnSetOvUvNewAlarmReportIntervalCommand::getCommandData()
 {
     return boost::assign::list_of( reportingInterval );
-}
-
-
-void RfnSetOvUvNewAlarmReportIntervalCommand::invokeResultHandler(ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
 }
 
 
@@ -168,12 +156,6 @@ RfnCommand::Bytes RfnSetOvUvAlarmRepeatIntervalCommand::getCommandData()
 }
 
 
-void RfnSetOvUvAlarmRepeatIntervalCommand::invokeResultHandler(ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
-
 ////////////////////////
 ///
 
@@ -193,12 +175,6 @@ RfnSetOvUvAlarmRepeatCountCommand::RfnSetOvUvAlarmRepeatCountCommand( const unsi
 RfnCommand::Bytes RfnSetOvUvAlarmRepeatCountCommand::getCommandData()
 {
     return boost::assign::list_of( repeatCount );
-}
-
-
-void RfnSetOvUvAlarmRepeatCountCommand::invokeResultHandler(ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
 }
 
 
@@ -260,24 +236,12 @@ RfnSetOvUvSetOverVoltageThresholdCommand::RfnSetOvUvSetOverVoltageThresholdComma
 {
 }
 
-void RfnSetOvUvSetOverVoltageThresholdCommand::invokeResultHandler(ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
-
 RfnSetOvUvSetUnderVoltageThresholdCommand::RfnSetOvUvSetUnderVoltageThresholdCommand( const MeterID meter_id,
                                                                                     const double threshold_volts )
     :   RfnSetOvUvSetThresholdCommand(meter_id, UnderVoltage, threshold_volts),
         uvThresholdValue(threshold_volts)
 {
 }
-
-void RfnSetOvUvSetUnderVoltageThresholdCommand::invokeResultHandler(ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
 
 ////////////////////////
 ///
@@ -291,12 +255,6 @@ RfnGetOvUvAlarmConfigurationCommand::RfnGetOvUvAlarmConfigurationCommand( const 
 {
     validate( Condition( meter_id != Unspecified, ClientErrors::BadParameter )
             << "Invalid Meter ID: Unspecified (" << meter_id << ")" );
-}
-
-
-void RfnGetOvUvAlarmConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
 }
 
 

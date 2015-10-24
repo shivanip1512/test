@@ -54,20 +54,10 @@ struct RfnCommandResult
     std::vector<DeviceCommand::point_data> points;
 };
 
-class IM_EX_DEVDB RfnCommand : public DeviceCommand
+struct RfnResultHandlerInvoker
 {
-public:
-
-    typedef Bytes RfnRequestPayload;
-    typedef Bytes RfnResponsePayload;
-
-    RfnRequestPayload executeCommand(const CtiTime now);
-    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
-    virtual RfnCommandResult error  (const CtiTime now, const YukonError_t errorCode);
-
     struct ResultHandler
     {
-        virtual void handleCommandResult(const RfnCommand &)                                          {}
         virtual void handleCommandResult(const RfDaReadDnpSlaveAddressCommand &)                      {}
         virtual void handleCommandResult(const RfnCentronSetLcdConfigurationCommand &)                {}
         virtual void handleCommandResult(const RfnCentronGetLcdConfigurationCommand &)                {}
@@ -102,7 +92,41 @@ public:
     };
 
     //  to be overridden by children that require a result handler
-    virtual void invokeResultHandler(ResultHandler &rh) const;
+    virtual void invokeResultHandler(ResultHandler &rh) const = 0;
+};
+
+struct NoResultHandler : virtual RfnResultHandlerInvoker
+{
+    void invokeResultHandler(ResultHandler &rh) const final {}
+};
+
+template<class CommandType>
+struct InvokerFor : virtual RfnResultHandlerInvoker
+{
+    void invokeResultHandler(ResultHandler &rh) const final
+    {
+        //  Verify that we're actually the command type we were templated with
+        using SafeCommandType =
+            std::enable_if<
+                std::is_base_of<
+                       InvokerFor<CommandType>,
+                    CommandType>::value,
+                CommandType>::type;
+
+        rh.handleCommandResult(static_cast<const SafeCommandType &>(*this));
+    }
+};
+
+class IM_EX_DEVDB RfnCommand : public DeviceCommand, public virtual RfnResultHandlerInvoker
+{
+public:
+
+    typedef Bytes RfnRequestPayload;
+    typedef Bytes RfnResponsePayload;
+
+    RfnRequestPayload executeCommand(const CtiTime now);
+    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
+    virtual RfnCommandResult error  (const CtiTime now, const YukonError_t errorCode);
 
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 

@@ -26,8 +26,6 @@ public:
         DisplayDigits6x1 = 6,
     };
 
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const = 0;
-
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
 
 protected:
@@ -43,11 +41,10 @@ protected:
     virtual unsigned char getOperation() const = 0;
 };
 
-class IM_EX_DEVDB RfnCentronSetLcdConfigurationCommand : public RfnCentronLcdConfigurationCommand
+class IM_EX_DEVDB RfnCentronSetLcdConfigurationCommand : public RfnCentronLcdConfigurationCommand,
+       InvokerFor<RfnCentronSetLcdConfigurationCommand>
 {
 public:
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnCentronSetLcdConfigurationCommand(
             const metric_vector_t &display_metrics,
@@ -74,11 +71,10 @@ protected:
 };
 
 
-class IM_EX_DEVDB RfnCentronGetLcdConfigurationCommand : public RfnCentronLcdConfigurationCommand
+class IM_EX_DEVDB RfnCentronGetLcdConfigurationCommand : public RfnCentronLcdConfigurationCommand,
+       InvokerFor<RfnCentronGetLcdConfigurationCommand>
 {
 public:
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnCentronGetLcdConfigurationCommand();
 

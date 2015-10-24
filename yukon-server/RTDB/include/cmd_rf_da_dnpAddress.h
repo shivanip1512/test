@@ -7,7 +7,8 @@ namespace Devices {
 namespace Commands {
 
 
-class IM_EX_DEVDB RfDaReadDnpSlaveAddressCommand : public RfnCommand
+class IM_EX_DEVDB RfDaReadDnpSlaveAddressCommand : public RfnCommand,
+       InvokerFor<RfDaReadDnpSlaveAddressCommand>
 {
     unsigned short _dnp3SlaveAddress;
 
@@ -25,8 +26,6 @@ protected:
     virtual unsigned char getOperation() const;  //  unused
 
 public:
-
-    virtual void invokeResultHandler( ResultHandler & rh ) const;
 
     virtual ASID getApplicationServiceId() const;
 

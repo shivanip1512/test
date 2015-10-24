@@ -97,18 +97,17 @@ protected:
 /**
  * Voltage Profile Get Configuration
  */
-class IM_EX_DEVDB RfnVoltageProfileGetConfigurationCommand : public RfnVoltageProfileConfigurationCommand
+class IM_EX_DEVDB RfnVoltageProfileGetConfigurationCommand : public RfnVoltageProfileConfigurationCommand,
+       InvokerFor<RfnVoltageProfileGetConfigurationCommand>
 {
 public:
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnVoltageProfileGetConfigurationCommand();
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
 
-    boost::optional<unsigned> getVoltageAveragingInterval() const; 
+    boost::optional<unsigned> getVoltageAveragingInterval() const;
     boost::optional<unsigned> getLoadProfileInterval()      const;
 
 private:
@@ -121,11 +120,10 @@ private:
 /**
  * Voltage Profile Set Configuration
  */
-class IM_EX_DEVDB RfnVoltageProfileSetConfigurationCommand : public RfnVoltageProfileConfigurationCommand
+class IM_EX_DEVDB RfnVoltageProfileSetConfigurationCommand : public RfnVoltageProfileConfigurationCommand,
+       InvokerFor<RfnVoltageProfileSetConfigurationCommand>
 {
 public:
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnVoltageProfileSetConfigurationCommand( const unsigned voltage_averaging_interval_seconds,
                                               const unsigned load_profile_interval_minutes );
@@ -164,11 +162,10 @@ protected:
 /**
  * Load Profile Recording Get State
  */
-class IM_EX_DEVDB RfnLoadProfileGetRecordingCommand : public RfnLoadProfileRecordingCommand
+class IM_EX_DEVDB RfnLoadProfileGetRecordingCommand : public RfnLoadProfileRecordingCommand,
+       InvokerFor<RfnLoadProfileGetRecordingCommand>
 {
 public:
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnLoadProfileGetRecordingCommand();
 
@@ -194,11 +191,10 @@ private:
 /**
  * Load Profile Recording Set Temporary Recording State
  */
-class IM_EX_DEVDB RfnLoadProfileSetTemporaryRecordingCommand : public RfnLoadProfileRecordingCommand
+class IM_EX_DEVDB RfnLoadProfileSetTemporaryRecordingCommand : public RfnLoadProfileRecordingCommand,
+       InvokerFor<RfnLoadProfileSetTemporaryRecordingCommand>
 {
 public:
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnLoadProfileSetTemporaryRecordingCommand( const RecordingOption option );
 
@@ -212,11 +208,10 @@ public:
 /**
  * Load Profile Recording Set Permanent Recording State
  */
-class IM_EX_DEVDB RfnLoadProfileSetPermanentRecordingCommand : public RfnLoadProfileRecordingCommand
+class IM_EX_DEVDB RfnLoadProfileSetPermanentRecordingCommand : public RfnLoadProfileRecordingCommand,
+       InvokerFor<RfnLoadProfileSetPermanentRecordingCommand>
 {
 public:
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnLoadProfileSetPermanentRecordingCommand( const RecordingOption option );
 
@@ -230,7 +225,7 @@ public:
 /**
  * Load Profile Read Points
  */
-class IM_EX_DEVDB RfnLoadProfileReadPointsCommand : public RfnLoadProfileCommand
+class IM_EX_DEVDB RfnLoadProfileReadPointsCommand : public RfnLoadProfileCommand, NoResultHandler
 {
 public:
 

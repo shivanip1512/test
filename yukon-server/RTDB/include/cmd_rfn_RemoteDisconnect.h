@@ -118,11 +118,10 @@ protected:
 //------------------------------------------------------------
 // On-Demand disconnect set configuration command
 //------------------------------------------------------------
-class IM_EX_DEVDB RfnRemoteDisconnectSetOnDemandConfigurationCommand : public RfnRemoteDisconnectSetConfigurationCommand
+class IM_EX_DEVDB RfnRemoteDisconnectSetOnDemandConfigurationCommand : public RfnRemoteDisconnectSetConfigurationCommand,
+       InvokerFor<RfnRemoteDisconnectSetOnDemandConfigurationCommand>
 {
 public:
-
-    virtual void invokeResultHandler( RfnCommand::ResultHandler &rh ) const;
 
     RfnRemoteDisconnectSetOnDemandConfigurationCommand( const Reconnect reconnect_param );
 
@@ -138,11 +137,10 @@ protected:
 //------------------------------------------------------------
 // Demand threshold disconnect set configuration command
 //------------------------------------------------------------
-class IM_EX_DEVDB RfnRemoteDisconnectSetThresholdConfigurationCommand : public RfnRemoteDisconnectSetConfigurationCommand
+class IM_EX_DEVDB RfnRemoteDisconnectSetThresholdConfigurationCommand : public RfnRemoteDisconnectSetConfigurationCommand,
+       InvokerFor<RfnRemoteDisconnectSetThresholdConfigurationCommand>
 {
 public:
-
-    virtual void invokeResultHandler( RfnCommand::ResultHandler &rh ) const;
 
     RfnRemoteDisconnectSetThresholdConfigurationCommand( const Reconnect      reconnect_param,
                                                          const DemandInterval demand_interval,
@@ -166,11 +164,10 @@ protected:
 //------------------------------------------------------------
 // Cycling disconnect set configuration command
 //------------------------------------------------------------
-class IM_EX_DEVDB RfnRemoteDisconnectSetCyclingConfigurationCommand : public RfnRemoteDisconnectSetConfigurationCommand
+class IM_EX_DEVDB RfnRemoteDisconnectSetCyclingConfigurationCommand : public RfnRemoteDisconnectSetConfigurationCommand,
+       InvokerFor<RfnRemoteDisconnectSetCyclingConfigurationCommand>
 {
 public:
-
-    virtual void invokeResultHandler( RfnCommand::ResultHandler &rh ) const;
 
     RfnRemoteDisconnectSetCyclingConfigurationCommand( const unsigned disconnect_minutes,
                                                        const unsigned connect_minutes );
@@ -188,11 +185,10 @@ protected:
 //------------------------------------------------------------
 // Base class for remote disconnect get configuration commands
 //------------------------------------------------------------
-class IM_EX_DEVDB RfnRemoteDisconnectGetConfigurationCommand : public RfnRemoteDisconnectConfigurationCommand
+class IM_EX_DEVDB RfnRemoteDisconnectGetConfigurationCommand : public RfnRemoteDisconnectConfigurationCommand,
+       InvokerFor<RfnRemoteDisconnectGetConfigurationCommand>
 {
 public:
-
-    virtual void invokeResultHandler( RfnCommand::ResultHandler &rh ) const;
 
     RfnRemoteDisconnectGetConfigurationCommand();
 

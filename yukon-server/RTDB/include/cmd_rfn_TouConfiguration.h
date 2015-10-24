@@ -100,13 +100,12 @@ protected:
     boost::optional<Schedule> _schedule_received;
 };
 
-class IM_EX_DEVDB RfnTouScheduleSetConfigurationCommand : public RfnTouScheduleConfigurationCommand
+class IM_EX_DEVDB RfnTouScheduleSetConfigurationCommand : public RfnTouScheduleConfigurationCommand,
+       InvokerFor<RfnTouScheduleSetConfigurationCommand>
 {
 public:
 
     RfnTouScheduleSetConfigurationCommand( const Schedule &schedule_to_send );
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     const Schedule schedule_to_send;
 
@@ -120,13 +119,12 @@ private:
     const Bytes _commandData_to_send;
 };
 
-class IM_EX_DEVDB RfnTouScheduleGetConfigurationCommand : public RfnTouScheduleConfigurationCommand
+class IM_EX_DEVDB RfnTouScheduleGetConfigurationCommand : public RfnTouScheduleConfigurationCommand,
+       InvokerFor<RfnTouScheduleGetConfigurationCommand>
 {
 public:
 
     RfnTouScheduleGetConfigurationCommand();
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
 private:
 
@@ -137,11 +135,10 @@ private:
 /**
  * RFN TOU configuration command holiday
  */
-class IM_EX_DEVDB RfnTouHolidayConfigurationCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouHolidayConfigurationCommand : public RfnTouConfigurationCommand,
+       InvokerFor<RfnTouHolidayConfigurationCommand>
 {
 public:
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     typedef boost::array<CtiDate, 3> Holidays;
 
@@ -168,7 +165,8 @@ private:
 /**
  * RFN TOU configuration command enable/disable
  */
-class IM_EX_DEVDB RfnTouStateConfigurationCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouStateConfigurationCommand : public RfnTouConfigurationCommand,
+       InvokerFor<RfnTouStateConfigurationCommand>
 {
 public:
 
@@ -176,8 +174,6 @@ public:
     RfnTouStateConfigurationCommand( TouState touState_to_send ); // write
 
     boost::optional<TouState> getTouState() const;
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
 protected:
 
@@ -194,7 +190,7 @@ private:
 /**
  * RFN TOU set Holiday active
  */
-class IM_EX_DEVDB RfnTouSetHolidayActiveCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouSetHolidayActiveCommand : public RfnTouConfigurationCommand, NoResultHandler
 {
 public:
 
@@ -211,7 +207,7 @@ protected:
 /**
  * RFN TOU cancel Holiday active
  */
-class IM_EX_DEVDB RfnTouCancelHolidayActiveCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouCancelHolidayActiveCommand : public RfnTouConfigurationCommand, NoResultHandler
 {
 public:
 
@@ -228,7 +224,7 @@ protected:
 /**
  * RFN TOU reset registers
  */
-class IM_EX_DEVDB RfnTouResetCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouResetCommand : public RfnTouConfigurationCommand, NoResultHandler
 {
 public:
 
@@ -245,7 +241,7 @@ protected:
 /**
  * RFN TOU reset registers and set to current reading
  */
-class IM_EX_DEVDB RfnTouResetZeroCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouResetZeroCommand : public RfnTouConfigurationCommand, NoResultHandler
 {
 public:
 
@@ -262,7 +258,7 @@ protected:
 /**
  * RFN TOU critical peak command
  */
-class IM_EX_DEVDB RfnTouCriticalPeakCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouCriticalPeakCommand : public RfnTouConfigurationCommand, NoResultHandler
 {
 public:
 
@@ -288,7 +284,7 @@ private:
 /**
  * RFN TOU cancel critical peak command
  */
-class IM_EX_DEVDB RfnTouCancelCriticalPeakCommand : public RfnTouConfigurationCommand
+class IM_EX_DEVDB RfnTouCancelCriticalPeakCommand : public RfnTouConfigurationCommand, NoResultHandler
 {
 public:
 

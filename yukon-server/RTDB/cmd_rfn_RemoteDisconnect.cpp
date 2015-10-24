@@ -299,11 +299,6 @@ RfnRemoteDisconnectSetOnDemandConfigurationCommand::RfnRemoteDisconnectSetOnDema
     // Empty
 }
 
-void RfnRemoteDisconnectSetOnDemandConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
-{
-    rh.handleCommandResult( *this );
-}
-
 DisconnectMode RfnRemoteDisconnectSetOnDemandConfigurationCommand::getConfigurationDisconnectMode() const
 {
     return DisconnectMode_OnDemand;
@@ -349,11 +344,6 @@ RfnRemoteDisconnectSetThresholdConfigurationCommand::RfnRemoteDisconnectSetThres
     validate( Condition( max_disconnects <= 20, ClientErrors::BadParameter )
             << "Invalid Max Disconnects: (" << max_disconnects
             << ") overflow (maximum 20)" );
-}
-
-void RfnRemoteDisconnectSetThresholdConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
-{
-    rh.handleCommandResult( *this );
 }
 
 DisconnectMode RfnRemoteDisconnectSetThresholdConfigurationCommand::getConfigurationDisconnectMode() const
@@ -405,11 +395,6 @@ RfnRemoteDisconnectSetCyclingConfigurationCommand::RfnRemoteDisconnectSetCycling
             << ") overflow (maximum 1440)" );
 }
 
-void RfnRemoteDisconnectSetCyclingConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
-{
-    rh.handleCommandResult( *this );
-}
-
 DisconnectMode RfnRemoteDisconnectSetCyclingConfigurationCommand::getConfigurationDisconnectMode() const
 {
     return DisconnectMode_Cycling;
@@ -435,11 +420,6 @@ RfnRemoteDisconnectGetConfigurationCommand::RfnRemoteDisconnectGetConfigurationC
     :   RfnRemoteDisconnectConfigurationCommand( Operation_GetConfiguration )
 {
     // Empty
-}
-
-void RfnRemoteDisconnectGetConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
-{
-    rh.handleCommandResult( *this );
 }
 
 RfnCommandResult RfnRemoteDisconnectGetConfigurationCommand::decodeCommand( const CtiTime now, const RfnResponsePayload & response )

@@ -64,7 +64,8 @@ public:
 };
 
 
-class IM_EX_DEVDB RfnSetOvUvAlarmProcessingStateCommand : public RfnOvUvConfigurationCommand
+class IM_EX_DEVDB RfnSetOvUvAlarmProcessingStateCommand : public RfnOvUvConfigurationCommand,
+       InvokerFor<RfnSetOvUvAlarmProcessingStateCommand>
 {
 public:
 
@@ -77,21 +78,18 @@ public:
 
     RfnSetOvUvAlarmProcessingStateCommand( const AlarmStates alarmState );
 
-    virtual void invokeResultHandler( ResultHandler &rh ) const;
-
 protected:
 
     virtual Bytes getCommandData();
 };
 
 
-class IM_EX_DEVDB RfnSetOvUvNewAlarmReportIntervalCommand : public RfnOvUvConfigurationCommand
+class IM_EX_DEVDB RfnSetOvUvNewAlarmReportIntervalCommand : public RfnOvUvConfigurationCommand,
+       InvokerFor<RfnSetOvUvNewAlarmReportIntervalCommand>
 {
 public:
 
     RfnSetOvUvNewAlarmReportIntervalCommand( const unsigned interval_minutes );
-
-    virtual void invokeResultHandler( ResultHandler &rh ) const;
 
     const unsigned reportingInterval;
 
@@ -101,13 +99,12 @@ protected:
 };
 
 
-class IM_EX_DEVDB RfnSetOvUvAlarmRepeatIntervalCommand : public RfnOvUvConfigurationCommand
+class IM_EX_DEVDB RfnSetOvUvAlarmRepeatIntervalCommand : public RfnOvUvConfigurationCommand,
+       InvokerFor<RfnSetOvUvAlarmRepeatIntervalCommand>
 {
 public:
 
     RfnSetOvUvAlarmRepeatIntervalCommand( const unsigned interval_minutes );
-
-    virtual void invokeResultHandler( ResultHandler &rh ) const;
 
     const unsigned repeatInterval;
 
@@ -117,13 +114,12 @@ protected:
 };
 
 
-class IM_EX_DEVDB RfnSetOvUvAlarmRepeatCountCommand : public RfnOvUvConfigurationCommand
+class IM_EX_DEVDB RfnSetOvUvAlarmRepeatCountCommand : public RfnOvUvConfigurationCommand,
+       InvokerFor<RfnSetOvUvAlarmRepeatCountCommand>
 {
 public:
 
     RfnSetOvUvAlarmRepeatCountCommand( const unsigned repeat_count );
-
-    virtual void invokeResultHandler( ResultHandler &rh ) const;
 
     const unsigned repeatCount;
 
@@ -150,26 +146,25 @@ private:
     unsigned    _thresholdValue;
 };
 
-struct IM_EX_DEVDB RfnSetOvUvSetOverVoltageThresholdCommand : public RfnSetOvUvSetThresholdCommand
+struct IM_EX_DEVDB RfnSetOvUvSetOverVoltageThresholdCommand : public RfnSetOvUvSetThresholdCommand,
+       InvokerFor<RfnSetOvUvSetOverVoltageThresholdCommand>
 {
     RfnSetOvUvSetOverVoltageThresholdCommand( const MeterID meter_id, const double threshold_volts );
-
-    virtual void invokeResultHandler( ResultHandler &rh ) const;
 
     const double ovThresholdValue;
 };
 
-struct IM_EX_DEVDB RfnSetOvUvSetUnderVoltageThresholdCommand : public RfnSetOvUvSetThresholdCommand
+struct IM_EX_DEVDB RfnSetOvUvSetUnderVoltageThresholdCommand : public RfnSetOvUvSetThresholdCommand,
+       InvokerFor<RfnSetOvUvSetUnderVoltageThresholdCommand>
 {
     RfnSetOvUvSetUnderVoltageThresholdCommand( const MeterID meter_id, const double threshold_volts );
-
-    virtual void invokeResultHandler( ResultHandler &rh ) const;
 
     const double uvThresholdValue;
 };
 
 
-class IM_EX_DEVDB RfnGetOvUvAlarmConfigurationCommand : public RfnOvUvConfigurationCommand
+class IM_EX_DEVDB RfnGetOvUvAlarmConfigurationCommand : public RfnOvUvConfigurationCommand,
+       InvokerFor<RfnGetOvUvAlarmConfigurationCommand>
 {
 public:
 
@@ -182,8 +177,6 @@ public:
         boost::optional<double> ovThreshold,
                                 uvThreshold;
     };
-
-    virtual void invokeResultHandler( ResultHandler &rh ) const;
 
     RfnGetOvUvAlarmConfigurationCommand( const MeterID meter_id, const EventID event_id );
 

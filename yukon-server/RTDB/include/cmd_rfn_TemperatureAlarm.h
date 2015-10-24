@@ -6,11 +6,10 @@ namespace Cti        {
 namespace Devices    {
 namespace Commands   {
 
-class IM_EX_DEVDB RfnTemperatureAlarmCommand : public RfnCommand
+class IM_EX_DEVDB RfnTemperatureAlarmCommand : public RfnCommand,
+       InvokerFor<RfnTemperatureAlarmCommand>
 {
 public:
-
-    void invokeResultHandler( ResultHandler & rh ) const override;
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response ) = 0;

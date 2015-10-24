@@ -44,7 +44,8 @@ protected:
 /**
  * Channel Selection Configuration Command
  */
-class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCommand
+class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCommand,
+       InvokerFor<RfnChannelSelectionCommand>
 {
     enum
     {
@@ -75,19 +76,13 @@ protected:
         TlvType_ChannelSelection_ActiveChannels = 0x02
     };
 
-    RfnChannelSelectionCommand()
-    {};
+    RfnChannelSelectionCommand() = default;
 
     virtual unsigned char getExpectedTlvType() const = 0;
 
 public:
-    void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
-
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response );
-
-    virtual ~RfnChannelSelectionCommand()
-    {};
 };
 
 /**
@@ -171,7 +166,8 @@ namespace RfnChannelIntervalRecording {
 /**
  * Set channel interval recording channels and intervals
  */
-class IM_EX_DEVDB SetConfigurationCommand : public RfnChannelIntervalRecordingCommand
+class IM_EX_DEVDB SetConfigurationCommand : public RfnChannelIntervalRecordingCommand,
+       InvokerFor<SetConfigurationCommand>
 {
     Bytes _setIntervalRecordingTlvPayload;
 
@@ -180,8 +176,6 @@ class IM_EX_DEVDB SetConfigurationCommand : public RfnChannelIntervalRecordingCo
     unsigned char getOperation() const;
 
     virtual void decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result );
-
-    void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     const unsigned _intervalRecordingSeconds,
                    _intervalReportingSeconds;
@@ -199,7 +193,8 @@ public:
  * Get channel interval recording channel and interval
  * configuration
  */
-class IM_EX_DEVDB GetConfigurationCommand : public RfnChannelIntervalRecordingCommand
+class IM_EX_DEVDB GetConfigurationCommand : public RfnChannelIntervalRecordingCommand,
+       InvokerFor<GetConfigurationCommand>
 {
     unsigned char getOperation() const;
 
@@ -210,8 +205,6 @@ class IM_EX_DEVDB GetConfigurationCommand : public RfnChannelIntervalRecordingCo
     unsigned _intervalRecordingSecondsReceived;
     unsigned _intervalReportingSecondsReceived;
 
-    void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
-
 public:
     unsigned getIntervalRecordingSecondsReceived() const;
     unsigned getIntervalReportingSecondsReceived() const;
@@ -220,7 +213,8 @@ public:
 /**
  * Get actual active channels
  */
-class IM_EX_DEVDB GetActiveConfigurationCommand : public RfnChannelIntervalRecordingCommand
+class IM_EX_DEVDB GetActiveConfigurationCommand : public RfnChannelIntervalRecordingCommand,
+       InvokerFor<GetActiveConfigurationCommand>
 {
     unsigned char getOperation() const;
 
@@ -230,8 +224,6 @@ class IM_EX_DEVDB GetActiveConfigurationCommand : public RfnChannelIntervalRecor
 
     unsigned _intervalRecordingSecondsReceived;
     unsigned _intervalReportingSecondsReceived;
-
-    void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
 public:
     unsigned getIntervalRecordingSecondsReceived() const;

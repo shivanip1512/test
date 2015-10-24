@@ -8,11 +8,13 @@
 
 using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandResult;
+using Cti::Devices::Commands::RfnOvUvConfigurationCommand;
 using Cti::Devices::Commands::RfnSetOvUvAlarmProcessingStateCommand;
 using Cti::Devices::Commands::RfnSetOvUvNewAlarmReportIntervalCommand;
 using Cti::Devices::Commands::RfnSetOvUvAlarmRepeatIntervalCommand;
 using Cti::Devices::Commands::RfnSetOvUvAlarmRepeatCountCommand;
-using Cti::Devices::Commands::RfnSetOvUvSetThresholdCommand;
+using Cti::Devices::Commands::RfnSetOvUvSetOverVoltageThresholdCommand;
+using Cti::Devices::Commands::RfnSetOvUvSetUnderVoltageThresholdCommand;
 using Cti::Devices::Commands::RfnGetOvUvAlarmConfigurationCommand;
 
 
@@ -239,9 +241,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Alarm_Repeat_Count_construc
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_Centron_UnderVoltage )
 {
-    RfnSetOvUvSetThresholdCommand  command( RfnSetOvUvSetThresholdCommand::CentronC2SX,
-                                            RfnSetOvUvSetThresholdCommand::UnderVoltage,
-                                            119.3 );
+    RfnSetOvUvSetUnderVoltageThresholdCommand  command(RfnOvUvConfigurationCommand::CentronC2SX, 119.3);
 
     // execute
     {
@@ -264,9 +264,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_Centron_Under
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_Centron_OverVoltage )
 {
-    RfnSetOvUvSetThresholdCommand  command( RfnSetOvUvSetThresholdCommand::CentronC2SX,
-                                            RfnSetOvUvSetThresholdCommand::OverVoltage,
-                                            124.8 );
+    RfnSetOvUvSetOverVoltageThresholdCommand  command(RfnOvUvConfigurationCommand::CentronC2SX, 124.8);
 
     // execute
     {
@@ -289,9 +287,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_Centron_OverV
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAX_UnderVoltage )
 {
-    RfnSetOvUvSetThresholdCommand  command( RfnSetOvUvSetThresholdCommand::LGFocusAX,
-                                            RfnSetOvUvSetThresholdCommand::UnderVoltage,
-                                            119.3 );
+    RfnSetOvUvSetUnderVoltageThresholdCommand  command(RfnOvUvConfigurationCommand::LGFocusAX, 119.3);
 
     // execute
     {
@@ -314,9 +310,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAX_Under
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAX_OverVoltage )
 {
-    RfnSetOvUvSetThresholdCommand  command( RfnSetOvUvSetThresholdCommand::LGFocusAX,
-                                            RfnSetOvUvSetThresholdCommand::OverVoltage,
-                                            124.8 );
+    RfnSetOvUvSetOverVoltageThresholdCommand  command(RfnOvUvConfigurationCommand::LGFocusAX, 124.8);
 
     // execute
     {
@@ -339,9 +333,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAX_OverV
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAL_UnderVoltage )
 {
-    RfnSetOvUvSetThresholdCommand  command( RfnSetOvUvSetThresholdCommand::LGFocusAL,
-                                            RfnSetOvUvSetThresholdCommand::UnderVoltage,
-                                            119.3 );
+    RfnSetOvUvSetUnderVoltageThresholdCommand  command(RfnOvUvConfigurationCommand::LGFocusAL, 119.3);
 
     // execute
     {
@@ -364,9 +356,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAL_Under
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAL_OverVoltage )
 {
-    RfnSetOvUvSetThresholdCommand  command( RfnSetOvUvSetThresholdCommand::LGFocusAL,
-                                            RfnSetOvUvSetThresholdCommand::OverVoltage,
-                                            124.8 );
+    RfnSetOvUvSetOverVoltageThresholdCommand  command(RfnOvUvConfigurationCommand::LGFocusAL, 124.8);
 
     // execute
     {
@@ -389,9 +379,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_FocusAL_OverV
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_CentronC1SX_OverVoltage )
 {
-    RfnSetOvUvSetThresholdCommand  command( RfnSetOvUvSetThresholdCommand::CentronC1SX,
-                                            RfnSetOvUvSetThresholdCommand::OverVoltage,
-                                            124.8 );
+    RfnSetOvUvSetOverVoltageThresholdCommand  command(RfnOvUvConfigurationCommand::CentronC1SX, 124.8);
 
     // execute
     {
@@ -414,8 +402,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Set_Threshold_CentronC1SX_O
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_FocusAL_OverVoltage )
 {
-    RfnGetOvUvAlarmConfigurationCommand  command( RfnSetOvUvSetThresholdCommand::LGFocusAL,
-                                                  RfnSetOvUvSetThresholdCommand::OverVoltage );
+    RfnGetOvUvAlarmConfigurationCommand  command(RfnOvUvConfigurationCommand::LGFocusAL,
+                                                 RfnOvUvConfigurationCommand::OverVoltage);
 
     // execute
     {
@@ -479,8 +467,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_FocusAL_OverVolt
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Get_Config_CentronC1SX_UnderVoltage )
 {
-    RfnGetOvUvAlarmConfigurationCommand  command( RfnSetOvUvSetThresholdCommand::CentronC1SX,
-                                                  RfnSetOvUvSetThresholdCommand::UnderVoltage );
+    RfnGetOvUvAlarmConfigurationCommand  command(RfnOvUvConfigurationCommand::CentronC1SX,
+                                                 RfnOvUvConfigurationCommand::UnderVoltage);
 
     // execute
     {

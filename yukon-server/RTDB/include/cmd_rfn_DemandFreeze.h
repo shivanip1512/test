@@ -118,15 +118,14 @@ public:
 ////
 
 
-class IM_EX_DEVDB RfnDemandFreezeConfigurationCommand : public RfnDemandFreezeCommand
+class IM_EX_DEVDB RfnDemandFreezeConfigurationCommand : public RfnDemandFreezeCommand,
+       InvokerFor<RfnDemandFreezeConfigurationCommand>
 {
 protected:
 
     virtual Bytes getCommandData();
 
 public:
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnDemandFreezeConfigurationCommand( const unsigned char day_of_freeze );
 
@@ -140,7 +139,7 @@ public:
 ////
 
 
-class IM_EX_DEVDB RfnImmediateDemandFreezeCommand : public RfnDemandFreezeCommand
+class IM_EX_DEVDB RfnImmediateDemandFreezeCommand : public RfnDemandFreezeCommand, public NoResultHandler
 {
 public:
 
@@ -160,7 +159,8 @@ public:
 ////
 
 
-class IM_EX_DEVDB RfnGetDemandFreezeInfoCommand : public RfnDemandFreezeCommand
+class IM_EX_DEVDB RfnGetDemandFreezeInfoCommand : public RfnDemandFreezeCommand,
+       InvokerFor<RfnGetDemandFreezeInfoCommand>
 {
 public:
 
@@ -200,8 +200,6 @@ public:
 
         PeaksPerRate peakValues;
     };
-
-    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
     RfnGetDemandFreezeInfoCommand();
 

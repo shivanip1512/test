@@ -206,11 +206,6 @@ RfnTouScheduleGetConfigurationCommand::RfnTouScheduleGetConfigurationCommand()
 {
 }
 
-void RfnTouScheduleGetConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
 unsigned char RfnTouScheduleGetConfigurationCommand::getOperation() const
 {
     return Operation_GetTouSchedule;
@@ -227,11 +222,6 @@ RfnTouScheduleSetConfigurationCommand::RfnTouScheduleSetConfigurationCommand( co
 {
 }
 
-
-void RfnTouScheduleSetConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
 
 unsigned char RfnTouScheduleSetConfigurationCommand::getOperation() const
 {
@@ -659,12 +649,6 @@ RfnTouHolidayConfigurationCommand::RfnTouHolidayConfigurationCommand( const Holi
 }
 
 
-void RfnTouHolidayConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
-
 /**
  * Get Operation code for TOU Holiday configuration
  * @return operation code
@@ -784,11 +768,6 @@ boost::optional<RfnTouConfigurationCommand::TouState> RfnTouStateConfigurationCo
     }
 
     return _touState_received;
-}
-
-void RfnTouStateConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
 }
 
 /**

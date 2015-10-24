@@ -532,11 +532,6 @@ const RfnChannelSelectionCommand::LongTlvList RfnChannelSelectionCommand::longTl
         (TlvType_ChannelSelection_Configuration)
         (TlvType_ChannelSelection_ActiveChannels);
 
-void RfnChannelSelectionCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
-{
-    rh.handleCommandResult( *this );
-}
-
 unsigned char RfnChannelSelectionCommand::getCommandCode() const
 {
     return CommandCode_Request;
@@ -734,11 +729,6 @@ void SetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandR
     decodeChannelDescriptors( tlv.value, result );
 }
 
-void SetConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
-{
-    rh.handleCommandResult( *this );
-}
-
 unsigned SetConfigurationCommand::getIntervalRecordingSeconds() const
 {
     return _intervalRecordingSeconds;
@@ -786,11 +776,6 @@ void GetConfigurationCommand::decodeChannelIntervalRecording( const Bytes &respo
     decodeMetricsIds( Bytes(response.begin() + 8 , response.end()), result );
 }
 
-void GetConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
-{
-    rh.handleCommandResult( *this );
-}
-
 unsigned GetConfigurationCommand::getIntervalRecordingSecondsReceived() const
 {
     return _intervalRecordingSecondsReceived;
@@ -836,11 +821,6 @@ void GetActiveConfigurationCommand::decodeActiveConfiguration( const Bytes &resp
                           "Interval Reporting: " + CtiNumStr(_intervalReportingSecondsReceived) + " seconds\n";
 
     decodeChannelDescriptors( Bytes(response.begin() + 8, response.end()), result );
-}
-
-void GetActiveConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
-{
-    rh.handleCommandResult( *this );
 }
 
 unsigned GetActiveConfigurationCommand::getIntervalRecordingSecondsReceived() const

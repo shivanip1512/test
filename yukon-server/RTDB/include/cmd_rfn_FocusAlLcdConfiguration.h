@@ -42,15 +42,14 @@ protected:
     virtual Bytes         getCommandData() = 0;
 };
 
-class IM_EX_DEVDB RfnFocusAlLcdConfigurationReadCommand : public RfnFocusAlLcdConfigurationCommand
+class IM_EX_DEVDB RfnFocusAlLcdConfigurationReadCommand : public RfnFocusAlLcdConfigurationCommand,
+       InvokerFor<RfnFocusAlLcdConfigurationReadCommand>
 {
 public:
     boost::optional<MetricVector> getDisplayItemsReceived() const;
     boost::optional<unsigned char> getDisplayItemDurationReceived() const;
 
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
-
-    void invokeResultHandler(ResultHandler &rh) const;
 
 protected:
     virtual unsigned char getOperation() const;
@@ -61,14 +60,13 @@ private:
     boost::optional<unsigned char>  _displayItemDurationReceived;
 };
 
-class IM_EX_DEVDB RfnFocusAlLcdConfigurationWriteCommand : public RfnFocusAlLcdConfigurationCommand
+class IM_EX_DEVDB RfnFocusAlLcdConfigurationWriteCommand : public RfnFocusAlLcdConfigurationCommand,
+       InvokerFor<RfnFocusAlLcdConfigurationWriteCommand>
 {
 public:
     RfnFocusAlLcdConfigurationWriteCommand( const MetricVector &metrics_, const unsigned char displayItemDuration_ );
 
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
-
-    void invokeResultHandler(ResultHandler &rh) const;
 
     const MetricVector metrics;
     const unsigned char displayItemDuration;

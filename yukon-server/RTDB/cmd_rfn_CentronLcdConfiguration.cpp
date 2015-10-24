@@ -105,16 +105,6 @@ RfnCentronGetLcdConfigurationCommand::RfnCentronGetLcdConfigurationCommand()
 }
 
 
-void RfnCentronSetLcdConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
-void RfnCentronGetLcdConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
 void describeMetric(std::ostringstream &metric_description, unsigned metricIndex, unsigned char metric)
 {
     metric_description << "\nDisplay metric " << ++metricIndex << ": ";

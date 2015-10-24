@@ -201,12 +201,6 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
     return result;
 }
 
-void RfnFocusAlLcdConfigurationReadCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
-}
-
-
 
 /**
  * get the display items received, will contain empty vector is valid response is received with no display items
@@ -333,11 +327,6 @@ RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const Cti
     }
 
     return result;
-}
-
-void RfnFocusAlLcdConfigurationWriteCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
-{
-    rh.handleCommandResult(*this);
 }
 
 
