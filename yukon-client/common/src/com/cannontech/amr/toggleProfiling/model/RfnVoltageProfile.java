@@ -1,12 +1,14 @@
-package com.cannontech.amr.toggleProfiling.service.impl;
+package com.cannontech.amr.toggleProfiling.model;
 
-import java.util.Date;
+import org.joda.time.Instant;
+
+
 
 public class RfnVoltageProfile {
 
     private Integer deviceID = null;
     private ProfilingStatus profilingStatus = ProfilingStatus.UNKNOWN;
-    private Date enabledTill = null;
+    private Instant enabledTill = null;
     private long voltageProfilingRate = 0;
 
     public enum ProfilingStatus {
@@ -22,11 +24,11 @@ public class RfnVoltageProfile {
         this.deviceID = deviceID;
     }
 
-    public Date getEnabledTill() {
+    public Instant getEnabledTill() {
         return enabledTill;
     }
 
-    public void setEnabledTill(Date enabledTill) {
+    public void setEnabledTill(Instant enabledTill) {
         this.enabledTill = enabledTill;
     }
     

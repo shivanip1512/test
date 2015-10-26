@@ -4,6 +4,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
+<cti:includeScript link="/resources/js/pages/yukon.ami.channel.scanning.js"/>
+
 <script>
     // Reinit the datepickers. Required after an action is take on the Meter Profile
     // page and the contents, including the date pickers, are ajaxed in.
@@ -43,7 +45,6 @@
         }
         
         function doToggleScanning(channelNum, newToggleVal) {
-        	debugger;
             $('#' + 'channelNum').val(channelNum);
             $('#' + 'newToggleVal').val(newToggleVal);
             ${widgetParameters.jsWidget}.doDirectActionRefresh("toggleProfiling");

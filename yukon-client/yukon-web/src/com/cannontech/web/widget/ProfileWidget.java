@@ -32,8 +32,8 @@ import com.cannontech.amr.device.ProfileAttributeChannel;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.toggleProfiling.model.RfnVoltageProfile;
 import com.cannontech.amr.toggleProfiling.service.ProfilingService;
-import com.cannontech.amr.toggleProfiling.service.impl.RfnVoltageProfile;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -176,7 +176,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 RfnVoltageProfile rfnVoltageProfile = loadProfileService.getRfnVoltageProfileDetails(deviceId);
                 channelInfo.put("channelProfilingStatus", rfnVoltageProfile.getProfilingStatus());
                 channelInfo.put("channelEnabledTill", rfnVoltageProfile.getEnabledTill());
-                channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
+                channelInfo.put("channelNumber", attrChanEnum.getChannel());
                 channelInfo.put("channelDescription",
                                 messageSourceResolver.getMessageSourceAccessor(userContext)
                                                      .getMessage(attrChanEnum.getAttribute()

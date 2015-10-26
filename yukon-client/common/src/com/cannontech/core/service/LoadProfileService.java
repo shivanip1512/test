@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.amr.toggleProfiling.service.impl.RfnVoltageProfile;
+import com.cannontech.amr.toggleProfiling.model.RfnVoltageProfile;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;

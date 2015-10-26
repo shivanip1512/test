@@ -16,14 +16,15 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.amr.toggleProfiling.service.impl.RfnVoltageProfile;
-import com.cannontech.amr.toggleProfiling.service.impl.RfnVoltageProfile.ProfilingStatus;
+import com.cannontech.amr.toggleProfiling.model.RfnVoltageProfile;
+import com.cannontech.amr.toggleProfiling.model.RfnVoltageProfile.ProfilingStatus;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
 import com.cannontech.common.pao.YukonPao;
@@ -689,7 +690,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         toggleVoltageProfile(deviceId, newToggleVal);
         
         if (!newToggleVal) {
-            Date stopDate = DateUtils.addWeeks(new Date(), 2);
+            Instant stopDate = new DateTime().plusWeeks(2).toInstant();
             rfnVoltageProfile.setProfilingStatus(ProfilingStatus.ENABLED);
             rfnVoltageProfile.setEnabledTill(stopDate);
             rfnVoltageProfile.setVoltageProfilingRate(getRfnVoltageProfileDetails(deviceId).getVoltageProfilingRate());
@@ -709,7 +710,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         rfnVoltageProfile.setProfilingStatus(voltageDetails.enabledUntil == null ? ProfilingStatus.DISABLED
                 : ProfilingStatus.ENABLED);
         rfnVoltageProfile.setEnabledTill(voltageDetails.enabledUntil == null ? null
-                : voltageDetails.enabledUntil.toDate());
+                : voltageDetails.enabledUntil);
         rfnVoltageProfile.setVoltageProfilingRate(voltageDetails.profileInterval == null ? 0
                 : voltageDetails.profileInterval.getStandardMinutes());
         dynamicPaoInfoCache.put(deviceId, rfnVoltageProfile);
