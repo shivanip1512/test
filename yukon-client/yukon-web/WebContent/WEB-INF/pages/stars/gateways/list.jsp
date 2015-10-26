@@ -8,7 +8,10 @@
 
 <cti:standardPage module="operator" page="gateways.list">
 
+<c:set var="showPageActions" value="${false}"/>
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+    <c:set var="showPageActions" value="${true}"/>
+
     <div id="gateway-create-popup" class="dn" 
         data-dialog 
         data-title="<cti:msg2 key=".create.gateway.label"/>" 
@@ -18,36 +21,33 @@
         data-event="yukon:assets:gateway:save" 
         data-ok-text="<cti:msg2 key="components.button.save.label"/>" 
         data-load-event="yukon:assets:gateway:load"></div>
-</cti:checkRolesAndProperties>
 
-<cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-    <%-- YUK-14626 Work in Progress --%>
-    <div id="firmware-upgrade-popup"
-        data-dialog
-        data-url="<cti:url value="/stars/gateways/update-servers"/>"
-        data-title="<cti:msg2 key=".updateServer.set"/>"
-        data-event="yukon:assets:gateway:update-server:save"
-        data-ok-text="<cti:msg2 key="components.button.save.label"/>">
-    </div>
-</cti:checkGlobalRolesAndProperties>
-
-<c:set var="showPageActions" value="${false}"/>
-<cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-    <c:set var="showPageActions" value="${true}"/>
+    <c:if test="${enableNMGatewayVersion}">
+        <div id="firmware-upgrade-popup"
+            data-dialog
+            data-url="<cti:url value="/stars/gateways/update-servers"/>"
+            data-title="<cti:msg2 key=".updateServer.set"/>"
+            data-event="yukon:assets:gateway:update-server:save"
+            data-ok-text="<cti:msg2 key="components.button.save.label"/>">
+        </div>
+    </c:if>
 </cti:checkRolesAndProperties>
-<cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-    <c:set var="showPageActions" value="${true}"/>
-</cti:checkGlobalRolesAndProperties>
 
 <c:if test="${showPageActions}">
     <div id="page-actions">
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-            <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green"><i:inline key=".create.gateway.label"/></cm:dropdownOption>
+            <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green">
+                <i:inline key=".create.gateway.label"/>
+            </cm:dropdownOption>
+
+            <c:if test="${enableNMGatewayVersion}">
+                <cm:dropdownOption data-popup="#firmware-upgrade-popup" icon="icon-drive-go"
+                    classes="update-servers disabled" disabled="true">
+
+                    <i:inline key=".updateServer.set"/>
+                </cm:dropdownOption>
+            </c:if>
         </cti:checkRolesAndProperties>
-        <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-            <%-- YUK-14626 Work in Progress --%>
-            <cm:dropdownOption data-popup="#firmware-upgrade-popup" icon="icon-drive-go" classes="update-servers disabled" disabled="true"><i:inline key=".updateServer.set"/></cm:dropdownOption>
-        </cti:checkGlobalRolesAndProperties>
     </div>
 </c:if>
 

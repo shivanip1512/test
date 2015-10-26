@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -71,17 +73,18 @@ public class GatewaySettingsController {
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
-    @Autowired private ServerDatabaseCache cache;
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private CronExpressionTagService cronService;
-    @Autowired private PaoLocationDao paoLocationDao;
-    @Autowired private GatewaySettingsValidator validator;
-    @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private EndpointEventLogService endpointEventLogService;
+    @Autowired private GatewayEventLogService gatewayEventLogService;
+    @Autowired private GatewaySettingsValidator validator;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private NMConfigurationService nmConfigurationService;
+    @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnGatewayFirmwareUpgradeDao firmwareUpgradeDao;
+    @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private ServerDatabaseCache cache;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
@@ -165,10 +168,17 @@ public class GatewaySettingsController {
     
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
     @RequestMapping("/gateways/{id}/edit")
-    public String editDialog(ModelMap model, @PathVariable int id) {
+    public String editDialog(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
         
         model.addAttribute("mode", PageEditMode.EDIT);
         
+        boolean updateServerCompatability = false;
+        Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
+        if (nmCompatibility != null && nmCompatibility >= 7.0) {
+            updateServerCompatability = true;
+        }
+        model.addAttribute("updateServerCompatability", updateServerCompatability);
+
         try {
             
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
@@ -176,7 +186,9 @@ public class GatewaySettingsController {
             model.addAttribute("settings", settings);
             
         } catch (NmCommunicationException e) {
-            // TODO 
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            model.addAttribute("errorMsg", errorMsg);
         }
         
         return "gateways/settings.jsp";
@@ -228,7 +240,6 @@ public class GatewaySettingsController {
                     String updateServerUrl = updateServer.getUpdateServerUrl();
                     boolean isDefault = StringUtils.isEmpty(updateServerUrl) || defaultServer.equals(updateServerUrl);
                     updateServer.setUseDefault(isDefault);
-
 
                     String availableVersion = updateServerToVersion.get(updateServer.getUpdateServerUrl());
                     if (StringUtils.isEmpty(availableVersion)) {

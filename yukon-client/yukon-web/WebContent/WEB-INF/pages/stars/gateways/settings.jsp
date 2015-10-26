@@ -119,44 +119,50 @@
         </tr>
         
     </tags:nameValueContainer2>
-    
-    <div class="section-separator"></div>
-    <h4><i:inline key=".updateServer"/></h4>
 
-    <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".updateServer.default">
-            <tags:switchButton path="useDefault" onNameKey=".yes.label" offNameKey=".no.label" 
-                toggleGroup="update-server" toggleAction="invisible" toggleInverse="true"/>
-        </tags:nameValue2>
+    <c:if test="${updateServerCompatability}">
+        <div class="section-separator"></div>
+        <h4><i:inline key=".updateServer"/></h4>
 
-        <tags:nameValue2 nameKey=".updateServer.url" data-toggle-group="update-server">
-            <tags:input path="updateServerUrl" placeholder="${defaultUpdateServer}" size="40"/>
-        </tags:nameValue2>
-        <tr data-toggle-group="update-server">
-            <td class="name">
-                <i:inline key=".updateServer.login"/>
-            </td>
-            <td class="value">
-                <spring:bind path="updateServerLogin.username">
-                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:input path="updateServerLogin.username" cssClass="M0 left ${clazz}" 
-                        placeholder="${phUsername}"/>
-                </spring:bind>
-                <spring:bind path="updateServerLogin.password">
-                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:password path="updateServerLogin.password" cssClass="M0 ${clazz} right"
-                        placeholder="${phPassword}" showPassword="true"/>
-                </spring:bind>
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".updateServer.default">
+                <tags:switchButton path="useDefault" onNameKey=".yes.label" offNameKey=".no.label" 
+                    toggleGroup="update-server" toggleAction="invisible" toggleInverse="true"/>
+            </tags:nameValue2>
 
-                <spring:bind path="updateServerLogin.username">
-                    <c:if test="${status.error}"><form:errors path="updateServerLogin.username" cssClass="error" element="div"/></c:if>
-                </spring:bind>
-                <spring:bind path="updateServerLogin.password">
-                    <c:if test="${status.error}"><form:errors path="updateServerLogin.password" cssClass="error" element="div"/></c:if>
-                </spring:bind>
-            </td>
-        </tr>
-    </tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".updateServer.url" data-toggle-group="update-server">
+                <tags:input path="updateServerUrl" placeholder="${defaultUpdateServer}" size="40"/>
+            </tags:nameValue2>
+            <tr data-toggle-group="update-server">
+                <td class="name">
+                    <i:inline key=".updateServer.login"/>
+                </td>
+                <td class="value">
+                    <spring:bind path="updateServerLogin.username">
+                        <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
+                        <form:input path="updateServerLogin.username" cssClass="M0 left ${clazz}"
+                            placeholder="${phUsername}"/>
+                    </spring:bind>
+                    <spring:bind path="updateServerLogin.password">
+                        <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
+                        <form:password path="updateServerLogin.password" cssClass="M0 ${clazz} right"
+                            placeholder="${phPassword}" showPassword="true"/>
+                    </spring:bind>
+
+                    <spring:bind path="updateServerLogin.username">
+                        <c:if test="${status.error}">
+                            <form:errors path="updateServerLogin.username" cssClass="error" element="div"/>
+                        </c:if>
+                    </spring:bind>
+                    <spring:bind path="updateServerLogin.password">
+                        <c:if test="${status.error}">
+                            <form:errors path="updateServerLogin.password" cssClass="error" element="div"/>
+                        </c:if>
+                    </spring:bind>
+                </td>
+            </tr>
+        </tags:nameValueContainer2>
+    </c:if>
 
 </form:form>
 

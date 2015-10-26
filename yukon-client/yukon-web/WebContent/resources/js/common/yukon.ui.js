@@ -163,7 +163,7 @@ yukon.ui = (function () {
                         originalValue = elem.is(':checked');
                     }
                     elem.data('originalValue', originalValue);
-                    elem.attr('data-original-Value', originalValue);
+                    elem.attr('data-original-value', originalValue);
                 } else {
                     originalValue = elem.data('originalValue');
                     if (elem.is(':checkbox') || elem.is(':radio')) {
