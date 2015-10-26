@@ -18,10 +18,6 @@ public interface IServerConnection extends BasicServerConnection {
 
     public void setAutoReconnect(boolean val);
 
-    public boolean isQueueMessages();
-    
-    public void setQueueMessages(boolean b);
-
     public void disconnect();
 
     public void addObserver(Observer obs);

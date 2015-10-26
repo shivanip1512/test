@@ -93,6 +93,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
                             connection.setExceptionListener(this);
                             connection.start();
                             started = true;
+                            logger.info("Connection to "+getName()+ " via "+connection.toString());
                         }
                         catch (JMSException e) {
                             connection = null;

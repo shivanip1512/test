@@ -99,7 +99,16 @@ public:
         xt_eot.nsec = 0;
     }
 
-   virtual ~CtiQueue()
+    CtiQueue(std::string name) :
+        _col(0),
+        _interruptBlockingRead(false)
+    {
+        xt_eot.sec = INT_MAX;
+        xt_eot.nsec = 0;
+        _name = name;
+    }
+
+    virtual ~CtiQueue()
     {
         lock_t scoped_lock(mux, xt_eot);
         resetCollection();

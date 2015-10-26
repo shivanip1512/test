@@ -23,13 +23,16 @@ CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerC
     CtiConnection( "Server Connection " + std::to_string(++serverConnectionCount), inQ, termSeconds ),
     _replyDest( listenerConnection.getClientReplyDest() )
 {
-    setName( listenerConnection.getServerQueueName() );
+
+    inQ->setName(listenerConnection.getServerQueueName());
 
     // use the same managed connection as the listener
     _connection = listenerConnection.getConnection();
 
     // set the outbound destination physical name
     _peerName = destPhysicalName(*_replyDest);
+
+    setName(listenerConnection.getServerQueueName()+_peerName);
 
     // consider server connections valid by default
     _valid = true;

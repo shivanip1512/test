@@ -95,7 +95,6 @@ public static void main(String[] args)
 	conn.setRegistrationMsg( pr );
 	conn.addMessageListener( new PointGenerator() );
 
-	conn.setQueueMessages(false);
 	conn.connect();
 
 	//First do a registration

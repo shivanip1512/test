@@ -229,7 +229,6 @@ private boolean executeCheckDispatchConnection()
         
 		
 		connection.setAutoReconnect( false );
-		connection.setQueueMessages( true );
 		connection.setRegistrationMsg( reg );
 		connection.connectWithoutWait();
 

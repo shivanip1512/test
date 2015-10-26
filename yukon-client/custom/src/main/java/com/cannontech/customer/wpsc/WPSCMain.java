@@ -68,7 +68,6 @@ public class WPSCMain implements Runnable {
     public WPSCMain() {
     	super();
         dispatchConn = (DispatchClientConnection) ConnPool.getInstance().getDefDispatchConn();
-        dispatchConn.setQueueMessages(true);
     }
 
     /**

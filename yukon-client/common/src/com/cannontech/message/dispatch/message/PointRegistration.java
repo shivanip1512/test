@@ -72,4 +72,9 @@ public Set<Integer> getPointIds() {
 public void setRegFlags(int newValue) {
 	this.regFlags = newValue;
 }
+
+@Override
+public String toString() {
+    return "PointRegistration [regFlags=" + regFlags + ", pointIds=" + pointIds + "]";
+}
 }

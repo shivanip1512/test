@@ -2,8 +2,10 @@ package com.cannontech.messaging.connection;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.event.Event;
@@ -35,7 +37,21 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
     private Thread worker;
     private T transport;
 
+    /** Queue of messages to be sent over the transport */
     private Queue<Message> outQueue;
+
+    /**
+     * Out Queue size warning limit threshold. We warn when we hit 100 messages in queue, then
+     * increment the warning threshold *2 and warn again when that is hit.
+     */
+    private int outQueueSizeWarning =
+        Integer
+            .getInteger("com.cannontech.messaging.connection.ConnectionBase.outQueueSizeWarning",
+                        100);
+
+    /** Count of messages sent */
+    private AtomicLong outQueueSentMessages= new AtomicLong(0);    
+
     private boolean disconnectRequested = false;
     private boolean closeRequested = false;
     private boolean autoReconnect = false;
@@ -46,6 +62,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
 
     // create a logger for instances of this class and its subclasses
     protected Logger logger = YukonLogManager.getLogger(this.getClass());
+
 
     protected ConnectionBase(String name) {
         connectionEvent = new ConnectionEvent();
@@ -246,6 +263,19 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
         synchronized (outQueue) {
             outQueue.offer(message);
             outQueue.notifyAll();
+            
+            if (outQueue.size() > outQueueSizeWarning)
+            {
+                Log.warn(this.toString() + " - outQueue has more than " + outQueueSizeWarning
+                         + " elements (" + outQueue.size() + ")");
+                outQueueSizeWarning = outQueueSizeWarning * 2;
+            }
+            
+            outQueueSentMessages.getAndIncrement();
+            if (outQueueSentMessages.get() % 1000 == 0)
+            {
+                Log.info(this.toString() + " - has sent " + outQueueSentMessages + "messages");
+            }
         }
     }
 

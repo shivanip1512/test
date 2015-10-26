@@ -80,4 +80,10 @@ public void setAppKnownPort(int newValue) {
 public void setAppName(String newValue) {
 	this.appName = newValue;
 }
+
+@Override
+public String toString() {
+    return "Registration [appName=" + appName + ", appIsUnique=" + appIsUnique + ", appKnownPort="
+           + appKnownPort + ", appExpirationDelay=" + appExpirationDelay + ", regID=" + regID + "]";
+}
 }

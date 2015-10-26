@@ -68,7 +68,7 @@ void CtiConnection::start()
 
             if( _inQueue == NULL )
             {
-                _inQueue         = CTIDBG_new Que_t;
+                _inQueue         = CTIDBG_new Que_t(_name);
                 _localQueueAlloc = true;
             }
 
@@ -320,6 +320,19 @@ void CtiConnection::onMessage( const cms::Message* message )
     _lastInQueueWrite = _lastInQueueWrite.now();
 
     writeIncomingMessageToQueue( omsg.release() );
+
+    const auto inQueueSize = _inQueue->size();
+    auto inQueueSizeWarning = _inQueueSizeWarning.load();
+
+    if(inQueueSize > inQueueSizeWarning)
+    {
+        CTILOG_WARN(dout, who() << " - inQueue has more than " << inQueueSizeWarning << " elements (" << inQueueSize << ")");
+
+        if(!_inQueueSizeWarning.compare_exchange_strong(inQueueSizeWarning, inQueueSizeWarning * 2))
+        {
+            CTILOG_WARN(dout, who() << " - could not update _inQueueSizeWarning, value was set to " << inQueueSizeWarning << " by another thread");
+        }
+    }
 }
 
 /**

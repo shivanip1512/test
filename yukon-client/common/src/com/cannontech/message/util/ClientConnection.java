@@ -1,11 +1,10 @@
 package com.cannontech.message.util;
 
 import java.net.URI;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -49,24 +48,97 @@ public abstract class ClientConnection extends Observable implements IServerConn
     private AtomicLong totalSentMessages = new AtomicLong();
     private AtomicLong totalReceivedMessages = new AtomicLong();
     private AtomicLong totalFiredEvents = new AtomicLong();
+
     // create a logger for instances of this class and its subclasses
     protected Logger logger = YukonLogManager.getLogger(this.getClass());
 
     // This message will be sent automatically on connecting
     private Message registrationMsg = null;
 
-    private Queue<Message> inQueue = new LinkedList<>();
     private PriorityBlockingQueue<Message> outQueue = new PriorityBlockingQueue<>(100, new MessagePriorityComparable());
 
     private boolean isValid = false;
     private boolean autoReconnect = false;
-    private boolean queueMessages = false; // if true, be sure you are reading from the inQueue!!
     private boolean disconnected = false;
+
+    private static final int maxQueueSize = 64 * 1024;
+    private static final int latchOffOnRemainingCapacity = 1024;
+    private static final int latchOnRemainingCapacity = maxQueueSize * 50 / 100;
+
+    private AtomicLong maxMessagesQueued = new AtomicLong(0);
+    
+    private boolean isBehindLatch = false;
+    private LinkedBlockingQueue<Message> inQueue = new LinkedBlockingQueue<>(maxQueueSize);
+
+    private class HandleMessage extends Thread
+    {
+        boolean run=true;
+        
+        public void setRun(boolean run) {
+            this.run = run;
+        }
+
+        @Override
+        public void run() {
+            while (run) {
+                Message msg;
+
+                try {
+                    msg = inQueue.take();
+                    if (inQueue.remainingCapacity() > latchOnRemainingCapacity) {
+                        isBehindLatch = false;
+                    }
+                    
+                } catch (InterruptedException e) {
+                    logger.warn("received shutdown signal, queue size: " + inQueue.size());
+                    break;
+                }
+
+                
+                if (inQueue.size() > inQueueSizeWarning)
+                {
+                    logger.warn(this.toString() + " - inQueue has more than " + inQueueSizeWarning
+                             + " elements (" + inQueue.size() + ")");
+                    inQueueSizeWarning = inQueueSizeWarning * 2;
+                }
+                
+                if (inQueue.size() > maxMessagesQueued.get())
+                {
+                    maxMessagesQueued.set(inQueue.size());
+                }
+                
+                fireMessageEvent(msg);
+            }
+        }
+    };
+    
+    private HandleMessage worker=new HandleMessage();
+    
+    /**
+     * Out Queue size warning limit threshold. We warn when we hit 100 messages in queue, then
+     * increment the warning threshold *2 and warn again when that is hit.
+     */
+    private int inQueueSizeWarning =
+        Integer
+            .getInteger("com.cannontech.message.util.ClientConnection.inQueueSizeWarning",
+                        100);
 
     protected ClientConnection(String connectionName) {
         super();
+
         this.connectionName = connectionName;
         autoReconnect = true;
+        
+        worker.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                logger.error("Error in thread " + t, e);
+            }
+        });
+        worker.setName(connectionName + "ClientConnection_worker_thread");
+        worker.setDaemon(true);
+        worker.start();
+
     }
 
     /**
@@ -80,6 +152,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
         connection.setName(connectionName);
         connection.getMessageEvent().registerHandler(eventHandler);
         connection.getConnectionEvent().registerHandler(eventHandler);
+        
         this.connection = connection;
     }
 
@@ -91,6 +164,8 @@ public abstract class ClientConnection extends Observable implements IServerConn
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
         }
+        
+        worker.setRun(false);
     }
 
     public final void connect() {
@@ -419,22 +494,6 @@ public abstract class ClientConnection extends Observable implements IServerConn
     }
 
     @Override
-    @ManagedAttribute
-    public final boolean isQueueMessages() {
-        return queueMessages;
-    }
-
-    /**
-     * Set this to false if you don't want the connection to queue up received messages.
-     *
-     * @param b
-     */
-    @Override
-    public final void setQueueMessages(boolean b) {
-        queueMessages = b;
-    }
-
-    @Override
     public void disconnect() {
         if (disconnected) {
             logger.warn("already disconnected " + getName());
@@ -513,29 +572,17 @@ public abstract class ClientConnection extends Observable implements IServerConn
                 return;
             }
 
-            if (conn.isQueueMessages()) {
-                // Add this message to the in queue so it can be 'read'
-                synchronized (conn.inQueue) {
-                    conn.inQueue.offer(msg);
-                    conn.inQueue.notifyAll();
-                }
+//            CTILogger.info(conn.getName()+": Inbound message: "+msg);
+            // Add this message to the in queue so it can be 'read'
+            synchronized (conn.inQueue) {
+                conn.inQueue.offer(msg);
+                conn.inQueue.notifyAll();
+                if (inQueue.remainingCapacity() < latchOffOnRemainingCapacity) {
+                    isBehindLatch = true;
+                }            }
 
-                if (conn.inQueue.size() > 0 && (conn.inQueue.size() % 10000) == 0) {
-                    CTILogger.warn("Message inQueue is growing! Queue Count = " + conn.inQueue.size());
-                }
-            }
-
-            // Tell out listeners about this message
-            try {
-                // protect against missbehaved listeners
-                conn.fireMessageEvent(msg);
-            } catch (Throwable t) {
-                if (msg != null) {
-                    conn.logger.error("Error while firing a message event. Msg type '" + msg.getClass()
-                        + "' content :\n" + msg, t);
-                } else {
-                    conn.logger.error("Error while firing a message event. Msg is null'");
-                }
+            if (conn.inQueue.size() > 0 && (conn.inQueue.size() % 10000) == 0) {
+                CTILogger.warn("Message inQueue is growing! Queue Count = " + conn.inQueue.size());
             }
         }
     }
@@ -554,4 +601,13 @@ public abstract class ClientConnection extends Observable implements IServerConn
         return connection.isConnectionFailed();
     }
 
+    @ManagedAttribute
+    public boolean isBehind() {
+        return isBehindLatch;
+    }
+
+    @ManagedAttribute
+    public int getQueueSize() {
+        return inQueue.size();
+    }
 }
