@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.gateway;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -43,7 +42,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
@@ -82,7 +80,7 @@ public class GatewayListController {
     }
     
     @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.GET)
-    public String gateways(ModelMap model, FlashScope flashScope, YukonUserContext userContext,
+    public String gateways(ModelMap model, YukonUserContext userContext,
             @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
         try {
             Map<String, String>  upgradeVersions = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateServerVersions();
