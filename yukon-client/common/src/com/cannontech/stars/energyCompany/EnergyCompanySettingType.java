@@ -40,7 +40,7 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     WORK_ORDER_NUMBER_AUTO_GEN(HARDWARE, booleanType(), false),
 
     // MISC
-    ADMIN_EMAIL_ADDRESS(MISC, stringType(), "info@cannontech.com"),
+    ADMIN_EMAIL_ADDRESS(MISC, stringType(), "yukon@eaton.com"),
     ADMIN_ALLOW_DESIGNATION_CODE(MISC, booleanType(), false),
     BROADCAST_OPT_OUT_CANCEL_SPID(MISC, true, integerType(), 1),
     ENERGY_COMPANY_DEFAULT_TIME_ZONE(MISC, stringType(), "America/Chicago"),
