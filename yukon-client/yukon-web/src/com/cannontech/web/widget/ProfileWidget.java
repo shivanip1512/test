@@ -169,11 +169,22 @@ public class ProfileWidget extends WidgetControllerBase {
         Set<Attribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
 
         List<Map<String, Object>> availableChannels = new ArrayList<Map<String, Object>>();
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String intervalString = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.unknown");
+        
         for (ProfileAttributeChannel attrChanEnum : ProfileAttributeChannel.values()) {
 
             if (supportedProfileAttributes.contains(attrChanEnum.getAttribute())) {
                 Map<String, Object> channelInfo = new HashMap<String, Object>();
                 RfnVoltageProfile rfnVoltageProfile = loadProfileService.getRfnVoltageProfileDetails(deviceId);
+                String channelProfileRate = calcIntervalStr(rfnVoltageProfile.getVoltageProfilingRate(),
+                                                            userContext);
+                boolean channelProfileRateKnown;
+                if (intervalString.equals(channelProfileRate)) {
+                    channelProfileRateKnown = false;
+                } else {
+                    channelProfileRateKnown = true;
+                }
                 channelInfo.put("channelProfilingStatus", rfnVoltageProfile.getProfilingStatus());
                 channelInfo.put("channelEnabledTill", rfnVoltageProfile.getEnabledTill());
                 channelInfo.put("channelNumber", attrChanEnum.getChannel());
@@ -181,9 +192,8 @@ public class ProfileWidget extends WidgetControllerBase {
                                 messageSourceResolver.getMessageSourceAccessor(userContext)
                                                      .getMessage(attrChanEnum.getAttribute()
                                                                              .getMessage()));
-                channelInfo.put("channelProfileRate",
-                                calcIntervalStr(rfnVoltageProfile.getVoltageProfilingRate(),
-                                                userContext));
+                channelInfo.put("channelProfileRateKnown", channelProfileRateKnown);
+                channelInfo.put("channelProfileRate", channelProfileRate);
                 availableChannels.add(channelInfo);
             }
         }

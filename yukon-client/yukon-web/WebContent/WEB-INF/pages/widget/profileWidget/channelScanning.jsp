@@ -116,7 +116,7 @@
                  
                  <c:if test="${c.channelProfilingStatus eq 'ENABLED'}">
                     <td>${fn:escapeXml(c.channelProfileRate)}
-                        <c:if test="${c.channelProfileRate eq 'Unknown'}">
+                        <c:if test="${not c.channelProfileRateKnown}">
                            <cti:icon icon="icon-help" classes="cp fn vatb" data-popup="#unknown-interval-help-popup" data-popup-toggle=""/>
                         </c:if>
                      </td>
@@ -132,7 +132,7 @@
                   
                  <c:if test="${c.channelProfilingStatus eq 'DISABLED'}">
                      <td class="wsnw">${fn:escapeXml(c.channelProfileRate)}
-                     <c:if test="${c.channelProfileRate eq 'Unknown'}">
+                     <c:if test="${not c.channelProfileRateKnown}">
                             <cti:icon icon="icon-help" classes="cp fn vatb" data-popup="#unknown-interval-help-popup" data-popup-toggle=""/>
                      </c:if>
                      </td>
