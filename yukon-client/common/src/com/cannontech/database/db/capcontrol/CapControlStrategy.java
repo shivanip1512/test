@@ -55,6 +55,10 @@ public class CapControlStrategy {
         SATURDAY,
         HOLIDAY;
 
+        public boolean isDisplay() {
+            return this != HOLIDAY;
+        }
+
         @Override
         public String getFormatKey() {
             return "yukon.common.day." + name() + ".short";

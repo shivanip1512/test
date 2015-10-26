@@ -120,8 +120,8 @@
                                 <c:forEach var="dayOfWeek" items="${DaysOfWeek}">
                                     <cti:displayForPageEditModes modes="VIEW">
                                         <spring:bind path="peakDays[${dayOfWeek}]">
-                                            <c:if test="${status.value}">
-                                                <c:if test="${not empty daysString }">
+                                            <c:if test="${status.value && dayOfWeek.display}">
+                                                <c:if test="${not empty daysString}">
                                                     <c:set var="daysString">${daysString}<i:inline key="yukon.common.comma"/>&nbsp;<i:inline key="${dayOfWeek}"/></c:set>
                                                 </c:if>
                                                 <c:if test="${empty daysString }">
@@ -131,7 +131,8 @@
                                         </spring:bind>
                                     </cti:displayForPageEditModes>
                                     <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                        <tags:check path="peakDays[${dayOfWeek}]" key="${dayOfWeek}"/>
+                                        <c:set var="classes" value="${dayOfWeek.display ? '' : 'dn'}"/>
+                                        <tags:check path="peakDays[${dayOfWeek}]" key="${dayOfWeek}" classes="${classes}"/>
                                     </cti:displayForPageEditModes>
                                 </c:forEach>
                                 <cti:displayForPageEditModes modes="VIEW">
