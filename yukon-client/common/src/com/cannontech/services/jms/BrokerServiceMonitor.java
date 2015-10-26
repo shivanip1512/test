@@ -1,5 +1,15 @@
 package com.cannontech.services.jms;
 
+import java.lang.management.GarbageCollectorMXBean;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.management.Notification;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationListener;
+import javax.management.openmbean.CompositeData;
+
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.Destination;
@@ -10,19 +20,55 @@ import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.sun.management.GarbageCollectionNotificationInfo;
+import com.sun.management.GcInfo;
 
-public class BrokerServiceMonitor extends Thread {
 
+/**
+ *  This class runs a thread that monitors the ActiveMQ broker.  It perodically outputs queue depths
+ *  and memory usage as well as JVM memory statistics from the GC. 
+ */
+public class BrokerServiceMonitor extends Thread implements NotificationListener {
+
+    /** General class logger */
     private Logger log = YukonLogManager.getLogger(BrokerServiceMonitor.class);
-
-    private Broker broker;
-    private BrokerService brokerService;
     
+    /** Put this under a sub-logger so it can be independently manipulated.
+     *  
+     * To enable, put this in yukonLogging.xml: 
+     * 
+     *   <logger name="com.cannontech.services.jms.BrokerServiceMonitor.gc"> 
+     *     <level value="DEBUG"/>
+     *   </logger>
+     **/
+    private Logger logGC = YukonLogManager.getLogger(BrokerServiceMonitor.class.getCanonicalName()+".gc");
+
+    /** Broker instance */
+    private Broker broker;
+    /** BrokerService instance */
+    private BrokerService brokerService;
+
     /** Time period for checking on the queue depths from the Java System Properties */
     private Duration reportingPeriod = Duration.standardSeconds(
-            Integer.getInteger("com.cannontech.services.jms.BrokerServiceMonitor.reportingPeriodSeconds", 
-                         5 /* minutes */ * 60 /* Seconds/Minute */));
-    
+        Integer
+            .getInteger("com.cannontech.services.jms.BrokerServiceMonitor.reportingPeriodSeconds",
+                        5 /* minutes */* 60 /* Seconds/Minute */));
+
+    /** Constructor.  Registers this class for GC notifications as well. */
+    public BrokerServiceMonitor() {
+        super();
+
+        List<GarbageCollectorMXBean> gcbeans =
+            java.lang.management.ManagementFactory.getGarbageCollectorMXBeans();
+
+        for (GarbageCollectorMXBean gcbean : gcbeans) {
+            NotificationEmitter emitter = (NotificationEmitter) gcbean;
+
+            // Add the a listener
+            emitter.addNotificationListener(this, null, null);
+        }
+    }
+
     @Override
     public void run() {
         while (true)
@@ -33,8 +79,8 @@ public class BrokerServiceMonitor extends Thread {
                     Destination dest = brokerService.getDestination(aMQdest);
                     MemoryUsage usage = dest.getMemoryUsage();
                     DestinationStatistics stat = dest.getDestinationStatistics();
-                    
-                    if (usage.getUsage()>0 && aMQdest.isTemporary())
+
+                    if (usage.getUsage() > 0 && aMQdest.isTemporary())
                     {
                         log.info(aMQdest.getQualifiedName() + ":" +
                                  "Enque=" + stat.getEnqueues().getCount() +
@@ -45,14 +91,12 @@ public class BrokerServiceMonitor extends Thread {
                                  ", Mem=" + usage.getUsage());
                     }
                 }
-                
-                log.info("Free memory: "+Runtime.getRuntime().freeMemory());
+
                 Thread.sleep(reportingPeriod.getMillis());
             } catch (Exception e) {
                 log.warn("caught exception in run", e);
             }
         }
-
     }
 
     public Broker getBroker() {
@@ -61,7 +105,40 @@ public class BrokerServiceMonitor extends Thread {
 
     public void setBroker(Broker broker) {
         this.broker = broker;
-        this.brokerService=broker.getBrokerService();
+        this.brokerService = broker.getBrokerService();
     }
 
+    // implement the notifier callback handler
+    @Override
+    public void handleNotification(Notification notification, Object handback) {
+        // we only handle GARBAGE_COLLECTION_NOTIFICATION notifications here
+        if (notification.getType()
+            .equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
+            
+            // get notification information
+            GarbageCollectionNotificationInfo info =
+                GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
+
+            // GC info
+            GcInfo gcInfo = info.getGcInfo();
+            logGC.debug("GC start: "+gcInfo.getStartTime()+", end: "+gcInfo.getEndTime()+", duration: "+gcInfo.getDuration()+" (ms)");
+            logGC.debug("   reason: "+info.getGcCause());
+            
+            // Get before and after GC stats
+            Map<String, java.lang.management.MemoryUsage> memBefore = gcInfo.getMemoryUsageBeforeGc();
+            Map<String, java.lang.management.MemoryUsage> memAfter = gcInfo.getMemoryUsageAfterGc();
+            
+            // Print in a pretty table
+            logGC.debug(String.format("%22s|%7s|%7s", "Heap Used", "Before", "After"));
+            for (Entry<String, java.lang.management.MemoryUsage> entry : memBefore.entrySet()) {
+                String name = entry.getKey();
+                long memUsedBefore = entry.getValue().getUsed();
+                long memUsedAfter = memAfter.get(name).getUsed();
+                logGC.debug(String.format("%22s|%7d|%7d", name, memUsedBefore/1024, memUsedAfter/1024));
+            }
+            
+            // Just for grins...
+            logGC.debug("Free memory: " + Runtime.getRuntime().freeMemory()/1024 + "k");
+        }
+    }
 }

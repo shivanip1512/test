@@ -3,8 +3,8 @@ package com.cannontech.message.util;
 import java.net.URI;
 import java.util.List;
 import java.util.Observable;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.messaging.connection.Connection;
@@ -68,7 +67,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
     private AtomicLong maxMessagesQueued = new AtomicLong(0);
     
     private boolean isBehindLatch = false;
-    private LinkedBlockingQueue<Message> inQueue = new LinkedBlockingQueue<>(maxQueueSize);
+    private ArrayBlockingQueue<Message> inQueue = new ArrayBlockingQueue<Message>(maxQueueSize);
 
     private class HandleMessage extends Thread
     {
@@ -579,10 +578,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
                 conn.inQueue.notifyAll();
                 if (inQueue.remainingCapacity() < latchOffOnRemainingCapacity) {
                     isBehindLatch = true;
-                }            }
-
-            if (conn.inQueue.size() > 0 && (conn.inQueue.size() % 10000) == 0) {
-                CTILogger.warn("Message inQueue is growing! Queue Count = " + conn.inQueue.size());
+                }
             }
         }
     }
