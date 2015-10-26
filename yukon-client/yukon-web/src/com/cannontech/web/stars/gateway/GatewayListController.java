@@ -88,9 +88,11 @@ public class GatewayListController {
             gateways.forEach(new Consumer<RfnGateway>() {
                 @Override
                 public void accept(RfnGateway gateway) {
-                    String updateServerUrl = gateway.getData().getUpdateServerUrl();
-                    String upgradeVersion = upgradeVersions.get(updateServerUrl);
-                    gateway.setUpgradeVersion(upgradeVersion);
+                   if (gateway.getData() != null) {
+                       String updateServerUrl = gateway.getData().getUpdateServerUrl();
+                       String upgradeVersion = upgradeVersions.get(updateServerUrl);
+                       gateway.setUpgradeVersion(upgradeVersion); 
+                   }
                 }
             });
             Collections.sort(gateways);

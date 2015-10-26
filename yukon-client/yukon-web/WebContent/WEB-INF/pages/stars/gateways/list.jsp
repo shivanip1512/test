@@ -230,6 +230,9 @@
             <td class="js-gw-name"><a></a></td>
             <td class="js-gw-sn"></td>
             <td class="js-gw-ip"></td>
+            <c:if test="${enableNMGatewayVersion}">
+                <td class="js-gw-rv"></td>
+            </c:if>
             <td class="js-gw-last-comm"></td>
             <td class="js-gw-data-collection">
                 <div class="dib vat progress">
