@@ -159,10 +159,17 @@ yukon.ui = (function () {
                 var originalValue;
                 if (editing) {
                     originalValue = elem.val();
+                    if (elem.is(':checkbox') || elem.is(':radio')) {
+                        originalValue = elem.is(':checked');
+                    }
                     elem.data('originalValue', originalValue);
+                    elem.attr('data-original-Value', originalValue);
                 } else {
                     originalValue = elem.data('originalValue');
-                    elem.val(originalValue);
+                    if (elem.is(':checkbox') || elem.is(':radio')) {
+                        elem.prop('checked', originalValue);
+                    }
+                    elem.val(originalValue).trigger('change');
                 }
             });
         });
@@ -1044,11 +1051,17 @@ yukon.ui = (function () {
             var action = checkbox.data('toggleAction');
 
             if (action === 'hide') {
-                inputs.each(function (idx, input) { $(input).toggleClass('dn', !enable); });
+                inputs.each(function (idx, input) {
+                    $(input).toggleClass('dn', !enable);
+                });
             } else if (action === 'invisible') {
-                inputs.each(function (idx, input) { $(input).toggleClass('vh', !enable); });
+                inputs.each(function (idx, input) {
+                    $(input).toggleClass('vh', !enable);
+                });
             } else {
-                inputs.each(function (idx, input) { $(input).prop('disabled', !enable); });
+                inputs.each(function (idx, input) {
+                    $(input).prop('disabled', !enable);
+                });
             }
                 
         },

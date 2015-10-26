@@ -141,7 +141,7 @@
     <entry key="yukon.web.modules.operator.gateways.longitude">Longitude</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer">Firmware Upgrade Server</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer.set">Set Update Servers</entry>
-    <entry key="yukon.web.modules.operator.gateways.updateServer.default">Use Default</entry>
+    <entry key="yukon.web.modules.operator.gateways.updateServer.default">Default Server</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer.url">Server URL</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer.login">Server Authentication</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer.login.user">Server Username</entry>

@@ -206,6 +206,7 @@ public class GatewaySettingsController {
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String unknownText = accessor.getMessage("yukon.common.unknown");
+        String defaultServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
 
         model.addAttribute("mode", PageEditMode.EDIT);
 
@@ -224,6 +225,10 @@ public class GatewaySettingsController {
                 @Override
                 public GatewayUpdateServer apply(RfnGateway gateway) {
                     GatewayUpdateServer updateServer = GatewayUpdateServer.of(gateway);
+                    String updateServerUrl = updateServer.getUpdateServerUrl();
+                    boolean isDefault = StringUtils.isEmpty(updateServerUrl) || defaultServer.equals(updateServerUrl);
+                    updateServer.setUseDefault(isDefault);
+
 
                     String availableVersion = updateServerToVersion.get(updateServer.getUpdateServerUrl());
                     if (StringUtils.isEmpty(availableVersion)) {
@@ -252,12 +257,22 @@ public class GatewaySettingsController {
         @ModelAttribute("allSettings") GatewaySettingsList allSettings,
         YukonUserContext userContext ) {
 
+        String defaultServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+        Authentication defaultAuth = new Authentication();
+        defaultAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
+        defaultAuth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
+
         try {
             List<GatewayUpdateServer> updateServerInfos = allSettings.getList();
 
             List<RfnGateway> gateways = new ArrayList<>();
 
             for (GatewayUpdateServer updateServerInfo : updateServerInfos) {
+                if (updateServerInfo.isUseDefault()) {
+                    updateServerInfo.setUpdateServerUrl(defaultServer);
+                    updateServerInfo.setUpdateServerLogin(defaultAuth);
+                }
+
                 RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(updateServerInfo.getId());
                 gateway = gateway.withUpdateServer(updateServerInfo);
                 gateways.add(gateway);

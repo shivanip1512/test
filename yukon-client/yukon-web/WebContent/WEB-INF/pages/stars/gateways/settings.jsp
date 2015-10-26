@@ -125,8 +125,8 @@
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".updateServer.default">
-            <tags:switchButton path="useDefault" toggleGroup="update-server" toggleAction="invisible"
-                toggleInverse="true"/>
+            <tags:switchButton path="useDefault" onNameKey=".yes.label" offNameKey=".no.label" 
+                toggleGroup="update-server" toggleAction="invisible" toggleInverse="true"/>
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".updateServer.url" data-toggle-group="update-server">
