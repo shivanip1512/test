@@ -14,6 +14,22 @@ struct test_RfnResidentialVoltageDevice : RfnResidentialVoltageDevice
 {
     using RfnResidentialDevice::handleCommandResult;
     using CtiTblPAOLite::_type;
+
+    virtual double getNmCompatibilityVersion() const override
+    {
+        return 6.5;
+    }
+};
+
+struct test_RfnResidentialVoltageDevice_nm7 : RfnResidentialVoltageDevice
+{
+    using RfnResidentialDevice::handleCommandResult;
+    using CtiTblPAOLite::_type;
+
+    virtual double getNmCompatibilityVersion() const override
+    {
+        return 7.0;
+    }
 };
 
 struct test_state_rfnResidentialVoltage
@@ -1214,6 +1230,132 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getvalue_voltage_profile_st
         };
 
         BOOST_CHECK_EQUAL_RANGES( rcv, exp );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltageprofile_enable )
+{
+    test_RfnResidentialVoltageDevice    dut;
+
+    dut._type = TYPE_RFN420FX;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue( RfnStrings::enableDataStreaming,   "true" );
+
+    using Bytes = std::vector<unsigned char>;
+
+    {
+        CtiCommandParser parse("putconfig install voltageprofile");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltageprofile_enable_nm7 )
+{
+    test_RfnResidentialVoltageDevice_nm7    dut;
+
+    dut._type = TYPE_RFN420FX;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue( RfnStrings::enableDataStreaming,   "true" );
+
+    using Bytes = std::vector<unsigned char>;
+
+    {
+        CtiCommandParser parse("putconfig install voltageprofile");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            Bytes exp
+            {
+                0x68, 0x06, 0x00
+            };
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+
+            dut.extractCommandResult( *command );
+
+            long test_voltageProfileEnabled;
+
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabled, test_voltageProfileEnabled ));
+            BOOST_CHECK_EQUAL( static_cast<bool>(test_voltageProfileEnabled), true );
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltageprofile_disable_nm7 )
+{
+    test_RfnResidentialVoltageDevice_nm7    dut;
+
+    dut._type = TYPE_RFN420FX;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue( RfnStrings::enableDataStreaming,   "false" );
+
+    using Bytes = std::vector<unsigned char>;
+
+    {
+        CtiCommandParser parse("putconfig install voltageprofile");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            Bytes exp
+            {
+                0x68, 0x02, 0x00
+            };
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+
+            dut.extractCommandResult( *command );
+
+            long test_voltageProfileEnabled;
+
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabled, test_voltageProfileEnabled ));
+            BOOST_CHECK_EQUAL( static_cast<bool>(test_voltageProfileEnabled), false );
+        }
     }
 }
 

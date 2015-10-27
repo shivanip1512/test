@@ -243,6 +243,7 @@ const string RfnStrings::DisplayDigits = "displayDigits";
 
 const string RfnStrings::voltageAveragingInterval   = "voltageAveragingInterval";
 const string RfnStrings::demandInterval        = "demandInterval";
+const string RfnStrings::enableDataStreaming   = "enableDataStreaming";
 const string RfnStrings::voltageDataStreamingIntervalMinutes = "voltageDataStreamingIntervalMinutes";
 
 const string RfnStrings::demandFreezeDay       = "demandFreezeDay";

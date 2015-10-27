@@ -35,10 +35,15 @@ protected:
     YukonError_t executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
     YukonError_t executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
     YukonError_t executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executeGetConfigPermanentVoltageProfile  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executePutConfigPermanentVoltageProfile  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand          & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileSetTemporaryRecordingCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileSetPermanentRecordingCommand & cmd ) override;
+
+    bool NmCompatibilityAtLeast( const double minimumVersion );
+    virtual double getNmCompatibilityVersion() const;
 
 public:
 

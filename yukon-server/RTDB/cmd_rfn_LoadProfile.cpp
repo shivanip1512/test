@@ -363,9 +363,7 @@ RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand(const CtiTime 
 
         default:
         {
-            validate( Condition( tlv.type == TlvType_LoadProfileState ||
-                                 tlv.type == TlvType_PermanentLoadProfileRecordingState ||
-                                 tlv.type == TlvType_TemporaryLoadProfileRecordingState, ClientErrors::InvalidData )
+            validate( Condition( false, ClientErrors::InvalidData )
                     << "Invalid TLV type (" << tlv.type << ")" );
         }
     }

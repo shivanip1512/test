@@ -24,6 +24,7 @@ protected:
         static const std::string disconnect;
         static const std::string temperaturealarm;
         static const std::string channelconfig;
+        static const std::string voltageprofile;
     };
 
     typedef boost::function<YukonError_t (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)> ConfigMethod;
