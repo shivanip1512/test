@@ -34,6 +34,7 @@ import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -67,8 +68,7 @@ public class GatewayListController {
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
-    @Autowired private ConfigurationSource configurationSource;
-    
+    @Autowired private NMConfigurationService nmConfigurationService;
     private Map<SortBy, Comparator<CertificateUpdate>> sorters;
     
     @PostConstruct
@@ -119,11 +119,7 @@ public class GatewayListController {
         }
         model.addAttribute("certUpdates", certUpdates);
         helper.addText(model, userContext);
-        boolean enableNMGatewayVersion = false;
-        Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
-        if (nmCompatibility != null && nmCompatibility >= 7.0) {
-            enableNMGatewayVersion = true;
-        }
+        boolean enableNMGatewayVersion = nmConfigurationService.isFirmwareUpdateSupported();
         model.addAttribute("enableNMGatewayVersion",enableNMGatewayVersion);
         return "gateways/list.jsp";
     }
