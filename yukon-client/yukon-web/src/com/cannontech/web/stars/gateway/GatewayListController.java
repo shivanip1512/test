@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -120,7 +118,7 @@ public class GatewayListController {
         model.addAttribute("certUpdates", certUpdates);
         helper.addText(model, userContext);
         boolean enableNMGatewayVersion = nmConfigurationService.isFirmwareUpdateSupported();
-        model.addAttribute("enableNMGatewayVersion",enableNMGatewayVersion);
+        model.addAttribute("enableNMGatewayVersion", enableNMGatewayVersion);
         return "gateways/list.jsp";
     }
     
