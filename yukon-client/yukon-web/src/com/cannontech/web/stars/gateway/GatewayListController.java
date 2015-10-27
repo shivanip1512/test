@@ -77,28 +77,13 @@ public class GatewayListController {
         sorters = builder.build();
     }
     
-    @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.GET)
-    public String gateways(ModelMap model, YukonUserContext userContext,
-            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
-        try {
-            Map<String, String>  upgradeVersions = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateServerVersions();
-            List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-            gateways.forEach(new Consumer<RfnGateway>() {
-                @Override
-                public void accept(RfnGateway gateway) {
-                   if (gateway.getData() != null) {
-                       String updateServerUrl = gateway.getData().getUpdateServerUrl();
-                       String upgradeVersion = upgradeVersions.get(updateServerUrl);
-                       gateway.setUpgradeVersion(upgradeVersion); 
-                   }
-                }
-            });
-            Collections.sort(gateways);
-            model.addAttribute("gateways", gateways);
-        }
-        catch(NmCommunicationException e){
-            log.warn("caught exception in getGatewaysFromDevices", e);
-        }
+    @RequestMapping(value = { "/gateways", "/gateways/" }, method = RequestMethod.GET)
+    public String gateways(ModelMap model, YukonUserContext userContext, @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
+
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        Collections.sort(gateways);
+        model.addAttribute("gateways", gateways);
+
         List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
         Direction dir = sorting.getDirection();
         SortBy sortBy = SortBy.valueOf(sorting.getSort());
@@ -108,7 +93,7 @@ public class GatewayListController {
         } else {
             Collections.sort(certUpdates, comparator);
         }
-        
+
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         for (SortBy column : SortBy.values()) {
             String text = accessor.getMessage(column);
@@ -124,14 +109,26 @@ public class GatewayListController {
     
     @RequestMapping("/gateways/data")
     public @ResponseBody Map<Integer, Object> data(YukonUserContext userContext) {
-        
         Map<Integer, Object> json = new HashMap<>();
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
-        for (RfnGateway gateway : gateways) {
-            Map<String, Object> data = helper.buildGatewayModel(gateway, userContext);
-            json.put(gateway.getPaoIdentifier().getPaoId(), data);
+        try {
+            Map<String, String>  upgradeVersions = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateServerVersions();
+            gateways.forEach(new Consumer<RfnGateway>() {
+                @Override
+                public void accept(RfnGateway gateway) {
+                   if (gateway.getData() != null) {
+                       String updateServerUrl = gateway.getData().getUpdateServerUrl();
+                       String upgradeVersion = upgradeVersions.get(updateServerUrl);
+                       gateway.setUpgradeVersion(upgradeVersion); 
+                   }
+                   Map<String, Object> data = helper.buildGatewayModel(gateway, userContext);
+                   json.put(gateway.getPaoIdentifier().getPaoId(), data);
+                }
+            });
+            
+        } catch (NmCommunicationException e){
+            log.debug("rfnGatewayFirmwareUpgrade Failed");
         }
-        
         return json;
     }
     
