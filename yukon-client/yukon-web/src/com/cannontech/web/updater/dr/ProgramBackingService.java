@@ -23,18 +23,19 @@ public class ProgramBackingService extends UpdateBackingServiceBase<LMProgramBas
     @Override
     public Object getValue(DatedObject<LMProgramBase> datedObject, String[] idBits,
                            YukonUserContext userContext) {
-
+        
         String fieldName = idBits[1];
-
-        DemandResponseBackingField<LMProgramBase> backingField = 
-            programFieldService.getBackingField(fieldName);
+        DemandResponseBackingField<LMProgramBase> backingField = programFieldService.getBackingField(fieldName);
         
         LMProgramBase program = null;
         if (datedObject != null) {
             program = datedObject.getObject();
         }
-        
-        return backingField.getValue(program, userContext);
+        if(idBits.length == 3) {
+            return backingField.getValue(program, idBits, userContext);
+        } else {
+            return backingField.getValue(program, userContext);   
+        }
     }
     
     @Autowired

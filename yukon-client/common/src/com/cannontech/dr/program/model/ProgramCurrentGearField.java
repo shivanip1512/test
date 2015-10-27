@@ -1,8 +1,14 @@
 package com.cannontech.dr.program.model;
 
 import java.util.Comparator;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -10,6 +16,10 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class ProgramCurrentGearField extends ProgramBackingFieldBase {
+    
+    @Autowired private ScenarioDao scenarioDao;
+    @Autowired private ProgramDao programDao;
+    
     private final static NaturalOrderComparator comparator =
         new NaturalOrderComparator();
 
@@ -29,7 +39,27 @@ public class ProgramCurrentGearField extends ProgramBackingFieldBase {
         }
         return blankFieldResolvable;
     }
-
+    
+    @Override
+    public Object getValue(LMProgramBase program, String[] idbits, YukonUserContext userContext) {
+        if(program != null) {
+            if (!program.isActive() && idbits.length == 3) { // This is an inactive scenario program
+                // Find the scenario start gear for this program and display it's name.
+                Integer scenarioId = Integer.parseInt(idbits[2]);
+                
+                int programId = program.getPaoIdentifier().getPaoId();
+                
+                Map<Integer, ScenarioProgram> scenarioPrograms = scenarioDao.findScenarioProgramsForScenario(scenarioId);
+                ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
+                String gearName = programDao.findGearName(programId, scenarioProgram.getStartGear());
+                return buildResolvable(getFieldName(), gearName);
+            }
+            
+            return getProgramValue((LMProgramBase) program, userContext);
+        }
+        return blankFieldResolvable;
+    }
+    
     @Override
     public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new Comparator<DisplayablePao>() {

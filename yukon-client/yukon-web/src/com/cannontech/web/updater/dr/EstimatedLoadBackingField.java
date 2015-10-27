@@ -13,5 +13,9 @@ public interface EstimatedLoadBackingField {
      * @return Value of the requested field
      */
     public String getValue(int paoId, YukonUserContext userContext);
+    
+    default public String getValue(int programId, int scenarioId, YukonUserContext userContext) {
+        return getValue(programId, userContext);
+    }
 
 }

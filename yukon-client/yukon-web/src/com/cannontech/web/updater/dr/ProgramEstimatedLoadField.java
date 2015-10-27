@@ -2,17 +2,24 @@ package com.cannontech.web.updater.dr;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
 import com.cannontech.dr.estimatedload.EstimatedLoadException;
 import com.cannontech.dr.estimatedload.EstimatedLoadResult;
+import com.cannontech.dr.estimatedload.GearNotFoundException;
+import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
+import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Maps;
@@ -21,7 +28,10 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
 
     @Autowired private EstimatedLoadBackingServiceHelper backingServiceHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-
+    @Autowired private ScenarioDao scenarioDao;
+    @Autowired private EstimatedLoadDao estimatedLoadDao;
+    
+    private final Logger log = YukonLogManager.getLogger(EstimatedLoadBackingService.class);
     @Override
     public String getFieldName() {
         return "PROGRAM";
@@ -29,9 +39,11 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
 
     @Override
     public String getValue(int programId, YukonUserContext userContext) {
-        EstimatedLoadResult estimatedLoadResult = null;
-        
-        estimatedLoadResult = backingServiceHelper.findProgramValue(programId, false);
+        EstimatedLoadResult estimatedLoadResult = backingServiceHelper.findProgramValue(programId, false);
+        return buildJson(programId, userContext, estimatedLoadResult);
+    }
+
+    private String buildJson(int programId, YukonUserContext userContext, EstimatedLoadResult estimatedLoadResult) {
         if (null == estimatedLoadResult) {
             return createCalculatingJson(programId, userContext);
         }
@@ -43,6 +55,34 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
         return null;
     }
 
+    @Override
+    public String getValue(int programId, int scenarioId, YukonUserContext userContext) {
+        EstimatedLoadResult loadResult = null;
+        LMProgramBase program;
+        try {
+            program = backingServiceHelper.getLmProgramBase(programId);
+        } catch (EstimatedLoadException e) {
+            return createErrorJson(programId, e, userContext);
+        }
+        if(!program.isActive()) {
+             // The program is not active so find the scenario start gear
+                Map<Integer, ScenarioProgram> programsForScenario = scenarioDao.findScenarioProgramsForScenario(scenarioId);
+                ScenarioProgram scenarioProgram = programsForScenario.get(programId);
+                
+                int startGearId = 0; 
+                try {
+                    startGearId = estimatedLoadDao.getGearIdForProgramAndGearNumber(programId, scenarioProgram.getStartGear());
+                    loadResult = backingServiceHelper.findProgramValue(programId, startGearId, false);
+                    return buildJson(programId, userContext, loadResult);
+                } catch (GearNotFoundException e) {
+                    return createErrorJson(programId, e, userContext);
+                }
+                
+          }
+        return getValue(programId, userContext);
+    }
+
+    
     private String createCalculatingJson(int programId, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         

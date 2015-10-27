@@ -44,7 +44,6 @@ public class DataUpdaterController {
             response.setContentType("application/json");
             response.setStatus(HttpStatus.CONFLICT.value());
         }
-
         return null;
     }
 }

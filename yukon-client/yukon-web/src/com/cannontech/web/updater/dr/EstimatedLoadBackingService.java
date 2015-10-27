@@ -28,7 +28,7 @@ public class EstimatedLoadBackingService implements UpdateBackingService {
     /* The following regex pattern is used to split the paoId from the field when receiving a data updater identifier.
      * In order to match, the string has to have the form: VALUE/VALUE
      * For example, it will match: '1234/SCENARIO', storing '1234' in the first group and 'SCENARIO' in the second. */
-    private final Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
+    private final static Pattern pattern = Pattern.compile("^(\\d+)/([A-Z_]+)/?(\\d+)?$");
 
     @Autowired
     public EstimatedLoadBackingService(List<EstimatedLoadBackingFieldBase> handlers) throws Exception {
@@ -57,18 +57,23 @@ public class EstimatedLoadBackingService implements UpdateBackingService {
      */
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
-        Matcher m = idSplitter.matcher(identifier);
-        if(m.matches()) {
-            int paoId = Integer.parseInt(m.group(1));
+        Matcher m = pattern.matcher(identifier);
+        if (m.matches()) {
+            int programId = Integer.parseInt(m.group(1));
             String fieldName = m.group(2);
             EstimatedLoadBackingField handler = handlersMap.get(fieldName);
-            String result = handler.getValue(paoId, userContext);
+            String result;
+            if (m.group(3) != null) {
+                int scenarioId = Integer.parseInt(m.group(3));
+                result = handler.getValue(programId, scenarioId, userContext);
+            } else {
+                result = handler.getValue(programId, userContext);
+            }
             if (result != null) {
                 return result;
             } else {
-                log.error("Problem retrieving estimated load value for pao id: " + paoId);
+                log.error("Problem retrieving estimated load value for pao id: " + programId);
             }
-
         }
         return null;
     }

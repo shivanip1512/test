@@ -103,6 +103,15 @@ public class ProgramDaoImpl implements ProgramDao {
         return result;
     }
     
+    public String findGearName(int programId, int gearNumber) {
+        SqlStatementBuilder sql = new SqlStatementBuilder(); 
+        sql.append("SELECT GearName FROM LMProgramDirectGear");
+        sql.append("WHERE DeviceId").eq(programId);
+        sql.append("AND GearNumber").eq(gearNumber);
+                
+        return jdbcTemplate.queryForString(sql);
+    }
+    
     private FieldMapper<Program> programFieldMapper = new FieldMapper<Program>() {
         @Override
         public void extractValues(MapSqlParameterSource p, Program program) {

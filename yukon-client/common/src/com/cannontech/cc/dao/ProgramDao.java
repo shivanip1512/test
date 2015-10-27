@@ -13,4 +13,6 @@ public interface ProgramDao extends IdentifiableObjectProvider<Program> {
     public Integer incrementAndReturnIdentifier(Program program);
     public void save(Program object);
     public void delete(Program object);
+    public String findGearName(int programId, int gearNumber);
+    
 }

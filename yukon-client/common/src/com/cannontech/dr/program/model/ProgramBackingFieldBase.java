@@ -32,7 +32,7 @@ public abstract class ProgramBackingFieldBase implements DemandResponseBackingFi
      *                                                  MessageSourceResolvable, ResolvableTemplate)
      */
     public abstract Object getProgramValue(LMProgramBase program, YukonUserContext userContext);
-
+    
     @Override
     public Object getValue(LMProgramBase program, YukonUserContext userContext) {
         if(program != null || handlesNull()) {

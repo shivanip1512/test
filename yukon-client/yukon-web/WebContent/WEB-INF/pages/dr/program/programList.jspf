@@ -134,7 +134,14 @@
                                     <td><dr:programState programId="${programId}"/></td>
                                     <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/></td>
                                     <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/></td>
-                                    <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
+                                    <c:choose>
+                                        <c:when test="${scenario != null}">
+                                            <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR/${scenario.paoIdentifier.paoId}" type="DR_PROGRAM"/></td>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
+                                        </c:otherwise>
+                                    </c:choose>
                                     
                                     <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                                         <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/></td>
@@ -144,10 +151,20 @@
                                     </cti:checkRolesAndProperties>
                                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                         <td data-pao="${programId}" class="wsnw">
-                                            <cti:dataUpdaterCallback
-                                                function="yukon.dr.estimatedLoad.displayValue"
-                                                value="ESTIMATED_LOAD/${programId}/PROGRAM"
-                                                initialize="true"/>
+                                            <c:choose>
+                                                <c:when test="${scenario != null}">    
+                                                    <cti:dataUpdaterCallback
+                                                        function="yukon.dr.estimatedLoad.displayValue"
+                                                        value="ESTIMATED_LOAD/${programId}/PROGRAM/${scenario.paoIdentifier.paoId}"
+                                                        initialize="true"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <cti:dataUpdaterCallback
+                                                        function="yukon.dr.estimatedLoad.displayValue"
+                                                        value="ESTIMATED_LOAD/${programId}/PROGRAM"
+                                                        initialize="true"/>
+                                                </c:otherwise>
+                                            </c:choose>
                                             <cti:icon icon="icon-loading-bars" 
                                                 classes="js-est-load-calculating push-down-4"/>
                                             <cti:button classes="js-est-load-error-btn dn fn vat M0" 

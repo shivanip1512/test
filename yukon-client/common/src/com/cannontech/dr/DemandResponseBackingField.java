@@ -21,6 +21,14 @@ public interface DemandResponseBackingField<T> {
      */
     public Object getValue(T object, YukonUserContext userContext);
 
+    
+    /** 
+     * This is implemented by ProgramBackingFieldBase to pass along the scenario ID
+     */
+    default public Object getValue(T object, String[] idbits, YukonUserContext userContext)  {
+        return getValue(object, userContext);
+    }
+    
     /**
      * Method to get a DisplayablePao Comparator for this field 
      * @param userContext - Current userContext

@@ -122,7 +122,12 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
         }
         return getProgramValue(programId, currentGearId, blocking);
     }
-    
+
+    @Override
+    public EstimatedLoadResult findProgramValue(final int programId, final int gearId, boolean blocking) {
+        return getProgramValue(programId, gearId, blocking);
+    }
+
     /**
      * Takes a program id and gear id and attempts to calculate the estimated load amounts for that
      * program/gear combination. First checks to see if the cache holds a recently computed value. If so,
