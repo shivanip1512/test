@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -73,7 +71,6 @@ public class GatewaySettingsController {
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired private CronExpressionTagService cronService;
     @Autowired private EndpointEventLogService endpointEventLogService;
     @Autowired private GatewayEventLogService gatewayEventLogService;
@@ -171,12 +168,8 @@ public class GatewaySettingsController {
     public String editDialog(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
         
         model.addAttribute("mode", PageEditMode.EDIT);
-        
-        boolean updateServerCompatability = false;
-        Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
-        if (nmCompatibility != null && nmCompatibility >= 7.0) {
-            updateServerCompatability = true;
-        }
+
+        boolean updateServerCompatability = nmConfigurationService.isFirmwareUpdateSupported();
         model.addAttribute("updateServerCompatability", updateServerCompatability);
 
         try {
