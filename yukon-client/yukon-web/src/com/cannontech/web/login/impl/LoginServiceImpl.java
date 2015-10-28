@@ -62,8 +62,6 @@ public class LoginServiceImpl implements LoginService {
     private static final String SAVED_YUKON_USERS = LoginController.SAVED_YUKON_USERS;
     private static final String LOGIN_CLIENT_ACTIVITY_ACTION = ActivityLogActions.LOGIN_CLIENT_ACTIVITY_ACTION;
     private static final String LOGOUT_ACTIVITY_LOG = ActivityLogActions.LOGOUT_ACTIVITY_LOG;
-    private static final String LOGIN_FAILED_ACTIVITY_LOG = ActivityLogActions.LOGIN_FAILED_ACTIVITY_LOG;
-    private static final String OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION = ActivityLogActions.LOGIN_VOICE_ACTIVITY_ACTION;
     
     @Override
     public void login(HttpServletRequest request, String username, String password) 
@@ -78,13 +76,14 @@ public class LoginServiceImpl implements LoginService {
                     + request.getRemoteAddr());
             
         } catch (AuthenticationThrottleException e) {
-            ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG,
-                                    "Login attempt as " + username + " failed from " + request.getRemoteAddr() 
-                                    + ", throttleSeconds=" + e.getThrottleSeconds());
+            systemEventLogService.loginWebFailed(username, request.getRemoteAddr());
+            log.info("Login attempt as " + username + " failed from " + request.getRemoteAddr()
+                + "due to incorrect Password!Account Locked, throttleSeconds=" + e.getThrottleSeconds());
             throw e;
         } catch (BadAuthenticationException e) {
-            ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username 
-                    + " failed from " + request.getRemoteAddr());
+            if (e.getType() == BadAuthenticationException.Type.DISABLED
+                || e.getType() == BadAuthenticationException.Type.INCORRECT)
+                systemEventLogService.loginWebFailed(username, request.getRemoteAddr());
             throw e;
         }
     }
@@ -117,8 +116,7 @@ public class LoginServiceImpl implements LoginService {
             systemEventLogService.loginClient(user, request.getRemoteAddr());
             
         } catch (BadAuthenticationException e) {
-            ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username 
-                    + " failed from " + request.getRemoteAddr());
+            systemEventLogService.loginClientFailed(username, request.getRemoteAddr());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         } catch (PasswordExpiredException e) {
             String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request);
@@ -216,9 +214,6 @@ public class LoginServiceImpl implements LoginService {
             
             initSession(user, session, request);
             session.setAttribute( TOKEN, request.getParameter(TOKEN) );
-            ActivityLogger.logEvent(user.getUserID(), OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION, "VOICE User " 
-            + user.getUsername() + " (userid=" + user.getUserID() + ") (Contact=" + lContact.toString() 
-            + ") has logged in from " + request.getRemoteAddr());
             systemEventLogService.loginOutboundVoice(user, request.getRemoteAddr());
             response.sendRedirect(request.getContextPath() + voice_home_url);
         } else {  // Login failed, send them on their way using one of
@@ -234,7 +229,9 @@ public class LoginServiceImpl implements LoginService {
                     redirect = VOICE_ROOT + LoginController.INVALID_URI;
                 }
             }
-            ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "VOICE Login attempt for contact " + lContact.toString() + " failed from " + request.getRemoteAddr());
+            systemEventLogService.loginOutboundVoiceFailed(username, request.getRemoteAddr());
+            log.info("VOICE Login attempt for contact " + lContact.toString() + " failed from "
+                + request.getRemoteAddr());
             redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
             response.sendRedirect(redirect);
         }

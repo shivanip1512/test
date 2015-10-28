@@ -28,18 +28,6 @@ public class ActivityLogger {
     }
 
     /**
-     * The log method used by LoginController when the login attempt failed.
-     * To be used only for events where no userId is/can be known, ie login attempts.
-     */
-    public static void logEvent(String action, String description) {
-        ActivityLog activityLog = new ActivityLog();
-        activityLog.setAction(action);
-        activityLog.setDescription(description);
-
-        addActivityLog(activityLog);
-    }
-
-    /**
      * To be used for logging things about PaoIds; not for use with customers/accounts.
      */
     public static void logEvent(int userID, int paoID, String action, String description) {

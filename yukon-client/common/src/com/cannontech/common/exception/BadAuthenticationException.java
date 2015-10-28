@@ -6,11 +6,23 @@ package com.cannontech.common.exception;
  */
 public class BadAuthenticationException extends Exception {
     private final String messageKey = "yukon.web.error.csrf.badPassword";
-    
+    public static enum Type {
+        UNKNOWN,
+        INCORRECT,
+        DISABLED
+    }
+    private Type type = Type.UNKNOWN;
     public BadAuthenticationException() {
         super();
     }
     
+    public BadAuthenticationException(Type type) {
+        this.type = type;
+    }
+    
+    public Type getType() {
+        return type;
+    }
     public String getMessageKey() {
         return messageKey;
     }

@@ -47,6 +47,18 @@ public interface SystemEventLogService {
                          @Arg(ArgEnum.remoteAddress) String remoteAddress);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
+    public void loginWebFailed(@Arg(ArgEnum.username) String user, 
+                         @Arg(ArgEnum.remoteAddress) String remoteAddress);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
+    public void loginClientFailed(@Arg(ArgEnum.username) String user, 
+                         @Arg(ArgEnum.remoteAddress) String remoteAddress);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
+    public void loginOutboundVoiceFailed(@Arg(ArgEnum.username) String user, 
+                         @Arg(ArgEnum.remoteAddress) String remoteAddress);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
     public void loginClient(@Arg(ArgEnum.username) LiteYukonUser user,
                             @Arg(ArgEnum.remoteAddress) String remoteAddress);
         
