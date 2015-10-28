@@ -84,7 +84,7 @@ public class MapController {
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("description", deviceCollection.getDescription());
         
-        Map<AttributeGroup, Set<BuiltInAttribute>> groups = BuiltInAttribute.getAllGroupedAttributes();
+        Map<AttributeGroup, Set<BuiltInAttribute>> groups = BuiltInAttribute.getAllStatusTypeAttributes();
         model.addAttribute("attributes", objectFormattingService.sortDisplayableValues(groups, userContext));
         
         Filter filter = new Filter();
