@@ -183,6 +183,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                             RfnGatewayFirmwareUpdateRequest request = 
                                     (RfnGatewayFirmwareUpdateRequest) requestMessage.getObject();
                             
+                            log.info("Sending firmware upgrade response for updateId: " + request.getUpdateId() +
+                                     ", gateway: " + request.getGateway());
                             RfnGatewayFirmwareUpdateResponse response = setUpFirmwareUpdateResponse(request, settings);
                             jmsTemplate.convertAndSend(firmwareUpgradeResponseQueue, response);
                         }

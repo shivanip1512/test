@@ -127,7 +127,7 @@ public class GatewayListController {
             });
             
         } catch (NmCommunicationException e){
-            log.debug("rfnGatewayFirmwareUpgrade Failed");
+            log.debug("Retrieval of firmware update server versions failed");
         }
         return json;
     }

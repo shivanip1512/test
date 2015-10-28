@@ -86,7 +86,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
         sink.addValue("UpdateId", updateId);
         sink.addValue("SendDate", Instant.now());
         sink.addValue("GatewayCount", gateways.size());
-        sink.addValue("UpdateServers", updateServerCount);
+        sink.addValue("UpdateServerCount", updateServerCount);
         
         jdbcTemplate.update(sql);
         
@@ -117,12 +117,12 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
      * Checks for any upgrades that are older than the timeout period and marks any incomplete entries as timed out.
      */
     private void updateTimeouts() {
-        Instant timeout = Instant.now().minus(upgradeTimeoutMinutes);
+        Instant timeoutMinutesBeforeNow = Instant.now().minus(upgradeTimeoutMinutes);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT UpdateId");
         sql.append("FROM GatewayFirmwareUpdate");
-        sql.append("WHERE SendDate").gt(timeout);
+        sql.append("WHERE SendDate").lt(timeoutMinutesBeforeNow);
         List<Integer> updateIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
         
         if (!updateIds.isEmpty()) {
