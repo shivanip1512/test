@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -53,6 +54,7 @@ import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
@@ -83,6 +85,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RfnDeviceCreationService creationService;
     private RfnDeviceDao rfnDeviceDao;
     private RfnGatewayDataCache dataCache;
+    @Autowired private RfnGatewayFirmwareUpgradeService rfnFirmwareUpgradeService;
 
        
     // Created in post-construct
@@ -147,6 +150,25 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             RfnGateway gateway = buildRfnGateway(device, device.getName(), data);
             gateways.add(gateway);
         }
+
+        return gateways;
+    }
+
+    @Override
+    public Set<RfnGateway> getAllGatewaysWithUpdateServer() throws NmCommunicationException {
+
+        Set<RfnGateway> gateways = getAllGatewaysWithData();
+        Map<String, String>  upgradeVersions = rfnFirmwareUpgradeService.getFirmwareUpdateServerVersions();
+        gateways.forEach(new Consumer<RfnGateway>() {
+            @Override
+            public void accept(RfnGateway gateway) {
+                if (gateway.getData() != null) {
+                    String updateServerUrl = gateway.getData().getUpdateServerUrl();
+                    String upgradeVersion = upgradeVersions.get(updateServerUrl);
+                    gateway.setUpgradeVersion(upgradeVersion); 
+                }
+            }
+        });
 
         return gateways;
     }

@@ -1,12 +1,16 @@
 package com.cannontech.web.stars.gateway;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,11 +27,14 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
+import com.cannontech.common.rfn.model.GatewayUpdateModel;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.JsonUtils;
+import com.cannontech.common.util.LazyList;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -172,6 +179,151 @@ public class GatewayUpdateServerController {
             return updateServerAvailableVersionMap;
         }
         return updateServerAvailableVersionMap;
+    }
+
+    public static class GatewayUpdateModelList {
+
+        private List<GatewayUpdateModel> list = LazyList.ofInstance(GatewayUpdateModel.class);
+
+        public GatewayUpdateModelList() {}
+
+        public GatewayUpdateModelList(List<GatewayUpdateModel> list) {
+            setList(list);
+        }
+
+        public List<GatewayUpdateModel> getList() {
+            return list;
+        }
+
+        public void setList(List<GatewayUpdateModel> list) {
+            this.list = list;
+        }
+    }
+
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @RequestMapping("/gateways/update-servers")
+    public String editUpdateServers(ModelMap model, YukonUserContext userContext) {
+
+        String defaultServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+
+        model.addAttribute("mode", PageEditMode.EDIT);
+
+        List<GatewayUpdateModel> allGateways = Collections.emptyList();
+        try {
+            allGateways = rfnGatewayService.getAllGatewaysWithUpdateServer()
+                .stream()
+                .sorted()
+                .map(new Function<RfnGateway, GatewayUpdateModel>() {
+
+                        @Override
+                        public GatewayUpdateModel apply(RfnGateway gateway) {
+                            GatewayUpdateModel updateServer = GatewayUpdateModel.of(gateway);
+                            String updateServerUrl = updateServer.getUpdateServerUrl();
+                            boolean isDefault = StringUtils.isEmpty(updateServerUrl) || 
+                                        defaultServer.equals(updateServerUrl);
+                            updateServer.setUseDefault(isDefault);
+
+                            return updateServer;
+                        }
+                    }).collect(Collectors.toList());
+        } catch (NmCommunicationException e) {
+            log.error("Failed communication with NM", e);
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            model.addAttribute("errorMsg", errorMsg);
+        }
+
+
+        model.addAttribute("allSettings", new GatewayUpdateModelList(allGateways));
+
+        String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+
+        model.addAttribute("defaultUpdateServer", defaultUpdateServer);
+
+        return "gateways/update-servers.jsp";
+    }
+
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @RequestMapping(value="/gateways/update-servers", method=RequestMethod.POST)
+    public String saveUpdateServers(
+        ModelMap model,
+        HttpServletResponse resp,
+        @ModelAttribute("allSettings") GatewayUpdateModelList allSettings,
+        YukonUserContext userContext ) {
+
+        String defaultServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+        Authentication defaultAuth = new Authentication();
+        defaultAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
+        defaultAuth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
+
+        try {
+            List<GatewayUpdateModel> updateServerInfos = allSettings.getList();
+
+            List<RfnGateway> gateways = new ArrayList<>();
+
+            for (GatewayUpdateModel updateServerInfo : updateServerInfos) {
+                if (updateServerInfo.isUseDefault()) {
+                    updateServerInfo.setUpdateServerUrl(defaultServer);
+                    updateServerInfo.setUpdateServerLogin(defaultAuth);
+                }
+
+                RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(updateServerInfo.getId());
+                gateway = gateway.withUpdateServer(updateServerInfo);
+                gateways.add(gateway);
+            }
+
+            rfnGatewayService.updateGateways(gateways, userContext.getYukonUser());
+
+        } catch (NmCommunicationException e) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            model.addAttribute("errorMsg", errorMsg);
+
+            return "gateways/update-servers.jsp";
+        }
+
+        // Success
+        model.clear();
+        Map<String, Object> json = new HashMap<>();
+        json.put("success", true);
+        return JsonUtils.writeResponse(resp, json);
+    }
+
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @RequestMapping(value = "/gateways/firmware-upgrade")
+    public String updateUpdateServer(ModelMap model, YukonUserContext userContext) {
+
+
+        try {
+            List<GatewayUpdateModel> gateways =
+                rfnGatewayService.getAllGatewaysWithUpdateServer().stream()
+                    .sorted()
+                    .map(new Function<RfnGateway, GatewayUpdateModel>() {
+
+                        @Override
+                        public GatewayUpdateModel apply(RfnGateway gateway) {
+                            return GatewayUpdateModel.of(gateway);
+                        }
+                    }).collect(Collectors.toList());
+
+            GatewayUpdateModelList springGateways = new GatewayUpdateModelList(gateways);
+            model.addAttribute("gateways", springGateways);
+
+        } catch (NmCommunicationException e) {
+
+            log.error("Failed communication with NM", e);
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+
+            model.addAttribute("errorMsg", errorMsg);
+        }
+
+        return "gateways/firmware-upgrade.jsp";
     }
 
 }

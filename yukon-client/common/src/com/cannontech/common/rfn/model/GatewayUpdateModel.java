@@ -2,7 +2,7 @@ package com.cannontech.common.rfn.model;
 
 import com.cannontech.common.rfn.message.gateway.Authentication;
 
-public class GatewayUpdateServer {
+public class GatewayUpdateModel {
 
     private int id;
     private String name;
@@ -12,6 +12,7 @@ public class GatewayUpdateServer {
     private String serialNumber;
     private String currentVersion;
     private String availableVersion;
+    private boolean sendNow;
 
     public int getId() {
         return id;
@@ -61,10 +62,16 @@ public class GatewayUpdateServer {
     public void setAvailableVersion(String availableVersion) {
         this.availableVersion = availableVersion;
     }
+    public boolean isSendNow() {
+        return sendNow;
+    }
+    public void setSendNow(boolean sendNow) {
+        this.sendNow = sendNow;
+    }
 
-    public static GatewayUpdateServer of(RfnGateway gateway) {
+    public static GatewayUpdateModel of(RfnGateway gateway) {
 
-        GatewayUpdateServer updateServer = new GatewayUpdateServer();
+        GatewayUpdateModel updateServer = new GatewayUpdateModel();
 
         updateServer.setId(gateway.getPaoIdentifier().getPaoId());
         updateServer.setName(gateway.getName());
@@ -72,6 +79,7 @@ public class GatewayUpdateServer {
         updateServer.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
         updateServer.setSerialNumber(gateway.getRfnIdentifier().getSensorSerialNumber());
         updateServer.setCurrentVersion(gateway.getData().getReleaseVersion());
+        updateServer.setAvailableVersion(gateway.getUpgradeVersion());
 
         return updateServer;
     }

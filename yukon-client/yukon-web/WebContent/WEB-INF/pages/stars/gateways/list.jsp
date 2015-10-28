@@ -30,6 +30,16 @@
             data-event="yukon:assets:gateway:update-server:save"
             data-ok-text="<cti:msg2 key="components.button.save.label"/>">
         </div>
+
+        <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
+            <div id="send-firmware-upgrade-popup"
+                data-dialog
+                data-url="<cti:url value="/stars/gateways/firmware-upgrade"/>"
+                data-title="<cti:msg2 key=".firmwareUpdate"/>"
+                data-event="yukon:assets:gateway:firmware-upgrade:send"
+                data-ok-text="<cti:msg2 key="components.button.next.label"/>">
+            </div>
+        </cti:checkGlobalRolesAndProperties>
     </c:if>
 </cti:checkRolesAndProperties>
 
@@ -46,6 +56,13 @@
 
                     <i:inline key=".updateServer.set"/>
                 </cm:dropdownOption>
+                <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
+                    <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go"
+                        classes="update-servers disabled" disabled="true">
+    
+                        <i:inline key=".firmwareUpdate"/>
+                    </cm:dropdownOption>
+                </cti:checkGlobalRolesAndProperties>
             </c:if>
         </cti:checkRolesAndProperties>
     </div>

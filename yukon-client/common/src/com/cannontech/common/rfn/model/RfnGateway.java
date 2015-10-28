@@ -155,7 +155,7 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
         return name.compareToIgnoreCase(o.getName());
     }
     
-    public RfnGateway withUpdateServer(GatewayUpdateServer updateServer) {
+    public RfnGateway withUpdateServer(GatewayUpdateModel updateServer) {
 
         RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
 
