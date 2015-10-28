@@ -521,6 +521,18 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         return Sets.union(lookupByGroup.get(AttributeGroup.STATUS), Sets.difference(getRfnEventTypes(), rfnEventAnalogTypes));
     }
     
+    /**
+     * All status and event types (excluding analog events)
+     * 
+     * @return Map<AttributeGroup, Set<BuiltInAttribute>>
+     */
+    public static Map<AttributeGroup, Set<BuiltInAttribute>> getAllStatusTypeAttributes() {
+        ImmutableMap.Builder<AttributeGroup, Set<BuiltInAttribute>> groupedDataAttributesBuilder =
+            ImmutableMap.builder();
+        groupedDataAttributesBuilder.put(AttributeGroup.STATUS, getAllStatusTypes());
+        return groupedDataAttributesBuilder.build();
+    }
+
     /** 
      * Is status or event type (excluding analog events)
      * @return
