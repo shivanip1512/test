@@ -261,6 +261,12 @@ ALTER COLUMN NotifySchedule NUMERIC NOT NULL;
 GO
 /* End YUK-14739 */
 
+/* Start YUK-14754 */
+/* @error ignore-begin */
+DROP TABLE temp_FdrTranslation_Increment;
+/* @error ignore-end */
+/* End YUK-14754 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
