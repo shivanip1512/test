@@ -73,6 +73,13 @@
                     <div class="action-area">
                         <cti:button nameKey="edit" icon="icon-pencil" 
                             data-popup=".js-edit-info-popup" data-popup-toggle=""/>
+                        <f:verbatim>
+                        <%-- Delete Button --%>
+                        <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
+                            <cti:param name="value" value="${areaId}"/>
+                        </cti:url>
+                        <cti:button nameKey="delete" href="${deleteUrl}" classes="delete js-delete"/>
+                        </f:verbatim>
                     </div>
                 </c:if>
             </cti:tab>
