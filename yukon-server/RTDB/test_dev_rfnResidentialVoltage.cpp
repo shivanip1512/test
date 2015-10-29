@@ -15,20 +15,11 @@ struct test_RfnResidentialVoltageDevice : RfnResidentialVoltageDevice
     using RfnResidentialDevice::handleCommandResult;
     using CtiTblPAOLite::_type;
 
-    virtual double getNmCompatibilityVersion() const override
-    {
-        return 6.5;
-    }
-};
-
-struct test_RfnResidentialVoltageDevice_nm7 : RfnResidentialVoltageDevice
-{
-    using RfnResidentialDevice::handleCommandResult;
-    using CtiTblPAOLite::_type;
+    double test_nmCompatibility = 6.5;
 
     virtual double getNmCompatibilityVersion() const override
     {
-        return 7.0;
+        return test_nmCompatibility;
     }
 };
 
@@ -1263,8 +1254,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
 
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltageprofile_enable_nm7 )
 {
-    test_RfnResidentialVoltageDevice_nm7    dut;
+    test_RfnResidentialVoltageDevice    dut;
 
+    dut.test_nmCompatibility = 7.0;
     dut._type = TYPE_RFN420FX;
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
@@ -1291,14 +1283,27 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
         {
             Commands::RfnCommandSPtr command = *rfnRequest_itr++;
 
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-            Bytes exp
             {
-                0x68, 0x06, 0x00
-            };
+                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
-            BOOST_CHECK_EQUAL( rcv, exp );
+                Bytes exp
+                {
+                    0x68, 0x06, 0x00
+                };
+
+                BOOST_CHECK_EQUAL( rcv, exp );
+            }
+
+            {
+                Bytes response
+                {
+                    0x69, 0x03, 0x00, 0x00
+                };
+
+                Commands::RfnCommandResult rcv = command->decodeCommand( execute_time, response );
+
+                BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+            }
 
             dut.extractCommandResult( *command );
 
@@ -1312,8 +1317,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
 
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltageprofile_disable_nm7 )
 {
-    test_RfnResidentialVoltageDevice_nm7    dut;
+    test_RfnResidentialVoltageDevice    dut;
 
+    dut.test_nmCompatibility = 7.0;
     dut._type = TYPE_RFN420FX;
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
@@ -1340,14 +1346,27 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
         {
             Commands::RfnCommandSPtr command = *rfnRequest_itr++;
 
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-            Bytes exp
             {
-                0x68, 0x02, 0x00
-            };
+                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
-            BOOST_CHECK_EQUAL( rcv, exp );
+                Bytes exp
+                {
+                    0x68, 0x02, 0x00
+                };
+
+                BOOST_CHECK_EQUAL( rcv, exp );
+            }
+
+            {
+                Bytes response
+                {
+                    0x69, 0x02, 0x00, 0x00
+                };
+
+                Commands::RfnCommandResult rcv = command->decodeCommand( execute_time, response );
+
+                BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+            }
 
             dut.extractCommandResult( *command );
 
