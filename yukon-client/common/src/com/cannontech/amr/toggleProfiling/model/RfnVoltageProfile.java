@@ -8,7 +8,7 @@ public class RfnVoltageProfile {
 
     private Integer deviceID = null;
     private ProfilingStatus profilingStatus = ProfilingStatus.UNKNOWN;
-    private Instant enabledTill = null;
+    private Instant stopDate = null;
     private long voltageProfilingRate = 0;
 
     public enum ProfilingStatus {
@@ -24,12 +24,12 @@ public class RfnVoltageProfile {
         this.deviceID = deviceID;
     }
 
-    public Instant getEnabledTill() {
-        return enabledTill;
+    public Instant getStopDate() {
+        return stopDate;
     }
 
-    public void setEnabledTill(Instant enabledTill) {
-        this.enabledTill = enabledTill;
+    public void setStopDate(Instant stopDate) {
+        this.stopDate = stopDate;
     }
     
     public long getVoltageProfilingRate() {

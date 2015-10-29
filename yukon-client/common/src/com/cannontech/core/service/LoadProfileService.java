@@ -24,7 +24,7 @@ public interface LoadProfileService {
     /**
      * Get voltage profile status for RFN meters. 
      */
-     public void getDynamicPaoInfo(int device);
+     public void loadDynamicRfnVoltageProfileCache(int device);
      
      /**
       * Returns the RfnVoltageProfile data from the available cache. If its not available in the cache means a the 

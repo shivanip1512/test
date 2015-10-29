@@ -186,7 +186,7 @@ public class ProfileWidget extends WidgetControllerBase {
                     channelProfileRateKnown = true;
                 }
                 channelInfo.put("channelProfilingStatus", rfnVoltageProfile.getProfilingStatus());
-                channelInfo.put("channelEnabledTill", rfnVoltageProfile.getEnabledTill());
+                channelInfo.put("channelStopDate", rfnVoltageProfile.getStopDate());
                 channelInfo.put("channelNumber", attrChanEnum.getChannel());
                 channelInfo.put("channelDescription",
                                 messageSourceResolver.getMessageSourceAccessor(userContext)
@@ -204,7 +204,7 @@ public class ProfileWidget extends WidgetControllerBase {
     @RequestMapping("refreshChannelScanningInfoRfn")
     public ModelAndView getRfnChannelInfo(HttpServletRequest request, HttpServletResponse response,
             int deviceId, YukonUserContext userContext) throws Exception {
-        loadProfileService.getDynamicPaoInfo(deviceId);
+        loadProfileService.loadDynamicRfnVoltageProfileCache(deviceId);
         return refreshChannelScanningInfo(request, response);
     }
     
@@ -432,7 +432,7 @@ public class ProfileWidget extends WidgetControllerBase {
                                         HttpServletResponse response) throws Exception {
         
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        YukonMeter device = meterDao.getForId(deviceId);
         PaoType paoType = device.getPaoType();
         
         if(paoType.isRfMeter()) {
@@ -606,9 +606,9 @@ public class ProfileWidget extends WidgetControllerBase {
         // get device
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         
-        boolean newToggleVal = WidgetParameterHelper.getRequiredBooleanParameter(request, "newToggleVal");
+        boolean enableProfiling = WidgetParameterHelper.getRequiredBooleanParameter(request, "newToggleVal");
         
-        if (newToggleVal) {
+        if (enableProfiling) {
             loadProfileService.startVoltageProfilingForDevice(deviceId);
         } else {
             loadProfileService.stopVoltageProfilingForDevice(deviceId);

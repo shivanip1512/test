@@ -115,7 +115,7 @@
                  </c:if>
                  
                  <c:if test="${c.channelProfilingStatus eq 'ENABLED'}">
-                    <td>${fn:escapeXml(c.channelProfileRate)}
+                    <td class="wsnw">${fn:escapeXml(c.channelProfileRate)}
                         <c:if test="${not c.channelProfileRateKnown}">
                            <cti:icon icon="icon-help" classes="cp fn vatb" data-popup="#unknown-interval-help-popup" data-popup-toggle=""/>
                         </c:if>
@@ -123,7 +123,7 @@
                     <td>
                     <span><strong class="success"><i:inline key="yukon.common.on"/></strong></span>
                     <span>
-                        <cti:formatDate value="${c.channelEnabledTill}" type="FULL" var="formattedScheduleDate" />
+                        <cti:formatDate value="${c.channelStopDate}" type="FULL" var="formattedScheduleDate" />
                         <i:inline key=".scanning.stops" arguments="${formattedScheduleDate}"/>
                     </span>
                     </td>

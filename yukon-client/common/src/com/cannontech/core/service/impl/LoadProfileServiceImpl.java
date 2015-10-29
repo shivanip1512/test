@@ -84,8 +84,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     
     @Autowired private PorterDynamicPaoInfoService porterDynamicPaoInfoService;
     
-    private Map<Integer, RfnVoltageProfile> profileCache = new HashMap<Integer, RfnVoltageProfile>();
-    private Map<Integer, RfnVoltageProfile> dynamicPaoInfoCache = new HashMap<Integer, RfnVoltageProfile>();
+    private Map<Integer, RfnVoltageProfile> rfnVoltageProfileCache = new HashMap<Integer, RfnVoltageProfile>();
+    private Map<Integer, RfnVoltageProfile> dynamicRfnVoltageProfileCache  = new HashMap<Integer, RfnVoltageProfile>();
    
     @PostConstruct
     public void initialize() {
@@ -247,12 +247,18 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         }
     }
    
-    private void toggleVoltageProfile(int device, boolean newToggleVal) {
+    /**
+     * Sends a voltage profile enable/disable command to porter.
+     * 
+     * @param deviceId
+     * @enableProfiling - Indicates whether to enable/disable voltage profiling.
+     */
+    private void enableVoltageProfile(int device, boolean enableProfiling) {
 
         // build command
         Request req = new Request();
         StringBuilder formatString = new StringBuilder("putconfig voltage profile");
-        if (!newToggleVal) {
+        if (enableProfiling) {
             formatString.append(" enable");
         } else {
             formatString.append(" disable");
@@ -474,7 +480,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             log.debug("received response for request id " + requestId + ",response was " + returnMsg.getResultString());
             boolean finished = returnMsg.getExpectMore() == 0;
             if(finished) {
-                profileCache.remove(deviceId);
+                rfnVoltageProfileCache.remove(deviceId);
                 enableDisableVoltageProfileRequestIds.remove(requestId);
             }
             
@@ -678,56 +684,56 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     }
 
     public void startVoltageProfilingForDevice(int deviceId) {
-        toggleProfilingForDevice(deviceId, true);
+        enableProfilingForDevice(deviceId, true);
     }
 
     public void stopVoltageProfilingForDevice(int deviceId) {
-        toggleProfilingForDevice(deviceId, false);
+        enableProfilingForDevice(deviceId, false);
     }
 
-    private void toggleProfilingForDevice(int deviceId, boolean newToggleVal) {
+    private void enableProfilingForDevice(int deviceId, boolean enableProfiling) {
         RfnVoltageProfile rfnVoltageProfile = new RfnVoltageProfile();
-        toggleVoltageProfile(deviceId, newToggleVal);
+        enableVoltageProfile(deviceId, enableProfiling);
         
-        if (!newToggleVal) {
+        if (enableProfiling) {
             Instant stopDate = new DateTime().plusWeeks(2).toInstant();
             rfnVoltageProfile.setProfilingStatus(ProfilingStatus.ENABLED);
-            rfnVoltageProfile.setEnabledTill(stopDate);
+            rfnVoltageProfile.setStopDate(stopDate);
             rfnVoltageProfile.setVoltageProfilingRate(getRfnVoltageProfileDetails(deviceId).getVoltageProfilingRate());
         } else {
             rfnVoltageProfile.setProfilingStatus(ProfilingStatus.DISABLED);
             rfnVoltageProfile.setVoltageProfilingRate(getRfnVoltageProfileDetails(deviceId).getVoltageProfilingRate());
         }
-        profileCache.put(deviceId, rfnVoltageProfile);
+        rfnVoltageProfileCache.put(deviceId, rfnVoltageProfile);
     }
     
     @Override
-    public void getDynamicPaoInfo(int deviceId) {
+    public void loadDynamicRfnVoltageProfileCache(int deviceId) {
         VoltageProfileDetails voltageDetails = porterDynamicPaoInfoService.getVoltageProfileDetails(deviceId);
 
         RfnVoltageProfile rfnVoltageProfile = new RfnVoltageProfile();
         rfnVoltageProfile.setDeviceID(deviceId);
         rfnVoltageProfile.setProfilingStatus(voltageDetails.enabledUntil == null ? ProfilingStatus.DISABLED
                 : ProfilingStatus.ENABLED);
-        rfnVoltageProfile.setEnabledTill(voltageDetails.enabledUntil == null ? null
+        rfnVoltageProfile.setStopDate(voltageDetails.enabledUntil == null ? null
                 : voltageDetails.enabledUntil);
         rfnVoltageProfile.setVoltageProfilingRate(voltageDetails.profileInterval == null ? 0
                 : voltageDetails.profileInterval.getStandardMinutes());
-        dynamicPaoInfoCache.put(deviceId, rfnVoltageProfile);
+        dynamicRfnVoltageProfileCache .put(deviceId, rfnVoltageProfile);
     }
 
     @Override
     public RfnVoltageProfile getRfnVoltageProfileDetails(int deviceId) {
 
-        if (profileCache.containsKey(deviceId)) {
-            return profileCache.get(deviceId);
+        if (rfnVoltageProfileCache.containsKey(deviceId)) {
+            return rfnVoltageProfileCache.get(deviceId);
         } else {
-            if (dynamicPaoInfoCache.get(deviceId) == null) {
+            if (dynamicRfnVoltageProfileCache .get(deviceId) == null) {
                 RfnVoltageProfile rfnVoltageProfile = new RfnVoltageProfile();
                 rfnVoltageProfile.setProfilingStatus(ProfilingStatus.UNKNOWN);
-                return rfnVoltageProfile;
+                dynamicRfnVoltageProfileCache.put(deviceId, rfnVoltageProfile);
             }
-            return dynamicPaoInfoCache.get(deviceId);
+            return dynamicRfnVoltageProfileCache .get(deviceId);
         }
     }
 

@@ -14,12 +14,12 @@ init: function() {
 });
 
 $(document).on('click', ".js-toggle-profile-on", function(e){
-    newToggleVal = false;
+    newToggleVal = true;
     yukon.ui.dialog('#confirm-popup');
 });
 
 $(document).on('click', ".js-toggle-profile-off", function(e){
-    newToggleVal = true;
+    newToggleVal = false;
     doToggleScanning(0,newToggleVal);
 });
 }
