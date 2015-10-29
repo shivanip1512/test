@@ -1600,7 +1600,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      */
     private void verifyAndUpdatePaoName(String newPaoName, YukonMeter existingMeter, String mspMethod, MultispeakVendor mspVendor) {
         String originalName = existingMeter.getName();
-        if (!originalName.equals(newPaoName)) {
+        if (!originalName.equalsIgnoreCase(newPaoName)) {
             // UPDATE PAONAME
             // Shouldn't fail, if PaoName already exists, a uniqueness value will be added.
             newPaoName = getNewUniquePaoName(newPaoName);
@@ -1616,7 +1616,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      */
     private void verifyAndUpdateMeterNumber(String newMeterNumber, YukonMeter existingMeter, String mspMethod, MultispeakVendor mspVendor) {
         String originalMeterNumber = existingMeter.getMeterNumber(); 
-        if (!originalMeterNumber.equals(newMeterNumber)) {
+        if (!originalMeterNumber.equalsIgnoreCase(newMeterNumber)) {
             // UPDATE METER NUMBER
             // Shouldn't fail, if Meter Number already exists, we end up with duplicates
             deviceDao.changeMeterNumber(existingMeter, newMeterNumber);
