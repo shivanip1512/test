@@ -300,9 +300,9 @@ public class EcobeeController {
             ecobeeSettings.setCheckErrorsTime(LocalTime.fromDateFields(nextErrorCheck));
             Date nextPointUpdate = jobManager.getNextRuntime(ecobeePointUpdateJob, now);
             ecobeeSettings.setDataCollectionTime(LocalTime.fromDateFields(nextPointUpdate));
-        } catch (ScheduleException e) {
-        ecobeeSettings.setCheckErrorsTime(LocalTime.MIDNIGHT);
-        ecobeeSettings.setDataCollectionTime(LocalTime.MIDNIGHT);
+        } catch (IllegalArgumentException | ScheduleException e) {
+            ecobeeSettings.setCheckErrorsTime(LocalTime.MIDNIGHT);
+            ecobeeSettings.setDataCollectionTime(LocalTime.MIDNIGHT);
             log.error("Unable to retrieve ecobee job schedules. ", e);
         }
         model.addAttribute("ecobeeSettings", ecobeeSettings);
