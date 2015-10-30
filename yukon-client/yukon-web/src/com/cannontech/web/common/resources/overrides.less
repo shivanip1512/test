@@ -374,12 +374,15 @@ span.dynatree-folder a {
             border: 1px solid #ccc;
             border-bottom-width: 0;
             border-radius: @border-radius @border-radius 0 0;
+            list-style-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
             margin: 0 -1px 0 0;
             
             &.error { background-color: #fdd; }
             &.error .ui-tabs-anchor { color: @red !important }
 
-            &.ui-tabs-active { background: #fff; }
+            &.ui-tabs-active { background: #fff; 
+                list-style-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
+            }
             
             &:not(.ui-tabs-active):hover {
                 background: #fff;
@@ -397,7 +400,6 @@ span.dynatree-folder a {
     
     .ui-tabs-active > .ui-tabs-anchor {
         font-weight: bold !important;
-        list-style: none !important;
     }
 }
 .link-tabbed-container .ui-tabs-nav { border-bottom: 1px solid #ccc; }
