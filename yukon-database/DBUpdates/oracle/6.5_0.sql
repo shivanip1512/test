@@ -246,7 +246,6 @@ CREATE TABLE GatewayFirmwareUpdate (
    UpdateServerCount    NUMBER              NOT NULL,
    CONSTRAINT PK_GatewayFirmwareUpdate PRIMARY KEY (UpdateId)
 );
-GO
 
 CREATE TABLE GatewayFirmwareUpdateEntry (
    EntryId              NUMBER              NOT NULL,
@@ -258,7 +257,6 @@ CREATE TABLE GatewayFirmwareUpdateEntry (
    UpdateStatus         VARCHAR2(40)        NOT NULL,
    CONSTRAINT PK_GatewayFirmwareUpdateEntry PRIMARY KEY (EntryId)
 );
-GO
 
 ALTER TABLE GatewayFirmwareUpdateEntry
    ADD CONSTRAINT FK_GatewayFUEnt_GatewayFUUpd FOREIGN KEY (UpdateId)
