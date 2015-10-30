@@ -69,6 +69,10 @@ public class GatewayUpdateModel {
         this.sendNow = sendNow;
     }
 
+    public boolean isUpdateAvailable() {
+        return availableVersion != null && !availableVersion.equals(currentVersion);
+    }
+
     public static GatewayUpdateModel of(RfnGateway gateway) {
 
         GatewayUpdateModel updateServer = new GatewayUpdateModel();

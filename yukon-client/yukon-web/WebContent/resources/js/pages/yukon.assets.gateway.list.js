@@ -284,7 +284,38 @@ yukon.assets.gateway.list = (function () {
                     success: function (result, status, xhr, $form) {
 
                         popup.dialog('close');
-                        yukon.ui.alertSuccess('Update Servers Updated');
+                        yukon.ui.alertSuccess(result.message);
+
+                    },
+                    error: function (xhr, status, error, $form) {
+                        popup.html(xhr.responseText);
+                        yukon.ui.initContent(popup);
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
+            });
+
+            /** 'Send' button clicked on the Update Firmware Version popup. */
+            $(document).on('yukon:assets:gateway:firmware-upgrade:send', function (ev) {
+
+                var popup = $('#send-firmware-upgrade-popup'),
+                btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                primary = btns.find('.js-primary-action'),
+                secondary = btns.find('.js-secondary-action');
+
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+
+                popup.find('.user-message').remove();
+
+                $('#update-servers-form').ajaxSubmit({
+                    success: function (result, status, xhr, $form) {
+
+                        popup.dialog('close');
+                        yukon.ui.alertSuccess(result.message);
 
                     },
                     error: function (xhr, status, error, $form) {

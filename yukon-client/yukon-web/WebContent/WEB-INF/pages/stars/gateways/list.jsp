@@ -37,7 +37,8 @@
                 data-url="<cti:url value="/stars/gateways/firmware-upgrade"/>"
                 data-title="<cti:msg2 key=".firmwareUpdate"/>"
                 data-event="yukon:assets:gateway:firmware-upgrade:send"
-                data-ok-text="<cti:msg2 key="components.button.next.label"/>">
+                data-confirm
+                data-ok-text="<cti:msg2 key="components.button.send.label"/>">
             </div>
         </cti:checkGlobalRolesAndProperties>
     </c:if>

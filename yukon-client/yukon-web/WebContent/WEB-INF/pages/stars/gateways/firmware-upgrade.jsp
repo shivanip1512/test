@@ -7,9 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <cti:msgScope paths="modules.operator.gateways,modules.operator">
-<cti:msg2 var="phUsername" key=".username.ph"/>
-<cti:msg2 var="phPassword" key=".password.ph"/>
-<cti:url var="updateUrl"  value="/stars/gateways/update-servers" />
+<cti:url var="updateUrl"  value="/stars/gateways/firmware-upgrade" />
 
 <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
 
@@ -21,9 +19,10 @@
                 <th><i:inline key=".name"/></th>
                 <th><i:inline key=".version.current"/></th>
                 <th><i:inline key=".version.available"/></th>
-                <th>
+                <th><i:inline key=".updateServer"/></th>
+                <th class="tar">
+                    <span><i:inline key=".firmwareUpdate.send"/></span>
                     <input type="checkbox" class="js-select-all">
-                    <span><i:inline key=".firmwareUpdate.send"/></span> 
                 </th>
             </tr>
         </thead>
@@ -45,8 +44,13 @@
                         <tags:input path="list[${idx}].availableVersion"/>
                     </td>
                     <td>
+                        <tags:input path="list[${idx}].updateServerUrl"/>
+                    </td>
+                    <td class="tar">
                         <tags:setFormEditMode mode="EDIT"/>
-                        <tags:checkbox path="list[${idx}].sendNow" styleClass="js-select-all-item"/>
+                        <c:if test="${gateway.updateAvailable}">
+                            <tags:checkbox path="list[${idx}].sendNow" styleClass="js-select-all-item"/>
+                        </c:if>
                     </td>
                 </tr>
             </c:forEach>
