@@ -59,7 +59,7 @@ yukon.ui.progressbar = (function () {
         
         if (progressContainer.length === 0) return;
         
-        totalCompletedCount = parseInt(successCompletedCount, 10) + parseInt(failureCompletedCount, 10);
+        totalCompletedCount = successCompletedCount + failureCompletedCount;
         percentDone = totalCount > 0 ? percentDone = yukon.percent(totalCompletedCount, totalCount, 2) : '100%';
         
         try {
@@ -116,7 +116,7 @@ yukon.ui.progressbar = (function () {
                 if (progressContainer.length === 0) {
                     return;
                 }
-                completedCount = data.completedCount;
+                completedCount = + data.completedCount;
                 _setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
             };
         },
@@ -135,8 +135,8 @@ yukon.ui.progressbar = (function () {
                     return;
                 }
 
-                completedCount = data.completedCount;
-                totalCount = data.totalCount;
+                completedCount = + data.completedCount;
+                totalCount = + data.totalCount;
                 _updateTotalCount(pbarId, totalCount);
                 _setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
             };
@@ -150,8 +150,8 @@ yukon.ui.progressbar = (function () {
         */
         updateSuccessFailureProgressBar : function (pbarId, totalCount, completionCallback) {
             return function (data) {
-                var successCompletedCount = data.successCompletedCount,
-                    failureCompletedCount = data.failureCompletedCount;
+                var successCompletedCount = + data.successCompletedCount,
+                    failureCompletedCount = + data.failureCompletedCount;
                 _setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
             };
         },
@@ -194,9 +194,9 @@ yukon.ui.progressbar = (function () {
         */
         updateSuccessFailureProgressBarWithDynamicTotal : function (pbarId, completionCallback) {
             return function (data) {
-                var successCompletedCount = data.successCompletedCount,
-                    failureCompletedCount = data.failureCompletedCount,
-                    totalCount = data.totalCount;
+                var successCompletedCount = + data.successCompletedCount,
+                    failureCompletedCount = + data.failureCompletedCount,
+                    totalCount = + data.totalCount;
                 _updateTotalCount(pbarId, totalCount);
                 _setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
             };
