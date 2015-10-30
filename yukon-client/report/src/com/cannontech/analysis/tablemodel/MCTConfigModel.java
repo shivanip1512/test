@@ -50,18 +50,29 @@ public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow>
 
     public void doLoadData() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT YP.PAOName AS MctName, YP.Type, DLP.LastIntervalDemandRate AS DemandRate, ");
+        sql.append("SELECT DISTINCT YP.PAOName AS MctName, YP.Type, DLP.LastIntervalDemandRate AS DemandRate, ");
         sql.append("   DLP.LoadProfileDemandRate AS ProfileRate, DC.Name AS ConfigName, ");
-        sql.append("   DCI.ItemValue AS ConfigDemandRate, DCI2.ItemValue AS ConfigProfileRate");
+        sql.append("   DemandInterval, LoadProfileInterval AS ConfigProfileRate");
         sql.append("FROM YukonPaObject YP");
         sql.append("   JOIN DeviceLoadProfile DLP ON YP.PAObjectID = DLP.DEVICEID");
         sql.append("      AND (YP.Type LIKE 'MCT-430%' OR YP.Type LIKE 'MCT-470%')");
         sql.append("   LEFT JOIN DeviceConfigurationDeviceMap DCM ON DCM.DeviceId = YP.paobjectid");
         sql.append("   LEFT JOIN DeviceConfiguration DC ON DC.DeviceConfigurationID = DCM.DeviceConfigurationId");
-        sql.append("   LEFT JOIN DeviceConfigCategoryItem DCI ON DC.DeviceConfigurationID = DCI.DeviceConfigCategoryId");
-        sql.append("      AND DCI.ItemName = 'demandInterval'");
-        sql.append("   LEFT JOIN DeviceConfigCategoryItem DCI2 ON DCI2.DeviceConfigCategoryId = DCM.DeviceConfigurationId");
-        sql.append("      AND DCI2.ItemName = 'loadProfileInterval1'");
+        sql.append("   LEFT JOIN ");
+        sql.append("   (SELECT (CASE DemandItem.DeviceConfigurationId WHEN NULL THEN ProfileItem.DeviceConfigurationId");
+        sql.append("   ELSE DemandItem.DeviceConfigurationId END) AS DeviceConfigurationId,DemandInterval, LoadProfileInterval");
+        sql.append("   FROM "); 
+        sql.append("    (SELECT DeviceConfigurationId, itemvalue AS DemandInterval"); 
+        sql.append("    FROM DeviceConfigCategoryMap dccm"); 
+        sql.append("      JOIN DeviceConfigCategoryItem DCI ON dccm.DeviceConfigCategoryId = dci.DeviceConfigCategoryId");
+        sql.append("    WHERE DCI.ItemName = 'demandInterval') AS DemandItem");
+        sql.append("   LEFT JOIN ");
+        sql.append("    (SELECT DeviceConfigurationId, itemvalue AS LoadProfileInterval"); 
+        sql.append("    FROM DeviceConfigCategoryMap dccm ");
+        sql.append("     JOIN DeviceConfigCategoryItem DCI2 ON dccm.DeviceConfigCategoryId = dci2.DeviceConfigCategoryId");
+        sql.append("    WHERE DCI2.ItemName = 'profileInterval') AS ProfileItem ON demanditem.DeviceConfigurationId = ProfileItem.DeviceConfigurationId)"); 
+        sql.append("AS Intervals ON Intervals.DeviceConfigurationId = DC.DeviceConfigurationID");
+        sql.append("ORDER BY  YP.PAOName");
         
         jdbcTemplate.query(sql, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
@@ -79,7 +90,7 @@ public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow>
                 row.profileRate = profileRateMinutes.toString();
                 
                 row.configName = rs.getString("ConfigName");
-                row.configDemandRate = rs.getString("ConfigDemandRate");
+                row.configDemandRate = rs.getString("DemandInterval");
                 row.configProfileRate = rs.getString("ConfigProfileRate");
                 
                 data.add(row);
