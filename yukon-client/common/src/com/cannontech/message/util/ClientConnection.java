@@ -93,16 +93,13 @@ public abstract class ClientConnection extends Observable implements IServerConn
                     break;
                 }
 
-                
-                if (inQueue.size() > inQueueSizeWarning)
-                {
+                if (inQueue.size() > inQueueSizeWarning) {
                     logger.warn(this.toString() + " - inQueue has more than " + inQueueSizeWarning
-                             + " elements (" + inQueue.size() + ")");
+                                + " elements (" + inQueue.size() + ")");
                     inQueueSizeWarning = inQueueSizeWarning * 2;
                 }
-                
-                if (inQueue.size() > maxMessagesQueued.get())
-                {
+
+                if (inQueue.size() > maxMessagesQueued.get()) {
                     maxMessagesQueued.set(inQueue.size());
                 }
                 
