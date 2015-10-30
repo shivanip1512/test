@@ -2,6 +2,7 @@ package com.cannontech.amr.deviceread.dao;
 
 import java.util.Set;
 
+import com.cannontech.amr.deviceread.dao.impl.DeviceCommandServiceImpl.CompletionCallback;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
@@ -19,5 +20,5 @@ public interface DeviceCommandService {
      */
     CompletionCallback execute(Set<SimpleDevice> devices, Set<? extends Attribute> attributes, String command,
             DeviceRequestType type, LiteYukonUser user, RetryParameters retryParameters,
-            CommandCompletionCallbackAdapter<CommandRequestDevice> callback);
+            CommandCompletionCallbackAdapter<CommandRequestDevice> callback, String scheduleName);
 }

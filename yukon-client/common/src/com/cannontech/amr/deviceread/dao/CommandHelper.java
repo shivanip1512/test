@@ -33,49 +33,51 @@ public class CommandHelper {
      * Attempts to lookup a command to a group of devices. If command is not provided looks up commands by attributes.
      */
     public ParsedCommands parseCommands(Set<SimpleDevice> devices, Set<? extends Attribute> attributes,
-           String command) {
+            String command) {
         Set<YukonPao> unsupportedDevices = new HashSet<>();
         Set<CommandRequestDevice> commands = new HashSet<>();
-        if (!StringUtils.isEmpty(command)) {
-            List<SimpleDevice> supportedDevicesByCommand = new ArrayList<>();
-            for (SimpleDevice device : devices) {
-                if (supportsPorterRequests(device.getDeviceType())) {
-                    supportedDevicesByCommand.add(device);
-                } else {
-                    unsupportedDevices.add(device.getPaoIdentifier());
-                }
-            }
-            commands.addAll(
-                Lists.transform(supportedDevicesByCommand, new Function<SimpleDevice, CommandRequestDevice>() {
-
-                    @Override
-                    public CommandRequestDevice apply(SimpleDevice device) {
-                        CommandRequestDevice cmdReq = new CommandRequestDevice();
-                        cmdReq.setCommandCallback(new CommandCallbackBase(command));
-                        cmdReq.setDevice(device);
-                        return cmdReq;
-                    }
-
-                }));
-        } else if (attributes != null && !attributes.isEmpty()) {
-            PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
-                attributeService.findPaoMultiPointIdentifiersForAttributesWithUnsupported(devices, attributes);
-            if (meterReadCommandGeneratorService.isReadable(paoPointIdentifiers.getSupportedDevicesAndPoints())) {
-                List<PaoMultiPointIdentifier> supportedDevicesByAttribute = new ArrayList<>();
-                for (YukonPao pao : paoPointIdentifiers.getUnsupportedDevices()) {
-                    unsupportedDevices.add(pao.getPaoIdentifier());
-                }
-                for (PaoMultiPointIdentifier identifier : paoPointIdentifiers.getSupportedDevicesAndPoints()) {
-                    if (supportsPorterRequests(identifier.getPao().getPaoType())) {
-                        supportedDevicesByAttribute.add(identifier);
-                    } else {
-                        unsupportedDevices.add(identifier.getPao());
-                    }
-                }
-                commands.addAll(meterReadCommandGeneratorService.getCommandRequests(supportedDevicesByAttribute));
-            } else {
+        if (!devices.isEmpty()) {
+            if (!StringUtils.isEmpty(command)) {
+                List<SimpleDevice> supportedDevicesByCommand = new ArrayList<>();
                 for (SimpleDevice device : devices) {
-                    unsupportedDevices.add(device.getPaoIdentifier());
+                    if (supportsPorterRequests(device.getDeviceType())) {
+                        supportedDevicesByCommand.add(device);
+                    } else {
+                        unsupportedDevices.add(device.getPaoIdentifier());
+                    }
+                }
+                commands.addAll(
+                    Lists.transform(supportedDevicesByCommand, new Function<SimpleDevice, CommandRequestDevice>() {
+
+                        @Override
+                        public CommandRequestDevice apply(SimpleDevice device) {
+                            CommandRequestDevice cmdReq = new CommandRequestDevice();
+                            cmdReq.setCommandCallback(new CommandCallbackBase(command));
+                            cmdReq.setDevice(device);
+                            return cmdReq;
+                        }
+
+                    }));
+            } else if (attributes != null && !attributes.isEmpty()) {
+                PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
+                    attributeService.findPaoMultiPointIdentifiersForAttributesWithUnsupported(devices, attributes);
+                if (meterReadCommandGeneratorService.isReadable(paoPointIdentifiers.getSupportedDevicesAndPoints())) {
+                    List<PaoMultiPointIdentifier> supportedDevicesByAttribute = new ArrayList<>();
+                    for (YukonPao pao : paoPointIdentifiers.getUnsupportedDevices()) {
+                        unsupportedDevices.add(pao.getPaoIdentifier());
+                    }
+                    for (PaoMultiPointIdentifier identifier : paoPointIdentifiers.getSupportedDevicesAndPoints()) {
+                        if (supportsPorterRequests(identifier.getPao().getPaoType())) {
+                            supportedDevicesByAttribute.add(identifier);
+                        } else {
+                            unsupportedDevices.add(identifier.getPao());
+                        }
+                    }
+                    commands.addAll(meterReadCommandGeneratorService.getCommandRequests(supportedDevicesByAttribute));
+                } else {
+                    for (SimpleDevice device : devices) {
+                        unsupportedDevices.add(device.getPaoIdentifier());
+                    }
                 }
             }
         }

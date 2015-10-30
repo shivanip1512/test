@@ -201,6 +201,28 @@
     
     <entry key="yukon.common.events.amr.schedules.scheduleDeleted">User {1} deleted schedule {2}.</entry>
     
+    <entry key="yukon.common.events.amr.schedules.jobStarted">Job {1} "{2}" started for device group {3} with {7} retries by {4} (JobId={8}). </entry>
+    <entry key="yukon.common.events.amr.schedules.jobStarted.7">Retry number</entry>
+    <entry key="yukon.common.events.amr.schedules.jobCompleted">Job {1} "{2}" completed (JobId={7}, ContextId={8}). </entry>
+    
+    <entry key="yukon.common.events.amr.schedules.readAttempted">{1} "{2}" attempted at {11} all commands are unsupported (ContextId={7}). </entry>
+    
+    <entry key="yukon.common.events.amr.schedules.readStarted">{1} "{2}" started at {11} with timeout at {12} and {7} commands (ContextId={8}). </entry>
+    <entry key="yukon.common.events.amr.schedules.readStarted.7">Command number</entry>
+    <entry key="yukon.common.events.amr.schedules.readStarted.11">Read start time</entry>
+    <entry key="yukon.common.events.amr.schedules.readStarted.12">Read time out time</entry>
+    <entry key="yukon.common.events.amr.schedules.readCompleted">{1} "{2}" completed (ContextId={7}). </entry>
+    <entry key="yukon.common.events.amr.schedules.readFailed">{1} "{2}" failed with reason:"{3}" on try {7} (ContextId={8}, ExecutionId={9}).</entry>
+    <entry key="yukon.common.events.amr.schedules.readFailed.7">Try number</entry>
+    <entry key="yukon.common.events.amr.schedules.readTimeout">{1} "{2}" timed out on try {7} (ContextId={8}, ExecutionId={9}). </entry>
+    <entry key="yukon.common.events.amr.schedules.readTimeout.7">Try number</entry>
+    <entry key="yukon.common.events.amr.schedules.readCancelled">{1} "{2}" cancelled on try {7} by {3} (ContextId={8}, ExecutionId={9}). </entry>
+    <entry key="yukon.common.events.amr.schedules.readCancelled.7">Try number</entry>
+    
+    <entry key="yukon.common.events.amr.schedules.tryStarted">{1} "{2}" try {7} started with {8} commands (ContextId={9}, ExecutionId={10}). </entry>
+    <entry key="yukon.common.events.amr.schedules.tryCompleted">{1} "{2}" try {7} completed with {8} failed commands (ContextId={9}, ExecutionId={10}). </entry>
+    
+    
     <!-- RFN -->
     <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically">New meter created from {2} for {1}; Id:{3}</entry>
     <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.2">Template Name</entry>
