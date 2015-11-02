@@ -33,7 +33,7 @@
 
 <script>
 $(function () {
-    $('.js-resizable').each(function (index, elem) {
+    $('.y-resizable').each(function (index, elem) {
         var item = $(elem),
             naturalHeight = item.height();
 
@@ -44,24 +44,34 @@ $(function () {
         item.resizable({
             'handles': 's',
             'minHeight': 50,
-            'maxHeight': naturalHeight + 20
+            'maxHeight': naturalHeight
         });
     });
 });
 </script>
 <style>
-    .ui-resizable-handle { 
+    .y-resizable .ui-resizable-handle {
         border: 1px solid #ccc;
         position: absolute;
-        bottom:0;
-        height: 20px;
+        bottom: -20px;
+        height:  20px;
         background: #f3f3f3;
     }
+    .y-resizable .y-resizable-content {
+        overflow: auto;
+        position: relative;
+        height: 100%;
+    }
+    .y-resizable {
+        margin-bottom: 20px;
+    }
 
-    .ui-resizable-handle:before {
+    .y-resizable .ui-resizable-handle:before {
         content: '';
         position: absolute;
-        margin-left: 50%;
+        margin: auto;
+        left: 0;
+        right:0;
         width: 16px;
         height: 16px;
         background-image: url(../../WebConfig/yukon/Icons/icons.png);
@@ -71,8 +81,8 @@ $(function () {
     .full-height {height:100%;}
 </style>
 <tags:sectionContainer title="Sizable Scrolling container">
-    <div class="js-resizable">
-        <div class="oa pr full-height">
+    <div class="y-resizable">
+        <div class="y-resizable-content">
             Work in progress
             <ul>
                 <c:forEach var="i" begin="1" end="30" step="1">
