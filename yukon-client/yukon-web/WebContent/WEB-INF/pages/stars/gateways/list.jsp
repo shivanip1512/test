@@ -12,8 +12,8 @@
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
     <c:set var="showPageActions" value="${true}"/>
 
-    <div id="gateway-create-popup" class="dn" 
-        data-dialog 
+    <div id="gateway-create-popup" class="dn"
+        data-dialog
         data-title="<cti:msg2 key=".create.gateway.label"/>" 
         data-url="<cti:url value="/stars/gateways/create"/>" 
         data-width="570" 
@@ -24,6 +24,7 @@
 
     <c:if test="${enableNMGatewayVersion}">
         <div id="firmware-upgrade-popup"
+            class="js-dialog-scroll"
             data-dialog
             data-url="<cti:url value="/stars/gateways/update-servers"/>"
             data-title="<cti:msg2 key=".updateServer.set"/>"
@@ -33,6 +34,7 @@
 
         <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
             <div id="send-firmware-upgrade-popup"
+                class="js-dialog-scroll"
                 data-dialog
                 data-url="<cti:url value="/stars/gateways/firmware-upgrade"/>"
                 data-title="<cti:msg2 key=".firmwareUpdate"/>"
@@ -45,7 +47,7 @@
 </cti:checkRolesAndProperties>
 
 <c:if test="${showPageActions}">
-    <div id="page-actions">
+    <div id="page-actions" class="dn">
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
             <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green">
                 <i:inline key=".create.gateway.label"/>

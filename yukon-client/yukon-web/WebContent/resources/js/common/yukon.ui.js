@@ -144,6 +144,19 @@ yukon.ui = (function () {
             }
         });
 
+        $(document).on('dialogresizestart', '.js-dialog-scroll', function (ev, ui) {
+            var resizeContainer = $(this).find('.js-resize-with-dialog');
+            var originalHeight = resizeContainer.height();
+            resizeContainer.data('originalHeight', originalHeight);
+        });
+
+        $(document).on('dialogresize', '.js-dialog-scroll', function (ev, ui) {
+            var heightDifference = ui.size.height - ui.originalSize.height;
+            var resizeContainer = $(this).find('.js-resize-with-dialog');
+            var originalHeight = resizeContainer.data('originalHeight');
+            resizeContainer.css('max-height', originalHeight + heightDifference);
+        });
+
         $(document).on('click', '[data-edit-toggle]', function () {
             var btn = $(this);
             var groupName = btn.data('editToggle');
@@ -666,7 +679,11 @@ yukon.ui = (function () {
                         
                         var dialog = $(this).closest('.ui-dialog-content'),
                             target = options.target || dialog;
-                        mod.confirm({ dialog : dialog });
+                        mod.confirm({
+                            dialog : dialog,
+                            yesText: yg.text['delete'],
+                            noText: yg.text.cancel
+                        });
                         dialog.off('yukon:ui:dialog:confirm').on('yukon:ui:dialog:confirm', function (ev) {
                             $(target).trigger('yukon:ui:dialog:delete');
                         });

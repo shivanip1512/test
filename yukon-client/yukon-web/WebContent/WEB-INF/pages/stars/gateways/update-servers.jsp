@@ -15,6 +15,7 @@
 
 <form:form id="update-servers-form" commandName="allSettings" action="${updateUrl}">
     <cti:csrfToken/>
+    <div class="scroll-lg js-resize-with-dialog">
     <table class="compact-results-table with-form-controls">
         <thead>
             <tr>
@@ -113,5 +114,6 @@
             </c:forEach>
         </tbody>
     </table>
+    </div>
 </form:form>
 </cti:msgScope>

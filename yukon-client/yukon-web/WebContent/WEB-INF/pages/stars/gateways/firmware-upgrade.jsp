@@ -13,6 +13,7 @@
 
 <form:form id="update-servers-form" commandName="gateways" action="${updateUrl}">
     <cti:csrfToken/>
+    <div class="scroll-lg js-resize-with-dialog">
     <table class="compact-results-table with-form-controls js-select-all-container">
         <thead>
             <tr>
@@ -56,5 +57,6 @@
             </c:forEach>
         </tbody>
     </table>
+    </div>
 </form:form>
 </cti:msgScope> 
