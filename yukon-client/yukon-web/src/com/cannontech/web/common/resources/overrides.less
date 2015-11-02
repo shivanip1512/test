@@ -379,8 +379,10 @@ span.dynatree-folder a {
             
             &.error { background-color: #fdd; }
             &.error .ui-tabs-anchor { color: @red !important }
-
-            &.ui-tabs-active { background: #fff; 
+            &.ui-tabs-active { background: #fff;
+            /*this is to fix IE10-IE11 bug where the default state of a hoverable item exposes the list decoration
+              when it should be hidden. Does not effect other browsers. 
+            */  
                 list-style-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
             }
             
