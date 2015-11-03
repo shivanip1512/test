@@ -2698,11 +2698,13 @@
                 <pointRef name="Max Volts" />
                 <pointRef name="Min Volts" />
             </command>
-            <command id="READ_MIN_MAX_VOLTAGE_FROZEN" enabled="false">
+            <command id="READ_MIN_MAX_VOLTAGE_FROZEN">
                 <name>Read Min/Max Voltage (Frozen)</name>
                 <cmd text="getvalue voltage frozen" />
                 <pointRef name="Frozen Max Volts" />
                 <pointRef name="Frozen Min Volts" />
+                <pointRef name="Max Volts" />
+                <pointRef name="Min Volts" />
             </command>
             <command id="READ_BLINK_COUNT">
                 <name>Read Blink Count</name>
