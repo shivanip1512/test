@@ -7,6 +7,7 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.messaging.connection.transport.TransportException;
 import com.cannontech.messaging.connection.transport.amq.AmqConsumerTransport;
 import com.cannontech.messaging.connection.transport.amq.AmqProducerTransport;
@@ -21,6 +22,9 @@ class HandShakeConnector {
     public static final String HAND_SHAKE_REQ_MSG_TYPE  = "com.eaton.eas.yukon.clientinit";
     public static final String HAND_SHAKE_RESP_MSG_TYPE = "com.eaton.eas.yukon.serverresp";
     public static final String HAND_SHAKE_ACK_MSG_TYPE  = "com.eaton.eas.yukon.clientack";
+
+    // create a logger for instances of this class and its subclasses
+    private static org.apache.log4j.Logger logger = YukonLogManager.getLogger("com.cannontech.messaging.connection.amq.HandShakeConnector");
 
     static TwoWayTransport createClientConnectionTransport(AmqClientConnection clientConnection) {
         AmqConsumerTransport consumer = null;
@@ -74,6 +78,9 @@ class HandShakeConnector {
             producer = new AmqProducerTransport(connection, (ActiveMQDestination) rspMessage.getJMSReplyTo());
             producer.start();
 
+            logger.info("Connection request from "+reqProducer.getDestination()+" connected through "+producer.getDestination());
+            logger.info("  via "+producer.getConnection());
+            
             // Create the resulting 2 way transport
             TwoWayTransport transport = new TwoWayTransport(producer, consumer);
             
