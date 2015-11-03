@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/20/2015 3:39:17 PM                        */
+/* Created on:     11/3/2015 2:34:50 PM                         */
 /*==============================================================*/
 
 
@@ -6993,6 +6993,16 @@ create table POINT  (
    constraint Key_PT_PTID primary key (POINTID)
 );
 
+INSERT INTO Point Values(17, 'Analog', 'Web Service CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1016, 'None', 0);
+INSERT INTO Point Values(16, 'Analog', 'Service Manager CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1015, 'None', 0);
+INSERT INTO Point Values(15, 'Analog', 'Notification Server CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1014, 'None', 0);
+INSERT INTO Point Values(14, 'Analog', 'MACS CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1013, 'None', 0);
+INSERT INTO Point Values(13, 'Analog', 'FDR CPU Utilization', 0, 'Default', 0, 'N', 'N', 'R', 1012, 'None', 0);
+INSERT INTO Point Values(12, 'Analog', 'CapControl CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1011, 'None', 0);
+INSERT INTO Point Values(11, 'Analog', 'Calc CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1010, 'None', 0);
+INSERT INTO Point Values(10, 'Analog', 'Scanner CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1009, 'None', 0);
+INSERT INTO Point Values( 9, 'Analog', 'Dispatch CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1008, 'None', 0);
+INSERT INTO Point Values( 8, 'Analog', 'Porter CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1007, 'None', 0);
 INSERT INTO Point VALUES( 7, 'Status','Porter Monitor',0,'Default',-7,'N','N','R',1000,'None',0);
 INSERT INTO Point VALUES( 6, 'Status','Dispatch Monitor',0,'Default',-7,'N','N','R',1001,'None',0);
 INSERT INTO Point VALUES( 5, 'Status','Scanner Monitor',0,'Default',-7,'N','N','R',1002,'None',0);
@@ -7074,6 +7084,16 @@ create table POINTANALOG  (
    constraint PK_POINTANALOG primary key (POINTID)
 );
 
+insert into pointanalog values( 8, -1, 1, 0 );
+insert into pointanalog values( 9, -1, 1, 0 );
+insert into pointanalog values( 10, -1, 1, 0 );
+insert into pointanalog values( 11, -1, 1, 0 );
+insert into pointanalog values( 12, -1, 1, 0 );
+insert into pointanalog values( 13, -1, 1, 0 );
+insert into pointanalog values( 14, -1, 1, 0 );
+insert into pointanalog values( 15, -1, 1, 0 );
+insert into pointanalog values( 16, -1, 1, 0 );
+insert into pointanalog values( 17, -1, 1, 0 );
 insert into pointanalog values( 100, 0, 1, 0 );
 
 /*==============================================================*/
@@ -7142,6 +7162,16 @@ create table POINTUNIT  (
    constraint PK_POINTUNITID primary key (POINTID)
 );
 
+insert into pointunit values( 8, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 9, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 10, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 11, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 12, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 13, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 14, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 15, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 16, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 17, 28, 2, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
 
 /*==============================================================*/
