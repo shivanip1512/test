@@ -130,8 +130,7 @@
                                 </td>
                                 <td>
                                     <c:if test="${not empty jobWrapper.attributes}">
-                                        ${jobWrapper.attributeDescriptions} 
-                                        <i:inline key=".executions.tableHeader.attributeOrCommand.attribute"/>
+                                        <i:inline key=".executions.tableHeader.attributeOrCommand.attribute" arguments="${jobWrapper.attributeDescriptions}"/>
                                     </c:if>
                                     <c:if test="${not empty jobWrapper.command}">${jobWrapper.command}</c:if>
                                 </td>

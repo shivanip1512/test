@@ -80,7 +80,7 @@
     <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.NEXT_RUN">Next Run</entry>
     <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.ENABLED_STATUS">Status</entry>
     <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.executionCount.linkText">Executions</entry>
-    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.attributeOrCommand.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.attributeOrCommand.attribute">{0} Attribute</entry>
     <entry key="yukon.web.modules.tools.schedules.all.executions.tableHeader.enabled">Enabled</entry>
     <entry key="yukon.web.modules.tools.schedules.all.enable.hoverText">Click to disable ({0})</entry>
     <entry key="yukon.web.modules.tools.schedules.all.disable.hoverText">Click to enable ({0})</entry>
