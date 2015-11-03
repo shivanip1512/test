@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!-- RF Devices: highest Analog OFFSET=261 @ 2015-07-07 -->
+<!-- RF Devices: highest Analog OFFSET=263 @ 2015-11-02 -->
 <!-- RF Devices: highest Status OFFSET=79 @ 2014-04-30T -->
 
 <!--  Point Name naming convention: 
@@ -8236,7 +8236,7 @@
         <displayName>RFN-410cL</displayName>
     </pao>
     <pao id="RFN420CL" 
-        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_420_DISPLAY_CONFIGURATION, RFN_VOLTAGE_CONFIG">
+        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_CENTRON_420_KVAH, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_420_DISPLAY_CONFIGURATION, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-420cL</displayName>
     </pao>
     <pao id="RFN420CD" inherits="RFN420CL, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
@@ -11788,6 +11788,31 @@
             </attribute>
             <attribute name="RFN_OUTAGE_RESTORE_COUNT">
                 <basicLookup point="Outage Restore Count" />
+            </attribute>
+        </attributes>
+    </pao>
+
+    <pao id="RFN_CENTRON_420_KVAH" abstract="true">
+        <points>
+            <point type="Analog" offset="262">
+                <name>kVAh Delivered</name>
+                <multiplier value="0.001" />
+                <unitofmeasure value="kVah" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="263">
+                <name>kVAh Received</name>
+                <multiplier value="0.001" />
+                <unitofmeasure value="kVah" />
+                <decimalplaces value="3" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="KVAH">
+                <basicLookup point="kVAh Delivered" />
+            </attribute>
+            <attribute name="RECEIVED_KVAH">
+                <basicLookup point="kVAh Received" />
             </attribute>
         </attributes>
     </pao>
