@@ -5,6 +5,7 @@ import org.joda.time.Instant;
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.model.EventSource;
+import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
@@ -46,9 +47,9 @@ public interface SystemEventLogService {
     public void loginWeb(@Arg(ArgEnum.username) LiteYukonUser user, 
                          @Arg(ArgEnum.remoteAddress) String remoteAddress);
     
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
-    public void loginWebFailed(@Arg(ArgEnum.username) String user, 
-                         @Arg(ArgEnum.remoteAddress) String remoteAddress);
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.login")
+    public void loginWebFailed(@Arg(ArgEnum.username) String user, @Arg(ArgEnum.remoteAddress) String remoteAddress,
+            @Arg(ArgEnum.message)BadAuthenticationException.Type exceptionType);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
     public void loginClientFailed(@Arg(ArgEnum.username) String user, 

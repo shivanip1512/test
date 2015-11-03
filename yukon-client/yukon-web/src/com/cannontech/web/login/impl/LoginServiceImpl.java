@@ -76,14 +76,13 @@ public class LoginServiceImpl implements LoginService {
                     + request.getRemoteAddr());
             
         } catch (AuthenticationThrottleException e) {
-            systemEventLogService.loginWebFailed(username, request.getRemoteAddr());
             log.info("Login attempt as " + username + " failed from " + request.getRemoteAddr()
                 + "due to incorrect Password!Account Locked, throttleSeconds=" + e.getThrottleSeconds());
             throw e;
         } catch (BadAuthenticationException e) {
-            if (e.getType() == BadAuthenticationException.Type.DISABLED
-                || e.getType() == BadAuthenticationException.Type.INCORRECT)
-                systemEventLogService.loginWebFailed(username, request.getRemoteAddr());
+            if (e.getType() == BadAuthenticationException.Type.DISABLED_USER
+                || e.getType() == BadAuthenticationException.Type.INVALID_PASSWORD)
+                systemEventLogService.loginWebFailed(username, request.getRemoteAddr(), e.getType());
             throw e;
         }
     }

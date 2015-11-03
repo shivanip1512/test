@@ -38,6 +38,7 @@ import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.events.model.MappedEventLog;
 import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.mappers.LiteYukonUserToNameMapper;
+import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -137,6 +138,7 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.createForEnum(GlobalSettingType.class));
         builder.add(ArgumentMapper.createForEnum(EventSource.class));
         builder.add(ArgumentMapper.createForEnum(EnergyCompanySettingType.class));
+        builder.add(ArgumentMapper.createForEnum(BadAuthenticationException.Type.class));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             @Override
             public Date map(ReadableInstant from) throws ObjectMappingException {

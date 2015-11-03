@@ -75,14 +75,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         LiteYukonUser user = yukonUserDao.findUserByUsername(username);
         if (user == null) {
             log.info("Authentication failed (unknown user): username=" + username);
-            throw new BadAuthenticationException(BadAuthenticationException.Type.UNKNOWN);
+            throw new BadAuthenticationException(BadAuthenticationException.Type.UNKNOWN_USER);
         }
 
         // ensure that user is enabled
         if (user.getLoginStatus().isDisabled()) {
             log.info("Authentication failed (disabled): username=" + username + ", id=" + user.getUserID() +
                 ", status=" + user.getLoginStatus());
-            throw new BadAuthenticationException(BadAuthenticationException.Type.DISABLED);
+            throw new BadAuthenticationException(BadAuthenticationException.Type.DISABLED_USER);
         }
         
         UserAuthenticationInfo authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
@@ -140,7 +140,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!isPasswordMatched) {
             // login must have failed
             log.info("Authentication failed (auth failed): username=" + username + ", id=" + user.getUserID());
-            throw new BadAuthenticationException(BadAuthenticationException.Type.INCORRECT);
+            throw new BadAuthenticationException(BadAuthenticationException.Type.INVALID_PASSWORD);
         } else {
             log.debug("Authentication succeeded: username=" + username);
             authenticationThrottleService.loginSucceeded(username);
