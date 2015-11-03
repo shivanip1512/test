@@ -12,6 +12,7 @@ yukon.da.busview = (function () {
     
    
     var _initialized = false;
+    var initializedTimelines = {};
 
     var _updateRecentEvents = function () {
 
@@ -45,6 +46,11 @@ yukon.da.busview = (function () {
                 if (toAdd.length) {
                     timeline.timeline(options);
                     timeline.timeline('addEvents', toAdd);
+                    initializedTimelines[_id] = true;
+                }
+                if (initializedTimelines[_id] === undefined) {
+                    timeline.timeline(options);
+                    initializedTimelines[_id] = true;
                 }
                 timeline.timeline('draw');
 
