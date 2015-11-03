@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!-- RF Devices: highest Analog OFFSET=263 @ 2015-11-02 -->
+<!-- RF Devices: highest Analog OFFSET=261 @ 2015-07-07 -->
 <!-- RF Devices: highest Status OFFSET=79 @ 2014-04-30T -->
 
 <!--  Point Name naming convention: 
@@ -11794,15 +11794,15 @@
 
     <pao id="RFN_CENTRON_420_KVAH" abstract="true">
         <points>
-            <point type="Analog" offset="262">
+            <point type="Analog" offset="150">
                 <name>kVAh Delivered</name>
-                <multiplier value="0.001" />
+                <multiplier value="1.0" />
                 <unitofmeasure value="kVah" />
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="263">
+            <point type="Analog" offset="151">
                 <name>kVAh Received</name>
-                <multiplier value="0.001" />
+                <multiplier value="1.0" />
                 <unitofmeasure value="kVah" />
                 <decimalplaces value="3" />
             </point>
