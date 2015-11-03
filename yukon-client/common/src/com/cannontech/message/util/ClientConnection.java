@@ -64,8 +64,8 @@ public abstract class ClientConnection extends Observable implements IServerConn
     private static final int latchOffOnRemainingCapacity = 1024;
     private static final int latchOnRemainingCapacity = maxQueueSize * 50 / 100;
 
-    private AtomicLong maxMessagesQueued = new AtomicLong(0);
-    
+    private volatile Long maxMessagesQueued = new Long(0);
+
     private boolean isBehindLatch = false;
     private ArrayBlockingQueue<Message> inQueue = new ArrayBlockingQueue<Message>(maxQueueSize);
 
@@ -99,8 +99,11 @@ public abstract class ClientConnection extends Observable implements IServerConn
                     inQueueSizeWarning = inQueueSizeWarning * 2;
                 }
 
-                if (inQueue.size() > maxMessagesQueued.get()) {
-                    maxMessagesQueued.set(inQueue.size());
+                long inQueueSize = inQueue.size();
+                synchronized(maxMessagesQueued) {
+                    if (inQueueSize > maxMessagesQueued) {
+                        maxMessagesQueued = inQueueSize;
+                    }
                 }
                 
                 fireMessageEvent(msg);
