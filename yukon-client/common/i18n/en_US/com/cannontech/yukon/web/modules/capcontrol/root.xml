@@ -235,7 +235,7 @@
     <entry key="yukon.web.modules.capcontrol.command.notAuthorized">User ''{0}'' not authorized for command ''{1}''</entry>
     <entry key="yukon.web.modules.capcontrol.command.assignBankHere">Assign Here</entry>
     <entry key="yukon.web.modules.capcontrol.command.comment">{0} executed on {1} by {2}</entry>
-    <entry key="yukon.web.modules.capcontrol.command.confirm">Are you sure you want to perform {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.command.confirm">Are you sure you want to perform {0}?</entry>
     <entry key="yukon.web.modules.capcontrol.forcedComment">{0} executed on {1}</entry>
     <entry key="yukon.web.modules.capcontrol.commandQueued">''{0}'' successfully queued</entry>
     <entry key="yukon.web.modules.capcontrol.commandQueuedFor">''{0}'' successfully queued for ''{1}''</entry>
