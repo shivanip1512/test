@@ -286,6 +286,18 @@ DROP TABLE temp_FdrTranslation_Increment;
 /* @error ignore-end */
 /* End YUK-14754 */
 
+/* Start YUK-14755 */
+UPDATE GlobalSetting
+SET Value = 'yukon@eaton.com'
+WHERE Name = 'MAIL_FROM_ADDRESS'
+AND Value = 'yukon@cannontech.com';
+
+UPDATE EnergyCompanySetting
+SET Value = 'yukon@eaton.com'
+WHERE Name = 'ADMIN_EMAIL_ADDRESS'
+AND Value = 'info@cannontech.com';
+/* End YUK-14755 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
