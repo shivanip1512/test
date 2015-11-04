@@ -117,7 +117,10 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
         // we only handle GARBAGE_COLLECTION_NOTIFICATION notifications here
         if (notification.getType()
             .equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
-            if (nextGCReport == null || nextGCReport.isBeforeNow())
+            long freeMemory = Runtime.getRuntime().freeMemory();
+            long totalMemory = Runtime.getRuntime().totalMemory();
+            if (nextGCReport == null || nextGCReport.isBeforeNow() ||
+                    freeMemory < totalMemory/3)
             {
                 nextGCReport=DateTime.now().plusHours(1);
                 
@@ -145,7 +148,8 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
             }
             
             // Just for grins...
-            logGC.debug("Free memory: " + Runtime.getRuntime().freeMemory()/1024 + "k");
+            logGC
+                .debug("Free/Total memory: " + freeMemory / 1024 + "k/" + totalMemory / 1024 + "k");
         }
     }
 }
