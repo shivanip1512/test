@@ -146,8 +146,8 @@ public class BusViewController {
         String substationName = station.getCcName();
         String subBusName = subBus.getCcName();
         
-        model.addAttribute("bc_areaId", area.getCcId());
-        model.addAttribute("bc_areaName", areaName);
+        model.addAttribute("areaId", area.getCcId());
+        model.addAttribute("areaName", areaName);
         model.addAttribute("substationId", station.getCcId());
         model.addAttribute("substationName", substationName);
         model.addAttribute("subBusName", subBusName);

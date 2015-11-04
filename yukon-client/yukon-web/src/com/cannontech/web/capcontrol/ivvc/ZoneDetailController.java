@@ -529,8 +529,8 @@ public class ZoneDetailController {
         String subBusName = subBus.getCcName();
         String zoneName = zoneDto.getName();
         
-        model.addAttribute("bc_areaId", area.getCcId());
-        model.addAttribute("bc_areaName", areaName);
+        model.addAttribute("areaId", area.getCcId());
+        model.addAttribute("areaName", areaName);
         model.addAttribute("substationId", station.getCcId());
         model.addAttribute("substationName", substationName);
         model.addAttribute("subBusId", subBusId);
