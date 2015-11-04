@@ -295,6 +295,10 @@ input[type=radio] {
 .with-form-controls .checkbox-value::before { top: 1px; }
 
 /** Styles for a 'toggle button' checkbox and radio buttons **/
+.switch-btn {
+    position: relative;
+}
+
 .switch-btn .switch-btn-checkbox,
 .radio-btn input[type=radio],
 .check-btn input[type=checkbox] {
@@ -1170,6 +1174,14 @@ hr.dashed,
 .revealer.revealer-expanded {
     background-image: url('../Icons/icon_blockexpanded.png');
     background-position-x: 0;
+}
+
+//Inline editing
+.single-field .js-view [data-edit-toggle] {
+    visibility: hidden;
+}
+.single-field:hover [data-edit-toggle] {
+    visibility: visible;
 }
 
 /* YUKON PICKER */

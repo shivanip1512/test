@@ -9,6 +9,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.AppMode;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.message.gateway.LastCommStatus;
+import com.cannontech.util.NaturalOrderComparator;
 
 public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGateway> {
     
@@ -152,7 +153,7 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
 
     @Override
     public int compareTo(RfnGateway o) {
-        return name.compareToIgnoreCase(o.getName());
+        return NaturalOrderComparator.naturalCompare(name, o.getName());
     }
     
     public RfnGateway withUpdateServer(GatewayUpdateModel updateServer) {

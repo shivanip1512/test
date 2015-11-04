@@ -21,6 +21,13 @@ package com.cannontech.util;
 import java.util.Comparator;
 
 public class NaturalOrderComparator implements Comparator<String> {
+    
+    private static final NaturalOrderComparator naturalComparator = new NaturalOrderComparator();
+    
+    public static int naturalCompare(String lhs, String rhs) {
+        return naturalComparator.compare(lhs, rhs);
+    }
+    
     private int compareRight(String a, String b) {
         int bias = 0;
         int ia = 0;

@@ -20,13 +20,9 @@
         <thead>
             <tr>
                 <th><i:inline key=".name" /></th>
-                <%--
-                <th><i:inline key=".serialNumber" /></th> 
-                --%>
                 <th><i:inline key=".version.current" /></th>
                 <th><i:inline key=".version.available" /></th>
                 <th><i:inline key=".updateServer" /></th>
-                <th></th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -39,11 +35,6 @@
                         <form:hidden path="list[${idx}].id"/>
                         <tags:input path="list[${idx}].name"/>
                     </td>
-                    <%--
-                    <td>
-                        <tags:input path="list[${idx}].serialNumber"/>
-                    </td>
-                    --%>
                     <td>
                         <tags:input path="list[${idx}].currentVersion"/>
                     </td>
@@ -51,64 +42,32 @@
                         <tags:input path="list[${idx}].availableVersion"/>
                     </td>
                     <td>
+                        <tags:setFormEditMode mode="EDIT"/>
                         <div>
-                            <span data-edit-group="update-server-${idx}">
-                                <span class="js-view">
-                                    <spring:bind path="list[${idx}].useDefault">
-                                        <c:if test="${status.value}">
-                                            <span class="empty-list"><i:inline key=".updateServer.default"/></span>
-                                        </c:if>
-                                    </spring:bind>
-                                </span>
-                                <span class="js-edit dn">
-                                    <div>
-                                        <span class="vatb form-control">
-                                            <i:inline key=".updateServer.default"/>
-                                        </span>
-                                        <tags:setFormEditMode mode="EDIT"/>
-                                        <tags:switchButton path="list[${idx}].useDefault" 
-                                            onClasses="fn" offClasses="fn" onNameKey=".yes.label" offNameKey=".no.label"
-                                            toggleGroup="toggle-update-server-${idx}" toggleAction="hide" toggleInverse="true"/>
-                                    </div>
-                                    <span data-toggle-group="toggle-update-server-${idx}">
-                                        <i:inline key=".updateServer.server"/>
-                                    </span>
-                                </span>
+                            <span class="vatb form-control">
+                                <i:inline key=".updateServer.default"/>
                             </span>
-                            <tags:inlineEdit name="update-server-${idx}" hideControls="true">
-                                <span data-toggle-group="toggle-update-server-${idx}">
-                                    <tags:input path="list[${idx}].updateServerUrl" size="40" toggleGroup="toggle-update-server-${idx}"/>
-                                </span>
-                            </tags:inlineEdit>
-
+                            <tags:switchButton path="list[${idx}].useDefault"
+                                onClasses="fn" offClasses="fn" onNameKey=".yes.label" offNameKey=".no.label"
+                                toggleGroup="toggle-update-server-${idx}" toggleAction="hide" toggleInverse="true"/>
                         </div>
-                        <div data-edit-group="update-server-${idx}" data-toggle-group="toggle-update-server-${idx}">
-                            <span class="js-edit dn">
-                                <i:inline key=".updateServer.auth"/>
-                                <spring:bind path="list[${idx}].updateServerLogin.username">
-                                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                                    <form:input path="list[${idx}].updateServerLogin.username" cssClass="M0 left ${clazz}" 
-                                        placeholder="${phUsername}" size="12" data-toggle-group="toggle-update-server-${idx}"/>
-                                </spring:bind>
-                                <spring:bind path="list[${idx}].updateServerLogin.password">
-                                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                                    <form:password path="list[${idx}].updateServerLogin.password" cssClass="M0 ${clazz} right"
-                                        placeholder="${phPassword}" showPassword="true" size="12" data-toggle-group="toggle-update-server-${idx}"/>
-                                </spring:bind>
-                            </span>
+                        <div data-toggle-group="toggle-update-server-${idx}">
+                            <i:inline key=".updateServer.server"/>
+                            <tags:input path="list[${idx}].updateServerUrl" size="40" toggleGroup="toggle-update-server-${idx}"/>
                         </div>
-                    </td>
-                    <td>
-                        <span data-edit-group="update-server-${idx}">
-                            <span class="js-view">
-                                <cti:button icon="icon-pencil" renderMode="image" data-edit-toggle="update-server-${idx}" nameKey="edit"/>
-                            </span>
-                            <span class="js-edit dn">
-                                <div>
-                                <cti:button icon="icon-cross" renderMode="image" data-edit-toggle="update-server-${idx}" nameKey="cancel"/>
-                                </div>
-                            </span>
-                        </span>
+                        <div data-toggle-group="toggle-update-server-${idx}">
+                            <i:inline key=".updateServer.auth"/>
+                            <spring:bind path="list[${idx}].updateServerLogin.username">
+                                <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
+                                <form:input path="list[${idx}].updateServerLogin.username" cssClass="M0 left ${clazz}" 
+                                    placeholder="${phUsername}" size="12" data-toggle-group="toggle-update-server-${idx}"/>
+                            </spring:bind>
+                            <spring:bind path="list[${idx}].updateServerLogin.password">
+                                <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
+                                <form:password path="list[${idx}].updateServerLogin.password" cssClass="M0 ${clazz} right"
+                                    placeholder="${phPassword}" showPassword="true" size="12" data-toggle-group="toggle-update-server-${idx}"/>
+                            </spring:bind>
+                        </div>
                     </td>
                 </tr>
             </c:forEach>
