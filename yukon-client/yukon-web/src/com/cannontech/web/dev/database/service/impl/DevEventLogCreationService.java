@@ -40,6 +40,7 @@ import com.cannontech.common.events.loggers.ValidationEventLogService;
 import com.cannontech.common.events.loggers.VeeReviewEventLogService;
 import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.events.model.EventSource;
+import com.cannontech.common.exception.BadAuthenticationException.Type;
 import com.cannontech.common.i18n.Displayable;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -667,6 +668,13 @@ public class DevEventLogCreationService {
                 int rowsDeleted = 10;
 
                 systemEventLogService.globalSettingChanged(user, GlobalSettingType.ACCT_PORT, "abc");
+                systemEventLogService.loginChangeAttempted(user, username, devEventLog.getEventSource());
+                systemEventLogService.loginWebFailed(user.getUsername(), username, Type.DISABLED_USER);
+                systemEventLogService.loginWebFailed(user.getUsername(), username, Type.INVALID_PASSWORD);
+                systemEventLogService.loginClientFailed(user.getUsername(), username, Type.DISABLED_USER);
+                systemEventLogService.loginClientFailed(user.getUsername(), username, Type.INVALID_PASSWORD);
+                systemEventLogService.loginOutboundVoiceFailed(user.getUsername(), username);
+                systemEventLogService.loginChangeAttempted(user, username, devEventLog.getEventSource());
                 systemEventLogService.loginChangeAttempted(user, username, devEventLog.getEventSource());
                 systemEventLogService.loginClient(user, remoteAddress);
                 systemEventLogService.loginConsumer(user, EventSource.API);

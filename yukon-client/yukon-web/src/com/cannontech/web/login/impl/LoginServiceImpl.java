@@ -115,7 +115,9 @@ public class LoginServiceImpl implements LoginService {
             systemEventLogService.loginClient(user, request.getRemoteAddr());
             
         } catch (BadAuthenticationException e) {
-            systemEventLogService.loginClientFailed(username, request.getRemoteAddr());
+            if (e.getType() == BadAuthenticationException.Type.DISABLED_USER
+                || e.getType() == BadAuthenticationException.Type.INVALID_PASSWORD)
+                systemEventLogService.loginClientFailed(username, request.getRemoteAddr(), e.getType());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         } catch (PasswordExpiredException e) {
             String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request);
