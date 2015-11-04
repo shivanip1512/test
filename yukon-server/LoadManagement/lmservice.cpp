@@ -282,6 +282,8 @@ void CtiLMService::Run()
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
+
+    SetStatus(SERVICE_STOPPED);
 }
 
 void CtiLMService::ParseArgs(DWORD argc, LPTSTR* argv)

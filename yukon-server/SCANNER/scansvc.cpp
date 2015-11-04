@@ -85,6 +85,8 @@ void CtiScannerService::Run()
    SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
    _scannerThread.join();
+
+   SetStatus(SERVICE_STOPPED);
 }
 
 void CtiScannerService::ParseArgs(DWORD argc, LPTSTR* argv)

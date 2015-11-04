@@ -101,6 +101,8 @@ void CtiPorterService::Run()
    SetStatus( SERVICE_STOP_PENDING, 50, 40000 );
 
    _porterThread.join();
+
+   SetStatus(SERVICE_STOPPED);
 }
 
 void CtiPorterService::ParseArgs(DWORD argc, LPTSTR* argv)

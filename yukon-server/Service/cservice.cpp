@@ -109,7 +109,6 @@ void CService::ServiceMainMember(DWORD argc, LPTSTR* argv, LPHANDLER_FUNCTION pf
 #endif
 
    DeInit();
-   SetStatus(SERVICE_STOPPED, 0, 0, 0, dwErr, 0);
 }
 
 // Register the control handler for the service
@@ -271,8 +270,10 @@ void CService::SetStatus(DWORD dwNewState, DWORD dwNewCheckpoint,
 
    LeaveCriticalSection(&m_cs);
 
-   if( !_running_in_console && !SetServiceStatus(m_hServiceStatus, &ss))
-      ErrorHandler(_T("SetServiceStatus"));
+   if(!_running_in_console && !SetServiceStatus(m_hServiceStatus, &ss)) {
+       DWORD LastError = GetLastError();
+       ErrorHandler(_T("SetServiceStatus"));
+   }
 }
 
 //Generic error handler which gathers the last error, looks up the description string, and optionally

@@ -220,8 +220,9 @@ void CtiCCService::Run()
         Sleep(500);
     }
 
-
     SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
+
+    SetStatus(SERVICE_STOPPED);
 }
 
 void CtiCCService::ParseArgs(DWORD argc, LPTSTR* argv)
