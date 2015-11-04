@@ -57,6 +57,19 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         return pointData;
     }
     
+    public static PointData of(LitePointData lpd) {
+        PointData pointData = new PointData();
+
+        pointData.setId(lpd.getId());
+        pointData.setType(lpd.getType());
+        pointData.setPointQuality(lpd.getPointQuality());
+        pointData.setTags(lpd.getTags());
+        pointData.setValue(lpd.getValue());
+        pointData.setTime(lpd.getPointDataTimeStamp());
+
+        return pointData;
+    }
+    
     public long getForced() {
         return forced;
     }

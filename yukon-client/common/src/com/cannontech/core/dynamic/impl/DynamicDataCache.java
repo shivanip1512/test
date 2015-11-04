@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
@@ -27,7 +28,7 @@ import com.cannontech.yukon.IServerConnection;
  */
 /* package */ class DynamicDataCache implements MessageListener {
     // Stores current PointData messages by PointID
-    private Map<Integer, PointData> pointData = new ConcurrentHashMap<>();
+    private Map<Integer, LitePointData> pointData = new ConcurrentHashMap<>();
 
     // Stores current Signal messages by PointID
     // Only signals with a category > 1 will be stored
@@ -42,7 +43,12 @@ import com.cannontech.yukon.IServerConnection;
     }
 
     PointData getPointData(int pointId) {
-        return pointData.get(pointId);
+        LitePointData lpd = pointData.get(pointId);
+        PointData ptData = null;
+        if (lpd != null) {
+            ptData = PointData.of(lpd);
+        }
+        return ptData;
     }
 
     Set<Signal> getSignals(int pointId) {
@@ -79,7 +85,7 @@ import com.cannontech.yukon.IServerConnection;
     }
 
     private void handlePointData(PointData pd) {
-        pointData.put(pd.getId(), pd);
+        pointData.put(pd.getId(), LitePointData.of(pd));
     }
 
     public void handleSignals(Set<Signal> signals, int pointId) {
