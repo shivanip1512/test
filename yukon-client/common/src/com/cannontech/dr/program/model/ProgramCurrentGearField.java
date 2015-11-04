@@ -41,15 +41,12 @@ public class ProgramCurrentGearField extends ProgramBackingFieldBase {
     }
     
     @Override
-    public Object getValue(LMProgramBase program, String[] idbits, YukonUserContext userContext) {
+    public Object getValue(LMProgramBase program, int objectIdentifier, YukonUserContext userContext) {
         if(program != null) {
-            if (!program.isActive() && idbits.length == 3) { // This is an inactive scenario program
+            if (!program.isActive()) { // This is an inactive scenario program
                 // Find the scenario start gear for this program and display it's name.
-                Integer scenarioId = Integer.parseInt(idbits[2]);
-                
                 int programId = program.getPaoIdentifier().getPaoId();
-                
-                Map<Integer, ScenarioProgram> scenarioPrograms = scenarioDao.findScenarioProgramsForScenario(scenarioId);
+                Map<Integer, ScenarioProgram> scenarioPrograms = scenarioDao.findScenarioProgramsForScenario(objectIdentifier);
                 ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
                 String gearName = programDao.findGearName(programId, scenarioProgram.getStartGear());
                 return buildResolvable(getFieldName(), gearName);
