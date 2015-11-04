@@ -24,10 +24,10 @@ public interface DemandResponseBackingField<T> {
     
     /** 
      * This is implemented by ProgramBackingFieldBase to pass along the scenario ID
-     * idBits is a raw string list where the pattern in each item is either 1234/TAG or 1234/TAG/1234
-     *\/delimited. The first group is the program or pao id. The second is the identifier specific to the dao
-     *retrieval ie. PROGRAM or SCENARIO. The third group is a conditional group in the event the identifier specifies
-     *a dao that requires two fields in order to retrieve a result. 
+     *@param object is the LMProgramBase to pass in order to get the paoId.
+     *@param objectIdentifier is the Scenario Id association to the object being passed.
+     *@param userContext is the contextual object specific the application. 
+     *@return the value return may be only one value, or a collection of values to be serialized in a JSON response 
      */
     default public Object getValue(T object, int objectIdentifier, YukonUserContext userContext)  {
         return getValue(object, userContext);
