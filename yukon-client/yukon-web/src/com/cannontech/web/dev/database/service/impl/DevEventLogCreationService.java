@@ -675,7 +675,6 @@ public class DevEventLogCreationService {
                 systemEventLogService.loginClientFailed(user.getUsername(), username, Type.INVALID_PASSWORD);
                 systemEventLogService.loginOutboundVoiceFailed(user.getUsername(), username);
                 systemEventLogService.loginChangeAttempted(user, username, devEventLog.getEventSource());
-                systemEventLogService.loginChangeAttempted(user, username, devEventLog.getEventSource());
                 systemEventLogService.loginClient(user, remoteAddress);
                 systemEventLogService.loginConsumer(user, EventSource.API);
                 systemEventLogService.loginConsumerAttempted("barney", EventSource.API);
