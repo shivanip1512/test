@@ -17,6 +17,7 @@ import org.apache.activemq.broker.region.DestinationStatistics;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.usage.MemoryUsage;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -43,6 +44,8 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
      **/
     private Logger logGC = YukonLogManager.getLogger(BrokerServiceMonitor.class.getCanonicalName()+".gc");
 
+    DateTime nextGCReport;
+    
     /** Broker instance */
     private Broker broker;
     /** BrokerService instance */
@@ -114,27 +117,31 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
         // we only handle GARBAGE_COLLECTION_NOTIFICATION notifications here
         if (notification.getType()
             .equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
-            
-            // get notification information
-            GarbageCollectionNotificationInfo info =
-                GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
-
-            // GC info
-            GcInfo gcInfo = info.getGcInfo();
-            logGC.debug("GC start: "+gcInfo.getStartTime()+", end: "+gcInfo.getEndTime()+", duration: "+gcInfo.getDuration()+" (ms)");
-            logGC.debug("   reason: "+info.getGcCause());
-            
-            // Get before and after GC stats
-            Map<String, java.lang.management.MemoryUsage> memBefore = gcInfo.getMemoryUsageBeforeGc();
-            Map<String, java.lang.management.MemoryUsage> memAfter = gcInfo.getMemoryUsageAfterGc();
-            
-            // Print in a pretty table
-            logGC.debug(String.format("%22s|%7s|%7s", "Heap Used", "Before", "After"));
-            for (Entry<String, java.lang.management.MemoryUsage> entry : memBefore.entrySet()) {
-                String name = entry.getKey();
-                long memUsedBefore = entry.getValue().getUsed();
-                long memUsedAfter = memAfter.get(name).getUsed();
-                logGC.debug(String.format("%22s|%7d|%7d", name, memUsedBefore/1024, memUsedAfter/1024));
+            if (nextGCReport == null || nextGCReport.isBeforeNow())
+            {
+                nextGCReport=DateTime.now().plusHours(1);
+                
+                // get notification information
+                GarbageCollectionNotificationInfo info =
+                    GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
+    
+                // GC info
+                GcInfo gcInfo = info.getGcInfo();
+                logGC.debug("GC start: "+gcInfo.getStartTime()+", end: "+gcInfo.getEndTime()+", duration: "+gcInfo.getDuration()+" (ms)");
+                logGC.debug("   reason: "+info.getGcCause());
+                
+                // Get before and after GC stats
+                Map<String, java.lang.management.MemoryUsage> memBefore = gcInfo.getMemoryUsageBeforeGc();
+                Map<String, java.lang.management.MemoryUsage> memAfter = gcInfo.getMemoryUsageAfterGc();
+                
+                // Print in a pretty table
+                logGC.debug(String.format("%22s|%7s|%7s", "Heap Used", "Before", "After"));
+                for (Entry<String, java.lang.management.MemoryUsage> entry : memBefore.entrySet()) {
+                    String name = entry.getKey();
+                    long memUsedBefore = entry.getValue().getUsed();
+                    long memUsedAfter = memAfter.get(name).getUsed();
+                    logGC.debug(String.format("%22s|%7d|%7d", name, memUsedBefore/1024, memUsedAfter/1024));
+                }
             }
             
             // Just for grins...
