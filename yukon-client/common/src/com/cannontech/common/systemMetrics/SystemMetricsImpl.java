@@ -3,7 +3,6 @@
  */
 package com.cannontech.common.systemMetrics;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -15,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
@@ -38,10 +38,8 @@ import com.google.common.util.concurrent.AtomicDouble;
 @ManagedResource
 public class SystemMetricsImpl extends Observable implements Runnable, SystemMetrics {
 
-    @Autowired
-    private AttributeService attributeService;
-    @Autowired
-    private SimplePointAccessDao pointAccessDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private SimplePointAccessDao pointAccessDao;
 
     private Logger log = YukonLogManager.getLogger(this.getClass());
 
@@ -89,7 +87,7 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
         }
 
         lastSampleTime = Instant.now();
-        task = scheduler.scheduleAtFixedRate(this, 60, 60, SECONDS);
+        task = scheduler.scheduleAtFixedRate(this, 60, 60, TimeUnit.SECONDS);
     }
 
     /**
@@ -97,6 +95,7 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
      * 
      * @param paoId PaoId for Load Statistics
      */
+    @Override
     public void setPaoId(int paoId) {
         log.debug("setPaoId(" + paoId + ")");
         this.paoId = paoId;
@@ -107,6 +106,7 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
      * 
      * @param attribute attribute Id.
      */
+    @Override
     public void setAttribute(BuiltInAttribute attribute) {
         log.debug("setAttribute(" + attribute + ")");
         this.attribute = attribute;
@@ -135,6 +135,7 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
      * 
      * @return current load from this process.
      */
+    @Override
     @ManagedAttribute
     public final double getloadAverage() {
         return loadAverage.get();
