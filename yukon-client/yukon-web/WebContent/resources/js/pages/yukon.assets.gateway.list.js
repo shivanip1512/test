@@ -79,6 +79,42 @@ yukon.assets.gateway.list = (function () {
         });
     },
     
+    _updateFirmwareUpdates = function () {
+        $.ajax({
+            url: yukon.url('/stars/gateways/firmware-update/data'),
+            contentType: 'application/json'
+        }).done(function (updates) {
+            Object.keys(updates).forEach(function (yui) {
+                var 
+                update = updates[yui],
+                row = $('[data-yui="' + yui + '"]');
+                
+                _updateFirmwareRow(row, update);
+            });
+        }).always(function () {
+            setTimeout(_updateFirmwareUpdates, 4000);
+        });
+    },
+    
+    _updateFirmwareRow = function (row, update) {
+        var timestamp = moment(update.sendDate.millis).tz(yg.timezone).format(yg.formats.date.full_hm);
+        
+        row.find('.js-firmware-update-timestamp a').text(timestamp);
+        if (update.complete) {
+            row.find('.js-firmware-update-status').html('<span class="success">' + _text['complete'] + '</span>');
+        } else {
+            row.find('.js-firmware-update-status .progress-bar-success')
+            .css('width', yukon.percent(update.gatewayUpdatesSuccessful, update.totalGateways, 2))
+            .siblings('.progress-bar-danger')
+            .css('width', yukon.percent(update.gatewayUpdatesFailed, update.totalGateways, 2));
+            row.find('.js-firmware-update-status .js-percent')
+            .text(yukon.percent(update.gatewayUpdatesFailed + update.gatewayUpdatesSuccessful, update.totalGateways, 2));
+        }
+        row.find('.js-firmware-update-pending').text(update.gatewayUpdatesPending)
+        .siblings('.js-firmware-update-failed').text(update.gatewayUpdatesFailed)
+        .siblings('.js-firmware-update-successful').text(update.gatewayUpdatesSuccessful);
+    },
+    
     _updateCerts = function () {
         $.ajax({
             url: yukon.url('/stars/gateways/cert-update/data'),
@@ -264,7 +300,24 @@ yukon.assets.gateway.list = (function () {
                         buttons: [{ text: yg.text.close, click: function () { $(this).dialog('close'); } }]
                     });
                 });
+            });
+            
+            /** User clicked one of the firmware update timestamp links, show details popup */
+            $(document).on('click', '.js-firmware-update-timestamp a', function () {
                 
+                var id = $(this).closest('tr').data('yui'),
+                    timestamp = $(this).text(),
+                    popup = $('#gateway-firmware-details-popup');
+                
+                $.ajax({ url: yukon.url('/stars/gateways/firmware-update/' + id + '/details') })
+                .done(function (details) {
+                    popup.html(details).dialog({
+                        title: _text['firmware.update.label'] + ': ' + timestamp,
+                        width: 900,
+                        height: 400,
+                        buttons: [{ text: yg.text.close, click: function () { $(this).dialog('close'); } }]
+                    });
+                });
             });
             
             /** 'Save' button clicked on the set update servers popup. */
@@ -331,6 +384,7 @@ yukon.assets.gateway.list = (function () {
 
             _update();
             _updateCerts();
+            _updateFirmwareUpdates();
             
             _initialized = true;
         }

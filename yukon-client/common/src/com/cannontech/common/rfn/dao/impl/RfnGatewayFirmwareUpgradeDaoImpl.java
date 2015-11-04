@@ -157,7 +157,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
          * combined into a single row with the info from GatewayFirmwareUpdate in the outer select.
          */
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UpdateId, SendDate, GatewayCount, UpdateServerCount");
+        sql.append("SELECT UpdateId, SendDate, GatewayCount, UpdateServerCount,");
         sql.append("CASE");
         sql.append(  "WHEN TEMP.Pending IS NULL THEN 0");
         sql.append(  "ELSE TEMP.Pending");
@@ -165,14 +165,14 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
         sql.append("CASE");
         sql.append(  "WHEN TEMP.Successful IS NULL THEN 0");
         sql.append(  "ELSE TEMP.Successful");
-        sql.append("END AS Successful");
+        sql.append("END AS Successful,");
         sql.append("CASE");
         sql.append(  "WHEN TEMP.Failed IS NULL THEN 0");
         sql.append(  "ELSE Temp.Failed");
         sql.append("END AS Failed");
         
         sql.append("FROM (");
-        sql.append(  "SELECT UpdateId, SendDate, GatewayCount, UpdateServerCount");
+        sql.append(  "SELECT UpdateId, SendDate, GatewayCount, UpdateServerCount,");
         
         sql.append(  "(SELECT COUNT(EntryId)");
         sql.append(   "FROM GatewayFirmwareUpdateEntry gfue");
@@ -187,7 +187,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
         sql.append(   "GROUP BY UpdateId) AS Successful,");
         
         sql.append(  "(SELECT COUNT(EntryId)");
-        sql.append(   "FROM GatewayFimrwareUpdateEntry gfue");
+        sql.append(   "FROM GatewayFirmwareUpdateEntry gfue");
         sql.append(   "WHERE UpdateStatus").in_k(GatewayFirmwareUpdateStatus.getFailedStates());
         sql.append(     "AND gfue.UpdateId = gfu.UpdateId");
         sql.append(   "GROUP BY UpdateId) AS Failed");

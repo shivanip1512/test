@@ -48,6 +48,7 @@ public class GatewayControllerHelper {
         text.put("collect.data.title", accessor.getMessage(baseKey + "collect.data.title"));
         text.put("cert.update.more", accessor.getMessage(baseKey + "cert.update.more"));
         text.put("cert.update.label", accessor.getMessage(baseKey + "cert.update.label"));
+        text.put("firmware.update.label", accessor.getMessage(baseKey + "firmware.update.label"));
         text.put("complete", accessor.getMessage("yukon.common.complete"));
         text.put("port", accessor.getMessage(baseKey + "port"));
         

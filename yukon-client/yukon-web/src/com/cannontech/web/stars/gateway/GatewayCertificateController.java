@@ -64,7 +64,7 @@ public class GatewayCertificateController {
     }
     
     @RequestMapping("/gateways/cert-update/data")
-    public @ResponseBody Map<Integer, Object> data(YukonUserContext userContext) {
+    public @ResponseBody Map<Integer, Object> data() {
         
         Map<Integer, Object> json = new HashMap<>();
         

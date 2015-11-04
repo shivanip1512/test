@@ -81,6 +81,7 @@
     
 <div id="gateway-collect-data-popup" class="dn"></div>
 <div id="gateway-cert-details-popup" class="dn"></div>
+<div id="gateway-firmware-details-popup" class="dn"></div>
 
 <div class="stacked-lg">
 <table id="gateways-table" class="compact-results-table has-actions has-alerts">
@@ -184,7 +185,9 @@
 <h3><i:inline key=".cert.updates"/></h3>
 <c:set var="clazz" value="${empty certUpdates ? 'dn' : ''}"/>
 <c:if test="${empty certUpdates}">
-    <div class="js-no-cert-updates empty-list"><i:inline key=".cert.updates.none"/></div>
+    <div class="js-no-cert-updates empty-list">
+        <i:inline key=".cert.updates.none"/>
+    </div>
 </c:if>
 <div data-url="<cti:url value="/stars/gateways/"/>" data-static> 
 <table id="cert-table" class="compact-results-table ${clazz}">
@@ -242,6 +245,62 @@
         <cti:button icon="icon-plus-green" nameKey="cert.update" data-popup="#gateway-cert-popup" classes="M0"/>
     </div>
 </cti:checkRolesAndProperties>
+
+<c:if test="${enableNMGatewayVersion}">
+<h3><i:inline key=".firmwareUpdates"/></h3>
+<c:if test="${empty firmwareUpdates}">
+    <div class="js-no-firmware-updates empty-list">
+        <i:inline key=".firmwareUpdates.none"/>
+    </div>
+</c:if>
+<div data-url="<cti:url value="/stars/gateways/"/>" data-static>
+    <c:set var="clazz" value="${empty firmwareUpdates ? 'dn' : ''}"/>
+    <table id="firmware-table" class="compact-results-table ${clazz}">
+        <thead>
+            <tr>
+                <th><i:inline key=".firmwareUpdates.timestamp"/></th>
+                <th><i:inline key=".firmwareUpdates.totalGateways"/></th>
+                <th><i:inline key=".firmwareUpdates.totalServers"/></th>
+                <th><i:inline key="yukon.common.status"/></th>
+                <th class="tar"><i:inline key="yukon.common.pending"/></th>
+                <th class="tar"><i:inline key="yukon.common.failed"/></th>
+                <th class="tar"><i:inline key="yukon.common.successful"/></th>
+            </tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+            <c:forEach var="update" items="${firmwareUpdates}">
+                <tr data-yui="${update.updateId}">
+                    <td class="js-firmware-update-timestamp">
+                        <a href="javascript:void(0);">
+                            <cti:formatDate value="${update.sendDate}" type="DATEHM_12"/>
+                        </a>
+                    </td>
+                    <td>${update.totalGateways}</td>
+                    <td>${update.totalUpdateServers}</td>
+                    <td class="js-firmware-update-status">
+                        <c:choose>
+                            <c:when test="${update.gatewayUpdatesPending == 0}">
+                                <span class="success"><i:inline key="yukon.common.complete"/></span>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="progress dib vat">
+                                    <div class="progress-bar progress-bar-success" style="width: ${update.successPercent};"></div>
+                                    <div class="progress-bar progress-bar-danger" style="width: ${update.failedPercent};"></div>
+                                </div>
+                                <span class="js-percent">${update.totalPercent}</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <td class="js-firmware-update-pending tar subtle">${update.gatewayUpdatesPending}</td>
+                    <td class="js-firmware-update-failed tar error">${update.gatewayUpdatesFailed}</td>
+                    <td class="js-firmware-update-successful tar success">${update.gatewayUpdatesSuccessful}</td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+</div>
+</c:if>
 
 <div id="gateway-templates" class="dn">
     <table>

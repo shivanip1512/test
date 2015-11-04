@@ -32,6 +32,7 @@ import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
@@ -104,6 +105,12 @@ public class GatewayListController {
         helper.addText(model, userContext);
         boolean enableNMGatewayVersion = nmConfigurationService.isFirmwareUpdateSupported();
         model.addAttribute("enableNMGatewayVersion", enableNMGatewayVersion);
+        
+        if (enableNMGatewayVersion) {
+            List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
+            model.addAttribute("firmwareUpdates", firmwareUpdates);
+        }
+        
         return "gateways/list.jsp";
     }
     

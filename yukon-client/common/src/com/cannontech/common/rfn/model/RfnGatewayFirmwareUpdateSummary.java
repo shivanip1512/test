@@ -3,6 +3,7 @@ package com.cannontech.common.rfn.model;
 import org.joda.time.Instant;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.StringUtils;
 
 /**
  * Summary of an entire firmware upgrade operation.
@@ -12,9 +13,9 @@ public class RfnGatewayFirmwareUpdateSummary {
     private Instant sendDate;
     private int totalGateways;
     private int totalUpdateServers;
-    private int gatewayUpdatesPending;
-    private int gatewayUpdatesFailed;
-    private int gatewayUpdatesSuccessful;
+    private int pending;
+    private int failed;
+    private int successful;
     
     public enum GatewayFirmwareUpdateSummaryStatus implements DisplayableEnum {
         IN_PROGRESS,
@@ -61,34 +62,53 @@ public class RfnGatewayFirmwareUpdateSummary {
     }
 
     public GatewayFirmwareUpdateSummaryStatus getStatus() {
-        if (gatewayUpdatesPending > 0) {
+        if (pending > 0) {
             return GatewayFirmwareUpdateSummaryStatus.IN_PROGRESS;
         }
         return GatewayFirmwareUpdateSummaryStatus.COMPLETE;
     }
-
+    
+    public boolean isComplete() {
+        return pending == 0;
+    }
+    
     public int getGatewayUpdatesPending() {
-        return gatewayUpdatesPending;
+        return pending;
     }
 
     public void setGatewayUpdatesPending(int gatewayUpdatesPending) {
-        this.gatewayUpdatesPending = gatewayUpdatesPending;
+        pending = gatewayUpdatesPending;
     }
 
     public int getGatewayUpdatesFailed() {
-        return gatewayUpdatesFailed;
+        return failed;
     }
 
     public void setGatewayUpdatesFailed(int gatewayUpdatesFailed) {
-        this.gatewayUpdatesFailed = gatewayUpdatesFailed;
+        failed = gatewayUpdatesFailed;
     }
 
     public int getGatewayUpdatesSuccessful() {
-        return gatewayUpdatesSuccessful;
+        return successful;
     }
 
     public void setGatewayUpdatesSuccessful(int gatewayUpdatesSuccessful) {
-        this.gatewayUpdatesSuccessful = gatewayUpdatesSuccessful;
+        successful = gatewayUpdatesSuccessful;
+    }
+    
+    public String getSuccessPercent() {
+        int total = successful + failed + pending;
+        return StringUtils.percent(total, successful, 2);
+    }
+    
+    public String getFailedPercent() {
+        int total = successful + failed + pending;
+        return StringUtils.percent(total, failed, 2);
+    }
+    
+    public String getTotalPercent() {
+        int total = successful + failed + pending;
+        return StringUtils.percent(total, failed + successful, 2);
     }
     
 }
