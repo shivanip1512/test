@@ -44,10 +44,16 @@ struct processTimes_t {
     FILETIME currentTime;
 };
 
+struct processTimesLongLong_t {
+    ULONGLONG creationTime;
+    ULONGLONG exitTime;
+    ULONGLONG kernelTime;
+    ULONGLONG userTime;
+    ULONGLONG currentTime;
+};
+
 IM_EX_CTIBASE int getProcessTimes(processTimes_t &times);
-IM_EX_CTIBASE void fileTime2LongLong(ULARGE_INTEGER &ularge, FILETIME &filetime);
-IM_EX_CTIBASE void getProcessTimesLongLong(ULONGLONG &creationTime, ULONGLONG &kernelTime,
-                                        ULONGLONG &userTime, ULONGLONG &currentTime);
+IM_EX_CTIBASE struct processTimesLongLong_t getProcessTimesLongLong(void);
 
 IM_EX_CTIBASE double pdhGetCpuTotal(void);
 

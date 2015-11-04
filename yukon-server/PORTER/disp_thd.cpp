@@ -211,10 +211,10 @@ void DispatchMsgHandlerThread()
 
             if(TimeNow > nextCPULoadReportTime && cpuPointID != 0)     // Time to update CPU utilization Point?
             {
-                CtiMessage* pData = CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                     AnalogPointType, "Porter Usage");
-                pData->setSource("Porter Server");
-                VanGoghConnection.WriteConnQue(pData);
+                data->setSource("Porter Server");
+                VanGoghConnection.WriteConnQue(data.release());
                 nextCPULoadReportTime = TimeNow + 60;    // Wait another 60 seconds 
             }
 

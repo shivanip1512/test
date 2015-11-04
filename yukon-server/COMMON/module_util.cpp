@@ -117,7 +117,7 @@ static int processorCount;
 /** Calculate CPU Load based on processTimes().  Result is in percent. */
 double getCPULoad()
 {
-    ULONGLONG newCreationTime, newKernelTime, newUserTime, newCurrentTime;
+    struct processTimesLongLong_t newTimes;
     ULONGLONG elapsedUserTime;
     ULONGLONG elapsedKernelTime;
     ULONGLONG elapsedCPUTime;
@@ -126,7 +126,7 @@ double getCPULoad()
 
     CtiLockGuard<CtiCriticalSection> lock(cpuTimeLock);
 
-    Cti::getProcessTimesLongLong(newCreationTime, newKernelTime, newUserTime, newCurrentTime);
+    newTimes=Cti::getProcessTimesLongLong();
 
     if(oldCurrentTime == 0) // First time through?
     {
@@ -136,18 +136,18 @@ double getCPULoad()
     else
     {
         // Times reported are in 100 ns increments.  We convert to uS
-        elapsedUserTime = (newUserTime - oldUserTime)/10;
-        elapsedKernelTime = (newKernelTime - oldKernelTime)/10;
+        elapsedUserTime = (newTimes.userTime - oldUserTime)/10;
+        elapsedKernelTime = (newTimes.kernelTime - oldKernelTime)/10;
         elapsedCPUTime = elapsedKernelTime + elapsedUserTime;
 
-        elapsedTime = (newCurrentTime - oldCurrentTime)/10;
+        elapsedTime = (newTimes.currentTime - oldCurrentTime)/10;
         cpuLoad = (double)elapsedCPUTime / (double)elapsedTime;
     }
 
-    oldCreationTime = newCreationTime;
-    oldKernelTime = newKernelTime;
-    oldUserTime = newUserTime;
-    oldCurrentTime = newCurrentTime;
+    oldCreationTime = newTimes.creationTime;
+    oldKernelTime = newTimes.kernelTime;
+    oldUserTime = newTimes.userTime;
+    oldCurrentTime = newTimes.currentTime;
 
     return cpuLoad/processorCount*100;  // Handle multiple cores & Dont forget this is in percent.
 }

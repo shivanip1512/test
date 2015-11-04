@@ -857,10 +857,10 @@ void CtiCapController::controlLoop()
 
             if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
             {
-                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                     AnalogPointType, "CapControl Usage");
-                pData->setSource("CapControl Server");
-                getDispatchConnection()->WriteConnQue(pData);
+                data->setSource("CapControl Server");
+                getDispatchConnection()->WriteConnQue(data.release());
                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
             }
         }

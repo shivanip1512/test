@@ -324,6 +324,16 @@ void CtiCalcLogicService::Run( )
                             CTILOG_ERROR(dout, "Unable to reuse the old point lists.  Will attempt a DB reload in 15 sec.");
 
                             tempCalcThread.reset();
+
+                            if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)     // Time to update CPU utilization Point?
+                            {
+                                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                                    AnalogPointType, "Calc Usage");
+                                data->setSource("Calc Server");
+                                dispatchConnection->WriteConnQue(data.release());
+                                nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
+                            }
+
                             Sleep(15000);
                             continue;
                         }
@@ -417,10 +427,10 @@ void CtiCalcLogicService::Run( )
 
                     if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)     // Time to update CPU utilization Point?
                     {
-                        CtiMessage* pData = CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                        auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                             AnalogPointType, "Calc Usage");
-                        pData->setSource("Calc Server");
-                        dispatchConnection->WriteConnQue(pData);
+                        data->setSource("Calc Server");
+                        dispatchConnection->WriteConnQue(data.release());
                         nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                     }
 

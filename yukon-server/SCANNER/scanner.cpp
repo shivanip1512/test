@@ -455,8 +455,10 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)
             {
                 {
-                    VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(cpuPointID, 
-                        Cti::getCPULoad(), NormalQuality, AnalogPointType, ""));
+                    auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                        AnalogPointType, "Scanner Usage");
+                    data->setSource("Scanner Service");
+                    VanGoghConnection.WriteConnQue(data.release());
                     nextCPULoadReportTime = CtiTime::now() + 60;
                 }
             }
@@ -536,7 +538,10 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
         if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)
         {
-            VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality, AnalogPointType, ""));
+            auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality, 
+                AnalogPointType, "Scanner Usage");
+            data->setSource("Scanner Service");
+            VanGoghConnection.WriteConnQue(data.release());
             nextCPULoadReportTime=CtiTime::now()+60;
         }
 

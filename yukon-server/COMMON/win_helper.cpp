@@ -42,7 +42,7 @@ int getProcessTimes(processTimes_t &times)
 }
 
 /** Convert a FILETIME to a ULARGE_INTEGER */
-ULONGLONG &fileTime2LongLong(FILETIME &filetime)
+ULONGLONG fileTime2LongLong(FILETIME &filetime)
 {
     ULARGE_INTEGER ularge;
     ularge.LowPart = filetime.dwLowDateTime;
@@ -51,19 +51,18 @@ ULONGLONG &fileTime2LongLong(FILETIME &filetime)
 }
 
 /** Read in ProcessTimes and make them into ULLONGLONG_INTEGERS */
-void getProcessTimesLongLong(
-    ULONGLONG &creationTime,
-    ULONGLONG &kernelTime,
-    ULONGLONG &userTime,
-    ULONGLONG &currentTime)
+struct processTimesLongLong_t getProcessTimesLongLong()
 {
     Cti::processTimes_t times;
+    Cti::processTimesLongLong_t longTimes;
     Cti::getProcessTimes(times);
 
-    creationTime = fileTime2LongLong(times.creationTime);
-    kernelTime = fileTime2LongLong(times.kernelTime);
-    userTime = fileTime2LongLong(times.userTime);
-    currentTime = fileTime2LongLong(times.currentTime);
+    longTimes.creationTime = fileTime2LongLong(times.creationTime);
+    longTimes.kernelTime = fileTime2LongLong(times.kernelTime);
+    longTimes.userTime = fileTime2LongLong(times.userTime);
+    longTimes.currentTime = fileTime2LongLong(times.currentTime);
+
+    return longTimes;
 }
 
 static PDH_HQUERY cpuQuery;

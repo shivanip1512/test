@@ -284,10 +284,10 @@ void CtiFDRService::Run( )
 
             if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
             {
-                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(),
+                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(),
                     NormalQuality, AnalogPointType, "");
-                pData->setSource("FDR Service");
-                FdrVanGoghConnection.WriteConnQue(pData);
+                data->setSource("FDR Service");
+                FdrVanGoghConnection.WriteConnQue(data.release());
                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
             }
 
