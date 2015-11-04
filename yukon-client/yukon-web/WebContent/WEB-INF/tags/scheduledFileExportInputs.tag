@@ -84,7 +84,7 @@
 
     <c:if test="${!isSmtpConfigured}">
         <tags:nameValue2 nameKey="yukon.common.email.send">
-            <tags:switchButton name="sendEmail" toggleGroup="email-address" offClasses="M0" 
+            <tags:switchButton name="sendEmail" checked="${exportData.sendEmail}" toggleGroup="email-address" offClasses="M0" 
                 offNameKey=".no.label" onNameKey=".yes.label"/>
             <tags:input id="emailNotificationAddress" path="notificationEmailAddresses" disabled="true" 
                 toggleGroup="email-address"/>
