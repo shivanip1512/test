@@ -467,7 +467,11 @@ void CtiCapController::controlLoop()
         CtiTime fifteenMinCheck = nextScheduledTimeAlignedOnRate( CtiTime(),  900);
 
         long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CapControl);
+        long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CapControlCPU);
+
         CtiTime NextThreadMonitorReportTime;
+        CtiTime nextCPULoadReportTime;
+
         CtiThreadMonitor::State previous;
 
         while(true)
@@ -702,21 +706,6 @@ void CtiCapController::controlLoop()
 
                         boost::this_thread::interruption_point();
 
-                        threadStatus.monitorCheck();
-
-                        if(pointID!=0)
-                        {
-                            CtiThreadMonitor::State next;
-                            if((next = ThreadMonitor.getState()) != previous ||
-                               CtiTime::now() > NextThreadMonitorReportTime)
-                            {
-                                // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
-                                previous = next;
-                                NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
-
-                                getDispatchConnection()->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
-                            }
-                        }
                     }
                     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                     {
@@ -849,6 +838,30 @@ void CtiCapController::controlLoop()
             catch (...)
             {
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Exception while updating Voltage Regulators.");
+            }
+            threadStatus.monitorCheck();
+
+            if(pointID != 0)
+            {
+                CtiThreadMonitor::State next;
+                if((next = ThreadMonitor.getState()) != previous ||
+                    CtiTime::now() > NextThreadMonitorReportTime)
+                {
+                    // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
+                    previous = next;
+                    NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate(CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2);
+
+                    getDispatchConnection()->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                }
+            }
+
+            if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
+            {
+                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                    AnalogPointType, "CapControl Usage");
+                pData->setSource("CapControl Server");
+                getDispatchConnection()->WriteConnQue(pData);
+                nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
             }
         }
     }

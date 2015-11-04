@@ -19,4 +19,11 @@
     <bean id="deviceDataMonitorProcessor" class="com.cannontech.amr.monitors.impl.DeviceDataMonitorProcessorFactoryImpl"/>
 
     <bean class="com.cannontech.services.password.impl.EncryptPlainTextPasswordsServiceImpl"/>
+    
+    <bean id="systemMetrics" class="com.cannontech.common.systemMetrics.SystemMetricsImpl"
+           init-method="init" destroy-method="destroy">
+        <property name="paoId" value="0"/>
+        <property name="attribute" value="SERVICE_MANAGER_CPU_UTILIZATION"/>
+    </bean>
+    
 </beans>

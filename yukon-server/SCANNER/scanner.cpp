@@ -392,7 +392,11 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     }
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Scanner);
+    long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::ScannerCPU);
+
     CtiTime NextThreadMonitorReportTime;
+    CtiTime nextCPULoadReportTime;
+
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
 
     // Initialize the connection to VanGogh....
@@ -435,6 +439,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             NextScan[DLC_LP_SCAN] = TimeOfNextLPScan();
         }
 
+        // Todo: Looks like NextScan[REMOTE_SCAN] is always set to +60 seconds, so this may be
+        // dead code.  
         if(NextScan[REMOTE_SCAN] == MAXTime  &&
            NextScan[DLC_LP_SCAN] == MAXTime  &&
            !ScannerQuit)
@@ -444,6 +450,15 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             for(int i = 0; i < 30 && !ScannerQuit; i++)
             {
                 Sleep(1000);
+            }
+
+            if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)
+            {
+                {
+                    VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(cpuPointID, 
+                        Cti::getCPULoad(), NormalQuality, AnalogPointType, ""));
+                    nextCPULoadReportTime = CtiTime::now() + 60;
+                }
             }
         }
     }
@@ -517,6 +532,12 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
                 VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
             }
+        }
+
+        if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)
+        {
+            VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality, AnalogPointType, ""));
+            nextCPULoadReportTime=CtiTime::now()+60;
         }
 
         // release the lock

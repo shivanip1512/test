@@ -36,4 +36,11 @@
 
     <bean id="curtailmentEventScheduler" class="com.cannontech.notif.handler.CurtailmentEventScheduler"
         abstract="false" scope="singleton" autowire="byType"/>
+
+    <bean id="systemMetrics" class="com.cannontech.common.systemMetrics.SystemMetricsImpl"
+        init-method="init" destroy-method="destroy">
+        <property name="paoId" value="0" />
+        <property name="attribute" value="NOTIFICATION_SERVER_CPU_UTILIZATION" />
+    </bean>
+    
 </beans>

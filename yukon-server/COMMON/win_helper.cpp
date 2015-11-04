@@ -41,6 +41,31 @@ int getProcessTimes(processTimes_t &times)
     return 0;
 }
 
+/** Convert a FILETIME to a ULARGE_INTEGER */
+ULONGLONG &fileTime2LongLong(FILETIME &filetime)
+{
+    ULARGE_INTEGER ularge;
+    ularge.LowPart = filetime.dwLowDateTime;
+    ularge.HighPart = filetime.dwHighDateTime;
+    return ularge.QuadPart;
+}
+
+/** Read in ProcessTimes and make them into ULLONGLONG_INTEGERS */
+void getProcessTimesLongLong(
+    ULONGLONG &creationTime,
+    ULONGLONG &kernelTime,
+    ULONGLONG &userTime,
+    ULONGLONG &currentTime)
+{
+    Cti::processTimes_t times;
+    Cti::getProcessTimes(times);
+
+    creationTime = fileTime2LongLong(times.creationTime);
+    kernelTime = fileTime2LongLong(times.kernelTime);
+    userTime = fileTime2LongLong(times.userTime);
+    currentTime = fileTime2LongLong(times.currentTime);
+}
+
 static PDH_HQUERY cpuQuery;
 static PDH_HCOUNTER cpuTotal;
 

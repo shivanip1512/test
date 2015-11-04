@@ -43,6 +43,13 @@ public:
        CapControl = 1004,
        FDR = 1005,
        Macs = 1006,
+       PorterCPU = 1007,
+       DispatchCPU = 1008,
+       ScannerCPU = 1009,
+       CalcCPU = 1010,
+       CapControlCPU = 1011,
+       FDRCPU = 1012,
+       MacsCPU = 1013,
        LastPoint
    };
 

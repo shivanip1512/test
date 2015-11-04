@@ -94,7 +94,11 @@ void CtiMCServer::run()
         if( init() )
         {
             const long threadMonitorPointId = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Macs);
+            long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::MacsCPU);
+
             CtiTime LastThreadMonitorTime, NextThreadMonitorReportTime;
+            CtiTime nextCPULoadReportTime;
+
             CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
 
             /* Main Loop */
@@ -124,6 +128,15 @@ void CtiMCServer::run()
                             _dispatchConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(threadMonitorPointId, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                         }
                     }
+                }
+
+                if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
+                {
+                    CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(),
+                        NormalQuality, AnalogPointType, "");
+                    pData->setSource("Macs Service");
+                    _dispatchConnection.WriteConnQue(pData);
+                    nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                 }
 
                 // adjust the timeout if the next event time is imminent

@@ -237,7 +237,11 @@ void CtiFDRService::Run( )
     }
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
+    long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDRCPU);
+
     CtiTime NextThreadMonitorReportTime;
+    CtiTime nextCPULoadReportTime;
+
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
 
     // for shutting down
@@ -278,7 +282,16 @@ void CtiFDRService::Run( )
                 }
             }
 
-            while( CtiMessage *msg = FdrVanGoghConnection.ReadConnQue(0) )
+            if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
+            {
+                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(),
+                    NormalQuality, AnalogPointType, "");
+                pData->setSource("FDR Service");
+                FdrVanGoghConnection.WriteConnQue(pData);
+                nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
+            }
+
+            while(CtiMessage *msg = FdrVanGoghConnection.ReadConnQue(0))
             {
                 if( msg->isA() == MSG_COMMAND && ((CtiCommandMsg*)msg)->getOperation() == CtiCommandMsg::AreYouThere )
                 {

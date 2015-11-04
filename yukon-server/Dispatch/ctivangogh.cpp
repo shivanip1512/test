@@ -4450,9 +4450,12 @@ void CtiVanGogh::VGRPHWriterThread()
 void CtiVanGogh::VGAppMonitorThread()
 {
     CtiTime NextThreadMonitorReportTime;
+    CtiTime nextCPULoadReportTime;
+
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
     CtiPointDataMsg vgStatusPoint;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Dispatch);
+    long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::DispatchCPU);
 
     //on startup wait for 10 minutes!
     for(int i=0;i<120 && !bGCtrlC;i++)
@@ -4466,6 +4469,15 @@ void CtiVanGogh::VGAppMonitorThread()
             MainQueue_.putQueue(pData);
 
             NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate(CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2);
+        }
+
+        if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
+        {
+            CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                AnalogPointType, "Dispatch Usage");
+            pData->setSource(DISPATCH_APPLICATION_NAME);
+            MainQueue_.putQueue(pData);
+            nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
         }
     }
 
@@ -4506,6 +4518,15 @@ void CtiVanGogh::VGAppMonitorThread()
             for(int i=0;i<=36 && !bGCtrlC;i++)
             {
                 Sleep(5000);//5 second sleep
+
+                if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
+                {
+                    CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                        AnalogPointType, "");
+                    pData->setSource(DISPATCH_APPLICATION_NAME);
+                    MainQueue_.putQueue(pData);
+                    nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
+                }
 
                 //Check thread watcher status
                 if(pointID!=0)

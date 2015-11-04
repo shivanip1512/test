@@ -368,6 +368,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.DIVERSIFIED_LOAD">Diversified Load</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAX_LOAD_REDUCTION">Max Load Reduction</entry>
     <entry key="yukon.common.attribute.builtInAttribute.AVAILABLE_LOAD_REDUCTION">Available Load Reduction</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NOTIFICATION_SERVER_CPU_UTILIZATION">Notification Server CPU Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SERVICE_MANAGER_CPU_UTILIZATION">Service Manager CPU Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.WEB_SERVICE_CPU_UTILIZATION">Web Service CPU Utilization</entry>
     
     
     <!-- BuiltInAttribute see note above about changing values -->

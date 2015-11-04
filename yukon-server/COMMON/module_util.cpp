@@ -109,6 +109,50 @@ std::string reportPrivateBytes(const compileinfo_t &info)
     return buf.extractToString();
 }
 
+/** Keep old accumulations around to calculate deltas */
+static ULONGLONG oldCreationTime, oldKernelTime, oldUserTime, oldCurrentTime;
+static CtiCriticalSection cpuTimeLock;
+static int processorCount;
+
+/** Calculate CPU Load based on processTimes().  Result is in percent. */
+double getCPULoad()
+{
+    ULONGLONG newCreationTime, newKernelTime, newUserTime, newCurrentTime;
+    ULONGLONG elapsedUserTime;
+    ULONGLONG elapsedKernelTime;
+    ULONGLONG elapsedCPUTime;
+    ULONGLONG elapsedTime;
+    double cpuLoad = 0.0;
+
+    CtiLockGuard<CtiCriticalSection> lock(cpuTimeLock);
+
+    Cti::getProcessTimesLongLong(newCreationTime, newKernelTime, newUserTime, newCurrentTime);
+
+    if(oldCurrentTime == 0) // First time through?
+    {
+        std::string processorCountString(getenv("NUMBER_OF_PROCESSORS"));
+        processorCount = std::stoi(processorCountString);
+    }
+    else
+    {
+        // Times reported are in 100 ns increments.  We convert to uS
+        elapsedUserTime = (newUserTime - oldUserTime)/10;
+        elapsedKernelTime = (newKernelTime - oldKernelTime)/10;
+        elapsedCPUTime = elapsedKernelTime + elapsedUserTime;
+
+        elapsedTime = (newCurrentTime - oldCurrentTime)/10;
+        cpuLoad = (double)elapsedCPUTime / (double)elapsedTime;
+    }
+
+    oldCreationTime = newCreationTime;
+    oldKernelTime = newKernelTime;
+    oldUserTime = newUserTime;
+    oldCurrentTime = newCurrentTime;
+
+    return cpuLoad/processorCount*100;  // Handle multiple cores & Dont forget this is in percent.
+}
+
+/** Get processTimes as a string */
 std::string reportProcessTimes(const compileinfo_t &info)
 {
     Cti::processTimes_t times;
@@ -139,6 +183,7 @@ std::string reportProcessTimes(const compileinfo_t &info)
     return buf.extractToString();
 }
 
+/** Get Total processor time as a string */
 std::string reportProcessorTimes()
 {
     double cpuTotal=Cti::pdhGetCpuTotal();

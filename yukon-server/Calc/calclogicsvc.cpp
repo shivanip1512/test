@@ -171,9 +171,12 @@ void CtiCalcLogicService::Run( )
 
     ThreadMonitor.start(); //ecs 1/4/2005
     CtiTime NextThreadMonitorReportTime;
+    CtiTime nextCPULoadReportTime;
+
     CtiThreadMonitor::State previous;
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Calc);
+    long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CalcCPU);
 
     if(_running_in_console)
     {
@@ -412,7 +415,16 @@ void CtiCalcLogicService::Run( )
 
                     threadStatus.monitorCheck( CtiThreadMonitor::ExtendedMonitorTime );
 
-                    Sleep( 1000 );
+                    if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)     // Time to update CPU utilization Point?
+                    {
+                        CtiMessage* pData = CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                            AnalogPointType, "Calc Usage");
+                        pData->setSource("Calc Server");
+                        dispatchConnection->WriteConnQue(pData);
+                        nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
+                    }
+
+                    Sleep(1000);
                     ::std::time(&timeNow);
 
                     if( timeNow > _nextCheckTime )

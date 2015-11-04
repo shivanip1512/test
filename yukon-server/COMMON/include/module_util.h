@@ -31,6 +31,7 @@ IM_EX_CTIBASE bool isTimeToReportMemory(const CtiTime Now);
 IM_EX_CTIBASE std::string reportPrivateBytes(const compileinfo_t &info);
 IM_EX_CTIBASE std::string reportProcessTimes(const compileinfo_t &info);
 IM_EX_CTIBASE std::string reportProcessorTimes();
+IM_EX_CTIBASE double getCPULoad();
 
 } // namespace Cti
 

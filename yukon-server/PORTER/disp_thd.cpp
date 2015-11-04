@@ -38,8 +38,10 @@ void DispatchMsgHandlerThread()
     CtiTime         LastThreadMonitorTime, NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous;
     CtiTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
+    CtiTime         nextCPULoadReportTime;
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
+    long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PorterCPU);
 
     CTILOG_INFO(dout, "DispatchMsgHandlerThd started");
 
@@ -206,6 +208,16 @@ void DispatchMsgHandlerThread()
                     }
                 }
             }
+
+            if(TimeNow > nextCPULoadReportTime && cpuPointID != 0)     // Time to update CPU utilization Point?
+            {
+                CtiMessage* pData = CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                    AnalogPointType, "Porter Usage");
+                pData->setSource("Porter Server");
+                VanGoghConnection.WriteConnQue(pData);
+                nextCPULoadReportTime = TimeNow + 60;    // Wait another 60 seconds 
+            }
+
         }
         catch(...)
         {

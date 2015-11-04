@@ -9952,6 +9952,35 @@
     <!-- SYSTEM RESERVED PAOS -->
     <pao id="SYSTEM">
         <displayName>SYSTEM</displayName>
+        <displayGroup>System</displayGroup>
+        <points>
+            <point type="Analog" offset="1014">
+                <init>true</init>
+                <name>Notification Server CPU Utilization</name>
+                <stategroup value="SystemState" />
+            </point>
+            <point type="Analog" offset="1015">
+                <init>true</init>
+                <name>Service Manager CPU Utilization</name>
+                <stategroup value="SystemState" />
+            </point>
+            <point type="Analog" offset="1016">
+                <init>true</init>
+                <name>Web Service CPU Utilization</name>
+                <stategroup value="SystemState" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="NOTIFICATION_SERVER_CPU_UTILIZATION">
+                <basicLookup point="Notification Server CPU Utilization" />
+            </attribute>
+            <attribute name="SERVICE_MANAGER_CPU_UTILIZATION">
+                <basicLookup point="Service Manager CPU Utilization" />
+            </attribute>
+            <attribute name="WEB_SERVICE_CPU_UTILIZATION">
+                <basicLookup point="Web Service CPU Utilization" />
+            </attribute>
+        </attributes>
     </pao>
 
     <!-- GRID ADVISOR -->

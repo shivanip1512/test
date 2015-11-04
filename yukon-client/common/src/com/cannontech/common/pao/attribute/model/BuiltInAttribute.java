@@ -316,6 +316,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     DIVERSIFIED_LOAD("Diversified Load", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
     MAX_LOAD_REDUCTION("Max Load Reduction", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
     AVAILABLE_LOAD_REDUCTION("Available Load Reduction", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
+    
+    NOTIFICATION_SERVER_CPU_UTILIZATION("Notification Server CPU Utilization", AttributeGroup.PERCENT),
+    SERVICE_MANAGER_CPU_UTILIZATION("Service Manager CPU Utilization", AttributeGroup.PERCENT),
+    WEB_SERVICE_CPU_UTILIZATION("Web Service CPU Utilization", AttributeGroup.PERCENT),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
@@ -463,6 +467,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allOtherAttributes.addAll(lookupByGroup.get(AttributeGroup.OTHER));
         allOtherAttributes.addAll(lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));
         allOtherAttributes.addAll(lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
+        allOtherAttributes.addAll(lookupByGroup.get(AttributeGroup.PERCENT));
         allGroupedBuilder.put(AttributeGroup.OTHER, allOtherAttributes.build());
 
         allGroupedBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, lookupByGroup.get(AttributeGroup.BLINK_AND_OUTAGE));
