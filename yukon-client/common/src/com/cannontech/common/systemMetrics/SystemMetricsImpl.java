@@ -105,7 +105,9 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
     public void init() {
         log.debug("SystemMetricsImpl.init()");
 
-        PaoIdentifier paoIdentifier = new PaoIdentifier(0, PaoType.SYSTEM);
+        PaoIdentifier paoIdentifier =
+            new PaoIdentifier(com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID,
+                              PaoType.SYSTEM);
         point = attributeService.getPointForAttribute(paoIdentifier, attribute);
     }
 
