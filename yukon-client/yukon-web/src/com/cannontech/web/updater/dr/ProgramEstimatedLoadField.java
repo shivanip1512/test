@@ -31,7 +31,6 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private EstimatedLoadDao estimatedLoadDao;
     
-    private final Logger log = YukonLogManager.getLogger(EstimatedLoadBackingService.class);
     @Override
     public String getFieldName() {
         return "PROGRAM";
@@ -84,7 +83,7 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
 
     
     private String createCalculatingJson(int programId, YukonUserContext userContext) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        //MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         Map<String, String> calculatingNode = Maps.newHashMapWithExpectedSize(2);
         calculatingNode.put("paoId", String.valueOf(programId));
@@ -100,7 +99,7 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         MessageSourceResolvable na = new YukonMessageSourceResolvable("yukon.common.na");
-        MessageSourceResolvable exceptionMessage = backingServiceHelper.resolveException(exception, userContext);
+       //MessageSourceResolvable exceptionMessage = backingServiceHelper.resolveException(exception, userContext);
 
         Map<String, String> errorNode = Maps.newHashMapWithExpectedSize(5);
         errorNode.put("paoId", String.valueOf(programId));

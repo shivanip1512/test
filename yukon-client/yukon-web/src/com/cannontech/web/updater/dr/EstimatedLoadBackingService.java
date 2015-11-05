@@ -25,9 +25,11 @@ public class EstimatedLoadBackingService implements UpdateBackingService {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private final Map<String, EstimatedLoadBackingField> handlersMap;
-    /* The following regex pattern is used to split the paoId from the field when receiving a data updater identifier.
+    /* The following regex pattern is used to split the paoId or possibly a second id from the field when receiving a data updater identifier.
      * In order to match, the string has to have the form: VALUE/VALUE
-     * For example, it will match: '1234/SCENARIO', storing '1234' in the first group and 'SCENARIO' in the second. */
+     * For example, it will match: '1234/SCENARIO', storing '1234' in the first group and 'SCENARIO' in the second.
+     * In the event that we may have a third value, the match will be 1234/TAG/1234, where the first group is isolated as 
+     * numberic, the second group is the IDENTIFIER, and the final third group is the ScenarioID */
     private final static Pattern pattern = Pattern.compile("^(\\d+)/([A-Z_]+)/?(\\d+)?$");
 
     @Autowired

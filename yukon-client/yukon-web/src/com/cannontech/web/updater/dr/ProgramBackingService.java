@@ -32,7 +32,8 @@ public class ProgramBackingService extends UpdateBackingServiceBase<LMProgramBas
             program = datedObject.getObject();
         }
         if(idBits.length == 3) {
-            return backingField.getValue(program, idBits, userContext);
+            Integer scenarioId = Integer.parseInt(idBits[2]);/// this still smells. 
+            return backingField.getValue(program, scenarioId, userContext);
         } else {
             return backingField.getValue(program, userContext);   
         }
