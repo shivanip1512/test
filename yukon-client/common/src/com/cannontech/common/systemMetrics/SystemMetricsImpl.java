@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -107,7 +108,11 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
         log.debug("SystemMetricsImpl.init()");
 
         PaoIdentifier paoIdentifier = new PaoIdentifier(Device.SYSTEM_DEVICE_ID, PaoType.SYSTEM);
-        point = attributeService.getPointForAttribute(paoIdentifier, attribute);
+        try {
+            point = attributeService.getPointForAttribute(paoIdentifier, attribute);
+        } catch (IllegalUseOfAttribute e) {
+            log.error("Attribute: ["+attribute+"] not found for pao type: [SYSTEM]");
+        }
     }
 
     /**
