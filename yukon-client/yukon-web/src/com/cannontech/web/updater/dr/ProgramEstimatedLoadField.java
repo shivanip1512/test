@@ -2,11 +2,11 @@ package com.cannontech.web.updater.dr;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.clientutils.YukonLogManager;
+
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
@@ -83,8 +83,6 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
 
     
     private String createCalculatingJson(int programId, YukonUserContext userContext) {
-        //MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        
         Map<String, String> calculatingNode = Maps.newHashMapWithExpectedSize(2);
         calculatingNode.put("paoId", String.valueOf(programId));
         calculatingNode.put("status", "calc");
@@ -97,10 +95,7 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
 
     private String createErrorJson(int programId, EstimatedLoadException exception, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        
         MessageSourceResolvable na = new YukonMessageSourceResolvable("yukon.common.na");
-       //MessageSourceResolvable exceptionMessage = backingServiceHelper.resolveException(exception, userContext);
-
         Map<String, String> errorNode = Maps.newHashMapWithExpectedSize(5);
         errorNode.put("paoId", String.valueOf(programId));
         errorNode.put("status", "error");

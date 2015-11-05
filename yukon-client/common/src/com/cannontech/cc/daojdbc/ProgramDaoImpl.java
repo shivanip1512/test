@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +22,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import com.cannontech.core.dao.NotFoundException;
+
 
 public class ProgramDaoImpl implements ProgramDao {
 
@@ -34,6 +32,7 @@ public class ProgramDaoImpl implements ProgramDao {
     @Autowired private ProgramParameterDao programParameterDao;
     @Autowired private ProgramNotificationGroupDao programNotificationGroupDao;
     @Autowired private AvailableProgramGroupDaoImpl programGroupDao;
+    
     private SimpleTableAccessTemplate<Program> template;
     
     @PostConstruct
@@ -104,25 +103,6 @@ public class ProgramDaoImpl implements ProgramDao {
         program.setLastIdentifier(result);
         template.save(program);
         return result;
-    }
-    
-    public String findGearName(int programId, int gearNumber) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder(); 
-            sql.append("SELECT GearName FROM LMProgramDirectGear");
-            sql.append("WHERE DeviceId").eq(programId);
-            sql.append("AND GearNumber").eq(gearNumber);
-            String result = jdbcTemplate.queryForString(sql);
-            if(result != null && !result.isEmpty())
-            {
-                return result; 
-            }
-            throw new NotFoundException("No GearName was found using: programId" + programId +" and gearNumber:" + gearNumber);
-        }
-        catch (IncorrectResultSizeDataAccessException e) {
-               Log.debug(e.getMessage());
-        }
-        return null;
     }
     
     private FieldMapper<Program> programFieldMapper = new FieldMapper<Program>() {

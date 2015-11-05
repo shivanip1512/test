@@ -5,13 +5,15 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.cc.dao.ProgramDao;
+
+
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.NaturalOrderComparator;
 

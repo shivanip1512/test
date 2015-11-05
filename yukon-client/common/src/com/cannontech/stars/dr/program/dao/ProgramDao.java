@@ -58,4 +58,12 @@ public interface ProgramDao {
 
     public DisplayablePao getProgram(int programId);
     public List<PaoIdentifier> getAllProgramPaoIdentifiers();
+    
+    /*
+     *Finds the associated gear name of the gear id
+     * @param programId The program Id of the object a gearName is being retrieved for
+     * @param gearNumber The gear id of the object associated to the program, and carries the gear name
+     * @return string label associate to the gear id record.
+     * */
+    public String findGearName(int programId, int gearNumber);
 }
