@@ -12,7 +12,7 @@ yukon.ami.channel.scanning = (function (){
     mod = {
             init: function() {
              $(document).on('yukon.toggle.click', '#toggle-state', function (ev) {
-             $('#confirm-popup').dialog('close');
+             $('#confirm-popup').remove();
              doToggleScanning(0,newToggleVal);
             });
 
