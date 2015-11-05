@@ -30,6 +30,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.device.Device;
 import com.google.common.util.concurrent.AtomicDouble;
 
 /**
@@ -105,9 +106,7 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
     public void init() {
         log.debug("SystemMetricsImpl.init()");
 
-        PaoIdentifier paoIdentifier =
-            new PaoIdentifier(com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID,
-                              PaoType.SYSTEM);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(Device.SYSTEM_DEVICE_ID, PaoType.SYSTEM);
         point = attributeService.getPointForAttribute(paoIdentifier, attribute);
     }
 
