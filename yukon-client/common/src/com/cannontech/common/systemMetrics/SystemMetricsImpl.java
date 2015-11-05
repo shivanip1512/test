@@ -43,8 +43,6 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
 
     private Logger log = YukonLogManager.getLogger(this.getClass());
 
-    private int paoId;
-    private PaoIdentifier paoIdentifier;
     private BuiltInAttribute attribute;
 
     class SystemMetricsThreadFactory implements ThreadFactory {
@@ -91,17 +89,6 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
     }
 
     /**
-     * Setter that takes the PaoID and sets up the point id.
-     * 
-     * @param paoId PaoId for Load Statistics
-     */
-    @Override
-    public void setPaoId(int paoId) {
-        log.debug("setPaoId(" + paoId + ")");
-        this.paoId = paoId;
-    }
-
-    /**
      * Setter that takes the attribute Id.
      * 
      * @param attribute attribute Id.
@@ -117,7 +104,8 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
      */
     public void init() {
         log.debug("SystemMetricsImpl.init()");
-        paoIdentifier = new PaoIdentifier(paoId, PaoType.SYSTEM);
+
+        PaoIdentifier paoIdentifier = new PaoIdentifier(0, PaoType.SYSTEM);
         point = attributeService.getPointForAttribute(paoIdentifier, attribute);
     }
 
@@ -150,7 +138,7 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
 
         try {
             double loadAverage = calculateLoadAverage();
-            pointAccessDao.setPointValue(point, Instant.now(), loadAverage);
+            pointAccessDao.setPointValue(point, loadAverage);
         } catch (IllegalUseOfAttribute e) {
             log.warn("caught exception in SystemMetrics.run", e);
         }

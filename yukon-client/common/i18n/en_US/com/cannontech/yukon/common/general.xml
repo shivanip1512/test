@@ -16,7 +16,7 @@
 <entry key="yukon.common.attributeGroups.CURRENT">Current</entry>
 <entry key="yukon.common.attributeGroups.DEMAND">Demand</entry>
 <entry key="yukon.common.attributeGroups.ESTIMATED_LOAD">Estimated Load</entry>
-<entry key="yukon.common.attributeGroups.PERCENT">Percent</entry>
+<entry key="yukon.common.attributeGroups.SYSTEM">Yukon System</entry>
 <entry key="yukon.common.attributeGroups.OTHER">Other</entry>
 <entry key="yukon.common.attributeGroups.PROFILE">Profile</entry>
 <entry key="yukon.common.attributeGroups.REACTIVE">Reactive</entry>

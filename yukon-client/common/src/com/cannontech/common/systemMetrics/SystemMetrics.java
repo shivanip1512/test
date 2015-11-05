@@ -12,13 +12,6 @@ public interface SystemMetrics {
     public final static int WEB_SERVER_CPU = 1016;
     
     /**
-     * Setter that takes the PaoID and sets up the point id.
-     * 
-     * @param paoId PaoId for Load Statistics
-     */
-    public void setPaoId(int paoId);
-    
-    /**
      * Setter that takes the attribute Id.
      * 
      * @param attribute attribute Id.

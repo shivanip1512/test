@@ -130,12 +130,15 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
     
                 // GC info
                 GcInfo gcInfo = info.getGcInfo();
-                logGC.debug("GC start: "+gcInfo.getStartTime()+", end: "+gcInfo.getEndTime()+", duration: "+gcInfo.getDuration()+" (ms)");
+                logGC.debug("GC start: " + gcInfo.getStartTime() + ", end: " + gcInfo.getEndTime()
+                            + ", duration: " + gcInfo.getDuration() + " (ms)");
                 logGC.debug("   reason: "+info.getGcCause());
                 
                 // Get before and after GC stats
-                Map<String, java.lang.management.MemoryUsage> memBefore = gcInfo.getMemoryUsageBeforeGc();
-                Map<String, java.lang.management.MemoryUsage> memAfter = gcInfo.getMemoryUsageAfterGc();
+                Map<String, java.lang.management.MemoryUsage> memBefore =
+                    gcInfo.getMemoryUsageBeforeGc();
+                Map<String, java.lang.management.MemoryUsage> memAfter =
+                    gcInfo.getMemoryUsageAfterGc();
                 
                 // Print in a pretty table
                 logGC.debug(String.format("%22s|%7s|%7s", "Heap Used", "Before", "After"));
@@ -143,13 +146,15 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
                     String name = entry.getKey();
                     long memUsedBefore = entry.getValue().getUsed();
                     long memUsedAfter = memAfter.get(name).getUsed();
-                    logGC.debug(String.format("%22s|%7d|%7d", name, memUsedBefore/1024, memUsedAfter/1024));
+                    logGC.debug(String.format("%22s|%7d|%7d",
+                                              name,
+                                              memUsedBefore / 1024,
+                                              memUsedAfter / 1024));
                 }
             }
             
             // Just for grins...
-            logGC
-                .debug("Free/Total memory: " + freeMemory / 1024 + "k/" + totalMemory / 1024 + "k");
+            logGC.debug("Free/Total memory: " + freeMemory / 1024 + "k/" + totalMemory / 1024 + "k");
         }
     }
 }

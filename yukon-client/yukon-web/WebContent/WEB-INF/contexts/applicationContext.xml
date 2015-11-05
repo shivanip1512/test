@@ -1274,7 +1274,6 @@
 
     <bean id="systemMetrics" class="com.cannontech.common.systemMetrics.SystemMetricsImpl"
            init-method="init" destroy-method="destroy">
-        <property name="paoId" value="0"/>
         <property name="attribute" value="WEB_SERVICE_CPU_UTILIZATION"/>
     </bean>
     

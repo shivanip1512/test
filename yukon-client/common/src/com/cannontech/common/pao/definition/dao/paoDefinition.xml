@@ -9957,17 +9957,23 @@
             <point type="Analog" offset="1014">
                 <init>true</init>
                 <name>Notification Server CPU Utilization</name>
-                <stategroup value="SystemState" />
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
             </point>
             <point type="Analog" offset="1015">
                 <init>true</init>
                 <name>Service Manager CPU Utilization</name>
-                <stategroup value="SystemState" />
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
             </point>
             <point type="Analog" offset="1016">
                 <init>true</init>
                 <name>Web Service CPU Utilization</name>
-                <stategroup value="SystemState" />
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
             </point>
         </points>
         <attributes>
