@@ -457,7 +457,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 {
                     auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                         AnalogPointType, "Scanner Usage");
-                    data->setSource("Scanner Service");
+                    data->setSource(SCANNER_APPLICATION_NAME);
                     VanGoghConnection.WriteConnQue(data.release());
                     nextCPULoadReportTime = CtiTime::now() + 60;
                 }
@@ -540,7 +540,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         {
             auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality, 
                 AnalogPointType, "Scanner Usage");
-            data->setSource("Scanner Service");
+            data->setSource(SCANNER_APPLICATION_NAME);
             VanGoghConnection.WriteConnQue(data.release());
             nextCPULoadReportTime=CtiTime::now()+60;
         }

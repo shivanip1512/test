@@ -134,7 +134,7 @@ void CtiMCServer::run()
                 {
                     auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(),
                         NormalQuality, AnalogPointType, "");
-                    data->setSource("Macs Service");
+                    data->setSource(MACS_APPLICATION_NAME);
                     _dispatchConnection.WriteConnQue(data.release());
                     nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                 }

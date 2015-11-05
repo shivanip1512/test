@@ -11,6 +11,7 @@
 
 static HANDLE iShutdown;
 
+#define FDR_APPLICATION_NAME  "FDR Service"
 
 class CtiFDRService : public CService
 {

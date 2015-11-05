@@ -213,7 +213,7 @@ void DispatchMsgHandlerThread()
             {
                 auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                     AnalogPointType, "Porter Usage");
-                data->setSource("Porter Server");
+                data->setSource(PORTER_APPLICATION_NAME);
                 VanGoghConnection.WriteConnQue(data.release());
                 nextCPULoadReportTime = TimeNow + 60;    // Wait another 60 seconds 
             }

@@ -24,6 +24,8 @@
 
 class CtiReturnMsg;
 
+#define CAPCONTROL_APPLICATION_NAME  "CapControl Server"
+
 class CtiCapController : public MessageListener
 {
     public:

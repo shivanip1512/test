@@ -329,7 +329,7 @@ void CtiCalcLogicService::Run( )
                             {
                                 auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                                     AnalogPointType, "Calc Usage");
-                                data->setSource("Calc Server");
+                                data->setSource(CALCLOGIC_APPLICATION_NAME);
                                 dispatchConnection->WriteConnQue(data.release());
                                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                             }
@@ -429,7 +429,7 @@ void CtiCalcLogicService::Run( )
                     {
                         auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                             AnalogPointType, "Calc Usage");
-                        data->setSource("Calc Server");
+                        data->setSource(CALCLOGIC_APPLICATION_NAME);
                         dispatchConnection->WriteConnQue(data.release());
                         nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                     }

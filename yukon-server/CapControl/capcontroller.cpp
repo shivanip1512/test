@@ -859,7 +859,7 @@ void CtiCapController::controlLoop()
             {
                 auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                     AnalogPointType, "CapControl Usage");
-                data->setSource("CapControl Server");
+                data->setSource(CAPCONTROL_APPLICATION_NAME);
                 getDispatchConnection()->WriteConnQue(data.release());
                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
             }

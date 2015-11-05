@@ -4,6 +4,8 @@
 #include "dlldefs.h"
 #include "dllbase.h"
 
+#define SCANNER_APPLICATION_NAME "Scanner Service"
+
 #define RESULT_THREAD_STK_SIZE 100000
 #define DAS08_THREAD_STK_SIZE  50000
 

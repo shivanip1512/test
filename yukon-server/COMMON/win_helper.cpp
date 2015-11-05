@@ -24,23 +24,6 @@ long long getPrivateBytes()
     return memoryCounters.PrivateUsage;
 }
 
-int getProcessTimes(processTimes_t &times)
-{
-    if(!GetProcessTimes(GetCurrentProcess(),
-        &times.creationTime, &times.exitTime, &times.kernelTime, &times.userTime))
-    {
-        const DWORD error = GetLastError();
-
-        CTILOG_ERROR(dout, "GetProcessTimes failed with error code " << error << " / " << getSystemErrorMessage(error));
-
-        return -1;
-    }
-
-    GetSystemTimeAsFileTime(&times.currentTime);
-
-    return 0;
-}
-
 /** Convert a FILETIME to a ULARGE_INTEGER */
 ULONGLONG fileTime2LongLong(FILETIME &filetime)
 {
@@ -51,16 +34,31 @@ ULONGLONG fileTime2LongLong(FILETIME &filetime)
 }
 
 /** Read in ProcessTimes and make them into ULLONGLONG_INTEGERS */
-struct processTimesLongLong_t getProcessTimesLongLong()
+struct processTimes_t getProcessTimes()
 {
-    Cti::processTimes_t times;
-    Cti::processTimesLongLong_t longTimes;
-    Cti::getProcessTimes(times);
+    Cti::processTimes_t longTimes;
+    FILETIME creationTime;
+    FILETIME exitTime;
+    FILETIME kernelTime;
+    FILETIME userTime;
+    FILETIME currentTime;
 
-    longTimes.creationTime = fileTime2LongLong(times.creationTime);
-    longTimes.kernelTime = fileTime2LongLong(times.kernelTime);
-    longTimes.userTime = fileTime2LongLong(times.userTime);
-    longTimes.currentTime = fileTime2LongLong(times.currentTime);
+    if(!GetProcessTimes(GetCurrentProcess(),
+        &creationTime, &exitTime, &kernelTime, &userTime))
+    {
+        const DWORD error = GetLastError();
+
+        CTILOG_ERROR(dout, "GetProcessTimes failed with error code " << error << " / " << getSystemErrorMessage(error));
+
+        return longTimes;
+    }
+
+    GetSystemTimeAsFileTime(&currentTime);
+
+    longTimes.creationTime = fileTime2LongLong(creationTime);
+    longTimes.kernelTime = fileTime2LongLong(kernelTime);
+    longTimes.userTime = fileTime2LongLong(userTime);
+    longTimes.currentTime = fileTime2LongLong(currentTime);
 
     return longTimes;
 }

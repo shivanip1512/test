@@ -15,6 +15,8 @@
 class CtiCommandMsg;
 class CtiSignalMsg;
 
+#define CALCLOGIC_APPLICATION_NAME  "Calc Server"
+
 class CtiCalcLogicService : public CService
 {
 public:

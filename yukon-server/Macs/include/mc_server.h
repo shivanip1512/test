@@ -25,6 +25,8 @@
 #include <set>
 #include <map>
 
+#define MACS_APPLICATION_NAME "Macs Service"
+
 class CtiMCServer : public CtiThread
 {
 public:

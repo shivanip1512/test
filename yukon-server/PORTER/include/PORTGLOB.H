@@ -4,6 +4,8 @@
 #include "porter.h"
 #include "logger.h"
 
+#define PORTER_APPLICATION_NAME "Porter Service"
+
 #define PORTER_DEBUG_VERBOSE           0x00000001
 #define PORTER_DEBUG_NEXUSREAD         0x00000004
 #define PORTER_DEBUG_PORTQUEREAD       0x00000008

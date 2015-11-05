@@ -255,7 +255,7 @@ void CtiFDRService::Run( )
         // Initialize the connection to VanGogh....
         FdrVanGoghConnection.setName("FDR Service to Dispatch");
         FdrVanGoghConnection.start();
-        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("FDR Service", GetCurrentThreadId(), true));
+        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(FDR_APPLICATION_NAME, GetCurrentThreadId(), true));
 
         do
         {
@@ -286,7 +286,7 @@ void CtiFDRService::Run( )
             {
                 auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(),
                     NormalQuality, AnalogPointType, "");
-                data->setSource("FDR Service");
+                data->setSource(FDR_APPLICATION_NAME);
                 FdrVanGoghConnection.WriteConnQue(data.release());
                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
             }

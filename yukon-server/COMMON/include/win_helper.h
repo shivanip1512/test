@@ -37,14 +37,6 @@ inline std::string getSystemErrorMessage(const DWORD errorCode)
 IM_EX_CTIBASE long long getPrivateBytes();
 
 struct processTimes_t {
-    FILETIME creationTime;
-    FILETIME exitTime;
-    FILETIME kernelTime;
-    FILETIME userTime;
-    FILETIME currentTime;
-};
-
-struct processTimesLongLong_t {
     ULONGLONG creationTime;
     ULONGLONG exitTime;
     ULONGLONG kernelTime;
@@ -52,8 +44,7 @@ struct processTimesLongLong_t {
     ULONGLONG currentTime;
 };
 
-IM_EX_CTIBASE int getProcessTimes(processTimes_t &times);
-IM_EX_CTIBASE struct processTimesLongLong_t getProcessTimesLongLong(void);
+IM_EX_CTIBASE processTimes_t getProcessTimes(void);
 
 IM_EX_CTIBASE double pdhGetCpuTotal(void);
 
