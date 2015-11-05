@@ -34,11 +34,11 @@
                     <c:set var="gateway" value="${gateways.get(entry.gatewayPaoId)}"/>
                     <tr>
                         <cti:url var="url" value="/stars/gateways/${entry.gatewayPaoId}"/>
-                        <td class="wsnw"><a href="${url}">${gateway.name}</a></td>
-                        <td>${gateway.rfnIdentifier.sensorSerialNumber}</td>
-                        <td>${entry.originalVersion}</td>
-                        <td>${entry.newVersion}</td>
-                        <td>${entry.updateServerUrl}</td>
+                        <td class="wsnw"><a href="${url}">${fn:length(gateway.name)}</a></td>
+                        <td>${fn:length(gateway.rfnIdentifier.sensorSerialNumber)}</td>
+                        <td>${fn:length(entry.originalVersion)}</td>
+                        <td>${fn:length(entry.newVersion)}</td>
+                        <td>${fn:length(entry.updateServerUrl)}</td>
                         <td><i:inline key="${entry.status}"/></td>
                     </tr>
                 </c:forEach>
