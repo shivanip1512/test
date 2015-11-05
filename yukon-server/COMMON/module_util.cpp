@@ -109,15 +109,15 @@ std::string reportPrivateBytes(const compileinfo_t &info)
     return buf.extractToString();
 }
 
-/** Keep old accumulations around to calculate deltas */
-static ULONGLONG oldCreationTime, oldKernelTime, oldUserTime, oldCurrentTime;
-static CtiCriticalSection cpuTimeLock;
-static int processorCount;
 
 /** Calculate CPU Load based on processTimes().  Result is in percent. */
 double getCPULoad()
 {
-    struct processTimes_t newTimes;
+    /** Keep old accumulations around to calculate deltas */
+    static ULONGLONG oldCreationTime, oldKernelTime, oldUserTime, oldCurrentTime;
+    static CtiCriticalSection cpuTimeLock;
+    static int processorCount;
+
     ULONGLONG elapsedUserTime;
     ULONGLONG elapsedKernelTime;
     ULONGLONG elapsedCPUTime;
@@ -126,7 +126,7 @@ double getCPULoad()
 
     CtiLockGuard<CtiCriticalSection> lock(cpuTimeLock);
 
-    newTimes=getProcessTimes();
+    const auto newTimes=getProcessTimes();
 
     if(oldCurrentTime == 0) // First time through?
     {
@@ -155,10 +155,9 @@ double getCPULoad()
 /** Get processTimes as a string */
 std::string reportProcessTimes(const compileinfo_t &info)
 {
-    processTimes_t times;
     StreamBuffer buf;
 
-    times = getProcessTimes();
+    const auto times = getProcessTimes();
 
     unsigned long long elapsed = times.currentTime - times.creationTime;
 
