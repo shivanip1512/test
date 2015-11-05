@@ -46,5 +46,7 @@
     </tags:nameValueContainer2>
     
 </form:form>
+<cti:url var="url" value="/capcontrol/areas/${area.id}"/>
+<form:form method="DELETE" id="delete-area-form" action="${url}" ></form:form>
 
 </cti:msgScope>

@@ -57,6 +57,12 @@ yukon.da.area = (function () {
                 });
             });
             
+            $(document).on('yukon:ui:dialog:delete', function (ev) {
+                var dialog = $(ev.target);
+                $('#delete-area-form').submit();
+                dialog.dialog('close');
+            });
+            
             /** User clicked volt reduction toggle button; show hide point picker. */
             $(document).on('click', '.js-volt-reduct', function () {
                 
