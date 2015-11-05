@@ -43,7 +43,7 @@
                                 <x:htmlTag value="legend"><x:outputText value="General"/></x:htmlTag>
 								<x:outputLabel for="Name" value="Name: "
 									title="A label for the item in the system" />
-								<x:inputText id="Name" maxlength="32" styleClass="char32Label"
+								<x:inputText id="Name" maxlength="60" styleClass="char32Label"
 									value="#{capControlForm.wizData.name}" />
 	
 								<x:htmlTag value="br"/>
@@ -94,7 +94,7 @@
                                 
 									<x:outputLabel for="Controller_Name" value="Controller Name: "
 										title="A label for the Controller in the system" />
-									<x:inputText id="Controller_Name" required="false" maxlength="32"
+									<x:inputText id="Controller_Name" required="false" maxlength="60"
 										styleClass="char32Label"
 										value="#{capControlForm.wizData.nestedWizard.name}"
 										disabled="#{!capControlForm.wizData.createNested}" />
