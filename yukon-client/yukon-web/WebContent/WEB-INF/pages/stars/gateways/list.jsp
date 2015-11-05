@@ -276,8 +276,8 @@
                             <cti:formatDate value="${update.sendDate}" type="DATEHM_12"/>
                         </a>
                     </td>
-                    <td>${update.totalGateways}</td>
-                    <td>${update.totalUpdateServers}</td>
+                    <td class="js-firmware-gateways">${update.totalGateways}</td>
+                    <td class="js-firmware-update-servers">${update.totalUpdateServers}</td>
                     <td class="js-firmware-update-status">
                         <c:choose>
                             <c:when test="${update.gatewayUpdatesPending == 0}">
@@ -351,6 +351,27 @@
             <td class="js-cert-update-failed tar error"></td>
             <td class="js-cert-update-successful tar success"></td>
         </tr>
+        
+        
+        <tr class="js-new-firmware-update" data-yui="">
+            <td class="js-firmware-update-timestamp">
+                <a href="javascript:void(0);"></a>
+            </td>
+            <td class="js-firmware-gateways"></td>
+            <td class="js-firmware-update-servers"></td>
+            <td class="js-firmware-update-status">
+                <div class="progress dib vat">
+                    <div class="progress-bar progress-bar-success"></div>
+                    <div class="progress-bar progress-bar-danger"></div>
+                </div>
+                <span class="js-percent"></span>
+            </td>
+            <td class="js-firmware-update-pending tar subtle"></td>
+            <td class="js-firmware-update-failed tar error"></td>
+            <td class="js-firmware-update-successful tar success"></td>
+        </tr>
+        
+        
     </table>
     <cti:toJson object="${text}" id="gateway-text"/>
 </div>

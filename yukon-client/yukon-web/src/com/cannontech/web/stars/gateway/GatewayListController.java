@@ -108,6 +108,12 @@ public class GatewayListController {
         
         if (enableNMGatewayVersion) {
             List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
+            firmwareUpdates.sort(new Comparator<RfnGatewayFirmwareUpdateSummary>() {
+                @Override
+                public int compare(RfnGatewayFirmwareUpdateSummary first, RfnGatewayFirmwareUpdateSummary second) {
+                    return second.getSendDate().compareTo(first.getSendDate());
+                }
+            });
             model.addAttribute("firmwareUpdates", firmwareUpdates);
         }
         

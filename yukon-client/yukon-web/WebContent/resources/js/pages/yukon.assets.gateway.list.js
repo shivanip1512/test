@@ -89,7 +89,23 @@ yukon.assets.gateway.list = (function () {
                 update = updates[yui],
                 row = $('[data-yui="' + yui + '"]');
                 
-                _updateFirmwareRow(row, update);
+                // If a row doesn't exist yet for this update, clone one from the template
+                if (!row.length) {
+                    row = $('.js-new-firmware-update').clone()
+                          .removeClass('js-new-firmware-update')
+                          .attr('data-yui', yui);
+                    
+                    // Update the new row like normal
+                    _updateFirmwareRow(row, update);
+                    
+                    // Append the new row and do some show/hide, in case there were no rows before this one.
+                    $('.js-no-firmware-updates').hide();
+                    $('#firmware-table tbody').prepend(row);
+                    $('#firmware-table').show();
+                } else {
+                    // A row already existed for this update, so just update the values.
+                    _updateFirmwareRow(row, update);
+                }
             });
         }).always(function () {
             setTimeout(_updateFirmwareUpdates, 4000);
@@ -100,6 +116,9 @@ yukon.assets.gateway.list = (function () {
         var timestamp = moment(update.sendDate.millis).tz(yg.timezone).format(yg.formats.date.full_hm);
         
         row.find('.js-firmware-update-timestamp a').text(timestamp);
+        row.find('.js-firmware-gateways').text(update.totalGateways);
+        row.find('.js-firmware-update-servers').text(update.totalUpdateServers);
+        
         if (update.complete) {
             row.find('.js-firmware-update-status').html('<span class="success">' + _text['complete'] + '</span>');
         } else {
