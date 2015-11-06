@@ -51,7 +51,6 @@ import com.google.common.collect.Lists;
 public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
     private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
-    private final ParameterizedRowMapper<Integer> programIdRowMapper = createProgramIdRowMapper();
     private final PaoNameDisplayablePaoRowMapper programRowMapper = new PaoNameDisplayablePaoRowMapper();
 
     @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
@@ -369,12 +368,7 @@ public class ProgramDaoImpl implements ProgramDao {
             sql.append("SELECT GearName FROM LMProgramDirectGear");
             sql.append("WHERE DeviceId").eq(programId);
             sql.append("AND GearNumber").eq(gearNumber);
-            String result = jdbcTemplate.queryForString(sql);
-            if(result != null && !result.isEmpty())
-            {
-                return result; 
-            }
-            throw new NotFoundException("No GearName was found using: programId" + programId +" and gearNumber:" + gearNumber);
+            return jdbcTemplate.queryForString(sql); 
         }
         catch (IncorrectResultSizeDataAccessException e) {
             return null;
