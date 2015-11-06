@@ -60,6 +60,15 @@ yukon.assets.gateway.list = (function () {
                     row.find('.js-gw-conn-status').attr('title', data.connectionStatusText)
                     .find('.state-box').toggleClass('green', data.connected).toggleClass('red', !data.connected);
                     row.find('.js-gw-ip').text(data.ip);
+                    row.find('.js-gw-rv').text(data.releaseVersion);
+                    if(data.hasUpdateVersion) { 
+                        row.find('.js-gateway-update-available').removeClass('dn');
+                    }
+                    else {
+                        if(!row.find('.js-gateway-update-available').hasClass('dn')) {
+                            row.find('.js-gateway-update-available').addClass('dn');
+                        }
+                    }
                     row.find('.js-gw-last-comm').attr('title', timestamp).text(data.lastCommText)
                     .toggleClass('green', data.lastComm == 'SUCCESSFUL')
                     .toggleClass('red', data.lastComm == 'FAILED')
