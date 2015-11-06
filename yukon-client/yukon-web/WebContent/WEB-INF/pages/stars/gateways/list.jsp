@@ -310,7 +310,10 @@
             <td class="js-gw-sn"></td>
             <td class="js-gw-ip"></td>
             <c:if test="${enableNMGatewayVersion}">
-                <td class="js-gw-rv"></td>
+                <td class="js-gw-rv">
+                <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
+                <cti:icon icon="icon-download" classes="js-gateway-update-available fn dn" title="${updateAvailable}"/>
+                </td>
             </c:if>
             <td class="js-gw-last-comm"></td>
             <td class="js-gw-data-collection">
