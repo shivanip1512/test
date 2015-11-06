@@ -204,9 +204,6 @@
                                     </div>
                                 </li>
                             </cti:checkRolesAndProperties>
-                            <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-                                <li><a href="<cti:url value="/dev"/>">Development</a></li>
-                            </cti:checkGlobalRolesAndProperties>
                             <c:if test="${showNM}">
                                 <li><a href="${nmUrl}" target="_blank"><i:inline key="yukon.common.networkManager"/></a></li>
                             </c:if>
@@ -239,6 +236,7 @@
                                         <li><cti:msg2 key=".buildInfo" arguments="${buildInfo}"
                                                 htmlEscapeArguments="false"/></li>
                                         <li>${servletPath}</li>
+                                        <li><a href="<cti:url value="/dev"/>">Development</a></li>
                                     </ul>
                                 </cti:checkGlobalRolesAndProperties>
                             </div>
