@@ -317,9 +317,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     MAX_LOAD_REDUCTION("Max Load Reduction", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
     AVAILABLE_LOAD_REDUCTION("Available Load Reduction", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
     
-    NOTIFICATION_SERVER_CPU_UTILIZATION("Notification Server CPU Utilization", AttributeGroup.SYSTEM),
-    SERVICE_MANAGER_CPU_UTILIZATION("Service Manager CPU Utilization", AttributeGroup.SYSTEM),
-    WEB_SERVICE_CPU_UTILIZATION("Web Service CPU Utilization", AttributeGroup.SYSTEM),
+    NOTIFICATION_SERVER_CPU_UTILIZATION("Notification Server CPU Utilization", AttributeGroup.SYSTEM, false),
+    SERVICE_MANAGER_CPU_UTILIZATION("Service Manager CPU Utilization", AttributeGroup.SYSTEM, false),
+    WEB_SERVICE_CPU_UTILIZATION("Web Service CPU Utilization", AttributeGroup.SYSTEM, false),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
