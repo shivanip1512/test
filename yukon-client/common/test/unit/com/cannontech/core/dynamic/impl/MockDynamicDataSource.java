@@ -20,6 +20,7 @@ import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.collect.Maps;
@@ -109,13 +110,13 @@ public class MockDynamicDataSource implements DynamicDataSource {
 
     @Override
     @Deprecated
-    public PointData getPointData(int pointId) throws DynamicDataAccessException {
+    public LitePointData getPointData(int pointId) throws DynamicDataAccessException {
         throw new MethodNotImplementedException();
     }
 
     @Override
     @Deprecated
-    public Set<PointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException {
+    public Set<LitePointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException {
         throw new MethodNotImplementedException();
     }
 

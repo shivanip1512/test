@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 
@@ -32,7 +33,7 @@ public interface DynamicDataSource {
      * @Deprecated use getPointValue
      */
     @Deprecated
-    public PointData getPointData(int pointId) throws DynamicDataAccessException;
+    public LitePointData getPointData(int pointId) throws DynamicDataAccessException;
     /**
      * Please use getPointValue to avoid creating a dependency on the actual PointData message
      * @param pointId
@@ -41,7 +42,7 @@ public interface DynamicDataSource {
      * @Deprecated use getPointValue
      */
     @Deprecated
-    public Set<PointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException;
+    public Set<LitePointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException;
     
     public PointValueQualityHolder getPointValue(int pointId) throws DynamicDataAccessException;
     

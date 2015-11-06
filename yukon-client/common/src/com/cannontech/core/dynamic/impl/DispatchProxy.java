@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
@@ -46,15 +47,15 @@ class DispatchProxy {
      * @param pointId
      * @return
      */
-    PointData getPointData(int pointId) {
+    LitePointData getPointData(int pointId) {
         Multi m = getPointDataMulti(ImmutableSet.of(pointId));
-        List<PointData> pointData = new ArrayList<PointData>(1);
+        List<LitePointData> pointData = new ArrayList<LitePointData>(1);
         extractPointData(pointData, m);
         Validate.isTrue(pointData.size() != 0, "Returned multi was empty: ", pointData.size());
         if (pointData.size() > 1) {
             log.warn("Returned multi was bigger than expected, ignoring other elements: " + pointData.subList(1, pointData.size()));
         }
-        return (PointData) pointData.get(0);
+        return pointData.get(0);
     }
     
     /**
@@ -62,12 +63,13 @@ class DispatchProxy {
      * @param pointIds
      * @return
      */
-    Set<PointData> getPointData(Set<Integer> pointIds) {
-        Set<PointData> pointData = new HashSet<PointData>((int)(pointIds.size() / 0.75f) + 1);
+    Set<LitePointData> getPointData(Set<Integer> pointIds) {
+        Set<LitePointData> pointData = new HashSet<LitePointData>((int)(pointIds.size() / 0.75f) + 1);
         if (!pointIds.isEmpty()) {
             Multi m = getPointDataMulti(pointIds);
             extractPointData(pointData, m);
         }
+        
         return pointData;
     }
     
@@ -222,10 +224,10 @@ class DispatchProxy {
      * @param pointData
      * @param m
      */
-    private void extractPointData(Collection<PointData> pointData, Multi m) {
+    private void extractPointData(Collection<LitePointData> pointData, Multi m) {
         for (Object o : m.getVector()) {
             if (o instanceof PointData) {
-                pointData.add((PointData) o);
+                pointData.add(LitePointData.of((PointData) o));
             } else if (o instanceof Multi) {
                 extractPointData(pointData, (Multi) o);
             } else if (o instanceof Signal) {

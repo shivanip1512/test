@@ -53,6 +53,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.command.service.CommandService;
+import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.base.Function;
@@ -134,7 +135,7 @@ public class TdcServiceImpl implements TdcService {
         
     @Override
     public void sendPointData(int pointId, double value, LiteYukonUser user){
-        PointData pd = dynamicDataSource.getPointData(pointId);
+        LitePointData pd = dynamicDataSource.getPointData(pointId);
         PointData data  = new PointData();
         data.setId(pointId);
         data.setTags(pd.getTags());

@@ -42,13 +42,8 @@ import com.cannontech.yukon.IServerConnection;
         dispatchConnection.addMessageListener(this);
     }
 
-    PointData getPointData(int pointId) {
-        LitePointData lpd = pointData.get(pointId);
-        PointData ptData = null;
-        if (lpd != null) {
-            ptData = PointData.of(lpd);
-        }
-        return ptData;
+    LitePointData getPointData(int pointId) {
+       return pointData.get(pointId);
     }
 
     Set<Signal> getSignals(int pointId) {
@@ -100,7 +95,7 @@ import com.cannontech.yukon.IServerConnection;
     }
 
     private void handleSignal(Signal signal) {
-        PointData pointData = getPointData(signal.getPointID());
+        LitePointData pointData = getPointData(signal.getPointID());
         if (pointData != null) {
             pointData.setTags((signal.getTags() & ~Signal.MASK_ANY_ALARM)
                 | (pointData.getTags() & Signal.MASK_ANY_ALARM));

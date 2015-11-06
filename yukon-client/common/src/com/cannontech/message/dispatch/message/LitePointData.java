@@ -2,6 +2,7 @@ package com.cannontech.message.dispatch.message;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.Instant;
 import org.springframework.core.style.ToStringCreator;
 
@@ -29,22 +30,14 @@ public class LitePointData extends LiteBase implements PointValueQualityHolder {
         return lpd;
     }
 
-    @Override
     public int getId() {
         return id;
     }
 
-    /**
-     * Time that this point read/gathered. This is NOT the time this message was created!
-     * 
-     * @return java.util.Date
-     */
-    @Override
     public Date getPointDataTimeStamp() {
         return time;
     }
 
-    @Override
     public PointQuality getPointQuality() {
         return pointQuality;
     }
@@ -53,17 +46,14 @@ public class LitePointData extends LiteBase implements PointValueQualityHolder {
         return tags;
     }
 
-    @Override
     public int getType() {
         return type;
     }
 
-    @Override
     public PointType getPointType() {
         return PointType.getForId(type);
     }
 
-    @Override
     public double getValue() {
         return value;
     }
@@ -90,6 +80,22 @@ public class LitePointData extends LiteBase implements PointValueQualityHolder {
 
     public void setPointQuality(PointQuality pointQuality) {
         this.pointQuality = pointQuality;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
+        if (other instanceof LitePointData) {
+            return ((LitePointData) other).id == id;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(6709, 3511).append(id).toHashCode();
     }
 
     @Override
