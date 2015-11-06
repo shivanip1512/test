@@ -374,16 +374,55 @@ yukon.assets.gateway.list = (function () {
             $(document).on('yukon:assets:gateway:firmware-upgrade:send', function (ev) {
 
                 var popup = $('#send-firmware-upgrade-popup'),
-                btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
-                primary = btns.find('.js-primary-action'),
-                secondary = btns.find('.js-secondary-action');
+                    btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
 
                 yukon.ui.busy(primary);
                 secondary.prop('disabled', true);
 
                 popup.find('.user-message').remove();
 
-                $('#update-servers-form').ajaxSubmit({
+                var selectedRows = $('#firmware-upgrade-form').find('tr')
+                    .filter(function (idx, row) {
+                        return $(row).find('.js-send-now').is(':checked');
+                    });
+
+                /** Object.<string, number>
+                 *  Object mapping update servers to the count of gateways selected to use them
+                 */
+                var updateServersCount = {};
+                selectedRows.each(function (idx, row) {
+                    var updateServer = $(row).find('.js-update-server:input').val();
+                    if (updateServersCount[updateServer] !== undefined) {
+                        updateServersCount[updateServer] += 1;
+                    } else {
+                        updateServersCount[updateServer] = 1;
+                    }
+                });
+
+                var updateServers = Object.keys(updateServersCount);
+                var confirmMessage = yg.text.confirm;
+                if (updateServers.length > 1) {
+                    confirmMessage = popup.data('confirmMultipleText') + ' '+ yg.text.confirm;
+                }
+                yukon.ui.confirm({
+                    dialog: popup,
+                    confirmText: confirmMessage,
+                    event: 'yukon:assets:gateway:firmware-upgrade:confirmed',
+                    yesText: primary.text(),
+                    noText: yg.text.cancel
+                });
+            });
+
+            $(document).on('yukon:assets:gateway:firmware-upgrade:confirmed', function (ev) {
+
+                var popup = $(ev.target),
+                    btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
+
+                $('#firmware-upgrade-form').ajaxSubmit({
                     success: function (result, status, xhr, $form) {
 
                         popup.dialog('close');

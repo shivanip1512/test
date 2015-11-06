@@ -766,7 +766,11 @@ yukon.ui = (function () {
                     dialogClass: popup.is('[data-class]') ? 'yukon-dialog ' + popup.data('class') : 'yukon-dialog'
                 },
                 buttonOptions = {},
-                positionOptions = {};
+                positionOptions = {
+                    my: 'center',
+                    at: 'center',
+                    of: window
+                };
             
             if (popup.is('[data-title]')) options.title = popup.data('title');
             if (popup.is('[title]')) options.title = popup.attr('title');
@@ -896,8 +900,8 @@ yukon.ui = (function () {
                 confirmText = options.confirmText || yg.text.confirm,
                 yesText = options.yesText || yg.text.yes,
                 noText = options.noText || yg.text.no,
-                oldButtons = dialog.dialog('option', 'buttons'),
-                confirmButton = {
+                oldButtons = dialog.dialog('option', 'buttons');
+            var confirmButton = {
                     text: yesText,
                     click: function (ev) {
                         confirmSpan.remove();
@@ -905,19 +909,24 @@ yukon.ui = (function () {
                         $(target).trigger(event);
                     },
                     'class': 'primary action js-primary-action'
-                },
-                cancelButton = {
+                };
+            var cancelAction = function (ev) {
+                confirmSpan.remove();
+                dialog.dialog('option', 'buttons', oldButtons);
+            };
+            
+            dialog.on('change', ':input', cancelAction);
+
+            var cancelButton = {
                    text: noText,
-                   click: function (ev) {
-                       confirmSpan.remove();
-                       dialog.dialog('option', 'buttons', oldButtons);
-                   },
+                   click: cancelAction,
                    'class': 'js-secondary-action '
                 },
                 confirmSpan = $('<span>')
                 .attr('class', 'fr')
                 .css({'line-height': '36px'})
-                .text(confirmText);
+                .text(confirmText)
+                .flash();
             
             dialog.dialog('option', 'buttons', [cancelButton, confirmButton]);
             dialog.closest('.ui-dialog').find('.ui-dialog-buttonpane').append(confirmSpan);

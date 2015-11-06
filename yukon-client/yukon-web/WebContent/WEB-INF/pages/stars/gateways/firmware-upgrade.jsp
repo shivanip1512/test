@@ -11,7 +11,7 @@
 
 <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
 
-<form:form id="update-servers-form" commandName="gateways" action="${updateUrl}">
+<form:form id="firmware-upgrade-form" commandName="gateways" action="${updateUrl}">
     <cti:csrfToken/>
     <div class="scroll-lg js-resize-with-dialog">
     <table class="compact-results-table with-form-controls js-select-all-container">
@@ -45,12 +45,12 @@
                         <tags:input path="list[${idx}].availableVersion"/>
                     </td>
                     <td>
-                        <tags:input path="list[${idx}].updateServerUrl"/>
+                        <tags:input path="list[${idx}].updateServerUrl" inputClass="js-update-server "/>
                     </td>
                     <td class="tar">
                         <tags:setFormEditMode mode="EDIT"/>
                         <c:if test="${gateway.updateAvailable}">
-                            <tags:checkbox path="list[${idx}].sendNow" styleClass="js-select-all-item"/>
+                            <tags:checkbox path="list[${idx}].sendNow" styleClass="js-send-now js-select-all-item"/>
                         </c:if>
                     </td>
                 </tr>
