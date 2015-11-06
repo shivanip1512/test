@@ -9954,6 +9954,55 @@
         <displayName>SYSTEM</displayName>
         <displayGroup>System</displayGroup>
         <points>
+            <point type="Analog" offset="1007">
+                <init>true</init>
+                <name>Porter CPU Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
+            </point>
+            <point type="Analog" offset="1008">
+                <init>true</init>
+                <name>Dispatch CPU Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
+            </point>
+            <point type="Analog" offset="1009">
+                <init>true</init>
+                <name>Scanner CPU Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
+            </point>
+            <point type="Analog" offset="1010">
+                <init>true</init>
+                <name>Calc CPU Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
+            </point>
+            <point type="Analog" offset="1011">
+                <init>true</init>
+                <name>CapControl CPU Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
+            </point>
+            <point type="Analog" offset="1012">
+                <init>true</init>
+                <name>FDR CPU Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
+            </point>
+            <point type="Analog" offset="1013">
+                <init>true</init>
+                <name>MACS CPU Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
+            </point>
             <point type="Analog" offset="1014">
                 <init>true</init>
                 <name>Notification Server CPU Utilization</name>
@@ -9977,6 +10026,27 @@
             </point>
         </points>
         <attributes>
+            <attribute name="PORTER_CPU_UTILIZATION">
+                <basicLookup point="Porter CPU Utilization" />
+            </attribute>
+            <attribute name="DISPATCH_CPU_UTILIZATION">
+                <basicLookup point="Dispatch CPU Utilization" />
+            </attribute>
+            <attribute name="SCANNER_CPU_UTILIZATION">
+                <basicLookup point="Scanner CPU Utilization" />
+            </attribute>
+            <attribute name="CALC_CPU_UTILIZATION">
+                <basicLookup point="Calc CPU Utilization" />
+            </attribute>
+            <attribute name="CAPCONTROL_CPU_UTILIZATION">
+                <basicLookup point="CapControl CPU Utilization" />
+            </attribute>
+            <attribute name="FDR_CPU_UTILIZATION">
+                <basicLookup point="FDR CPU Utilization" />
+            </attribute>
+            <attribute name="MACS_CPU_UTILIZATION">
+                <basicLookup point="MACS CPU Utilization" />
+            </attribute>
             <attribute name="NOTIFICATION_SERVER_CPU_UTILIZATION">
                 <basicLookup point="Notification Server CPU Utilization" />
             </attribute>

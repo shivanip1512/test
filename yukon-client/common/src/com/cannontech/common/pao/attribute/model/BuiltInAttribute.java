@@ -317,6 +317,14 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     MAX_LOAD_REDUCTION("Max Load Reduction", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
     AVAILABLE_LOAD_REDUCTION("Available Load Reduction", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
     
+    PORTER_CPU_UTILIZATION("Porter CPU Utilization", AttributeGroup.SYSTEM, false),
+    DISPATCH_CPU_UTILIZATION("Dispatch CPU Utilization", AttributeGroup.SYSTEM, false),
+    SCANNER_CPU_UTILIZATION("Scanner CPU Utilization", AttributeGroup.SYSTEM, false),
+    CALC_CPU_UTILIZATION("Calc CPU Utilization", AttributeGroup.SYSTEM, false),
+    CAPCONTROL_CPU_UTILIZATION("CapControl CPU Utilization", AttributeGroup.SYSTEM, false),
+    FDR_CPU_UTILIZATION("FDR CPU Utilization", AttributeGroup.SYSTEM, false),
+    MACS_CPU_UTILIZATION("MACS CPU Utilization", AttributeGroup.SYSTEM, false),
+    
     NOTIFICATION_SERVER_CPU_UTILIZATION("Notification Server CPU Utilization", AttributeGroup.SYSTEM, false),
     SERVICE_MANAGER_CPU_UTILIZATION("Service Manager CPU Utilization", AttributeGroup.SYSTEM, false),
     WEB_SERVICE_CPU_UTILIZATION("Web Service CPU Utilization", AttributeGroup.SYSTEM, false),

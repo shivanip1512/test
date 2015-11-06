@@ -368,6 +368,15 @@
     <entry key="yukon.common.attribute.builtInAttribute.DIVERSIFIED_LOAD">Diversified Load</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAX_LOAD_REDUCTION">Max Load Reduction</entry>
     <entry key="yukon.common.attribute.builtInAttribute.AVAILABLE_LOAD_REDUCTION">Available Load Reduction</entry>
+    
+    <entry key="yukon.common.attribute.builtInAttribute.PORTER_CPU_UTILIZATION">Porter CPU Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DISPATCH_CPU_UTILIZATION">Dispatch CPU Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SCANNER_CPU_UTILIZATION">Scanner CPU Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CALC_CPU_UTILIZATION">Calc CPU Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CAPCONTROL_CPU_UTILIZATION">CapControl CPU Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FDR_CPU_UTILIZATION">FDR CPU Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MACS_CPU_UTILIZATION">MACS CPU Utilization</entry>
+
     <entry key="yukon.common.attribute.builtInAttribute.NOTIFICATION_SERVER_CPU_UTILIZATION">Notification Server CPU Utilization</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_MANAGER_CPU_UTILIZATION">Service Manager CPU Utilization</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WEB_SERVICE_CPU_UTILIZATION">Web Service CPU Utilization</entry>
