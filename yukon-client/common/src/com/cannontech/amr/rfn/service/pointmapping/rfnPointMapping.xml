@@ -280,6 +280,15 @@
         <paoType value="RFN430A3R"/>
         <paoType value="RFN430KV"/>
 <!-- existed for all + requested for ALL -->
+        <point name="Delivered kW"> 
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
         <point name="Delivered kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -523,15 +532,6 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <point name="Delivered kW"> 
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
         <point name="Received kWh (Rate A kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>

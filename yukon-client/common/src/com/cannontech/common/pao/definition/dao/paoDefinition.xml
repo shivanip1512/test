@@ -6292,6 +6292,13 @@
                 <unitofmeasure value="Seconds" />
                 <decimalplaces value="3" />
             </point>
+            <point type="Analog" offset="101">
+                <init>true</init>
+                <name>Delivered kW</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kW" />
+                <decimalplaces value="3" />
+            </point>
             <point type="Analog" offset="216">
                 <name>Over Voltage Measured</name>
                 <multiplier value="1.0" />
@@ -6886,6 +6893,9 @@
             <attribute name="CURRENT_LOSS">
                 <basicLookup point="Current Loss" />
             </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="Delivered kW" />
+            </attribute>
             <attribute name="DEMAND_OVERLOAD">
                 <basicLookup point="Demand Overload" />
             </attribute>
@@ -7295,14 +7305,6 @@
     <pao id="RFN_L2_CENTRON_AND_FOCUS" abstract="true"
         inherits="RFN_COMMON, RFN_TOU_FOR_ALL_EXCEPT_A3D">
         <points>
-            <point type="Analog" offset="101">
-                <init>true</init>
-                <name>Delivered kW</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="kW" />
-                <decimalplaces value="3" />
-            </point>
-
             <point type="Analog" offset="125">
                 <name>Received kWh (Rate A kWh)</name>
                 <multiplier value="1.0" />
@@ -7354,9 +7356,6 @@
             </point>
         </points>
         <attributes>
-            <attribute name="DEMAND">
-                <basicLookup point="Delivered kW" />
-            </attribute>
             <attribute name="RECEIVED_KWH_RATE_A">
                 <basicLookup point="Received kWh (Rate A kWh)" />
             </attribute>
