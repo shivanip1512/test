@@ -264,7 +264,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     PASSWORD_TABLE_CRC_ERROR("Password Table Crc Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     PHASE_ANGLE_DISPLACEMENT("Phase Angle Displacement", AttributeGroup.RFN_OTHER_EVENT, false),
     PHASE_LOSS("Phase Loss", AttributeGroup.RFN_OTHER_EVENT, false),
-    POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC("Polarity, Cross-phase and Energy Flow Diagnostic", AttributeGroup.RFN_OTHER_EVENT, false),
+    POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC("Polarity and Cross-phase and Energy Flow Diagnostic", AttributeGroup.RFN_OTHER_EVENT, false),
     POTENTIAL_INDICATOR_WARNING("Potential Indicator Warning", AttributeGroup.RFN_METERING_EVENT, false),
     POWER_FAIL_DATA_SAVE_ERROR("Power Fail Data Save Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
     PQM_TEST_FAILURE_WARNING("Pqm Test Failure Warning", AttributeGroup.RFN_METERING_EVENT, false),
