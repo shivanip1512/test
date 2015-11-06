@@ -117,8 +117,8 @@
                         <c:if test="${enableNMGatewayVersion}">
                             <td class="js-gw-rv">${fn:escapeXml(gateway.data.releaseVersion)}
                                 <c:if test="${not gateway.upgradeAvailable}">
-                                   <span><cti:icon icon="icon-download"/>
-                                  <i:inline key=".firmwareUpdateAvailable"/></span> 
+                                   <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
+                                   <cti:icon icon="icon-download" classes="js-gateway-update-available fn dn" title="${updateAvailable}"/>
                                 </c:if>
                             </td>
                         </c:if>

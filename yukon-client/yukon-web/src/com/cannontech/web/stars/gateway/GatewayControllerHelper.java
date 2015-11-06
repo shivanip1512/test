@@ -89,7 +89,7 @@ public class GatewayControllerHelper {
             dataJson.put("usVersion", data.getUpperStackVersion());
             dataJson.put("radioVersion", data.getRadioVersion());
             dataJson.put("releaseVersion", data.getReleaseVersion());
-            
+            dataJson.put("hasUpdateVersion",gateway.isUpgradeAvailable());
             dataJson.put("versionConflict", !data.getVersionConflicts().isEmpty());
             if (!data.getVersionConflicts().isEmpty()) {
                 List<String> conflicts = new ArrayList<>();
