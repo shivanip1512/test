@@ -94,7 +94,7 @@ public class AreasController {
 
     private static final Logger log = YukonLogManager.getLogger(AreasController.class);
     private final static String areaKey = "yukon.web.modules.capcontrol.area.";
-    private static final String AREA_URL = "/capcontrol/tier/areas";
+    private static final String areaUrl = "/capcontrol/tier/areas";
     
     private final Validator validator = new SimpleValidator<PaoModel>(PaoModel.class) {
         
@@ -245,7 +245,7 @@ public class AreasController {
         Area area = areaDao.getArea(areaId);
         areaDao.delete(area.getPaoIdentifier());
         flash.setConfirm(new YukonMessageSourceResolvable(areaKey + "deleted.success", area.getName()));
-        return "redirect:" + AREA_URL;
+        return "redirect:" + areaUrl;
     }
     
     /** SUB ASSIGNMENT POPUP */
