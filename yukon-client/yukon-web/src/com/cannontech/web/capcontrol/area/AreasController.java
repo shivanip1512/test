@@ -238,13 +238,13 @@ public class AreasController {
     }
     
     /**
-     * Method deletes the Capcontrol Substaion area / Special area
+     * Method deletes the Capcontrol Substation area / Special area
      */
     @RequestMapping(value = "areas/{areaId}", method = RequestMethod.DELETE)
     public String deleteArea(HttpServletResponse resp, @PathVariable int areaId, FlashScope flash) {
         Area area = areaDao.getArea(areaId);
         areaDao.delete(area.getPaoIdentifier());
-        flash.setConfirm(new YukonMessageSourceResolvable(areaKey + "deleted.Success", area.getName()));
+        flash.setConfirm(new YukonMessageSourceResolvable(areaKey + "deleted.success", area.getName()));
         return "redirect:" + AREA_URL;
     }
     
