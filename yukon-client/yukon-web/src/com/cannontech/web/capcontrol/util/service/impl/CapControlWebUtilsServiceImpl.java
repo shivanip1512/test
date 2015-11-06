@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -195,6 +196,8 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
         String url;
         if (pao.getPaoType().isRegulator()) {
             url = request.getContextPath() + "/capcontrol/regulators/" + ccId;
+        } else if (pao.getPaoType() == PaoType.CAP_CONTROL_AREA) {
+            url = request.getContextPath() + "/capcontrol/areas/" + ccId;
         } else {
             url= request.getContextPath() + "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
                     + "&amp;itemid=" + ccId;
