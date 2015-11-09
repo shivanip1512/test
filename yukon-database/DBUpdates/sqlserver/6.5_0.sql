@@ -280,32 +280,38 @@ AND Value = 'info@cannontech.com';
 /* End YUK-14755 */
 
 /* Start YUK-14784 */
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'Porter CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1007, 'None', 0);
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'Dispatch CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1008, 'None', 0);
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'Scanner CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1009, 'None', 0);
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'Calc CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1010, 'None', 0);
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'CapControl CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1011, 'None', 0);
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'FDR CPU Utilization', 0, 'Default', 0, 'N', 'N', 'R', 1012, 'None', 0);
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'MACS CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1013, 'None', 0);
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'Notification Server CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1014, 'None', 0);
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'Service Manager CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1015, 'None', 0);
-INSERT INTO Point VALUES ((SELECT MAX(PointId) + 1 FROM Point), 'Analog', 'Web Service CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1016, 'None', 0);
+INSERT INTO Point VALUES (-11, 'Analog', 'Porter CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1007, 'None', 0);
+INSERT INTO Point VALUES (-12, 'Analog', 'Dispatch CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1008, 'None', 0);
+INSERT INTO Point VALUES (-13, 'Analog', 'Scanner CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1009, 'None', 0);
+INSERT INTO Point VALUES (-14, 'Analog', 'Calc CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1010, 'None', 0);
+INSERT INTO Point VALUES (-15, 'Analog', 'CapControl CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1011, 'None', 0);
+INSERT INTO Point VALUES (-16, 'Analog', 'FDR CPU Utilization', 0, 'Default', 0, 'N', 'N', 'R', 1012, 'None', 0);
+INSERT INTO Point VALUES (-17, 'Analog', 'MACS CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1013, 'None', 0);
+INSERT INTO Point VALUES (-18, 'Analog', 'Notification Server CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1014, 'None', 0);
+INSERT INTO Point VALUES (-19, 'Analog', 'Service Manager CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1015, 'None', 0);
+INSERT INTO Point VALUES (-20, 'Analog', 'Web Service CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1016, 'None', 0);
 
-INSERT INTO PointAnalog
-    SELECT PointId, -1, 1, 0
-    FROM Point
-    WHERE PointName IN ('Porter CPU Utilization', 'Dispatch CPU Utilization', 
-        'Scanner CPU Utilization', 'Calc CPU Utilization', 'CapControl CPU Utilization', 'FDR CPU Utilization', 
-        'MACS CPU Utilization', 'Notification Server CPU Utilization', 'Service Manager CPU Utilization', 
-        'Web Service CPU Utilization');
+INSERT INTO PointAnalog VALUES (-11, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-12, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-13, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-14, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-15, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-16, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-17, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-18, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-19, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-20, -1, 1, 0 );
 
-INSERT INTO PointUnit 
-    SELECT PointId, 28, 2, 1.0E+30, -1.0E+30, 0
-    FROM Point
-    WHERE PointName IN ('Porter CPU Utilization', 'Dispatch CPU Utilization', 
-        'Scanner CPU Utilization', 'Calc CPU Utilization', 'CapControl CPU Utilization', 'FDR CPU Utilization', 
-        'MACS CPU Utilization', 'Notification Server CPU Utilization', 'Service Manager CPU Utilization', 
-        'Web Service CPU Utilization');
+INSERT INTO PointUnit VALUES (-11, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-12, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-13, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-14, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-15, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-16, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-17, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-18, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-19, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-20, 28, 2, 1.0E+30, -1.0E+30, 0);
 /* End YUK-14784 */
 
 /**************************************************************/
