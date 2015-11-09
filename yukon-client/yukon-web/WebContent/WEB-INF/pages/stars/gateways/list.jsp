@@ -115,11 +115,15 @@
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
                         <c:if test="${enableNMGatewayVersion}">
-                            <td class="js-gw-rv">${fn:escapeXml(gateway.data.releaseVersion)}
+                            <td class="js-gw-rv">
+                                <span class="js-gw-rv-text">
+                                    ${fn:escapeXml(gateway.data.releaseVersion)}
+                                </span>
                                 <c:if test="${not gateway.upgradeAvailable}">
-                                   <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
-                                   <cti:icon icon="icon-download" classes="js-gateway-update-available fn dn" title="${updateAvailable}"/>
+                                    <c:set var="dn" value="dn"/>
                                 </c:if>
+                                <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
+                                <cti:icon icon="icon-download" classes="js-gateway-update-available fn ${dn}" title="${updateAvailable}"/>
                             </td>
                         </c:if>
                         <c:set var="clazz" value="green"/>

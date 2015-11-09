@@ -27,15 +27,15 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     }
     
     public void setUpgradeVersion(String version) {
-        this.upgradeVersion = version;
+        upgradeVersion = version;
     }
     
     public String getUpgradeVersion() {
-        return this.upgradeVersion;
+        return upgradeVersion;
     }
     
     public boolean isUpgradeAvailable () {
-        return upgradeVersion !=null && upgradeVersion.equals(getData().getReleaseVersion());
+        return upgradeVersion != null && !upgradeVersion.equals(getData().getReleaseVersion());
     }
     
     public void setData(RfnGatewayData data) {
