@@ -196,7 +196,7 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
         String url;
         if (pao.getPaoType().isRegulator()) {
             url = request.getContextPath() + "/capcontrol/regulators/" + ccId;
-        } else if (pao.getPaoType() == PaoType.CAP_CONTROL_AREA) {
+        } else if (pao.getPaoType() == PaoType.CAP_CONTROL_AREA || pao.getPaoType() == PaoType.CAP_CONTROL_SPECIAL_AREA) {
             url = request.getContextPath() + "/capcontrol/areas/" + ccId;
         } else {
             url= request.getContextPath() + "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
