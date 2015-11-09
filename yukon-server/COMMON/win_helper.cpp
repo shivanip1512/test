@@ -36,7 +36,7 @@ ULONGLONG fileTime2LongLong(FILETIME &filetime)
 /** Read in ProcessTimes and make them into ULLONGLONG_INTEGERS */
 struct processTimes_t getProcessTimes()
 {
-    Cti::processTimes_t longTimes;
+    Cti::processTimes_t longTimes = {0, 0, 0, 0, 0};
     FILETIME creationTime;
     FILETIME exitTime;
     FILETIME kernelTime;
