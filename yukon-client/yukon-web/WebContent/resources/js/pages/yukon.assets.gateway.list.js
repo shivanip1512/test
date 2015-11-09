@@ -92,16 +92,16 @@ yukon.assets.gateway.list = (function () {
             url: yukon.url('/stars/gateways/firmware-update/data'),
             contentType: 'application/json'
         }).done(function (updates) {
-            Object.keys(updates).forEach(function (yui) {
+            Object.keys(updates).forEach(function (updateId) {
                 var 
-                update = updates[yui],
-                row = $('[data-yui="' + yui + '"]');
+                update = updates[updateId],
+                row = $('[data-update-id="' + updateId + '"]');
                 
                 // If a row doesn't exist yet for this update, clone one from the template
                 if (!row.length) {
                     row = $('.js-new-firmware-update').clone()
                           .removeClass('js-new-firmware-update')
-                          .attr('data-yui', yui);
+                          .attr('data-update-id', updateId);
                     
                     // Update the new row like normal
                     _updateFirmwareRow(row, update);
@@ -332,7 +332,7 @@ yukon.assets.gateway.list = (function () {
             /** User clicked one of the firmware update timestamp links, show details popup */
             $(document).on('click', '.js-firmware-update-timestamp a', function () {
                 
-                var id = $(this).closest('tr').data('yui'),
+                var id = $(this).closest('tr').data('updateId'),
                     timestamp = $(this).text(),
                     popup = $('#gateway-firmware-details-popup');
                 

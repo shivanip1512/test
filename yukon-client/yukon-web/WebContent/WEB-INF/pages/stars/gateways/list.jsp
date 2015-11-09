@@ -274,7 +274,7 @@
         <tfoot></tfoot>
         <tbody>
             <c:forEach var="update" items="${firmwareUpdates}">
-                <tr data-yui="${update.updateId}">
+                <tr data-update-id="${update.updateId}">
                     <td class="js-firmware-update-timestamp">
                         <a href="javascript:void(0);">
                             <cti:formatDate value="${update.sendDate}" type="DATEHM_12"/>
@@ -360,7 +360,7 @@
         </tr>
         
         
-        <tr class="js-new-firmware-update" data-yui="">
+        <tr class="js-new-firmware-update" data-update-id="">
             <td class="js-firmware-update-timestamp">
                 <a href="javascript:void(0);"></a>
             </td>
