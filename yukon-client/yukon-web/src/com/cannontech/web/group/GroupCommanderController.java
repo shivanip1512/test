@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,9 +144,11 @@ public class GroupCommanderController {
      * Sort order 
      *  - By PaoType db string 
      *  - By Display Order of the command
+     *  
+     *  If the duplicate command is found the first command will be kept.
      */
     private List<LiteCommand> getCommands(List<SimpleDevice> devices, LiteYukonUser user) {
-        List<LiteCommand> authorized = new ArrayList<LiteCommand>();
+        Map<String, LiteCommand> authorized = new LinkedHashMap<String, LiteCommand>();
         if (rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user)) {
             ImmutableMap<Integer, LiteCommand> commands =
                 Maps.uniqueIndex(commandDao.getAllCommands(), new Function<LiteCommand, Integer>() {
@@ -154,7 +157,7 @@ public class GroupCommanderController {
                         return from.getLiteID();
                     }
                 });
-        
+
             Set<PaoType> paoTypes = new TreeSet<PaoType>(new Comparator<PaoType>() {
                 @Override
                 public int compare(PaoType o1, PaoType o2) {
@@ -162,20 +165,21 @@ public class GroupCommanderController {
                 }
             });
             paoTypes.addAll(Collections2.transform(devices, SimpleDevice.TO_PAO_TYPE));
-         
+
             for (PaoType type : paoTypes) {
                 List<LiteDeviceTypeCommand> all = commandDao.getAllDevTypeCommands(type.getDbString());
                 for (LiteDeviceTypeCommand command : all) {
                     if (command.isVisible()) {
                         LiteCommand liteCommand = commands.get(command.getCommandId());
-                        if (commandAuthorizationService.isAuthorized(user, liteCommand.getCommand())) {
-                            authorized.add(liteCommand);
+                        if (!authorized.containsKey(liteCommand.getCommand())
+                            && commandAuthorizationService.isAuthorized(user, liteCommand.getCommand())) {
+                            authorized.put(liteCommand.getCommand(), liteCommand);
                         }
                     }
                 }
             }
         }
-        return authorized;
+        return new ArrayList<LiteCommand>(authorized.values());
     }
 
     @RequestMapping("groupProcessing")
