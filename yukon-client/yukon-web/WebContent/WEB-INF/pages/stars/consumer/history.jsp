@@ -27,7 +27,7 @@ $(function() {
 <h3>
     <cti:msg key="yukon.web.modules.consumer.history.pageTitle" /><br>
     <c:forEach var="stat" items="${thermostats}">
-        &nbsp;${stat.label}&nbsp;
+        &nbsp;${fn:escapeXml(stat.label)}&nbsp;
     </c:forEach>
 </h3>
 

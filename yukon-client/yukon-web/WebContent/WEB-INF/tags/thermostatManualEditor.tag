@@ -32,7 +32,7 @@
                             <cti:button nameKey="cancel" classes="cancelLabelEdit"/>
                         </span> 
                         <span id="thermostatName">
-                            <spring:escapeBody>${thermostat.deviceLabel}</spring:escapeBody>
+                            <spring:escapeBody>${fn:escapeXml(thermostat.deviceLabel)}</spring:escapeBody>
                             <a href="javascript:void(0)" class="editLabel"><i:inline key=".edit" /></a>
                         </span>
                     </form:form>
@@ -44,7 +44,7 @@
                                 <i:inline key="yukon.web.modules.operator.thermostatManual.multipleLabel"/>
                             </c:when>
                             <c:otherwise>
-                                <spring:escapeBody>${thermostat.deviceLabel}</spring:escapeBody>
+                                <spring:escapeBody>${fn:escapeXml(thermostat.deviceLabel)}</spring:escapeBody>
                             </c:otherwise>
                         </c:choose>
                     </span>
