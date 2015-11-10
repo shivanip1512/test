@@ -9,6 +9,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -26,11 +28,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.HtmlUtils;
 
-import com.cannontech.amr.errors.dao.DeviceError;
-import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.analysis.tablemodel.GroupCommanderFailureResultsModel;
 import com.cannontech.analysis.tablemodel.GroupCommanderSuccessResultsModel;
@@ -47,7 +45,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ResultExpiredException;
@@ -59,6 +57,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.simplereport.SimpleReportOutputter;
@@ -71,6 +70,10 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/commander/*")
@@ -88,7 +91,6 @@ public class GroupCommanderController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GroupCommandExecutor groupCommandExecutor;
     @Autowired private SimpleReportOutputter simpleReportOutputter;
-    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -124,13 +126,56 @@ public class GroupCommanderController {
     public void collectionProcessing(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model)
             throws ServletException {
 
-        List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
+        List<LiteCommand> commands = getCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
         model.addAttribute("commands", commands);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("email", contactDao.getUserEmail(userContext.getYukonUser()));
         boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
         model.addAttribute("isSmtpConfigured", isSmtpConfigured);
-
+    }
+    
+    /**
+     * Returns all commands that can be executed by the user for the devices selected.
+     * Authorization checks:
+     *  - If the user can execute a manual command
+     *  - If command is visible
+     *  - If the user is authorized to execute commands
+     * Sort order 
+     *  - By PaoType db string 
+     *  - By Display Order of the command
+     */
+    private List<LiteCommand> getCommands(List<SimpleDevice> devices, LiteYukonUser user) {
+        List<LiteCommand> authorized = new ArrayList<LiteCommand>();
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user)) {
+            ImmutableMap<Integer, LiteCommand> commands =
+                Maps.uniqueIndex(commandDao.getAllCommands(), new Function<LiteCommand, Integer>() {
+                    @Override
+                    public Integer apply(LiteCommand from) {
+                        return from.getLiteID();
+                    }
+                });
+        
+            Set<PaoType> paoTypes = new TreeSet<PaoType>(new Comparator<PaoType>() {
+                @Override
+                public int compare(PaoType o1, PaoType o2) {
+                    return o1.getDbString().compareTo(o2.getDbString());
+                }
+            });
+            paoTypes.addAll(Collections2.transform(devices, SimpleDevice.TO_PAO_TYPE));
+         
+            for (PaoType type : paoTypes) {
+                List<LiteDeviceTypeCommand> all = commandDao.getAllDevTypeCommands(type.getDbString());
+                for (LiteDeviceTypeCommand command : all) {
+                    if (command.isVisible()) {
+                        LiteCommand liteCommand = commands.get(command.getCommandId());
+                        if (commandAuthorizationService.isAuthorized(user, liteCommand.getCommand())) {
+                            authorized.add(liteCommand);
+                        }
+                    }
+                }
+            }
+        }
+        return authorized;
     }
 
     @RequestMapping("groupProcessing")
@@ -342,26 +387,15 @@ public class GroupCommanderController {
         return mav;
     }
     
-    @RequestMapping(value={"errorsList", "successList"})
+    @RequestMapping(value = { "errorsList", "successList" })
     public void results(YukonUserContext userContext, String resultKey, ModelMap map) {
-        GroupCommandResult result = groupCommandExecutor.getResult(resultKey);  
-        
-        /*
-         *  RFN devices do not use porter. Replacing the porter error with the error from error-code.xml - Invalid Action for Device Type.
-         */
-        Map<SimpleDevice, SpecificDeviceErrorDescription> errors = result
-                .getCallback().getErrors();
-        if (!errors.isEmpty()) {
-            for (SimpleDevice device : errors.keySet()) {
-                if (device.getDeviceType().getPaoClass() == PaoClass.RFMESH && errors.get(device).getDeviceError() != DeviceError.INVALID_ACTION) {
-                    DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(DeviceError.INVALID_ACTION, userContext);
-                    SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(error, null);
-                    errors.put(device, deviceError);
-                }
-            }
+        GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
+
+        Map<SimpleDevice, SpecificDeviceErrorDescription> errors = result.getCallback().getErrors();
+        for (SimpleDevice device : errors.keySet()) {
+            SpecificDeviceErrorDescription specificError = errors.get(device);
+            errors.put(device, specificError);
         }
-        
         map.addAttribute("result", result);
     }
-
 }

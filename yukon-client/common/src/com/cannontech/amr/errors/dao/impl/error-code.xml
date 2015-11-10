@@ -1005,7 +1005,16 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    
+    <error code="293">
+        <category>Network Manager</category>
+        <porter>Did not receive a response from Network Manager.</porter>
+        <description>
+            Network Manager did not acknowledge the request.
+        </description>
+        <troubleshooting>
+            Check Network Manager server logs to identify the root cause of the failure.
+        </troubleshooting>
+    </error>
     <error code="1024">
         <category>Network Manager</category>
         <porter>No node in Network Manager.</porter>
