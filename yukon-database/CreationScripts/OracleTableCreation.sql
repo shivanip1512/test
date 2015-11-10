@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/9/2015 3:50:45 PM                         */
+/* Created on:     11/10/2015 12:59:21 PM                       */
 /*==============================================================*/
 
 
@@ -7084,16 +7084,16 @@ create table POINTANALOG  (
    constraint PK_POINTANALOG primary key (POINTID)
 );
 
-insert into pointanalog values( 8, -1, 1, 0 );
-insert into pointanalog values( 9, -1, 1, 0 );
-insert into pointanalog values( 10, -1, 1, 0 );
-insert into pointanalog values( 11, -1, 1, 0 );
-insert into pointanalog values( 12, -1, 1, 0 );
-insert into pointanalog values( 13, -1, 1, 0 );
-insert into pointanalog values( 14, -1, 1, 0 );
-insert into pointanalog values( 15, -1, 1, 0 );
-insert into pointanalog values( 16, -1, 1, 0 );
-insert into pointanalog values( 17, -1, 1, 0 );
+insert into pointanalog values(-11, -1, 1, 0 );
+insert into pointanalog values(-12, -1, 1, 0 );
+insert into pointanalog values(-13, -1, 1, 0 );
+insert into pointanalog values(-14, -1, 1, 0 );
+insert into pointanalog values(-15, -1, 1, 0 );
+insert into pointanalog values(-16, -1, 1, 0 );
+insert into pointanalog values(-17, -1, 1, 0 );
+insert into pointanalog values(-18, -1, 1, 0 );
+insert into pointanalog values(-19, -1, 1, 0 );
+insert into pointanalog values(-20, -1, 1, 0 );
 insert into pointanalog values( 100, 0, 1, 0 );
 
 /*==============================================================*/
@@ -7162,16 +7162,16 @@ create table POINTUNIT  (
    constraint PK_POINTUNITID primary key (POINTID)
 );
 
-insert into pointunit values( 8, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 9, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 10, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 11, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 12, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 13, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 14, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 15, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 16, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 17, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-11, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-12, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-13, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-14, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-15, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-16, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-17, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-18, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-19, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-20, 28, 2, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
 
 /*==============================================================*/
@@ -9812,7 +9812,7 @@ create table YukonWebConfiguration  (
    ConfigurationID      NUMBER                          not null,
    LogoLocation         VARCHAR2(100),
    Description          VARCHAR2(500),
-   AlternateDisplayName VARCHAR2(100),
+   AlternateDisplayName VARCHAR2(200),
    URL                  VARCHAR2(100),
    constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 );

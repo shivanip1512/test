@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/9/2015 3:49:27 PM                         */
+/* Created on:     11/10/2015 12:59:58 PM                       */
 /*==============================================================*/
 
 
@@ -7511,16 +7511,16 @@ create table POINTANALOG (
 )
 go
 
-insert into pointanalog values( 8, -1, 1, 0 );
-insert into pointanalog values( 9, -1, 1, 0 );
-insert into pointanalog values( 10, -1, 1, 0 );
-insert into pointanalog values( 11, -1, 1, 0 );
-insert into pointanalog values( 12, -1, 1, 0 );
-insert into pointanalog values( 13, -1, 1, 0 );
-insert into pointanalog values( 14, -1, 1, 0 );
-insert into pointanalog values( 15, -1, 1, 0 );
-insert into pointanalog values( 16, -1, 1, 0 );
-insert into pointanalog values( 17, -1, 1, 0 );
+insert into pointanalog values(-11, -1, 1, 0 );
+insert into pointanalog values(-12, -1, 1, 0 );
+insert into pointanalog values(-13, -1, 1, 0 );
+insert into pointanalog values(-14, -1, 1, 0 );
+insert into pointanalog values(-15, -1, 1, 0 );
+insert into pointanalog values(-16, -1, 1, 0 );
+insert into pointanalog values(-17, -1, 1, 0 );
+insert into pointanalog values(-18, -1, 1, 0 );
+insert into pointanalog values(-19, -1, 1, 0 );
+insert into pointanalog values(-20, -1, 1, 0 );
 insert into pointanalog values( 100, 0, 1, 0 );
 
 /*==============================================================*/
@@ -7594,16 +7594,16 @@ create table POINTUNIT (
 )
 go
 
-insert into pointunit values( 8, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 9, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 10, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 11, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 12, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 13, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 14, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 15, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 16, 28, 2, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 17, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-11, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-12, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-13, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-14, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-15, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-16, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-17, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-18, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-19, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-20, 28, 2, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
 
 /*==============================================================*/
@@ -10369,7 +10369,7 @@ create table YukonWebConfiguration (
    ConfigurationID      numeric              not null,
    LogoLocation         varchar(100)         null,
    Description          varchar(500)         null,
-   AlternateDisplayName varchar(100)         null,
+   AlternateDisplayName varchar(200)         null,
    URL                  varchar(100)         null,
    constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 )
