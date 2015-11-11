@@ -68,17 +68,27 @@ $(function() {
         <tags:sectionContainer2 nameKey="manuals">
             <ul class="simple-list stacked">
             <cti:checkRolesAndProperties value="METERING">
-                <li class="stacked">
+                <c:set var="lastPortalLink" value="METERING" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="DEMAND_RESPONSE">
+                <c:set var="lastPortalLink" value="DEMAND_RESPONSE" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="CBC_SETTINGS">
+                <c:set var="lastPortalLink" value="CBC_SETTINGS" />
+            </cti:checkRolesAndProperties>
+
+            <cti:checkRolesAndProperties value="METERING">
+                <li class="${lastPortalLink == 'METERING' ? 'stacked' : ''}">
                    <a href="<cti:msg2 key=".manuals.ami.link"/>"><i:inline key=".manuals.ami.title"/></a>&nbsp;<span class="notes"><i:inline key=".manuals.general.label"/></span>
                </li>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="DEMAND_RESPONSE">
-               <li class="stacked">
+                <li class="${lastPortalLink == 'DEMAND_RESPONSE' ? 'stacked' : ''}">
                    <a href="<cti:msg2 key=".manuals.dr.link"/>"><i:inline key=".manuals.dr.title"/></a>&nbsp;<span class="notes"><i:inline key=".manuals.general.label"/></span>
-               </li>
+                </li>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="CBC_SETTINGS">
-               <li class="stacked">
+                <li class="${lastPortalLink eq 'CBC_SETTINGS' ? 'stacked' : ''}">
                    <a href="<cti:msg2 key=".manuals.voltvar.link"/>"><i:inline key=".manuals.voltvar.title"/></a>&nbsp;<span class="notes"><i:inline key=".manuals.general.label"/></span>
                </li>
             </cti:checkRolesAndProperties>
