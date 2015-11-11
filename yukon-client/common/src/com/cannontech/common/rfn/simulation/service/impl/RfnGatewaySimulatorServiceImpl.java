@@ -486,7 +486,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         response.setVersionConflicts(new HashSet<ConflictType>());
         
         response.setCollectionSchedule("0 0 * * * ?");
-        response.setRouteColor((short) 1);
+        response.setRouteColor((short) 123);
         response.setMode(AppMode.NORMAL);
         
         Set<Radio> radios = new HashSet<>();

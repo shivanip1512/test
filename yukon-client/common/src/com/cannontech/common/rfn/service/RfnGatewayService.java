@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.service;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.Multimap;
 
 /**
  * Handles most work relating to RFN gateways.
@@ -207,4 +209,12 @@ public interface RfnGatewayService {
      *             and Network Manager.
      */
     void updateGateways(Iterable<RfnGateway> gateways, LiteYukonUser user) throws NmCommunicationException;
+    
+    /**
+     * Checks the specified gateways to determine if any colors are used by more than one. If any duplications are found,
+     * the returned multimap will include the duplicated colors and names of all gateways using each duplicated color.
+     * @param gateways A collection of gateways with gateway data. Gateways without data will be ignored.
+     * @return A multimap of color -> gateway name for colors that are duplicated. 
+     */
+    Multimap<Short, String> getDuplicateColorGateways(Collection<RfnGateway> gateways);
 }

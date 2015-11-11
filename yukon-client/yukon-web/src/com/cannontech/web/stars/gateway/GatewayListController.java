@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +40,18 @@ import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 
 @Controller
@@ -79,12 +83,30 @@ public class GatewayListController {
     }
     
     @RequestMapping(value = { "/gateways", "/gateways/" }, method = RequestMethod.GET)
-    public String gateways(ModelMap model, YukonUserContext userContext, @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
+    public String gateways(ModelMap model, YukonUserContext userContext, FlashScope flash,
+                           @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
 
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
-
+        
+        // Check for gateways with duplicate colors
+        // If any are found, output a flash scope warning to notify the user
+        Multimap<Short, String> duplicateColorGateways = rfnGatewayService.getDuplicateColorGateways(gateways);
+        if (duplicateColorGateways.keySet().size() > 0) {
+            StringBuilder gatewaysString = new StringBuilder(); 
+            for (Short color : duplicateColorGateways.keySet()) {
+                gatewaysString.append(color)
+                              .append(" (")
+                              .append(StringUtils.join(duplicateColorGateways.get(color), ", "))
+                              .append(") ");
+            }
+            YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.gateways.list.duplicateColors", 
+                                                                                    gatewaysString);
+            flash.setWarning(message);
+        }
+        
+        
         List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
         Direction dir = sorting.getDirection();
         SortBy sortBy = SortBy.valueOf(sorting.getSort());

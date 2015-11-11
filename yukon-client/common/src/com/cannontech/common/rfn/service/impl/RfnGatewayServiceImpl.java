@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.service.impl;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -62,6 +63,8 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class RfnGatewayServiceImpl implements RfnGatewayService {
@@ -598,5 +601,26 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             updateGateway(gateway, user);
         }
     }
-
+    
+    @Override
+    public Multimap<Short, String> getDuplicateColorGateways(Collection<RfnGateway> gateways) {
+        Multimap<Short, String> colorGateways = ArrayListMultimap.create();
+        
+        // Populate the map with all color/gateway pairs
+        for (RfnGateway gateway : gateways) {
+            RfnGatewayData data = gateway.getData();
+            if (data != null) {
+                colorGateways.put(data.getRouteColor(), gateway.getName());
+            }
+        }
+        
+        // Trim all entries where color is only used by a single gateway
+        for (Short color : colorGateways.keySet()) {
+            if (colorGateways.get(color).size() == 1) {
+                colorGateways.removeAll(color);
+            }
+        }
+        return colorGateways;
+    }
+    
 }
