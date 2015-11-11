@@ -925,7 +925,6 @@ yukon.ui = (function () {
                 noText = options.noText || yg.text.no,
                 oldButtons = dialog.dialog('option', 'buttons');
             var confirmButton = {
-                    id: 'confirm-send-firmware-update',
                     text: yesText,
                     click: function (ev) {
                         confirmSpan.remove();
@@ -941,6 +940,8 @@ yukon.ui = (function () {
             
             dialog.on('change', ':input', cancelAction);
 
+            var btnPane = dialog.closest('.ui-dialog').find('.ui-dialog-buttonpane');
+
             var cancelButton = {
                    text: noText,
                    click: cancelAction,
@@ -953,13 +954,14 @@ yukon.ui = (function () {
                 .flash({
                     duration: 750,
                     complete: function () {
-                        $('#confirm-send-firmware-update').prop('disabled', false);
+                        var confirmBtn = btnPane.find('.js-primary-action');
+                        confirmBtn.prop('disabled', false);
                     }
                 });
             
             dialog.dialog('option', 'buttons', [cancelButton, confirmButton]);
-            $('#confirm-send-firmware-update').prop('disabled', true);
-            dialog.closest('.ui-dialog').find('.ui-dialog-buttonpane').append(confirmSpan);
+            btnPane.append(confirmSpan);
+            btnPane.find('.js-primary-action').prop('disabled', true);
             dialog.on('dialogclose', function () {
                 confirmSpan.remove();
             });
