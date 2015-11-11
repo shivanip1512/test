@@ -24,25 +24,27 @@
 
     <c:if test="${enableNMGatewayVersion}">
         <div id="firmware-upgrade-popup"
-            class="js-dialog-scroll"
             data-dialog
+            data-big-content
+            data-width="750"
+            data-height="450"
             data-url="<cti:url value="/stars/gateways/update-servers"/>"
             data-title="<cti:msg2 key=".updateServer.set"/>"
             data-event="yukon:assets:gateway:update-server:save"
             data-ok-text="<cti:msg2 key="components.button.save.label"/>">
         </div>
 
-        <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-            <div id="send-firmware-upgrade-popup"
-                class="js-dialog-scroll"
-                data-dialog
-                data-url="<cti:url value="/stars/gateways/firmware-upgrade"/>"
-                data-title="<cti:msg2 key=".firmwareUpdate"/>"
-                data-event="yukon:assets:gateway:firmware-upgrade:send"
-                data-confirm-multiple-text="<cti:msg2 key=".firmwareUpdate.confirmMultiple"/>"
-                data-ok-text="<cti:msg2 key="components.button.send.label"/>">
-            </div>
-        </cti:checkGlobalRolesAndProperties>
+        <div id="send-firmware-upgrade-popup"
+            data-dialog
+            data-big-content
+            data-width="750"
+            data-height="450"
+            data-url="<cti:url value="/stars/gateways/firmware-upgrade"/>"
+            data-title="<cti:msg2 key=".firmwareUpdate"/>"
+            data-event="yukon:assets:gateway:firmware-upgrade:send"
+            data-confirm-multiple-text="<cti:msg2 key=".firmwareUpdate.confirmMultiple"/>"
+            data-ok-text="<cti:msg2 key="components.button.send.label"/>">
+        </div>
     </c:if>
 </cti:checkRolesAndProperties>
 
@@ -65,13 +67,11 @@
 
                     <i:inline key=".updateServer.set"/>
                 </cm:dropdownOption>
-                <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-                    <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go"
-                        classes="update-servers disabled" disabled="true">
-    
-                        <i:inline key=".firmwareUpdate"/>
-                    </cm:dropdownOption>
-                </cti:checkGlobalRolesAndProperties>
+                <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go"
+                    classes="update-servers disabled" disabled="true">
+
+                    <i:inline key=".firmwareUpdate"/>
+                </cm:dropdownOption>
             </c:if>
         </cti:checkRolesAndProperties>
     </div>

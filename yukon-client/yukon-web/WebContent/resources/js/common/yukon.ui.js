@@ -144,15 +144,15 @@ yukon.ui = (function () {
             }
         });
 
-        $(document).on('dialogresizestart', '.js-dialog-scroll', function (ev, ui) {
-            var resizeContainer = $(this).find('.js-resize-with-dialog');
+        $(document).on('dialogresizestart', '.ui-dialog-content', function (ev, ui) {
+            var resizeContainer = $(this).find('.js-resize-with-dialog').eq(0);
             var originalHeight = resizeContainer.height();
             resizeContainer.data('originalHeight', originalHeight);
         });
 
-        $(document).on('dialogresize', '.js-dialog-scroll', function (ev, ui) {
+        $(document).on('dialogresize', '.ui-dialog-content', function (ev, ui) {
             var heightDifference = ui.size.height - ui.originalSize.height;
-            var resizeContainer = $(this).find('.js-resize-with-dialog');
+            var resizeContainer = $(this).find('.js-resize-with-dialog').eq(0);
             var originalHeight = resizeContainer.data('originalHeight');
             resizeContainer.css('max-height', originalHeight + heightDifference);
         });
@@ -746,6 +746,11 @@ yukon.ui = (function () {
          * data-mode          - If present, sets a page mode for the popup, passed to buttons. 
          *                      Values: 'CREATE', 'EDIT', 'VIEW'.
          *
+         * data-big-content   - If present, takes shortcuts in the dialog rendering.
+         *                      Requires data-width and data-height attributes.
+         *                      Inspired by
+         *                      http://johnculviner.com/a-jquery-ui-dialog-open-performance-issue-and-how-to-fix-it/
+         *
          * Positioning options: see http://api.jqueryui.com/position/
          * data-position-my   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
          * data-position-at   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
@@ -757,13 +762,21 @@ yukon.ui = (function () {
             
             var dialog = popup.is('[data-dialog]'),
                 tabbed = popup.is('[data-dialog-tabbed]'),
+                bigContent = popup.is('[data-big-content]'),
                 loadEvent = popup.data('loadEvent'),
                 options = {
                     minWidth: popup.is('[data-min-width]') ? popup.data('minWidth') : '150',
                     width: popup.is('[data-width]') ? popup.data('width') : 'auto',
                     height: popup.is('[data-height]') ? popup.data('height') : 'auto',
                     minHeight: popup.is('[data-min-height]') ? popup.data('minHeight') : '150',
-                    dialogClass: popup.is('[data-class]') ? 'yukon-dialog ' + popup.data('class') : 'yukon-dialog'
+                    dialogClass: popup.is('[data-class]') ? 'yukon-dialog ' + popup.data('class') : 'yukon-dialog',
+                    open: function () {
+                        if (bigContent) {
+                            popup.append(content);
+                        }
+                        // Check for a focus element
+                        mod.autofocus(popup);
+                    }
                 },
                 buttonOptions = {},
                 positionOptions = {
@@ -795,9 +808,18 @@ yukon.ui = (function () {
             if (popup.is('[data-position-of]')) positionOptions.of = popup.data('positionOf');
             options.position = positionOptions;
             
+            var content = popup;
+
             if (popup.is('[data-url]') || url) {
                 url = url || popup.data('url');
-                popup.load(url, function () {
+
+                if (bigContent) {
+                    popup.empty();
+                    content = $('<div>');
+                }
+                mod.blockPage();
+
+                content.load(url, function () {
                     
                     // if no title provided, try to find one hidden in the popup contents
                     if (!options.title) {
@@ -808,15 +830,13 @@ yukon.ui = (function () {
                     
                     if (tabbed) {
                         popup.tabbedDialog(options);
+                        mod.unblockPage();
                     } else {
-                        $.extend(options, {
-                            open: function () {
-                                // Check for a focus element
-                                mod.autofocus(popup);
-                            }
-                        });
+                        debug.time('dialog');
                         popup.dialog(options);
+                        debug.timeEnd('dialog');
                         mod.initContent(popup);
+                        mod.unblockPage();
                     }
                 });
             } else {
@@ -825,6 +845,9 @@ yukon.ui = (function () {
                 if (tabbed) {
                     popup.tabbedDialog(options);
                 } else {
+                    if (bigContent) {
+                        content = popup.children().detach();
+                    }
                     popup.dialog(options);
                     mod.initContent(popup);
                 }
@@ -897,11 +920,12 @@ yukon.ui = (function () {
             var dialog = options.dialog,
                 target = options.target || dialog,
                 event = options.event || 'yukon:ui:dialog:confirm',
-                confirmText = options.confirmText || yg.text.confirm,
+                confirmText = options.confirmText || yg.text.confirmMessage,
                 yesText = options.yesText || yg.text.yes,
                 noText = options.noText || yg.text.no,
                 oldButtons = dialog.dialog('option', 'buttons');
             var confirmButton = {
+                    id: 'confirm-send-firmware-update',
                     text: yesText,
                     click: function (ev) {
                         confirmSpan.remove();
@@ -921,14 +945,20 @@ yukon.ui = (function () {
                    text: noText,
                    click: cancelAction,
                    'class': 'js-secondary-action '
-                },
-                confirmSpan = $('<span>')
+                };
+            var confirmSpan = $('<span>')
                 .attr('class', 'fr')
                 .css({'line-height': '36px'})
                 .text(confirmText)
-                .flash();
+                .flash({
+                    duration: 750,
+                    complete: function () {
+                        $('#confirm-send-firmware-update').prop('disabled', false);
+                    }
+                });
             
             dialog.dialog('option', 'buttons', [cancelButton, confirmButton]);
+            $('#confirm-send-firmware-update').prop('disabled', true);
             dialog.closest('.ui-dialog').find('.ui-dialog-buttonpane').append(confirmSpan);
             dialog.on('dialogclose', function () {
                 confirmSpan.remove();

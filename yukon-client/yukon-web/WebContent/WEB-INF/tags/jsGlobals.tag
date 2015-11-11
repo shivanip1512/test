@@ -50,7 +50,8 @@ var yg = {
     text: {
         cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',
         close: '<cti:msg2 key="yukon.web.components.button.close.label"/>',
-        confirm: '<cti:msg2 key="yukon.common.confirm"/>',
+        confirm: '<cti:msg2 key="yukon.web.components.button.confirm.label"/>',
+        confirmQuestion: '<cti:msg2 key="yukon.common.confirm"/>',
         complete: '<cti:msg2 key="yukon.common.complete"/>',
         'delete': '<cti:msg2 key="yukon.web.components.button.delete.label"/>',
         edit: '<cti:msg2 key="yukon.web.components.button.edit.label"/>',

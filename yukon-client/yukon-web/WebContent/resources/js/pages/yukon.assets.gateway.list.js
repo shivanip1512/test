@@ -410,15 +410,16 @@ yukon.assets.gateway.list = (function () {
                 });
 
                 var updateServers = Object.keys(updateServersCount);
-                var confirmMessage = yg.text.confirm;
-                if (updateServers.length > 1) {
-                    confirmMessage = popup.data('confirmMultipleText') + ' '+ yg.text.confirm;
-                }
+
+                var confirmMessage = popup.data('confirmMultipleText')
+                    .replace('{0}', selectedRows.length)
+                    .replace('{1}', updateServers.length);
+
                 yukon.ui.confirm({
                     dialog: popup,
                     confirmText: confirmMessage,
                     event: 'yukon:assets:gateway:firmware-upgrade:confirmed',
-                    yesText: primary.text(),
+                    yesText: yg.text.confirm,
                     noText: yg.text.cancel
                 });
             });

@@ -63,6 +63,7 @@
     <entry key="yukon.web.components.button.clear.label">Clear</entry>
     <entry key="yukon.web.components.button.close.label">Close</entry>
     <entry key="yukon.web.components.button.collectionAction.label">Collection Action</entry>
+    <entry key="yukon.web.components.button.confirm.label">Confirm</entry>
     <entry key="yukon.web.components.button.copy.label">Copy</entry>
     <entry key="yukon.web.components.button.create.label">Create</entry>
     <entry key="yukon.web.components.button.csv.label">Download CSV</entry>
