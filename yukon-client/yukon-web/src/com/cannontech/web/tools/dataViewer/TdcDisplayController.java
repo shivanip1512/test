@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -393,7 +395,15 @@ public class TdcDisplayController {
             // Display only the first 2 options from the list - if the option with index 0 is
             // selected the control request open will be send otherwise the control request closed
             // will be send
-            List<LiteState> stateList = group.getStatesList().subList(0, 2);
+            List<LiteState> stateList = group.getStatesList()
+                    .stream()
+                    .filter(new Predicate<LiteState>() {
+                @Override
+                public boolean test(LiteState t) {
+                    return t.getStateRawState() >= 0;
+                }
+            }).collect(Collectors.toList());
+            
             model.put("stateList", stateList);
         }
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
