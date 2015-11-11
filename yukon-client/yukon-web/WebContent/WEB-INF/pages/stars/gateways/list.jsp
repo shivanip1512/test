@@ -52,7 +52,13 @@
             <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green">
                 <i:inline key=".create.gateway.label"/>
             </cm:dropdownOption>
-
+        </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+            <cm:dropdownOption data-popup="#gateway-cert-popup" icon="icon-drive-go">
+                <i:inline key=".cert.update.label"/>
+            </cm:dropdownOption>
+        </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
             <c:if test="${enableNMGatewayVersion}">
                 <cm:dropdownOption data-popup="#firmware-upgrade-popup" icon="icon-drive-go"
                     classes="update-servers disabled" disabled="true">
@@ -119,6 +125,7 @@
                                 <span class="js-gw-rv-text">
                                     ${fn:escapeXml(gateway.data.releaseVersion)}
                                 </span>
+                                <c:set var="dn" value=""/>
                                 <c:if test="${not gateway.upgradeAvailable}">
                                     <c:set var="dn" value="dn"/>
                                 </c:if>
@@ -193,7 +200,7 @@
         <i:inline key=".cert.updates.none"/>
     </div>
 </c:if>
-<div data-url="<cti:url value="/stars/gateways/"/>" data-static> 
+<div data-url="<cti:url value="/stars/gateways/"/>" data-static class="stacked-lg"> 
 <table id="cert-table" class="compact-results-table ${clazz}">
     <thead>
         <tr>
@@ -244,11 +251,6 @@
     </tbody>
 </table>
 </div>
-<cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
-    <div class="page-action-area">
-        <cti:button icon="icon-plus-green" nameKey="cert.update" data-popup="#gateway-cert-popup" classes="M0"/>
-    </div>
-</cti:checkRolesAndProperties>
 
 <c:if test="${enableNMGatewayVersion}">
 <h3><i:inline key=".firmwareUpdates"/></h3>
