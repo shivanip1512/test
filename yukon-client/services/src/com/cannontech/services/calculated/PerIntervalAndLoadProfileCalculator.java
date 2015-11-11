@@ -107,8 +107,8 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         if (currentValue == null) {
             /* The current value has been taken out of the recent readings map!
             
-             * Since it was JUST put in the map prior to queueing it up for calculation,
-             * my only guess is that we recieved duplicate archive requests and the calculation
+             * Since it was JUST put in the map prior to queuing it up for calculation,
+             * my only guess is that we received duplicate archive requests and the calculation
              * for the first one removed the value from the cache since it was no longer needed.
              */
             return;
@@ -122,8 +122,6 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
             return;
         }
         
-        double previous = 0;
-        double next = 0;
         double previousPerIntervalValue = 0;
         double nextPerIntervalValue = 0;
         boolean foundPrevious = false;
@@ -142,14 +140,14 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         CacheKey previousKey = CacheKey.of(pvqh.getId(), previousInterval.getMillis());
         CacheValue previousValue = recentReadings.getIfPresent(previousKey);
         if (previousValue != null && previousValue.getInterval() == interval) {
-            previous = previousValue.getValue();
+            previousPerIntervalValue = pvqh.getValue() - previousValue.getValue();
             foundPrevious = true;
             log.debug(String.format("Found previous interval from Cache: %s", previousValue));
         } else {
             // try getting it from rph
             try {
                 PointValueQualityHolder previousRph = rphDao.getSpecificValue(pvqh.getId(), previousInterval.getMillis());
-                previous = previousRph.getValue();
+                previousPerIntervalValue = pvqh.getValue() - previousRph.getValue();
                 foundPrevious = true;
                 log.debug(String.format("Found previous interval from RPH: %s", previousRph));
             } catch (NotFoundException e) {
@@ -160,14 +158,14 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         CacheKey nextKey = CacheKey.of(pvqh.getId(), nextInterval.getMillis());
         CacheValue nextValue = recentReadings.getIfPresent(nextKey);
         if (nextValue != null && nextValue.getInterval() == interval) {
-            next = nextValue.getValue();
+            nextPerIntervalValue = nextValue.getValue() - pvqh.getValue();
             foundNext = true;
             log.debug(String.format("Found next interval from Cache: %s", nextValue));
         } else {
             // try getting it from rph
             try {
                 PointValueQualityHolder nextRph = rphDao.getSpecificValue(pvqh.getId(), nextInterval.getMillis());
-                next = nextRph.getValue();
+                nextPerIntervalValue = nextRph.getValue() - pvqh.getValue();
                 foundNext = true;
                 log.debug(String.format("Found next interval from RPH: %s", nextRph));
             } catch (NotFoundException e) {
@@ -180,10 +178,30 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
             
             /* previous interval's per interval value */
             if (foundPrevious) {
-                
-                previousPerIntervalValue = pvqh.getValue() - previous;
                 addPointData(perIntervalPoint, previousPerIntervalValue, timestamp, pointData);
-                
+            }
+            if (foundNext) {
+                addPointData(perIntervalPoint, nextPerIntervalValue, nextInterval.toDate(), pointData);
+            }
+        }
+        
+        /** Handle load profile value */
+        if (loadProfilePoint != null) {
+            double intervalsPerHour = 3600.0d / interval;
+            if (foundPrevious) {
+                double previousLoadProfileValue = previousPerIntervalValue * intervalsPerHour;
+                addPointData(loadProfilePoint, previousLoadProfileValue, timestamp, pointData);
+            }
+            if (foundNext) {
+                double nextLoadProfileValue = nextPerIntervalValue * intervalsPerHour;
+                addPointData(loadProfilePoint, nextLoadProfileValue, nextInterval.toDate(), pointData);
+            }
+        }
+        
+        
+        /** Cleanup cache */
+        {
+            if (foundPrevious) {
                 if (previousValue != null) {
                     if (previousValue.isPrevious()) {
                         // handled both intervals around the previous one, it's no longer needed.
@@ -196,10 +214,6 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
             }
             
             if (foundNext) {
-                
-                nextPerIntervalValue = next - pvqh.getValue();
-                addPointData(perIntervalPoint, nextPerIntervalValue, nextInterval.toDate(), pointData);
-                
                 if (nextValue != null) {
                     
                     if (currentValue.isPrevious()) {
@@ -217,19 +231,6 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
                         nextValue.setPrevious(true);
                     }
                 }
-            }
-        }
-        
-        /** Handle load profile value */
-        if (loadProfile != null && loadProfilePoint != null) {
-            double intervalsPerHour = 3600.0d / interval;
-            if (foundPrevious) {
-                double previousLoadProfileValue = previousPerIntervalValue * intervalsPerHour;
-                addPointData(loadProfilePoint, previousLoadProfileValue, timestamp, pointData);
-            }
-            if (foundNext) {
-                double nextLoadProfileValue = nextPerIntervalValue * intervalsPerHour;
-                addPointData(loadProfilePoint, nextLoadProfileValue, nextInterval.toDate(), pointData);
             }
         }
     }
