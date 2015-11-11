@@ -309,6 +309,16 @@ INSERT INTO Point VALUES (-17, 'Analog', 'MACS CPU Utilization', 0,'Default', 0,
 INSERT INTO Point VALUES (-18, 'Analog', 'Notification Server CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1014, 'None', 0);
 INSERT INTO Point VALUES (-19, 'Analog', 'Service Manager CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1015, 'None', 0);
 INSERT INTO Point VALUES (-20, 'Analog', 'Web Service CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1016, 'None', 0);
+INSERT INTO Point VALUES (-21, 'Analog', 'Porter Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1017, 'None', 0);
+INSERT INTO Point VALUES (-22, 'Analog', 'Dispatch Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1018, 'None', 0);
+INSERT INTO Point VALUES (-23, 'Analog', 'Scanner Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1019, 'None', 0);
+INSERT INTO Point VALUES (-24, 'Analog', 'Calc Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1020, 'None', 0);
+INSERT INTO Point VALUES (-25, 'Analog', 'CapControl Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1021, 'None', 0);
+INSERT INTO Point VALUES (-26, 'Analog', 'FDR Memory Utilization', 0, 'Default', 0, 'N', 'N', 'R', 1022, 'None', 0);
+INSERT INTO Point VALUES (-27, 'Analog', 'MACS Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1023, 'None', 0);
+INSERT INTO Point VALUES (-28, 'Analog', 'Notification Server Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1024, 'None', 0);
+INSERT INTO Point VALUES (-29, 'Analog', 'Service Manager Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1025, 'None', 0);
+INSERT INTO Point VALUES (-30, 'Analog', 'Web Service Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1026, 'None', 0);
 
 INSERT INTO PointAnalog VALUES (-11, -1, 1, 0 );
 INSERT INTO PointAnalog VALUES (-12, -1, 1, 0 );
@@ -320,6 +330,18 @@ INSERT INTO PointAnalog VALUES (-17, -1, 1, 0 );
 INSERT INTO PointAnalog VALUES (-18, -1, 1, 0 );
 INSERT INTO PointAnalog VALUES (-19, -1, 1, 0 );
 INSERT INTO PointAnalog VALUES (-20, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-21, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-22, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-23, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-24, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-25, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-26, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-27, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-28, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-29, -1, 1, 0 );
+INSERT INTO PointAnalog VALUES (-30, -1, 1, 0 );
+
+INSERT INTO UnitMeasure VALUES ((SELECT MAX(UomId) + 1 FROM UnitMeasure), 'MB', 0, 'MegaBytes', '(none)');
 
 INSERT INTO PointUnit VALUES (-11, 28, 2, 1.0E+30, -1.0E+30, 0);
 INSERT INTO PointUnit VALUES (-12, 28, 2, 1.0E+30, -1.0E+30, 0);
@@ -331,6 +353,16 @@ INSERT INTO PointUnit VALUES (-17, 28, 2, 1.0E+30, -1.0E+30, 0);
 INSERT INTO PointUnit VALUES (-18, 28, 2, 1.0E+30, -1.0E+30, 0);
 INSERT INTO PointUnit VALUES (-19, 28, 2, 1.0E+30, -1.0E+30, 0);
 INSERT INTO PointUnit VALUES (-20, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-21, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-22, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-23, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-24, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-25, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-26, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-27, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-28, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-29, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
+INSERT INTO PointUnit VALUES (-30, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
 /* End YUK-14784 */
 
 /**************************************************************/

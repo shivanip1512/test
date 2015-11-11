@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/10/2015 12:59:21 PM                       */
+/* Created on:     11/10/2015 3:48:32 PM                        */
 /*==============================================================*/
 
 
@@ -7008,16 +7008,26 @@ INSERT INTO Point VALUES(-4, 'System', 'Macs', 0, 'Default', 0, 'N', 'N', 'S', 4
 INSERT INTO Point VALUES(-5, 'System', 'Cap Control', 0, 'Default', 0, 'N', 'N', 'S', 5  ,'None', 0);
 INSERT INTO Point VALUES(-6, 'System', 'Notification', 0, 'Default', 0, 'N', 'N', 'S', 6  ,'None', 0);
 INSERT INTO Point VALUES(-10,'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
-INSERT INTO Point Values(-11, 'Analog', 'Porter CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1007, 'None', 0);
-INSERT INTO Point Values(-12, 'Analog', 'Dispatch CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1008, 'None', 0);
-INSERT INTO Point Values(-13, 'Analog', 'Scanner CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1009, 'None', 0);
-INSERT INTO Point Values(-14, 'Analog', 'Calc CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1010, 'None', 0);
-INSERT INTO Point Values(-15, 'Analog', 'CapControl CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1011, 'None', 0);
-INSERT INTO Point Values(-16, 'Analog', 'FDR CPU Utilization', 0, 'Default', 0, 'N', 'N', 'R', 1012, 'None', 0);
-INSERT INTO Point Values(-17, 'Analog', 'MACS CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1013, 'None', 0);
-INSERT INTO Point Values(-18, 'Analog', 'Notification Server CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1014, 'None', 0);
-INSERT INTO Point Values(-19, 'Analog', 'Service Manager CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1015, 'None', 0);
-INSERT INTO Point Values(-20, 'Analog', 'Web Service CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1016, 'None', 0);
+INSERT INTO Point VALUES(-11, 'Analog', 'Porter CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1007, 'None', 0);
+INSERT INTO Point VALUES(-12, 'Analog', 'Dispatch CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1008, 'None', 0);
+INSERT INTO Point VALUES(-13, 'Analog', 'Scanner CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1009, 'None', 0);
+INSERT INTO Point VALUES(-14, 'Analog', 'Calc CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1010, 'None', 0);
+INSERT INTO Point VALUES(-15, 'Analog', 'CapControl CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1011, 'None', 0);
+INSERT INTO Point VALUES(-16, 'Analog', 'FDR CPU Utilization', 0, 'Default', 0, 'N', 'N', 'R', 1012, 'None', 0);
+INSERT INTO Point VALUES(-17, 'Analog', 'MACS CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1013, 'None', 0);
+INSERT INTO Point VALUES(-18, 'Analog', 'Notification Server CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1014, 'None', 0);
+INSERT INTO Point VALUES(-19, 'Analog', 'Service Manager CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1015, 'None', 0);
+INSERT INTO Point VALUES(-20, 'Analog', 'Web Service CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1016, 'None', 0);
+INSERT INTO Point VALUES(-21, 'Analog', 'Porter Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1017, 'None', 0);
+INSERT INTO Point VALUES(-22, 'Analog', 'Dispatch Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1018, 'None', 0);
+INSERT INTO Point VALUES(-23, 'Analog', 'Scanner Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1019, 'None', 0);
+INSERT INTO Point VALUES(-24, 'Analog', 'Calc Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1020, 'None', 0);
+INSERT INTO Point VALUES(-25, 'Analog', 'CapControl Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1021, 'None', 0);
+INSERT INTO Point VALUES(-26, 'Analog', 'FDR Memory Utilization', 0, 'Default', 0, 'N', 'N', 'R', 1022, 'None', 0);
+INSERT INTO Point VALUES(-27, 'Analog', 'MACS Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1023, 'None', 0);
+INSERT INTO Point VALUES(-28, 'Analog', 'Notification Server Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1024, 'None', 0);
+INSERT INTO Point VALUES(-29, 'Analog', 'Service Manager Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1025, 'None', 0);
+INSERT INTO Point VALUES(-30, 'Analog', 'Web Service Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1026, 'None', 0);
 INSERT INTO Point VALUES(-100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 100 ,'None', 0);
 INSERT INTO Point VALUES( 100, 'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 INSERT INTO Point VALUES(-110, 'System', 'MultiSpeak' , 0, 'Default', 0, 'N', 'N', 'S', 110 ,'None', 0);
@@ -7094,6 +7104,16 @@ insert into pointanalog values(-17, -1, 1, 0 );
 insert into pointanalog values(-18, -1, 1, 0 );
 insert into pointanalog values(-19, -1, 1, 0 );
 insert into pointanalog values(-20, -1, 1, 0 );
+insert into pointanalog values(-21, -1, 1, 0 );
+insert into pointanalog values(-22, -1, 1, 0 );
+insert into pointanalog values(-23, -1, 1, 0 );
+insert into pointanalog values(-24, -1, 1, 0 );
+insert into pointanalog values(-25, -1, 1, 0 );
+insert into pointanalog values(-26, -1, 1, 0 );
+insert into pointanalog values(-27, -1, 1, 0 );
+insert into pointanalog values(-28, -1, 1, 0 );
+insert into pointanalog values(-29, -1, 1, 0 );
+insert into pointanalog values(-30, -1, 1, 0 );
 insert into pointanalog values( 100, 0, 1, 0 );
 
 /*==============================================================*/
@@ -7172,6 +7192,16 @@ insert into pointunit values(-17, 28, 2, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values(-18, 28, 2, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values(-19, 28, 2, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values(-20, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-21, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-22, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-23, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-24, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-25, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-26, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-27, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-28, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-29, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-30, 56, 0, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
 
 /*==============================================================*/
@@ -8462,16 +8492,17 @@ INSERT INTO UnitMeasure VALUES ( 42,'AmpsA2H', 1,'Amps from A2H','(none)' );
 INSERT INTO UnitMeasure VALUES ( 43,'Tap', 0,'LTC Tap Position','(none)' );
 INSERT INTO UnitMeasure VALUES ( 44,'Miles', 0,'Miles','(none)' );
 INSERT INTO UnitMeasure VALUES ( 45,'Ms', 0,'Milliseconds','(none)' );
-INSERT INTO UnitMeasure VALUES( 46,'PPM',0,'Parts Per Million','(none)');
-INSERT INTO UnitMeasure VALUES( 47,'MPH',0,'Miles Per Hour','(none)');
-INSERT INTO UnitMeasure VALUES( 48,'Inches',0,'Inches','(none)');
-INSERT INTO UnitMeasure VALUES( 49,'KPH',0,'Kilometers Per Hour','(none)');
-INSERT INTO UnitMeasure VALUES( 50,'Milibars',0,'Milibars','(none)');
-INSERT INTO UnitMeasure VALUES( 51,'km/h',0,'Kilometers Per Hour','(none)');
-INSERT INTO UnitMeasure VALUES( 52,'m/s',0,'Meters Per Second','(none)');
-INSERT INTO UnitMeasure VALUES( 53,'KV', 0,'KVolts','(none)' );
-INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
+INSERT INTO UnitMeasure VALUES ( 46,'PPM',0,'Parts Per Million','(none)');
+INSERT INTO UnitMeasure VALUES ( 47,'MPH',0,'Miles Per Hour','(none)');
+INSERT INTO UnitMeasure VALUES ( 48,'Inches',0,'Inches','(none)');
+INSERT INTO UnitMeasure VALUES ( 49,'KPH',0,'Kilometers Per Hour','(none)');
+INSERT INTO UnitMeasure VALUES ( 50,'Milibars',0,'Milibars','(none)');
+INSERT INTO UnitMeasure VALUES ( 51,'km/h',0,'Kilometers Per Hour','(none)');
+INSERT INTO UnitMeasure VALUES ( 52,'m/s',0,'Meters Per Second','(none)');
+INSERT INTO UnitMeasure VALUES ( 53,'KV', 0,'KVolts','(none)' );
+INSERT INTO UnitMeasure VALUES ( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
+INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'MegaBytes', '(none)');
 
 /*==============================================================*/
 /* Table: UserGroup                                             */
