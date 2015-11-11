@@ -131,8 +131,11 @@ public class ApplianceCategoryController {
                 if (shortName.indexOf(',') != -1 && shortName.indexOf('"') != -1) {
                     errors.rejectValue("assignedProgram.shortName", baseKey + ".editAssignedProgram.commaAndQuotes");
                 }
-                if (alternateDisplayName.length() > 99) {
-                    errors.reject(baseKey + ".editAssignedProgram.namesTooLong");
+                if (displayName.length() > 95) {
+                    errors.reject(baseKey + ".editAssignedProgram.displayNameTooLong");
+                }
+                if (shortName.length() > 95) {
+                    errors.reject(baseKey + ".editAssignedProgram.shortNameTooLong");
                 }
             }
             YukonValidationUtils.checkExceedsMaxLength(errors, "assignedProgram.description",

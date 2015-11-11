@@ -115,7 +115,8 @@
 
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.empty">Required field.</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.empty.assignedProgram.displayName">Display name cannot be empty.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.namesTooLong">Display name and short name combined cannot be longer than 95 characters.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.displayNameTooLong">Display name cannot be longer than 95 characters.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.shortNameTooLong">Short name cannot be longer than 95 characters.</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.commaAndQuotes">Cannot contain both comma and quote at the same time.</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.iconNamesTooLong">Icon names combined length cannot exceed 98 characters.</entry>
 
