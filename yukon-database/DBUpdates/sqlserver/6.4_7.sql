@@ -26,12 +26,11 @@ BEGIN
     
     UPDATE FDRTranslation 
     SET Translation =
-        CONCAT(
-            chopped.PreOffset, 
-            'Offset:', 
-            CAST(LEFT(chopped.PostOffset, CHARINDEX(';', chopped.PostOffset) - 1) AS NUMERIC) + 1, 
-            ';', 
-            RIGHT(chopped.PostOffset, LEN(chopped.PostOffset) - CHARINDEX(';', chopped.PostOffset)))
+        (chopped.PreOffset +
+        'Offset:' +
+		(CAST(CAST(LEFT(chopped.PostOffset, CHARINDEX(';', chopped.PostOffset) - 1) AS NUMERIC)  + 1  AS VARCHAR)) +
+        ';' + 
+        RIGHT(chopped.PostOffset, LEN(chopped.PostOffset) - CHARINDEX(';', chopped.PostOffset)))
     FROM temp_FdrTranslation_Increment chopped 
     INNER JOIN FDRTranslation orig ON (orig.PointId       = chopped.PointId 
                                    AND orig.DirectionType = chopped.DirectionType
