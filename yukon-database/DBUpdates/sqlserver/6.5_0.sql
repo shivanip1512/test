@@ -346,6 +346,11 @@ INSERT INTO PointUnit VALUES (-29, (SELECT UomId FROM UnitMeasure WHERE UomName 
 INSERT INTO PointUnit VALUES (-30, (SELECT UomId FROM UnitMeasure WHERE UomName = 'MB'), 0, 1.0E+30, -1.0E+30, 0);
 /* End YUK-14784 */
 
+/* Start YUK-14818 */
+ALTER TABLE YukonWebConfiguration
+ALTER COLUMN AlternateDisplayName VARCHAR(200) NOT NULL;
+/* End YUK-14818 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

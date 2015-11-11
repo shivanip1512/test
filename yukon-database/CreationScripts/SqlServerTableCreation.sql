@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/11/2015 12:42:07 AM                       */
+/* Created on:     11/11/2015 1:15:12 AM                        */
 /*==============================================================*/
 
 
@@ -10400,7 +10400,7 @@ create table YukonWebConfiguration (
    ConfigurationID      numeric              not null,
    LogoLocation         varchar(100)         null,
    Description          varchar(500)         null,
-   AlternateDisplayName varchar(100)         null,
+   AlternateDisplayName varchar(200)         null,
    URL                  varchar(100)         null,
    constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 )
