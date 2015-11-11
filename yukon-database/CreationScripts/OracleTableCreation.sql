@@ -9843,7 +9843,7 @@ create table YukonWebConfiguration  (
    ConfigurationID      NUMBER                          not null,
    LogoLocation         VARCHAR2(100),
    Description          VARCHAR2(500),
-   AlternateDisplayName VARCHAR2(200),
+   AlternateDisplayName VARCHAR2(100),
    URL                  VARCHAR2(100),
    constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 );

@@ -10400,7 +10400,7 @@ create table YukonWebConfiguration (
    ConfigurationID      numeric              not null,
    LogoLocation         varchar(100)         null,
    Description          varchar(500)         null,
-   AlternateDisplayName varchar(200)         null,
+   AlternateDisplayName varchar(100)         null,
    URL                  varchar(100)         null,
    constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 )
