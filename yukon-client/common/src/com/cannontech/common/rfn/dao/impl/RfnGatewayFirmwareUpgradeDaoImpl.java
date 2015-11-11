@@ -76,7 +76,6 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
     public int createUpgrade(Collection<RfnGateway> gateways) throws GatewayDataException {
         
         Map<Integer, FirmwareUpdateServerInfo> gatewayToUpdateServer = getAllFirmwareUpdateServerInfo(gateways);
-        long updateServerCount = gatewayToUpdateServer.values().stream().distinct().count();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("GatewayFirmwareUpdate");
@@ -85,8 +84,6 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
         
         sink.addValue("UpdateId", updateId);
         sink.addValue("SendDate", Instant.now());
-        sink.addValue("GatewayCount", gateways.size());
-        sink.addValue("UpdateServerCount", updateServerCount);
         
         jdbcTemplate.update(sql);
         
@@ -172,25 +169,40 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
         sql.append("END AS Failed");
         
         sql.append("FROM (");
-        sql.append(  "SELECT UpdateId, SendDate, GatewayCount, UpdateServerCount,");
+        sql.append(  "SELECT UpdateId, SendDate,");
         
+        // Number of pending gateways
         sql.append(  "(SELECT COUNT(EntryId)");
         sql.append(   "FROM GatewayFirmwareUpdateEntry gfue");
         sql.append(   "WHERE UpdateStatus").eq_k(GatewayFirmwareUpdateStatus.STARTED);
         sql.append(     "AND gfue.UpdateId = gfu.UpdateId");
         sql.append(   "GROUP BY UpdateId) AS Pending,");
         
+        // Number of successful gateways
         sql.append(  "(SELECT COUNT(EntryId)");
         sql.append(   "FROM GatewayFirmwareUpdateEntry gfue");
         sql.append(   "WHERE UpdateStatus").eq_k(GatewayFirmwareUpdateStatus.ACCEPTED);
         sql.append(     "AND gfue.UpdateId = gfu.UpdateId");
         sql.append(   "GROUP BY UpdateId) AS Successful,");
         
+        // Number of failed gateways
         sql.append(  "(SELECT COUNT(EntryId)");
         sql.append(   "FROM GatewayFirmwareUpdateEntry gfue");
         sql.append(   "WHERE UpdateStatus").in_k(GatewayFirmwareUpdateStatus.getFailedStates());
         sql.append(     "AND gfue.UpdateId = gfu.UpdateId");
-        sql.append(   "GROUP BY UpdateId) AS Failed");
+        sql.append(   "GROUP BY UpdateId) AS Failed,");
+        
+        // Number of gateways total
+        sql.append(  "(SELECT COUNT(GatewayId)");
+        sql.append(   "FROM GatewayFirmwareUpdateEntry gfue");
+        sql.append(   "WHERE gfue.UpdateId = gfu.UpdateId");
+        sql.append(   "GROUP BY UpdateId) AS GatewayCount,");
+        
+        // Number of firmware server urls
+        sql.append(  "(SELECT COUNT(DISTINCT UpdateServerUrl)");
+        sql.append(   "FROM GatewayFirmwareUpdateEntry gfue");
+        sql.append(   "WHERE gfue.UpdateId = gfu.UpdateId");
+        sql.append(   "GROUP BY UpdateId) AS UpdateServerCount");
         
         sql.append(  "FROM GatewayFirmwareUpdate gfu");
         sql.append(") TEMP");
