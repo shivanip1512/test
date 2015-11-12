@@ -93,7 +93,7 @@ public class GatewayListController {
         // Check for gateways with duplicate colors
         // If any are found, output a flash scope warning to notify the user
         Multimap<Short, String> duplicateColorGateways = rfnGatewayService.getDuplicateColorGateways(gateways);
-        if (duplicateColorGateways.keySet().size() > 0) {
+        if (duplicateColorGateways.isEmpty()) {
             StringBuilder gatewaysString = new StringBuilder(); 
             for (Short color : duplicateColorGateways.keySet()) {
                 gatewaysString.append(color)
