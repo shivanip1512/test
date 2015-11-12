@@ -3,7 +3,6 @@
 #include "dlldefs.h"
 #include "ctitime.h"
 #include "version.h"
-#include "streamBuffer.h"
 
 #include <windows.h>
 
