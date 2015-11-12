@@ -832,9 +832,13 @@ yukon.ui = (function () {
                         popup.tabbedDialog(options);
                         mod.unblockPage();
                     } else {
-                        debug.time('dialog');
+                        if (yg.dev_mode) {
+                            debug.time('dialog');
+                        }
                         popup.dialog(options);
-                        debug.timeEnd('dialog');
+                        if (yg.dev_mode) {
+                            debug.timeEnd('dialog');
+                        }
                         mod.initContent(popup);
                         mod.unblockPage();
                     }
@@ -1010,10 +1014,11 @@ yukon.ui = (function () {
             var blockElement = $(target).closest('.js-block-this')[0];
            if (blockElement) {
                elementGlass.show(blockElement);
-               debug.log("->block");
+               if (yg.dev_mode) {
+                   debug.log("block");
+               }
            } else {
-               pageGlass.show();
-               debug.log("->block");
+               mod.blockPage();
            }
         },
         
@@ -1022,23 +1027,28 @@ yukon.ui = (function () {
             var blockElement = $(target).closest('.js-block-this')[0];
             if (blockElement) {
                 elementGlass.hide(blockElement);
-                debug.log("->unblockPage");
+                if (yg.dev_mode) {
+                    debug.log("unblock");
+                }
             } else {
-                pageGlass.hide();
-                debug.log("->unblock");
+                mod.unblockPage();
             }
         },
         
         /** Block out the whole page */
         blockPage: function (args) {
             pageGlass.show();
-            debug.log("->blockPage");
+            if (yg.dev_mode) {
+                debug.log("blockPage");
+            }
         },
         
         /** Unblock the whole page */
         unblockPage: function () {
             pageGlass.hide();
-            debug.log("->unblockPage");
+            if (yg.dev_mode) {
+                debug.log("unblockPage");
+            }
         },
         
         /** Add a success alert box. */
