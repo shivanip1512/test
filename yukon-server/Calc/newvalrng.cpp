@@ -69,13 +69,13 @@ int main(int argc, char **argv)
     CtiClientConnection Connect( Cti::Messaging::ActiveMQ::Queue::dispatch );
     Connect.start();
 
-    Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg("point changer", GetCurrentThreadId(), true) );
+    Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg( "point changer", GetCurrentThreadId(), true ), CALLSITE );
 
     CtiPointRegistrationMsg *ptReg = CTIDBG_new CtiPointRegistrationMsg( 0 );
 
     for( int l = atoi( argv[2] ); l < atoi( argv[3] ); l++ )
         ptReg->insert( l );
-    Connect.WriteConnQue( ptReg );
+    Connect.WriteConnQue( ptReg, CALLSITE );
 
     CtiMessage *incoming = Connect.ReadConnQue( );
     CtiMultiMsg *ifIHaveTo;
@@ -97,12 +97,12 @@ int main(int argc, char **argv)
     {
         ptType = ((CtiPointDataMsg *)incoming)->getType( );
         ptID   = ((CtiPointDataMsg *)incoming)->getId( );
-        Connect.WriteConnQue( CTIDBG_new CtiPointDataMsg( ptID, (double)1.0, NormalQuality, ptType, "Individual Point Change") );
+        Connect.WriteConnQue( CTIDBG_new CtiPointDataMsg( ptID, (double)1.0, NormalQuality, ptType, "Individual Point Change" ), CALLSITE );
         if( numEntries - i - 1 )
             incoming = (*ifIHaveTo)[i+1];
     }
 
-    Connect.WriteConnQue( CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0) );
+    Connect.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 0 ), CALLSITE );
     Connect.close( );
 
     return 0;

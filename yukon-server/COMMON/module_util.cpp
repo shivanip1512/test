@@ -5,6 +5,7 @@
 #include "logger.h"
 #include "dllbase.h"
 #include "guard.h"
+#include "streamBuffer.h"
 
 using std::endl;
 
@@ -179,6 +180,16 @@ std::string reportProcessorTimes()
 
     return buf.extractToString();
 }
+
+//std::ostream &operator<<(std::ostream &o, const ::Cti::CallSite &cs)
+//{
+//    return o << "( called from " << cs.file << " : " << cs.line << " )";
+//}
+
+//StreamBufferSink &operator<<(StreamBufferSink  &o, const ::Cti::CallSite &cs)
+//{
+//    return o << "( called from " << cs.file << " : " << cs.line << " )";
+//}
 
 
 } // namespace Cti

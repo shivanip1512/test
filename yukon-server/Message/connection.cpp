@@ -489,8 +489,13 @@ void CtiConnection::close()
  * @param timeout timeout in millisec, if the queue is full
  * @return NORMAL if the message is queued, QUEUE_WRITE if there was a timeout
  */
-YukonError_t CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
+YukonError_t CtiConnection::WriteConnQue( CtiMessage *QEnt, ::Cti::CallSite cs, unsigned timeoutMillis )
 {
+    if(QEnt == nullptr)
+    {
+        CTILOG_ERROR(dout, who() << "WriteConnQue: Caller passed in null pointer from " << cs.file << ":" << cs.line);
+    }
+
     // take ownership of the message
     std::unique_ptr<CtiMessage> msg( QEnt );
 
@@ -526,11 +531,7 @@ YukonError_t CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMill
     }
     else
     {
-        while(!_outQueue.putQueue(msg.get(), 30000))
-        {
-            CTILOG_ERROR(dout, who() << " - message was NOT able to be queued within 30 seconds");
-        }  // wait forever
-        msg.release();
+        _outQueue.putQueue( msg.release() ); // wait forever
     }
 
     return ClientErrors::None;

@@ -1388,7 +1388,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                                 while( !retList.empty())
                                 {
                                     CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.front();retList.pop_front();
-                                    VanGoghConnection.WriteConnQue(retMsg);
+                                    VanGoghConnection.WriteConnQue(retMsg, CALLSITE);
 
                                 }
                                 delete_container(retList);
@@ -1481,7 +1481,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
 
                         if( !retMsg->getData().empty() )
                         {
-                            VanGoghConnection.WriteConnQue( retMsg );
+                            VanGoghConnection.WriteConnQue( retMsg, CALLSITE );
                         }
                         else
                         {
@@ -1548,7 +1548,11 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                             IED->getVerificationObjects(verification_queue);
                             PorterVerificationThread.push(verification_queue);
 
-                            VanGoghConnection.WriteConnQue(Device->rsvpToDispatch());
+                            auto msg = Device->rsvpToDispatch();
+                            if(msg)
+                            {
+                                VanGoghConnection.WriteConnQue(msg, CALLSITE);
+                            }
                         }
                         catch(...)
                         {
@@ -1638,7 +1642,11 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                         IED->freeDataBins();
                         Port->setTAP( FALSE );
 
-                        VanGoghConnection.WriteConnQue(Device->rsvpToDispatch());
+                        auto msg = Device->rsvpToDispatch();
+                        if(msg)
+                        {
+                            VanGoghConnection.WriteConnQue(msg, CALLSITE);
+                        }
 
                         break;
                     }

@@ -82,7 +82,7 @@ void DispatchConnection::requestPointValues(const std::set<long>& pointIds)
     }
 
     cmdMsg->setOpArgList(points);
-    WriteConnQue(cmdMsg);
+    WriteConnQue(cmdMsg, CALLSITE);
 }
 
 /**
@@ -102,7 +102,7 @@ void DispatchConnection::refreshPointRegistration()
             _registeredPoints.erase(pointId);
         }
 
-        WriteConnQue(msg);
+        WriteConnQue(msg, CALLSITE);
     }
 
     if (_addList.size() > 0)
@@ -121,7 +121,7 @@ void DispatchConnection::refreshPointRegistration()
             _registeredPoints.insert(pointId);
         }
 
-        WriteConnQue(msg);
+        WriteConnQue(msg, CALLSITE);
 
         //If REG_ADD_POINTS follow up with point request message
         if (flag == REG_ADD_POINTS)

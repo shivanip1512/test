@@ -29,7 +29,7 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const 
 
     //Send a registration message
     CtiRegistrationMsg* reg2 = new CtiRegistrationMsg("CTILOGIC", 0, false );
-    gDispatchConnection->WriteConnQue( reg2 );
+    gDispatchConnection->WriteConnQue(reg2, CALLSITE);
 
     return TCL_OK;
 }
@@ -44,6 +44,6 @@ int SetPoint(ClientData clientData, Tcl_Interp* interp, int argc, const char* ar
     double value = atof(argv[2]);
 
     CtiPointDataMsg* msg = new CtiPointDataMsg(pointid, value, NormalQuality, InvalidPointType);
-    gDispatchConnection->WriteConnQue(msg);
+    gDispatchConnection->WriteConnQue(msg, CALLSITE);
     return TCL_OK;
 }

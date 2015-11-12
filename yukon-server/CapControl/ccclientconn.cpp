@@ -68,7 +68,7 @@ void CtiCCClientConnection::close()
 ---------------------------------------------------------------------------*/
 void CtiCCClientConnection::write( CtiMessage* msg )
 {
-    _connection.WriteConnQue( msg );
+    _connection.WriteConnQue(msg, CALLSITE);
 }
 
 /*---------------------------------------------------------------------------

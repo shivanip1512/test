@@ -115,7 +115,7 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type &CM)
                         pCmd->setSource(getMyServerName());
                         pCmd->setOpString(CompileInfo.version);
 
-                        Mgr->WriteConnQue(pCmd);  // Ask the old guy to respond to us..
+                        Mgr->WriteConnQue(pCmd, CALLSITE);  // Ask the old guy to respond to us..
 
                         questionedEntry = TRUE;
 
@@ -151,7 +151,7 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type &CM)
         // For some reason, the connection has been refused. Shut it down...
         CTILOG_WARN(dout, "Connection rejected, entry will be deleted.");
 
-        CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
+        CM->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::Shutdown, 15 ), CALLSITE );  // Ask the new guy to blow off..
 
         {
             if(mConnectionTable.remove(reinterpret_cast<size_t>(CM.get())))
@@ -214,7 +214,7 @@ void CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 // cout << "VGMain: Looping the Client " << endl;
                 // "new" memory is deleted in the connection machinery!.
                 // use the copy constructor to return to the client.
-                pConn->WriteConnQue(CTIDBG_new CtiCommandMsg(*Cmd));
+                pConn->WriteConnQue( CTIDBG_new CtiCommandMsg( *Cmd ), CALLSITE );
                 break;
             }
         case (CtiCommandMsg::AreYouThere):
@@ -244,7 +244,7 @@ void CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 else  // Client wants to hear from us?
                 {
                     if( !ciStringEqual(getMyServerName(),Cmd->getSource()) )
-                        pConn->WriteConnQue(Cmd->replicateMessage());
+                        pConn->WriteConnQue( Cmd->replicateMessage(), CALLSITE );
                 }
 
                 break;
@@ -319,7 +319,7 @@ int  CtiServer::clientArbitrationWinner(CtiServer::ptr_type &CM)
             // The connection Mgr has been refuted by the prior manager. Shut Mgr down...
             CTILOG_INFO(dout, "Connection "<< Mgr->getClientName() <<" to "<< Mgr->getPeer() <<" has been denied, entry will be deleted.");
 
-            Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
+            Mgr->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::Shutdown, 15 ), CALLSITE );  // Ask the new guy to blow off..
 
             if(mConnectionTable.remove((long)Mgr.get()))
             {
@@ -371,7 +371,7 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
             Cmd->setSource(getMyServerName());
             Cmd->setOpString(CompileInfo.version);
 
-            Mgr->WriteConnQue(Cmd);
+            Mgr->WriteConnQue( Cmd, CALLSITE );
         }
 
         if(pClientCount != NULL)

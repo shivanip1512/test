@@ -67,7 +67,7 @@ void CtiConnectionManager::setRequestId(int rid)
     _serverRequestId = rid;
 }
 
-YukonError_t CtiConnectionManager::WriteConnQue(CtiMessage *pMsg, unsigned millitimeout, int payload_status, std::string payload_string )
+YukonError_t CtiConnectionManager::WriteConnQue( CtiMessage *pMsg, Cti::CallSite cs, unsigned millitimeout, int payload_status, std::string payload_string )
 {
     CtiMessage *pWrite = pMsg;  // Default to sending the original message.
 
@@ -79,7 +79,7 @@ YukonError_t CtiConnectionManager::WriteConnQue(CtiMessage *pMsg, unsigned milli
         pWrite = resp;
     }
 
-    return Inherited::WriteConnQue(pWrite, millitimeout);
+    return Inherited::WriteConnQue(pWrite, CALLSITE, millitimeout);
 }
 
 void CtiConnectionManager::writeIncomingMessageToQueue(CtiMessage *msgPtr)

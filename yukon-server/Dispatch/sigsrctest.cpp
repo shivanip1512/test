@@ -84,7 +84,7 @@ void main(int argc, char **argv)
       Connect.start();
 
       // Insert a registration message into the multi
-      Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg( "SignalSource", GetCurrentThreadId(), true ));
+      Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("SignalSource", GetCurrentThreadId(), true), CALLSITE);
 
 /*      CtiEmailMsg       *pEmail = CTIDBG_new CtiEmailMsg(1, CtiEmailMsg::CICustomerEmailType);
       Connect.WriteConnQue(pEmail);
@@ -108,7 +108,7 @@ void main(int argc, char **argv)
                                                      tag ));
          }
 
-         Connect.WriteConnQue( pMulti.release() );
+         Connect.WriteConnQue(pMulti.release(), CALLSITE);
 
          ReadTheInboundAndDispose( Connect );
 
@@ -117,7 +117,7 @@ void main(int argc, char **argv)
 
       cout << CtiTime() << " Ending Test." << endl;
 
-      Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+      Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0), CALLSITE);
       Connect.close();
    }
    catch(...)

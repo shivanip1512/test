@@ -86,7 +86,7 @@ void CtiDeviceLMI::sendDispatchResults(CtiConnection &vg_connection)
 
     points.clear();
 
-    vg_connection.WriteConnQue(vgMsg);
+    vg_connection.WriteConnQue(vgMsg, CALLSITE);
 }
 
 

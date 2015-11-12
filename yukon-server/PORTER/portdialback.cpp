@@ -202,7 +202,7 @@ void PortDialbackThread(void *pid)
                             pSig->setSource("Port Control");
                             // pSig->dump();
 
-                            VanGoghConnection.WriteConnQue( pSig );
+                            VanGoghConnection.WriteConnQue(pSig, CALLSITE);
                         }
 
 
@@ -230,7 +230,7 @@ void PortDialbackThread(void *pid)
 
                                 pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
 
-                                VanGoghConnection.WriteConnQue(pAltRate);
+                                VanGoghConnection.WriteConnQue(pAltRate, CALLSITE);
 
                                 CTILOG_INFO(dout, "Requesting scans at the alternate scan rate for "<< pDevice->getName());
                             }

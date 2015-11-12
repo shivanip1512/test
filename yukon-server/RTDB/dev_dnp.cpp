@@ -799,7 +799,7 @@ void DnpDevice::sendDispatchResults(CtiConnection &vg_connection)
         }
     }
 
-    vg_connection.WriteConnQue(vgMsg);
+    vg_connection.WriteConnQue(vgMsg, CALLSITE);
 }
 
 

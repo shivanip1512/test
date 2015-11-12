@@ -128,9 +128,9 @@ void main(int argc, char **argv)
             // start the connection
             Connect.start();
 
-            Connect.WriteConnQue(new CtiRegistrationMsg(argv[0], GetCurrentThreadId(), false));
+            Connect.WriteConnQue(new CtiRegistrationMsg(argv[0], GetCurrentThreadId(), false), CALLSITE);
             CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NOTHING);
-            Connect.WriteConnQue(PtRegMsg);
+            Connect.WriteConnQue(PtRegMsg, CALLSITE);
 
             if( !(command == 0x03 || command == 0x04 || command == 0x05 || command == 0x06 || command == 0x07) )
             {
@@ -152,7 +152,7 @@ void main(int argc, char **argv)
                     }
                 }
 
-                Connect.WriteConnQue(pCmd);
+                Connect.WriteConnQue(pCmd, CALLSITE);
             }
             else
             {
@@ -168,23 +168,23 @@ void main(int argc, char **argv)
                 if( command == 0x03 )
                 {
                     CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangePAODb, "device", "", ChangeTypeUpdate);
-                    Connect.WriteConnQue(chg);
+                    Connect.WriteConnQue(chg, CALLSITE);
                 }
                 else if( command == 0x04 )
                 {
                     CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangePointDb, "point", "", ChangeTypeUpdate);
-                    Connect.WriteConnQue(chg);
+                    Connect.WriteConnQue(chg, CALLSITE);
                 }
                 else if( command == 0x05 )
                 {
                     CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangeConfigDb, "device config", "config", ChangeTypeUpdate);
 
-                    Connect.WriteConnQue(chg);
+                    Connect.WriteConnQue(chg, CALLSITE);
                 }
                 else if( command == 0x06 )
                 {
                     CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangeConfigDb, "device config", "device", ChangeTypeUpdate);
-                    Connect.WriteConnQue(chg);
+                    Connect.WriteConnQue(chg, CALLSITE);
                 }
                 else if( command == 0x07 )
                 {
@@ -199,7 +199,7 @@ void main(int argc, char **argv)
                         for( int i=0; i<=25000; i++ )
                         {
                             CtiPointDataMsg *pData = new CtiPointDataMsg(pointID, i, NormalQuality, analogOrStat == 0x01 ? AnalogPointType : StatusPointType);
-                            Connect.WriteConnQue(pData);
+                            Connect.WriteConnQue(pData, CALLSITE);
                             if( i%1000 == 0 )
                             {
                                 CTILOG_INFO(dout, i <<" messages sent");
@@ -213,7 +213,7 @@ void main(int argc, char **argv)
                 }
             }
 
-            Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+            Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0), CALLSITE);
 
             CtiMessage *pMsg;
             while( 0 != (pMsg = Connect.ReadConnQue(1000)) )

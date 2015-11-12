@@ -49,7 +49,7 @@ void CtiMCServer::dispatchThreadFunc()
 
         if( msg.get() && msg->isA() == MSG_COMMAND && ((CtiCommandMsg*)msg.get())->getOperation() == CtiCommandMsg::AreYouThere )
         {
-            _dispatchConnection.WriteConnQue(msg.release());
+            _dispatchConnection.WriteConnQue(msg.release(), CALLSITE);
 
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
@@ -86,7 +86,7 @@ void CtiMCServer::run()
         _dispatchThread.start();
 
         // send a registration message
-        _dispatchConnection.WriteConnQue(new CtiRegistrationMsg("MACServer", 0, false));
+        _dispatchConnection.WriteConnQue(new CtiRegistrationMsg("MACServer", 0, false), CALLSITE);
 
         // initialize timeout to next minute
         CtiTime timeout = getNextMinute();
@@ -125,7 +125,9 @@ void CtiMCServer::run()
                             previous = next;
                             NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( LastThreadMonitorTime, CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                            _dispatchConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(threadMonitorPointId, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                            _dispatchConnection.WriteConnQue(
+                                CTIDBG_new CtiPointDataMsg(threadMonitorPointId, ThreadMonitor.getState(), NormalQuality, 
+                                StatusPointType, ThreadMonitor.getString().c_str()), CALLSITE);
                         }
                     }
                 }
@@ -135,7 +137,7 @@ void CtiMCServer::run()
                     auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(),
                         NormalQuality, AnalogPointType, "");
                     data->setSource(MACS_APPLICATION_NAME);
-                    _dispatchConnection.WriteConnQue(data.release());
+                    _dispatchConnection.WriteConnQue(data.release(), CALLSITE);
                     nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                 }
 

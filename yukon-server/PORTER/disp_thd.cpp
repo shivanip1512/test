@@ -49,7 +49,7 @@ void DispatchMsgHandlerThread()
 
     VanGoghConnection.setName("Porter to Dispatch");
     VanGoghConnection.start();
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PORTER_REGISTRATION_NAME, GetCurrentThreadId(), false));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PORTER_REGISTRATION_NAME, GetCurrentThreadId(), false), CALLSITE);
 
     LastThreadMonitorTime = LastThreadMonitorTime.now();
 
@@ -116,7 +116,7 @@ void DispatchMsgHandlerThread()
                             }
                         case (CtiCommandMsg::AreYouThere):
                             {
-                                VanGoghConnection.WriteConnQue(Cmd->replicateMessage()); // Copy one back
+                                VanGoghConnection.WriteConnQue(Cmd->replicateMessage(), CALLSITE); // Copy one back
                                 break;
                             }
                         case (CtiCommandMsg::PorterConsoleInput):
@@ -204,7 +204,9 @@ void DispatchMsgHandlerThread()
                         previous = next;
                         NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( LastThreadMonitorTime, CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                        VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                        VanGoghConnection.WriteConnQue(
+                            CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, 
+                            StatusPointType, ThreadMonitor.getString().c_str()), CALLSITE);
                     }
                 }
             }
@@ -214,7 +216,7 @@ void DispatchMsgHandlerThread()
                 auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                     AnalogPointType, "Porter Usage");
                 data->setSource(PORTER_APPLICATION_NAME);
-                VanGoghConnection.WriteConnQue(data.release());
+                VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
                 nextCPULoadReportTime = TimeNow + 60;    // Wait another 60 seconds 
             }
 
@@ -225,6 +227,6 @@ void DispatchMsgHandlerThread()
         }
     } /* End of for */
 
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
     VanGoghConnection.close();
 }

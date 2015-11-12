@@ -542,7 +542,7 @@ bool CtiFDRInterface::connectWithDispatch()
 
         CTILOG_INFO(dout, "Registering:  "<< regStr);
 
-        if( iDispatchConn->WriteConnQue( new CtiRegistrationMsg( regStr, *iDispatchRegisterId, true)) != ClientErrors::None )
+        if(iDispatchConn->WriteConnQue(new CtiRegistrationMsg(regStr, *iDispatchRegisterId, true), CALLSITE) != ClientErrors::None)
         {
             iDispatchConn.reset();
             return false;
@@ -554,7 +554,7 @@ bool CtiFDRInterface::connectWithDispatch()
 
             multiMsg->insert( buildRegistrationPointList() );
 
-            if( iDispatchConn->WriteConnQue(multiMsg.release()) != ClientErrors::None )
+            if(iDispatchConn->WriteConnQue(multiMsg.release(), CALLSITE) != ClientErrors::None)
             {
                 iDispatchConn.reset();
                 return false;
@@ -1187,7 +1187,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
     {
         ReaderGuard guard(iDispatchLock);
 
-        if( iDispatchConn && iDispatchConn->WriteConnQue(msg->replicateMessage()) == ClientErrors::None ) // use a copy in case the send fails
+        if(iDispatchConn && iDispatchConn->WriteConnQue(msg->replicateMessage(), CALLSITE) == ClientErrors::None) // use a copy in case the send fails
         {
             return true;
         }
@@ -1201,7 +1201,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
     {
         ReaderGuard guard(iDispatchLock);
 
-        if( iDispatchConn && iDispatchConn->WriteConnQue(msg.release()) == ClientErrors::None )
+        if(iDispatchConn && iDispatchConn->WriteConnQue(msg.release(), CALLSITE) == ClientErrors::None)
         {
             return true;
         }

@@ -402,7 +402,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     // Initialize the connection to VanGogh....
     VanGoghConnection.setName("Scanner to Dispatch");
     VanGoghConnection.start();
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, GetCurrentThreadId(), true));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, GetCurrentThreadId(), true), CALLSITE);
 
     CtiTime NextScan[MAX_SCAN_TYPE];
 
@@ -418,7 +418,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 previous = next;
                 NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, 
+                    StatusPointType, ThreadMonitor.getString().c_str()), CALLSITE);
             }
         }
 
@@ -458,7 +459,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                     auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                         AnalogPointType, "Scanner Usage");
                     data->setSource(SCANNER_APPLICATION_NAME);
-                    VanGoghConnection.WriteConnQue(data.release());
+                    VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
                     nextCPULoadReportTime = CtiTime::now() + 60;
                 }
             }
@@ -532,7 +533,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 previous = next;
                 NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, 
+                    StatusPointType, ThreadMonitor.getString().c_str()), CALLSITE);
             }
         }
 
@@ -541,7 +543,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality, 
                 AnalogPointType, "Scanner Usage");
             data->setSource(SCANNER_APPLICATION_NAME);
-            VanGoghConnection.WriteConnQue(data.release());
+            VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
             nextCPULoadReportTime=CtiTime::now()+60;
         }
 
@@ -815,14 +817,14 @@ void ResultThread (void *Arg)
                     while(!retList.empty())
                     {
                         //  add protection here for CtiRequestMsgs going to Dispatch
-                        VanGoghConnection.WriteConnQue(retList.front());   // I no longer manage this, the queue cleans up!
+                        VanGoghConnection.WriteConnQue(retList.front(), CALLSITE);   // I no longer manage this, the queue cleans up!
                         retList.pop_front();
                     }
 
                     // Write any signals or misc. messages back to VanGogh!
                     while(!vgList.empty())
                     {
-                        VanGoghConnection.WriteConnQue(vgList.front());   // I no longer manage this, the queue cleans up!
+                        VanGoghConnection.WriteConnQue(vgList.front(), CALLSITE);   // I no longer manage this, the queue cleans up!
                         vgList.pop_front();
                     }
 
@@ -923,7 +925,7 @@ void ScannerCleanUp ()
 
     ScannerDeviceManager.deleteList();
 
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
     Sleep(2000);
     VanGoghConnection.close();
 
@@ -1263,7 +1265,7 @@ void DispatchMsgHandlerThread(void *Arg)
                         }
                     case (CtiCommandMsg::AreYouThere):
                         {
-                            VanGoghConnection.WriteConnQue(Cmd.replicateMessage()); // Copy one back
+                            VanGoghConnection.WriteConnQue(Cmd.replicateMessage(), CALLSITE); // Copy one back
                             break;
                         }
                     case (CtiCommandMsg::AlternateScanRate):

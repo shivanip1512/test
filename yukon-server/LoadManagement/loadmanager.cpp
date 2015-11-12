@@ -141,7 +141,7 @@ void CtiLoadManager::stop()
         CtiLockGuard<CtiCriticalSection>  guard(_mutex);
         if( _dispatchConnection.get() != NULL && _dispatchConnection->valid() )
         {
-            _dispatchConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _dispatchConnection->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
         }
         _dispatchConnection.reset(); // Note this delete will block for the message above to go out.
     }
@@ -155,7 +155,7 @@ void CtiLoadManager::stop()
         CtiLockGuard<CtiCriticalSection>  guard(_mutex);
         if( _porterConnection.get() != NULL && _porterConnection->valid() )
         {
-            _porterConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _porterConnection->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
         }
         _porterConnection.reset(); // Note this delete will block for the message above to go out.
     }
@@ -169,7 +169,7 @@ void CtiLoadManager::stop()
         CtiLockGuard<CtiCriticalSection>  guard(_mutex);
         if( _notificationConnection.get()!=NULL && _notificationConnection->valid() )
         {
-            _notificationConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _notificationConnection->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
         }
         _notificationConnection.reset(); // Note this delete will block for the message above to go out.
     }
@@ -453,7 +453,7 @@ void CtiLoadManager::controlLoop()
                     if( multiDispatchMsg->getCount() > 0 )
                     {
                         multiDispatchMsg->resetTime();                              // CGP 5/21/04 Update its time to current time.
-                        getDispatchConnection()->WriteConnQue(multiDispatchMsg);
+                        getDispatchConnection()->WriteConnQue(multiDispatchMsg, CALLSITE);
                         multiDispatchMsg = CTIDBG_new CtiMultiMsg();
                     }
                 }
@@ -468,7 +468,7 @@ void CtiLoadManager::controlLoop()
                     {
                         multiPilMsg->setMessagePriority(13);
                         multiPilMsg->resetTime();                       // CGP 5/21/04 Update its time to current time.
-                        getPorterConnection()->WriteConnQue(multiPilMsg);
+                        getPorterConnection()->WriteConnQue(multiPilMsg, CALLSITE);
                         multiPilMsg = CTIDBG_new CtiMultiMsg();
                     }
                 }
@@ -483,7 +483,7 @@ void CtiLoadManager::controlLoop()
                     {
                         multiNotifMsg->setMessagePriority(13);
                         multiNotifMsg->resetTime();                       // CGP 5/21/04 Update its time to current time.
-                        getNotificationConnection()->WriteConnQue(multiNotifMsg);
+                        getNotificationConnection()->WriteConnQue(multiNotifMsg, CALLSITE);
                         multiNotifMsg = CTIDBG_new CtiMultiMsg();
                     }
                 }
@@ -642,7 +642,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
 
             //Send a registration message to Dispatch
             CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
-            _dispatchConnection->WriteConnQue( registrationMsg );
+            _dispatchConnection->WriteConnQue(registrationMsg, CALLSITE);
         }
 
         return _dispatchConnection;
@@ -673,7 +673,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPorterConnection()
 
             //Send a registration message to Porter
             CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
-            _porterConnection->WriteConnQue( registrationMsg );
+            _porterConnection->WriteConnQue(registrationMsg, CALLSITE);
         }
 
         return _porterConnection;
@@ -861,7 +861,7 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
     }
     try
     {
-        getDispatchConnection()->WriteConnQue(regMsg);
+        getDispatchConnection()->WriteConnQue(regMsg, CALLSITE);
     }
     catch( ... )
     {
@@ -948,7 +948,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
                 }
                 try
                 {
-                    getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage());
+                    getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage(), CALLSITE);
                 }
                 catch( ... )
                 {
@@ -1094,7 +1094,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     {
                         try
                         {
-                            getDispatchConnection()->WriteConnQue(CTIDBG_new CtiSignalMsg(currentTrigger->getPointId(),0,text,additional,GeneralLogType,SignalEvent));
+                            getDispatchConnection()->WriteConnQue(
+                                CTIDBG_new CtiSignalMsg(currentTrigger->getPointId(), 0, text, additional, GeneralLogType, SignalEvent), CALLSITE);
                             CTILOG_INFO(dout, text << ", " << additional << " (" << currentControlArea->getPAOName() << ")");
                         }
                         catch( ... )
@@ -1278,7 +1279,7 @@ void CtiLoadManager::sendMessageToDispatch( CtiMessage* message )
     CtiLockGuard<CtiCriticalSection>  guard(_mutex);
     try
     {
-        getDispatchConnection()->WriteConnQue(message);
+        getDispatchConnection()->WriteConnQue(message, CALLSITE);
     }
     catch( ... )
     {
@@ -1298,7 +1299,7 @@ void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
     try
     {
         message->resetTime();                       // CGP 5/21/04 Update its time to current time.
-        getPorterConnection()->WriteConnQue(message);
+        getPorterConnection()->WriteConnQue(message, CALLSITE);
     }
     catch( ... )
     {
@@ -1317,7 +1318,7 @@ void CtiLoadManager::sendMessageToNotification( CtiMessage* message )
     try
     {
         message->resetTime();                       // CGP 5/21/04 Update its time to current time.
-        getNotificationConnection()->WriteConnQue(message);
+        getNotificationConnection()->WriteConnQue(message, CALLSITE);
     }
     catch( ... )
     {

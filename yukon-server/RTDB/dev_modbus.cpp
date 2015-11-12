@@ -420,7 +420,7 @@ void ModbusDevice::sendDispatchResults(CtiConnection &vg_connection)
 
     points.erase(points.begin(), points.end());
 
-    vg_connection.WriteConnQue(vgMsg);
+    vg_connection.WriteConnQue(vgMsg, CALLSITE);
 }
 
 

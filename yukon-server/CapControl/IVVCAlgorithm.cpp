@@ -1007,7 +1007,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
             if (request != NULL)
             {
                 CtiTime time = request->getMessageTime();
-                CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(request);
+                CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(request, CALLSITE);
 
                 sendIVVCAnalysisMessage(
                     IVVCAnalysisMessage::createCapbankOperationMessage( subbus->getPaoId(),
@@ -1180,7 +1180,7 @@ void IVVCAlgorithm::sendPointChanges(DispatchConnectionPtr dispatchConnection, C
     {
         CtiMultiMsg* pointChangeMsg = new CtiMultiMsg();
         pointChangeMsg->setData(pointChanges);
-        dispatchConnection->WriteConnQue(pointChangeMsg);
+        dispatchConnection->WriteConnQue(pointChangeMsg, CALLSITE);
     }
 }
 
@@ -1269,7 +1269,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
     }
     if (pilMsg.size() > 0)
     {
-        CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(pilMessages);
+        CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(pilMessages, CALLSITE);
         sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
     }
 
@@ -2498,7 +2498,7 @@ void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isC
         DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
 
         dispatchConnection->WriteConnQue(
-            new CtiPointDataMsg( busCommsPointId, isCommsLost ? 1.0 : 0.0 ) ); // NormalQuality, StatusPointType
+            new CtiPointDataMsg(busCommsPointId, isCommsLost ? 1.0 : 0.0), CALLSITE); // NormalQuality, StatusPointType
     }
 }
 

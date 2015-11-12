@@ -71,8 +71,8 @@ int main(int argc, char **argv)
 
     string regStr = "Lurker";
 
-    myConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, GetCurrentThreadId(), true) );
-    myConnection.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
+    myConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg( regStr, GetCurrentThreadId(), true ), CALLSITE );
+    myConnection.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ), CALLSITE );
 
     CtiMessage *incomingMsg;
 
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
     }
 
     //  tell Dispatch we're going away, then leave
-    myConnection.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+    myConnection.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15 ), CALLSITE );
     myConnection.close();
 
     cout << msgNum << " messages in " << CtiTime( ).seconds( ) - startTime.seconds( ) << " seconds" << endl;

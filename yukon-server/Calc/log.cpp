@@ -73,8 +73,8 @@ int main(int argc, char **argv)
 
     string regStr = "CalcLogTest";
 
-    Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, GetCurrentThreadId(), true) );
-    Connect.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
+    Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg( regStr, GetCurrentThreadId(), true ), CALLSITE );
+    Connect.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ), CALLSITE );
 
     CtiMessage *incomingMsg;
 
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
     }
 
     //  tell Dispatch we're going away, then leave
-    Connect.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 0) );
+    Connect.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 0 ), CALLSITE );
     Connect.close();
 
     return 0;

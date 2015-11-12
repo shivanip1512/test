@@ -153,7 +153,7 @@ void runClient( string name )
         {
             auto_ptr<CtiTraceMsg> msg( new CtiTraceMsg() );
             msg->setTrace( conn.who() + " sent trace msg");
-            conn.WriteConnQue( msg.release() );
+            conn.WriteConnQue(msg.release(), CALLSITE);
         }
         else if( i == 0 )
         {

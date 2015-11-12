@@ -1108,7 +1108,7 @@ void UnsolicitedHandler::sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> 
 
     if( !m->getData().empty() )
     {
-        connection.WriteConnQue(m.release());
+        connection.WriteConnQue(m.release(), CALLSITE);
     }
 }
 

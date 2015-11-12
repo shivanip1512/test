@@ -2091,7 +2091,7 @@ void commFail(const CtiDeviceSPtr &Device)
 
         if(pData != NULL)
         {
-            VanGoghConnection.WriteConnQue(pData);
+            VanGoghConnection.WriteConnQue(pData, CALLSITE);
         }
     }
     else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device && state)
@@ -2183,7 +2183,7 @@ void reportOnWorkObjects()
 
     if(pData != NULL)
     {
-        VanGoghConnection.WriteConnQue(pData);
+        VanGoghConnection.WriteConnQue(pData, CALLSITE);
     }
 
 }

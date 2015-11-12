@@ -3,6 +3,7 @@
 #include "dlldefs.h"
 #include "ctitime.h"
 #include "version.h"
+#include "streamBuffer.h"
 
 #include <windows.h>
 
@@ -33,6 +34,18 @@ IM_EX_CTIBASE std::string reportProcessTimes(const compileinfo_t &info);
 IM_EX_CTIBASE std::string reportProcessorTimes();
 IM_EX_CTIBASE double getCPULoad();
 
+struct CallSite
+{
+    const char *file;
+    const unsigned line;
+};
+
+//IM_EX_CTIBASE std::ostream &operator<<(std::ostream &o, const ::Cti::CallSite &cs);
+
+//IM_EX_CTIBASE StreamBufferSink &operator<<(StreamBufferSink  &o, const ::Cti::CallSite &cs);
+
+#define CALLSITE (::Cti::CallSite{__FILE__, __LINE__})
+
 } // namespace Cti
 
 extern Cti::compileinfo_t CompileInfo;
@@ -52,3 +65,4 @@ extern Cti::compileinfo_t CompileInfo;
 #define SETCOMPILEINFO( x, y, z ) Cti::compileinfo_t CompileInfo = { x, STRINGIZE(y), STRINGIZE(z), __TIMESTAMP__ }
 
 #define PROJECT_ID( x ) SETCOMPILEINFO( x, BUILD_VERSION, BUILD_VERSION_DETAILS )
+

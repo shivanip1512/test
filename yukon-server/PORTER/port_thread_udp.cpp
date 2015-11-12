@@ -454,7 +454,7 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, str
     {
         extern CtiClientConnection VanGoghConnection;
 
-        VanGoghConnection.WriteConnQue(vgMsg.release());
+        VanGoghConnection.WriteConnQue(vgMsg.release(), CALLSITE);
     }
 }
 

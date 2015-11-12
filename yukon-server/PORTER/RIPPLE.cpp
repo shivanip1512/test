@@ -1405,7 +1405,7 @@ void SubmitDataToDispatch  ( list< CtiMessage* >  &vgList )
     while( vgList.size() > 0 )
     {
         CtiMessage *pVg = vgList.front();vgList.pop_front();
-        VanGoghConnection.WriteConnQue(pVg);
+        VanGoghConnection.WriteConnQue(pVg, CALLSITE);
     }
 
     return;

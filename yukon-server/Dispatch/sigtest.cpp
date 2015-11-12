@@ -35,10 +35,10 @@ void main( int argc, char **argv )
         Connect.start();
 
         // Send registration message
-        Connect.WriteConnQue( new CtiRegistrationMsg(argv[1], GetCurrentThreadId(), false ));
+        Connect.WriteConnQue(new CtiRegistrationMsg(argv[1], GetCurrentThreadId(), false), CALLSITE);
 
         // Register for a few points which "test.exe" will change.
-        Connect.WriteConnQue( new CtiPointRegistrationMsg(REG_EVENTS | REG_ALARMS | REG_NO_UPLOAD ));
+        Connect.WriteConnQue(new CtiPointRegistrationMsg(REG_EVENTS | REG_ALARMS | REG_NO_UPLOAD), CALLSITE);
 
         for( int imsg_cnt=0; imsg_cnt < atoi(argv[2]); imsg_cnt++ )
         {
@@ -72,7 +72,7 @@ void main( int argc, char **argv )
         cout << CtiTime() << " Ending Test." << endl;
 
         // Send shutdown request
-        Connect.WriteConnQue( new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15 ));
+        Connect.WriteConnQue(new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
         Connect.close();
     }
     catch(...)

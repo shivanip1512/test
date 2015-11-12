@@ -213,7 +213,7 @@ void CtiCapController::stop()
         {
             if( _dispatchConnection->valid() )
             {
-                _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+                _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15 ), CALLSITE );
             }
             _dispatchConnection->close();
         }
@@ -229,7 +229,7 @@ void CtiCapController::stop()
         {
             if( _porterConnection->valid() )
             {
-                _porterConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+                _porterConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15 ), CALLSITE );
             }
             _porterConnection->close();
         }
@@ -746,7 +746,7 @@ void CtiCapController::controlLoop()
                     if( pointChanges.size() > 0 )
                     {
                         multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
-                        getDispatchConnection()->WriteConnQue(multiDispatchMsg);
+                        getDispatchConnection()->WriteConnQue( multiDispatchMsg, CALLSITE );
                         multiDispatchMsg = new CtiMultiMsg();
                     }
                 }
@@ -765,7 +765,7 @@ void CtiCapController::controlLoop()
                         {
                             CTILOG_DEBUG(dout, "PIL MESSAGES " << multiPilMsg);
                         }
-                        getPorterConnection()->WriteConnQue(multiPilMsg);
+                        getPorterConnection()->WriteConnQue( multiPilMsg, CALLSITE );
                         multiPilMsg = new CtiMultiMsg();
                     }
                 }
@@ -851,7 +851,9 @@ void CtiCapController::controlLoop()
                     previous = next;
                     NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate(CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2);
 
-                    getDispatchConnection()->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                    getDispatchConnection()->WriteConnQue(
+                        CTIDBG_new CtiPointDataMsg( pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType,
+                        ThreadMonitor.getString().c_str() ), CALLSITE );
                 }
             }
 
@@ -860,7 +862,7 @@ void CtiCapController::controlLoop()
                 auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                     AnalogPointType, "CapControl Usage");
                 data->setSource(CAPCONTROL_APPLICATION_NAME);
-                getDispatchConnection()->WriteConnQue(data.release());
+                getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
             }
         }
@@ -1266,7 +1268,7 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
             _dispatchConnection->start();
 
             // send a registration message to Dispatch
-            _dispatchConnection->WriteConnQue( new CtiRegistrationMsg( "CapController", 0, false ));
+            _dispatchConnection->WriteConnQue( new CtiRegistrationMsg( "CapController", 0, false ), CALLSITE );
 
             return _dispatchConnection;
         }
@@ -1316,7 +1318,7 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPorterConnection()
             _porterConnection->start();
 
             // send a registration message to Porter
-            _porterConnection->WriteConnQue( new CtiRegistrationMsg( "CapController", 0, false ));
+            _porterConnection->WriteConnQue(new CtiRegistrationMsg("CapController", 0, false), CALLSITE);
 
             return _porterConnection;
         }
@@ -2014,7 +2016,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                     {
                         try
                         {
-                            getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage());
+                            getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage(), CALLSITE);
                             if( _CC_DEBUG & CC_DEBUG_STANDARD )
                             {
                                 CTILOG_DEBUG(dout, "Replied to Are You There message.");
@@ -3844,7 +3846,9 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
             currentCapBank->setTotalOperations( currentCapBank->getTotalOperations() - 1);
         if (currentCapBank->getCurrentDailyOperations() > 0)
             currentCapBank->setCurrentDailyOperations( currentCapBank->getCurrentDailyOperations() - 1);
-        getDispatchConnection()->WriteConnQue(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Command Refused, Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+        getDispatchConnection()->WriteConnQue(
+            new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(), currentCapBank->getTotalOperations(), NormalQuality, 
+            AnalogPointType, "Command Refused, Forced ccServer Update", TAG_POINT_FORCE_UPDATE), CALLSITE);
         ccEvents.push_back( EventLogEntry(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, CapBank opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
     }
 
@@ -3858,7 +3862,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
                                                                         NormalQuality,
                                                                         AnalogPointType,
                                                                         "Command Refused, Forced ccServer Update",
-                                                                        TAG_POINT_FORCE_UPDATE ) );
+                                                                        TAG_POINT_FORCE_UPDATE), CALLSITE);
             ccEvents.push_back( EventLogEntry( 0,
                                                currentFeeder->getDailyOperationsAnalogPointId(),
                                                spAreaId,
@@ -4010,7 +4014,7 @@ void CtiCapController::sendMessageToDispatch( CtiMessage* message )
 {
     try
     {
-        getDispatchConnection()->WriteConnQue(message);
+        getDispatchConnection()->WriteConnQue(message, CALLSITE);
     }
     catch(...)
     {
@@ -4029,14 +4033,14 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     {
         if (pilRequest != NULL)
         {
-            getPorterConnection()->WriteConnQue(pilRequest);
+            getPorterConnection()->WriteConnQue(pilRequest, CALLSITE);
         }
 
         if (multiMsg != NULL)
         {
             if (multiMsg->getCount() > 0)
             {
-                getDispatchConnection()->WriteConnQue(multiMsg);
+                getDispatchConnection()->WriteConnQue(multiMsg, CALLSITE);
             }
             else
             {
@@ -4070,7 +4074,7 @@ void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMulti
         {
             if (pilMultiMsg->getCount() > 0)
             {
-                getPorterConnection()->WriteConnQue(pilMultiMsg);
+                getPorterConnection()->WriteConnQue(pilMultiMsg, CALLSITE);
             }
             else
             {
@@ -4082,7 +4086,7 @@ void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMulti
         {
             if( multiMsg->getCount() > 0 )
             {
-                getDispatchConnection()->WriteConnQue(multiMsg);
+                getDispatchConnection()->WriteConnQue(multiMsg, CALLSITE);
             }
             else
             {

@@ -218,7 +218,8 @@ void CtiCalcLogicService::Run( )
                 //    the program name and such doesn't change - only our requested points do.)
 
                 // USE A SINGLE Simple Name - bdw
-                dispatchConnection->WriteConnQue( new CtiRegistrationMsg("CalcLogic"+CtiNumStr(conncnt++), GetCurrentThreadId(), false ));
+                dispatchConnection->WriteConnQue( new CtiRegistrationMsg( "CalcLogic" + CtiNumStr( conncnt++ ), GetCurrentThreadId(), false ),
+                    CALLSITE );
             }
 
             try
@@ -330,7 +331,7 @@ void CtiCalcLogicService::Run( )
                                 auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                                     AnalogPointType, "Calc Usage");
                                 data->setSource(CALCLOGIC_APPLICATION_NAME);
-                                dispatchConnection->WriteConnQue(data.release());
+                                dispatchConnection->WriteConnQue(data.release(), CALLSITE);
                                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                             }
 
@@ -419,7 +420,8 @@ void CtiCalcLogicService::Run( )
                             previous = next;
                             NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( Now, CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                            dispatchConnection->WriteConnQue( new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                            dispatchConnection->WriteConnQue( new CtiPointDataMsg(pointID, ThreadMonitor.getState(), 
+                                NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()), CALLSITE);
                         }
                     }
 
@@ -430,7 +432,7 @@ void CtiCalcLogicService::Run( )
                         auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                             AnalogPointType, "Calc Usage");
                         data->setSource(CALCLOGIC_APPLICATION_NAME);
-                        dispatchConnection->WriteConnQue(data.release());
+                        dispatchConnection->WriteConnQue(data.release(), CALLSITE);
                         nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                     }
 
@@ -508,7 +510,8 @@ void CtiCalcLogicService::Run( )
         SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
 
         //  tell Dispatch we're going away, then leave
-        dispatchConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+        dispatchConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15 ),
+            CALLSITE );
         dispatchConnection->close();
 
         SetStatus(SERVICE_STOP_PENDING, 75, 5000);
@@ -575,7 +578,7 @@ void CtiCalcLogicService::_outputThread()
             {
                 if( entry && entry->getCount() > 0 )
                 {
-                    dispatchConnection->WriteConnQue( entry.release() );
+                    dispatchConnection->WriteConnQue( entry.release(), CALLSITE );
                 }
             }
         }
@@ -715,7 +718,7 @@ void CtiCalcLogicService::handleCommandMsg(const CtiCommandMsg &cmdMsg)
             // echo back the same message - we are here
             if( cmdMsg.getUser() != CompileInfo.project)
             {
-                dispatchConnection->WriteConnQue( cmdMsg.replicateMessage() );
+                dispatchConnection->WriteConnQue( cmdMsg.replicateMessage(), CALLSITE );
 
                 CTILOG_INFO(dout, "CalcLogic has been pinged");
 
@@ -1156,7 +1159,7 @@ void CtiCalcLogicService::_registerForPoints()
         msgPtReg->insert( ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc) );
         //  now send off the point registration
 
-        dispatchConnection->WriteConnQue( msgPtReg.release() );
+        dispatchConnection->WriteConnQue( msgPtReg.release(), CALLSITE );
     }
     catch(...)
     {

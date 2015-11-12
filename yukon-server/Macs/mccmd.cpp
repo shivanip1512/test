@@ -197,7 +197,7 @@ void _MessageThrFunc()
                 // message then echo it right back
                 if( vgMsg->isA() == MSG_COMMAND && ((CtiCommandMsg*)vgMsg)->getOperation() == CtiCommandMsg::AreYouThere )
                 {
-                    VanGoghConnection->WriteConnQue(vgMsg);
+                    VanGoghConnection->WriteConnQue(vgMsg, CALLSITE);
                 }
                 else
                 {  // not interested, just delete it
@@ -355,7 +355,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const cha
 
     //Send a registration message
     CtiRegistrationMsg* reg = new CtiRegistrationMsg("MCCMD", 0, false );
-    PorterConnection->WriteConnQue( reg );
+    PorterConnection->WriteConnQue(reg, CALLSITE);
 
     VanGoghConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
     VanGoghConnection->setName("MCCMD to Dispatch");
@@ -363,7 +363,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const cha
 
     //Send a registration message
     CtiRegistrationMsg* reg2 = new CtiRegistrationMsg("MCCMD", 0, false );
-    VanGoghConnection->WriteConnQue( reg2 );
+    VanGoghConnection->WriteConnQue(reg2, CALLSITE);
 
     NotificationConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification );
     NotificationConnection->setName("MCCMD to Notification");
@@ -1021,7 +1021,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, cons
                                                       "macs");
 
                 // we wait this to keep running even if it fails
-                VanGoghConnection->WriteConnQue(msg);
+                VanGoghConnection->WriteConnQue(msg, CALLSITE);
                 decodeResult = ClientErrors::None;
             }
             else if(decodeResult == TEXT_CMD_FILE_UNABLE_TO_EDIT_ORIGINAL)
@@ -1044,7 +1044,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, cons
                                                       "macs");
 
                 // we wait this to keep running even if it fails
-                VanGoghConnection->WriteConnQue(msg);
+                VanGoghConnection->WriteConnQue(msg, CALLSITE);
             }
             else if(decodeResult == TEXT_CMD_FILE_UNABLE_TO_OPEN_FILE)
             {
@@ -1242,7 +1242,7 @@ int LogEvent(ClientData clientData, Tcl_Interp* interp, int argc, const char* ar
                                           classification,
                                           SignalEvent,
                                           user);
-    VanGoghConnection->WriteConnQue(msg);
+    VanGoghConnection->WriteConnQue(msg, CALLSITE);
 
     return TCL_OK;
 }
@@ -1300,7 +1300,7 @@ int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, const 
     CTILOG_INFO(dout, "Sending email notification to the notification server"<<
             loglist);
 
-    NotificationConnection->WriteConnQue(msg);
+    NotificationConnection->WriteConnQue(msg, CALLSITE);
 
     return TCL_OK;
 }
@@ -1543,7 +1543,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         inboundMessageQueues.insert(msgid, requestQueue);
     }
 
-    PorterConnection->WriteConnQue(multi_req);
+    PorterConnection->WriteConnQue(multi_req, CALLSITE);
 
     // We dont care about responses, dont set up the queue, send the message and exit.
     if ( ! timeout )
@@ -1644,7 +1644,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         if( now > lastPorterCountTime + PORT_COUNT_REQUEST_SECONDS )
         {
             lastPorterCountTime = now;
-            PorterConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request count", msgid, msgid));
+            PorterConnection->WriteConnQue( CTIDBG_new CtiRequestMsg( 0, "system message request count", msgid, msgid ), CALLSITE );
         }
     } while(true);
 
@@ -1656,7 +1656,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     // We now always send the cancel message.
     if( two_way && timeout > 0 && !gDoNotSendCancel)
     {
-        PorterConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, msgid));
+        PorterConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, msgid), CALLSITE);
     }
 
     // set up good and bad tcl lists
@@ -2148,7 +2148,7 @@ int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, const char
     dbChange->setUser(user);
     dbChange->setSource(app);
 
-    VanGoghConnection->WriteConnQue(dbChange);
+    VanGoghConnection->WriteConnQue(dbChange, CALLSITE);
 
     return TCL_OK;
 }

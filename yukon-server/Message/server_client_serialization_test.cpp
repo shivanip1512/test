@@ -95,7 +95,7 @@ struct ServerClientTestSequence
 
         _tc.Populate();
 
-        _serverConn.WriteConnQue( _tc._imsg.release() );
+        _serverConn.WriteConnQue(_tc._imsg.release(), CALLSITE);
     }
 };
 

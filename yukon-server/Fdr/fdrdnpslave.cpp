@@ -83,7 +83,7 @@ void DnpSlave::startup()
 
     _porterConnection.start();
     _porterConnection.WriteConnQue(
-            new CtiRegistrationMsg("FDR (DNP Slave)", 0, true));
+        new CtiRegistrationMsg("FDR (DNP Slave)", 0, true), CALLSITE);
 }
 
 /*************************************************
@@ -1176,7 +1176,7 @@ bool DnpSlave::tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_
 
 YukonError_t DnpSlave::writePorterConnection(CtiRequestMsg *msg, const Timing::Chrono duration)
 {
-    return _porterConnection.WriteConnQue(msg, duration.milliseconds());
+    return _porterConnection.WriteConnQue(msg, CALLSITE, duration.milliseconds());
 }
 
 

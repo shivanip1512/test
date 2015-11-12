@@ -162,7 +162,7 @@ void PilServer::mainThread()
 
     VanGoghConnection.setName("Pil to Dispatch");
     VanGoghConnection.start();
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PIL_REGISTRATION_NAME, GetCurrentThreadId(), true));
+    VanGoghConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg( PIL_REGISTRATION_NAME, GetCurrentThreadId(), true ), CALLSITE );
 
     if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
     {
@@ -229,7 +229,7 @@ void PilServer::mainThread()
                                         req->UserMessageId(),
                                         req->getSOE()));
 
-                            requestingClient->WriteConnQue(expiredRequestError.release());
+                            requestingClient->WriteConnQue( expiredRequestError.release(), CALLSITE );
                         }
 
                         delete MsgPtr;    // No one attached it to them, so we need to kill it!
@@ -366,7 +366,7 @@ void PilServer::mainThread()
 
     _broken = true;
 
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
     VanGoghConnection.close();
 
     CTILOG_INFO(dout, "PIL mainThread - Terminating");
@@ -838,7 +838,7 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
                 }
 
                 //  This sends all ReturnMsgs to the connectionHandle, overriding the ReturnMsg->ConnectionHandle (if set).
-                Conn->WriteConnQue(pRet);
+                Conn->WriteConnQue(pRet, CALLSITE);
             }
             else
             {
@@ -853,7 +853,7 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
 
         for each( CtiMessage *vgMsg in vgList )
         {
-            VanGoghConnection.WriteConnQue(vgMsg);
+            VanGoghConnection.WriteConnQue(vgMsg, CALLSITE);
         }
         vgList.clear();
     }
@@ -1214,7 +1214,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                     if(pcRet != NULL)
                     {
-                        CM->WriteConnQue(pcRet);
+                        CM->WriteConnQue(pcRet, CALLSITE);
                     }
                 }
             }
@@ -1246,7 +1246,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                 CTILOG_DEBUG(dout, *pcRet);
             }
 
-            CM->WriteConnQue(pcRet);
+            CM->WriteConnQue(pcRet, CALLSITE);
         }
         else
         {
@@ -1279,7 +1279,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
     for each( CtiMessage *pVg in vgList )
     {
-        VanGoghConnection.WriteConnQue(pVg);
+        VanGoghConnection.WriteConnQue(pVg, CALLSITE);
     }
     vgList.clear();
 
@@ -1369,7 +1369,7 @@ void PilServer::vgConnThread()
                         }
                     case (CtiCommandMsg::AreYouThere):
                         {
-                            VanGoghConnection.WriteConnQue(pMsg->replicateMessage()); // Copy one back
+                            VanGoghConnection.WriteConnQue(pMsg->replicateMessage(), CALLSITE); // Copy one back
                             break;
                         }
                     default:
@@ -1399,7 +1399,7 @@ void PilServer::vgConnThread()
 
     } /* End of for */
 
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
     VanGoghConnection.close();
 
     CTILOG_INFO(dout, "PIL vgConnThread - Terminating");

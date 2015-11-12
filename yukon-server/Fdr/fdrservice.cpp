@@ -255,7 +255,8 @@ void CtiFDRService::Run( )
         // Initialize the connection to VanGogh....
         FdrVanGoghConnection.setName("FDR Service to Dispatch");
         FdrVanGoghConnection.start();
-        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(FDR_APPLICATION_NAME, GetCurrentThreadId(), true));
+        FdrVanGoghConnection.WriteConnQue(
+            CTIDBG_new CtiRegistrationMsg(FDR_APPLICATION_NAME, GetCurrentThreadId(), true), CALLSITE);
 
         do
         {
@@ -278,7 +279,9 @@ void CtiFDRService::Run( )
                     previous = next;
                     NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                    FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                    FdrVanGoghConnection.WriteConnQue(
+                        CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, 
+                        StatusPointType, ThreadMonitor.getString().c_str()), CALLSITE);
                 }
             }
 
@@ -287,7 +290,7 @@ void CtiFDRService::Run( )
                 auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(),
                     NormalQuality, AnalogPointType, "");
                 data->setSource(FDR_APPLICATION_NAME);
-                FdrVanGoghConnection.WriteConnQue(data.release());
+                FdrVanGoghConnection.WriteConnQue(data.release(), CALLSITE);
                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
             }
 
@@ -295,7 +298,7 @@ void CtiFDRService::Run( )
             {
                 if( msg->isA() == MSG_COMMAND && ((CtiCommandMsg*)msg)->getOperation() == CtiCommandMsg::AreYouThere )
                 {
-                    FdrVanGoghConnection.WriteConnQue(msg->replicateMessage());
+                    FdrVanGoghConnection.WriteConnQue(msg->replicateMessage(), CALLSITE);
 
                     CTILOG_INFO(dout, "FDR Service Replied to Are You There message.");
                 }
