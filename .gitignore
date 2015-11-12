@@ -1,8 +1,10 @@
 yukon-build/bin
 yukon-build/build
 yukon-client/.metadata
+yukon-client/FDEmulator/bin
 yukon-client/api-web/bin
 yukon-client/api-web/build
+yukon-client/api/bin
 yukon-client/api/build
 yukon-client/billing/.cvsignore
 yukon-client/billing/bin
@@ -35,9 +37,11 @@ yukon-client/macs/bin
 yukon-client/macs/build
 yukon-client/monitor/bin
 yukon-client/monitor/build
+yukon-client/multispeak/bin
 yukon-client/multispeak/build
 yukon-client/notification/bin
 yukon-client/notification/build
+yukon-client/openadr-web/build/classes
 yukon-client/report/bin
 yukon-client/report/build
 yukon-client/resource/master.cfg
@@ -57,6 +61,7 @@ yukon-client/tools/build
 yukon-client/trending/.cvsignore
 yukon-client/trending/bin
 yukon-client/trending/build
+yukon-client/web-common/bin
 yukon-client/web-common/build
 yukon-client/yukon-web/.tomcatplugin
 yukon-client/yukon-web/WebContent/WEB-INF/classes
