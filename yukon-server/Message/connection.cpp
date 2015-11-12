@@ -546,9 +546,10 @@ CtiMessage* CtiConnection::ReadConnQue( UINT Timeout )
 {
     CtiMessage *Msg = 0;
 
-    if( _sendStart != CtiTime::not_a_time && _sendStart > 30 * 1000)
+    if( _sendStart != CtiTime::not_a_time && _sendStart > 30 * 1000)    // > 30 seconds
     {
-        CTILOG_WARN( dout, who() << " - send queue thread has send outstanding since " << _sendStart.asString() );
+        CTILOG_LOG( (_sendStart > 5 * 60 * 1000 ? Cti::Logging::Logger::Error : Cti::Logging::Logger::Warn),
+                dout, who() << " - send queue thread has send outstanding since " << _sendStart.asString() );
     }
 
     if( _inQueue )
