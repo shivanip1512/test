@@ -392,11 +392,10 @@ public class TdcDisplayController {
             backingBean.setValue(pointValue.getValue());
         } else if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
             LiteStateGroup group = pointDao.getStateGroup(litePoint.getStateGroupID());
-            // Display only the first 2 options from the list - if the option with index 0 is
-            // selected the control request open will be send otherwise the control request closed
-            // will be send
+            // Filter out the negative control states - i.e. TwoStateStatus contains Any(-1)
             List<LiteState> stateList = group.getStatesList()
                     .stream()
+                    //  TODO JAVA 8
                     .filter(new Predicate<LiteState>() {
                 @Override
                 public boolean test(LiteState t) {
