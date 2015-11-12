@@ -5,7 +5,6 @@
 #include "logger.h"
 #include "dllbase.h"
 #include "guard.h"
-#include "streamBuffer.h"
 
 using std::endl;
 
