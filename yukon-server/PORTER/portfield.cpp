@@ -1548,8 +1548,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                             IED->getVerificationObjects(verification_queue);
                             PorterVerificationThread.push(verification_queue);
 
-                            auto msg = Device->rsvpToDispatch();
-                            if(msg)
+                            if(const auto msg = Device->rsvpToDispatch())
                             {
                                 VanGoghConnection.WriteConnQue(msg, CALLSITE);
                             }
@@ -1642,8 +1641,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                         IED->freeDataBins();
                         Port->setTAP( FALSE );
 
-                        auto msg = Device->rsvpToDispatch();
-                        if(msg)
+                        if(const auto msg = Device->rsvpToDispatch())
                         {
                             VanGoghConnection.WriteConnQue(msg, CALLSITE);
                         }
