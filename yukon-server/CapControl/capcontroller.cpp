@@ -1190,15 +1190,12 @@ void CtiCapController::outClientMsgs()
         {
             CtiMessage* msg = NULL;
             bool retVal = getOutClientMsgQueueHandle().read(msg,5000);
-            int totalEntries = getOutClientMsgQueueHandle().entries();
 
             if (retVal)
             {
                 CtiCCClientListener::getInstance().BroadcastMessage( msg );
                 delete msg;
             }
-
-            boost::this_thread::sleep( boost::posix_time::milliseconds( 50 ) );
 
             threadStatus.monitorCheck();
         }
