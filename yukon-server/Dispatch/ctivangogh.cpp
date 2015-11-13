@@ -3029,14 +3029,23 @@ YukonError_t CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg &pData, CtiM
         pendingPointData->setPointData( (CtiPointDataMsg*)pData.replicateMessage() );
 
         addToPendingSet(pendingPointData);
+
+        return ClientErrors::None;
     }
-    else
+
+    // This is a point data which is to be processed right NOW.  It may generate signals and it
+    // may clear active alarms.
+    try
     {
-        // This is a point data which is to be processed right NOW.  It may generate signals and it
-        // may clear active alarms.
-        try
+        if(pData.getTime() < pDyn->getTimeStamp())
         {
-            if(!pPoint->isAlarmDisabled())
+            pData.setTags(TAG_POINT_OLD_TIMESTAMP);
+        }
+        else
+        {
+            pData.resetTags(TAG_POINT_OLD_TIMESTAMP); // No one else may set this but us!
+
+            if( !pPoint->isAlarmDisabled() )
             {
                 if(pPoint->isNumeric())
                 {
@@ -3059,27 +3068,18 @@ YukonError_t CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg &pData, CtiM
                     }
                 }
             }
-
-            if(pData.getTime() < pDyn->getTimeStamp())
-            {
-                pData.setTags(TAG_POINT_OLD_TIMESTAMP);
-            }
-            else
-            {
-                pData.resetTags(TAG_POINT_OLD_TIMESTAMP); // No one else may set this but us!
-            }
-
-            //  checked here to avoid calling the point manager inside processStalePoint()
-            if( PointMgr.hasProperty(pPoint->getPointID(), CtiTablePointProperty::STALE_UPDATE_TYPE) )
-            {
-                int updateType = PointMgr.getProperty(pPoint->getPointID(), CtiTablePointProperty::STALE_UPDATE_TYPE);
-                processStalePoint(*pPoint, *pDyn, updateType, pData, aWrap);
-            }
         }
-        catch(...)
+
+        //  checked here to avoid calling the point manager inside processStalePoint()
+        if( PointMgr.hasProperty(pPoint->getPointID(), CtiTablePointProperty::STALE_UPDATE_TYPE) )
         {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Point exception on "<< pPoint->getName());
+            int updateType = PointMgr.getProperty(pPoint->getPointID(), CtiTablePointProperty::STALE_UPDATE_TYPE);
+            processStalePoint(*pPoint, *pDyn, updateType, pData, aWrap);
         }
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Point exception on "<< pPoint->getName());
     }
 
     return ClientErrors::None;
