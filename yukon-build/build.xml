@@ -175,7 +175,7 @@
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/common/pao/definition/dao/paoDefinition.xml" 
             tofile="${yukon.exampleXml}/deviceDefinition_Example.xml"/>
 
-        <signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
+        <signjar alias="cannon5" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
             <fileset dir="${client.bin}">
                 <include name="*.jar"/>
                 <exclude name="activation.jar"/>
@@ -188,7 +188,7 @@
              digest algorithms so we have to also sign the bouncy castle jars with SHA1.  We need to sign them
              ourselves because their cert isn't official enough but we can't remove their signature because
              we get errors. -->
-        <signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore"
+        <signjar alias="cannon5" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore"
                 digestalg="SHA1">
             <fileset dir="${client.bin}">
                 <include name="bcpkix-jdk15on-149.jar"/>
