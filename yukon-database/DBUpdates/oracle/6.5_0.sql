@@ -346,7 +346,7 @@ INSERT INTO PointAnalog VALUES (-30, -1, 1, 0 );
 INSERT INTO PointAnalog VALUES (-32, -1, 1, 0 );
 INSERT INTO PointAnalog VALUES (-33, -1, 1, 0 );
 
-INSERT INTO UnitMeasure VALUES (56, 'MB', 0, 'MegaBytes', '(none)');
+INSERT INTO UnitMeasure VALUES (56, 'MB', 0, 'Megabytes', '(none)');
 
 INSERT INTO PointUnit VALUES (-11, 28, 2, 1.0E+30, -1.0E+30, 0);
 INSERT INTO PointUnit VALUES (-12, 28, 2, 1.0E+30, -1.0E+30, 0);

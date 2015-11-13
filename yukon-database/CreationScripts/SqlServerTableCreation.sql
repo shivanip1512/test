@@ -9036,7 +9036,7 @@ INSERT INTO UnitMeasure VALUES ( 52,'m/s',0,'Meters Per Second','(none)');
 INSERT INTO UnitMeasure VALUES ( 53,'KV', 0,'KVolts','(none)' );
 INSERT INTO UnitMeasure VALUES ( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
-INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'MegaBytes', '(none)');
+INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 
 /*==============================================================*/
 /* Table: UserGroup                                             */
