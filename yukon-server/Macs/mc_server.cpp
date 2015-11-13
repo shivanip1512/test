@@ -108,12 +108,7 @@ void CtiMCServer::run()
             {
                 dout->poke();  //  called roughly each minute (see _main_queue.getQueue() below)
 
-                if( Cti::isTimeToReportMemory(CtiTime::now()) )
-                {
-                    CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-                    CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-                    CTILOG_INFO(dout, Cti::reportProcessorTimes());
-                }
+                Cti::reportSystemMetrics( CompileInfo );
 
                 // Do thread monitor stuff
                 if( threadMonitorPointId != 0 )
@@ -141,17 +136,12 @@ void CtiMCServer::run()
                     data->setSource(MACS_APPLICATION_NAME);
                     _dispatchConnection.WriteConnQue(data.release(), CALLSITE);
 
-                    data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024,
+                    data = std::make_unique<CtiPointDataMsg>(memoryPointID, (double)Cti::getPrivateBytes() / 1024 / 1024,
                         NormalQuality, AnalogPointType, "");
                     data->setSource(MACS_APPLICATION_NAME);
                     _dispatchConnection.WriteConnQue( data.release(), CALLSITE );
 
-                    if(Cti::isTimeToReportMemory(CtiTime::now()))
-                    {
-                        CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-                        CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-                        CTILOG_INFO(dout, Cti::reportProcessorTimes());
-                    }
+                    Cti::reportSystemMetrics( CompileInfo );
 
                     nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                 }

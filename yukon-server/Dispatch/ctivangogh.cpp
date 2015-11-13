@@ -4480,17 +4480,12 @@ void CtiVanGogh::VGAppMonitorThread()
             data->setSource(DISPATCH_APPLICATION_NAME);
             MainQueue_.putQueue(data.release());
 
-            data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024, 
+            data = std::make_unique<CtiPointDataMsg>(memoryPointID, (double)Cti::getPrivateBytes() / 1024 / 1024, 
                 NormalQuality, AnalogPointType, "");
             data->setSource(DISPATCH_APPLICATION_NAME);
             MainQueue_.putQueue(data.release());
 
-            if(Cti::isTimeToReportMemory(CtiTime::now()))
-            {
-                CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-                CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-                CTILOG_INFO(dout, Cti::reportProcessorTimes());
-            }
+            Cti::reportSystemMetrics( CompileInfo );
 
             nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
         }
@@ -4541,17 +4536,12 @@ void CtiVanGogh::VGAppMonitorThread()
                     data->setSource(DISPATCH_APPLICATION_NAME);
                     MainQueue_.putQueue(data.release());
 
-                    data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024, 
+                    data = std::make_unique<CtiPointDataMsg>(memoryPointID, (double)Cti::getPrivateBytes() / 1024 / 1024, 
                         NormalQuality, AnalogPointType, "");
                     data->setSource(DISPATCH_APPLICATION_NAME);
                     MainQueue_.putQueue(data.release());
 
-                    if(Cti::isTimeToReportMemory(CtiTime::now()))
-                    {
-                        CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-                        CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-                        CTILOG_INFO(dout, Cti::reportProcessorTimes());
-                    }
+                    Cti::reportSystemMetrics( CompileInfo );
 
                     nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                 }

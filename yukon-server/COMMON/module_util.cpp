@@ -84,31 +84,36 @@ HANDLE createExclusiveEvent(bool manualReset,
     return hExclusion;
 }
 
-CtiTime nextMemoryReportTime;
-
-bool isTimeToReportMemory(const CtiTime Now)
+/** Report System Metrics when the timer expires */
+void reportSystemMetrics( const compileinfo_t &info )
 {
-    if( nextMemoryReportTime < Now )
+    static CtiTime nextMemoryReportTime;
+
+    CtiTime now = CtiTime::now();
+    if(nextMemoryReportTime < now)
     {
-        nextMemoryReportTime = nextScheduledTimeAlignedOnRate(Now, gMemoryReportIntervalSeconds);
+        nextMemoryReportTime = nextScheduledTimeAlignedOnRate( now, gMemoryReportIntervalSeconds );
 
-        return true;
+        StreamBuffer buf;
+
+        long long privateBytes = getPrivateBytes();
+        buf << info.project << " memory use: " << CtiNumStr( privateBytes / 1048576.0, 1 ) << " MB (" 
+            << commaFormatted( privateBytes ) << ")";
+        CTILOG_INFO( dout, buf.extractToString() );
+
+        const auto times = getProcessTimes();
+        unsigned long long elapsed = times.currentTime - times.creationTime;
+        buf << info.project << " process times: "
+            << CtiNumStr( (double)elapsed / 10000000, 3 ) << "(e) "
+            << CtiNumStr( (double)times.kernelTime / 10000000, 3 ) << "(k) "
+            << CtiNumStr( (double)times.userTime / 10000000, 3 ) << "(u) ";
+        CTILOG_INFO( dout, buf.extractToString() );
+
+        double cpuTotal = pdhGetCpuTotal();
+        buf << "Total processor time: " << CtiNumStr( cpuTotal, 3 ) << "%";
+        CTILOG_INFO( dout, buf.extractToString());
     }
-
-    return false;
 }
-
-std::string reportPrivateBytes(const compileinfo_t &info)
-{
-    StreamBuffer buf;
-
-    long long privateBytes = getPrivateBytes();
-
-    buf << info.project << " memory use: " << CtiNumStr(privateBytes / 1048576.0, 1) << " MB (" << commaFormatted(privateBytes) << ")";
-
-    return buf.extractToString();
-}
-
 
 /** Calculate CPU Load based on processTimes().  Result is in percent. */
 double getCPULoad()
@@ -150,34 +155,6 @@ double getCPULoad()
     oldCurrentTime = newTimes.currentTime;
 
     return cpuLoad/processorCount*100;  // Handle multiple cores & Dont forget this is in percent.
-}
-
-/** Get processTimes as a string */
-std::string reportProcessTimes(const compileinfo_t &info)
-{
-    StreamBuffer buf;
-
-    const auto times = getProcessTimes();
-
-    unsigned long long elapsed = times.currentTime - times.creationTime;
-
-    buf << info.project << " process times: "
-        << CtiNumStr((double)elapsed / 10000000, 3) << "(e) "
-        << CtiNumStr((double)times.kernelTime / 10000000, 3) << "(k) "
-        << CtiNumStr((double)times.userTime / 10000000, 3) << "(u) ";
-
-    return buf.extractToString();
-}
-
-/** Get Total processor time as a string */
-std::string reportProcessorTimes()
-{
-    double cpuTotal=pdhGetCpuTotal();
-    StreamBuffer buf;
-
-    buf << "Total processor time: " << CtiNumStr(cpuTotal, 3) << "%";
-
-    return buf.extractToString();
 }
 
 //std::ostream &operator<<(std::ostream &o, const ::Cti::CallSite &cs)

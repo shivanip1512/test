@@ -50,9 +50,9 @@ public:
        CapControlCPU = 1011,
        FDRCPU = 1012,
        MacsCPU = 1013,
-       NotifServCPU = 1014,
-       ServMgrCPU = 1015,
-       WebServCPU = 1016,
+//     NotificationServerCPU = 1014,        // Not used in the C++ code, only in Java
+//     ServiceManagerCPU = 1015,            // Not used in the C++ code, only in Java
+//     WebServerCPU = 1016,                 // Not used in the C++ code, only in Java
        PorterMemory = 1017,
        DispatchMemory = 1018,
        ScannerMemory = 1019,
@@ -60,9 +60,9 @@ public:
        CapControlMemory = 1021,
        FDRMemory = 1022,
        MacsMemory = 1023,
-       NotifServMemory = 1024,
-       ServMgrMemory = 1025,
-       WebServMemory = 1026,
+//     NotificationServerMemory = 1024,     // Not used in the C++ code, only in Java
+//     ServiceManagerMemory = 1025,         // Not used in the C++ code, only in Java
+//     WebServerMemory = 1026,              // Not used in the C++ code, only in Java
        LoadManager = 1027,
        LoadManagerCPU = 1028,
        LoadManagerMemory = 1029,

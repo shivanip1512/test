@@ -336,17 +336,12 @@ void CtiCalcLogicService::Run( )
                                 dispatchConnection->WriteConnQue(data.release(), CALLSITE);
 
                                 data = std::make_unique<CtiPointDataMsg>(memoryPointID, 
-                                    (long)Cti::getPrivateBytes() / 1024 / 1024,
+                                    (double)Cti::getPrivateBytes() / 1024 / 1024,
                                     NormalQuality, AnalogPointType, "");
                                 data->setSource(CALCLOGIC_APPLICATION_NAME);
                                 dispatchConnection->WriteConnQue( data.release(), CALLSITE );
 
-                                if(Cti::isTimeToReportMemory(CtiTime::now()))
-                                {
-                                    CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-                                    CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-                                    CTILOG_INFO(dout, Cti::reportProcessorTimes());
-                                }
+                                Cti::reportSystemMetrics( CompileInfo );
 
                                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                             }
@@ -444,17 +439,12 @@ void CtiCalcLogicService::Run( )
                         dispatchConnection->WriteConnQue(data.release(), CALLSITE);
 
                         data = std::make_unique<CtiPointDataMsg>(memoryPointID,
-                            (long)Cti::getPrivateBytes() / 1024 / 1024,
+                            (double)Cti::getPrivateBytes() / 1024 / 1024,
                             NormalQuality, AnalogPointType, "");
                         data->setSource(CALCLOGIC_APPLICATION_NAME);
                         dispatchConnection->WriteConnQue( data.release(), CALLSITE );
 
-                        if(Cti::isTimeToReportMemory(CtiTime::now()))
-                        {
-                            CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-                            CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-                            CTILOG_INFO(dout, Cti::reportProcessorTimes());
-                        }
+                        Cti::reportSystemMetrics( CompileInfo );
 
                         nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                     }

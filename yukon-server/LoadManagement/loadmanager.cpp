@@ -276,17 +276,12 @@ void CtiLoadManager::controlLoop()
                     data->setSource( LOAD_MANAGER_APPLICATION_NAME );
                     getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
 
-                    data = std::make_unique<CtiPointDataMsg>( memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024,
+                    data = std::make_unique<CtiPointDataMsg>( memoryPointID, (double)Cti::getPrivateBytes() / 1024 / 1024,
                         NormalQuality, AnalogPointType, "" );
                     data->setSource( LOAD_MANAGER_APPLICATION_NAME );
                     getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
 
-                    if(Cti::isTimeToReportMemory( CtiTime::now() ))
-                    {
-                        CTILOG_INFO( dout, Cti::reportPrivateBytes( CompileInfo ) );
-                        CTILOG_INFO( dout, Cti::reportProcessTimes( CompileInfo ) );
-                        CTILOG_INFO( dout, Cti::reportProcessorTimes() );
-                    }
+                    Cti::reportSystemMetrics( CompileInfo );
 
                     nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                 }
