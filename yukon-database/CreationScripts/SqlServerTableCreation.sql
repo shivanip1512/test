@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/11/2015 1:15:12 AM                        */
+/* Created on:     11/13/2015 1:31:04 PM                        */
 /*==============================================================*/
 
 
@@ -7447,6 +7447,9 @@ INSERT INTO Point VALUES(-27, 'Analog', 'MACS Memory Utilization', 0,'Default', 
 INSERT INTO Point VALUES(-28, 'Analog', 'Notification Server Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1024, 'None', 0);
 INSERT INTO Point VALUES(-29, 'Analog', 'Service Manager Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1025, 'None', 0);
 INSERT INTO Point VALUES(-30, 'Analog', 'Web Service Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1026, 'None', 0);
+INSERT INTO Point VALUES(-31, 'Status', 'Load Management Monitor', 0, 'Default', -7, 'N', 'N', 'R', 1027, 'None', 0);
+INSERT INTO Point VALUES(-32, 'Analog', 'Load Management CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1028, 'None', 0);
+INSERT INTO Point VALUES(-33, 'Analog', 'Load Management Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1029, 'None', 0);
 INSERT INTO Point VALUES(-100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 100 ,'None', 0);
 INSERT INTO Point VALUES( 100, 'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 INSERT INTO Point VALUES(-110, 'System', 'MultiSpeak' , 0, 'Default', 0, 'N', 'N', 'S', 110 ,'None', 0);
@@ -7541,6 +7544,8 @@ insert into pointanalog values(-27, -1, 1, 0 );
 insert into pointanalog values(-28, -1, 1, 0 );
 insert into pointanalog values(-29, -1, 1, 0 );
 insert into pointanalog values(-30, -1, 1, 0 );
+insert into pointanalog values(-32, -1, 1, 0 );
+insert into pointanalog values(-33, -1, 1, 0 );
 insert into pointanalog values( 100, 0, 1, 0 );
 
 /*==============================================================*/
@@ -7584,6 +7589,7 @@ insert into pointstatus values( 4, 0);
 insert into pointstatus values( 3, 0);
 insert into pointstatus values( 2, 0);
 insert into pointstatus values( 1, 0);
+insert into pointstatus values(-31, 0);
 
 /*==============================================================*/
 /* Table: POINTTRIGGER                                          */
@@ -7634,6 +7640,8 @@ insert into pointunit values(-27, 56, 0, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values(-28, 56, 0, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values(-29, 56, 0, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values(-30, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-32, 28, 2, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values(-33, 56, 0, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
 
 /*==============================================================*/
