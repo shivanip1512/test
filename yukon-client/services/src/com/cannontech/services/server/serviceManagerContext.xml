@@ -22,7 +22,8 @@
     
     <bean id="systemMetrics" class="com.cannontech.common.systemMetrics.SystemMetricsImpl"
            init-method="init" destroy-method="destroy">
-        <property name="attribute" value="SERVICE_MANAGER_CPU_UTILIZATION"/>
+        <property name="loadAverageAttribute" value="SERVICE_MANAGER_CPU_UTILIZATION"/>
+        <property name="memoryAttribute" value="SERVICE_MANAGER_MEMORY_UTILIZATION" />
     </bean>
     
 </beans>

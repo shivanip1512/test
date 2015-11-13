@@ -42,6 +42,7 @@ void DispatchMsgHandlerThread()
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
     long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PorterCPU);
+    long memoryPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PorterMemory);
 
     CTILOG_INFO(dout, "DispatchMsgHandlerThd started");
 
@@ -217,6 +218,19 @@ void DispatchMsgHandlerThread()
                     AnalogPointType, "Porter Usage");
                 data->setSource(PORTER_APPLICATION_NAME);
                 VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
+
+                data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024,
+                    NormalQuality, AnalogPointType, "");
+                data->setSource(PORTER_APPLICATION_NAME);
+                VanGoghConnection.WriteConnQue( data.release(), CALLSITE );
+
+                if(Cti::isTimeToReportMemory(CtiTime::now()))
+                {
+                    CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessorTimes());
+                }
+
                 nextCPULoadReportTime = TimeNow + 60;    // Wait another 60 seconds 
             }
 

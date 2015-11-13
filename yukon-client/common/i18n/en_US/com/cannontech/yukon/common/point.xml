@@ -381,6 +381,21 @@
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_MANAGER_CPU_UTILIZATION">Service Manager CPU Utilization</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WEB_SERVICE_CPU_UTILIZATION">Web Service CPU Utilization</entry>
     
+    <entry key="yukon.common.attribute.builtInAttribute.PORTER_MEMORY_UTILIZATION">Porter Memory Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DISPATCH_MEMORY_UTILIZATION">Dispatch Memory Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SCANNER_MEMORY_UTILIZATION">Scanner Memory Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CALC_MEMORY_UTILIZATION">Calc Memory Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CAPCONTROL_MEMORY_UTILIZATION">CapControl Memory Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FDR_MEMORY_UTILIZATION">FDR Memory Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MACS_MEMORY_UTILIZATION">MACS Memory Utilization</entry>
+
+    <entry key="yukon.common.attribute.builtInAttribute.NOTIFICATION_SERVER_MEMORY_UTILIZATION">Notification Server Memory Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SERVICE_MANAGER_MEMORY_UTILIZATION">Service Manager Memory Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.WEB_SERVICE_MEMORY_UTILIZATION">Web Service Memory Utilization</entry>
+    
+    <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_MONITOR">Load Management Monitor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_CPU_UTILIZATION">Load Management CPU Utilization</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_MEMORY_UTILIZATION">Load Management Memory Utilization</entry>
     
     <!-- BuiltInAttribute see note above about changing values -->
 </properties>

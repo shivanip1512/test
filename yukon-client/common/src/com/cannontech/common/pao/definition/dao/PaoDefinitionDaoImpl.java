@@ -901,6 +901,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 throw new NotFoundException("Unit of measure does not exist: " + unitOfMeasureName
                     + ". Check the paoDefinition.xml file ", e);
             }
+            if (unitMeasure==null)
+            {
+                throw new NotFoundException("Unit of measure does not exist: " + unitOfMeasureName
+                                            + ". Check the paoDefinition.xml file ");
+            }
             unitOfMeasure = unitMeasure.getUomID();
         }
         

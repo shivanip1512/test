@@ -328,7 +328,23 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NOTIFICATION_SERVER_CPU_UTILIZATION("Notification Server CPU Utilization", AttributeGroup.SYSTEM, false),
     SERVICE_MANAGER_CPU_UTILIZATION("Service Manager CPU Utilization", AttributeGroup.SYSTEM, false),
     WEB_SERVICE_CPU_UTILIZATION("Web Service CPU Utilization", AttributeGroup.SYSTEM, false),
-    ;
+
+    PORTER_MEMORY_UTILIZATION("Porter Memory Utilization", AttributeGroup.SYSTEM, false),
+    DISPATCH_MEMORY_UTILIZATION("Dispatch Memory Utilization", AttributeGroup.SYSTEM, false),
+    SCANNER_MEMORY_UTILIZATION("Scanner Memory Utilization", AttributeGroup.SYSTEM, false),
+    CALC_MEMORY_UTILIZATION("Calc Memory Utilization", AttributeGroup.SYSTEM, false),
+    CAPCONTROL_MEMORY_UTILIZATION("CapControl Memory Utilization", AttributeGroup.SYSTEM, false),
+    FDR_MEMORY_UTILIZATION("FDR Memory Utilization", AttributeGroup.SYSTEM, false),
+    MACS_MEMORY_UTILIZATION("MACS Memory Utilization", AttributeGroup.SYSTEM, false),
+    
+    NOTIFICATION_SERVER_MEMORY_UTILIZATION("Notification Server Memory Utilization", AttributeGroup.SYSTEM, false),
+    SERVICE_MANAGER_MEMORY_UTILIZATION("Service Manager Memory Utilization", AttributeGroup.SYSTEM, false),
+    WEB_SERVICE_MEMORY_UTILIZATION("Web Service Memory Utilization", AttributeGroup.SYSTEM, false),
+
+    LOAD_MANAGEMENT_MONITOR("Load Management Monitor", AttributeGroup.SYSTEM, false),
+    LOAD_MANAGEMENT_CPU_UTILIZATION("Load Management CPU Utilization", AttributeGroup.SYSTEM, false),
+    LOAD_MANAGEMENT_MEMORY_UTILIZATION("Load Management Memory Utilization", AttributeGroup.SYSTEM, false),
+;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
 

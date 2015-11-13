@@ -50,6 +50,22 @@ public:
        CapControlCPU = 1011,
        FDRCPU = 1012,
        MacsCPU = 1013,
+       NotifServCPU = 1014,
+       ServMgrCPU = 1015,
+       WebServCPU = 1016,
+       PorterMemory = 1017,
+       DispatchMemory = 1018,
+       ScannerMemory = 1019,
+       CalcMemory = 1020,
+       CapControlMemory = 1021,
+       FDRMemory = 1022,
+       MacsMemory = 1023,
+       NotifServMemory = 1024,
+       ServMgrMemory = 1025,
+       WebServMemory = 1026,
+       LoadManager = 1027,
+       LoadManagerCPU = 1028,
+       LoadManagerMemory = 1029,
        LastPoint
    };
 

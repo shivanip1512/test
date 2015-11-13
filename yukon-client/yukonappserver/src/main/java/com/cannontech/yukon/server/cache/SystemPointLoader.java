@@ -88,7 +88,7 @@ timerStart = new java.util.Date();
     String sqlString = "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
                         " FROM ( POINT P LEFT OUTER JOIN POINTUNIT PU "+
                         " ON P.POINTID = PU.POINTID )  LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "+
-                        "WHERE PAOBJECTID = 0 AND P.POINTID > 0 "+
+                        "WHERE PAOBJECTID = 0"+
                         " ORDER BY PAObjectID, POINTOFFSET ";
     java.sql.Connection conn = null;
     java.sql.Statement stmt = null;

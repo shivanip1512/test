@@ -10023,6 +10023,95 @@
                 <unitofmeasure value="Percent" />
                 <decimalplaces value="2" />            
             </point>
+            <point type="Analog" offset="1017">
+                <init>true</init>
+                <name>Porter Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Analog" offset="1018">
+                <init>true</init>
+                <name>Dispatch Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Analog" offset="1019">
+                <init>true</init>
+                <name>Scanner Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Analog" offset="1020">
+                <init>true</init>
+                <name>Calc Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Analog" offset="1021">
+                <init>true</init>
+                <name>CapControl Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Analog" offset="1022">
+                <init>true</init>
+                <name>FDR Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Analog" offset="1023">
+                <init>true</init>
+                <name>MACS Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Analog" offset="1024">
+                <init>true</init>
+                <name>Notification Server Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Analog" offset="1025">
+                <init>true</init>
+                <name>Service Manager Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Analog" offset="1026">
+                <init>true</init>
+                <name>Web Service Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
+            <point type="Status" offset="1027">
+                <init>true</init>
+                <name>Load Management Monitor</name>
+                <stategroup value="Thread Monitor" />
+            </point>
+            <point type="Analog" offset="1028">
+                <init>true</init>
+                <name>Load Management CPU Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
+            </point>
+            <point type="Analog" offset="1029">
+                <init>true</init>
+                <name>Load Management Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
         </points>
         <attributes>
             <attribute name="PORTER_CPU_UTILIZATION">
@@ -10054,6 +10143,45 @@
             </attribute>
             <attribute name="WEB_SERVICE_CPU_UTILIZATION">
                 <basicLookup point="Web Service CPU Utilization" />
+            </attribute>
+            <attribute name="PORTER_MEMORY_UTILIZATION">
+                <basicLookup point="Porter Memory Utilization" />
+            </attribute>
+            <attribute name="DISPATCH_MEMORY_UTILIZATION">
+                <basicLookup point="Dispatch Memory Utilization" />
+            </attribute>
+            <attribute name="SCANNER_MEMORY_UTILIZATION">
+                <basicLookup point="Scanner Memory Utilization" />
+            </attribute>
+            <attribute name="CALC_MEMORY_UTILIZATION">
+                <basicLookup point="Calc Memory Utilization" />
+            </attribute>
+            <attribute name="CAPCONTROL_MEMORY_UTILIZATION">
+                <basicLookup point="CapControl Memory Utilization" />
+            </attribute>
+            <attribute name="FDR_MEMORY_UTILIZATION">
+                <basicLookup point="FDR Memory Utilization" />
+            </attribute>
+            <attribute name="MACS_MEMORY_UTILIZATION">
+                <basicLookup point="MACS Memory Utilization" />
+            </attribute>
+            <attribute name="NOTIFICATION_SERVER_MEMORY_UTILIZATION">
+                <basicLookup point="Notification Server Memory Utilization" />
+            </attribute>
+            <attribute name="SERVICE_MANAGER_MEMORY_UTILIZATION">
+                <basicLookup point="Service Manager Memory Utilization" />
+            </attribute>
+            <attribute name="WEB_SERVICE_MEMORY_UTILIZATION">
+                <basicLookup point="Web Service Memory Utilization" />
+            </attribute>
+            <attribute name="LOAD_MANAGEMENT_MONITOR">
+                <basicLookup point="Load Management Monitor" />
+            </attribute>
+            <attribute name="LOAD_MANAGEMENT_CPU_UTILIZATION">
+                <basicLookup point="Load Management CPU Utilization" />
+            </attribute>
+            <attribute name="LOAD_MANAGEMENT_MEMORY_UTILIZATION">
+                <basicLookup point="Load Management Memory Utilization" />
             </attribute>
         </attributes>
     </pao>

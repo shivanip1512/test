@@ -30,6 +30,8 @@
 #include "debug_timer.h"
 #include "module_util.h"
 #include "amq_constants.h"
+#include "thread_monitor.h"
+#include "win_helper.h"
 
 #include <time.h>
 #include <map>
@@ -206,6 +208,13 @@ void CtiLoadManager::controlLoop()
 
         CtiLMExecutorFactory executorFactory;
 
+        long pointID = ThreadMonitor.getPointIDFromOffset( CtiThreadMonitor::LoadManager );
+        long cpuPointID = ThreadMonitor.getPointIDFromOffset( CtiThreadMonitor::LoadManagerCPU );
+        long memoryPointID = ThreadMonitor.getPointIDFromOffset( CtiThreadMonitor::LoadManagerMemory );
+
+        CtiTime NextThreadMonitorReportTime;
+        CtiTime nextCPULoadReportTime;
+
         //remember when the last control area messages were sent
         time_t last_ca_msg_sent = 0;
 
@@ -248,11 +257,38 @@ void CtiLoadManager::controlLoop()
 
                 dout->poke();  //  called 4x/second (see sleep at top of loop)
 
-                if( Cti::isTimeToReportMemory(currentDateTime) )
+                if(pointID != 0)
                 {
-                    CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-                    CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-                    CTILOG_INFO(dout, Cti::reportProcessorTimes());
+                    if(CtiTime::now() > NextThreadMonitorReportTime)
+                    {
+                        NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
+
+                        getDispatchConnection()->WriteConnQue(
+                            CTIDBG_new CtiPointDataMsg( pointID, ThreadMonitor.getState(), NormalQuality,
+                            StatusPointType, ThreadMonitor.getString().c_str() ), CALLSITE );
+                    }
+                }
+
+                if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
+                {
+                    auto data = std::make_unique<CtiPointDataMsg>( cpuPointID, Cti::getCPULoad(),
+                        NormalQuality, AnalogPointType, "" );
+                    data->setSource( LOAD_MANAGER_APPLICATION_NAME );
+                    getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
+
+                    data = std::make_unique<CtiPointDataMsg>( memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024,
+                        NormalQuality, AnalogPointType, "" );
+                    data->setSource( LOAD_MANAGER_APPLICATION_NAME );
+                    getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
+
+                    if(Cti::isTimeToReportMemory( CtiTime::now() ))
+                    {
+                        CTILOG_INFO( dout, Cti::reportPrivateBytes( CompileInfo ) );
+                        CTILOG_INFO( dout, Cti::reportProcessTimes( CompileInfo ) );
+                        CTILOG_INFO( dout, Cti::reportProcessorTimes() );
+                    }
+
+                    nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                 }
 
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )

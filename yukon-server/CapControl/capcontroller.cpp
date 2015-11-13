@@ -39,6 +39,7 @@
 #include "millisecond_timer.h"
 #include "module_util.h"
 #include "mgr_config.h"
+#include "win_helper.h"
 
 extern void refreshGlobalCParms();
 
@@ -468,6 +469,7 @@ void CtiCapController::controlLoop()
 
         long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CapControl);
         long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CapControlCPU);
+        long memoryPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CapControlMemory);
 
         CtiTime NextThreadMonitorReportTime;
         CtiTime nextCPULoadReportTime;
@@ -481,13 +483,6 @@ void CtiCapController::controlLoop()
                 unsigned long secondsFrom1970 = Now.seconds();
 
                 dout->poke();  //  called around 2x/second (see boost::this_thread::sleep at bottom of loop)
-
-                if( Cti::isTimeToReportMemory(Now) )
-                {
-                    CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-                    CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-                    CTILOG_INFO(dout, Cti::reportProcessorTimes());
-                }
 
                 CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
                 CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
@@ -863,6 +858,19 @@ void CtiCapController::controlLoop()
                     AnalogPointType, "CapControl Usage");
                 data->setSource(CAPCONTROL_APPLICATION_NAME);
                 getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
+
+                data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024,
+                    NormalQuality, AnalogPointType, "");
+                data->setSource(CAPCONTROL_APPLICATION_NAME);
+                getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
+
+                if(Cti::isTimeToReportMemory(CtiTime::now()))
+                {
+                    CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessorTimes());
+                }
+
                 nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
             }
         }

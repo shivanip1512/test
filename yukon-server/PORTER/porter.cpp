@@ -942,13 +942,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
         dout->poke();  //  called 4x/second (see sleep at bottom of loop)
 
-        if( Cti::isTimeToReportMemory(Now) )
-        {
-            CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-            CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-            CTILOG_INFO(dout, Cti::reportProcessorTimes());
-        }
-
         if( nextWorkReportTime < Now )
         {
             nextWorkReportTime = nextScheduledTimeAlignedOnRate(Now, WorkReportIntervalInSeconds);

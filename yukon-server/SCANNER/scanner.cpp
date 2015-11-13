@@ -393,6 +393,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Scanner);
     long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::ScannerCPU);
+    long memoryPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::ScannerMemory);
 
     CtiTime NextThreadMonitorReportTime;
     CtiTime nextCPULoadReportTime;
@@ -402,6 +403,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     // Initialize the connection to VanGogh....
     VanGoghConnection.setName("Scanner to Dispatch");
     VanGoghConnection.start();
+
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, GetCurrentThreadId(), true), CALLSITE);
 
     CtiTime NextScan[MAX_SCAN_TYPE];
@@ -455,13 +457,24 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
             if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)
             {
-                {
-                    auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
-                        AnalogPointType, "Scanner Usage");
-                    data->setSource(SCANNER_APPLICATION_NAME);
+                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                    AnalogPointType, "Scanner Usage");
+                data->setSource(SCANNER_APPLICATION_NAME);
                     VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
-                    nextCPULoadReportTime = CtiTime::now() + 60;
+
+                data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024,
+                    NormalQuality, AnalogPointType, "");
+                data->setSource(SCANNER_APPLICATION_NAME);
+                VanGoghConnection.WriteConnQue( data.release(), CALLSITE );
+
+                if(Cti::isTimeToReportMemory(CtiTime::now()))
+                {
+                    CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                    CTILOG_INFO(dout, Cti::reportProcessorTimes());
                 }
+
+                nextCPULoadReportTime = CtiTime::now() + 60;
             }
         }
     }
@@ -516,13 +529,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
         dout->poke();  //  called 2x/second  (see Sleep at bottom of loop)
 
-        if( Cti::isTimeToReportMemory(TimeNow) )
-        {
-            CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-            CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
-            CTILOG_INFO(dout, Cti::reportProcessorTimes());
-        }
-
         if(pointID!=0)
         {
             CtiThreadMonitor::State next;
@@ -544,7 +550,20 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 AnalogPointType, "Scanner Usage");
             data->setSource(SCANNER_APPLICATION_NAME);
             VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
-            nextCPULoadReportTime=CtiTime::now()+60;
+
+            data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024,
+                NormalQuality, AnalogPointType, "");
+            data->setSource(SCANNER_APPLICATION_NAME);
+            VanGoghConnection.WriteConnQue( data.release(), CALLSITE );
+
+            if(Cti::isTimeToReportMemory(CtiTime::now()))
+            {
+                CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                CTILOG_INFO(dout, Cti::reportProcessorTimes());
+            }
+
+            nextCPULoadReportTime = CtiTime::now() + 60;
         }
 
         // release the lock

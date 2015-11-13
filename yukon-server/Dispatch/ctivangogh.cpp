@@ -61,6 +61,7 @@
 #include "millisecond_timer.h"
 
 #include "std_helper.h"
+#include "win_helper.h"
 #include "amq_constants.h"
 #include "module_util.h"
 #include "logger.h"
@@ -4456,6 +4457,7 @@ void CtiVanGogh::VGAppMonitorThread()
     CtiPointDataMsg vgStatusPoint;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Dispatch);
     long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::DispatchCPU);
+    long memoryPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::DispatchMemory);
 
     //on startup wait for 10 minutes!
     for(int i=0;i<120 && !bGCtrlC;i++)
@@ -4477,6 +4479,19 @@ void CtiVanGogh::VGAppMonitorThread()
                 AnalogPointType, "Dispatch Usage");
             data->setSource(DISPATCH_APPLICATION_NAME);
             MainQueue_.putQueue(data.release());
+
+            data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024, 
+                NormalQuality, AnalogPointType, "");
+            data->setSource(DISPATCH_APPLICATION_NAME);
+            MainQueue_.putQueue(data.release());
+
+            if(Cti::isTimeToReportMemory(CtiTime::now()))
+            {
+                CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                CTILOG_INFO(dout, Cti::reportProcessorTimes());
+            }
+
             nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
         }
     }
@@ -4521,10 +4536,23 @@ void CtiVanGogh::VGAppMonitorThread()
 
                 if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
                 {
-                    CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(cpuPointID, Cti::getCPULoad(), NormalQuality,
+                    auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
                         AnalogPointType, "");
-                    pData->setSource(DISPATCH_APPLICATION_NAME);
-                    MainQueue_.putQueue(pData);
+                    data->setSource(DISPATCH_APPLICATION_NAME);
+                    MainQueue_.putQueue(data.release());
+
+                    data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024, 
+                        NormalQuality, AnalogPointType, "");
+                    data->setSource(DISPATCH_APPLICATION_NAME);
+                    MainQueue_.putQueue(data.release());
+
+                    if(Cti::isTimeToReportMemory(CtiTime::now()))
+                    {
+                        CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                        CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                        CTILOG_INFO(dout, Cti::reportProcessorTimes());
+                    }
+
                     nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                 }
 

@@ -8,6 +8,7 @@
 #include "msg_reg.h"
 #include "amq_constants.h"
 #include "module_util.h"
+#include "win_helper.h"
 
 #include <time.h>
 #include <algorithm>
@@ -95,6 +96,7 @@ void CtiMCServer::run()
         {
             const long threadMonitorPointId = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Macs);
             long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::MacsCPU);
+            long memoryPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::MacsMemory);
 
             CtiTime LastThreadMonitorTime, NextThreadMonitorReportTime;
             CtiTime nextCPULoadReportTime;
@@ -138,6 +140,19 @@ void CtiMCServer::run()
                         NormalQuality, AnalogPointType, "");
                     data->setSource(MACS_APPLICATION_NAME);
                     _dispatchConnection.WriteConnQue(data.release(), CALLSITE);
+
+                    data = std::make_unique<CtiPointDataMsg>(memoryPointID, (long)Cti::getPrivateBytes() / 1024 / 1024,
+                        NormalQuality, AnalogPointType, "");
+                    data->setSource(MACS_APPLICATION_NAME);
+                    _dispatchConnection.WriteConnQue( data.release(), CALLSITE );
+
+                    if(Cti::isTimeToReportMemory(CtiTime::now()))
+                    {
+                        CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                        CTILOG_INFO(dout, Cti::reportProcessTimes(CompileInfo));
+                        CTILOG_INFO(dout, Cti::reportProcessorTimes());
+                    }
+
                     nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
                 }
 

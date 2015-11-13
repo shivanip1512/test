@@ -16,7 +16,7 @@ public interface SystemMetrics {
      * 
      * @param attribute attribute Id.
      */
-    public void setAttribute(BuiltInAttribute attribute);
+    public void setLoadAverageAttribute(BuiltInAttribute attribute);
     
     /**
      * Since we went through all the trouble of calculating the process load, and to get rid of a
@@ -25,4 +25,6 @@ public interface SystemMetrics {
      * @return current load from this process.
      */
     public double getloadAverage();
+
+    void setMemoryAttribute(BuiltInAttribute loadAverageAttribute);
 }

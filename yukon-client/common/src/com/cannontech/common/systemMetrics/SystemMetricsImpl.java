@@ -25,6 +25,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -44,7 +45,15 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
 
     private Logger log = YukonLogManager.getLogger(this.getClass());
 
-    private BuiltInAttribute attribute;
+    /** Attribute to access process memory usage */
+    private BuiltInAttribute memoryAttribute;
+    /** Attribute to access process CPU usage */
+    private Attribute loadAverageAttribute;
+
+    /** Point for process CPU usage */
+    private LitePoint loadAveragePoint;
+    /** Point for process memory usage */
+    private LitePoint memoryPoint;
 
     class SystemMetricsThreadFactory implements ThreadFactory {
         public Thread newThread(Runnable r) {
@@ -58,12 +67,13 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
     private final OperatingSystemMXBean osMXBean = ManagementFactory.getOperatingSystemMXBean();
 
     private ScheduledFuture<?> task;
-    private LitePoint point;
 
     private Instant lastSampleTime;
     private int processors;
 
     private Map<Long, Long> lastThreadTimes = new HashMap<Long, Long>();
+    
+    /** Allow loadAverage access from MBean viewer. */
     private AtomicDouble loadAverage = new AtomicDouble(0.0);
 
     /**
@@ -90,14 +100,25 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
     }
 
     /**
-     * Setter that takes the attribute Id.
+     * Setter that takes the load average attribute Id.
      * 
-     * @param attribute attribute Id.
+     * @param loadAverageAttribute attribute Id.
      */
     @Override
-    public void setAttribute(BuiltInAttribute attribute) {
-        log.debug("setAttribute(" + attribute + ")");
-        this.attribute = attribute;
+    public void setLoadAverageAttribute(BuiltInAttribute loadAverageAttribute) {
+        log.debug("setLoadAverageAttribute(" + loadAverageAttribute + ")");
+        this.loadAverageAttribute = loadAverageAttribute;
+    }
+
+    /**
+     * Setter that takes the memory attribute Id.
+     * 
+     * @param memoryAttribute attribute Id.
+     */
+    @Override
+    public void setMemoryAttribute(BuiltInAttribute memoryAttribute) {
+        log.debug("setLoadAverageAttribute(" + memoryAttribute + ")");
+        this.memoryAttribute = memoryAttribute;
     }
 
     /**
@@ -108,9 +129,14 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
 
         PaoIdentifier paoIdentifier = new PaoIdentifier(Device.SYSTEM_DEVICE_ID, PaoType.SYSTEM);
         try {
-            point = attributeService.getPointForAttribute(paoIdentifier, attribute);
+            loadAveragePoint = attributeService.getPointForAttribute(paoIdentifier, loadAverageAttribute);
         } catch (IllegalUseOfAttribute e) {
-            log.error("Attribute: ["+attribute+"] not found for pao type: [SYSTEM]");
+            log.error("Attribute: ["+memoryAttribute+"] not found for pao type: [SYSTEM]");
+        }
+        try {
+            memoryPoint = attributeService.getPointForAttribute(paoIdentifier, memoryAttribute);
+        } catch (IllegalUseOfAttribute e) {
+            log.error("Attribute: ["+memoryAttribute+"] not found for pao type: [SYSTEM]");
         }
     }
 
@@ -143,11 +169,20 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
 
         try {
             double loadAverage = calculateLoadAverage();
-            pointAccessDao.setPointValue(point, loadAverage);
+            pointAccessDao.setPointValue(loadAveragePoint, loadAverage);
+            log.info("Process CPU Utilization: "+loadAverage+"%");
         } catch (IllegalUseOfAttribute e) {
             log.warn("caught exception in SystemMetrics.run", e);
         }
-    }
+
+        try {
+            double memory = Runtime.getRuntime().totalMemory() / 1024 / 1024;
+            pointAccessDao.setPointValue(memoryPoint, memory);
+            log.info("Process Memory Utilization: " + (long) memory + " MB");
+        } catch (IllegalUseOfAttribute e) {
+            log.warn("caught exception in SystemMetrics.run", e);
+        }
+}
 
     /**
      * Total the elapsed CPU time from all threads. This is a bit tricky since some threads have
