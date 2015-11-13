@@ -272,12 +272,14 @@
     <entry key="yukon.common.events.system.databaseMigration.startingImport">Database migration import of file {2} started by {1}.</entry>
     
     <!-- Connect/Disconnect -->
-    <entry key="yukon.common.events.amr.disconnect.groupDisconnectAttempted">User {1} initiated a {2} Command collection action</entry>
-    <entry key="yukon.common.events.amr.disconnect.disconnectAttempted">User {1} attempted to {2} device {3}</entry>
-    <entry key="yukon.common.events.amr.disconnect.groupCancelAttempted">User {1} canceled a {2} Command collection action.</entry>
-    <entry key="yukon.common.events.amr.disconnect.groupActionCompleted">User {1} initiated a {2} Command collection action. {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10})</entry>
-    <entry key="yukon.common.events.amr.disconnect.disconnectInitiated">User {1} initiated a {2} ({3}).</entry> 
-    <entry key="yukon.common.events.amr.disconnect.actionCompleted">User {1} initiated a {2} {3}. {7} device selected. (Success:{8} Failure:{9} Not Attempted:{10})</entry>
+    <entry key="yukon.common.events.amr.disconnect.disconnectAttempted">{2} attempted on device {3} by {1}.</entry>
+    <entry key="yukon.common.events.amr.disconnect.disconnectInitiated">{2} command initiated on device {3} by {1}.</entry> 
+    <entry key="yukon.common.events.amr.disconnect.actionCompleted">{2} command {7,choice,0#failed|1#success} on device {3} with state {4} by {1}.</entry>
+    <entry key="yukon.common.events.amr.disconnect.actionCompleted.4">Disconnect State</entry>
+    <entry key="yukon.common.events.amr.disconnect.actionCompleted.7">Success(1)/Fail(0)</entry>
+    <entry key="yukon.common.events.amr.disconnect.groupDisconnectAttempted">{2} command collection action attempted by {1}.</entry>
+    <entry key="yukon.common.events.amr.disconnect.groupCancelAttempted">{2} command collection action canceled by {1}.</entry>
+    <entry key="yukon.common.events.amr.disconnect.groupActionCompleted">{2} command collection action initiated on {7} device(s) by {1}. (Success:{8} Failure:{9} Not Attempted:{10})</entry>
     
     <!-- Demand Reset-->
     <entry key="yukon.common.events.amr.demand.reset.collectionDemandResetAttempted">Demand Reset collection action collection={1} initiated by {2}.</entry>

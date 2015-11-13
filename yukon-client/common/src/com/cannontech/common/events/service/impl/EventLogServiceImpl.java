@@ -20,6 +20,8 @@ import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import com.cannontech.amr.disconnect.model.DisconnectCommand;
+import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -139,6 +141,8 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.createForEnum(EventSource.class));
         builder.add(ArgumentMapper.createForEnum(EnergyCompanySettingType.class));
         builder.add(ArgumentMapper.createForEnum(BadAuthenticationException.Type.class));
+        builder.add(ArgumentMapper.createForEnum(DisconnectCommand.class));
+        builder.add(ArgumentMapper.createForEnum(DisconnectDeviceState.class));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             @Override
             public Date map(ReadableInstant from) throws ObjectMappingException {

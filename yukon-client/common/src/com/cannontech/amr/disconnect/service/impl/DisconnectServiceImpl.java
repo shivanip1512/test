@@ -41,7 +41,6 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -71,7 +70,7 @@ public class DisconnectServiceImpl implements DisconnectService {
     public DisconnectResult execute(final DisconnectCommand command, DeviceCollection deviceCollection,
                                     final SimpleCallback<DisconnectResult> callback,
                                     final YukonUserContext userContext) {
-        disconnectEventLogService.groupDisconnectAttempted(userContext.getYukonUser(), command.name());
+        disconnectEventLogService.groupDisconnectAttempted(userContext.getYukonUser(), command);
         
         
         final DisconnectResult result = new DisconnectResult();
@@ -159,7 +158,7 @@ public class DisconnectServiceImpl implements DisconnectService {
                         }
                         result.complete();
                         disconnectEventLogService.groupActionCompleted(userContext.getYukonUser(),
-                                                                       command.name(),
+                                                                       command,
                                                                        result.getTotalCount(),
                                                                        result.getSuccessCount(),
                                                                        result.getFailedCount(),
@@ -244,7 +243,12 @@ public class DisconnectServiceImpl implements DisconnectService {
                 disconnectCallback.complete();
             } else {
                 requestCount += meters.size();
-                log(meters, command.name(), userContext.getYukonUser());
+
+                Iterable<YukonMeter> yukonMeters = meterDao.getMetersForYukonPaos(meters);
+                for (YukonMeter meter : yukonMeters) {
+                    disconnectEventLogService.disconnectInitiated(userContext.getYukonUser(), command, meter.getName());
+                }
+
                 // send command to the valid devices
                 CommandCompletionCallback<CommandRequestDevice> completionCallback =
                     strategy.execute(command, meters, disconnectCallback, execution, userContext);
@@ -266,15 +270,13 @@ public class DisconnectServiceImpl implements DisconnectService {
     @Override
     public DisconnectMeterResult execute(DisconnectCommand command, final DeviceRequestType type, YukonMeter meter,
                                          final YukonUserContext userContext) {
+
+        disconnectEventLogService.disconnectAttempted(userContext.getYukonUser(), command, meter.getName());
         
         Set<SimpleDevice> allDevices = Sets.newHashSet(new SimpleDevice(meter));
         if (!supportsDisconnect(allDevices)) {
             throw new UnsupportedOperationException("Meter:" + meter + " doesn't support connect/disconnect");
         }
-        disconnectEventLogService.disconnectInitiated(userContext.getYukonUser(),
-                                                      command.name(),
-                                                      type.name());
-        log(allDevices, command.name(), userContext.getYukonUser());
         
         final CommandRequestExecution execution =
             commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
@@ -295,7 +297,12 @@ public class DisconnectServiceImpl implements DisconnectService {
         for (DisconnectStrategy strategy : strategies) {
             FilteredDevices filteredDevices = strategy.filter(allDevices);
             if(!filteredDevices.getValid().isEmpty()){
+
                 log.debug("validMeters =" + filteredDevices.getValid());
+                disconnectEventLogService.disconnectInitiated(userContext.getYukonUser(),
+                                                              command,
+                                                              meter.getName()); // since there is only 1 object in this method, if we made it here we can assume filteredDevices == meter
+
                 strategy.execute(command, filteredDevices.getValid(), callback, execution, userContext);
             }
         } 
@@ -360,12 +367,10 @@ public class DisconnectServiceImpl implements DisconnectService {
             execution.setRequestCount(1);
             completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.COMPLETE);
             disconnectEventLogService.actionCompleted(user,
-                                                      result.getCommand().name(),
-                                                      type.name(),
-                                                      1,
-                                                      result.isSuccess() ? 1 : 0,
-                                                      result.isSuccess() ? 0 : 1,
-                                                      0);
+                                                      result.getCommand(),
+                                                      result.getMeter().getName(),
+                                                      result.getState(),
+                                                      result.isSuccess() ? 1 : 0);
             completeLatch.countDown();
         }
 
@@ -400,13 +405,6 @@ public class DisconnectServiceImpl implements DisconnectService {
         }
     } 
     
-    private void log(Set<SimpleDevice> meters, String commandName, LiteYukonUser user) {
-        Iterable<YukonMeter> yukonMeters = meterDao.getMetersForYukonPaos(meters);
-        for (YukonMeter meter : yukonMeters) {
-            disconnectEventLogService.disconnectAttempted(user, commandName, meter.getName());
-        }
-    }
-    
     private void saveUnsupported(List<SimpleDevice> devices, final int creId,
                                  final CommandRequestUnsupportedType type) {
         for (SimpleDevice device : devices) {
@@ -436,9 +434,7 @@ public class DisconnectServiceImpl implements DisconnectService {
     @Override
     public void cancel(String key, YukonUserContext userContext, DisconnectCommand command) {
         
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        String commandName = accessor.getMessage(command).toLowerCase();
-        disconnectEventLogService.groupCancelAttempted(userContext.getYukonUser(), commandName);
+        disconnectEventLogService.groupCancelAttempted(userContext.getYukonUser(), command);
         
         DisconnectResult result = getResult(key);
         CommandRequestExecution execution = result.getCommandRequestExecution();

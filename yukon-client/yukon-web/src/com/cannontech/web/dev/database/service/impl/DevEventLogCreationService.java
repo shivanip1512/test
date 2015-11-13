@@ -15,6 +15,8 @@ import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.amr.disconnect.model.DisconnectCommand;
+import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
@@ -392,13 +394,13 @@ public class DevEventLogCreationService {
                 
                 String deviceName = "45645-Name";
                 
-                disconnectEventLogService.actionCompleted(yukonUser, "control connect", "GROUP_CONNECT_DISCONNECT",
-                                                          20, 15, 3, 2);
-                disconnectEventLogService.disconnectAttempted(yukonUser, "control disconnect", deviceName);
-                disconnectEventLogService.disconnectInitiated(yukonUser, "control disconnect", deviceName);
-                disconnectEventLogService.groupActionCompleted(yukonUser, "CONNECT", 20, 15, 3, 2);
-                disconnectEventLogService.groupCancelAttempted(yukonUser, "Connect");
-                disconnectEventLogService.groupDisconnectAttempted(yukonUser, "DISCONNECT");
+                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.CONNECT, deviceName, DisconnectDeviceState.CONNECTED, 1);
+                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.DISCONNECT, deviceName, DisconnectDeviceState.DISCONNECTED, 0);
+                disconnectEventLogService.disconnectAttempted(yukonUser, DisconnectCommand.DISCONNECT, deviceName);
+                disconnectEventLogService.disconnectInitiated(yukonUser, DisconnectCommand.DISCONNECT, deviceName);
+                disconnectEventLogService.groupActionCompleted(yukonUser, DisconnectCommand.CONNECT, 20, 15, 3, 2);
+                disconnectEventLogService.groupCancelAttempted(yukonUser, DisconnectCommand.CONNECT);
+                disconnectEventLogService.groupDisconnectAttempted(yukonUser, DisconnectCommand.DISCONNECT);
             }
         });
 
