@@ -67,7 +67,7 @@
         <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
     </div>
 </c:if>
-<div class="column-12-12">
+<div class="column-10-14">
     <div class="column one">
         
         <tags:sectionContainer2 nameKey="busDetail">

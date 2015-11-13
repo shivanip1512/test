@@ -41,7 +41,6 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankName">Bank Name</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankState">Bank State</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankVoltage">Voltage</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.unassignedBanks">* Not assigned to any Zone.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.noCbc">None assigned</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.ivvcEvents.title">Recent Events</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.ivvcEvents.deviceName">Device</entry>
@@ -82,8 +81,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.offPeak">Off Peak</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.units">Units</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.zones.title">Zones</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.unassignedBanks">Some Capacitor Banks are not assigned to any Zone.</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.unassignedBanksCount">{0} bank(s) are not assigned to a Zone.</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.unassignedBanksCount">{0} {0, choice, 1#bank|1&lt;banks} are not assigned to a Zone.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.title">Substation Values</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kvar">kVAr</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kw">kW</entry>
