@@ -127,9 +127,9 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
                 setDirty(false); // No error occured!
             }
         }
-
-        getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
+
+    getOperationStats().dumpDynamicData(conn, currentDateTime);
 }
 
 void CtiCCSpecial::setDynamicData(Cti::RowReader& rdr)

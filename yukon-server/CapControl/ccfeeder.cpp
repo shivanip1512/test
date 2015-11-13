@@ -5844,10 +5844,10 @@ void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTi
                 _dirty = false; // No error occured!
             }
         }
-
-        getOriginalParent().dumpDynamicData(conn, currentDateTime);
-        getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
+
+    getOriginalParent().dumpDynamicData(conn, currentDateTime);
+    getOperationStats().dumpDynamicData(conn, currentDateTime);
 }
 
 /*---------------------------------------------------------------------------

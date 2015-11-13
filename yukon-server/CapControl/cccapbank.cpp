@@ -2212,14 +2212,16 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
                 _dirty = false; // No error occured!
             }
         }
-        getOriginalParent().dumpDynamicData(conn, currentDateTime);
-        getOperationStats().dumpDynamicData(conn, currentDateTime);
-
-        for each (CtiCCMonitorPointPtr monPoint in getMonitorPoint())
-        {
-            monPoint->dumpDynamicData(conn,currentDateTime);
-        }
     }
+
+    getOriginalParent().dumpDynamicData(conn, currentDateTime);
+    getOperationStats().dumpDynamicData(conn, currentDateTime);
+
+    for each (CtiCCMonitorPointPtr monPoint in getMonitorPoint())
+    {
+        monPoint->dumpDynamicData(conn,currentDateTime);
+    }
+
     try
     {
         if ( isControlDeviceTwoWay() )

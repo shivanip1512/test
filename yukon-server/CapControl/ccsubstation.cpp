@@ -202,10 +202,11 @@ void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, C
                 _dirty = false; // No error occured!
             }
         }
-
-        getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
+
+    getOperationStats().dumpDynamicData(conn, currentDateTime);
 }
+
 void CtiCCSubstation::setDynamicData(Cti::RowReader& rdr)
 {
     rdr["additionalflags"] >> _additionalFlags;

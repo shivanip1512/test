@@ -147,10 +147,11 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
                 setDirty(false); // No error occured!
             }
         }
-
-        getOperationStats().dumpDynamicData(conn, currentDateTime); // FIXME : put this outside if statement?
     }
+
+    getOperationStats().dumpDynamicData(conn, currentDateTime);
 }
+
 void CtiCCArea::setDynamicData(Cti::RowReader& rdr)
 {
     CtiCCAreaBase::setDynamicData(rdr);
