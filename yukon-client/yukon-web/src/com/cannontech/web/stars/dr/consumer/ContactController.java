@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -66,7 +68,8 @@ public class ContactController extends AbstractConsumerController {
     @Autowired private AccountCheckerService accountCheckerService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-
+    private final Logger log = YukonLogManager.getLogger(ContactController.class);
+    
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String index(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext,
@@ -131,6 +134,13 @@ public class ContactController extends AbstractConsumerController {
                                 YukonUserContext user,
                                 FlashScope flashScope,
                                 ModelMap map) {
+
+        if (contact.getLoginID() != UserUtils.USER_NONE_ID) {
+            log.error("Malicious access identified!");
+            setupPageMode(user, map, PageEditMode.CREATE, contact.getContactID(), false);
+            map.addAttribute("actionUrl", "/stars/consumer/contacts/create");
+            return "consumer/contacts/edit.jsp";
+        }
         
         int userId = user.getYukonUser().getUserID();
         LiteCustomer customer = customerDao.getCustomerForUser(userId);
@@ -179,7 +189,17 @@ public class ContactController extends AbstractConsumerController {
         accountCheckerService.checkContact(user.getYukonUser(), contact.getContactID());
         
         CustomerAccount account = customerAccountDao.getAccountByContactId(contact.getContactID());
-        
+
+        if (contact.getLoginID() != UserUtils.USER_NONE_ID)
+            if (contact.getLoginID() != contactDao.getContact(contact.getContactID()).getLoginID()) {
+                log.error("Malicious access identified!");
+                if (checkPrimaryContact(account, contact.getContactID())) {
+                    map.put("primaryContact", true);
+                }
+                setupPageMode(user, map, PageEditMode.EDIT, contact.getContactID(), false);
+                return "consumer/contacts/edit.jsp";
+            }
+
         //validate contact and notifications
         liteContactValidator.validate(contact, bindingResult);
         if(bindingResult.hasErrors()){
