@@ -2,7 +2,6 @@ package com.cannontech.message.dispatch.message;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.Instant;
 import org.springframework.core.style.ToStringCreator;
 
@@ -83,19 +82,45 @@ public class LitePointData extends LiteBase implements PointValueQualityHolder {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == null) {
-            return false;
-        }
-        if (other instanceof LitePointData) {
-            return ((LitePointData) other).id == id;
-        }
-        return false;
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + id;
+        result = prime * result + ((pointQuality == null) ? 0 : pointQuality.hashCode());
+        result = prime * result + (int) (tags ^ (tags >>> 32));
+        result = prime * result + ((time == null) ? 0 : time.hashCode());
+        result = prime * result + type;
+        long temp;
+        temp = Double.doubleToLongBits(value);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(6709, 3511).append(id).toHashCode();
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LitePointData other = (LitePointData) obj;
+        if (id != other.id)
+            return false;
+        if (pointQuality != other.pointQuality)
+            return false;
+        if (tags != other.tags)
+            return false;
+        if (time == null) {
+            if (other.time != null)
+                return false;
+        } else if (!time.equals(other.time))
+            return false;
+        if (type != other.type)
+            return false;
+        if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value))
+            return false;
+        return true;
     }
 
     @Override
