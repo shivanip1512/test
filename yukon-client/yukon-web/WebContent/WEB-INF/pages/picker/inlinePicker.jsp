@@ -16,7 +16,7 @@
             </label>
         </div>
         <div class="column two nogutter paging-area">
-            <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})"/>
+            <tags:nextPrevLinks previousUrl="javascript:yukon.pickers['${id}'].previous()" nextUrl="javascript:yukon.pickers['${id}'].next()"/>
         </div>
     </div>
 
@@ -29,21 +29,21 @@
     </div>
     <c:if test="${multiSelectMode}">
         <div class="action-area">
-            <input type="checkbox" id="picker-${id}-select-all" onclick="javascript:${id}.selectAll.call(${id})">
+            <input type="checkbox" id="picker-${id}-select-all" onclick="javascript:yukon.pickers['${id}'].selectAll()">
             <label for="picker-${id}-select-all" class="cp"><i:inline key=".selectAll"/></label>
             &nbsp;&nbsp;
             <span style="display: none">
                 <i:inline key=".pageSelected"/>&nbsp;&nbsp;
-                <a id="picker-${id}-select-all-pages" href="javascript:${id}.selectAllPages.call(${id})">place holder</a>
+                <a id="picker-${id}-select-all-pages" href="javascript:yukon.pickers['${id}'].selectAllPages()">place holder</a>
             </span>
             <span style="display: none">
                 <i:inline key=".selectionCleared"/>&nbsp;&nbsp;
                 <a id="picker-${id}-clear-entire-selection"
-                    href="javascript:${id}.clearEntireSelection.call(${id})"><i:inline key=".clearEntireSelection"/></a>
+                    href="javascript:yukon.pickers['${id}'].clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
             </span>
             <span style="display: none">
                 <span id="picker-${id}-all-pages-selected">place holder</span>&nbsp;&nbsp;
-                <a href="javascript:${id}.clearEntireSelection.call(${id})"><i:inline key=".clearEntireSelection"/></a>
+                <a href="javascript:yukon.pickers['${id}'].clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
             </span>
             <span id="picker-${id}-entire-selection-cleared" style="display: none">
                 <i:inline key=".entireSelectionCleared"/>
