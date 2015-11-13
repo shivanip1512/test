@@ -28,6 +28,7 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.impl.PaoNameDisplayablePaoRowMapper;
@@ -358,6 +359,21 @@ public class ProgramDaoImpl implements ProgramDao {
     @Override
     public List<PaoIdentifier> getAllProgramPaoIdentifiers() {
         return paoDao.getAllPaoIdentifiersForTags(PaoTag.LM_PROGRAM);
+    }
+    
+    @Override
+    public int getGearId (int programId, int gearNumber) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder(); 
+            sql.append("SELECT GearId FROM LMProgramDirectGear");
+            sql.append("WHERE DeviceId").eq(programId);
+            sql.append("AND GearNumber").eq(gearNumber);
+            return jdbcTemplate.queryForInt(sql); 
+        }
+        catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("gearid not found for programId:" + programId + " gearNumber:" + gearNumber, e);
+        }
+        
     }
     
     @Override

@@ -48,6 +48,7 @@ import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -65,6 +66,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
     @Autowired private ControlAreaDao controlAreaDao;
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private @Qualifier("estimatedLoad") Executor executor;
+    @Autowired private ProgramDao programDao;
 
     private static final int CACHE_SECONDS_TO_LIVE = 120;
     private final Cache<MultiKey, EstimatedLoadResult> cache = CacheBuilder.newBuilder()
@@ -124,7 +126,10 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
     }
 
     @Override
-    public EstimatedLoadResult findProgramValue(final int programId, final int gearId, boolean blocking) {
+    public EstimatedLoadResult findScenarioProgramValue(final int programId, final int scenarioId, boolean blocking) throws GearNotFoundException {
+        Map<Integer, ScenarioProgram> scenarioPrograms = scenarioDao.findScenarioProgramsForScenario(scenarioId);
+        ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
+        int gearId = estimatedLoadDao.getGearIdForProgramAndGearNumber(programId, scenarioProgram.getStartGear());
         return getProgramValue(programId, gearId, blocking);
     }
 

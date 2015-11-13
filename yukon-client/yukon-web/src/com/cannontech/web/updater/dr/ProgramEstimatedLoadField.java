@@ -65,13 +65,8 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
         }
         if(!program.isActive()) {
              // The program is not active so find the scenario start gear
-                Map<Integer, ScenarioProgram> programsForScenario = scenarioDao.findScenarioProgramsForScenario(scenarioId);
-                ScenarioProgram scenarioProgram = programsForScenario.get(programId);
-                
-                int startGearId = 0; 
                 try {
-                    startGearId = estimatedLoadDao.getGearIdForProgramAndGearNumber(programId, scenarioProgram.getStartGear());
-                    loadResult = backingServiceHelper.findProgramValue(programId, startGearId, false);
+                    loadResult = backingServiceHelper.findScenarioProgramValue(programId, scenarioId, false);
                     return buildJson(programId, userContext, loadResult);
                 } catch (GearNotFoundException e) {
                     return createErrorJson(programId, e, userContext);

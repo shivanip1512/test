@@ -171,9 +171,21 @@
                                                 renderMode="buttonImage" icon="icon-error" 
                                                 data-popup="[data-program-id=${programId}]"/>
                                             <span class="js-kw-savings"></span>
-                                            <cti:url var="url" value="/dr/estimatedLoad/program-error">
-                                                <cti:param name="programId" value="${programId}"/>
-                                            </cti:url>
+
+                                            <c:choose>
+                                                <c:when test="${scenario != null}">
+                                                    <cti:url var="url" value="/dr/estimatedLoad/scenario-program-error">
+                                                        <cti:param name="programId" value="${programId}"/>
+                                                        <cti:param name="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
+                                                    </cti:url>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <cti:url var="url" value="/dr/estimatedLoad/program-error">
+                                                        <cti:param name="programId" value="${programId}"/>
+                                                    </cti:url>
+    
+                                                </c:otherwise>
+                                            </c:choose>
                                             <div data-url="${url}" 
                                                 data-program-id="${programId}" data-height="235" data-width="575" 
                                                 class="dn"/>

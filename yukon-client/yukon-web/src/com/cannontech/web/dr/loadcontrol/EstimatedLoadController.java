@@ -50,6 +50,7 @@ import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInput;
 import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 import com.cannontech.dr.estimatedload.GearAssignment;
+import com.cannontech.dr.estimatedload.GearNotFoundException;
 import com.cannontech.dr.estimatedload.InputOutOfRangeException;
 import com.cannontech.dr.estimatedload.InputValueNotFoundException;
 import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
@@ -57,6 +58,8 @@ import com.cannontech.dr.estimatedload.NoGearFormulaException;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
 import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelperImpl.ButtonInfo;
+import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -65,6 +68,7 @@ import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
@@ -99,6 +103,7 @@ public class EstimatedLoadController {
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private FormulaBeanValidator formulaBeanValidator;
     @Autowired private EstimatedLoadBackingServiceHelper helper;
+    @Autowired private ScenarioDao scenarioDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public static enum SortBy {
@@ -313,6 +318,27 @@ public class EstimatedLoadController {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         EstimatedLoadResult result = helper.findProgramValue(programId, true);
+        String programName = cache.getAllPaosMap().get(programId).getPaoName();
+        
+        ProgramError error = buildProgramError(userContext, programId, accessor, result, programName);
+        
+        model.addAttribute("title", accessor.getMessage(elKey + "popup.program.title", programName));
+        model.addAttribute("errors", Collections.singleton(error));
+        
+        return "dr/estimatedLoad/programError.jsp";
+    }
+    
+    @RequestMapping("scenario-program-error")
+    public String programErrorPopup(ModelMap model, YukonUserContext userContext, int programId, int scenarioId) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+              
+        EstimatedLoadResult result;
+        try {
+            result = helper.findScenarioProgramValue(programId, scenarioId, true);
+        } catch (GearNotFoundException e) {
+            result = e;
+        }
+        
         String programName = cache.getAllPaosMap().get(programId).getPaoName();
         
         ProgramError error = buildProgramError(userContext, programId, accessor, result, programName);

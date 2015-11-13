@@ -6,6 +6,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.estimatedload.EstimatedLoadException;
 import com.cannontech.dr.estimatedload.EstimatedLoadResult;
 import com.cannontech.dr.estimatedload.EstimatedLoadSummary;
+import com.cannontech.dr.estimatedload.GearNotFoundException;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
@@ -28,11 +29,12 @@ public interface EstimatedLoadBackingServiceHelper {
      * If the requested program isn't in the cache, this returns null and the requested program's calculation begins.
      * If the calculation results in an error, an EstimatedLoadException will be returned.
      * @param programId The pao id of the program to calculate.
-     * @param gearNumber The gear number to use when calculating amounts. 
+     * @param scenarioId The scenario id that the load program is in.
      * @param blocking When true, the function will wait for calculation to complete before returning. 
      * If false, the cache will be checked for a result.  If not present, null is returned immediately and 
-     * the result is calculated in a new runnable and inserted into cache. */
-    EstimatedLoadResult findProgramValue(int programId, int gearNumber, boolean blocking);
+     * the result is calculated in a new runnable and inserted into cache. 
+     * @throws GearNotFoundException */
+    EstimatedLoadResult findScenarioProgramValue(int programId, int scenarioId, boolean blocking) throws GearNotFoundException;
 
     /** Retrieves an EstimatedLoadSummary object for a given LM control area.
      * This includes estimated load fields: connected load, diversified load, and kW savings max/now.

@@ -66,4 +66,11 @@ public interface ProgramDao {
      * @return string label associate to the gear id record.
      * */
     public String findGearName(int programId, int gearNumber);
+    /*
+     *Finds the associated gearId of the gear gear number
+     * @param programId The program Id of the object a gearName is being retrieved for
+     * @param gearNumber The gearNumber of the object associated to the program, and carries the gear id
+     * @return string label associate to the gear id record.
+     * */
+    public int getGearId( int programId, int gearNumber);
 }
