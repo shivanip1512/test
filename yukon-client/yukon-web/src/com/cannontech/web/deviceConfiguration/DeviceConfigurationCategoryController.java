@@ -37,6 +37,7 @@ import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -78,6 +79,7 @@ public class DeviceConfigurationCategoryController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private NMConfigurationService nmConfigurationService;
 
     private final static String baseKey = "yukon.web.modules.tools.configs";
 
@@ -473,8 +475,7 @@ public class DeviceConfigurationCategoryController {
         
         boolean enableVoltageDataStreamingOptions = false;
         if (type == CategoryType.RFN_CHANNEL_CONFIGURATION) {
-            Double nmCompatibility = configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY);
-            if (nmCompatibility != null && nmCompatibility >= 7.0) {
+            if (nmConfigurationService.isNewVoltageProfileUpdateSupported()) {
                 if (configId == null) {
                     enableVoltageDataStreamingOptions = true;
                 } else {

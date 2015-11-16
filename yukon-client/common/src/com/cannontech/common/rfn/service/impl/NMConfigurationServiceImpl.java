@@ -12,7 +12,8 @@ public class NMConfigurationServiceImpl implements NMConfigurationService {
     
     @Override
     public boolean isFirmwareUpdateSupported() {
-        if(configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == 7.0) {
+        if(configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) != null &&
+                configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) >= 7.0) {
             return true;
         } 
         return false;
@@ -20,7 +21,8 @@ public class NMConfigurationServiceImpl implements NMConfigurationService {
 
     @Override
     public boolean isNewVoltageProfileUpdateSupported() {
-        if(configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) == 7.0) {
+        if(configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) != null &&
+                configurationSource.getDouble(MasterConfigDouble.NM_COMPATIBILITY) >= 7.0) {
             return true;
         } 
         return false;
