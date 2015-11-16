@@ -1,6 +1,0 @@
-ACTION,NAME,TYPE,DISABLED,CONFIGURATION
-Add,Sample PO,PHASE_OPERATED,TRUE
-Add,Sample GO,GANG_OPERATED,FALSE,Default Regulator Configuration
-Add,Sample LTC,LTC,FALSE
-Update,Sample PO,,,Some Other Configuration
-Remove,Sample GO

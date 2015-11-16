@@ -1,9 +1,0 @@
-<Reply>
-	<GetInstalledMeters>
-		<Params>
-			<STATUS>-4</STATUS>
-			<STATUS_DESC>Invalid Account Number</STATUS_DESC>
-		</Params>
-		<STATUS>0</STATUS>
-	</GetInstalledMeters>
-</Reply>

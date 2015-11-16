@@ -1,1 +1,0 @@
-<div>My ajax'd content!</div>

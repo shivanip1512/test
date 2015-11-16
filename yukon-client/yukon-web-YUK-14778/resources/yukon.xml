@@ -1,2 +1,0 @@
-<!-- Context for yukon web application  -->
-<Context path="" docBase="/yukon" debug="0" reloadable="true"/>
