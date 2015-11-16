@@ -2209,7 +2209,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_dispatch )
 
         fdrPoint->setPointID(43);
         fdrPoint->setPaoID(53);
-        fdrPoint->setOffset(12);
+        fdrPoint->setOffset(10001);
         fdrPoint->setPointType(AnalogPointType);
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
@@ -2226,6 +2226,9 @@ BOOST_AUTO_TEST_CASE( test_analog_output_dispatch )
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
+
+    dnpSlave.point.setPointId(43);
+    dnpSlave.point.setPointOffset(10001);
 
     const byte_str request(
             "05 64 14 c4 0b 00 e8 03 72 f2 "
