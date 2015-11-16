@@ -993,7 +993,8 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 
         if( dnpId.SlaveId      == _dnpSlave.getSrcAddr()
             && dnpId.MasterId  == _dnpSlave.getDstAddr()
-            && dnpId.PointType == AnalogPointType )
+            && dnpId.PointType == AnalogPointType
+            && dnpId.Offset    == (analog.offset + 1) )
         {
             const CtiFDRDestination &fdrdest = kv.first;
             CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
@@ -1009,43 +1010,13 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 
             if( fdrPoint->isControllable() )
             {
-                const auto pointId = fdrPoint->getPointID();
-
-                auto point = lookupPointById(pointId);
-
-                if( point.getPointId() != pointId )
+                if( isDnpDeviceId(fdrPoint->getPaoID()) )
                 {
-                    CTILOG_WARN(dout, logNow() << " could not load DNP pointid " << pointId);
-
-                    continue;
+                    analog.status = tryPorterAnalogOutput(analog, fdrPoint->getPointID());
                 }
-
-                unsigned analogOffset = 0;
-
-                if( point.getControlOffset() > 0 )
+                else if( tryDispatchAnalogOutput(analog, fdrPoint->getPointID()) )
                 {
-                    //  if the point has a control offset, that overrides the analog output point offset...  I think this is correct
-                    analogOffset = point.getControlOffset();
-                }
-                else if( point.getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
-                {
-                    analogOffset = point.getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
-                }
-
-                if( analogOffset == (analog.offset + 1) )
-                {
-                    if( isDnpDeviceId(fdrPoint->getPaoID()) )
-                    {
-                        analog.status = tryPorterAnalogOutput(analog, fdrPoint->getPaoID());
-
-                        break;
-                    }
-                    else if( tryDispatchAnalogOutput(analog, pointId) )
-                    {
-                        analog.status = ControlStatus::Success;
-
-                        break;
-                    }
+                    analog.status = ControlStatus::Success;
                 }
             }
         }
@@ -1085,9 +1056,76 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 }
 
 
-ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, const long paoId)
+std::string describeAnalogOutputRequest(const Protocols::DnpSlave::analog_output_request &analog, const LitePoint &point)
 {
-    std::string commandString = "putvalue analog " + std::to_string(analog.offset + 1) + " value ";
+    FormattedList l;
+
+    l.add("DNP request");
+    l.add("Action") << log(analog.action);
+    l.add("Long index") << analog.isLongIndexed;
+    l.add("Offset") << analog.offset;
+    l.add("Status") << Protocols::DnpProtocol::getControlResultString(static_cast<unsigned char>(analog.status));
+    l.add("Type") << analog.type;
+    l.add("Value") << analog.value;
+
+    l.add("Yukon point");
+    l.add("Control offset") << point.getControlOffset();
+    l.add("Pao id") << point.getPaoId();
+    l.add("Point id") << point.getPointId();
+    l.add("Point name") << point.getPointName();
+    l.add("Point offset") << point.getPointOffset();
+    l.add("Point type") << point.getPointType();
+
+    return l.toString();
+}
+
+
+ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, long pointId)
+{
+    auto point = lookupPointById(pointId);
+
+    if( point.getPointId() != pointId )
+    {
+        CTILOG_WARN(dout, logNow() <<" could not load DNP pointid "<< pointId);
+
+        return ControlStatus::NotSupported;
+    }
+
+    unsigned analogOffset;
+
+    if( point.getControlOffset() > 0 )
+    {
+        //  if the point has a control offset, that overrides the analog output point offset...  I think this is correct
+        if( (analog.offset + 1) != point.getControlOffset() )
+        {
+            CTILOG_WARN(dout, logNow() << " analog control offset does not match request offset" << describeAnalogOutputRequest(analog, point));
+
+            return ControlStatus::FormatError;
+        }
+
+        analogOffset = point.getControlOffset();
+    }
+    else
+    {
+        //  if there's no control offset, require the point to be an analog offset
+        if( point.getPointOffset() <= AnalogOutputStatus::AnalogOutputOffset )
+        {
+            CTILOG_WARN(dout, logNow() << " analog has no control offset and is not an analog output" << describeAnalogOutputRequest(analog, point));
+
+            return ControlStatus::FormatError;
+        }
+
+        if( (analog.offset + 1) != (point.getPointOffset() % AnalogOutputStatus::AnalogOutputOffset) )
+        {
+            CTILOG_WARN(dout, logNow() << " analog output offset does not match request offset" << describeAnalogOutputRequest(analog, point));
+
+            return ControlStatus::FormatError;
+        }
+
+        analogOffset = point.getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
+    }
+
+    std::string commandString = "putvalue analog " + std::to_string(analogOffset) + " value ";
 
     switch( analog.type )
     {
@@ -1110,7 +1148,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
 
     auto requestMsg =
         std::make_unique<CtiRequestMsg>(
-                paoId,
+                point.getPaoId(),
                 commandString,
                 userMessageId);
 
@@ -1118,17 +1156,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
 
     if( const auto error = writePorterConnection(requestMsg.release(), Timing::Chrono::seconds(5)) )
     {
-        FormattedList l;
-
-        l.add("DNP request");
-        l.add("Action") << log(analog.action);
-        l.add("Long index") << analog.isLongIndexed;
-        l.add("Offset") << analog.offset;
-        l.add("Status") << Protocols::DnpProtocol::getControlResultString(static_cast<unsigned char>(analog.status));
-        l.add("Type") << analog.type;
-        l.add("Value") << analog.value;
-
-        CTILOG_ERROR(dout, logNow() << " failed to send analog output request to Porter" << l);
+        CTILOG_ERROR(dout, logNow() << " failed to send analog output request to Porter" << describeAnalogOutputRequest(analog, point));
 
         return ControlStatus::Undefined;
     }
