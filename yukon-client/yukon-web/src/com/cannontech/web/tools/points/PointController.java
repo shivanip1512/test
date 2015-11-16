@@ -210,7 +210,8 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext) {
 
         verifyRoles(userContext.getYukonUser());
-
+        if (!pointModel.getPointBase().getPoint().isPhysicalOffset())
+            pointModel.getPointBase().getPoint().setPointOffset(0);
         return save(pointModel, result, redirectAttributes);
     }
 
@@ -219,7 +220,8 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext) {
 
         verifyRoles(userContext.getYukonUser());
-
+        if (!pointModel.getPointBase().getPoint().isPhysicalOffset())
+            pointModel.getPointBase().getPoint().setPointOffset(0);
         return save(pointModel, result, redirectAttributes);
     }
 

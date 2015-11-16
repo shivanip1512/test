@@ -146,11 +146,16 @@
 
                 <c:if test="${isAnalogPoint}">
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
-
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                <tags:checkboxNameValue nameKey="yukon.common.blank" 
+                                    path="pointBase.point.physicalOffset" 
+                                    inputClass="js-use-offset" 
+                                    checkBoxDescriptionNameKey=".physicalOffset" excludeColon="true"/>
+                        </cti:displayForPageEditModes>
                         <%-- The physical offset value within the current device or parent this point belongs to --%>
                         <tags:nameValue2 nameKey=".offset">
                             <%-- 0 = No offset set --%>
-                            <tags:input path="pointBase.point.pointOffset" size="6"/>
+                            <tags:input path="pointBase.point.pointOffset" size="6" inputClass="js-point-offset"/>
                         </tags:nameValue2>
 
                         <%-- The amount the value of this point must deviate before the point is read and updated --%>
@@ -203,9 +208,15 @@
                 <c:if test="${isAccumulatorPoint}">
 
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                <tags:checkboxNameValue nameKey="yukon.common.blank" 
+                                    path="pointBase.point.physicalOffset" 
+                                    inputClass="js-use-offset" 
+                                    checkBoxDescriptionNameKey=".physicalOffset" excludeColon="true"/>
+                        </cti:displayForPageEditModes>
                         <tags:nameValue2 nameKey=".offset">
                             <%-- 0 = no offset set --%>
-                            <tags:input path="pointBase.point.pointOffset" size="6"/>
+                            <tags:input path="pointBase.point.pointOffset" size="6" inputClass="js-point-offset"/>
                         </tags:nameValue2>
 
                         <%-- A value that is always applied to the raw reading of this point --%>
