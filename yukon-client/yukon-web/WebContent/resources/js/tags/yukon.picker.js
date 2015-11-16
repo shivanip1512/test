@@ -101,8 +101,9 @@ yukon.protoPicker = function (okText,
     block = function () {
         this.block = true;
         setTimeout(function () {
-            if (this.block)
-            yukon.ui.block($(document.getElementById(this.pickerId)).find('.js-block-this'));
+            if (this.block) {
+                yukon.ui.block($(document.getElementById(this.pickerId)).find('.js-block-this'));
+            }
         }, 200);
     },
     
