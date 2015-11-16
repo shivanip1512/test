@@ -28,7 +28,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -52,14 +52,14 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             @Override
             public String getValueString(PointValueHolder data, String format, YukonUserContext userContext) {
                 FormattingTemplateProcessor templateProcessor = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
-                Object value = "";
+                Object value = data.getValue(); // may be overwritten with state text for status points.
                 Double rawValue = data.getValue();
                 String valueStr = "";
                 String unitString = "";
                 String state = "";
                 Color stateColor = null;
                 Integer decimalDigits = 4;
-                Boolean statusPoint = (data.getType() == PointTypes.STATUS_POINT || data.getType() == PointTypes.CALCULATED_STATUS_POINT);
+                PointType pointType = PointType.getForId(data.getType());
                 
                 PointQuality quality = null;
                 String shortQuality = "";
@@ -110,8 +110,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
 	                }
                 }
                     
-                if (!statusPoint) {
-                    value = data.getValue();
+                if (pointType.hasUnitMeasure()) {
                     if (templateProcessor.contains(format, "unit") || templateProcessor.contains(format, "default")) {
                         // point unit
                         LitePointUnit pointUnit = pointUnitCache.get(data.getId());
@@ -147,7 +146,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 params.put("rawValue", rawValue);
                 params.put("decimals", decimalDigits);
                 params.put("default", valueStr);
-                params.put("status", statusPoint);
+                params.put("status", Boolean.valueOf(pointType.isStatus()));
                 params.put("state", state);
                 params.put("stateColor", stateColor);
                 params.put("unit", unitString);

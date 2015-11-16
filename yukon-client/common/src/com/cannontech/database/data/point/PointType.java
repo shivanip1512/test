@@ -76,6 +76,10 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
         return statusPoints.contains(this);
     }
     
+    public boolean hasUnitMeasure() {
+        return !(isStatus() || this == System);
+    }
+    
     public boolean isCalcPoint() {
         return calcPoints.contains(this);
     }
