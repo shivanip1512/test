@@ -97,7 +97,7 @@ void reportSystemMetrics( const compileinfo_t &info )
         StreamBuffer buf;
 
         long long privateBytes = getPrivateBytes();
-        buf << info.project << " memory use: " << CtiNumStr( privateBytes / 1048576.0, 1 ) << " MB (" 
+        buf << info.project << " memory use: " << CtiNumStr( privateBytes / 1024.0 / 1024, 1 ) << " MB (" 
             << commaFormatted( privateBytes ) << ")";
         CTILOG_INFO( dout, buf.extractToString() );
 

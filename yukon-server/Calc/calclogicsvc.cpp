@@ -335,9 +335,9 @@ void CtiCalcLogicService::Run( )
                                 data->setSource(CALCLOGIC_APPLICATION_NAME);
                                 dispatchConnection->WriteConnQue(data.release(), CALLSITE);
 
-                                data = std::make_unique<CtiPointDataMsg>(memoryPointID, 
-                                    (double)Cti::getPrivateBytes() / 1024 / 1024,
-                                    NormalQuality, AnalogPointType, "");
+                                data = std::make_unique<CtiPointDataMsg>( memoryPointID,
+                                    static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
+                                    NormalQuality, AnalogPointType, "" );
                                 data->setSource(CALCLOGIC_APPLICATION_NAME);
                                 dispatchConnection->WriteConnQue( data.release(), CALLSITE );
 
@@ -438,9 +438,9 @@ void CtiCalcLogicService::Run( )
                         data->setSource(CALCLOGIC_APPLICATION_NAME);
                         dispatchConnection->WriteConnQue(data.release(), CALLSITE);
 
-                        data = std::make_unique<CtiPointDataMsg>(memoryPointID,
-                            (double)Cti::getPrivateBytes() / 1024 / 1024,
-                            NormalQuality, AnalogPointType, "");
+                        data = std::make_unique<CtiPointDataMsg>( memoryPointID,
+                            static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
+                            NormalQuality, AnalogPointType, "" );
                         data->setSource(CALCLOGIC_APPLICATION_NAME);
                         dispatchConnection->WriteConnQue( data.release(), CALLSITE );
 

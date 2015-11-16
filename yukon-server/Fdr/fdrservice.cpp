@@ -287,8 +287,8 @@ void CtiFDRService::Run( )
                 data->setSource(FDR_APPLICATION_NAME);
                 FdrVanGoghConnection.WriteConnQue(data.release(), CALLSITE);
 
-                data = std::make_unique<CtiPointDataMsg>(memoryPointID, (double)Cti::getPrivateBytes() / 1024 / 1024,
-                    NormalQuality, AnalogPointType, "");
+                data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
+                    NormalQuality, AnalogPointType, "" );
                 data->setSource(FDR_APPLICATION_NAME);
                 FdrVanGoghConnection.WriteConnQue( data.release(), CALLSITE );
 

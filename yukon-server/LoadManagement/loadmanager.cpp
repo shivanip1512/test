@@ -276,7 +276,7 @@ void CtiLoadManager::controlLoop()
                     data->setSource( LOAD_MANAGER_APPLICATION_NAME );
                     getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
 
-                    data = std::make_unique<CtiPointDataMsg>( memoryPointID, (double)Cti::getPrivateBytes() / 1024 / 1024,
+                    data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
                         NormalQuality, AnalogPointType, "" );
                     data->setSource( LOAD_MANAGER_APPLICATION_NAME );
                     getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );

@@ -219,8 +219,8 @@ void DispatchMsgHandlerThread()
                 data->setSource(PORTER_APPLICATION_NAME);
                 VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
 
-                data = std::make_unique<CtiPointDataMsg>(memoryPointID, (double)Cti::getPrivateBytes() / 1024 / 1024,
-                    NormalQuality, AnalogPointType, "");
+                data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
+                    NormalQuality, AnalogPointType, "" );
                 data->setSource(PORTER_APPLICATION_NAME);
                 VanGoghConnection.WriteConnQue( data.release(), CALLSITE );
 
