@@ -894,13 +894,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         
         if (point.getUnitofmeasure() != null) {
             String unitOfMeasureName = point.getUnitofmeasure().getValue();
-            LiteUnitMeasure unitMeasure = null;
-            try {
-                unitMeasure = unitMeasureDao.getLiteUnitMeasure(unitOfMeasureName);
-            } catch (EmptyResultDataAccessException e) {
-                throw new NotFoundException("Unit of measure does not exist: " + unitOfMeasureName
-                    + ". Check the paoDefinition.xml file ", e);
-            }
+            LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(unitOfMeasureName);
             if (unitMeasure == null) {
                 throw new NotFoundException("Unit of measure does not exist: " + unitOfMeasureName
                                             + ". Check the paoDefinition.xml file ");
