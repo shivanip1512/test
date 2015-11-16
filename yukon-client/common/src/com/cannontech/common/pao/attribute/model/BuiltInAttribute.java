@@ -341,7 +341,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SERVICE_MANAGER_MEMORY_UTILIZATION("Service Manager Memory Utilization", AttributeGroup.SYSTEM, false),
     WEB_SERVICE_MEMORY_UTILIZATION("Web Service Memory Utilization", AttributeGroup.SYSTEM, false),
 
-    LOAD_MANAGEMENT_MONITOR("Load Management Monitor", AttributeGroup.SYSTEM, false),
     LOAD_MANAGEMENT_CPU_UTILIZATION("Load Management CPU Utilization", AttributeGroup.SYSTEM, false),
     LOAD_MANAGEMENT_MEMORY_UTILIZATION("Load Management Memory Utilization", AttributeGroup.SYSTEM, false),
 ;

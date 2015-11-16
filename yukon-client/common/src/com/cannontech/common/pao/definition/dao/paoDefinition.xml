@@ -10093,11 +10093,6 @@
                 <unitofmeasure value="Megabytes" />
                 <decimalplaces value="0" />            
             </point>
-            <point type="Status" offset="1027">
-                <init>true</init>
-                <name>Load Management Monitor</name>
-                <stategroup value="Thread Monitor" />
-            </point>
             <point type="Analog" offset="1028">
                 <init>true</init>
                 <name>Load Management CPU Utilization</name>
@@ -10173,9 +10168,6 @@
             </attribute>
             <attribute name="WEB_SERVICE_MEMORY_UTILIZATION">
                 <basicLookup point="Web Service Memory Utilization" />
-            </attribute>
-            <attribute name="LOAD_MANAGEMENT_MONITOR">
-                <basicLookup point="Load Management Monitor" />
             </attribute>
             <attribute name="LOAD_MANAGEMENT_CPU_UTILIZATION">
                 <basicLookup point="Load Management CPU Utilization" />

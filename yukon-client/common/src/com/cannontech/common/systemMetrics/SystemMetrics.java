@@ -12,7 +12,7 @@ public interface SystemMetrics {
     public final static int WEB_SERVER_CPU = 1016;
     
     /**
-     * Setter that takes the attribute Id.
+     * Setter that takes the attribute Id for LoadAverage.
      * 
      * @param attribute attribute Id.
      */
@@ -26,5 +26,10 @@ public interface SystemMetrics {
      */
     public double getloadAverage();
 
-    void setMemoryAttribute(BuiltInAttribute loadAverageAttribute);
+    /**
+     * Setter that takes the attribute Id for Memory Usage.
+     * 
+     * @param attribute attribute Id.
+     */
+    void setMemoryAttribute(BuiltInAttribute memoryAttribute);
 }

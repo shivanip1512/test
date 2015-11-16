@@ -393,7 +393,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_MANAGER_MEMORY_UTILIZATION">Service Manager Memory Utilization</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WEB_SERVICE_MEMORY_UTILIZATION">Web Service Memory Utilization</entry>
     
-    <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_MONITOR">Load Management Monitor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_CPU_UTILIZATION">Load Management CPU Utilization</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_MEMORY_UTILIZATION">Load Management Memory Utilization</entry>
     

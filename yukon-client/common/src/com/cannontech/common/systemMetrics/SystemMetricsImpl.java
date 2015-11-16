@@ -54,12 +54,24 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
     private LitePoint loadAveragePoint;
     /** Point for process memory usage */
     private LitePoint memoryPoint;
+    
+    /**
+     * System Property com.cannontech.common.systemMetrics.SystemMetricsImpl.reportFrequency sets
+     * how often a log report is made as category Info. This is a multiplier to metricRate. Defaults
+     * to every 30 minutes
+     */
+    private int reportFrequency =
+        Integer.getInteger("com.cannontech.common.systemMetrics.SystemMetricsImpl.reportFrequency",
+                           30);
+    /** Counter for reports */
+    private int reportFrequencyCounter = 0;
 
-    class SystemMetricsThreadFactory implements ThreadFactory {
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "SystemMetrics");
-        }
-    }
+    /**
+     * System Property com.cannontech.common.systemMetrics.SystemMetricsImpl.metricRate sets
+     * how often the metrics are checked in seconds. Defaults to every minute
+     */
+    private final int metricRate =
+        Integer.getInteger("com.cannontech.common.systemMetrics.SystemMetricsImpl.metricRate", 60);
 
     private final ScheduledExecutorService scheduler = Executors
         .newScheduledThreadPool(1, new SystemMetricsThreadFactory());
@@ -75,6 +87,13 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
     
     /** Allow loadAverage access from MBean viewer. */
     private AtomicDouble loadAverage = new AtomicDouble(0.0);
+
+    /** Factory to force a thread name */
+    class SystemMetricsThreadFactory implements ThreadFactory {
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "SystemMetrics");
+        }
+    }
 
     /**
      * Spring (default) constructor.
@@ -96,7 +115,7 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
         }
 
         lastSampleTime = Instant.now();
-        task = scheduler.scheduleAtFixedRate(this, 60, 60, TimeUnit.SECONDS);
+        task = scheduler.scheduleAtFixedRate(this, metricRate, metricRate, TimeUnit.SECONDS);
     }
 
     /**
@@ -117,7 +136,7 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
      */
     @Override
     public void setMemoryAttribute(BuiltInAttribute memoryAttribute) {
-        log.debug("setLoadAverageAttribute(" + memoryAttribute + ")");
+        log.debug("setMemoryAttribute(" + memoryAttribute + ")");
         this.memoryAttribute = memoryAttribute;
     }
 
@@ -131,7 +150,7 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
         try {
             loadAveragePoint = attributeService.getPointForAttribute(paoIdentifier, loadAverageAttribute);
         } catch (IllegalUseOfAttribute e) {
-            log.error("Attribute: ["+memoryAttribute+"] not found for pao type: [SYSTEM]");
+            log.error("Attribute: ["+loadAverageAttribute+"] not found for pao type: [SYSTEM]");
         }
         try {
             memoryPoint = attributeService.getPointForAttribute(paoIdentifier, memoryAttribute);
@@ -167,18 +186,38 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
     public void run() {
         log.debug("SystemMetricsImpl.run()");
 
+        // Bump this counter every cycle, report statistic on when it matches reportFrequency
+        reportFrequencyCounter++;
+
         try {
             double loadAverage = calculateLoadAverage();
             pointAccessDao.setPointValue(loadAveragePoint, loadAverage);
-            log.info("Process CPU Utilization: "+loadAverage+"%");
+            
+            // Report load as log.info every reportFrequency or if loadAverage > 70%
+            String message = "Process CPU Utilization: " + loadAverage + "%";
+            if (reportFrequencyCounter % reportFrequency == 0 || loadAverage > 70) {
+                log.info(message);
+            } else {
+                log.debug(message);
+            }
+            
         } catch (IllegalUseOfAttribute e) {
             log.warn("caught exception in SystemMetrics.run", e);
         }
 
         try {
             double memory = Runtime.getRuntime().totalMemory() / 1024 / 1024;
+            double maxMemory = Runtime.getRuntime().maxMemory() / 1024 / 1024;
             pointAccessDao.setPointValue(memoryPoint, memory);
-            log.info("Process Memory Utilization: " + (long) memory + " MB");
+
+            // Report memory as log.info every reportFrequency or if within 70% of max memory
+            String message = "Process Memory Utilization: " + (long) memory + " MB, Max:"+ (long) maxMemory;
+            if (reportFrequencyCounter % reportFrequency == 0 || memory / maxMemory > .70) {
+                log.info(message);
+            } else {
+                log.debug(message);
+            }
+            
         } catch (IllegalUseOfAttribute e) {
             log.warn("caught exception in SystemMetrics.run", e);
         }
