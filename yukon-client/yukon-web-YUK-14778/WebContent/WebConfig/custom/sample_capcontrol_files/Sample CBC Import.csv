@@ -1,0 +1,2 @@
+Import Action,CBC Type,CBC Name,Comm Channel,Master Address,Slave Address,CBC Serial Number
+ADD,          CBC 7020,Sample CBC,UDP Chan,1,700,800000000

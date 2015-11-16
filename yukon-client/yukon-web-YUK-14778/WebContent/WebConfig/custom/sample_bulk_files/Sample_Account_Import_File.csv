@@ -1,0 +1,4 @@
+COLUMN_NAMES:ACCOUNT_NO,Cust_Action,Last_Name,First_Name,Home_Phone,Work_Phone,Email,Street_Addr1,Street_Addr2,City,State,County,Zip_Code,Map_No,Substation,Feeder,Pole,Trfm_Size,Serv_Volt,Username,Password,User_Group
+99999999,INSERT,Anderson,Andrew,1112223333,1116549774,andrew@aol.com,1628 COLONY RD                          ,,Minneapolis,MN,Hennepin,55441,42,ALEXANDRIA 11,8A532,2,1200,120,aanderson,secret,STARS Residential Customers Grp
+99999998,UPDATE,Anderson,Aaron,1112224444,1116547777,aaron@aol.com,150 CARDAMON DR,,Minneapolis,MN,Hennepin,55441,65,ALEXANDRIA 11,8B432,2,1200,120,aaronanderson,password,STARS Residential Customers Grp
+99999997,REMOVE,Braham,Bob,1112224444,1114449878,bob@aol.com,9854 Huntington Way,,Minneapolis,MN,Hennepin,55441,48,ALEXANDRIA 11,9H342,2,1200,120,bbraham,wilbur,STARS Residential Customers Grp

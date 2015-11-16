@@ -1,0 +1,111 @@
+<%@page import="com.cannontech.core.dao.AuthDao"%>
+<%@page import="com.cannontech.spring.YukonSpringHook"%>
+<%@page import="com.cannontech.core.roleproperties.dao.RolePropertyDao"%>
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+
+<script language="JavaScript">
+function dispStatusMsg(msgStr) 
+{
+  status=msgStr;
+  document.statVal = true;
+}
+</script>
+<%
+	//index vars for LinkPairs
+	int FILE = 0;
+	int LABEL = 1;
+	int DIR = 2;
+	
+	//index vars for links (hashtable) key=filename value=String[]link image, link html)
+	int IMG = 0;
+	int HTML = 1;
+	// Table of (link, page name, dir location) pairs
+	String linkPairs[][] = {{"user_direct.jsp", "Direct Control", "/user/CILC/"},
+						  {"user_trending.jsp", "Trending", "/user/CILC/"},
+  						  {"user_reporting.jsp", "Reporting", "/user/CILC/"},
+  						  {"user_get_data_now.jsp", "Get Data Now", "/user/CILC/"},
+						 };
+	String bulletImg = "<img src='../../WebConfig/yukon/Bullet.gif' width='9' height='9'>";
+	
+	// List of String[] (link image, link html)
+	Hashtable links = new Hashtable();
+	for (int i = 0; i < linkPairs.length; i++) {
+		String linkImg = null;
+		String linkHtml = null;
+		if (linkPairs[i][FILE].equalsIgnoreCase(pageName))
+		{
+			linkImg = bulletImg;
+			linkHtml = "<span class='Nav'>" + linkPairs[i][LABEL] + "</span>";
+		}
+		else
+		{
+			linkImg = "";
+			linkHtml = "<a href='" + request.getContextPath()+ linkPairs[i][DIR] + linkPairs[i][FILE] + "' class='Link2'><span class='NavText'>" + linkPairs[i][LABEL] + "</span></a>";
+		}
+		links.put(linkPairs[i][FILE], new String[] {linkImg, linkHtml});
+	}
+%>
+
+<table width="150" border="0" cellspacing="0" cellpadding="6">
+  <cti:checkRolesAndProperties value="TRENDING">
+  <tr> 
+    <td height="30" valign="bottom">
+      <div align="left"><span class="NavHeader">Trending</span><br>
+        <%   /* Retrieve all the predefined graphs for this user*/                       
+		if( gData != null )
+		{%>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<%
+			for( int i = 0; i < gData.length; i++ )                                                          
+			{
+				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && linkPairs[1][FILE].equalsIgnoreCase(pageName))
+				{%>
+          <tr> 
+            <td width="10"><%= bulletImg %></td>
+            <td style="padding:1"><span class="Nav"><%=gData[i][1] %></span></td>
+          </tr>
+				<%}
+				else 
+				{%>
+          <tr> 
+            <td width="10">&nbsp;</td>
+            <td style="padding:1"><a href="<%=request.getContextPath()+linkPairs[1][DIR] + linkPairs[1][FILE]+'?'%><%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a></td>
+          </tr>
+				<%}
+			}%>
+        </table>
+		<%}%>
+	  </div>
+    </td>
+  </tr>
+  <cti:checkRolesAndProperties value="SCAN_NOW_ENABLED">
+  <tr>
+    <td height="30" valign="bottom">
+      <div align="left"><span class="NavHeader">Display</span><br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("user_get_data_now.jsp"))[IMG] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("user_get_data_now.jsp"))[HTML]%></td>
+          </tr>
+        </table>
+      </div>
+    </td>
+  </tr>
+  </cti:checkRolesAndProperties>
+  </cti:checkRolesAndProperties>
+
+  <cti:checkRolesAndProperties value="REPORTING">
+  <tr> 
+    <td height="30" valign="bottom">
+      <div align="left"><span class="NavHeader">Reporting</span><br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("user_reporting.jsp"))[IMG] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("user_reporting.jsp"))[HTML] %></td>
+          </tr>
+        </table>
+	  </div>
+    </td>
+  </tr>
+  </cti:checkRolesAndProperties>
+</table>

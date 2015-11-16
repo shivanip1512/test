@@ -1,0 +1,98 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<div id="stars" class="devWidget">
+<cti:flashScopeMessages />
+<div class="widgetMessage"></div>
+    <form:form commandName="devStars" action="setupStars" method="post" id="setupStarsForm">
+        <cti:csrfToken/>
+        <div class="widgetContent">
+           <tags:nameValueContainer2>
+               <tags:nameValue2 nameKey=".setupDevDatabase.option.stars.parentEnergyCompany">
+                   <form:select path="energyCompany" cssClass="js-ec_select">
+                       <c:forEach items="${allEnergyCompanies}" var="energyCompany">
+                           <form:option value="${energyCompany.energyCompanyId}">${energyCompany.name}</form:option>
+                       </c:forEach>
+                       <option value="0" id="createNewEnergyCompanyOpt">*Create New Energy Company </option>
+                   </form:select>
+               </tags:nameValue2>
+               <tags:inputNameValue path="newEnergyCompanyName"
+                   nameKey=".setupDevDatabase.option.stars.createNewEC"
+                   size="10" inputClass="newEnergyCompanyInput"
+                   rowClass="newEnergyCompanyRow dn" />
+
+               <tr><td><h3>Stars Accounts</h3></td></tr>
+
+               <tags:inputNameValue
+                   path="devStarsAccounts.numAccounts"
+                   nameKey=".setupDevDatabase.option.stars.numAccounts"
+                   size="6" />
+               <tags:inputNameValue
+                   path="devStarsAccounts.accountNumMin"
+                   nameKey=".setupDevDatabase.option.stars.accountNumMin"
+                   size="10" />
+               <tags:inputNameValue
+                   path="devStarsAccounts.accountNumMax"
+                   nameKey=".setupDevDatabase.option.stars.accountNumMax"
+                   size="10" />
+
+               <tr><td><h3>Hardware</h3></td></tr>
+               <tags:inputNameValue
+                   path="devStarsHardware.numPerAccount"
+                   nameKey=".setupDevDatabase.option.stars.numHardwarePerAccount"
+                   size="2" />
+               <tags:inputNameValue
+                   path="devStarsHardware.numExtra"
+                   nameKey=".setupDevDatabase.option.stars.numExtra"
+                   size="2" />
+               <tags:inputNameValue
+                   path="devStarsHardware.serialNumMin"
+                   nameKey=".setupDevDatabase.option.stars.serialNumMin"
+                   size="10" />
+               <tags:inputNameValue
+                   path="devStarsHardware.serialNumMax"
+                   nameKey=".setupDevDatabase.option.stars.serialNumMax"
+                   size="10" />
+           </tags:nameValueContainer2>
+           <h4>Types</h4>
+           <ul>
+               <li>
+                   <label> 
+                       <input id="js-check_all_hardware" type="checkbox" />
+                       Check All
+                   </label>
+               </li>
+               <c:forEach items="${devStars.devStarsHardware.hardwareTypes}" var="hardwareType" varStatus="status">
+                   <li class="subItemCheckbox">
+                       <label> <tags:checkbox path="devStarsHardware.hardwareTypes[${status.index}].create"
+                               styleClass="js-check_single_hardware" />
+                           <span><i:inline key="${devStars.devStarsHardware.hardwareTypes[status.index].hardwareType}" /></span>
+                       </label>
+                   </li>
+               </c:forEach>
+           </ul>
+           <div class="page-action-area">
+               <cti:button type="submit" nameKey="runSetup" classes="action primary"/>
+           </div>
+        </div>
+    </form:form>
+
+    <script>
+    $(function() {
+        $("input#js-check_all_hardware:checkbox").checkAll("input.js-check_single_hardware:checkbox");
+        $('.js-ec_select').on('change', function() {
+            if ($('#createNewEnergyCompanyOpt').is(':selected')) {
+                $('.newEnergyCompanyRow').show(800, function() {
+                    $('.newEnergyCompanyInput').focus();
+                });
+            } else {
+                $('.newEnergyCompanyRow').hide(500);
+            }
+        });
+    });
+    </script>
+</div>

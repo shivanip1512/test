@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.0//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
+
+<!-- =========== FULL CONFIGURATION FILE ================================== -->
+
+<faces-config>
+
+	<application>
+        <variable-resolver>org.springframework.web.jsf.DelegatingVariableResolver</variable-resolver>
+	</application>
+
+	<!-- Our DBCache object -->
+    <managed-bean>
+        <managed-bean-name>dbCache</managed-bean-name>
+        <managed-bean-class>com.cannontech.database.cache.DefaultDatabaseCache</managed-bean-class>
+        <managed-bean-scope>application</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>selLists</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.util.CBCSelectionLists</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+		<managed-property>
+            <property-name>authDao</property-name>
+            <value>#{authDao}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>cbcHelperService</property-name>
+             <value>#{cbcHelperService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>yukonUserContextMessageSourceResolver</property-name>
+             <value>#{yukonUserContextMessageSourceResolver}</value>
+        </managed-property>
+    </managed-bean>
+    
+	<!-- Navigation bean -->
+    <managed-bean>
+        <managed-bean-name>CtiNavObject</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.navigation.CtiNavObject</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+
+	<!-- Converts HH:mm strings into total seconds -->
+	<converter>
+		<converter-id>cti_TimeConverter</converter-id> 
+		<converter-class>com.cannontech.web.util.TimeConverter</converter-class> 
+	</converter> 
+    
+    <converter>
+        <converter-id>objectConverter</converter-id>
+        <converter-class>com.cannontech.web.cc.ObjectConverter</converter-class>
+    </converter>
+    
+    <converter>
+        <converter-id>objectSerializingConverter</converter-id>
+        <converter-class>com.cannontech.web.cc.ObjectSerializingConverter</converter-class>
+    </converter>
+    
+    <!-- Validators -->
+    <validator>
+        <validator-id>dateTimeValidator</validator-id>
+        <validator-class>com.cannontech.web.capcontrol.validators.DateTimeValidator</validator-class>
+    </validator>
+
+</faces-config>
+        

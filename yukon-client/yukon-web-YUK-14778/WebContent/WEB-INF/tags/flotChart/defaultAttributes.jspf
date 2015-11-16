@@ -1,0 +1,5 @@
+<%@ attribute name="chartId"%>
+<%@ attribute name="jsonDataAndOptions" required="true" type="java.util.Map" description="json format should look like this: {datas: [{data: [[x,y, {tooltip: 'sometooltip'}], [x,y, {tooltip: 'sometooltip'}], etc], lineName: 'someLineName', color: 'hex/rgb color of this one line', phase: 'A/B/C for ivvc graphs'}], options: {nested objects of options}, type: 'line/bar/pie'}. See FlotChartServiceImpl.java for more specific examples"%>
+<%@ attribute name="title"%>
+
+<cti:default var="chartId" value="flotChartId"/>

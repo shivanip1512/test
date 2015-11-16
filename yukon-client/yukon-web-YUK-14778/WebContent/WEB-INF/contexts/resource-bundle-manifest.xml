@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+    
+   <bean id="yukonResourceList" class="com.cannontech.web.common.resources.data.ResourcePackageList">
+        <property name="packages">
+            <map>
+                <entry key="yukon-core" value-ref="yukonCorePackage"/>
+                <entry key="highchart-core-3" value-ref="highChartPackage"/>
+                <entry key="trends-core" value-ref="trendsPackage"/>
+                <entry key="standard-css-core" value-ref="standardCssPackage"/>
+                <entry key="yukon-less-core" value-ref="yukonLessPackage"/>
+            </map>
+        </property>
+   </bean>
+   <bean id="standardCssPackage" class="com.cannontech.web.common.resources.data.ResourceBundle">
+        <property name="name">
+            <value>standard-css-core</value>
+        </property>
+        <property name="resourceType">
+            <value type="com.cannontech.web.common.resources.data.ResourceType">css</value>
+        </property>
+        <property name="TTL">
+            <value>1800000</value>
+        </property>
+        <property name="resourcesPathList">
+            <list>
+                <value>/resources/css/lib/normalize.css</value>
+                <value>/resources/css/lib/bootstrap/bootstrap.css</value>
+                <value>/resources/css/lib/animate.css</value>
+                <value>/resources/js/lib/tipsy/tipsy.css</value>
+                <value>/resources/js/lib/spectrum/spectrum.css</value>
+                <value>/resources/js/lib/chosen/chosen.min.css</value>
+                <value>/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.css</value>
+                <value>/resources/js/lib/jquery-ui/jquery-ui.css</value>
+                <value>/resources/css/yukon/icons.css</value>
+            </list>
+        </property>
+        <property name="filterServiceList">
+            <list>
+            </list>
+        </property>
+   </bean>
+   <bean id="yukonLessPackage" class="com.cannontech.web.common.resources.data.ResourceBundle">
+        <property name="name">
+            <value>yukon-less-core</value>
+        </property>
+        <property name="TTL">
+            <value>1800000</value>
+        </property>
+        <property name="resourceType">
+            <value type="com.cannontech.web.common.resources.data.ResourceType" >css</value>
+        </property>
+        <property name="resourcesPathList">
+            <list>
+                <value>/resources/less/layout.less</value>
+                <value>/resources/less/yukon.less</value>
+                <value>/resources/less/buttons.less</value>
+                <value>/resources/less/overrides.less</value>
+           </list>
+        </property>
+        <property name="filterServiceList">
+            <list>
+                <value type="com.cannontech.web.common.resources.service.data.ResourceBundleFilterServiceType">LESS_TO_CSS</value>
+                <value type="com.cannontech.web.common.resources.service.data.ResourceBundleFilterServiceType">CSS_MINIFY</value>
+            </list>
+        </property>
+   </bean>
+   <bean id="trendsPackage" class="com.cannontech.web.common.resources.data.ResourceBundle">
+        <property name="name">
+            <value>trends-core</value>
+        </property>
+        <property name="TTL">
+            <value>1800000</value>
+        </property>
+        <property name="resourceType">
+            <value type="com.cannontech.web.common.resources.data.ResourceType">javascript</value>
+        </property>
+        <property name="resourcesPathList">
+            <list>
+                <value>/resources/js/pages/yukon.tools.trends.js</value>
+            </list>
+        </property>
+        <property name="filterServiceList">
+            <list>
+                <value type="com.cannontech.web.common.resources.service.data.ResourceBundleFilterServiceType">JS_MINIFY</value>
+            </list>
+        </property>
+   </bean>
+   <bean id="highChartPackage" class="com.cannontech.web.common.resources.data.ResourceBundle">
+        <property name="name">
+           <value>highchart-core-3</value>
+        </property>
+        <property name="TTL">
+            <value>1800000</value>
+        </property>
+        <property name="resourceType">
+            <value type="com.cannontech.web.common.resources.data.ResourceType">javascript</value>
+        </property>
+        <property name="resourcesPathList">
+            <list>
+                <value>/resources/js/lib/highstock/highstock.src.js</value>
+                <value>/resources/js/lib/highstock/modules/exporting.src.js</value>
+                <value>/resources/js/lib/highstock/modules/no-data-to-display.src.js</value>
+            </list>
+        </property>
+        <property name="filterServiceList">
+            <list>
+                 <value type="com.cannontech.web.common.resources.service.data.ResourceBundleFilterServiceType">JS_MINIFY</value>
+            </list>
+        </property>
+   </bean>
+   <bean id="yukonCorePackage" class="com.cannontech.web.common.resources.data.ResourceBundle">
+        <property name="name">
+            <value>yukon-core</value>
+        </property>
+        <property name="TTL">
+            <value>1800000</value>
+        </property>
+        <property name="resourceType">
+            <value type="com.cannontech.web.common.resources.data.ResourceType">javascript</value>
+        </property>
+        <property name="resourcesPathList">
+            <list>
+                <value>/resources/js/common/yukon.js</value>
+                <value>/resources/js/common/yukon.ui.js</value>
+                <value>/resources/js/common/yukon.hub.js</value>
+                <value>/resources/js/common/yukon.cookie.js</value>
+                <value>/resources/js/common/yukon.alerts.js</value> 
+                <value>/resources/js/common/yukon.dialog.confirm.js</value>
+                <value>/resources/js/common/yukon.ui.util.js</value>                
+                <value>/resources/js/common/yukon.ui.movables.js</value>
+                <value>/resources/js/common/yukon.data.updater.js</value>
+                <value>/resources/js/tags/yukon.dropdown.js</value>
+                <value>/resources/js/common/yukon.tooltip.js</value>
+                <value>/resources/js/common/yukon.analytics.js</value>
+                <value>/resources/js/common/yukon.favorites.js</value>
+                <value>/resources/js/common/yukon.simple.popups.js</value>
+                <value>/resources/js/tags/yukon.picker.js</value>
+                <value>/resources/js/tags/yukon.device.group.picker.js</value>
+                <value>/resources/js/widgets/yukon.widget.js</value>
+                <value>/resources/js/widgets/yukon.widget.monitors.js</value>
+                <value>/resources/js/pages/yukon.jobs.js</value>
+                <value>/resources/js/common/yukon.ui.progressbar.js</value>
+             </list>
+        </property>
+        <property name="filterServiceList">
+            <list>
+               <value type="com.cannontech.web.common.resources.service.data.ResourceBundleFilterServiceType">JS_MINIFY</value>
+            </list>
+        </property>
+   </bean>
+</beans>

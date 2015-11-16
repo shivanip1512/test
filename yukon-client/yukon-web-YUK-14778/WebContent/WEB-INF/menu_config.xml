@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<menus xmlns="http://yukon.cannontech.com/menus" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://yukon.cannontech.com/menus menus.xsd">
+  
+  <menu name="ami">
+    <permissions>
+      <or>
+        <role name="METERING" />
+        <role name="APPLICATION_BILLING" />
+      </or>
+    </permissions>
+    <link>/meter/start</link>
+    <options>
+      <option name="dashboard">
+        <permissions>
+          <or>
+            <role name="METERING" />
+            <role name="APPLICATION_BILLING" />
+            <role name="SCHEDULER" />
+            <role name="DEVICE_ACTIONS" />
+          </or>
+        </permissions>
+        <link>/meter/start</link>
+      </option>
+      <option name="billing">
+        <permissions>
+          <role name="APPLICATION_BILLING" />
+        </permissions>
+        <link>/billing/home</link>
+      </option>
+      <option name="import" section="true">
+        <permissions>
+          <roleProperty name="BULK_IMPORT_OPERATION" />
+        </permissions>
+        <link>/bulk/import/upload</link>
+      </option>
+      <option name="reports">
+        <permissions>
+          <roleProperty name="AMR_REPORTS_GROUP" />
+        </permissions>
+        <link>/analysis/Reports.jsp?groupType=METERING</link>
+      </option>
+    </options>
+  </menu>
+  <menu name="dr">
+    <permissions>
+      <role name="DEMAND_RESPONSE" />
+    </permissions>
+    <link>/dr/home</link>
+    <options>
+      <option name="dashboard">
+        <link>/dr/home</link>
+      </option>
+      <option name="scenarios">
+        <permissions>
+          <roleProperty name="SHOW_SCENARIOS" />
+        </permissions>
+        <link>/dr/scenario/list</link>
+      </option>
+      <option name="controlAreas">
+        <permissions>
+          <roleProperty name="SHOW_CONTROL_AREAS" />
+        </permissions>
+        <link>/dr/controlArea/list</link>
+      </option>
+      <option name="programs">
+        <link>/dr/program/list</link>
+      </option>
+      <option name="loadGroups">
+        <link>/dr/loadGroup/list</link>
+      </option>
+      <option name="estimatedLoad">
+        <permissions>
+            <masterConfig name="ENABLE_ESTIMATED_LOAD" />              
+        </permissions>
+        <link>/dr/estimatedLoad/home</link>
+      </option>
+      <option name="ci">
+        <permissions>
+          <role name="CI_CURTAILMENT" />
+        </permissions>
+        <link>/cc/ciSetup.jsf</link>
+      </option>
+      <option name="reports" section="true">
+        <permissions>
+          <roleProperty name="LOAD_MANAGEMENT_REPORTS_GROUP" />
+        </permissions>
+        <link>/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT</link>
+      </option>
+    </options>
+  </menu>
+  <menu name="vv">
+    <permissions>
+      <roleProperty name="CAP_CONTROL_ACCESS" />
+    </permissions>
+    <link>/capcontrol/tier/areas</link>
+    <options>
+      <option name="dashboard">
+        <link>/capcontrol/tier/areas</link>
+      </option>
+      <option name="schedules">
+        <link>/capcontrol/schedules</link>
+      </option>
+      <option name="strategies">
+        <link>/capcontrol/strategies</link>
+      </option>
+      <option name="movedBanks">
+        <link>/capcontrol/move/movedCapBanks</link>
+      </option>
+      <option name="orphans">
+        <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
+      </option>
+      <option name="regulatorSetup">
+        <link>/capcontrol/regulator-setup</link>
+      </option>
+      <option name="import" section="true">
+        <permissions>
+          <roleProperty name="CAP_CONTROL_IMPORTER" />
+        </permissions>
+        <link>/capcontrol/import/view</link>
+      </option>
+      <option name="reports">
+        <permissions>
+          <roleProperty name="CAP_CONTROL_REPORTS_GROUP" />
+        </permissions>
+        <link>/analysis/Reports.jsp?groupType=CAP_CONTROL</link>
+      </option>
+    </options>
+  </menu>
+  <menu name="assets">
+    <permissions>
+      <or>
+        <role name="CONSUMER_INFO" />
+        <role name="INVENTORY" />
+      </or>
+    </permissions>
+    <link>/stars/operator/inventory/home</link>
+    <options>
+      <option name="dashboard">
+        <permissions>
+          <or>
+            <role name="CONSUMER_INFO" />
+            <role name="INVENTORY" />
+          </or>
+        </permissions>
+        <link>/stars/operator/inventory/home</link>
+      </option>
+      <option name="gateways">
+        <permissions>
+          <or>
+            <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
+            <roleProperty name="INFRASTRUCTURE_DELETE"/>
+            <roleProperty name="INFRASTRUCTURE_ADMIN"/>
+            <roleProperty name="INFRASTRUCTURE_VIEW"/>
+          </or>
+        </permissions>
+        <link>/stars/gateways</link>
+      </option>
+      <option name="optouts">
+        <permissions>
+          <or>
+            <roleProperty name="OPERATOR_OPT_OUT_ADMIN_STATUS" />
+            <roleProperty name="OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE" />
+            <roleProperty name="OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS" />
+            <roleProperty name="OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT" />
+            <roleProperty name="ADMIN_VIEW_OPT_OUT_EVENTS" />
+          </or>
+        </permissions>
+        <link>/stars/operator/optOut/admin</link>
+      </option>
+      <option name="workorders">
+        <permissions>
+          <role name="WORK_ORDER" />
+        </permissions>
+        <link>/operator/WorkOrder/WorkOrder.jsp</link>
+      </option>
+      <option name="import" section="true">
+        <permissions>
+          <roleProperty name="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
+        </permissions>
+        <link>/stars/operator/account/accountImport</link>
+      </option>
+      <option name="reports">
+        <permissions>
+          <roleProperty name="STARS_REPORTS_GROUP" />
+        </permissions>
+        <link>/analysis/Reports.jsp?groupType=STARS</link>
+      </option>
+    </options>
+  </menu>
+  <menu name="tools">
+    <options>
+      <option name="bulkOperations">
+        <permissions>
+            <or>
+              <roleProperty name="BULK_IMPORT_OPERATION" />
+              <roleProperty name="ADD_REMOVE_POINTS" />
+              <roleProperty name="FDR_TRANSLATION_MANAGER" />
+              <roleProperty name="IMPORTER_ENABLED" />
+              <roleProperty name="CAP_CONTROL_IMPORTER" />
+              <roleProperty name="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
+            </or>
+        </permissions>
+        <link>/bulk/bulkHome</link>
+      </option>
+      <option name="collectionActions">
+        <permissions>
+            <role name="DEVICE_ACTIONS"/>
+        </permissions>
+        <link>/bulk/deviceSelection</link>
+      </option>
+      <option name="commander">
+        <permissions>
+          <roleProperty name="ENABLE_WEB_COMMANDER" />
+        </permissions>
+        <link>/tools/commander</link>
+      </option>
+      <option name="dataExport">
+        <permissions>
+          <roleProperty name="ARCHIVED_DATA_EXPORT" />
+        </permissions>
+        <link>/tools/data-exporter/view</link>
+      </option>
+      <option name="tdc">
+        <permissions>
+          <role name="TABULAR_DISPLAY_CONSOLE" />
+        </permissions>
+        <link>/tools/data-viewer</link>
+      </option>
+      <option name="deviceConfiguration">
+        <permissions>
+          <roleProperty name="ADMIN_VIEW_CONFIG" />
+        </permissions>
+        <link>/deviceConfiguration/home</link>
+      </option>
+      <option name="deviceGroups">
+        <permissions>
+          <role name="DEVICE_ACTIONS" />
+        </permissions>
+        <link>/group/editor/home</link>
+      </option>
+      <option name="schedules">
+        <permissions>
+          <role name="SCHEDULER" />
+        </permissions>
+        <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
+      </option>
+      <option name="scripts">
+        <permissions>
+          <role name="SCHEDULER" />
+        </permissions>
+        <link>/macsscheduler/schedules/view</link>
+      </option>
+      <option name="trends">
+        <permissions>
+          <role name="TRENDING" />
+        </permissions>
+        <link>/tools/trends</link>
+      </option>
+      <option name="reports" section="true">
+        <permissions>
+          <roleProperty name="ADMIN_REPORTS_GROUP" />
+        </permissions>
+        <link>/analysis/Reports.jsp</link>
+      </option>
+    </options>
+  </menu>
+  <menu name="admin">
+    <permissions>
+      <role name="OPERATOR_ADMINISTRATOR" />
+    </permissions>
+    <options>
+      <option name="configuration">
+        <permissions>
+          <roleProperty name="ADMIN_SUPER_USER" />
+        </permissions>
+        <link>/admin/config/view</link>
+      </option>
+      <option name="energyCompany">
+        <permissions>
+          <or>
+            <ecOperator/>
+            <roleProperty name="ADMIN_SUPER_USER" />
+          </or>
+        </permissions>
+        <link>/admin/energyCompany/home</link>
+      </option>
+      <!-- <option name="jobs"> enable after these pages don't suck -->
+      <!-- <link>/admin/jobsscheduler/active</link> -->
+      <!-- </option> -->
+      <option name="maintenance">
+        <permissions>
+          <roleProperty name="ADMIN_SUPER_USER" />
+        </permissions>
+        <link>/admin/maintenance/view</link>
+      </option>
+      <option name="multispeak">
+        <permissions>
+          <roleProperty name="ADMIN_MULTISPEAK_SETUP" />
+        </permissions>
+        <link>/multispeak/setup/home</link>
+      </option>
+      <option name="substations">
+        <link>/admin/substations/routeMapping/view</link>
+      </option>
+      <option name="usersAndGroups">
+        <permissions>
+          <roleProperty name="ADMIN_SUPER_USER" />
+        </permissions>
+        <link>/admin/users-groups/home</link>
+      </option>
+      <option name="reports" section="true">
+        <permissions>
+          <roleProperty name="ADMIN_REPORTS_GROUP" />
+        </permissions>
+        <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE</link>
+      </option>
+    </options>
+  </menu>
+</menus>

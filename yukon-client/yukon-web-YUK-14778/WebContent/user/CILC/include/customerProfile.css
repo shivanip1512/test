@@ -1,0 +1,11 @@
+.contactEditor td {
+  vertical-align: top;
+  font-size: small;
+}
+
+.contactEditor {
+  margin-bottom: 20px;
+  background: #eee;
+  padding: 5px;
+}
+

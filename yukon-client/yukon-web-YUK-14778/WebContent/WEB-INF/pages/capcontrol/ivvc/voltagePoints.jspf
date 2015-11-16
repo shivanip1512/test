@@ -1,0 +1,78 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<cti:msgScope paths="modules.capcontrol.ivvc.voltagePoints">
+	<strong>
+		<c:choose>
+			<c:when test="${zoneDetailUrl != null}">
+                <a href="${zoneDetailUrl}">${fn:escapeXml(zoneName)}</a>
+			</c:when>
+			<c:otherwise>
+                ${fn:escapeXml(zoneName)}
+			</c:otherwise>
+		</c:choose>
+	</strong>
+	(<a href="${zoneVoltagePointsUrl}"><i:inline key=".editPoints"/></a>)
+	<table class="compact-results-table zoneVoltagePoints">
+        <thead>
+		<tr>
+            <th>&nbsp;</th>
+			<th><i:inline key=".table.header.phase"/></th>
+			<th title="<cti:msg2 key=".table.header.lowerLimitTitle"/>">
+				<i:inline key=".table.header.lowerLimitSmall"/>
+			</th>
+			<th title="<cti:msg2 key=".table.header.currentVoltageTitle"/>">
+				<i:inline key=".table.header.currentVoltageSmall"/>
+			</th>
+			<th title="<cti:msg2 key=".table.header.upperLimitTitle"/>">
+				<i:inline key=".table.header.upperLimitSmall"/>
+			</th>
+		</tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+		<c:forEach var="voltagePoint" items="${zoneVoltagePointsHolder.points}" varStatus="status">
+			<c:set var="overrideStrategyClass" value="fwb"/>
+			<c:set var="lowerLimit" value="${voltagePoint.lowerLimit}"/>
+			<c:set var="upperLimit" value="${voltagePoint.upperLimit}"/>
+			<c:if test="${!voltagePoint.overrideStrategy}">
+				<c:set var="overrideStrategyClass" value="disabled"/>
+    			<c:set var="lowerLimit" value="${strategyLimits.lowerLimit}"/>
+    			<c:set var="upperLimit" value="${strategyLimits.upperLimit}"/>
+			</c:if>
+			<tr>
+				<td>
+                    <div>
+                        <strong><i:inline key="yukon.common.device"/></strong>&nbsp;
+                        ${fn:escapeXml(voltagePoint.paoName)}
+                    </div>
+                    <div>
+                        <strong><i:inline key="yukon.common.point"/></strong>&nbsp;
+                        <cti:url var="pointLink" value="/tools/points/${voltagePoint.pointId}" />
+                        <a href="${pointLink}">${fn:escapeXml(voltagePoint.pointName)}</a>
+                    </div>
+				</td>
+				<td><i:inline key="${voltagePoint.phase}"/></td>
+				<td title="<cti:msg2 key=".table.header.lowerLimitTitle"/>" class="${overrideStrategyClass}">
+					${lowerLimit}
+				</td>
+				<td><c:choose>
+						<c:when test="${voltagePoint.pointId > 0}">
+							<cti:pointValue pointId="${voltagePoint.pointId}" format="VALUE" />
+						</c:when>
+						<c:otherwise>
+							<i:inline key="yukon.common.dashes" />
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td title="<cti:msg2 key=".table.header.upperLimitTitle"/>" class="${overrideStrategyClass}">
+					${upperLimit}
+				</td>
+			</tr>
+		</c:forEach>
+        </tbody>
+	</table>
+</cti:msgScope>

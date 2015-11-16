@@ -1,0 +1,117 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<input id="formula-row-index" type="hidden" value="${formulaBean.numberOfEntries}"/>
+
+<form:form id="formulaForm" commandName="formulaBean" action="edit?formulaId=${formulaBean.formulaId}">
+
+    <cti:csrfToken/>
+    <div class="column-10-14 clearfix">
+        <div class="column one">
+            <tags:sectionContainer2 nameKey="formulaSettings">
+                <tags:nameValueContainer2 tableClass="with-form-controls">
+                    <tags:hidden path="formulaType"/>
+                    <tags:hidden path="calculationType"/>
+                    <tags:inputNameValue nameKey=".name" path="name"/>
+                    <tags:nameValue2 nameKey=".formulaType">
+                        <i:inline key="${formulaBean.formulaType}"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".calculationType">
+                        <i:inline key="${formulaBean.calculationType}"/>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </tags:sectionContainer2>
+        </div>
+        <div class="column two nogutter">
+            <tags:sectionContainer2 nameKey="assignments">
+                <div id="assignments" class="scroll-md" style="${empty formulaBean.assignments ? 'display:none':''}">
+                    <c:if test="${formulaBean.appCatFormula}">
+                        <div class="column-8-8-8">
+                            <div class="column one"><h4><i:inline key=".name"/></h4></div>
+                            <div class="column two"><h4><i:inline key=".appCatType"/></h4></div>
+                            <div class="column three nogutter"><h4><i:inline key=".applianceLoad"/></h4></div>
+                        </div>
+                        <c:forEach var="assignmentId" items="${formulaBean.assignments}">
+                            <%@ include file="appCategoryAssignmentRow.jspf" %>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${formulaBean.gearFormula}">
+                        <div class="column-8-8-8">
+                            <div class="column one"><h4><i:inline key=".name"/></h4></div>
+                            <div class="column two"><h4><i:inline key=".gearControlMethod"/></h4></div>
+                            <div class="column three nogutter"><h4><i:inline key=".program"/></h4></div>
+                        </div>
+                        <c:forEach var="assignmentId" items="${formulaBean.assignments}">
+                            <%@ include file="gearAssignmentRow.jspf" %>
+                        </c:forEach>
+                    </c:if>
+                </div>
+               <c:if test="${empty formulaBean.assignments}">
+                   <span id="no-assignments" class="empty-list"><i:inline key=".noAssignments"/></span>
+               </c:if>
+               <cti:displayForPageEditModes modes="EDIT">
+                       <div class="action-area">
+                          <c:if test="${formulaBean.appCatFormula}">
+                               <tags:pickerDialog
+                                   id="unassignedApplianceCategoryPicker" type="unassignedApplianceCategoryPicker"
+                                   linkType="button" nameKey="assignAppCat" multiSelectMode="true" icon="icon-plus-green"
+                                   endAction="yukon.dr.formula.unassignedAppCatPickerClose"/>
+                           </c:if>
+                          <c:if test="${formulaBean.gearFormula}">
+                              <tags:pickerDialog
+                                  id="unassignedGearPicker" type="unassignedGearPicker"
+                                  linkType="button" nameKey="assignGear" multiSelectMode="true" icon="icon-plus-green"
+                                  endAction="yukon.dr.formula.unassignedGearPickerClose"/>
+                          </c:if>
+                       </div>
+                </cti:displayForPageEditModes>
+            </tags:sectionContainer2>
+        </div>
+    </div>
+    <tags:sectionContainer2 nameKey="lookupTables">
+        <div id="formula-tables">
+            <c:forEach var="table" items="${formulaBean.tables}" varStatus="loop">
+                <c:set var="tableIndex" value="${loop.index}"/>
+                <%@ include file="formulaTableRow.jspf" %>
+            </c:forEach>
+        </div>
+    </tags:sectionContainer2>
+    <cti:displayForPageEditModes modes="EDIT">
+        <hr>
+        <div class="action-area">
+            <cti:button id="new-lookup-table-btn" icon="icon-plus-green" nameKey="newTable"/>
+        </div>
+    </cti:displayForPageEditModes>
+    <div class="page-action-area">
+        <cti:displayForPageEditModes modes="VIEW">
+            <cti:button nameKey="edit" icon="icon-pencil" href="edit?formulaId=${formulaBean.formulaId}"/>
+        </cti:displayForPageEditModes>
+        <cti:displayForPageEditModes modes="EDIT">
+            <cti:button nameKey="save" type="submit" classes="primary action"/>
+            <cti:button nameKey="delete" id="deleteBtn" href="delete?formulaId=${formulaBean.formulaId}"
+                classes="delete"/>
+            <cti:button nameKey="cancel" href="view?formulaId=${formulaBean.formulaId}"/>
+            <d:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${fn:escapeXml(formulaBean.name)}"/>
+        </cti:displayForPageEditModes>
+    </div>
+</form:form>
+
+<c:set var="assignmentId" value="-1"/>
+<c:if test="${formulaBean.gearFormula}">
+    <%@ include file="gearAssignmentRow.jspf" %>
+</c:if>
+<c:if test="${formulaBean.appCatFormula}">
+    <%@ include file="appCategoryAssignmentRow.jspf" %>
+</c:if>
+    
+    <!-- all 'pickers' on this page use this picker -->
+<div style="display:none"><tags:pickerDialog
+    id="pointPicker"
+    type="analogPointPicker"
+    linkType="selection"
+    selectionProperty="pointName" endAction="yukon.dr.formula.pointChosen" /></div>
+
+<c:set var="tableIndex" value="-1"/>
+<c:set var="entryIndex" value="-1"/>
+<%@ include file="formulaTableRow.jspf" %>
+<c:set var="timeInput" value="true"/>
+<%@ include file="formulaTableEntryRow.jspf" %>

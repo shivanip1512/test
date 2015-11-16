@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <context:annotation-config/>
+
+    <bean id="yukonJobDefinitionFactory"
+        class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
+        <property name="serviceLocatorInterface"
+            value="com.cannontech.jobs.support.YukonJobDefinitionFactory" />
+    </bean>
+
+    <bean id="jobStatusDao" class="com.cannontech.jobs.dao.impl.JobStatusDaoImpl"/>
+    <bean id="yukonJobDao" class="com.cannontech.jobs.dao.impl.YukonJobDaoImpl"/>
+
+    <bean id="yukonJobBaseRowMapper" class="com.cannontech.jobs.dao.impl.YukonJobBaseRowMapper"/>
+    <bean id="scheduledRepeatingJobDao" class="com.cannontech.jobs.dao.impl.ScheduledRepeatingJobDaoImpl"/>
+    <bean id="scheduledOneTimeJobDao" class="com.cannontech.jobs.dao.impl.ScheduledOneTimeJobDaoImpl"/>
+
+    <bean id="jobScheduledExecutor" class="com.cannontech.common.util.ThreadCachingScheduledExecutorService">
+        <qualifier value="job"/>
+        <constructor-arg value="jobScheduledExecutor"/>
+    </bean>
+
+    <bean id="jobManagerStub" class="com.cannontech.jobs.service.impl.JobManagerStub" />
+    
+    <bean id="jobManagerActual" class="com.cannontech.jobs.service.impl.JobManagerImpl">
+        <property name="timeSource" ref="timeSource"/>
+        <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
+        <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
+        <property name="yukonJobDao" ref="yukonJobDao"/>
+        <property name="jobStatusDao" ref="jobStatusDao"/>
+        <property name="transactionTemplate" ref="transactionTemplate"/>
+        <property name="scheduledExecutor" ref="jobScheduledExecutor"/>
+    </bean>
+    
+    <bean id="jobManager" class="com.cannontech.jobs.support.JobManagerFactory">
+	    <property name="configurationSource" ref="configurationSource"/>
+	    <property name="jobManagerStub" ref="jobManagerStub"/>
+	    <property name="jobManagerActual" ref="jobManagerActual"/>
+    </bean>
+
+    <bean id="moveInMoveOutEmailService" class="com.cannontech.amr.moveInMoveOut.service.impl.MoveInMoveOutEmailServiceImpl">
+        <property name="emailService" ref="emailService"/>
+        <property name="pointFormattingService" ref="pointFormattingService"/>
+
+        <property name="moveInSuccessEmail"
+            value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveInSuccessEmail.tmp"/>
+        <property name="moveInScheduledEmail"
+            value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveInScheduledEmail.tmp"/>
+        <property name="moveInFailedEmail"
+            value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveInFailedEmail.tmp"/>
+
+        <property name="moveOutSuccessEmail"
+            value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveOutSuccessEmail.tmp"/>
+        <property name="moveOutScheduledEmail"
+            value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveOutScheduledEmail.tmp"/>
+        <property name="moveOutFailedEmail"
+            value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveOutFailedEmail.tmp"/>
+
+    </bean>
+
+    <bean id="moveInMoveOutService" class="com.cannontech.amr.moveInMoveOut.service.impl.MoveInMoveOutServiceImpl">
+        <property name="moveInDefinition" ref="moveInJob"/>
+        <property name="moveOutDefinition" ref="moveOutJob"/>
+    </bean>
+
+    <!-- Moving JobDefinitions -->
+    <bean id="moveInJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="moveInTask"/>
+        </property>
+        <property name="title" value="Move In Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="meter"/>
+                            <property name="displayName" value="Meter"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.MeterType">
+                                    <property name="meterDao" ref="meterDao"/>
+                                </bean>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="newMeterNumber"/>
+                            <property name="displayName" value="New Meter Number"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="newMeterName"/>
+                            <property name="displayName" value="New Meter Name"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="emailAddress"/>
+                            <property name="displayName" value="Email Address"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="moveInDate"/>
+                            <property name="displayName" value="Move In Date"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.DateType"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="moveOutJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="moveOutTask"/>
+        </property>
+        <property name="title" value="Move Out Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="meter"/>
+                            <property name="displayName" value="Meter"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.MeterType">
+                                    <property name="meterDao" ref="meterDao"/>
+                                </bean>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="emailAddress"/>
+                            <property name="displayName" value="Email Address"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="moveOutDate"/>
+                            <property name="displayName" value="Move Out Date"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.DateType"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Moving Tasks -->
+    <bean id="moveInTask" class="com.cannontech.amr.moveInMoveOut.tasks.MoveInTask" scope="prototype">
+        <property name="moveInMoveOutService" ref="moveInMoveOutService"/>
+        <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService"/>
+    </bean>
+
+    <bean id="moveOutTask" class="com.cannontech.amr.moveInMoveOut.tasks.MoveOutTask" scope="prototype">
+        <property name="moveInMoveOutService" ref="moveInMoveOutService"/>
+        <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService"/>
+    </bean>
+
+    <!-- Toggle Profiling Service -->
+    <bean id="profilingService" class="com.cannontech.amr.toggleProfiling.service.impl.ProfilingServiceImpl">
+        <property name="paoDao" ref="paoDao" />
+        <property name="dbPersistentDao" ref="dbPersistentDao" />
+        <property name="jobManager" ref="jobManager" />
+        <property name="toggleProfilingDefinition" ref="toggleProfilingJob" />
+
+    </bean>
+    <!-- This is temporary.  This exports services that the EIM server uses that the web server provides.
+         (This context file is now only included in the web server.)  Yes, this is wrong (but functional)
+         and needs to be cleaned up.  See YUK-11769. -->
+    <bean id="profilingServiceExporter" class="org.springframework.jms.remoting.JmsInvokerServiceExporter">
+        <property name="serviceInterface" value="com.cannontech.amr.toggleProfiling.service.ProfilingService"/>
+        <property name="service" ref="profilingService"/>
+    </bean>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="destination" ref="webServerServiceProxyQueue"/>
+        <property name="concurrentConsumers" value="3"/>
+        <property name="messageListener" ref="profilingServiceExporter"/>
+    </bean>
+
+    <!-- Toggle Profiling Job Definition -->
+    <bean id="toggleProfilingJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="toggleProfilingTask"/>
+        </property>
+        <property name="title" value="Toggle Profiling Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="deviceId"/>
+                            <property name="displayName" value="Device ID"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="newToggleVal"/>
+                            <property name="displayName" value="New Toggle Value"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="channelNum"/>
+                            <property name="displayName" value="Channel Number"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Toggle Profiling Task -->
+    <bean id="toggleProfilingTask" class="com.cannontech.amr.toggleProfiling.tasks.ToggleProfilingTask"
+        scope="prototype">
+        <property name="paoDao" ref="paoDao"/>
+        <property name="dbPersistentDao" ref="dbPersistentDao"/>
+    </bean>
+
+    <!-- Scheduled Group Request Execution Job Definition -->
+    <bean id="scheduledGroupRequestExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="scheduledGroupRequestExecutionTask"/>
+        </property>
+        <property name="title" value="Scheduled Group Request Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="name"/>
+                            <property name="displayName" value="Name"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="deviceGroup"/>
+                            <property name="displayName" value="Device Group"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.DeviceGroupType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="attributes"/>
+                            <property name="displayName" value="Attributes"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.AttributeSetType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="command"/>
+                            <property name="displayName" value="Command"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="commandRequestExecutionType"/>
+                            <property name="displayName" value="Command Request Execution Type"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.CommandRequestExecutionTypeType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="retryCount"/>
+                            <property name="displayName" value="Retry Count"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="turnOffQueuingAfterRetryCount"/>
+                            <property name="displayName" value="Turn Off Queuing After Retry Count"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="stopRetryAfterHoursCount"/>
+                            <property name="displayName" value="Stop Retry After Hours Count"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Scheduled RPH Duplicate Deletion Execution Job Definition -->
+    <bean id="scheduledRphDuplicateDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="rphDuplicateDeletion"/>
+        <property name="taskName">
+            <idref local="scheduledRphDuplicateDeletionExecutionTask"/>
+        </property>
+        <property name="title" value="Scheduled Rph Duplicate Deletion Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Scheduled RPH Dangling Entries Deletion Job Definition -->
+    <bean id="scheduledRphDanglingEntriesDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="rphDanglingDeletion"/>
+        <property name="taskName">
+            <idref local="scheduledRphDanglingEntriesDeletionExecutionTask"/>
+        </property>
+        <property name="title" value="Scheduled Rph Dangling Entries Deletion Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Scheduled System Log Dangling Entries Deletion Job Definition -->
+    <bean id="scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="systemLogDanglingDeletion"/>
+        <property name="taskName">
+            <idref local="scheduledSystemLogDanglingEntriesDeletionExecutionTask"/>
+        </property>
+        <property name="title" value="Scheduled System Log Dangling Entries Deletion Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <!-- Scheduled Estimated Load Data updated -->
+    <bean id="repeatingEstimatedLoadTaskJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="estimatedLoadData"/>
+        <property name="taskName">
+            <idref local="repeatingEstimatedLoadTask"/>
+        </property>
+        <property name="title" value="Scheduled Estimated Load Data Update Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="repeatingWeatherDataTaskJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="weatherData"/>
+        <property name="taskName">
+            <idref local="repeatingWeatherDataTask"/>
+        </property>
+        <property name="title" value="Scheduled Weather Data Update Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="repeatingExportHistoryDeletionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="exportHistoryDeletion"/>
+        <property name="taskName">
+            <idref local="repeatingExportHistoryDeletionTask"/>
+        </property>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="spSmartIndexMaintanenceJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="spSmartIndexMaintanence"/>
+        <property name="taskName">
+            <idref local="scheduledSpSmartIndexMaintenanceExecutionTask"/>
+        </property>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="rfnPerformanceVerificationJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="rfnPerformanceVerification"/>
+        <property name="taskName">
+            <idref local="rfnPerformanceVerificationTask"/>
+        </property>
+        <property name="title" value="Rfn Performance Verification Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="rfnPerformanceVerificationEmailJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="rfnPerformanceVerificationEmail"/>
+        <property name="taskName">
+            <idref local="rfnPerformanceVerificationEmailTask"/>
+        </property>
+        <property name="title" value="Rfn Performance Verification Email Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="notificationGroups"/>
+                            <property name="displayName" value="Notification Groups"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="additionalEmails"/>
+                            <property name="displayName" value="Additional Emails"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="ecobeeReconciliationReportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="ecobeeReconciliationReport"/>
+        <property name="taskName">
+            <idref local="ecobeeReconciliationReportTask"/>
+        </property>
+        <property name="title" value="Ecobee Reconciliation Report Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="ecobeePointUpdateJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="ecobeePointUpdate"/>
+        <property name="taskName">
+            <idref local="ecobeePointUpdateTask"/>
+        </property>
+        <property name="title" value="Ecobee Point Update Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <!-- Scheduled Export History Cleanup Task -->
+    <bean id="repeatingExportHistoryDeletionTask" class="com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask" 
+        scope="prototype">
+    </bean>
+    
+    <!-- Scheduled Group Request Execution Task -->
+    <bean id="scheduledGroupRequestExecutionTask" class="com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask"
+        scope="prototype">
+    </bean>
+
+    <!-- Scheduled Rph Duplicate Deletion Execution Task -->
+    <bean id="scheduledRphDuplicateDeletionExecutionTask"
+        class="com.cannontech.web.maintenance.tasks.ScheduledRphDuplicateDeletionExecutionTask"
+        scope="prototype">
+    </bean>
+
+    <!-- Scheduled Rph Dangling Entries Deletion Execution Task -->
+    <bean id="scheduledRphDanglingEntriesDeletionExecutionTask"
+        class="com.cannontech.web.maintenance.tasks.ScheduledRphDanglingEntriesDeletionExecutionTask"
+        scope="prototype">
+    </bean>
+
+    <!-- Scheduled System Log Dangling Entries Deletion Execution Task -->
+    <bean id="scheduledSystemLogDanglingEntriesDeletionExecutionTask"
+        class="com.cannontech.web.maintenance.tasks.ScheduledSystemLogDanglingEntriesDeletionExecutionTask"
+        scope="prototype">
+    </bean>
+
+    <!-- Scheduled Estimated Load Data Update Execution task -->
+    <bean id="repeatingEstimatedLoadTask" class="com.cannontech.web.loadcontrol.tasks.RepeatingEstimatedLoadTask"
+        scope="prototype">
+    </bean>
+
+   <!-- Scheduled Weather Data Update Execution task -->
+    <bean id="repeatingWeatherDataTask" class="com.cannontech.web.maintenance.tasks.RepeatingWeatherDataTask"
+        scope="prototype">
+    </bean>
+
+    <!-- Scheduled Group Request Execution Service -->
+    <bean id="scheduledGroupRequestExecutionService"
+        class="com.cannontech.amr.scheduledGroupRequestExecution.service.impl.ScheduledGroupRequestExecutionServiceImpl"
+        scope="prototype">
+    </bean>
+
+    <!-- Scheduled Group Command Execution Results Dao -->
+    <bean id="scheduledGroupRequestExecutionDao"
+        class="com.cannontech.amr.scheduledGroupRequestExecution.dao.impl.ScheduledGroupRequestExecutionDaoImpl"
+        scope="prototype">
+    </bean>
+    
+    <!-- Scheduled sp_SmartIndexMaintenance Execution Task -->
+    <bean id="scheduledSpSmartIndexMaintenanceExecutionTask"
+        class="com.cannontech.web.maintenance.tasks.ScheduledSmartIndexMaintenanceExecutionTask"
+        scope="prototype">
+    </bean>
+
+    <bean id="rfnPerformanceVerificationTask" 
+        class="com.cannontech.web.dr.RfnPerformanceVerificationTask" 
+        scope="prototype"/>
+        
+    <bean id="rfnPerformanceVerificationEmailTask" 
+        class="com.cannontech.web.dr.RfnPerformanceVerificationEmailTask" 
+        scope="prototype"/>
+        
+    <bean id="ecobeeReconciliationReportTask" class="com.cannontech.web.dr.ecobee.EcobeeReconciliationReportTask" 
+        scope="prototype"/>
+        
+    <bean id="ecobeePointUpdateTask" class="com.cannontech.web.dr.ecobee.EcobeePointUpdateTask" scope="prototype"/>
+</beans>
+

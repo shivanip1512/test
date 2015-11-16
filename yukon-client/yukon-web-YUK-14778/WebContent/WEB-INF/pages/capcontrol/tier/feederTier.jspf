@@ -1,0 +1,26 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+
+<c:if test="${fn:length(feederList) > 1}">
+    <c:set var="styleClass" value="with-footer"/>
+</c:if>
+<tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true" styleClass="${styleClass}">
+    <%@ include file="feederTable.jsp" %>
+</tags:boxContainer2>
+
+<c:if test="${fn:length(feederList) > 1}">
+    <tags:boxContainerFooter>
+        <cti:icon icon="icon-filter" classes="fn vatt"/>
+        <select id='feederFilter' class="js-feeder-filter">
+            <option value="0"><cti:msg2 key=".allFeeders"/></option>
+            <c:forEach var="feeder" items="${feederList}">
+                <option value="${feeder.ccId}">${fn:escapeXml(feeder.ccName)}</option>
+            </c:forEach>
+        </select>
+    </tags:boxContainerFooter>
+</c:if>

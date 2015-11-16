@@ -1,0 +1,6 @@
+NAME,NAME,ENABLE
+Meter 1,Meter 100,true
+Meter 2,Meter 200,true
+Meter 3,Meter 300,false
+Meter 4,Meter 400,false
+Meter 5,Meter 500,true

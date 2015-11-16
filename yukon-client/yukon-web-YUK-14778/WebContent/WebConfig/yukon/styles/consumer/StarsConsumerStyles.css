@@ -1,0 +1,396 @@
+html {overflow-y:auto;display:block;}
+head {display:none;}
+body {margin: 0;padding:0;color: #555;font: 14px/1.3 Arial,Helvetica,sans-serif;color:#555;-webkit-font-smoothing:antialiased;font-smoothing:antialiased;display:block;}
+
+* {box-sizing: border-box;-moz-box-sizing: border-box;}
+
+nav, header, footer, section, aside, hgroup, section {display:block;}
+
+h3 {
+    text-align: center;   
+}
+
+.clear {
+    clear: both;
+}
+
+.tac {
+    text-align: center;
+}
+
+div.customerAccount {
+	font-size: .8em;
+}	
+
+div.customerAccount div.accountNumber {
+	font-weight: bold;
+}	
+
+table.contactTable {
+    width: 100%;    
+}
+
+table.contactTable tr {
+    text-align: right;   
+}
+
+table.contactTable tr td.contactLeft {
+    width: 40%;   
+}
+
+table.contactTable tr td.contactRight {
+    width: 60%;   
+}
+
+table.contactTable th {
+	font-size: 1em;
+	text-align: left;
+	border-bottom: 2px groove gray;
+	padding-bottom: .5em;
+}
+
+table.contactTable td {
+	font-size: .7em;
+}
+
+table.contactTable td div {
+	margin-top: .5em;
+}
+
+table.enrolledPrograms {
+    border-collapse: collapse;
+}	
+
+table.enrolledPrograms tr th {
+    text-align: left;
+    color: #0066CC;
+    border-bottom: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.logo {
+	border-right: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.logoBordered {
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.logoBorderedAllSidesButBottom {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.logoBorderedAllSidesButTop {
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.bordered {
+	border-bottom: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.view {
+    white-space: nowrap;
+    font-size: .8em;
+    border-left: 1px solid #ccc;
+}
+
+table.enrolledPrograms td.images {
+    white-space: nowrap;
+}
+
+table.enrolledPrograms tr td.viewBordered {
+    white-space: nowrap;
+    font-size: .8em;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;  
+}
+
+.temperature {
+    text-align: center;
+    font-size: 2em;
+    width: 2em;
+}
+
+.clickable {
+    cursor: pointer;    
+}
+
+.plainText {
+    font-size: 12px;
+    overflow:hidden;
+}
+
+.plainText ol {
+    padding-left: 2em;
+}
+
+.subItem {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+td.arrow {
+    width: 20px;
+    height: 12px;    
+}
+
+div.message {
+    text-align: center; 
+    border: 1px solid gray;
+    padding: 2em;   
+}
+
+/* Schedule Styles */
+
+div.movingBar {
+    position: relative; 
+    width: 45px; 
+    height: 162px; 
+    left: 0px; 
+    top: 5px; 
+}
+
+.movingTable {
+    width: 100%;	
+}
+
+.barTemperature {
+    text-align: center;
+    white-space: nowrap;
+    font-size: 11px; 
+}
+
+.barImage {
+    width: 16px;
+    height: 131px; 
+}
+
+.barCool {
+    text-align: left;
+    position: relative; 
+    left: 0px; 
+    top:-115px; 
+}
+
+.barHeat {
+    text-align: right;
+    position: relative; 
+    left: 0px; 
+    top:-115px; 
+}
+
+.barGrayArrow {
+    width: 10px;
+    height: 10px;
+    top:-15px; 
+}
+
+.timeOfDayLabel {
+    text-align: left; 
+    width: 15%;
+    font-size: 11px;
+    font-weight:bold
+}
+
+.fieldLabel {
+    width: 10%; 
+    text-align: right;
+    font-size: 11px;
+}
+
+.timeTempField {
+    width: 15%; 
+    font-size: 11px;
+}
+
+.modeText {
+    text-align: center;
+    font-size: 11px;
+}
+
+.timePeriodText {
+    font-size: 11px;
+    color: #FFFFFF;
+}
+
+.saturdaySundayText {
+    font-size: 11px;
+    color: #FFFFFF;
+}
+
+table.programTitle {
+	border: 1px solid #ccc;
+	white-space: nowrap;
+}
+
+div#programEnrollmentDiv {
+	font-size: .8em;
+	vertical-align: top;
+}	
+
+div#controlEventsDiv {
+	font-size: .8em;
+	overflow: auto;
+}	
+
+div#controlEventsDiv table {
+	border-collapse: collapse;
+}
+
+div#controlEventsDiv table th {
+	color: #0066CC;
+	border-bottom: 1px solid #ccc;
+}
+
+div#controlEventsDiv table th {
+	color: #0066CC;
+	text-align: left;
+}
+
+div#controlEventsDiv table tr td {
+	white-space: nowrap;
+	padding-right: 1em;
+}
+
+span#notEnrolledMessageSpan {
+    font-size: 12px;
+}
+
+div.legend {
+	font-size: .7em;
+	border: 1px solid #ccc;
+	margin: 10px 50px 10px 50px;
+}
+
+div.legend h1 {
+	line-height: 0px;
+	font-size: 1em;
+}
+
+.surveyTitle {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.surveyDescription {
+	font-size: 12px;
+    margin: 10px 10px 15px 10px;
+}	
+
+.surveyQuestion {
+    margin-bottom: 5px;
+}
+
+.surveyAnswer {
+	font-size: 12px;
+    margin: 0px 0px 15px 0px;
+}	
+
+div.survey {
+	text-align: left;
+	margin: 20px;
+}
+
+
+.contactCard {
+    border: 1px solid #CCCCCC;
+    border-radius: 3px 3px 3px 3px;
+/*     float: left; */
+/*     width: 300px; */
+    margin: 10px;
+    padding: 5px 10px;
+    overflow: hidden;
+}
+
+.contactCard.primary {
+	background-color: #EFEFEF;
+}
+
+.contactCard .actions {
+	background: #efefef;
+	border-top: solid 1px #ccc;
+	padding: 10px;
+	margin: 10px -10px -10px;
+	font-size: 0.8em;
+	overflow: hidden;
+}
+
+.contactCard li {
+	display: block;
+	overflow: hidden;
+	padding: 0 5px;
+	width: 45%;
+	float: left;
+	font-size: 0.8em;
+}
+
+.contactCard form {
+	display: inline;
+}
+
+.contactCard h3 {
+	font-weight: normal;
+	color: #666;
+	text-align: left;
+    border-bottom: 1px solid #CCCCCC;
+    display: block;
+    padding: 2px 8px;
+    text-decoration: none;
+    margin: 0 0 10px !important;
+}
+
+.contactCard h3 a {
+	font-size: 0.8em;
+	color: #06c;
+	margin-left: 10px;
+}
+
+.contactCard h4 {
+	font-weight: normal;
+	color: #333;
+}
+
+#contactForm p {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+.contactCard ul {
+    margin: 0;
+    padding: 0;
+}
+
+
+.contactCard label {
+    color: #888888;
+    display: block;
+    float: left;
+    font-size: 0.8em;
+    line-height: 20px;
+    width: 9em;
+}
+.contactCard li > div.fl {
+	line-height: 20px;
+}
+.notification {
+	margin: 0 0 5px;
+	overflow: hidden;
+}
+
+.notification select, .notification input {
+	margin: 0 5px 0 0;
+}
+
+#CopyRight {
+	width: 960px;
+	margin: 0 auto;
+	padding: 20px 0;
+	clear: both;
+	font-size: .8em;
+	color: #888;
+	text-align: center;
+}

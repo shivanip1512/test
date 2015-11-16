@@ -1,0 +1,190 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+
+<c:if test="${hasSubBusControl}">
+    <script type="text/javascript">
+        addCommandMenuBehavior('a[id^="subbusState"]');
+    </script>
+</c:if>
+
+<c:if test="${fn:length(subBusList) > 1}">
+    <c:set var="styleClass" value="with-footer"/>
+</c:if>
+
+<tags:boxContainer2 nameKey="busContainer" hideEnabled="true" showInitially="true" styleClass="clear ${styleClass}">
+
+    <table id="subBusTable" class="compact-results-table has-alerts-multi has-actions row-highlighting">
+        <thead>
+            <tr>
+                <th></th>
+                <th><i:inline key=".name"/></th>
+                <th><i:inline key=".state"/></th>
+                <th><i:inline key=".target"/></th>
+                <th><i:inline key=".load"/></th>
+                <th><i:inline key=".timestamp"/></th>
+                <th><i:inline key=".pfactorEstimated"/></th>
+                <th><i:inline key=".kwVolts"/></th>
+                <th><i:inline key=".dailyMax"/></th>
+            </tr>
+        </thead>
+
+        <c:forEach var="viewableSubBus" items="${subBusList}">
+            <%-- Setup Variables --%>
+            <c:set var="subbusId" value="${viewableSubBus.ccId}"/>
+            <cti:url value="/capcontrol/ivvc/bus/detail" var="ivvcLink" htmlEscape="true">
+                <cti:param name="subBusId" value="${subbusId}"/>
+            </cti:url>
+            <cti:url value="/capcontrol/tier/feeders" var="dualBusLink" htmlEscape="true">
+                <cti:param name="substationId" value="${viewableSubBus.alternateStationId}"/>
+                <cti:param name="areaId" value="${viewableSubBus.alternateAreaId}"/>
+            </cti:url>
+            <cti:url value="/capcontrol/capbank/capBankLocations" var="locationLink" htmlEscape="true">
+                <cti:param name="value" value="${subbusId}"/>
+            </cti:url>
+            <tr id="tr_sub_${subbusId}" data-pao-id="${subbusId}" data-bus-id="${subbusId}">
+                <%-- Icons --%>
+                <td>
+                    <capTags:warningImg paoId="${subbusId}" type="SUBBUS"/>
+                    <capTags:verificationImg paoId="${subbusId}" type="SUBBUS"/>
+                    <a href="${dualBusLink}">
+                        <capTags:dualBusImg paoId="${subbusId}" type="SUBBUS"/>
+                    </a>
+                </td>
+                <%-- Name --%>
+                <td id="anc_${subbusId}"  class="wsnw">
+                    <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+                        <cti:param name="type" value="2"/>
+                        <cti:param name="itemid" value="${subbusId}"/>
+                    </cti:url>
+
+                    <a href="${editUrl}">
+                        ${fn:escapeXml(viewableSubBus.ccName)}
+                    </a>
+
+                </td>
+
+                <%-- State --%>
+                <td class="wsnw">
+                    <span class="box state-box js-cc-state-updater" data-pao-id="${subbusId}">&nbsp;</span>
+                    <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBBUS/${subbusId}/STATE_FLAGS"/>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="STATE" styleClass="vat"/>
+                </td>
+
+                <%-- Target --%>
+                <td>
+                    <c:choose>
+                        <c:when test="${viewableSubBus.busControlled}">
+                            <c:if test="${viewableSubBus.showTargetTooltip}">
+                                <div id="bus-target-msg-${subbusId}">
+                                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_MESSAGE"/>
+                                </div>
+                            </c:if>
+                            <span data-tooltip="#bus-target-msg-${subbusId}">
+                                <c:choose>
+                                    <c:when test="${viewableSubBus.ivvcControlled}">
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
+                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_PEAKLEAD"/>
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcLower"/></span>
+                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_PEAKLAG"/>
+                                        <br>
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcPowerFactor"/></span>
+                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_CLOSEOPENPERCENT"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
+                        </c:when>
+                        <c:otherwise>
+                            <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET"/>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+                
+                <%-- kVAR Load / Est. --%>
+                <td>
+                    <c:if test="${viewableSubBus.usePhaseData}">
+                        <div id="bus-kvar-msg-${subbusId}" class="dn">
+                            <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
+                        </div>
+                    </c:if>
+
+                    <span data-tooltip="#bus-kvar-msg-${subbusId}">
+                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD"/>
+                        <cti:classUpdater type="SUBBUS" identifier="${subbusId}/KVAR_LOAD_QUALITY">
+                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
+                        </cti:classUpdater>
+                        <i:inline key=".statSeparator"/> 
+                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
+                    </span>
+                </td>
+                
+                <%-- Date/Time --%>
+                <td>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DATE_TIME"/>
+                </td>
+                
+                <%-- PFactor / Est. --%>
+                <td>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="PFACTOR"/>
+                </td>
+                
+                <%-- kW / Volts --%>
+                <td>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KW"/>
+                    <cti:classUpdater type="SUBBUS" identifier="${subbusId}/WATT_QUALITY">
+                        <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
+                    </cti:classUpdater>
+                    <i:inline key=".statSeparator"/>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="VOLTS"/>
+                    <cti:classUpdater type="SUBBUS" identifier="${subbusId}/VOLT_QUALITY">
+                        <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
+                    </cti:classUpdater>
+                </td>
+                
+                <%-- Daily / Max Ops --%>
+                <td>
+                    <span id="dailyMaxOps_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DAILY_MAX_OPS"/></span>
+
+                <%-- Actions --%>
+                    <cti:msg2 var="busAddInfoTitle" key=".busAddInfoTitle" arguments="${viewableSubBus.ccName}"/>
+
+                    <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                        <c:if test="${hasSubBusControl}">
+                            <li>
+                                <a id="subbusState_${subbusId}" href="javascript:void(0)" class="clearfix">
+                                    <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".bus.actions"/></span>
+                                </a>
+                            </li>
+                        </c:if>
+                        <cm:dropdownOption key=".busAddInfo.label" href="javascript:yukon.da.common.showDialog('${busAddInfoTitle}', '../addInfo/bus?busId=${subbusId}')" icon="icon-magnifier" />
+                        <cm:dropdownOption key=".location.label" href="${locationLink}" icon="icon-interstate" />
+                        <c:if test="${viewableSubBus.ivvcControlled}">
+                            <cm:dropdownOption key=".ivvc.label" href="${ivvcLink}" icon="icon-ivvc" />
+                        </c:if>
+                    </cm:dropdown>
+                </td>
+            </tr>
+        </c:forEach>
+    </table>
+</tags:boxContainer2>
+<c:if test="${fn:length(subBusList) > 1}">
+    <tags:boxContainerFooter>
+        <cti:icon icon="icon-filter" classes="fn vatt"/>
+        <select id='subBusFilter' class="js-bus-filter">
+            <option value="0"><cti:msg2 key=".allBuses"/></option>
+            <c:forEach var="sub" items="${subBusList}" >
+               <option value="${sub.ccId}">${fn:escapeXml(sub.ccName)}</option>
+            </c:forEach>
+        </select>
+    </tags:boxContainerFooter>
+</c:if>

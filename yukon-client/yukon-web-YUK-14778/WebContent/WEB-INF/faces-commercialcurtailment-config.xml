@@ -1,0 +1,702 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.0//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
+
+<!-- =========== FULL CONFIGURATION FILE ================================== -->
+
+<faces-config>
+
+    <managed-bean>
+        <managed-bean-name>sCommercialCurtailment</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.CommercialCurtailmentBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>authDao</property-name>
+            <value>#{authDao}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sEventDetailHelper</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.EventDetailHelper</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>eventDetailLookup</property-name>
+            <map-entries>
+              <key-class>java.lang.String</key-class>
+              <value-class>com.cannontech.web.cc.methods.BaseDetailBean</value-class>
+              <map-entry>
+                <key>notification</key>
+                <value>#{sNotificationDetail}</value>
+              </map-entry>
+              <map-entry>
+                <key>economic</key>
+                <value>#{sEconomicDetail}</value>
+              </map-entry>
+              <map-entry>
+                <key>accounting</key>
+                <value>#{sAccountingDetail}</value>
+              </map-entry>
+            </map-entries>
+        </managed-property>
+        <managed-property>
+            <property-name>userEventDetailLookup</property-name>
+            <map-entries>
+              <key-class>java.lang.String</key-class>
+              <value-class>com.cannontech.web.cc.methods.BaseDetailBean</value-class>
+              <map-entry>
+                <key>notification</key>
+                <value>#{sNotificationDetail}</value>
+              </map-entry>
+              <map-entry>
+                <key>economic</key>
+                <value>#{sEconomicUserDetail}</value>
+              </map-entry>
+              <map-entry>
+                <key>accounting</key>
+                <value>#{sAccountingDetail}</value>
+              </map-entry>
+            </map-entries>
+        </managed-property>
+        <managed-property>
+          <property-name>strategyFactory</property-name>
+          <value>#{strategyFactory}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>rProgramList</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.ProgramListBean</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>programService</property-name>
+            <value>#{programService}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sProgramDetail</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.ProgramDetailBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>programService</property-name>
+            <value>#{programService}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>strategyFactory</property-name>
+          <value>#{strategyFactory}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>commercialCurtailmentBean</property-name>
+            <value>#{sCommercialCurtailment}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>notificationGroupDao</property-name>
+            <value>#{notificationGroupDao}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>rGroupList</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.GroupListBean</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>groupService</property-name>
+            <value>#{groupService}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sGroupDetail</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.GroupDetailBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>groupService</property-name>
+            <value>#{groupService}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>rCustomerList</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.CustomerListBean</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+            <property-name>commercialCurtailmentBean</property-name>
+            <value>#{sCommercialCurtailment}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>customerService</property-name>
+            <value>#{customerPointService}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sCustomerDetail</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.CustomerDetailBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>commercialCurtailmentBean</property-name>
+            <value>#{sCommercialCurtailment}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>customerService</property-name>
+            <value>#{customerPointService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>customerLMProgramService</property-name>
+            <value>#{customerLMProgramService}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sNotificationCreate</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.CreateNotificationBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+          <property-name>customerSelectionBean</property-name>
+          <value>#{sCustomerSelectionBean}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>detailBean</property-name>
+          <value>#{sNotificationDetail}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sNotificationDetail</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.DetailNotificationBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>programService</property-name>
+            <value>#{programService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>notificationService</property-name>
+            <value>#{notificationService}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>strategyFactory</property-name>
+          <value>#{strategyFactory}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>helper</property-name>
+            <value>#{sNotificationDetailHelper}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>registrationService</property-name>
+            <value>#{pointDataUpdateRegistrationService}</value>
+        </managed-property>
+        
+
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sNotificationDetailHelper</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.DetailNotificationHelperBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>notificationService</property-name>
+            <value>#{notificationService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sAccountingCreate</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.CreateAccountingBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+          <property-name>customerSelectionBean</property-name>
+          <value>#{sCustomerSelectionBean}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>detailBean</property-name>
+          <value>#{sAccountingDetail}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sAccountingDetail</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.DetailAccountingBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+          <property-name>strategyFactory</property-name>
+          <value>#{strategyFactory}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>rEventInit</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.EventInitBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>methodBeanLookup</property-name>
+            <map-entries>
+              <key-class>java.lang.String</key-class>
+              <value-class>com.cannontech.web.cc.methods.EventCreationBase</value-class>
+              <map-entry>
+                <key>notification</key>
+                <value>#{sNotificationCreate}</value>
+              </map-entry>
+              <map-entry>
+                <key>economic</key>
+                <value>#{sEconomicCreate}</value>
+              </map-entry>
+              <map-entry>
+                <key>accounting</key>
+                <value>#{sAccountingCreate}</value>
+              </map-entry>
+            </map-entries>
+        </managed-property>
+        <managed-property>
+          <property-name>strategyFactory</property-name>
+          <value>#{strategyFactory}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>programService</property-name>
+          <value>#{programService}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sEventList</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.EventListBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+          <property-name>programService</property-name>
+          <value>#{programService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>eventDetailHelper</property-name>
+            <value>#{sEventDetailHelper}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>rEventOverview</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.EventOverviewBean</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+          <property-name>eventService</property-name>
+          <value>#{eventService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>eventDetailHelper</property-name>
+            <value>#{sEventDetailHelper}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>commercialCurtailmentBean</property-name>
+            <value>#{sCommercialCurtailment}</value>
+        </managed-property>
+
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sEconomicCreate</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.CreateEconomicBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>programService</property-name>
+            <value>#{programService}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>customerSelectionBean</property-name>
+          <value>#{sCustomerSelectionBean}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>detailBean</property-name>
+          <value>#{sEconomicDetail}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sEconomicDetail</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.DetailEconomicBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>programService</property-name>
+            <value>#{programService}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>economicService</property-name>
+          <value>#{economicService}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>strategyFactory</property-name>
+          <value>#{strategyFactory}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>commercialCurtailment</property-name>
+            <value>#{sCommercialCurtailment}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sNotifEconomicDetail</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.NotifDetailEconomicBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>programService</property-name>
+            <value>#{programService}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>economicService</property-name>
+          <value>#{economicService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>commercialCurtailment</property-name>
+            <value>#{sCommercialCurtailment}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sCustomerSelectionBean</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.CustomerSelectionBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>groupService</property-name>
+            <value>#{groupService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>programService</property-name>
+            <value>#{programService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>registrationService</property-name>
+            <value>#{pointDataUpdateRegistrationService}</value>
+        </managed-property>
+    </managed-bean>
+
+ <!-- User facing beans -->
+ 
+    <managed-bean>
+        <managed-bean-name>sCustomerEventBean</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.CustomerEventBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>commercialCurtailmentBean</property-name>
+            <value>#{sCommercialCurtailment}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>customerEventService</property-name>
+            <value>#{customerEventService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>eventDetailHelper</property-name>
+            <value>#{sEventDetailHelper}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sEconomicUserDetail</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.UserDetailEconomicBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>programService</property-name>
+            <value>#{programService}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>economicService</property-name>
+          <value>#{economicService}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>strategyFactory</property-name>
+          <value>#{strategyFactory}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>commercialCurtailment</property-name>
+            <value>#{sCommercialCurtailment}</value>
+        </managed-property>
+    </managed-bean>
+
+
+<!--  Navigation rules --> 
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>programList</from-outcome>
+            <to-view-id>/cc/programList.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/cc/programList.jsp</from-view-id>
+        <navigation-case>
+           <from-outcome>create</from-outcome>
+           <to-view-id>/cc/programCreate.jsp</to-view-id>
+           <redirect />
+         </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/cc/programCreate.jsp</from-view-id>
+        <navigation-case>
+           <from-outcome>success</from-outcome>
+           <to-view-id>/cc/programDetail.jsp</to-view-id>
+           <redirect />
+         </navigation-case>
+    </navigation-rule>
+        
+    <navigation-rule>
+        <navigation-case>
+           <from-outcome>programDetail</from-outcome>
+           <to-view-id>/cc/programDetail.jsp</to-view-id>
+           <redirect />
+         </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/cc/groupList.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>create</from-outcome>
+            <to-view-id>/cc/groupDetail.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+           <from-outcome>groupDetail</from-outcome>
+           <to-view-id>/cc/groupDetail.jsp</to-view-id>
+           <redirect />
+         </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>groupList</from-outcome>
+            <to-view-id>/cc/groupList.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>customerList</from-outcome>
+            <to-view-id>/cc/customerList.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>customerDetail</from-outcome>
+            <to-view-id>/cc/customerDetail.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>eventList</from-outcome>
+            <to-view-id>/cc/eventList.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>notifStart</from-outcome>
+            <to-view-id>/cc/notif/init.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>notifConfirmation</from-outcome>
+            <to-view-id>/cc/notif/confirmation.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>acctStart</from-outcome>
+            <to-view-id>/cc/acct/init.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>acctConfirmation</from-outcome>
+            <to-view-id>/cc/acct/confirmation.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <from-view-id>/cc/user/overview.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>notifDetail</from-outcome>
+            <to-view-id>/cc/user/notifEvent.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <from-view-id>/cc/user/overview.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>acctDetail</from-outcome>
+            <to-view-id>/cc/user/acctEvent.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>notifDetail</from-outcome>
+            <to-view-id>/cc/notif/detail.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>acctDetail</from-outcome>
+            <to-view-id>/cc/acct/detail.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <from-view-id>/cc/notif/detail.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>prepareAdjustEvent</from-outcome>
+            <to-view-id>/cc/notif/adjust.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/cc/notif/detail.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>prepareSplitEvent</from-outcome>
+            <to-view-id>/cc/customerRemoveVerification.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>groupSelection</from-outcome>
+            <to-view-id>/cc/groupSelection.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <from-view-id>/cc/groupSelection.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>customerConfirmation</from-outcome>
+            <to-view-id>/cc/customerVerification.jsp</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>econStart</from-outcome>
+            <to-view-id>/cc/econ/init.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>econPricing</from-outcome>
+            <to-view-id>/cc/econ/pricing.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>econConfirmation</from-outcome>
+            <to-view-id>/cc/econ/confirmation.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>econDetail</from-outcome>
+            <to-view-id>/cc/econ/detail.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>notifEconDetail</from-outcome>
+            <to-view-id>/cc/econ/notifDetail.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/cc/econ/detail.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>reviseEconomicEvent</from-outcome>
+            <to-view-id>/cc/econ/revise.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>programSelect</from-outcome>
+            <to-view-id>/cc/ciSetup.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>userEconEvent</from-outcome>
+            <to-view-id>/cc/user/econEvent.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>
+    
+</faces-config>
+        

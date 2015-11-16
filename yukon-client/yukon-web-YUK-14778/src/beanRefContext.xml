@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+ 
+ <beans>
+<!-- The application context files that are loaded by tomcat -->
+   <bean id="com.cannontech.context.web" 
+        class="org.springframework.context.support.ClassPathXmlApplicationContext"
+        lazy-init="true">
+     <constructor-arg>
+       <list>
+            <value>com/cannontech/web/jobContext.xml</value>
+            <value>com/cannontech/common/alert/alertContext.xml</value>
+			<value>com/cannontech/web/search/searchContext.xml</value>
+			<value>com/cannontech/multispeak/client/applicationContext.xml</value>
+			<value>com/cannontech/billing/billingContext.xml</value>
+			<value>com/cannontech/cbc/cbcContext.xml</value>
+            <value>com/cannontech/remoteServicesContext.xml</value>
+            <value>com/cannontech/report/reportContext.xml</value>
+            <value>com/cannontech/web/devDatabaseContext.xml</value>
+            <value>com/cannontech/web/scheduledFileExport/scheduledFileExport.xml</value>
+            <value>com/cannontech/web/serverContext.xml</value>
+            <value>com/cannontech/web/commonContext.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg>
+         <ref bean="com.cannontech.context.common"/>
+     </constructor-arg>
+   </bean>
+    
+ </beans>

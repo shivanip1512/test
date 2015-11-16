@@ -1,0 +1,61 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+<%@page import="java.util.*" %>
+<%@page import="com.cannontech.message.capcontrol.streamable.*" %>
+
+<%@ taglib prefix="cc" tagdir="/WEB-INF/tags/capcontrol" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<!-- Check CapControl Role Access -->
+<cti:isPropertyFalse property="CAP_CONTROL_ACCESS">
+    <jsp:forward page="/capcontrol/redirect.jsp">
+        <jsp:param name="reason" value="Access to the page could not be granted." />
+        <jsp:param name="message" value="*** Please check your CapControlSettings.ACCESS options" />
+        <jsp:param name="redirectUrl" value="/dashboard"/>
+    </jsp:forward>
+</cti:isPropertyFalse>
+
+<!-- Included JavaScript -->
+<cti:includeScript link="/resources/js/pages/yukon.da.common.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.command.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.updaters.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.comments.js"/>
+
+<!-- Beans -->
+<jsp:useBean id="ccSession" class="com.cannontech.web.capcontrol.CCSessionInfo" type="com.cannontech.web.capcontrol.CCSessionInfo" scope="session"/>
+<jsp:useBean id="CtiNavObject" class="com.cannontech.web.navigation.CtiNavObject" type="com.cannontech.web.navigation.CtiNavObject" scope="session"/>
+
+<jsp:setProperty name="CtiNavObject" property="moduleLabel" value="Cap Control"/>
+
+<!-- Popup for simple content -->
+<div id="contentPopup" class="dn"></div>
+
+<!-- Popup for menus -->
+<div id="menuPopup" class="dn menuPopup"></div>
+
+<!-- Page Dropdown Actions -->
+<div id="page-actions" class="dn">
+
+    <cm:dropdownOption classes="js-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>
+
+    <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        
+            <li class="divider"></li>
+            <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
+                <tags:dynamicChooseOption optionId="enabled">
+                    <cm:dropdownOption id="systemOn" icon="icon-delete" href="javascript:doSystemCommand('28')" key=".disableSystem.label"/>
+                </tags:dynamicChooseOption>
+                <tags:dynamicChooseOption optionId="disabled">
+                    <cm:dropdownOption id="systemOff" icon="icon-accept" href="javascript:doSystemCommand('28')" key=".enableSystem.label"/>
+                </tags:dynamicChooseOption>
+            </tags:dynamicChoose>
+            <cm:dropdownOption id="systemResetOpCountsLink" icon="icon-arrow-undo" href="javascript:doSystemCommand('16')" key=".resetOpCount.label"/>
+            
+        </cti:checkRolesAndProperties>
+    </cti:checkRolesAndProperties>
+    
+</div>
+
+<cc:commandMsgDiv/>

@@ -1,0 +1,6 @@
+<Reply>
+	<GetInstalledMeters>
+		<STATUS>-1</STATUS>
+		<STATUS_DESC>Message Type Not Recognized</STATUS_DESC> 
+	</GetInstalledMeters>
+</Reply>

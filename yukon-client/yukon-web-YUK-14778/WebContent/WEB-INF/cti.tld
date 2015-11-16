@@ -1,0 +1,2439 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" 
+        version="2.0"> 
+
+  <!-- ============== Tag Library Description Elements ============= -->
+
+  <tlib-version>1.0</tlib-version>
+  <shortname>CTI Tags</shortname>
+  <uri>http://cannontech.com/tags/cti</uri>
+  
+  <tag>
+    <name>pickerProperties</name>
+    <description>Retrieve properties of a picker.</description>
+    <tag-class>com.cannontech.web.taglib.PickerPropertiesTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The type of picker, i.e. 'commanderDevicePicker'</description>
+    </attribute>
+    <attribute>
+      <name>property</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The type of property to retrieve, i.e. 'ID_FIELD_NAME' or 'OUTPUT_COLUMNS'.</description>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>getBooleanConfigParam</name>
+    <description>Retrieve a boolean config param. Returns false if param not specified.</description>
+    <tag-class>com.cannontech.web.taglib.GetBooleanConfigParamTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>param</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <!-- Start of user/role/roleproperty tags -->
+  <tag>
+      <name>breadCrumbs</name>
+      <tag-class>com.cannontech.web.taglib.nav.BreadCrumbsTag</tag-class>
+    <body-content>JSP</body-content>
+      <attribute>
+          <name>seperator</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
+  </tag>
+  <tag>
+      <name>crumbLink</name>
+      <tag-class>com.cannontech.web.taglib.nav.CrumbLinkTag</tag-class>
+    <body-content>scriptless</body-content>
+      <attribute>
+          <name>url</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
+      <attribute>
+          <name>title</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+  </tag>
+
+  <tag>
+      <name>displayForPageEditModes</name>
+      <tag-class>com.cannontech.web.taglib.DisplayForPageEditModesTag</tag-class>
+      <body-content>scriptless</body-content>
+      <attribute>
+          <name>modes</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
+  </tag>
+
+  <tag>
+      <name>enumName</name>
+      <tag-class>com.cannontech.web.taglib.EnumNameTag</tag-class>
+      <body-content>scriptless</body-content>
+      <attribute>
+          <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>value</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+  </tag>
+
+  <tag>
+      <name>checklogin</name>
+    <tag-class>com.cannontech.web.taglib.CheckLoginTag</tag-class>        
+  </tag>
+
+  <tag>
+      <name>checkPaoAuthorization</name>
+      <tag-class>com.cannontech.web.taglib.CheckPaoAuthorizationTag</tag-class>
+    <body-content>scriptless</body-content>
+      <attribute>
+          <name>pao</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+        <description>YukonPao to check permission for</description>
+      </attribute>    
+      <attribute>
+          <name>permission</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+        <description>String value of Permission to check</description>
+      </attribute>    
+      <attribute>
+          <name>invert</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+        <description>Set to true to check if the user does NOT have authorization</description>
+      </attribute>    
+  </tag>  
+
+  <tag>
+      <name>checkCommandAuthorization</name>
+      <tag-class>com.cannontech.web.taglib.CheckCommandAuthorization</tag-class>
+      <attribute>
+          <name>device</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
+      <attribute>
+          <name>command</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
+  </tag>  
+  
+  <tag>
+    <name>checkYukonVersionUndefined</name>
+    <tag-class>com.cannontech.web.taglib.CheckYukonVersionUndefinedTag</tag-class>
+    <body-content>scriptless</body-content>
+  </tag>
+  
+  <tag>
+      <name>checkGlobalSetting</name>
+      <tag-class>com.cannontech.web.taglib.CheckGlobalSetting</tag-class>
+      <attribute>
+          <name>setting</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>    
+  </tag>
+  
+  <tag>
+    <name>checkGlobalRolesAndProperties</name>
+    <tag-class>com.cannontech.web.taglib.CheckGlobalRolesAndPropertiesTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+  </tag>
+
+  <tag>
+    <name>checkRolesAndProperties</name>
+    <tag-class>com.cannontech.web.taglib.CheckRolesAndPropertiesTag</tag-class>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+  </tag>
+  
+<tag>
+    <name>checkEnergyCompanySetting</name>
+    <tag-class>com.cannontech.web.taglib.CheckEnergyCompanySettingTag</tag-class>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>energyCompanyId</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>   
+  </tag>
+
+  <tag>
+      <name>checkEnergyCompanyOperator</name>
+      <tag-class>com.cannontech.web.taglib.CheckEnergyCompanyOperatorTag</tag-class>
+      <attribute>
+          <name>showError</name>
+          <required>false</required>
+          <rtexprvalue>false</rtexprvalue>
+      </attribute>    
+  </tag>
+      
+  <tag>
+    <name>checkUserChecker</name>
+    <tag-class>com.cannontech.web.taglib.CheckUserCheckerTag</tag-class>
+    <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>userChecker</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>csrfToken</name>
+    <body-content>empty</body-content>
+    <tag-class>com.cannontech.web.taglib.CsrfTokenTag</tag-class>
+    <description>Inserts a hidden field containing the valid CSRF token found in the current session</description>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+   <tag>
+      <name>getProperty</name>
+    <tag-class>com.cannontech.web.taglib.RoleProperty</tag-class>    
+    <tei-class>com.cannontech.web.taglib.RolePropertyTEI</tei-class>
+    <attribute>
+        <name>propertyid</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>property</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>defaultvalue</name>
+        <required>false</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>format</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+      <name>isPropertyTrue</name>
+      <tag-class>com.cannontech.web.taglib.IsPropertyTrue</tag-class>
+      <attribute>
+          <name>propertyid</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>property</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+  </tag>
+  <tag>
+      <name>isPropertyFalse</name>
+      <tag-class>com.cannontech.web.taglib.IsPropertyFalse</tag-class>
+      <attribute>
+          <name>propertyid</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>property</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+  </tag>
+   
+    <tag>
+        <name>standardMsgScopeHelper</name>
+        <tag-class>com.cannontech.web.taglib.StandardMsgScopeHelperTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>module</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>pageName</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>fragmentName</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+ 
+   <tag>
+    <name>standardPage</name>
+    <tag-class>com.cannontech.web.taglib.StandardPageTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>title</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>page</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>htmlLevel</name>
+      <required>false</required>
+    </attribute>
+    <attribute>
+      <name>module</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>standardMenu</name>
+    <tag-class>com.cannontech.web.taglib.StandardMenuTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>menuSelection</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>outputDoctype</name>
+    <tag-class>com.cannontech.web.taglib.OutputDoctypeTag</tag-class>
+    <body-content>empty</body-content>
+    <info>This tag takes any comma-separated HtmlLevel enums and determines 
+    the most strict and outputs its doctype.</info>
+    <attribute>
+      <name>levels</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>includeCss</name>
+    <tag-class>com.cannontech.web.taglib.IncludeCssTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>link</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>force</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>includeScript</name>
+    <tag-class>com.cannontech.web.taglib.IncludeScriptTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>link</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>force</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>replaceAll</name>
+    <tag-class>com.cannontech.web.taglib.ReplaceAllTag</tag-class>
+    <body-content>empty</body-content>
+    <description>
+        Replace all matches of the input string with the replace string using the regex pattern.
+    </description>
+    <attribute>
+      <name>var</name>
+      <description>Set the var to the resulting map.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>input</name>
+      <description>The text to do the replace on.</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>pattern</name>
+      <description>The regex string for the replace operation.</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>replace</name>
+      <description>The replacement text to use for the replace operation.</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>yukonCookie</name>
+    <tag-class>com.cannontech.web.taglib.YukonCookieTag</tag-class>
+    <body-content>empty</body-content>
+    <description>
+        Retreives a value stored in the Yukon cookie. Values are stored as property
+        names that are a concatination of scope + id.
+    </description>
+    <attribute>
+      <name>var</name>
+      <description>Set the var to the resulting map.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>scope</name>
+      <description>The scope of the value. i.e. 'hideReveal'</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <description>The id (persistId) of the value. i.e. 'meterInfoSection'</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>defaultValue</name>
+      <description>The value returned if the cookie did not contain the property requested.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>toJson</name>
+    <tag-class>com.cannontech.web.taglib.JsonTag</tag-class>
+    <body-content>empty</body-content>
+    <description>Converts any java object into html escaped json.</description>
+    <attribute>
+      <name>id</name>
+      <description>If supplied, will create a hidden div.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>object</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <description>If supplied, will set the var to the json value.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>listAsSafeString</name>
+    <tag-class>com.cannontech.web.taglib.ListAsSafeString</tag-class>
+    <body-content>empty</body-content>
+    <description>Converts a list of strings to a value that is safe to use in attributes and javascript.</description>
+    <attribute>
+      <name>list</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>outputContent</name>
+    <tag-class>com.cannontech.web.taglib.OutputContentTag</tag-class>
+    <body-content>empty</body-content>
+   <attribute>
+      <name>writable</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>deviceCollection</name>
+    <tag-class>com.cannontech.web.taglib.DeviceCollectionTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>deviceCollection</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>inventoryCollection</name>
+    <tag-class>com.cannontech.web.taglib.InventoryCollectionTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>inventoryCollection</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>beanLookup</name>
+    <tag-class>com.cannontech.web.widget.support.BeanLookupTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>bean</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>pointValue</name>
+    <tag-class>com.cannontech.web.updater.point.PointValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>pointId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>format</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>unavailableValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>colorForStatus</name>
+      <description>If true, will set the font color to the current states color for status points.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssClass</name>
+      <description>CSS class to be added to the span surrounding the updated text.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>pointStatus</name>
+    <tag-class>com.cannontech.web.taglib.PointStatusTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>pointId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>rawState</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Only for status points. State to be used instead of current state. Useful for historical data.</description>
+    </attribute>
+    <attribute>
+      <name>classes</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>CSS class names applied to state box element.</description>
+    </attribute>
+    <attribute>
+      <name>statusPointOnly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>When true, will not create a state box for non-status points</description>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>capBankStateColor</name>
+    <tag-class>com.cannontech.web.taglib.CapBankStateColorTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>paoId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>format</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>capControlValue</name>
+    <tag-class>com.cannontech.web.updater.capcontrol.CapControlValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>paoId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>format</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>initialize</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>defaultBlank</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>navigableHierarchy</name>
+    <tag-class>com.cannontech.web.capcontrol.NavigableHierarchyTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>hierarchy</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>depth</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>yukonUser</name>
+    <tag-class>com.cannontech.web.taglib.YukonUserTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag> 
+  
+  <tag>
+    <name>customerAccountInfoTag</name>
+    <tag-class>com.cannontech.web.stars.dr.taglib.CustomerAccountInfoTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>account</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>dataUpdaterCallback</name>
+    <tag-class>com.cannontech.web.updater.DataUpdaterCallbackTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>function</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>initialize</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <name>dataUpdaterEventCallback</name>
+    <description>
+        Unlike the dataUpdaterCallback, this tag only handles true/false lookups
+        and will stop updating after the first true result. 
+    </description>
+    <tag-class>com.cannontech.web.updater.DataUpdaterEventCallbackTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>function</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+       <name>id</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>attributeResolver</name>
+    <tag-class>com.cannontech.web.taglib.AttributeResolverTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>pao</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>attributeName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>paoId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>attribute</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>globalSetting</name>
+    <tag-class>com.cannontech.web.taglib.GlobalSettingTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>globalSettingType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>pointValueFormatter</name>
+    <tag-class>com.cannontech.web.taglib.PointValueFormatterTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>format</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>deviceName</name>
+    <tag-class>com.cannontech.web.amr.taglib.DeviceNameTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>deviceId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>device</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>uniqueIdentifier</name>
+    <tag-class>com.cannontech.web.taglib.UniqueIdentifierTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>prefix</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+      <name>formatDate</name>
+      <tag-class>com.cannontech.web.taglib.FormatDateTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>value</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
+     <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+         <name>type</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+         <name>nullText</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>Text to be displayed in place of formatted date if date is null.</description>
+    </attribute>
+  </tag>
+
+  <tag>
+      <name>formatCron</name>
+      <tag-class>com.cannontech.web.taglib.FormatCronTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>value</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
+     <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>formatPeriod</name>
+    <tag-class>com.cannontech.web.taglib.FormatPeriodTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>type</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>defaultText</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Text to be displayed in place of formatted date if duration is blank.</description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>formatNotification</name>
+    <tag-class>com.cannontech.web.taglib.FormatNotificationTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>htmlEscape</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+    <tag>
+      <name>formatMillis</name>
+      <tag-class>com.cannontech.web.taglib.FormatMillisTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>value</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
+     <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+         <name>type</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+     <attribute>
+         <name>invalidStr</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>formatDuration</name>
+    <tag-class>com.cannontech.web.taglib.FormatDurationTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>value</name>
+        <description>value can be a long (milliseconds) or a ReadableDuration</description>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>startDate</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>endDate</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>type</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>formatObject</name>
+    <tag-class>com.cannontech.web.taglib.FormatObjectTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>formatInterval</name>
+    <tag-class>com.cannontech.web.taglib.FormatIntervalTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>value</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>joda Interval object to format, use this when not using start and end</description> 
+    </attribute>
+    <attribute>
+        <name>start</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>start time as a long, use this in conjunction with 'end' when not supplying a 'value'</description> 
+    </attribute>
+    <attribute>
+        <name>end</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>end time as a long, use this in conjunction with 'start' when not supplying a 'value'</description> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>type</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>formatTimePeriod</name>
+    <tag-class>com.cannontech.web.taglib.FormatTimePeriodTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>startDate</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>endDate</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>type</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>formatPhoneNumber</name>
+    <tag-class>com.cannontech.web.taglib.FormatPhoneNumberTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>htmlEscape</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+  </tag>
+  
+  <tag>
+      <name>renderInput</name>
+      <tag-class>com.cannontech.web.taglib.RenderInputTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>input</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>simpleReportLinkFromNameTag</name>
+    <tag-class>com.cannontech.web.reports.SimpleReportLinkFromNameTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>definitionName</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>viewType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <name>simpleReportUrlFromNameTag</name>
+    <tag-class>com.cannontech.web.reports.SimpleReportUrlFromNameTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>definitionName</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>viewType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>htmlOutput</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <name>simpleReportLinkFromModelTag</name>
+    <tag-class>com.cannontech.web.reports.SimpleReportLinkFromModelTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>definitionName</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>reportModel</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>viewType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+      <name>userName</name>
+      <tag-class>com.cannontech.web.taglib.UserNameTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>userId</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>    
+    </attribute>
+     <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+      <name>yukonListEntryList</name>
+      <tag-class>com.cannontech.web.taglib.YukonListEntryListTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>var</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>var where List of YukonListEntry will be placed</description>
+    </attribute>
+     <attribute>
+         <name>energyCompanyId</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>Energy Company Id</description>
+    </attribute>
+    <attribute>
+         <name>listName</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>String. See YukonSelectionListEnum. Example: "YUK_LIST_NAME_LM_CUSTOMER_EVENT".</description>
+    </attribute>
+  </tag>
+
+  <tag>
+      <name>yukonListEntryValue</name>
+      <tag-class>com.cannontech.web.taglib.YukonListEntryValueTag</tag-class>
+      <body-content>empty</body-content>
+    <attribute>
+         <name>var</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>var where List of YukonListEntry EntryText will be placed (optional)</description>
+    </attribute>
+     <attribute>
+         <name>entryId</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+          <description>Yukon List Entry Id</description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>verifyRolesAndProperties</name>
+    <tag-class>com.cannontech.web.taglib.VerifyRolesAndPropertiesTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>value</name>
+      <required>true</required> 
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>verifyRolePropertyValue</name>
+    <tag-class>com.cannontech.web.taglib.VerifyRolePropertyValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>property</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>expectedValue</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>verifyGlobalRolesAndProperties</name>
+    <tag-class>com.cannontech.web.taglib.VerifyGlobalRolesAndPropertiesTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>value</name>
+      <required>true</required> 
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+    <tag>
+        <name>msg</name>
+        <tag-class>com.cannontech.web.i18n.MsgTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            (This is copied from Spring, duplicated here to allow future expansion.)
+        
+            Retrieves the theme message with the given code, or text if code isn't resolvable.
+            The HTML escaping flag participates in a page-wide or application-wide setting
+            (i.e. by HtmlEscapeTag or a "defaultHtmlEscape" context-param in web.xml).
+        </description>
+        <attribute>
+            <name>key</name> <!-- renamed to works as 'message' or 'code' -->
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The key (code) to use when looking up the message.
+            If key is not provided, the text attribute will be used.</description>
+        </attribute>
+        <attribute>
+            <name>argument</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set optional message argument for this tag,
+            an Object array (used as argument array), or a single Object (used
+            as single argument).</description>
+        </attribute>
+        <attribute>
+            <name>arguments</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set optional message arguments for this tag, as a
+            (comma-)delimited String (each String argument can contain JSP EL),
+            an Object array (used as argument array), or a single Object (used
+            as single argument).</description>
+        </attribute>
+        <attribute>
+            <name>argumentSeparator</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The separator character to be used for splitting the
+            arguments string value; defaults to a 'comma' (',').</description>
+        </attribute>
+        <!-- 'text' attribute removed -->
+        <attribute>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The string to use when binding the result to the page,
+            request, session or application scope. If not specified, the result
+            gets outputted to the writer (i.e. typically directly to the JSP).</description>
+        </attribute>
+        <attribute>
+            <name>scope</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The scope to use when exporting the result to a variable.
+            This attribute is only used when var is also set. Possible values are
+            page, request, session and application.</description>
+        </attribute>
+        <attribute>
+            <name>htmlEscape</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set HTML escaping for this tag, as boolean value.
+            Overrides the default HTML escaping setting for the current page.</description>
+        </attribute>
+        <attribute>
+            <name>javaScriptEscape</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set JavaScript escaping for this tag, as boolean value. Default is false.</description>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>msg2</name>
+        <tag-class>com.cannontech.web.i18n.Msg2Tag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            (This is copied from Spring, duplicated here to allow future expansion.)
+        
+            Retrieves the theme message with the given code, or text if code isn't resolvable.
+            The HTML escaping flag participates in a page-wide or application-wide setting
+            (i.e. by HtmlEscapeTag or a "defaultHtmlEscape" context-param in web.xml).
+        </description>
+        <attribute>
+            <name>key</name> <!-- renamed to works as 'message' or 'code' -->
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The key (code) to use when looking up the message.
+            If key is not provided, the text attribute will be used.</description>
+        </attribute>
+        <attribute>
+            <name>argument</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set optional message argument for this tag,
+            an Object array (used as argument array), or a single Object (used
+            as single argument).</description>
+        </attribute>
+        <attribute>
+            <name>arguments</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set optional message arguments for this tag, as an Object array (used as
+            argument array), a java.util.Collection or a single Object (used as single argument).</description>
+        </attribute>
+        <attribute>
+            <name>argumentSeparator</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>DO NOT USE!  If you need multiple arguments, build them into a list or array.  In
+            a JSP file, you can use cti:list and cti:item to do this.</description>
+        </attribute>
+        <attribute>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The string to use when binding the result to the page,
+            request, session or application scope. If not specified, the result
+            gets outputted to the writer (i.e. typically directly to the JSP).</description>
+        </attribute>
+        <attribute>
+            <name>scope</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The scope to use when exporting the result to a variable.
+            This attribute is only used when var is also set. Possible values are
+            page, request, session and application.</description>
+        </attribute>
+        <attribute>
+            <name>htmlEscape</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set HTML escaping for this tag.  The default is false.</description>
+        </attribute>
+        <attribute>
+            <name>htmlEscapeArguments</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set HTML escaping for this arguments to this tag.  The default is true.</description>
+        </attribute>
+        <attribute>
+            <name>javaScriptEscape</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set JavaScript escaping for this tag, as boolean value. Default is false.</description>
+        </attribute>
+        <attribute>
+            <name>debug</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>fallback</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>blankIfMissing</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>pageName</name>
+        <tag-class>com.cannontech.web.i18n.PageTitleTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Given a UserPage object, display the localized title of it.
+        </description>
+        <attribute>
+            <name>userPage</name> <!-- renamed to works as 'message' or 'code' -->
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The UserPage object to display the name of.</description>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>theme</name>
+        <tag-class>com.cannontech.web.i18n.ThemeTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Retrieves the theme message with the given code, or text if code isn't resolvable.
+            The HTML escaping flag participates in a page-wide or application-wide setting
+            (i.e. by HtmlEscapeTag or a "defaultHtmlEscape" context-param in web.xml).
+        </description>
+        <attribute>
+            <name>message</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>A MessageSourceResolvable argument (direct or through JSP EL).</description>
+        </attribute>
+        <attribute>
+            <name>key</name> <!-- renamed to 'key' -->
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The key (code) to use when looking up the message.
+            If key is not provided, the text attribute will be used.</description>
+        </attribute>
+        <attribute>
+            <name>arguments</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set optional message arguments for this tag, as a
+            (comma-)delimited String (each String argument can contain JSP EL),
+            an Object array (used as argument array), or a single Object (used
+            as single argument).</description>
+        </attribute>
+        <attribute>
+            <name>argumentSeparator</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The separator character to be used for splitting the
+            arguments string value; defaults to a 'comma' (',').</description>
+        </attribute>
+        <attribute>
+            <name>default</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Default text to output when a message for the given code
+            could not be found. If both text and code are not set, the tag will
+            output null.</description>
+        </attribute>
+        <attribute>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The string to use when binding the result to the page,
+            request, session or application scope. If not specified, the result
+            gets outputted to the writer (i.e. typically directly to the JSP).</description>
+        </attribute>
+        <attribute>
+            <name>scope</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The scope to use when exporting the result to a variable.
+            This attribute is only used when var is also set. Possible values are
+            page, request, session and application.</description>
+        </attribute>
+        <attribute>
+            <name>htmlEscape</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set HTML escaping for this tag, as boolean value.
+            Overrides the default HTML escaping setting for the current page.</description>
+        </attribute>
+        <attribute>
+            <name>javaScriptEscape</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set JavaScript escaping for this tag, as boolean value. Default is false.</description>
+        </attribute>
+        <attribute>
+            <name>url</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set URL path treatment for this value (i.e. prepend context path)</description>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>formatTemplate</name>
+        <tag-class>com.cannontech.web.i18n.FormatTemplateTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Retrieves the template for the ResolvableTemplate's key and then evaluates it
+            with the included data.
+        </description>
+        <attribute>
+            <name>message</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>A ResolvableTemplate</description>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>logo</name>
+        <tag-class>com.cannontech.web.i18n.LogoTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Outputs the logo for the given key or nothing if the key is not found
+        </description>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>id for img tag</description>
+        </attribute>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The logo's I18N key</description>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>icon</name>
+        <tag-class>com.cannontech.web.i18n.IconTag</tag-class>
+        <dynamic-attributes>true</dynamic-attributes>
+        <body-content>empty</body-content>
+        <description>
+            Outputs span with icon background optionally wrapped in an anchor tag.
+            'icon' is the only required attribute.  'nameKey' can be used to 
+            specify hover text.
+        </description>
+        <attribute>
+            <name>icon</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Class name of icon to use.  See 'icons.css' for icon class names. Assumes 16px icon. 
+            </description>
+        </attribute>
+        <attribute>
+            <name>nameKey</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Base i18n key used to find optional ".hoverText" for icon element title attribute. 
+            </description>
+        </attribute>
+        <attribute>
+            <name>title</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Icon element title attribute. 
+            </description>
+        </attribute>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Id for generated span element, defaults to 'icon_X' where X is a random number. </description>
+        </attribute>
+        <attribute>
+            <name>href</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                'href' for anchor element. If not specified, no anchor element is generated.
+            </description>
+        </attribute>
+        <attribute>
+            <name>classes</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                CSS class names applied to generated span element.
+            </description>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>button</name>
+        <tag-class>com.cannontech.web.i18n.ButtonTag</tag-class>
+        <body-content>empty</body-content>
+        <dynamic-attributes>true</dynamic-attributes>
+        <description>
+            Outputs localized button with optional image and label.
+        </description>
+        <attribute>
+            <name>nameKey</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Not used when label attribute is used.
+                Base i18n key.  Use with ".label" for label, with ".hoverText" for optional hover text.
+                "nameKey" is require when renderMode is 'button' (the default) or 'labeledImage'.
+            </description>
+        </attribute>
+        <attribute>
+            <name>label</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Button text. Overrides nameKey.
+            </description>
+        </attribute>
+        <attribute>
+            <name>arguments</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set optional label arguments for this tag, as a
+            (comma-)delimited String (each String argument can contain JSP EL),
+            an Object array (used as argument array), or a single Object (used
+            as single argument).</description>
+        </attribute>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Id for generated button element.
+            </description>
+        </attribute>
+        <attribute>
+            <name>href</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Adds "data-href" attribute which causes button to navigate to given URL.
+            </description>
+        </attribute>
+        <attribute>
+            <name>onclick</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Onclick for button element.
+            </description>
+        </attribute>
+        <attribute>
+            <name>classes</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Class attribute applied to the button element.
+            </description>
+        </attribute>
+        <attribute>
+            <name>type</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Button type (submit, button, reset), defaults to button if not supplied.
+            </description>
+        </attribute>
+        <attribute>
+            <name>name</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Name attribute of the button element.
+            </description>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Value attribute of the button element.
+            </description>
+        </attribute>
+        <attribute>
+            <name>disabled</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Sets the 'disabled' attribute of the button when set to 'true'.
+            </description>
+        </attribute>
+        <attribute>
+            <name>title</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Title attribute of the button element.
+            </description>
+        </attribute>
+        <attribute>
+            <name>renderMode</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                'renderMode' is to describe how the button should look.
+                Possible values for renderMode are 'image', 'labeledImage', 'buttonImage', and 'button' (default).
+            </description>
+        </attribute>
+        <attribute>
+            <name>dialogButton</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                When 'true' will display the button as a dialog button adding '...' to the end of the button text.
+                Signifies the button will ask for more infomation before doing the action. Default is 'false'.
+            </description>
+        </attribute>
+        <attribute>
+            <name>icon</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                The class name of the icon to use for this button.
+            </description>
+        </attribute>
+        <attribute>
+            <name>busy</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Sets the 'data-busy' attribute of the button when set to 'true'.
+                If the .labelBusy key exists, it is used for button text after clicked.
+                This attribute requires the js-disable-after-click class. 
+            </description>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>css</name>
+        <tag-class>com.cannontech.web.i18n.CssTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Outputs the css include for the given key or nothing if the key is not found
+        </description>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The css file's I18N key</description>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>operationsSetup</name>
+        <tag-class>com.cannontech.web.taglib.OperationsSetupTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <tag>
+        <name>dataUpdaterValue</name>
+        <tag-class>com.cannontech.web.taglib.DataUpdaterValueTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            A more generic version of the PointValueTag, outputs a formatted
+            span for any valid data updater tag.
+        </description>
+        <attribute>
+            <name>type</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>identifier</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>classUpdater</name>
+        <tag-class>com.cannontech.web.taglib.ClassUpdaterTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>
+            Creates a span that updates it's class name.
+            Use by passing an updater type/identifier pair, or a full type+identifier key.
+            type/identifier pair will be used if they are passed in (over key if it also happens to be passed).
+            If a value is unavailable at render time, initialClassName will be used if passed.
+        </description>
+        <attribute>
+            <name>type</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>identifier</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>key</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>initialClassName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>elementType</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>elementType</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Type of element that will enclose the body of te tag. Defaults to 'span'.
+            </description>
+        </attribute>
+        <attribute>
+            <name>staticClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Class name that should always be on the element in addition to whatever class the updater appends.
+            </description>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>link</name>
+        <tag-class>com.cannontech.web.i18n.LinkTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>
+            Used to generate a anchor link using i18n values.
+        </description>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>href</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>escapeBody</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <dynamic-attributes>true</dynamic-attributes>
+    </tag>
+    
+    <tag>
+        <name>mapParam</name>
+        <tag-class>com.cannontech.web.i18n.MapParamTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Mimics the behavior of c:param, but uses a map
+        </description>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>
+            Outputs a device group hierarchy as a JSON string for tags using the dynatree plugin such as 
+            deviceGroupPicker.tag.
+        </description>
+        <name>deviceGroupHierarchyJson</name>
+        <tag-class>com.cannontech.web.taglib.DeviceGroupHierarchyJsonTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                Comma seperated list of predicates to apply to the default all-groups hierarchy.
+                Can be any of the Enum values defined in DeviceGroupPredicateEnum.
+                Example: predicates="MODIFIABLE, NON_HIDDEN"
+            </description>
+            <name>predicates</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue> 
+        </attribute>
+        <attribute>
+            <description>
+                Callbacks to be preformed on the node. Can be used to disable selecting certain nodes.
+            </description>
+            <name>callbacks</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue> 
+        </attribute>
+        <attribute>
+            <description>
+                The name given to the root node. Defaults to "Groups".
+            </description>
+            <name>rootName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>
+                Full path name of the group to be highlighted in the tree.
+            </description>
+            <name>selectGroupName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>
+                Name of var to write the ext node path of the selectGroupName group to.
+            </description>
+            <name>selectedNodePathVar</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>
+                Outputs the Json string into a context variable with name supplied to the 'var' attribute.
+            </description>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>item</name>
+        <tag-class>com.cannontech.web.taglib.ListItemTag</tag-class>
+        <description>Use this inside a list tag to represent a single item in the list.</description>
+        <body-content>scriptless</body-content>
+        <attribute>
+            <name>value</name>
+            <description>Specify the value of the item.  If not specified, the body will be used.</description>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>list</name>
+        <tag-class>com.cannontech.web.taglib.ListTag</tag-class>
+        <description>Use this create a list of items.  This list could be used for a list of
+            arguments to a i18n key.</description>
+        <body-content>scriptless</body-content>
+        <attribute>
+            <name>var</name>
+            <description>Specify the name of the variable put the list in.</description>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+  <tag>
+    <description>
+        Adds a parameter to a containing 'import' tag's URL.
+        Copied from JSTL because the JstlCoreTLV checks don't allow param to be
+        used outside of the core JSTL tags.
+    </description>
+    <name>param</name>
+    <tag-class>com.cannontech.web.i18n.ParamTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+        <description>
+            Name of the query string parameter.
+        </description>
+        <name>name</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <description>
+            Value of the parameter.
+        </description>
+        <name>value</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>url</name>
+    <tag-class>com.cannontech.web.taglib.UrlTag</tag-class>
+    <body-content>scriptless</body-content>
+    <description>
+    Prints or exposes a URL with optional query parameters
+        (via the cti:param tag).
+    </description>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>scope</name>
+        <required>false</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>htmlEscape</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>dataGrid</name>
+    <tag-class>com.cannontech.web.taglib.DataGridTag</tag-class>
+    <body-content>scriptless</body-content>
+    <description>
+        Organizes content into columns using cti:dataGridCell tags.
+    </description>
+    <attribute>
+        <name>cols</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>tableClasses</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>List of css classes for the table element.</description>
+    </attribute>
+    <attribute>
+        <name>tableStyle</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Becomes the table element's style attribute.</description>
+    </attribute>
+    <attribute>
+        <name>rowStyle</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Becomes the tr element's sytle attribute.</description>
+    </attribute>
+    <attribute>
+        <name>cellStyle</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Becomes the td element's sytle attribute.</description>
+    </attribute>
+    <attribute>
+     <name>orderMode</name>
+     <required>false</required>
+     <rtexprvalue>true</rtexprvalue>
+     <description>Sets the order mode (TOP_TO_BOTTOM, LEFT_TO_RIGHT (default))</description>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>dataGridCell</name>
+    <tag-class>com.cannontech.web.taglib.DataGridCellTag</tag-class>
+    <body-content>scriptless</body-content>
+    <description>
+        Container for a column cell inside a cti:dataGrid tag.
+    </description>
+  </tag>
+  
+  <tag>
+    <name>tabs</name>
+    <tag-class>com.cannontech.web.taglib.TabsTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>classes</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>CSS Class names applied to the container div.</description>
+    </attribute>
+    <attribute>
+        <name>id</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>The id to use for the top-level HTML element.</description>
+    </attribute>
+    <attribute>
+        <name>containerName</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>
+            When specified, this container will remember what tab was last selected.
+            This will override the otherwise initially selected tab.
+        </description>
+    </attribute>
+    <description>
+        Contains a collection of "cti:tab"
+    </description>
+  </tag>
+  
+  <tag>
+    <name>tab</name>
+    <tag-class>com.cannontech.web.taglib.TabTag</tag-class>
+    <body-content>scriptless</body-content>
+     <attribute>
+        <name>title</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Text for tab name</description>
+    </attribute>
+    <attribute>
+        <name>classes</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>CSS classes of the content div.</description>
+    </attribute>
+    <attribute>
+        <name>headerClasses</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>CSS classes for the tab header</description>
+    </attribute>
+    <attribute>
+        <name>selected</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Tab selected</description>
+    </attribute>
+    <attribute>
+        <name>tabId</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Tab li element id. If not specified a unique value will be used.</description>
+    </attribute>
+    <description>
+        Must be inside a "cti:tabs"
+    </description>
+  </tag>
+ 
+  <tag>
+    <name>paoDetailUrl</name>
+    <tag-class>com.cannontech.web.taglib.PaoDetailUrlTag</tag-class>
+    <body-content>scriptless</body-content>
+    <description>
+        Generates a url to the detail page for the specified pao
+    </description>
+    <attribute>
+        <name>yukonPao</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>newTab</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>If true, opens link in a new tab. Default: false.</description>
+    </attribute>
+    <attribute>
+        <name>scope</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>paoDetailPageName</name>
+    <tag-class>com.cannontech.web.taglib.PaoDetailPageNameTag</tag-class>
+    <body-content>empty</body-content>
+    <description>
+         Generates the page name from module_config.xml for the detail page for the specified pao
+    </description>
+    <attribute>
+        <name>yukonPao</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>scope</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>paoTypeIcon</name>
+    <tag-class>com.cannontech.web.taglib.PaoTypeIconTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>yukonPao</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>msgScope</name>
+    <tag-class>com.cannontech.web.i18n.MsgScopeTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>paths</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>printMsgScope</name>
+    <tag-class>com.cannontech.web.i18n.PrintMsgScopeTag</tag-class>
+    <body-content>empty</body-content>
+  </tag>
+  
+  <tag>
+    <name>flashScopeMessages</name>
+    <tag-class>com.cannontech.web.taglib.FlashScopeMessagesTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>htmlEscape</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>HTML escape the resolved messages. Defaults to true.</description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>default</name>
+    <tag-class>com.cannontech.web.taglib.DefaultTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>
+        Set a page scope variable to a default value if it doesn't already have a value.
+    </description>
+    <attribute>
+        <name>var</name>
+        <required>true</required>
+        <description>The name of the variable to set.</description>
+    </attribute>
+    <attribute>
+        <name>value</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>
+            The default value.  If unspecified, the body of the tag will be used.
+        </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>linkTabbedContainer</name>
+    <tag-class>com.cannontech.web.taglib.LinkTabbedTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>classes</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Class names applied to the div.</description>
+    </attribute>
+    <attribute>
+        <name>id</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>The id applied to the div - if blank, one is generated and set.</description>
+    </attribute>
+    <attribute>
+        <name>mode</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>the default mode is 'box', 'section' is like box but only has a line across the top.</description>
+    </attribute>
+    <description>
+        Uses jQuery tabs...
+    </description>
+  </tag>
+
+  <tag>
+    <name>linkTab</name>
+    <tag-class>com.cannontech.web.taglib.LinkTabTag</tag-class>
+    <body-content>scriptless</body-content>
+     <attribute>
+        <name>selectorName</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Printable text used within the tab</description>
+    </attribute>
+     <attribute>
+        <name>selectorKey</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>i18n key of string to display in the tab.</description>
+    </attribute>
+    <attribute>
+        <name>initiallySelected</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Tab selected</description>
+    </attribute>
+    <attribute>
+        <name>tabHref</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Set to a valid URL/URL-path</description>
+    </attribute>
+    <attribute>
+        <name>tabId</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Tab li element id. If not specified a generated unique value will be used.</description>
+    </attribute>
+    <description>
+        If tabHref is blank, the body content of this tag is used as the href if it is also not blank/whitespace.
+    </description>
+  </tag>
+
+  <tag>
+    <name>searchTerm</name>
+    <tag-class>com.cannontech.web.taglib.HighlightSearchTermTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>term</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>asLuceneTerms</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>When set to 'true' the tag will separate 'term' into words and replace each of those separately.  DEFAULT: false</description>
+    </attribute>
+  </tag>
+
+  <function>
+    <name>constantValue</name>
+    <function-class>com.cannontech.util.ReflectivePropertySearcher</function-class>
+    <function-signature>
+        Object getObjectForFQN(java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <name>combineWidgetParams</name>
+    <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
+    <function-signature>
+        java.util.Map combineParameters(java.util.Map, java.util.Map)
+    </function-signature>
+  </function>
+    
+  <function>
+    <name>jsonString</name>
+    <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
+    <function-signature>
+        java.lang.String generateJsonString(java.lang.Object)
+    </function-signature>
+  </function>
+
+  <function>
+    <name>jsSafe</name>
+    <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
+    <function-signature>
+        java.lang.String generateSafeJsString(java.lang.Object)
+    </function-signature>
+  </function>
+
+  <function>
+    <name>escapeJavaScript</name>
+    <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
+    <function-signature>
+        java.lang.String escapeJavaScript(java.lang.String)
+    </function-signature>
+  </function>
+    
+</taglib>

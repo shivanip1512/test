@@ -1,0 +1,455 @@
+#Content { 
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+}
+
+a.menuLink:active {
+	color: #FF9900;
+}
+
+.submenuLink, a.submenuLink:active, a.submenuLink:visited, a.submenuLink:link,
+a.submenuLink:hover, legend, .editorHeader, .legendLikeLabel {
+	color: #0066CC;
+}
+
+.submenuLink {
+	font-size: 11px;
+	background-color: #EEEEEE;
+	margin-left: 5px;
+}
+
+.main {
+	color: #000000;
+}
+
+.tableHeader, .column-header, .staticLabel,
+.staticNumberLabel, .medStaticLabel {
+	font-weight: bold;
+	background-color: #FFFFFF;
+}
+
+.medLabel, .medStaticLabel {
+	font-size: 14px;
+}
+
+.percentLabel {
+	width: 40px;
+}
+
+.char4Label {
+	width: 33px;
+}
+
+.char8Label {
+	width: 65px;
+}
+
+.char16Label, .char16PadLabel {
+	width: 130px;
+}
+
+.char32Label {
+	width: 260px;
+}
+
+.char64Label {
+	width: 420px;
+}
+
+.editorHeader {
+	font-size: 24px;
+}
+
+.scroller {
+    padding-left: 20px;
+}
+
+.smallResults, .errorResults {
+	overflow: auto;
+	height: 32px;
+	width: 100%;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.scrollSmall {
+	overflow: auto;
+	max-height: 200px;
+}
+
+.widthSet,.scrollSmallWidthSet,.scrollVerySmall {
+    width:  390px;  
+}
+
+.scrollSmallWidthSet {
+	overflow: scroll;
+	height: 200px;	
+}
+
+legend, .legendLikeLabel{
+	font-size: 14px;
+}
+
+.pageLayout, .pageNavigation, .pageFooter,
+.pageBody, .pageFooter, .gridLayout, .pageHeader {
+	vertical-align: top;
+	width: 100%;
+}
+
+.stdButton {
+	padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.alert, .errorResults {
+	color: #FF0000;
+}
+
+.complete {
+	color: green;
+}
+
+.alert, .errorResults, .complete {
+	font-weight: bold;
+}
+
+
+.fieldSet {
+    padding: 5px;
+    border: 1px solid #cccccc;
+}
+
+label {
+	padding-right: 2px;
+}
+
+.scrollerDiv {
+    float: left;
+}
+
+.scrollerPagingTable {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dataCell {
+	border-collapse: collapse;
+    vertical-align: top;
+    width: 100%;  For FF and IE7 
+}
+
+.scrollerDivWithBorder {
+	border: 1px solid gray;
+    max-height: 400px;
+    width: 60%;
+    overflow: auto;
+}
+
+.fullTable {
+	width: 100%;
+	padding: 2px;
+    border: 1px solid gray;
+    border-collapse: collapse;
+}
+
+.scrollerTable {
+    width: 300px;
+}
+
+.scrollerTable, .bigScrollerTable {
+	padding: 2px;
+    border: 1px solid gray;
+    border-collapse: collapse;
+}
+
+.bigScrollerTable {
+	padding: 2px;
+    border: 1px solid gray;
+    border-collapse: collapse;
+	width: 100%;	
+}
+
+.scrollerTable td {
+    padding: 2px;
+}
+
+.bigScrollerTable td {
+    padding: 2px;
+}
+
+.dataCell td {
+    padding: 2px;
+}
+
+.scrollerButtons {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.scrollerCentered {
+    text-align: center;
+}
+
+.scrollerLeft {
+    text-align: left;
+}
+
+.deletionScrollerTable {
+	width: 100%;
+    border-collapse: collapse;
+}
+
+.deletionScrollerTableHeader {
+	border-bottom: 1px solid #CCCCCC;
+    color:  #000000;
+    font-size: 12px;
+    font-weight: 600;
+    text-align:left;
+    vertical-align:bottom;
+    padding: 3px;
+}
+
+.deletionScrollerTableCell {
+    padding: 2px 2px;
+    font-size: 11px;
+    padding-top:3px;
+    vertical-align: top;
+}
+
+.deletionDiv {
+	padding: 4px;
+	border: 1px solid #777777
+}
+
+.scrollerTableHeader {
+    padding: 3px;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid gray;
+	font-weight: bold;
+}
+
+.scrollerTableHeaderLeft {
+    padding: 3px;
+    text-align: left;
+    border-bottom: 1px solid gray;
+    font-weight: bold;
+}
+
+.peakSettingsTableHeader {
+    padding: 3px;
+    text-align: left;
+    border: none;
+    font-weight: bold;
+}
+
+.peakSettingsTableCell {
+    padding-right: 5px;
+    border: none;
+}
+
+.altTableRow {
+    background-color: #ffffff;
+}
+
+.tableRow {
+    background-color: #eeeeee;
+}
+
+.gridColumn, .gridCell, .gridCellSmall, .gridCellMedium, .gridCellLarge {
+	vertical-align: top;
+	width: 50%;
+	padding: 10px;
+}
+
+.gridCell {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.gridCellSmall {
+	width: 10%;
+}
+
+.gridColumn{
+	width: 	40%;
+	padding-right: 105px;
+}
+.gridCellMedium {
+	width: 30%;
+}
+
+.gridCellLarge {
+	width: 60%;
+}
+
+#center {
+	margin-left: 10px;
+	margin-right: 10px;
+	width: 95%;
+}
+
+.popupWin {
+	font-size: 13px;
+	background-color: #E7EFF7;
+	font-weight: bold;
+	border: solid;
+	border-color: #003399;
+}
+
+.primeBGColor {
+	background-color: #003399;
+	height: 23px;
+	width: 100%;
+}
+
+.trimBGColor {
+	background-color: #888888;
+	font-weight: bold;
+	height: 1px;
+	width: 100%;
+}
+
+.secondBGColor, #footer {
+	background-color: #eeeeee;
+	height: 20px;
+	width: 100%;
+}
+
+.cellEditing {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #003399;
+	background-color: #E7EFF7;
+	font-weight: bold;
+	padding-left: 3px;
+	padding-right: 3px;
+	
+}
+
+.listWithNoBullets { 
+	list-style-type: none;
+	margin-left: 5px;
+	padding: 0;
+}
+
+.bigFont {
+    font-size: 20px;
+}
+
+.scrollVerySmall {
+    height: 50px; 
+}
+
+.padlabel, .char16PadLabel {
+    padding-right: 5px;
+}
+
+.padCheckBoxLabel {
+    padding-left: 3px;
+}
+
+.padUnitsLabel {
+    padding-left: 3px;
+}
+
+.nameValueLabel {
+	font-weight: bold;
+	padding-right: 5px;
+}
+
+.pointConfigSectionTable {
+	padding-bottom: 20px;
+}
+
+.pointPickerRows {}
+
+.regulatorPointCell {
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 10px;
+}
+
+.regulatorColumnHeader {
+	font-weight: bold;
+	border-bottom: 1px solid #cccccc;
+}
+
+.regulatorPointTable {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+div.regulatorPointDiv {
+	width: 50%;
+	padding-left: 10px;
+	padding-bottom: 10px;
+}
+
+.myFaces_panelTabbedPane {
+	width: 100%; 
+	vertical-align: top;
+}
+
+.myFaces_panelTabbedPane_pane {
+    border: solid 1px #777777;
+    border-top: 0px;
+}
+
+.myFaces_panelTabbedPane_activeHeaderCell input {
+    background-color: #fff;
+	border: none;
+    color:  #555;
+    padding: .3em .5em;
+}
+
+.myFaces_panelTabbedPane_inactiveHeaderCell input {
+	background-color: #fff;
+	border: none;
+    color:  #06C;
+    padding: .3em .5em;
+}
+
+.myFaces_panelTabbedPane_inactiveHeaderCell {
+    background-color: #fff;
+    border-style: solid none solid solid;
+    border-color: #BBB #BBB #777 #BBB;
+    border-width: 1px;
+}
+
+.myFaces_panelTabbedPane_activeHeaderCell {
+    border-style: solid solid none solid;
+    border-color: #777777 #777777;
+    border-width: 1px;
+}
+
+.myFaces_panelTabbedPane_emptyHeaderCell {
+	border-left: solid #BBB 1px;
+	border-bottom: solid #777777 1px;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell {
+    margin: 0px;
+	padding: 0px;
+	line-height: 1px;
+	color: #cccccc;
+	height: 1px;
+	border-top: none;
+	border-bottom: none;
+	background-color: #fff;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell_last {
+    border-left: none;
+    border-right: solid #777777 1px;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell_first {
+    border-right: none;
+    border-left: solid #777777 1px;
+}
+
+table[id^='editorForm'] > thead > tr > th {border:none;}

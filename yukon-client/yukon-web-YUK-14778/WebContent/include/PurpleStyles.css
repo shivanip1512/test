@@ -1,0 +1,58 @@
+.standardpurplesidebox
+{
+	position: relative;
+	width: 103px;
+	height: 450px;
+	background-color: #0066CC;
+	float: left;
+	margin-left: -7px;
+	margin-top: 7px;
+	z-index: 100;
+}
+
+.standardcentralwhitebody
+{
+	position: relative;
+	width: 660px;
+	height: 450px;
+	background-color: white;
+	border: black 1px solid;
+	float: left;
+	margin-top: 7px;
+
+}
+
+.standarddatabox
+{
+	position: relative;
+	width: 500px;
+	height: 300px;
+	background-color: white;
+	border: #CCCCCC 1px solid;
+	border-top: #CCCCCC 20px solid;
+	margin: 0 auto;
+}
+
+.headeremphasis 
+{  
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	color: #000000;
+	background-color: #CCCCCC
+}
+
+.fieldinfo 
+{  
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-style: bold italic;
+	color: #000000;
+	background-color: #CCCCCC
+}
+
+.forefront
+{
+	z-index: 10000;
+	position: absolute;
+}

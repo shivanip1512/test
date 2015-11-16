@@ -1,0 +1,19 @@
+.flotchart {display: inline-block; width: 95%; height: 200px; position: relative; margin: 0 auto;}
+
+.flottip {z-index: 10000;font-size: 11px; line-height: 12px; font-weight: bold; position: absolute; display: none; border: 1px solid #fdd; border-radius: 5px; padding: 2px; background-color: #EED600; color: #111; opacity: 0.80;}
+.flottip .divider {border-bottom: 1px solid #555555; margin: 5px 0;}
+.axis_label {font-size: 12px;}
+.axis_label.xaxis {text-align: center; margin-bottom: 10px; width: 100%;}
+.show_all {font-size: 11px; float: right; padding-right: 5px;}
+/* IVVC phase check boxes */
+.graph_phases {margin-left: 45px;}
+.graph_phases label {display: inline-block; margin-right: 10px; background-color: #eee; border: 1px solid #ccc; border-radius: 3px; padding: 3px 4px 3px 2px;}
+.graph_phases label:hover {cursor: pointer; border-color: #bbb; background-color: #ddd;}
+.graph_phases input {position: relative; top: 1px; outline-style: solid; outline-width: 1px; text-decoration: none;}
+.graph_phases input:focus {border: 0px; box-shadow: none;}
+/* IVVC phase check boxes - END */
+
+/* AssetAvailability */
+.flotchart_container.small-pie .flotchart {height: 100px;}
+.flotchart_container.small-pie .axis_label {margin: 0;}
+/* AssetAvailability END */

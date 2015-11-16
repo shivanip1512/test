@@ -1,0 +1,16 @@
+<html>
+    <p>
+        {header}
+    </p>
+    <table style="border-collapse: collapse; margin-bottom: 15px; border-spacing: 0;">
+        <thead>
+            {theader}
+        </thead>
+        <tbody>
+            {tbody}
+        </tbody>
+    </table>
+    <p>
+        {footer}
+    </p>
+</html>

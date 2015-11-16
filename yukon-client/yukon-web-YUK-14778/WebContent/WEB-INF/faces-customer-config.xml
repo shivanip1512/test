@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.0//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
+
+<!-- =========== FULL CONFIGURATION FILE ================================== -->
+
+<faces-config>
+
+    <managed-bean>
+        <managed-bean-name>sCustomerProfile</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.customer.CustomerProfileBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>customerDao</property-name>
+            <value>#{customerDao}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>dbPersistentDao</property-name>
+            <value>#{dbPersistentDao}</value>
+        </managed-property>
+    </managed-bean>
+
+
+ 
+<!--  Navigation rules --> 
+
+     
+</faces-config>
+        

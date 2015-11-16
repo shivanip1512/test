@@ -1,0 +1,54 @@
+<table class="compact-results-table" id="programs">
+    <thead>
+        <tr>
+            <th><i:inline key=".eventPricing.customer"/></th>
+            <th><i:inline key=".eventPricing.ack"/></th>
+            <th><i:inline key=".eventPricing.notif"/></th>
+
+            <c:forEach var="heading" items="${pricingTableHead}">
+                <th>
+                    <div>${heading[0]}</div>
+                    <div>${heading[1]}&nbsp;/</div>
+                    <div><i:inline key=".eventPricing.kwh"/></div>
+                </th>
+            </c:forEach>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        <c:forEach var="dataRow" items="${tableData}">
+        <tr>
+            <cti:url value="/dr/cc/program/${program.id}/event/${event.id}/companyInfo/${dataRow[0].id}/companyDetail" var="companyUrl"/>
+            <td><a href="${companyUrl}">${dataRow[0].name}</a></td>
+            <td>${dataRow[1]}</td>
+            <td><span><img src="${dataRow[2]}"></span></td>
+            <c:forEach var="dataCell" items="${dataRow}" varStatus="loop">
+                <c:if test="${loop.index gt 2}">
+                    <td>${dataCell}</td>
+                </c:if>
+            </c:forEach>
+        </tr>
+        </c:forEach>
+        <tr>
+            <td><i:inline key=".eventPricing.total"/></td>
+            <td></td>
+            <td></td>
+        <c:forEach var="totalCell" items="${pricingTableTotals}">
+            <td>${totalCell}</td>
+        </c:forEach>
+        </tr>
+    </tbody>
+</table>
+<div>${legend}</div>
+<div>
+    <c:if test="${fn:length(revisionList) gt 1}">
+        <c:forEach var="revision" items="${revisionList}">
+            <c:if test="${revision ne selectedRevision}">
+                <span>
+                    <cti:url value="/dr/cc/program/${program.id}/event/${event.id}/revision/${revision}" var="revisionUrl"/>
+                    <a href="${revisionUrl}">Revision&nbsp;${revision}&nbsp;</a>
+                </span>
+            </c:if>
+        </c:forEach>
+    </c:if>
+</div>

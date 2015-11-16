@@ -1,0 +1,64 @@
+<script type="text/javascript">
+$(document).on('click', '#recentEventsView', function (event) {
+    $('#recentEventsOptions').dialog('close');
+    var values = $.map($('table.recentEventsCheckboxes input[type=checkbox]:checked'), function (elem, index) {
+        return $(elem).val();
+    });
+    window.location.href = '/capcontrol/search/recentEvents?value=' + encodeURIComponent(values.join(','));
+});
+</script>
+
+<tags:sectionContainer2 nameKey="busContainer" styleClass="padBottom">
+    <div>
+        <input type="checkbox" id="recentEventsBusSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsBuses input[type=checkbox]');">
+        <label for="recentEventsBusSelectAll"><i:inline key=".selectAllBuses"/></label>
+    </div>
+    <div class="scroll-md">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBuses recentEventsCheckboxes">
+            <c:forEach var="bus" items="${subBusList}">
+                <cti:dataGridCell>
+                    <input type="checkbox" value="${bus.ccId}" id="recentEventsBus_${bus.ccId}">
+                    <label for="recentEventsBus_${bus.ccId}">${fn:escapeXml(bus.ccName)}</label>
+                </cti:dataGridCell>
+            </c:forEach>
+        </cti:dataGrid>
+    </div>
+</tags:sectionContainer2>
+
+<tags:sectionContainer2 nameKey="feedersContainer" styleClass="padBottom">
+    <div>
+        <input type="checkbox" id="recentEventsFeederSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsFeeders input[type=checkbox]');">
+        <label for="recentEventsFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
+    </div>
+    <div class="scroll-md">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsFeeders recentEventsCheckboxes">
+            <c:forEach var="feeder" items="${feederList}">
+                <cti:dataGridCell>
+                    <input type="checkbox" value="${feeder.ccId}" id="recentEventsFeeder_${feeder.ccId}">
+                    <label for="recentEventsFeeder_${feeder.ccId}">${fn:escapeXml(feeder.ccName)}</label>
+                </cti:dataGridCell>
+            </c:forEach>
+        </cti:dataGrid>
+    </div>
+</tags:sectionContainer2>
+
+<tags:sectionContainer2 nameKey="banksContainer">
+    <div>
+        <input type="checkbox" id="recentEventsBankSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsBanks input[type=checkbox]');">
+        <label for="recentEventsBankSelectAll"><i:inline key=".selectAllBanks"/></label>
+    </div>
+    <div class="scroll-md">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBanks recentEventsCheckboxes">
+            <c:forEach var="bank" items="${capBankList}">
+                <cti:dataGridCell>
+                    <input type="checkbox" value="${bank.ccId}" id="recentEventsBank_${bank.ccId}">
+                    <label for="recentEventsBank_${bank.ccId}">${fn:escapeXml(bank.ccName)}</label>
+                </cti:dataGridCell>
+            </c:forEach>
+        </cti:dataGrid>
+    </div>
+</tags:sectionContainer2>
+
+<div class="action-area">
+    <cti:button nameKey="recentEvents.view" id="recentEventsView" classes="js-blocker"/>
+</div>

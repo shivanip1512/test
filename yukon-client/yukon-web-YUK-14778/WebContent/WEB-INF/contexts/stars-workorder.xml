@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="workorderDefault" class="com.cannontech.web.stars.action.workorder.DefaultController"/>
+
+	<bean id="workorderSearchWorkOrder" class="com.cannontech.web.stars.action.workorder.SearchWorkOrderController"/>
+	
+	<bean id="workorderCreateWorkOrder" class="com.cannontech.web.stars.action.workorder.CreateWorkOrderController"/>
+	
+	<bean id="workorderSearchCustAccount" class="com.cannontech.web.stars.action.workorder.SearchCustAccountController"/>
+	
+	<bean id="workorderSendWorkOrder" class="com.cannontech.web.stars.action.workorder.SendWorkOrderController"/>
+
+	<bean id="workorderUpdateFilters" class="com.cannontech.web.stars.action.workorder.UpdateFiltersController"/>
+
+	<bean id="workorderManipulateSelectedResults" class="com.cannontech.web.stars.action.workorder.ManipulateSelectedResultsController"/>
+	
+	<bean id="workorderManipulateResults" class="com.cannontech.web.stars.action.workorder.ManipulateResultsController"/>
+	
+	<bean id="workorderApplyActions" class="com.cannontech.web.stars.action.workorder.ApplyActionsController"/>
+	
+	<bean id="workorderViewAllResults" class="com.cannontech.web.stars.action.workorder.ViewAllResultsController">
+		<property name="viewAll"><value>true</value></property>
+	</bean>
+	
+	<bean id="workorderHideAllResults" class="com.cannontech.web.stars.action.workorder.ViewAllResultsController">
+		<property name="viewAll"><value>false</value></property>
+	</bean>
+	
+	<bean id="workorderSortWorkOrders" class="com.cannontech.web.stars.action.workorder.SortWorkOrdersController"/>
+	
+	<bean id="workorderCreateReport" class="com.cannontech.web.stars.action.workorder.CreateReportController"/>
+</beans>

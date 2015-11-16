@@ -1,0 +1,32 @@
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+
+<table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr> 
+    <td width="102" height="102" background="../../WebConfig/yukon/WorkImage.jpg">&nbsp;</td>
+    <td valign="bottom" height="102"> 
+	  <table width="657" cellspacing="0" cellpadding="0" border="0">
+	    <tr> 
+		  <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty property="HEADER_LOGO" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
+	    </tr>
+	    <tr> 
+		  <td width="310" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Work Orders</td>
+		  <td width="235" valign="middle">&nbsp;</td>
+		  <td width="" valign="middle" align="right" nowrap>
+<% if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) == null) { %>
+            <span class="MainText"><a href="<cti:url value='/home' />" class="Link3">Home</a></span> 
+<% } %>
+		  &nbsp;&nbsp;&nbsp;</td>
+		  <td width="" valign="middle" nowrap> 
+<% if (session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) != null
+		&& liteEC.getParent() != null) { %>
+		    <span class="MainText"><a href="<cti:url value='/servlet/LoginController?ACTION=LOGOUT' />" class="Link3">Back to <%= liteEC.getParent().getName() %></a>&nbsp;&nbsp;&nbsp;</span>
+<% } else { %>
+			<span class="MainText"><a href="<cti:url value='/servlet/LoginController?ACTION=LOGOUT' />" class="Link3">Log Off</a>&nbsp;</span>
+<% } %>
+		  </td>
+	    </tr>
+	  </table>
+    </td>
+    <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
+  </tr>
+</table>

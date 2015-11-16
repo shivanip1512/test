@@ -1,0 +1,142 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:standardPage module="dev" page="containers">
+<tags:styleguide page="containers">
+
+<style type="text/css">
+.description {line-height: 26px;margin-left:20px;}
+</style>
+
+<tags:sectionContainer title="Box Containers" styleClass="separated-sections">
+    <div class="example section">
+        <div class="clearfix">
+            <tags:boxContainer title="This is a Box Container">:D</tags:boxContainer>
+            <span class="description">a normal box container</span>
+        </div>
+        <pre class="code prettyprint">&lt;tags:boxContainer title=&quot;This is a Box Container&quot;&gt;:D&lt;/tags:boxContainer&gt;</pre>
+    </div>
+</tags:sectionContainer>
+
+<tags:sectionContainer title="Section Containers">
+    <div class="example section">
+        <div class="clearfix">
+            <tags:sectionContainer title="This is a Section Container">:D</tags:sectionContainer>
+            <span class="description">a normal section container</span>
+        </div>
+        <pre class="code prettyprint">&lt;tags:sectionContainer title=&quot;This is a Section Container&quot;&gt;:D&lt;/tags:sectionContainer&gt;</pre>
+    </div>
+</tags:sectionContainer>
+
+<script>
+$(function () {
+    $('.y-resizable').each(function (index, elem) {
+        var item = $(elem),
+            naturalHeight = item.height();
+
+        item.css({
+            'height': '200px',
+        });
+
+        item.resizable({
+            'handles': 's',
+            'minHeight': 50,
+            'maxHeight': naturalHeight
+        });
+    });
+});
+</script>
+<style>
+    .y-resizable .ui-resizable-handle {
+        border: 1px solid #ccc;
+        position: absolute;
+        bottom: -20px;
+        height:  20px;
+        background: #f3f3f3;
+    }
+    .y-resizable .y-resizable-content {
+        overflow: auto;
+        position: relative;
+        height: 100%;
+    }
+    .y-resizable {
+        margin-bottom: 20px;
+    }
+
+    .y-resizable .ui-resizable-handle:before {
+        content: '';
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right:0;
+        width: 16px;
+        height: 16px;
+        background-image: url(../../WebConfig/yukon/Icons/icons.png);
+        background-position: -176px -48px;
+    }
+
+    .full-height {height:100%;}
+</style>
+<tags:sectionContainer title="Sizable Scrolling container">
+    <div class="y-resizable">
+        <div class="y-resizable-content">
+            Work in progress
+            <ul>
+                <c:forEach var="i" begin="1" end="30" step="1">
+                    <li> ${i}. Item</li>
+                </c:forEach>
+            </ul>
+        </div>
+    </div>
+</tags:sectionContainer>
+
+
+<tags:sectionContainer title="Tabs">
+    <cti:tabs>
+        <cti:tab title="First">First Content</cti:tab>
+        <cti:tab title="Second">Second Content</cti:tab>
+        <cti:tab title="Third">Third Content</cti:tab>
+    </cti:tabs>
+    <cti:tabs>
+        <cti:tab title="First">First Content</cti:tab>
+        <cti:tab title="Second" selected="true" >Second Content</cti:tab>
+        <cti:tab title="Third">Third Content</cti:tab>
+    </cti:tabs>
+
+
+</tags:sectionContainer>
+<tags:sectionContainer title="Containers Side by Side Test">
+    <div class="column-6-6-6-6">
+        <div class="column one">
+            <tags:boxContainer title="Box Container">box container contents</tags:boxContainer>
+        </div>
+        <div class="column two">
+            <script type="text/javascript">
+            $(function() {$('#tabs-test').tabs();});
+            </script>
+            <div id="tabs-test">
+                <ul>
+                    <li><a href="#tab1">Tab 1</a></li>
+                    <li><a href="#tab2">Tab 2</a></li>
+                </ul>
+                <div id="tab1" class="clearfix">tab 1 contents</div>
+                <div id="tab2" class="clearfix">tab 2 contents</div>
+            </div>
+        </div>
+        <div class="column three">
+            <cti:tabs>
+                <cti:tab title="Tab 1">tab 1 should start hidden</cti:tab>
+                <cti:tab title="Tab 2" selected="true">tab 2 should be active first</cti:tab>
+            </cti:tabs>
+        </div>
+        <div class="column four nogutter">
+            <tags:sectionContainer title="Section Container">section container contents</tags:sectionContainer>
+        </div>
+    </div>
+</tags:sectionContainer>
+
+</tags:styleguide>
+</cti:standardPage>

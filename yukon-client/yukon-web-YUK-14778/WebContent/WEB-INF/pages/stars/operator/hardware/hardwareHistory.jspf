@@ -1,0 +1,76 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
+<cti:tabs>
+    <cti:msg2 key=".deviceStatusHistory.tab" var="statusTitle"/>
+    <cti:tab title="${statusTitle}">
+        <c:choose>
+            <c:when test="${empty deviceStatusHistory}">
+                <span class="empty-list"><i:inline key=".deviceStatusHistory.none"/></span>
+            </c:when>
+            <c:otherwise>
+                <div class="scroll-sm">
+                    <table class="compact-results-table dashed">
+                        <thead>
+                            <tr>
+                                <th><i:inline key=".deviceStatusHistory.event"/></th>
+                                <th><i:inline key=".deviceStatusHistory.userName"/></th>
+                                <th><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
+                            </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach var="event" items="${deviceStatusHistory}">
+                                <tr>
+                                    <td><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
+                                    <td><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
+                                    <td><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </cti:tab>
+    
+    <cti:msg2 key=".hardwareHistory.tab" var="hardwareTitle"/>
+    <cti:tab title="${hardwareTitle}">
+            <c:choose>
+                <c:when test="${empty hardwareHistory}">
+                    <span class="empty-list"><i:inline key=".hardwareHistory.none"/></span>
+                </c:when>
+                <c:otherwise>
+                    <div class="scroll-sm">
+                        <table class="compact-results-table dashed">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".hardwareHistory.date"/></th>
+                                    <th><i:inline key=".hardwareHistory.action"/></th>
+                                </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                            <c:forEach var="event" items="${hardwareHistory}">
+                                <tr>
+                                    <td class="wsnw"><cti:formatDate value="${event.date}" type="BOTH"/></td>
+                                    <td class="wsnw last"><spring:escapeBody htmlEscape="true">${event.action}</spring:escapeBody></td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+    </cti:tab>
+
+    <c:if test="${showThermostatHistory}">
+        <cti:msg2 key=".commandHistory.tab" var="commandTitle"/>
+        <cti:tab title="${commandTitle}">
+            <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp" />
+        </cti:tab>
+    </c:if>
+</cti:tabs>

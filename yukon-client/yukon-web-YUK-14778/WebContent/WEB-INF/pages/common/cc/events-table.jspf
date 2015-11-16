@@ -1,0 +1,43 @@
+<table class="compact-results-table">
+    <thead>
+        <tr>
+            <th>Program Name</th>
+            <th>Program Type</th>
+            <th>Account</th>
+            <th>State</th>
+            <th>Start</th>
+            <th>End</th>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        <c:forEach var="event" items="${events}">
+            <tr>
+                <td>${event.program.name}</td>
+                <td>${event.program.programType.name}</td>
+                <td data-duration="${event.duration}"
+                    data-event-number="${event.displayName}"
+                    data-start-time="<cti:formatDate type="DATEHM" value="${event.startTime}"/>"
+                    data-reason="${event.reason}"
+                    data-popup="#details-popup">
+                    <a href="programs-events/details/${event.identifier}">${event.displayName}</a>
+                </td>
+                <td>${event.stateDescription}</td>
+                <td><cti:formatDate type="DATEHM" value="${event.startTime}"/></td>
+                <td><cti:formatDate type="DATEHM" value="${event.stopTime}"/></td>
+            </tr>
+        </c:forEach>
+        <c:forEach var="entry" items="${recentEventsColl}">
+            <tr>
+                <td>entry: ${entry.key}</td>
+            </tr>
+            <c:forEach var="val" items="${entry.value}">
+                <tr>
+                    <td>${val.program.name}</td>
+                    <td>${val.program.programType.name}</td>
+                    <td>${val.stateDescription}</td>
+                </tr>
+            </c:forEach>
+        </c:forEach>
+    </tbody>
+</table>

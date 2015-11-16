@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+                /error-code.xml=friendlyErrorBaseController
+                /porter_error.xsl=friendlyErrorBaseController
+                /*=yukonBaseController
+            </value>
+        </property>
+        <property name="order" value="1"/>
+    </bean>
+    
+    <bean id="friendlyErrorBaseController" class="com.cannontech.web.util.ClasspathResourceController">
+        <property name="classpathPrefix" value="com/cannontech/amr/errors/dao/impl"/>
+    </bean>
+    
+    <bean id="yukonBaseController" class="com.cannontech.web.util.YukonBaseStaticController">
+        <property name="prefix" value="\Server\Static"/>
+        <property name="urlPathHelper">
+          <bean class="org.springframework.web.util.UrlPathHelper">
+            <property name="urlDecode" value="false"/> <!-- changing this might open a security hole -->
+          </bean>
+        </property>
+    </bean>
+  
+</beans>

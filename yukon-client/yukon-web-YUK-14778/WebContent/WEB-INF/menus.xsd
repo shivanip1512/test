@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema elementFormDefault="qualified" 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://yukon.cannontech.com/menus"
+            xmlns:m="http://yukon.cannontech.com/menus">
+
+    <xsd:element name="menus" type="m:Menus"/>
+
+    <xsd:complexType name="Menus">
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="menu" type="m:Menu" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Menu">
+        <xsd:sequence>
+            <xsd:element name="permissions" type="m:Permissions" minOccurs="0"/>
+            <xsd:element name="link" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="options" type="m:Options"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Options">
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="option" type="m:Option"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Option">
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="permissions" type="m:Permissions" minOccurs="0"/>
+            <xsd:element name="link" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="section" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="RoleProperty">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Role">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="GlobalSetting">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="MasterConfig">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="EmptyElement">
+        <xsd:complexContent>
+            <xsd:restriction base="xsd:anyType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Permissions">
+        <xsd:choice>
+            <xsd:element name="and" type="m:PermissionSet"/>
+            <xsd:element name="or" type="m:PermissionSet"/>
+            <xsd:element name="role" type="m:Role"/>
+            <xsd:element name="roleProperty" type="m:RoleProperty"/>
+            <xsd:element name="globalSetting" type="m:GlobalSetting"/>
+            <xsd:element name="masterConfig" type="m:MasterConfig"/>
+            <xsd:element name="ecOperator" type="m:EmptyElement"/>
+        </xsd:choice>
+        <xsd:attribute name="mode" type="m:AnyOrAll"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="PermissionSet">
+        <xsd:choice minOccurs="2" maxOccurs="unbounded">
+            <xsd:element name="role" type="m:Role"/>
+            <xsd:element name="roleProperty" type="m:RoleProperty"/>
+            <xsd:element name="globalSetting" type="m:GlobalSetting"/>
+            <xsd:element name="masterConfig" type="m:MasterConfig"/>
+            <xsd:element name="ecOperator" type="m:EmptyElement"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:simpleType name="AnyOrAll">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="any"/>
+            <xsd:enumeration value="all"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>

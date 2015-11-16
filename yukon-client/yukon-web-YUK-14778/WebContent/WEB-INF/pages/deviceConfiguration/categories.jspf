@@ -1,0 +1,138 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:msgScope paths=",yukon.web.modules.tools.configs.category">
+
+<c:set var="catType" value="${category.categoryDisplay.categoryType}"/>
+<c:set var="selection" value="${configCategories.categorySelections[(loopStatus.index)]}"/>
+
+<input type="hidden" id="categoryId_${catType}" value="${selection.categoryId}"/>
+
+<div class="pr clearfix">
+    <c:set var="attrs" value=""/>
+    <c:forEach var="deviceType" items="${deviceConfigTypes.typesByCategory[catType]}">
+        <c:set var="attrs" value="${attrs} data-device-type-${deviceType}"/>
+    </c:forEach>
+    <span ${attrs} class="pipe" style="margin-bottom: 20px;">&nbsp;</span>
+    
+    <c:if test="${empty selection.categoryId}">
+        <tags:alertBox key=".needsSelection"/>
+    </c:if>
+    
+    <tags:nameValueContainer2>
+        <tags:nameValue2 nameKey=".name" nameColumnWidth="15%">
+            <div id="categoryName_${catType}">${fn:escapeXml(selection.categoryName)}</div>
+        </tags:nameValue2>
+        <tags:nameValue2 nameKey=".type">
+            <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
+            <cti:msg2 var="catPopupTitle" key=".categoryInfoTitle" argument="${i18nCatType}"/>
+            <i:inline key=".${catType}.title"/>
+            <a href="javascript:void(0);" 
+               class="js-category-type-info dib" 
+               title="click for more details" 
+               data-category-type="${catType}" 
+               data-config-id="${configCategories.configId}"
+               data-popup-title="${catPopupTitle}">
+                <cti:icon icon="icon-help" data-popup="#section-container-info-popup-${catType}"/>
+            </a>
+            <div id="section-container-info-popup-${catType}" title="${catPopupTitle}" data-width="500" class="dn">
+                <c:set var="supportedTypes" value=""/>
+                <c:forEach var="paoType" items="${categoryToDeviceTypeMap[catType]}" varStatus="status">
+                    <c:choose>
+                        <c:when test="${status.first}">
+                            <c:set var="supportedTypes" value="${paoType.dbString}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="supportedTypes" value="${supportedTypes}, ${paoType.dbString}"/>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+                <c:set var="supportedTypes" value="${supportedTypes}."/>
+                <cti:msg2 key=".categoryDeviceTypes" arguments="${supportedTypes}"/>
+            </div> 
+        </tags:nameValue2>
+        <c:if test="${not empty selection.categoryId}">
+            <tags:nameValue2 nameKey=".description">
+                ${fn:escapeXml(selection.description)}
+            </tags:nameValue2>
+        </c:if>
+    </tags:nameValueContainer2>
+    
+    <cti:displayForPageEditModes modes="VIEW,EDIT">
+        <cti:checkRolesAndProperties value="${editingRoleProperty}">
+            <cti:url var="swapCategoryUrl" value="/deviceConfiguration/config/swapCategory"/>
+            <form id="categoryChange_${catType}" action="${swapCategoryUrl}">
+                <input type="hidden" name="configId" value="${configCategories.configId}">
+                <input type="hidden" name="newCategoryId" id="newCategoryId_${catType}">
+                <input type="hidden" name="categoryType" value="${catType}">
+               
+                <c:set var="pickerLabel" value="changeOut"/>
+                <c:if test="${empty selection.categoryId}">
+                    <c:set var="pickerLabel" value="select"/>
+                </c:if>
+               
+                <cti:displayForPageEditModes modes="VIEW">
+                    <div class="action-area">
+                        <c:if test="${(not empty selection.otherCategoriesExist && selection.otherCategoriesExist) || 
+                                      empty selection.categoryId}">
+                            <tags:pickerDialog
+                                id="categoryPicker_${catType}"
+                                type="categoryPicker"
+                                destinationFieldId="newCategoryId_${catType}"
+                                linkType="button"
+                                nameKey="${pickerLabel}"
+                                allowEmptySelection="false"
+                                multiSelectMode="false"
+                                immediateSelectMode="true"
+                                icon="icon-arrow-swap"
+                                endAction="function(items) {return yukon.deviceConfig.changeOut('${catType}');}"
+                                extraArgs="${catType}"
+                                />
+                        </c:if>
+                        
+                        <cti:msg2 var="i18nCatType" key=".${catType}.title"/>
+                        <cti:msg2 var="createBtnTitle" key=".createCategory" argument="${i18nCatType}"/>
+                        <cti:button nameKey="create" 
+                            data-config-id="${configCategories.configId}" 
+                            data-category-type="${catType}" 
+                            classes="js-create-category" 
+                            busy="true" 
+                            icon="icon-plus-green" 
+                            title="${createBtnTitle}"/>
+                        <c:if test="${not empty selection.categoryId}">
+                            <cti:msg2 var="editBtnTitle" key=".editAssignedCategory" argument="${selection.categoryName}"/>
+                            <cti:button nameKey="edit" 
+                                data-config-id="${configCategories.configId}" 
+                                data-category-type="${catType}" 
+                                classes="js-edit-category" 
+                                busy="true" 
+                                icon="icon-pencil" 
+                                title="${editBtnTitle}"/>
+                            
+                            <div class="category-fields-title">
+                                <div class="fl revealer"
+                                    data-show-hide=".category-fields-content[data-category-id='${category.categoryId}']">
+                                    
+                                    <i:inline key=".categoryFields.title"/>
+                                </div>
+                            </div>
+                        </c:if>
+                        
+                    </div>
+                </cti:displayForPageEditModes>
+            </form>
+        </cti:checkRolesAndProperties>
+        
+        <cti:url var="quickView" value="/deviceConfiguration/category/quick-view">
+            <cti:param name="categoryId" value="${category.categoryId}" />
+            <cti:param name="configId" value="${deviceConfig.configId}" />
+        </cti:url>
+        
+        <div class="dn category-fields-content callout-box" data-category-id="${category.categoryId}"
+            data-url="${quickView}" data-event="yukon:device:config:quick-view:loaded"></div>
+        
+    </cti:displayForPageEditModes>
+</div>
+</cti:msgScope>

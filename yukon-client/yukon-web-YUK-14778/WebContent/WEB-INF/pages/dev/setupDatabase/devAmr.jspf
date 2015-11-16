@@ -1,0 +1,52 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<div id="amr" class="devWidget">
+    <cti:flashScopeMessages />
+    <div class="widgetMessage"></div>
+    <form:form commandName="devAMR" action="setupAMR" method="post" id="setupAMRForm">
+        <cti:csrfToken/>
+        <div class="widgetContent">
+            <tags:nameValueContainer2>
+                <label> 
+                    <tags:checkbox path="createCartObjects" descriptionNameKey=".setupDevDatabase.option.amr.createCartObjects" /><br>
+                </label>
+                <label> 
+                    <tags:checkbox path="createRfnTemplates"  descriptionNameKey=".setupDevDatabase.option.amr.createRfnTemplateMeters" />
+                </label>
+                <tags:inputNameValue path="numAdditionalMeters" nameKey=".setupDevDatabase.option.amr.numAdditionalMeters" size="4" />
+                <tags:selectNameValue path="routeId"            nameKey=".setupDevDatabase.option.amr.routeId" items="${allRoutes}" itemLabel="paoName" itemValue="liteID" />
+                <tags:inputNameValue path="addressRangeMin"     nameKey=".setupDevDatabase.option.amr.addressRangeMin" size="10" />
+                <tags:inputNameValue path="addressRangeMax"     nameKey=".setupDevDatabase.option.amr.addressRangeMax" size="10" />
+            </tags:nameValueContainer2>
+            <h4>Types</h4>
+            <ul>
+                <li><label> 
+                        <input id="js-check_all_meters" type="checkbox" />
+                        Check All
+                    </label>
+                </li>
+                <c:forEach items="${devAMR.meterTypes}" var="meterType" varStatus="status">
+                    <li class="subItemCheckbox">
+                        <label> 
+                            <tags:checkbox path="meterTypes[${status.index}].create" styleClass="js-check_single_meter" />${devAMR.meterTypes[status.index].paoType}
+                        </label>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
+   <div class="page-action-area">
+       <cti:button type="submit" nameKey="runSetup" classes="action primary"/>
+   </div>
+   </form:form>
+
+    <script type="text/javascript">
+    $(function() {
+        $("input#js-check_all_meters:checkbox").checkAll("input.js-check_single_meter:checkbox");
+    });
+    </script>
+</div>

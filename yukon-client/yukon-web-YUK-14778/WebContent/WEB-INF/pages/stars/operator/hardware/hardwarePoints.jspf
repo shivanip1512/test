@@ -1,0 +1,72 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
+<script type="text/javascript">
+$(function() {
+    <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr or hardware.hardwareType.ecobee}">
+        setupClickHandler('#readNow', '<cti:url value="/stars/operator/hardware/readNow"/>');
+    </c:if>
+    
+    function setupClickHandler(selector, url) {
+        $(document).on('click', selector, function(event) {
+            $.ajax({
+                url: url,
+                method: 'get',
+                data: {'deviceId': '${hardware.deviceId}'}
+            }).done(function(data) {
+                $('#commandStatus').html(data.message);
+                $('#commandStatus').show();
+                if (data.success ==  true) {
+                    $('#commandStatus').addClass('success').removeClass('error');
+                } else {
+                    $('#commandStatus').removeClass('success').addClass('error');
+                }
+            }).always(function() {
+                yukon.ui.unbusy($(selector));
+            });
+        });
+    }
+});
+</script>
+
+<tags:sectionContainer2 nameKey="hardwarePoints">
+    <c:forEach var="entry" items="${points}">
+        <c:if test="${fn:length(entry.value) > 0}">
+            <span><i:inline key="${entry.key}" /></span>
+            <div class="scroll-lg lite-container stacked dashed">
+                <table class="compact-results-table">
+                    <c:forEach var="point" items="${entry.value}">
+                        <tr>
+                            <td class="wsnw"><cti:pointValue pointId="${point.liteID}" format="DATE"/></td>
+                            <td class="full-width">${fn:escapeXml(point.pointName)}</td>
+                            <td class="wsnw">
+                                <cti:pointValue pointId="${point.liteID}" colorForStatus="true" format="VALUE"/>
+                                <cti:pointValue pointId="${point.liteID}" format="UNIT"/>
+                                <cti:pointValue pointId="${point.liteID}" format="SHORT_QUALITY"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </div>
+        </c:if>
+    </c:forEach>
+        <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr 
+                        or hardware.hardwareType.ecobee}">
+            <div id="commandStatus" class="dn error"></div>
+        </c:if>
+    <div class="action-area">
+        <cti:url var="pointsUrl" value="/stars/operator/hardware/points">
+            <cti:param name="deviceId" value="${hardware.deviceId}"/>
+            <cti:param name="accountId" value="${accountId}"/>
+        </cti:url>
+        <a href="${pointsUrl}"><i:inline key="yukon.common.showAll"/></a>
+        <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr 
+                        or hardware.hardwareType.ecobee}">
+            <cti:button id="readNow" nameKey="readNow" busy="true" icon="icon-read"/>
+        </c:if>
+        
+    </div>
+</tags:sectionContainer2>

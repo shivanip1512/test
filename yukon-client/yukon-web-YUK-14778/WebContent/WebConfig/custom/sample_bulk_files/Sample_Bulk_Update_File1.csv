@@ -1,0 +1,6 @@
+NAME,ENABLE,METER_NUMBER,ROUTE
+Meter 1,true,1000,CCU A
+Meter 2,true,2000,CCU A
+Meter 3,false,3000,CCU B
+Meter 4,false,4000,CCU B
+Meter 5,true,5000,CCU C

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <context:component-scan base-package="com.cannontech.web.bulk"/>
+
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+                <prop key="/massChangeOptions">MassChangeOptionsController</prop>
+            </props>
+        </property>
+        <property name="order" value="0"></property>
+    </bean>
+    
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/bulk/"/>
+    </bean>
+    
+    <!-- UPDATE CONTROLLER (UPDATE BY FILE) NEEDS THIS TO HANDLE FILE UPLOADS  -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+    
+    <!-- MASS CHANGE OPTIONS CONTROLLER -->
+    <bean id="MassChangeOptionsController" class="com.cannontech.web.bulk.MassChangeOptionsController" >
+        
+        <property name="commandName" value="massChangeOptions" />
+        <property name="formView" value="massChange/massChangeOptions.jsp" />
+        
+        <property name="bulkFieldService" ref="bulkFieldService" />
+        
+        <property name="bulkYukonDeviceFieldFactory" ref="bulkYukonDeviceFieldFactory" />
+        <property name="bulkProcessor" ref="resubmittingBulkProcessor" />
+        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+        
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+        <property name="temporaryDeviceGroupService" ref="temporaryDeviceGroupService" />
+        <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
+        <property name="recentResultsCache" ref="recentResultsCache" />
+        
+    </bean>
+    
+    <bean id="updatePointsProcessorFactory" class="com.cannontech.web.bulk.UpdatePointsProcessorFactory"/>
+    
+</beans>

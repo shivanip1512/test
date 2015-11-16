@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <!-- This file is for the Lucene Searching beans. -->
+
+    <bean id="pointDeviceSearcherLucene" class="com.cannontech.web.search.searcher.PointDeviceLuceneSearcher">
+        <property name="indexManager" ref="pointDeviceIndexManager" />
+    </bean>
+
+    <alias name="pointDeviceSearcherLucene" alias="pointDeviceSearcher" />
+    
+    <bean id="pointDeviceIndexManager" class="com.cannontech.web.search.lucene.index.PointDeviceIndexManager">
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+
+    <bean id="userSearcherLucene" class="com.cannontech.web.search.searcher.UserLuceneSearcher">
+        <property name="indexManager" ref="userIndexManager" />
+    </bean>
+
+    <alias name="userSearcherLucene" alias="userSearcher" />
+    
+    <bean id="userIndexManager" class="com.cannontech.web.search.lucene.index.UserIndexManager">
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+    
+    <bean id="customerAccountSearcherLucene" class="com.cannontech.web.search.searcher.CustomerAccountLuceneSearcher">
+        <property name="indexManager" ref="customerAccountIndexManager" />
+    </bean>
+
+    <alias name="customerAccountSearcherLucene" alias="customerAccountSearcher" />
+    
+    <bean id="customerAccountIndexManager" class="com.cannontech.web.search.lucene.index.CustomerAccountIndexManager">
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+
+    <bean id="userGroupSearcherLucene" class="com.cannontech.web.search.searcher.UserGroupLuceneSearcher">
+        <property name="indexManager" ref="userGroupIndexManager" />
+    </bean>
+
+    <alias name="userGroupSearcherLucene" alias="userGroupSearcher" />
+
+    <bean id="userGroupIndexManager" class="com.cannontech.web.search.lucene.index.UserGroupIndexManager">
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+    
+    <bean id="loginGroupSearcherLucene" class="com.cannontech.web.search.searcher.LoginGroupLuceneSearcher">
+        <property name="indexManager" ref="loginGroupIndexManager" />
+    </bean>
+
+    <alias name="loginGroupSearcherLucene" alias="loginGroupSearcher" />
+    
+    <bean id="loginGroupIndexManager" class="com.cannontech.web.search.lucene.index.LoginGroupIndexManager">
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+    
+    <bean id="paoTypeSearcherLucene" class="com.cannontech.web.search.searcher.PaoTypeLuceneSearcher">
+        <property name="indexManager" ref="paoIndexManager" />
+    </bean>
+
+    <alias name="paoTypeSearcherLucene" alias="paoTypeSearcher" />
+
+    <bean id="paoIndexManager" class="com.cannontech.web.search.lucene.index.PaoIndexManager">
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+
+    <bean class="com.cannontech.web.search.lucene.index.site.StaticPageIndexBuilder"/>
+    <bean class="com.cannontech.web.search.lucene.index.site.CustomerAccountPageIndexBuilder"/>
+    <bean class="com.cannontech.web.search.lucene.index.site.InventoryPageIndexBuilder"/>
+    <bean class="com.cannontech.web.search.lucene.index.site.PaoPageIndexBuilder"/>
+    <bean class="com.cannontech.web.search.lucene.index.site.MeterPaoTypeHandler"/>
+    <bean class="com.cannontech.web.search.lucene.index.site.DrPaoTypeHandler"/>
+    <bean class="com.cannontech.web.search.lucene.index.site.CapControlPaoTypeHandler"/>
+
+    <bean class="com.cannontech.web.search.lucene.index.SiteSearchIndexManager">
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource"/>
+    </bean>
+
+    <bean id="indexBuilder" class="com.cannontech.web.search.lucene.index.IndexBuilder"/>
+</beans>

@@ -1,0 +1,78 @@
+#enrollmentNote {
+    text-align: center;
+    background-color: #C3FDB8;
+    padding:  10px;
+    margin: 0px 50px 20px 50px;
+    border: 2px solid black;
+}
+
+div.applianceCategory {
+    margin: 20px 10px 20px 10px;
+    border: 2px solid black;
+    padding: 5px;
+}
+
+table.applianceCategoryHeading {
+}
+
+td.applianceCategoryIcon {
+    vertical-align: top;
+    padding: 5px;
+}
+
+td.applianceCategoryName {
+    vertical-align: top;
+    padding: 5px;
+    font-size: 16px;
+	font-weight: bold;
+}
+
+td.applianceCategoryDescription {
+    padding: 5px;
+}
+
+div.programList {
+	padding: 5px;
+}
+
+div.programList table {
+	margin: 5px;
+	padding-right: 10px;
+	width: 100%;
+}
+
+.enrolled {
+    background-color: #C3FDB8;
+}
+
+.notEnrolled {
+}
+
+div.program {
+	margin: 5px;
+	padding: 5px;
+}
+
+td.programName {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+td.programDescriptionIcon {
+    padding-left: 2px;
+    padding-right: 2px;
+    width: 25px;
+    max-width: 25px;
+}
+
+td.enrollLink {
+    padding-left: 5px;
+    padding-right: 10px;
+	text-align: right;
+	width: 75px;
+}
+
+.programDescription {
+	padding-left: 35px;
+	padding-right: 10px;
+}
