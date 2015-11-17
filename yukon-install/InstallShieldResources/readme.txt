@@ -1,6 +1,8 @@
 This document outlines the procedure for updating the certificate InstallShield uses to sign the Yukon installer (Setup.exe).
 InstallShield uses the same certificate we use for jar signing, and will need to be updated whenever that cert expires.
 
+Note that most of these steps need to be performed as an administrator.
+
 Install programs for formatting the certificate.
 1. Install OpenSSL (https://slproweb.com/products/Win32OpenSSL.html)
 2. Install KeyStore Explorer (http://keystore-explorer.sourceforge.net)
@@ -14,7 +16,7 @@ Extract private key file
 
 Create .pfx file. 
 1. Add the openssl.exe to the path, or navigate to the location it was installed in CMD.
-2. In CMD: "openssl pkcs12 -export -inkey privateKeyFileName -in certName.cer - out pfxFileName.pfx"
+2. In CMD: "openssl pkcs12 -export -inkey privateKeyFileName -in fromverisign5.cer - out pfxFileName.pfx"
 
 Use the pfx file in InstallShield
 1. Move the pfx file to yukon-install/InstallshieldResources
