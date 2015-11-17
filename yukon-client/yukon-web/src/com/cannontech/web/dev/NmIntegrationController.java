@@ -35,6 +35,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
+import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
@@ -43,6 +44,7 @@ import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
+import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
@@ -235,12 +237,22 @@ public class NmIntegrationController {
         model.addAttribute("acceptedUpdateStatusTypes", SimulatedCertificateReplySettings.acceptedUpdateStatusTypes);
         model.addAttribute("firmwareVersionReplyTypes", RfnUpdateServerAvailableVersionResult.values());
         model.addAttribute("firmwareUpdateResultTypes", GatewayFirmwareUpdateRequestResult.values());
+        model.addAttribute("gatewayUpdateResultTypes", GatewayUpdateResult.values());
         
         // Thread statuses
         model.addAttribute("autoDataReplyActive", gatewaySimService.isAutoDataReplyActive());
-        model.addAttribute("autoCertificateReplyActive", gatewaySimService.isAutoUpgradeReplyActive());
+        model.addAttribute("autoUpdateReplyActive", gatewaySimService.isAutoUpdateReplyActive());
+        model.addAttribute("autoCertificateReplyActive", gatewaySimService.isAutoCertificateUpgradeReplyActive());
         model.addAttribute("autoFirmwareReplyActive", gatewaySimService.isAutoFirmwareReplyActive());
         model.addAttribute("autoFirmwareVersionReplyActive", gatewaySimService.isAutoFirmwareVersionReplyActive());
+        model.addAttribute("numberOfSimulatorsRunning", gatewaySimService.getNumberOfSimulatorsRunning());
+        
+        // Current settings
+        model.addAttribute("certificateSettings", gatewaySimService.getCertificateSettings());
+        model.addAttribute("firmwareSettings", gatewaySimService.getFirmwareSettings());
+        model.addAttribute("firmwareVersionSettings", gatewaySimService.getFirmwareVersionSettings());
+        model.addAttribute("dataSettings", gatewaySimService.getGatewayDataSettings());
+        model.addAttribute("updateSettings", gatewaySimService.getGatewayUpdateSettings());
         
         return "rfn/gatewayDataSimulator.jsp";
     }
@@ -253,6 +265,92 @@ public class NmIntegrationController {
         
         gatewaySimService.sendGatewayArchiveRequest(name, serial, isGateway2);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayCreated", name));
+        
+        return "redirect:gatewaySimulator";
+    }
+    
+    @RequestMapping("enableAll")
+    public String enableAllSimulators(FlashScope flash) {
+        // Only start the threads that aren't already running. This lets the user specify non-default parameters for
+        // some threads, then just bulk-start the rest.
+        
+        // Data reply
+        boolean autoDataReplyActive = false;
+        if (!gatewaySimService.isAutoDataReplyActive()) {
+            SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
+            dataSettings.setReturnGwy800Model(false);
+            autoDataReplyActive = gatewaySimService.startAutoDataReply(dataSettings);
+        }
+        
+        // Update reply
+        boolean autoUpdateReplyActive = false;
+        if (!gatewaySimService.isAutoUpdateReplyActive()) {
+            SimulatedUpdateReplySettings updateSettings = new SimulatedUpdateReplySettings();
+            updateSettings.setCreateResult(GatewayUpdateResult.SUCCESSFUL);
+            updateSettings.setEditResult(GatewayUpdateResult.SUCCESSFUL);
+            updateSettings.setDeleteResult(GatewayUpdateResult.SUCCESSFUL);
+            autoUpdateReplyActive = gatewaySimService.startAutoUpdateReply(updateSettings);
+        }
+        
+        // Certificate upgrade reply
+        boolean autoCertUpdateReplyActive = false;
+        if (!gatewaySimService.isAutoCertificateUpgradeReplyActive()) {
+            SimulatedCertificateReplySettings certSettings = new SimulatedCertificateReplySettings();
+            certSettings.setAckType(RfnGatewayUpgradeRequestAckType.ACCEPTED_FULLY);
+            certSettings.setDeviceUpdateStatus(GatewayCertificateUpdateStatus.REQUEST_ACCEPTED);
+            autoCertUpdateReplyActive = gatewaySimService.startAutoCertificateReply(certSettings);
+        }
+        
+        // Firmware version reply
+        boolean firmwareReplyActive = false;
+        if (!gatewaySimService.isAutoFirmwareReplyActive()) {
+            SimulatedFirmwareReplySettings settings = new SimulatedFirmwareReplySettings();
+            settings.setResultType(GatewayFirmwareUpdateRequestResult.ACCEPTED);
+            firmwareReplyActive = gatewaySimService.startAutoFirmwareReply(settings);
+        }
+        
+        // Firmware upgrade reply
+        boolean firmwareVersionReplyActive = false;
+        if (!gatewaySimService.isAutoFirmwareVersionReplyActive()) {
+            SimulatedFirmwareVersionReplySettings settings = new SimulatedFirmwareVersionReplySettings();
+            settings.setVersion("1.2.3");
+            settings.setResult(RfnUpdateServerAvailableVersionResult.SUCCESS);
+            firmwareVersionReplyActive = gatewaySimService.startAutoFirmwareVersionReply(settings);
+        }
+        
+        if (autoDataReplyActive && autoCertUpdateReplyActive && autoUpdateReplyActive && firmwareReplyActive && firmwareVersionReplyActive) {
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
+        } else {
+            
+        }
+        return "redirect:gatewaySimulator";
+    }
+    
+    @RequestMapping("disableAll") 
+    public String disableAllSimulators(FlashScope flash) {
+        if (gatewaySimService.isAutoDataReplyActive()) {
+            gatewaySimService.stopAutoDataReply();
+        }
+        if (gatewaySimService.isAutoUpdateReplyActive()) {
+            gatewaySimService.stopAutoUpdateReply();
+        }
+        if (gatewaySimService.isAutoCertificateUpgradeReplyActive()) {
+            gatewaySimService.stopAutoCertificateReply();
+        }
+        if (gatewaySimService.isAutoFirmwareVersionReplyActive()) {
+            gatewaySimService.stopAutoFirmwareVersionReply();
+        }
+        if (gatewaySimService.isAutoFirmwareReplyActive()) {
+            gatewaySimService.stopAutoFirmwareReply();
+        }
+        
+        while(gatewaySimService.isAutoDataReplyActive() ||
+                gatewaySimService.isAutoUpdateReplyActive() ||
+                gatewaySimService.isAutoCertificateUpgradeReplyActive() ||
+                gatewaySimService.isAutoFirmwareReplyActive() ||
+                gatewaySimService.isAutoFirmwareVersionReplyActive()) {
+            // wait for all sims to stop
+        }
         
         return "redirect:gatewaySimulator";
     }
@@ -282,6 +380,36 @@ public class NmIntegrationController {
         return "redirect:gatewaySimulator";
     }
     
+    @RequestMapping("enableGatewayUpdateReply")
+    public String enableGatewayUpdateReply(@RequestParam GatewayUpdateResult createResult,
+                                           @RequestParam GatewayUpdateResult editResult,
+                                           @RequestParam GatewayUpdateResult deleteResult,
+                                           FlashScope flash) {
+        
+        SimulatedUpdateReplySettings updateSettings = new SimulatedUpdateReplySettings();
+        updateSettings.setCreateResult(createResult);
+        updateSettings.setEditResult(editResult);
+        updateSettings.setDeleteResult(deleteResult);
+        boolean autoUpdateReplyActive = gatewaySimService.startAutoUpdateReply(updateSettings);
+        
+        if (autoUpdateReplyActive) {
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
+        } else {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed"));
+        }
+        
+        return "redirect:gatewaySimulator";
+    }
+    
+    @RequestMapping("disableGatewayUpdateReply")
+    public String disableGatewayUpdateReply() {
+        gatewaySimService.stopAutoUpdateReply();
+        while (gatewaySimService.isAutoUpdateReplyActive()) {
+            //wait for sim to stop
+        }
+        return "redirect:gatewaySimulator";
+    }
+    
     @RequestMapping("enableGatewayCertificateReply")
     public String enableGatewayCertificateReply(@RequestParam RfnGatewayUpgradeRequestAckType ackType,
                                                 @RequestParam GatewayCertificateUpdateStatus updateStatus,
@@ -304,7 +432,7 @@ public class NmIntegrationController {
     @RequestMapping("disableGatewayCertificateReply")
     public String disableGatewayCertificateReply() {
         gatewaySimService.stopAutoCertificateReply();
-        while (gatewaySimService.isAutoUpgradeReplyActive()) {
+        while (gatewaySimService.isAutoCertificateUpgradeReplyActive()) {
             //wait for sim to stop
         }
         return "redirect:gatewaySimulator";

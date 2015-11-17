@@ -350,7 +350,7 @@ yukon.assets.gateway.list = (function () {
             /** 'Save' button clicked on the set update servers popup. */
             $(document).on('yukon:assets:gateway:update-server:save', function (ev) {
 
-                var popup = $('#firmware-upgrade-popup'),
+                var popup = $('#firmware-server-popup'),
                     btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
                     primary = btns.find('.js-primary-action'),
                     secondary = btns.find('.js-secondary-action');

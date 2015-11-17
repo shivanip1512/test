@@ -5,6 +5,7 @@ import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
+import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 
 /**
  * This is a development testing service that is intended to act as a replacement for Network Manager
@@ -24,6 +25,20 @@ public interface RfnGatewaySimulatorService {
      * The simulator stops automatically processing GatewayDataRequests.
      */
     void stopAutoDataReply(); 
+    
+    /**
+     * The simulator begins automatically processing GatewayCreateRequests, GatewayEditRequests and GatewayDeleteRequests
+     * and sending GatewayUpdateResponses.
+     * @param settings Configuration that determines the type of response sent. If null, default settings will be used.
+     * @return True if automatic update reply was started, and false if automatic update reply was already running or in
+     * the process of stopping.
+     */
+    boolean startAutoUpdateReply(SimulatedUpdateReplySettings settings);
+    
+    /**
+     * The simulator stops automatically processing GatewayCreateRequests, GatewayEditRequests, and GatewayDeleteRequests.
+     */
+    void stopAutoUpdateReply();
     
     /**
      * The simulator begins automatically processing RfnGatewayUpgradeRequests and sending RfnGatewayUpgradeResponses.
@@ -82,9 +97,14 @@ public interface RfnGatewaySimulatorService {
     public boolean isAutoDataReplyActive();
     
     /**
-     * @return true if the simulator is actively replying to certificate update requests.
+     * @return true if the simulator is actively replying to certificate upgrade requests.
      */
-    public boolean isAutoUpgradeReplyActive();
+    public boolean isAutoCertificateUpgradeReplyActive();
+    
+    /**
+     * @return true if the simulator is actively replying to gateway update requests.
+     */
+    public boolean isAutoUpdateReplyActive();
     
     /**
      * @return true if the simulator is actively replying to firmware upgrade requests.
@@ -95,7 +115,40 @@ public interface RfnGatewaySimulatorService {
      * @return true if the simulator is actively replying to firmware server version requests.
      */
     public boolean isAutoFirmwareVersionReplyActive();
-
     
+    /**
+     * Get the current settings for gateway data replies.
+     * @return the settings if the thread is running, otherwise null.
+     */
+    public SimulatedGatewayDataSettings getGatewayDataSettings();
+    
+    /**
+     * Get the current settings for gateway update replies to create/update/delete operations.
+     * @return the settings if the thread is running, otherwise null.
+     */
+    SimulatedUpdateReplySettings getGatewayUpdateSettings();
+    
+    /**
+     * Get the current settings for gateway certificate update replies.
+     * @return the settings if the thread is running, otherwise null.
+     */
+    public SimulatedCertificateReplySettings getCertificateSettings();
+    
+    /**
+     * Get the current settings for gateway firmware update replies.
+     * @return the settings if the thread is running, otherwise null.
+     */
+    public SimulatedFirmwareReplySettings getFirmwareSettings();
+    
+    /**
+     * Get the current settings for gateway firmware version replies.
+     * @return the settings if the thread is running, otherwise null.
+     */
+    public SimulatedFirmwareVersionReplySettings getFirmwareVersionSettings();
+    
+    /**
+     * Get the number of simulator threads currently running.
+     */
+    public int getNumberOfSimulatorsRunning();
     
 }

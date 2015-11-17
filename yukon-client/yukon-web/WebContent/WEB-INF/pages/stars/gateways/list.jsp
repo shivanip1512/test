@@ -23,7 +23,7 @@
         data-load-event="yukon:assets:gateway:load"></div>
 
     <c:if test="${enableNMGatewayVersion}">
-        <div id="firmware-upgrade-popup"
+        <div id="firmware-server-popup"
             data-dialog
             data-big-content
             data-width="750"
@@ -62,7 +62,7 @@
         </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
             <c:if test="${enableNMGatewayVersion}">
-                <cm:dropdownOption data-popup="#firmware-upgrade-popup" icon="icon-drive-go"
+                <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go"
                     classes="update-servers disabled" disabled="true">
 
                     <i:inline key=".updateServer.set"/>
