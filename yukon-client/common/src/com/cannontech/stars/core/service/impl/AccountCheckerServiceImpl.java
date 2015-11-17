@@ -44,10 +44,10 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     public void checkInventory(final LiteYukonUser user, final Integer... inventoryIds)
             throws NotAuthorizedException {
         
-        if (isOperator(user)) return;
-        
-        List<Integer> actualInventoryIds = getInventoryIdsByUser(user);
-        doCheck(user, actualInventoryIds, inventoryIds, "Inventory");
+        if (isOperator(user)) {
+	        List<Integer> actualInventoryIds = getInventoryIdsByUser(user);
+	        doCheck(user, actualInventoryIds, inventoryIds, "Inventory");
+        }
     }
     
     @Override
@@ -98,10 +98,10 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     public void checkProgram(final LiteYukonUser user, final Integer... programIds)
             throws NotAuthorizedException {
         
-        if (isOperator(user)) return;
-        
-        List<Integer> actualProgramIds = getProgramIdsByUser(user);
-        doCheck(user, actualProgramIds, programIds, "Program");
+        if (isOperator(user)) {        
+        	List<Integer> actualProgramIds = getProgramIdsByUser(user);
+        	doCheck(user, actualProgramIds, programIds, "Program");
+        }
     }
     
 	@Override
