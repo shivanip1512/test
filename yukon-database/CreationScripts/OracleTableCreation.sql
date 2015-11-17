@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/13/2015 1:29:43 PM                        */
+/* Created on:     11/13/2015 3:44:27 PM                        */
 /*==============================================================*/
 
 
@@ -5345,8 +5345,6 @@ create table GatewayCertificateUpdateEntry  (
 create table GatewayFirmwareUpdate  (
    UpdateId             NUMBER                          not null,
    SendDate             DATE                            not null,
-   GatewayCount         NUMBER                          not null,
-   UpdateServerCount    NUMBER                          not null,
    constraint PK_GatewayFirmwareUpdate primary key (UpdateId)
 );
 

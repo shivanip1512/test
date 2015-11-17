@@ -242,8 +242,6 @@ INSERT INTO DeviceConfigCategoryItem
 CREATE TABLE GatewayFirmwareUpdate (
    UpdateId             NUMBER              NOT NULL,
    SendDate             DATE                NOT NULL,
-   GatewayCount         NUMBER              NOT NULL,
-   UpdateServerCount    NUMBER              NOT NULL,
    CONSTRAINT PK_GatewayFirmwareUpdate PRIMARY KEY (UpdateId)
 );
 

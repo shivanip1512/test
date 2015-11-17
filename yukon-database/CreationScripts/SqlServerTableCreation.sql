@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/13/2015 1:31:04 PM                        */
+/* Created on:     11/13/2015 3:42:33 PM                        */
 /*==============================================================*/
 
 
@@ -5625,8 +5625,6 @@ go
 create table GatewayFirmwareUpdate (
    UpdateId             numeric              not null,
    SendDate             datetime             not null,
-   GatewayCount         numeric              not null,
-   UpdateServerCount    numeric              not null,
    constraint PK_GatewayFirmwareUpdate primary key (UpdateId)
 )
 go
