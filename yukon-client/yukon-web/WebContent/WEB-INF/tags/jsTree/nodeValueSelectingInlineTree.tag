@@ -32,9 +32,13 @@
     var multiSelect = ${multiSelect};
     
     function refreshMultiNodeElements() {
+
+        var field = $(document.getElementById("${fieldId}"));
+
+        var originalValue = field.val();
     
         // remove all
-        var sel = $(document.getElementById("${fieldId}")).html("");
+        field.html('');
         
         // add selected
         var selected = $("#${id}").dynatree("getSelectedNodes");
@@ -44,7 +48,11 @@
             newOpt.value = selected[i].data.metadata['${nodeValueName}'];
             newOpt.text = selected[i].data.metadata['${nodeValueName}'];
             newOpt.selected = true;
-            $(document.getElementById("${fieldId}")).append(newOpt);
+            field.append(newOpt);
+        }
+
+        if (field.val() !== originalValue) {
+            field.trigger('change');
         }
     }
 
@@ -59,7 +67,7 @@
         }
         else {
             // save group name
-            $(document.getElementById("${fieldId}")).val(nodeValue);
+            $(document.getElementById("${fieldId}")).val(nodeValue).trigger('change');
         }
     }
 </script>

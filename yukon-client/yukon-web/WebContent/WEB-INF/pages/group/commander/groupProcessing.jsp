@@ -25,18 +25,7 @@
     </cti:linkTab>
 </cti:linkTabbedContainer>
 
-<script type="text/javascript">
-function validateGroupIsSelected(btn, alertText) {
-    
-    if ($('#groupName').val() === '') {
-        alert(alertText);
-        return false;
-    }
-    
-    yukon.ui.busy('.js-group-commander');
-    $('#groupCommanderForm').submit();
-}
-</script>
+<cti:includeScript link="/resources/js/pages/yukon.tools.group.command.js"/>
 
 <%-- ERROR MSG --%>
 <c:if test="${not empty param.errorMsg}">
@@ -67,14 +56,14 @@ function validateGroupIsSelected(btn, alertText) {
     </div>
 
     <%-- SELECT COMMAND --%>
-    <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
-    <div>${selectCommandLabel}:</div>
-    <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
+    <div><i:inline key="yukon.common.device.commander.commandSelector.selectCommand"/></div>
+    <div id="no-command-options" class="dn empty-list"><i:inline key=".noCommands"/></div>
+    <amr:commandSelector id="select-group-command" selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
         selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}"/>
 
     <br><br>
-      <c:if test="${!isSmtpConfigured}">
-    <%-- EMAIL --%>
+    <c:if test="${!isSmtpConfigured}">
+        <%-- EMAIL --%>
         <div class="stacked">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey="yukon.common.email.send">
@@ -83,15 +72,13 @@ function validateGroupIsSelected(btn, alertText) {
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
-	  </c:if>
+    </c:if>
     <%-- EXECUTE BUTTON --%>
-    <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
-    <cti:url var="waitImgUrl" value="/WebConfig/yukon/Icons/spinner.gif" />
-    
     <div class="page-action-area stacked half-width">
+        <cti:msg2 var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
         <cti:button nameKey="execute"
             classes="js-group-commander-btn primary action M0"
-            onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');"/>
+            data-no-group-selected-text="${noGroupSelectedAlertText}"/>
     </div>
 </form>
 

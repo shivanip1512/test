@@ -3,6 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<%@ attribute name="id" %>
 <%@ attribute name="selectName" required="true" %>
 <%@ attribute name="fieldName" required="true" %>
 <%@ attribute name="commands" required="true" type="java.util.List"%>
@@ -10,6 +11,7 @@
 <%@ attribute name="selectedCommandString" %>
 
 <cti:uniqueIdentifier var="uniqueId" prefix="commandSelector_"/>
+<cti:default var="id" value="uniqueId"/>
 
 <cti:msg var="noAuthorizedCommandsText" key="yukon.common.device.commander.commandSelector.noAuthorizedCommands"/>
 <cti:msg var="selectOneLabel" key="yukon.common.device.commander.selector.selectOne"/>
@@ -18,7 +20,7 @@
     <c:when test="${fn:length(commands) <= 0}">${noAuthorizedCommandsText}</c:when>
     <c:otherwise>
         <tags:commanderPrompter/>
-        <select id="${uniqueId}" data-placeholder="${selectOneLabel}" 
+        <select id="${id}" data-placeholder="${selectOneLabel}" 
             name="${selectName}" class="js-loadCommanderCommand js-init-chosen" data-cmdfield="${fieldName}">
             <option value="">${selectOneLabel}</option>
             <c:forEach var="commandOption" items="${commands}">

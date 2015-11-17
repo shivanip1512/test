@@ -18,7 +18,6 @@ import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.util.ByteArrayDataSource;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +27,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -124,8 +125,7 @@ public class GroupCommanderController {
     }
 
     @RequestMapping("collectionProcessing")
-    public void collectionProcessing(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model)
-            throws ServletException {
+    public void collectionProcessing(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model) {
 
         List<LiteCommand> commands = getCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
         model.addAttribute("commands", commands);
@@ -183,7 +183,7 @@ public class GroupCommanderController {
     }
 
     @RequestMapping("groupProcessing")
-    public void groupProcessing(YukonUserContext userContext, ModelMap model) throws ServletException {
+    public void groupProcessing(YukonUserContext userContext, ModelMap model) {
 
         List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
         model.addAttribute("commands", commands);
@@ -193,7 +193,7 @@ public class GroupCommanderController {
     }
     
     @RequestMapping(value="executeGroupCommand", method=RequestMethod.POST)
-    public String executeGroupCommand(HttpServletRequest request, String groupName, String commandSelectValue, String commandString, String emailAddress, boolean sendEmail, YukonUserContext userContext, ModelMap map) throws ServletException {
+    public String executeGroupCommand(HttpServletRequest request, String groupName, String commandSelectValue, String commandString, String emailAddress, boolean sendEmail, YukonUserContext userContext, ModelMap map) {
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
         boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, sendEmail, groupName, userContext, map);
@@ -205,8 +205,7 @@ public class GroupCommanderController {
     }
 
     @RequestMapping(value="executeCollectionCommand", method=RequestMethod.POST)
-    public String executeCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection, String commandSelectValue, String commandString, final String emailAddress, boolean sendEmail, final YukonUserContext userContext, ModelMap map)
-    throws ServletException {
+    public String executeCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection, String commandSelectValue, String commandString, final String emailAddress, boolean sendEmail, final YukonUserContext userContext, ModelMap map) {
         boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, sendEmail, null, userContext, map);
         if (success) {
             return "redirect:resultDetail";
@@ -217,6 +216,16 @@ public class GroupCommanderController {
 
     }
 
+    @RequestMapping(value = "initCommands")
+    public @ResponseBody List<LiteCommand> initCommands(@RequestParam("groupName") String groupName, YukonUserContext userContext) {
+
+        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
+        List<LiteCommand> commands = getCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
+
+        return commands;
+    }
+
     public boolean doCollectionCommand(HttpServletRequest request, 
             DeviceCollection deviceCollection, 
             String commandSelectValue, 
@@ -224,8 +233,7 @@ public class GroupCommanderController {
             final String emailAddress, final boolean sendEmail,
             String groupName,
             final YukonUserContext userContext, 
-            ModelMap map)
-            throws ServletException {
+            ModelMap map) {
         
         // get host string
         final URL hostURL = ServletUtil.getHostURL(request);
@@ -392,7 +400,7 @@ public class GroupCommanderController {
     }
     
     @RequestMapping(value = { "errorsList", "successList" })
-    public void results(YukonUserContext userContext, String resultKey, ModelMap map) {
+    public void results(String resultKey, ModelMap map) {
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
 
         Map<SimpleDevice, SpecificDeviceErrorDescription> errors = result.getCallback().getErrors();
