@@ -3,8 +3,6 @@ package com.cannontech.capcontrol.service;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.ReadableInstant;
-
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.model.AbstractZone;
@@ -14,6 +12,7 @@ import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.common.model.Phase;
+import com.cannontech.common.util.TimeRange;
 
 public interface ZoneService {
     
@@ -126,21 +125,19 @@ public interface ZoneService {
      */
     public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int bankId);
     
-    /**
-     * Returns the latest CCEvents for the zone and subBus passed in. 
-     * It will limit the return by rowLimit
-     * @param zoneId
-     * @param subBusId
-     * @param rowLimit
-     * @param from - gets events greater than (>) this
-     * @param to - gets events less than or equal to (<=) this
-     * @return
-     */
-    public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to);
     
     /**
      * Returns a list of Regulator ids that are assigned to the zone of the given id.
      */
     List<Integer> getRegulatorsForZone(int id);
     
+    /**
+     * Returns the latest cap bank events.
+     */
+    List<CcEvent> getLatestCapBankEvents(List<Integer> zoneIds, TimeRange range);
+    
+    /**
+     * Returns the latest comm status events.
+     */
+    List<CcEvent> getLatestCommStatusEvents(int subBusId, TimeRange range);
 }

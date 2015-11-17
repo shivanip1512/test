@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.jfree.util.Log;
-import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +23,9 @@ import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.model.Phase;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.util.TimeRange;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -279,11 +279,6 @@ public class ZoneServiceImpl implements ZoneService {
         zoneDao.removeBankToZoneMapping(bankId);
     }
     
-    @Override
-    public List<CcEvent> getLatestEvents(int zoneId,int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to) {
-        return zoneDao.getLatestEvents(zoneId, subBusId, rowLimit, from, to);
-    }
-    
     private void sendZoneChangeDbMessage(int zoneId, DbChangeType dbChangeType) {
         dbChangeManager.processDbChange(zoneId,
                                         DBChangeMsg.CHANGE_IVVC_ZONE,
@@ -321,5 +316,15 @@ public class ZoneServiceImpl implements ZoneService {
         }
         
         return regulatorIds;
+    }
+    
+    @Override
+    public List<CcEvent> getLatestCapBankEvents(List<Integer> zoneIds, TimeRange range) {
+        return zoneDao.getLatestCapBankEvents(zoneIds, range);
+    }
+
+    @Override
+    public List<CcEvent> getLatestCommStatusEvents(int subBusId, TimeRange range) {
+        return zoneDao.getLatestCommStatusEvents(subBusId, range);
     }
 }

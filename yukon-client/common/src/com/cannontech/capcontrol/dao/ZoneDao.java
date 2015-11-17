@@ -3,8 +3,6 @@ package com.cannontech.capcontrol.dao;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.ReadableInstant;
-
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.model.AbstractZone;
@@ -14,9 +12,9 @@ import com.cannontech.capcontrol.model.CymePaoPoint;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.model.Phase;
+import com.cannontech.common.util.TimeRange;
 
 public interface ZoneDao {
-    
     
     /**
      * Updates or inserts existing zone with the information in zone.
@@ -172,21 +170,20 @@ public interface ZoneDao {
     public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int bankId);
 
     /**
-     * Returns the latest CCEvents for the zone and subBus passed in. 
-     * It will limit the return by rowLimit
-     * @param zoneId
-     * @param subBusId
-     * @param rowLimit
-     * @param from - queries for events greater than (>) this
-     * @param to - queries for events less than or equal to (<=) this
-     * @return
-     */
-    public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to);
-    
-    /**
      * Returns the RegulatorToZoneMappings for the specified zone.
      */
     public List<RegulatorToZoneMapping> getRegulatorToZoneMappingsByZoneId(int zoneId);
     
     public List<CymePaoPoint> getTapPointsBySubBusId(int substationBusId);
+
+    /**
+     * Returns the latest cap bank events.
+     */
+    List<CcEvent> getLatestCapBankEvents(List<Integer> zoneIds, TimeRange range);
+    
+    /**
+     * Returns the latest comm status events.
+     */
+    List<CcEvent> getLatestCommStatusEvents(int subBusId, TimeRange range);
+
 }

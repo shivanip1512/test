@@ -3,7 +3,6 @@ package com.cannontech.web.capcontrol.ivvc;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,8 +11,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.joda.time.DateTime;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.DataAccessException;
@@ -32,7 +29,6 @@ import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
-import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
@@ -54,8 +50,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
@@ -71,7 +65,6 @@ import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
-import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -90,9 +83,7 @@ import com.google.common.collect.Ordering;
 public class ZoneDetailController {
 
     @Autowired private CapControlCommandExecutor executor;
-    @Autowired private CapControlWebUtilsService capControlWebUtilsService;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
-    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private FilterCacheFactory filterCacheFactory;
     @Autowired private FlotChartService flotChartService;
     @Autowired private IDatabaseCache dbCache;
@@ -328,7 +319,6 @@ public class ZoneDetailController {
         AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
         
         setupZoneDetails(model, cache, zoneDto);
-        setupIvvcEvents(model, zoneDto.getZoneId(), zoneDto.getSubstationBusId());
         setupBreadCrumbs(model, cache, zoneDto);
         setupRegulatorPointMappings(model, zoneDto, userContext);
         setupRegulatorCommands(model, zoneDto);
@@ -407,48 +397,6 @@ public class ZoneDetailController {
         model.addAttribute("tapUpCommandHolder", CommandType.VOLTAGE_REGULATOR_TAP_POSITION_RAISE);
         model.addAttribute("enableRemoteCommandHolder", CommandType.VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE);
         model.addAttribute("disableRemoteCommandHolder", CommandType.VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE);
-    }
-    
-    private void setupIvvcEvents(ModelMap model, int zoneId, int subBusId) {
-        final int rowLimit = 20;
-        List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit, null, null);
-        model.addAttribute("events", events);
-        Instant mostRecentDateTime;
-        if (events != null && !events.isEmpty()) {
-            mostRecentDateTime = events.get(0).getDateTime();
-        } else {
-            mostRecentDateTime = new Instant();
-        }
-        model.addAttribute("mostRecentDateTime", mostRecentDateTime);
-    }
-
-    @RequestMapping("recent-events")
-    public @ResponseBody Map<String, Object> recentEvents(int zoneId,
-            int subBusId,
-            String mostRecent,
-            YukonUserContext userContext) {
-        
-        DateTime dt = new DateTime(mostRecent).toDateTime(userContext.getJodaTimeZone());
-
-        final int rowLimit = 20;
-        DateTime nextTime = new DateTime();
-        List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit, dt.toInstant(), nextTime.toInstant());
-
-        List<Map<String,String>> eventsJson = new ArrayList<>();
-        for (CcEvent event : events) {
-            String formattedTime = dateFormattingService.format(event.getDateTime(), DateFormatEnum.BOTH, userContext);
-
-            Map<String, String> eventJson = new HashMap<>();
-            eventJson.put("deviceName", event.getDeviceName());
-            eventJson.put("description", event.getText());
-            eventJson.put("formattedTime", formattedTime);
-            eventsJson.add(eventJson);
-        }
-        Map<String, Object> result = new HashMap<>();
-        result.put("timestamp", nextTime.toString());
-        result.put("events", eventsJson);
-
-        return result;
     }
 
     private void setupRegulatorPointMappings(ModelMap model, AbstractZone abstractZone, YukonUserContext userContext) {
