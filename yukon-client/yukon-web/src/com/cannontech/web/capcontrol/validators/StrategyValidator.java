@@ -1,17 +1,22 @@
 package com.cannontech.web.capcontrol.validators;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CommReportingPercentageSetting;
+import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSetting;
+import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
+import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.database.db.capcontrol.VoltViolationType;
 import com.cannontech.database.db.capcontrol.VoltageViolationSetting;
 
@@ -30,7 +35,7 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
     public void doValidation(CapControlStrategy strategy, Errors errors) {
         
         validateName(strategy, errors);
-        
+        validateTargetSettings(strategy, errors);
         YukonValidationUtils.checkRange(errors, "minConfirmPercent", 
             strategy.getMinConfirmPercent(), 0, 100, true);
         YukonValidationUtils.checkRange(errors, "failurePercent", 
@@ -135,5 +140,19 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
         YukonValidationUtils.checkRange(errors, "minCommunicationPercentageSetting.voltageMonitorReportingRatio", 
             setting.getVoltageMonitorReportingRatio(), 0.0, 100.0, true);
     }
-
+    
+    private static void validateTargetSettings(CapControlStrategy strategy, Errors errors) {
+        Map<TargetSettingType, PeakTargetSetting> targetSettings = strategy.getTargetSettings();
+        List<TargetSettingType> timeOfDaySettings =
+            StrategyPeakSettingsHelper.getSettingsForAlgorithm(ControlAlgorithm.TIME_OF_DAY);
+        for (Map.Entry<TargetSettingType, PeakTargetSetting> entry : targetSettings.entrySet()) {
+            if (timeOfDaySettings.contains(entry.getKey())) {
+                PeakTargetSetting peakTargetSetting = entry.getValue();
+                YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].peakValue",
+                    peakTargetSetting.getPeakValue(), 0.0, 100.0, true);
+                YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].offPeakValue",
+                    peakTargetSetting.getOffPeakValue(), 0.0, 100.0, true);
+            }
+        }
+    }
 }
