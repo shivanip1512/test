@@ -237,6 +237,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         if(isCommunicationDisabled(user)){
             return "consumer/thermostat/thermostatDisabled.jsp";
         }
+        accountCheckerService.checkInventory(user, thermostatIds);
         
         List<Integer> thermostatIdsList = getThermostatIds(request);
         List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
