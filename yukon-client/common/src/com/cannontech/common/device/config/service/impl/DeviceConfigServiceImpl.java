@@ -33,6 +33,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
@@ -52,6 +53,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DeviceConfigEventLogService eventLogService;
     @Autowired private GroupCommandExecutor groupCommandExecutor;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoLoadingService paoLoadingService;
@@ -99,9 +101,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         if (method.equalsIgnoreCase("force")) {
             commandString += " force";
         }
-
-        return sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND,
-            user);
+        String resultKey = sendConfigCommand(deviceCollection, callback, commandString, 
+                                             DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
+        eventLogService.sendConfigInitiated(1, commandString, resultKey, user);    //after the execute so we can have the key
+        return resultKey;
     }
 
     @Override
@@ -109,8 +112,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             LiteYukonUser user) {
         String commandString = "getconfig install all";
 
-        return sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ,
-            user);
+        String resultKey = sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
+        eventLogService.readConfigInitiated(deviceCollection.getDeviceCount(), resultKey, user);    // after execute call so we can get the key.
+        return resultKey;
     }
 
     @Override
@@ -195,6 +199,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback =
             waitableCommandCompletionCallbackFactory.createWaitable(commandCompletionCallback);
 
+        eventLogService.verifyConfigInitiated(deviceList.size(), user);
         commandRequestExecutor.execute(requests, waitableCallback, DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, user);
         try {
             waitableCallback.waitForCompletion();
@@ -205,7 +210,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             result.setExceptionReason("Operation Timed Out");
             log.error(e);
         }
-
         return result;
     }
 
@@ -217,6 +221,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Override
     public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception {
+        eventLogService.readConfigInitiated(1, "", user);
         String commandString = "getconfig install all";
         CommandResultHolder resultHolder =
             commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
@@ -226,6 +231,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Override
     public CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "putconfig emetcon install all";
+        
+        eventLogService.sendConfigInitiated(1, commandString, "", user);
         CommandResultHolder resultHolder =
             commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
         return resultHolder;

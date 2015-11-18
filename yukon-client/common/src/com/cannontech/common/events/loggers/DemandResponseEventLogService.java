@@ -169,6 +169,6 @@ public interface DemandResponseEventLogService {
     public void loadGroupDisabled(@Arg(ArgEnum.loadGroupName) String loadGroupName);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr")
-    public void seasonalControlHistoryReset(@Arg(ArgEnum.username) String userName);
+    public void seasonalControlHistoryReset(@Arg(ArgEnum.username) LiteYukonUser userName);
     
 }

@@ -170,7 +170,7 @@ public class HomeController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         commandService.resetSeasonControlHrs();
-        demandResponseEventLogService.seasonalControlHistoryReset(user.getUsername());
+        demandResponseEventLogService.seasonalControlHistoryReset(user);
         
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);

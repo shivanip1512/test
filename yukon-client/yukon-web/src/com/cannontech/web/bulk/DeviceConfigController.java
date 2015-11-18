@@ -39,6 +39,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
@@ -63,6 +64,7 @@ public class DeviceConfigController {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceConfigService deviceConfigService;
+    @Autowired private DeviceConfigEventLogService eventLogService;
     @Autowired private AlertService alertService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
@@ -105,7 +107,7 @@ public class DeviceConfigController {
         // PROCESS
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
         DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
-
+        eventLogService.assignConfigInitiated(configuration.getName(), deviceCollection.getDeviceCount(), userContext.getYukonUser());
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
@@ -164,6 +166,8 @@ public class DeviceConfigController {
         recentResultsCache.addResult(resultsId, callbackResult);
         
         // PROCESS
+        eventLogService.unassignConfigInitiated(deviceCollection.getDeviceCount(), userContext.getYukonUser());
+        
         Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor();
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
@@ -255,6 +259,11 @@ public class DeviceConfigController {
         
         // DO VERIFY
         VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
+        eventLogService.verifyConfigCompleted(result.getSuccessList().size(), 
+                                                      result.getFailureList().size(),
+                                                      result.getUnsupportedList().size(),
+                                                      result.getExceptionReason());
+
         StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
         StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
         StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
@@ -293,6 +302,12 @@ public class DeviceConfigController {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
+                eventLogService.readConfigCompleted(result.getSuccessCollection().getDeviceCount(),
+                                                            result.getFailureCollection().getDeviceCount(),
+                                                            result.getUnsupportedCollection().getDeviceCount(),
+                                                            result.getExceptionReason(), 
+                                                            result.getKey());
+
                 GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
                 alertService.add(commandCompletionAlert);
             }
@@ -320,6 +335,11 @@ public class DeviceConfigController {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
+                eventLogService.sendConfigCompleted(result.getSuccessCollection().getDeviceCount(),
+                                                            result.getFailureCollection().getDeviceCount(),
+                                                            result.getUnsupportedCollection().getDeviceCount(),
+                                                            result.getExceptionReason(),
+                                                            result.getKey());
                 GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
                 alertService.add(commandCompletionAlert);
             }

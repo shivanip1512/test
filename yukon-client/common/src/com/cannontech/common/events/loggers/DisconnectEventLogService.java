@@ -37,10 +37,10 @@ public interface DisconnectEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
     public void groupActionCompleted(@Arg(ArgEnum.username) LiteYukonUser user,
                                 @Arg(ArgEnum.commandRequestString) DisconnectCommand command,
-                                @Arg(ArgEnum.totalRequests) Integer total,
-                                @Arg(ArgEnum.successRequests) Integer success,
-                                @Arg(ArgEnum.failureRequests) Integer failure,
-                                @Arg(ArgEnum.notAttemptedRequests) Integer notAttempted
+                                @Arg(ArgEnum.totalCount) Integer total,
+                                @Arg(ArgEnum.successCount) Integer success,
+                                @Arg(ArgEnum.failureCount) Integer failure,
+                                @Arg(ArgEnum.notAttemptedCount) Integer notAttempted
             );
     
 }

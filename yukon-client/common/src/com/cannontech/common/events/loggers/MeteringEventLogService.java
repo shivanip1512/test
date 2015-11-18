@@ -34,7 +34,9 @@ public interface MeteringEventLogService {
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.schedules")
     public void readStarted(@Arg(ArgEnum.deviceRequestType) String deviceRequestType,
-            @Arg(ArgEnum.scheduleName) String scheduleName, Instant start, Instant timeout, int commands,
+            @Arg(ArgEnum.scheduleName) String scheduleName, 
+            @Arg(ArgEnum.startDate) Instant start,
+            Instant timeout, int commands,
             @Arg(ArgEnum.commandRequestExecutionContextId) int contextId);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.schedules")
@@ -49,7 +51,8 @@ public interface MeteringEventLogService {
             @Arg(ArgEnum.commandRequestExecutionId) int executionId);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.schedules")
-    public void readFailed(@Arg(ArgEnum.deviceRequestType) String deviceRequestType, String reason,
+    public void readFailed(@Arg(ArgEnum.deviceRequestType) String deviceRequestType,
+            String reason,
             @Arg(ArgEnum.scheduleName) String scheduleName, int tryNumber,
             @Arg(ArgEnum.commandRequestExecutionContextId) int contextId,
             @Arg(ArgEnum.commandRequestExecutionId) int executionId);

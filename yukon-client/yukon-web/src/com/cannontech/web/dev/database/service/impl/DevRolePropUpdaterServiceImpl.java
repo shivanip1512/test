@@ -80,7 +80,6 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                 }
 
                 if (canAddRole(group, YukonRole.DATABASE_EDITOR)) {
-                    setRoleProperty(group, YukonRoleProperty.POINT_ID_EDIT,true);
                     setRoleProperty(group, YukonRoleProperty.DBEDITOR_LM,true);
                     setRoleProperty(group, YukonRoleProperty.DBEDITOR_SYSTEM,true);
                     setRoleProperty(group, YukonRoleProperty.PERMIT_LOGIN_EDIT,true);

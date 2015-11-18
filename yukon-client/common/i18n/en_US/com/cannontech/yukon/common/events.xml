@@ -14,14 +14,15 @@
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
-    <entry key="yukon.common.events.commandRequestExecutionContextId">Command Request Execution Context Id</entry>
-    <entry key="yukon.common.events.commandRequestExecutionId">Command Request Execution Id</entry>
-    <entry key="yukon.common.events.commandRequestExecutionType">Command Request Execution Type</entry>
+    <entry key="yukon.common.events.commandRequestExecutionContextId">CRE ContextId</entry>
+    <entry key="yukon.common.events.commandRequestExecutionId">CREId</entry>
+    <entry key="yukon.common.events.commandRequestExecutionType">CRE Type</entry>
     <entry key="yukon.common.events.commandRequestString">Command</entry>
     <entry key="yukon.common.events.commandScheduleId">Command Schedule Id</entry>
     <entry key="yukon.common.events.contactName">Contact Name</entry>
     <entry key="yukon.common.events.controlAreaName">Control Area Name</entry>
     <entry key="yukon.common.events.cron">Run Frequency</entry>
+    <entry key="yukon.common.events.deviceConfig">Device Config</entry>
     <entry key="yukon.common.events.deviceLabel">Device Label</entry>
     <entry key="yukon.common.events.deviceGroup">Device Group</entry>
     <entry key="yukon.common.events.deviceName">Device Name</entry>
@@ -33,7 +34,7 @@
     <entry key="yukon.common.events.energyCompanySettingType">Energy Company Setting</entry>
     <entry key="yukon.common.events.energyCompanySettingValue">Energy Company Setting Value</entry>
     <entry key="yukon.common.events.eventSource">Event Source</entry>
-    <entry key="yukon.common.events.failureRequests">Failure Requests</entry>
+    <entry key="yukon.common.events.failureCount">Failures</entry>
     <entry key="yukon.common.events.fileName">File Name</entry>
     <entry key="yukon.common.events.gatewayName">Gateway Name</entry>
     <entry key="yukon.common.events.gearName">Gear Name</entry>
@@ -53,7 +54,7 @@
     <entry key="yukon.common.events.mspTransactionId">Transaction Id</entry>
     <entry key="yukon.common.events.mspVendor">Vendor</entry>
     <entry key="yukon.common.events.name">Name</entry>
-    <entry key="yukon.common.events.notAttemptedRequests">Not Attempted Requests</entry>
+    <entry key="yukon.common.events.notAttemptedCount">Not Attempted</entry>
     <entry key="yukon.common.events.paoId">Pao Id</entry>
     <entry key="yukon.common.events.paoName">Pao Name</entry>
     <entry key="yukon.common.events.paoType">Pao Type</entry>
@@ -64,6 +65,7 @@
     <entry key="yukon.common.events.pointValue">Point Value</entry>
     <entry key="yukon.common.events.programName">Program Name</entry>
     <entry key="yukon.common.events.remoteAddress">Remote Address</entry>
+    <entry key="yukon.common.events.resultKey">Result Key</entry>
     <entry key="yukon.common.events.rfnId">RFN Id</entry>
     <entry key="yukon.common.events.routeId">Route Id</entry>
     <entry key="yukon.common.events.routeName">Route Name</entry>
@@ -74,21 +76,25 @@
     <entry key="yukon.common.events.startDate">Start Date</entry>
     <entry key="yukon.common.events.state">Enabled/Disabled</entry>
     <entry key="yukon.common.events.substationName">Substation Name</entry>
-    <entry key="yukon.common.events.successRequests">Success Requests</entry>
+    <entry key="yukon.common.events.successCount">Success</entry>
     <entry key="yukon.common.events.syncIssueType">Sync Type</entry>
     <entry key="yukon.common.events.tagSet">Tag Set</entry>
     <entry key="yukon.common.events.taskName">Task Name</entry>
     <entry key="yukon.common.events.thermostatLabel">Thermostat Label</entry>
-    <entry key="yukon.common.events.totalRequests">Total Requests</entry>
+    <entry key="yukon.common.events.totalCount">Total</entry>
+    <entry key="yukon.common.events.unsupportedCount">Unsupported</entry>
     <entry key="yukon.common.events.username">Username</entry>
     <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
 
 <!-- Event log message text and column names -->
 
-    <entry key="yukon.common.events.commander.executeOnPao">User {1} executed command ''{2}'' on device {3}.</entry>
-    <entry key="yukon.common.events.commander.executeOnSerial">User {1} executed command ''{2}'' on serial number {3} and route {4}.</entry>
-    <entry key="yukon.common.events.commander.changeRoute">User {1} changed route for {2} from {3} to {4}.</entry>
+    <entry key="yukon.common.events.commander.executeOnPao">Command ''{2}'' executed on device {3} by {1}.</entry>
+    <entry key="yukon.common.events.commander.executeOnSerial">Command ''{2}'' executed on serial number {3} and route {4} by {1}.</entry>
+    <entry key="yukon.common.events.commander.changeRoute">Route changed from {3} to {4} on device {2} by {1}.</entry>
+    <entry key="yukon.common.events.commander.groupCommandInitiated">Command ''{1}'' initiated on {7} device(s) by {3}. Key: {2}</entry>
+    <entry key="yukon.common.events.commander.groupCommandCancelled">Command cancelled by {2}. Key: {1}</entry>
+    <entry key="yukon.common.events.commander.groupCommandCompleted">Command completed: Success:{7} Failure:{8} Unsupported:{9}. ExceptionMessage:{1}; Key: {2}</entry>
 
 <!-- Account -->
     <!-- Account -->
@@ -204,25 +210,30 @@
     <entry key="yukon.common.events.amr.schedules.scheduleDeleted">User {1} deleted schedule {2}.</entry>
     
     <entry key="yukon.common.events.amr.schedules.jobStarted">Job {1} {2} started for device group {3} with {7} retries by {4} (JobId={8}). </entry>
-    <entry key="yukon.common.events.amr.schedules.jobStarted.7">Retry number</entry>
+    <entry key="yukon.common.events.amr.schedules.jobStarted.7">Retries</entry>
     <entry key="yukon.common.events.amr.schedules.jobCompleted">Job {1} {2} completed (JobId={7}, ContextId={8}). </entry>
     
     <entry key="yukon.common.events.amr.schedules.readAttempted">{1} {2} attempted at {11} all commands are unsupported (ContextId={7}). </entry>
     
-    <entry key="yukon.common.events.amr.schedules.readStarted">{1} {2} started at {11} with timeout at {12} and {7} commands (ContextId={8}). </entry>
-    <entry key="yukon.common.events.amr.schedules.readStarted.7">Command number</entry>
-    <entry key="yukon.common.events.amr.schedules.readStarted.11">Read start time</entry>
-    <entry key="yukon.common.events.amr.schedules.readStarted.12">Read time out time</entry>
+    <entry key="yukon.common.events.amr.schedules.readStarted">{1} {2} started at {11} with timeout at {12} and {7} command(s) (ContextId={8}). </entry>
+    <entry key="yukon.common.events.amr.schedules.readStarted.7">Commands Count</entry>
+    <entry key="yukon.common.events.amr.schedules.readStarted.12">Timeout At</entry>
     <entry key="yukon.common.events.amr.schedules.readCompleted">{1} {2} completed (ContextId={7}). </entry>
     <entry key="yukon.common.events.amr.schedules.readFailed">{1} {2} failed with reason:"{3}" on try {7} (ContextId={8}, ExecutionId={9}).</entry>
-    <entry key="yukon.common.events.amr.schedules.readFailed.7">Try number</entry>
+    <entry key="yukon.common.events.amr.schedules.readFailed.2">Reason</entry>
+    <entry key="yukon.common.events.amr.schedules.readFailed.7">Try Attempt</entry>
     <entry key="yukon.common.events.amr.schedules.readTimeout">{1} {2} timed out on try {7} (ContextId={8}, ExecutionId={9}). </entry>
-    <entry key="yukon.common.events.amr.schedules.readTimeout.7">Try number</entry>
+    <entry key="yukon.common.events.amr.schedules.readTimeout.7">Try Attempt</entry>
     <entry key="yukon.common.events.amr.schedules.readCancelled">{1} {2} cancelled on try {7} by {3} (ContextId={8}, ExecutionId={9}). </entry>
-    <entry key="yukon.common.events.amr.schedules.readCancelled.7">Try number</entry>
+    <entry key="yukon.common.events.amr.schedules.readCancelled.7">Try Attempt</entry>
     
     <entry key="yukon.common.events.amr.schedules.tryStarted">{1} {2} try {7} started with {8} commands (ContextId={9}, ExecutionId={10}). </entry>
-    <entry key="yukon.common.events.amr.schedules.tryCompleted">{1} {2} try {7} completed with {8} failed commands (ContextId={9}, ExecutionId={10}). </entry>
+    <entry key="yukon.common.events.amr.schedules.tryStarted.7">Try Attempt</entry>
+    <entry key="yukon.common.events.amr.schedules.tryStarted.8">Commands Count</entry>
+    
+    <entry key="yukon.common.events.amr.schedules.tryCompleted">{1} {2} try {7} completed with {8} failed command(s) (ContextId={9}, ExecutionId={10}). </entry>
+    <entry key="yukon.common.events.amr.schedules.tryCompleted.7">Try Attempt</entry>
+    <entry key="yukon.common.events.amr.schedules.tryCompleted.8">Commands Count</entry>
     
     
     <!-- RFN -->
@@ -281,17 +292,27 @@
     <entry key="yukon.common.events.amr.disconnect.groupCancelAttempted">{2} command collection action canceled by {1}.</entry>
     <entry key="yukon.common.events.amr.disconnect.groupActionCompleted">{2} command collection action initiated on {7} device(s) by {1}. (Success:{8} Failure:{9} Not Attempted:{10})</entry>
     
+    <!--  Device Config -->
+    <entry key="yukon.common.events.device.configuration.assignConfigInitiated">Assign device configuration {1} to {7} device(s) initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.configuration.unassignConfigInitiated">Unassign device configuration from {7} device(s) initiated by {1}.</entry>
+    <entry key="yukon.common.events.device.configuration.sendConfigInitiated">Send device configuration command ''{1}'' to {7} device(s) initiated by {3}. Key: {2}</entry>
+    <entry key="yukon.common.events.device.configuration.sendConfigCompleted">Send device configuration completed: Success:{7} Failure:{8} Unsupported:{9}. ExceptionMessage:{1}; Key: {2}</entry>
+    <entry key="yukon.common.events.device.configuration.readConfigInitiated">Read device configuration from {7} device(s) initiated by {2}. Key: {1}</entry>
+    <entry key="yukon.common.events.device.configuration.readConfigCompleted">Read device configuration completed: Success:{7} Failure:{8} Unsupported:{9}. ExceptionMessage:{1}; Key: {2}</entry>
+    <entry key="yukon.common.events.device.configuration.verifyConfigInitiated">Verify device configuration on {7} device(s) initiated by {1}.</entry>
+    <entry key="yukon.common.events.device.configuration.verifyConfigCompleted">Verify device configuration completed: Success:{7} Failure:{8} Unsupported:{9}. ExceptionMessage:{1}</entry>
+    
     <!-- Demand Reset-->
-    <entry key="yukon.common.events.amr.demand.reset.collectionDemandResetAttempted">Demand Reset collection action collection={1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.amr.demand.reset.collectionDemandResetAttempted.1">Collection</entry>
-    <entry key="yukon.common.events.amr.demand.reset.verifyDemandResetAttempted">Demand Reset verification (Total Requests:{7} Not Attempted:{8}) by {1}.</entry>
-    <entry key="yukon.common.events.amr.demand.reset.initDemandResetAttempted">Demand Reset initiated (Total Requests:{7} Not Attempted:{8}) by {1}.</entry>
-    <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted">Demand Reset attempted on {2} by {1}.</entry>
-    <entry key="yukon.common.events.amr.demand.reset.cancelAttempted">Demand Reset canceled by {1}.</entry>
-    <entry key="yukon.common.events.amr.demand.reset.demandResetCompletedResults">Demand Reset Results: {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10}). Demand Reset collection action initiated by {1}.</entry>
+    <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted">Demand Reset attempted by {2}. (To Send:{7}, Unsupported:{8}, To Verify:{9}, Unsupported Verify:{10}). Key:{1}</entry>
+    <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted.7">To Reset</entry>
+    <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted.8">Unsupported</entry>
+    <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted.9">To Verify</entry>
+    <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted.10">Unsupported Verify</entry>
+    <entry key="yukon.common.events.amr.demand.reset.demandResetInitiated">{3} action initiated for device {2} by {1}.</entry>
+    <entry key="yukon.common.events.amr.demand.reset.cancelInitiated">Demand Reset canceled by {1}. Key:{2}</entry>
+    <entry key="yukon.common.events.amr.demand.reset.demandResetCompletedResults">Demand Reset complete: {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10}). Key:{1}</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetCompleted">Demand Reset initiated by {1} is complete.</entry>
     
-<!-- Hardware -->
     <!-- Hardware -->
     <entry key="yukon.common.events.hardware.hardwareMeterCreationAttempted">User {1} attempted to create meter {2}.</entry>
     <entry key="yukon.common.events.hardware.hardwareChangeOutForMeterAttempted">User {1} attempted to change out meter {2} for {3}.</entry>
@@ -661,6 +682,7 @@
     
     <!-- Endpoint -->
     <entry key="yukon.common.events.endpoint.location.locationUpdated">Location for id {1} updated with {2} by {3}.</entry>
+    <entry key="yukon.common.events.endpoint.location.locationUpdated.2">Coordinates</entry>
     <entry key="yukon.common.events.endpoint.location.locationRemoved">Location for device {1} deleted by {2}.</entry>
     
 </properties>

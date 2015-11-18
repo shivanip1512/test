@@ -44,6 +44,7 @@ import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.CommanderEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -84,6 +85,7 @@ public class GroupCommanderController {
     private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
 
     @Autowired private CommandDao commandDao;
+    @Autowired private CommanderEventLogService commanderEventLogService;
     @Autowired private ContactDao contactDao;
     @Autowired private AlertService alertService;
     @Autowired private EmailService emailService;
@@ -262,6 +264,11 @@ public class GroupCommanderController {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
+                commanderEventLogService.groupCommandCompleted(result.getSuccessCollection().getDeviceCount(),
+                                                               result.getFailureCollection().getDeviceCount(),
+                                                               result.getUnsupportedCollection() != null ? result.getUnsupportedCollection().getDeviceCount():0,
+                                                               result.getExceptionReason(),
+                                                               result.getKey());
                 GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
                 alertService.add(commandCompletionAlert);
                 if (sendEmail) {
@@ -272,6 +279,9 @@ public class GroupCommanderController {
         };
 
         String key = groupCommandExecutor.execute(deviceCollection, commandString, DeviceRequestType.GROUP_COMMAND, callback, userContext.getYukonUser());
+        commanderEventLogService.groupCommandInitiated(deviceCollection.getDeviceCount(), commandString, key, userContext.getYukonUser());   //logging after the action so we have the key
+        
+
         map.addAttribute("resultKey", key);
         return true;
     }
@@ -382,6 +392,7 @@ public class GroupCommanderController {
         String errorMsg = "";
         
         try {
+            commanderEventLogService.groupCommandCancelled(resultId, userContext.getYukonUser());
             groupCommandExecutor.cancelExecution(resultId, userContext.getYukonUser());
         } catch (Exception e) {
             errorMsg = e.getMessage();

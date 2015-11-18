@@ -211,7 +211,7 @@ public class CommanderController {
             Log.debug("User: " + user.getUsername() + " changed route on " + pao.getPaoName() + " from " 
                 + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
             
-            eventLogger.changeRoute(user.getUsername(), pao.getPaoName(), oldRoute.getPaoName(), newRoute.getPaoName(), 
+            eventLogger.changeRoute(user, pao.getPaoName(), oldRoute.getPaoName(), newRoute.getPaoName(), 
                     pao.getLiteID(), oldRoute.getLiteID(), newRoute.getLiteID());
         } catch (RuntimeException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -255,11 +255,11 @@ public class CommanderController {
             
             if (params.getTarget() == CommandTarget.DEVICE || params.getTarget() == CommandTarget.LOAD_GROUP) {
                 LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
-                eventLogger.executeOnPao(userContext.getYukonUser().getUsername(), params.getCommand(), 
+                eventLogger.executeOnPao(userContext.getYukonUser(), params.getCommand(), 
                         pao.getPaoName(), pao.getLiteID());
             } else {
                 LiteYukonPAObject route = cache.getAllPaosMap().get(params.getRouteId());
-                eventLogger.executeOnSerial(userContext.getYukonUser().getUsername(), params.getCommand(), 
+                eventLogger.executeOnSerial(userContext.getYukonUser(), params.getCommand(), 
                         params.getSerialNumber(), route.getPaoName(), route.getLiteID());
             }
             

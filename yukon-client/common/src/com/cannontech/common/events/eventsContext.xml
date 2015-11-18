@@ -110,4 +110,8 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.EndpointEventLogService"/>
     </bean>
     
+    <bean id="deviceConfigEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.DeviceConfigEventLogService"/>
+    </bean>
+    
 </beans>

@@ -128,7 +128,6 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
         roleGroup.setGroupName(devStars.getNewEnergyCompanyName() + " Operators Grp");
         yukonGroupDao.save(roleGroup);
 
-        setRoleProperty(roleGroup, YukonRoleProperty.POINT_ID_EDIT, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.DBEDITOR_LM, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.DBEDITOR_SYSTEM, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.UTILITY_ID_RANGE, " ");

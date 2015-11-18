@@ -68,9 +68,6 @@ public class DemandResetServiceImpl implements DemandResetService {
                                     SimpleCallback<DemandResetResult> alertCallback,
                                     YukonUserContext userContext) {  
                 
-        demandResetEventLogService
-            .collectionDemandResetAttempted(deviceCollection.getCollectionParameters().toString(),
-                                            userContext.getYukonUser());
         log.debug("sendDemandReset (Collection Action)");
         LiteYukonUser user = userContext.getYukonUser();
         DemandResetResult result = new DemandResetResult();
@@ -89,7 +86,13 @@ public class DemandResetServiceImpl implements DemandResetService {
         Set<SimpleDevice> unsupportedDevices = Sets.difference(allDevices, devicesToSend);           
         Set<SimpleDevice> devicesToVerify = getVerifiableDevices(devicesToSend);
         Set<SimpleDevice> unverifiableDevices = Sets.difference(devicesToSend, devicesToVerify);
-        
+
+        demandResetEventLogService.demandResetAttempted(devicesToSend.size(), 
+                                                                  unsupportedDevices.size(),
+                                                                  devicesToVerify.size(),
+                                                                  unverifiableDevices.size(),
+                                                                  result.getKey(), 
+                                                                  user);
         CommandRequestExecution initiatedExecution =
             commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
                                                               DeviceRequestType.DEMAND_RESET_COMMAND,
@@ -120,9 +123,7 @@ public class DemandResetServiceImpl implements DemandResetService {
             commandRequestExecutionResultDao.saveUnsupported(unverifiableDevices,
                             verificationExecution.getId(),
                             CommandRequestUnsupportedType.UNSUPPORTED);
-            CollectionCallback callback =
-                new CollectionCallback(devicesForStrategy, devicesToVerify, tempGroups, result,
-                                       alertCallback, user);
+            CollectionCallback callback = new CollectionCallback(devicesForStrategy, devicesToVerify, tempGroups, result, alertCallback);
             result.setDemandResetCallback(callback);
             for (DemandResetStrategy strategy : strategies) {
                 Set<SimpleDevice> meters = devicesForStrategy.get(strategy);
@@ -145,7 +146,7 @@ public class DemandResetServiceImpl implements DemandResetService {
     public void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback, LiteYukonUser user) {
        
         log.debug("sendDemandReset");
-
+        
         Set<SimpleDevice> allDevices = Sets.newHashSet(PaoUtils.asSimpleDeviceListFromPaos(devices));
         
         HashMultimap<DemandResetStrategy, SimpleDevice> devicesForStrategy = devicesForStrategy(allDevices);
@@ -153,8 +154,9 @@ public class DemandResetServiceImpl implements DemandResetService {
         Set<SimpleDevice> devicesToSend = new HashSet<>(devicesForStrategy.values());
         Set<SimpleDevice> unsupportedDevices = Sets.difference(allDevices, devicesToSend);
 
-        demandResetEventLogService
-            .initDemandResetAttempted(devicesToSend.size(), unsupportedDevices.size(), user);
+        demandResetEventLogService.demandResetAttempted(devicesToSend.size(), 
+                                                                  unsupportedDevices.size(),
+                                                                  0, 0, null, user);
         
         CommandRequestExecution initiatedExecution =
             commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
@@ -185,7 +187,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                                          LiteYukonUser user) {
 
         log.debug("sendDemandResetAndVerify");
-
+        
         Set<SimpleDevice> allDevices = Sets.newHashSet(PaoUtils.asSimpleDeviceListFromPaos(devices));
         
         HashMultimap<DemandResetStrategy, SimpleDevice> devicesForStrategy = devicesForStrategy(allDevices);
@@ -195,12 +197,12 @@ public class DemandResetServiceImpl implements DemandResetService {
         Set<SimpleDevice> devicesToVerify = getVerifiableDevices(devicesToSend);
         Set<SimpleDevice> unverifiableDevices = Sets.difference(devicesToSend, devicesToVerify);
 
-        demandResetEventLogService
-            .initDemandResetAttempted(devicesToSend.size(), unsupportedDevices.size(), user);
+        demandResetEventLogService.demandResetAttempted(devicesToSend.size(), 
+                                                                  unsupportedDevices.size(),
+                                                                  devicesToVerify.size(),
+                                                                  unverifiableDevices.size(),
+                                                                  null, user);
         
-        demandResetEventLogService
-            .verifyDemandResetAttempted(devicesToVerify.size(), unverifiableDevices.size(), user);
-
         CommandRequestExecution initiationExecution =
             commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
                                                               DeviceRequestType.DEMAND_RESET_COMMAND,
@@ -219,6 +221,7 @@ public class DemandResetServiceImpl implements DemandResetService {
         commandRequestExecutionResultDao.saveUnsupported(unsupportedDevices, initiationExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
            
         if (!devicesToSend.isEmpty()) {
+            
             CommandRequestExecution verificationExecution =
                 commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
                                                                   DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY,
@@ -264,18 +267,19 @@ public class DemandResetServiceImpl implements DemandResetService {
         verificationExecution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.CANCELING);
         commandRequestExecutionDao.saveOrUpdate(verificationExecution);
 
+        demandResetEventLogService.cancelInitiated(user, key);
+        
         result.getDemandResetCallback().cancel();
         for (DemandResetStrategy strategy : strategies) {
             strategy.cancel(result.getCommandCompletionCallbacks(), user);
         }
-        
     } 
     
-    private void log(Set<SimpleDevice> meters, LiteYukonUser user) {
+    private void log(Set<SimpleDevice> meters, LiteYukonUser user, DeviceRequestType deviceRequestType) {
         
         Iterable<YukonMeter> yukonMeters = meterDao.getMetersForYukonPaos(meters);
         for (YukonMeter meter : yukonMeters) {
-            demandResetEventLogService.demandResetAttempted(user, meter.getName());
+            demandResetEventLogService.demandResetInitiated(user, meter.getName(), deviceRequestType.getShortName());
         }
         
     }
@@ -291,8 +295,8 @@ public class DemandResetServiceImpl implements DemandResetService {
         for (DemandResetStrategy strategy : strategies) {
             Set<SimpleDevice> meters = devicesForStrategy.get(strategy);
             if (meters != null && !meters.isEmpty()) {
-                log(meters, user);
                 if (verify) {
+                    log(meters, user, verificationExecution.getCommandRequestExecutionType());
                     // send demand reset and collect callbacks needed for cancellation
                     completionCallbacks = strategy.sendDemandResetAndVerify(initiatedExecution,
                                                      verificationExecution,
@@ -300,6 +304,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                                                      callback,
                                                      user);
                 } else {
+                    log(meters, user, initiatedExecution.getCommandRequestExecutionType());
                     CommandCompletionCallback<CommandRequestDevice> completionCallback =
                         strategy.sendDemandReset(initiatedExecution,
                                                  meters,
@@ -363,7 +368,6 @@ public class DemandResetServiceImpl implements DemandResetService {
         TempGroups tempGroups;
         DemandResetResult result;
         SimpleCallback<DemandResetResult> alertCallback;
-        LiteYukonUser user;
 
         AtomicInteger pendingStrategies;
         Set<SimpleDevice> devicesToSend = new HashSet<>();
@@ -373,14 +377,13 @@ public class DemandResetServiceImpl implements DemandResetService {
         public CollectionCallback(HashMultimap<DemandResetStrategy, SimpleDevice> devicesForStrategy,
                                   Set<SimpleDevice> devicesToVerify,
                                   TempGroups tempGroups, DemandResetResult result,
-                                  SimpleCallback<DemandResetResult> alertCallback, LiteYukonUser user) {
+                                  SimpleCallback<DemandResetResult> alertCallback) {
             this.devicesToSend.addAll(devicesForStrategy.values());
             this.devicesToVerify.addAll(devicesToVerify);
             pendingStrategies = new AtomicInteger(devicesForStrategy.keySet().size());
             this.tempGroups = tempGroups;
             this.result = result;
             this.alertCallback = alertCallback;
-            this.user = user;
         }
         
         //Initiated called once per strategy after the request was sent. 
@@ -457,7 +460,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                     completeCommandRequestExecution(result.getVerificationExecution(),
                                                           CommandRequestExecutionStatus.COMPLETE);
                 }
-                demandResetEventLogService.demandResetCompletedResults(user,
+                demandResetEventLogService.demandResetCompletedResults(result.getKey(),
                                                                result.getTotalCount(),
                                                                result.getSuccessCount(),
                                                                result.getFailedCount(),
@@ -530,6 +533,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                 log.debug("initiated:" + initiationResults.getAllDevices());
                 completeCommandRequestExecution(initiationExecution, CommandRequestExecutionStatus.COMPLETE);
                 callback.initiated(initiationResults);
+                
                 demandResetEventLogService.demandResetCompleted(user);
             }
         }
