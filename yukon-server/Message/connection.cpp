@@ -550,7 +550,7 @@ CtiMessage* CtiConnection::ReadConnQue( UINT Timeout )
     if(_sendStart != CtiTime::not_a_time)
     {
         long elapsedSendStart = CtiTime::now().seconds() - _sendStart.seconds();
-        if(elapsedSendStart > 30 * 1000)    // > 30 seconds
+        if(elapsedSendStart > 30 )    // > 30 seconds
         {
             CTILOG_LOG( 
                 (elapsedSendStart > 5 * 60              //  has it been more than 5 minutes?
