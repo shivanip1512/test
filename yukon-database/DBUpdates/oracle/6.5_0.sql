@@ -374,7 +374,7 @@ INSERT INTO PointStatus VALUES (-31, 0);
 
 /* Start YUK-14818 */
 ALTER TABLE YukonWebConfiguration
-MODIFY AlternateDisplayName VARCHAR2(200) NOT NULL;
+MODIFY AlternateDisplayName VARCHAR2(200);
 /* End YUK-14818 */
 
 /**************************************************************/
