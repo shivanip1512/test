@@ -14,9 +14,9 @@
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
-    <entry key="yukon.common.events.commandRequestExecutionContextId">CRE ContextId</entry>
-    <entry key="yukon.common.events.commandRequestExecutionId">CREId</entry>
-    <entry key="yukon.common.events.commandRequestExecutionType">CRE Type</entry>
+    <entry key="yukon.common.events.commandRequestExecutionContextId">CommandReqExecContextId</entry>
+    <entry key="yukon.common.events.commandRequestExecutionId">CommandReqExecId</entry>
+    <entry key="yukon.common.events.commandRequestExecutionType">CommandReqExecType</entry>
     <entry key="yukon.common.events.commandRequestString">Command</entry>
     <entry key="yukon.common.events.commandScheduleId">Command Schedule Id</entry>
     <entry key="yukon.common.events.contactName">Contact Name</entry>
