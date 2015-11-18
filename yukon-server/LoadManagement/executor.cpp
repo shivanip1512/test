@@ -1278,9 +1278,10 @@ void CtiLMManualControlRequestExecutor::Execute()
 
         case CtiLMManualControlRequest::USE_CONSTRAINTS:
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
-            // Fix up program control window if necessary
-            startTime = (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStartTime();
-            CoerceStartStopTime(program, startTime, stopTime, controlArea);
+            // startTime is not used, but may impact things during constraint checking.  Move it out of the way
+            startTime = CtiTime::neg_infin;
+            stopTime = CtiTime::now();
+            CoerceStartStopTime( program, startTime, stopTime, controlArea );
             StopProgram(program, controlArea, stopTime);
             if( response != NULL )
             {
@@ -1406,6 +1407,8 @@ void CtiLMManualControlRequestExecutor::Execute()
 void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea,
                                                      const CtiTime& start, const CtiTime& stop)
 {
+    CTILOG_DEBUG( dout, "StartProgram start@" << start << ", stop@" << stop );
+
     if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD ) //TODO: pull this out into an operator
@@ -1484,6 +1487,8 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
 
 void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea, const CtiTime& stop)
 {
+    CTILOG_DEBUG( dout, "StopProgram stop@" << stop );
+
     static const string controlReason = "Manual Stop Command";
     if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
     {
@@ -1542,6 +1547,8 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program
 void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea,
                                                            const CtiTime& start, const CtiTime& stop)
 {
+    CTILOG_DEBUG( dout, "StartDirectProgram start@" << start << ", stop@" << stop );
+
     CtiTime startTime = start;
 
     lmProgramDirect->setManualControlReceivedFlag(FALSE);
@@ -1577,23 +1584,24 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPt
 
     lmProgramDirect->setManualControlReceivedFlag(TRUE);
     controlArea->setUpdatedFlag(TRUE);
+
+    CTILOG_DEBUG( dout, "Start scheduled for " << lmProgramDirect->getDirectStartTime() <<
+        ", notification at " << lmProgramDirect->getNotifyActiveTime() );
 }
 
 void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop)
 {
-    CtiTime stopTime;
-    if( _controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP )
-    {
-        stopTime = stop;
-    }
+    CTILOG_DEBUG( dout, "StopDirectProgram stop@" << stop );
 
     // Check the stop time to see if it is before the start time
-    if( stopTime.seconds() < lmProgramDirect->getDirectStartTime().seconds() )
+    if( stop.seconds() < lmProgramDirect->getDirectStartTime().seconds() )
     {
+        CTILOG_DEBUG( dout, "Scheduling stop time before scheduled start time" );
+
         // If we have already notified of start then we need to notify of stop.
         if( (lmProgramDirect->getDirectStartTime().seconds() - lmProgramDirect->getNotifyActiveOffset()) < CtiTime::now().seconds() )
         {
-            lmProgramDirect->scheduleStopNotification(stopTime);
+            lmProgramDirect->scheduleStopNotification(stop);
         }
         else
         {
@@ -1611,14 +1619,17 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
     {
         lmProgramDirect->setManualControlReceivedFlag(FALSE);
         lmProgramDirect->setControlActivatedByStatusTrigger(FALSE);
-        lmProgramDirect->setDirectStopTime(stopTime);
+        lmProgramDirect->setDirectStopTime(stop);
 
-        lmProgramDirect->scheduleStopNotification(stopTime);
-        lmProgramDirect->requestAdjustNotification(stopTime);
+        lmProgramDirect->scheduleStopNotification(stop);
+        lmProgramDirect->requestAdjustNotification(stop);
 
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);
     }
+
+    CTILOG_DEBUG( dout, "Stop scheduled for " << lmProgramDirect->getDirectStopTime() <<
+        ", notification at " << lmProgramDirect->getNotifyInactiveTime() );
 }
 
 void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea,
@@ -1691,8 +1702,55 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
         stop = resultStop;
     }
 
+    fitTimeToNotifications( start, stop, program );
+
     CTILOG_INFO(dout, "after coerce start: " << start.asString() << " stop: " << stop.asString());
 }
+
+/** Given the requested start/stop time, adjust start/stop time to allow for a notification */ 
+
+void CtiLMManualControlRequestExecutor::fitTimeToNotifications( CtiTime &proposedStart, CtiTime &proposedStop,
+    CtiLMProgramBaseSPtr program )
+{
+    CtiLMProgramDirect &programDirect = dynamic_cast<CtiLMProgramDirect&>(*program);
+
+    long activationOffset = programDirect.getNotifyActiveOffset();
+
+    // Postpone start time to allow for activationOffset.  We have to make sure that there is enough 
+    // time between now and the proposed start to send the notice.  A positive offset means we have to 
+    // send the notice before the activation.  
+    if(activationOffset > 0 && proposedStart.isValid()) {
+        CtiTime newStart = std::max( proposedStart, CtiTime::now().addSeconds( activationOffset ) );
+        if(newStart != proposedStart) {
+            CTILOG_DEBUG( dout, "activationOffset " << activationOffset << " start time was " <<
+                proposedStart << " and is now " << newStart );
+            proposedStart = newStart;
+        }
+    }
+
+    long inactivationOffset = programDirect.getNotifyInactiveOffset();
+
+    // Postpone stop time to allow for inactivationOffset
+    if(inactivationOffset < 0 && proposedStop.isValid()) {
+        CtiTime newStop = std::max( proposedStop, CtiTime::now().addSeconds( -1 * inactivationOffset ) );
+        if(newStop != proposedStop) {
+            CTILOG_DEBUG( dout, "inactivationOffset " << inactivationOffset << " stop time was " <<
+                proposedStop << " and is now " << newStop );
+            proposedStop = newStop;
+        }
+    }
+
+    // Make sure the new stop time is on or after the new start time
+    if(proposedStart.isValid() && proposedStop.isValid()) {
+        CtiTime newStop = std::max( proposedStop, proposedStart );
+        if(newStop != proposedStop) {
+            CTILOG_DEBUG( dout, "inactivationOffset " << inactivationOffset << " stop time was " <<
+                proposedStop << " and is now " << newStop );
+            proposedStop = newStop;
+        }
+    }
+}
+
 
 /*---------------------------------------------------------------------------
     Execute

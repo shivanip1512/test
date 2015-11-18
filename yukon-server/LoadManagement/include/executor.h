@@ -66,7 +66,8 @@ private:
     void StopDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop);
     void StartCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
     void StopCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea, const CtiTime& stop);
-   
+    void fitTimeToNotifications( CtiTime &proposedStart, CtiTime &proposedStop, CtiLMProgramBaseSPtr program );
+
     CtiServerRequestMsg* _request;
     CtiLMManualControlRequest* _controlMsg;
 
