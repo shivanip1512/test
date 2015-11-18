@@ -8,7 +8,8 @@
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.sendConfig" deviceCollection="${deviceCollection}">
         <div class="page-action-area">
-            <form id="sendConfigForm" method="post" action="/bulk/config/doSendConfig">
+            <cti:url var="sendConfigUrl" value="/bulk/config/doSendConfig" />
+            <form id="sendConfigForm" method="post" action="${sendConfigUrl}">
                 <cti:csrfToken/>            
                 <%-- DEVICE COLLECTION --%>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />

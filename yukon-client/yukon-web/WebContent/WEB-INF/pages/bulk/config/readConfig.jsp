@@ -7,7 +7,8 @@
 <cti:standardPage module="tools" page="bulk.readConfig">
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.readConfig" deviceCollection="${deviceCollection}">
-        <form id="readConfigForm" method="post" action="/bulk/config/doReadConfig">
+        <cti:url var="readConfigUrl" value="/bulk/config/doReadConfig" />
+        <form id="readConfigForm" method="post" action="${readConfigUrl}">
             <cti:csrfToken/>
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}"/>
