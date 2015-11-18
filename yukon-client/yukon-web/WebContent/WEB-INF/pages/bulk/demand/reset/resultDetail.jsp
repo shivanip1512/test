@@ -277,6 +277,6 @@
             value="DEMAND_RESET/${result.key}/CANCELLABLE" />
     </c:if>
     
-    <cti:includeScript link="/resources/js/common/yukon.tools.demand.reset.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.tools.demand.reset.js" />
     
 </cti:standardPage>
