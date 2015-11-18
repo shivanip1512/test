@@ -145,8 +145,10 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
         Map<TargetSettingType, PeakTargetSetting> targetSettings = strategy.getTargetSettings();
         List<TargetSettingType> timeOfDaySettings =
             StrategyPeakSettingsHelper.getSettingsForAlgorithm(ControlAlgorithm.TIME_OF_DAY);
+        List<TargetSettingType> pFactorSettings =
+            StrategyPeakSettingsHelper.getSettingsForAlgorithm(ControlAlgorithm.PFACTOR_KW_KVAR);
         for (Map.Entry<TargetSettingType, PeakTargetSetting> entry : targetSettings.entrySet()) {
-            if (timeOfDaySettings.contains(entry.getKey())) {
+            if (timeOfDaySettings.contains(entry.getKey()) || pFactorSettings.contains(entry.getKey())) {
                 PeakTargetSetting peakTargetSetting = entry.getValue();
                 YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].peakValue",
                     peakTargetSetting.getPeakValue(), 0.0, 100.0, true);
