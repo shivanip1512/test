@@ -37,7 +37,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
@@ -45,11 +44,8 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
@@ -217,73 +213,44 @@ public class GroupCommanderController {
         return commands;
     }
 
-    public boolean doCollectionCommand(HttpServletRequest request, 
-            DeviceCollection deviceCollection, 
-            String commandSelectValue, 
-            String commandString, 
-            final String emailAddress, final boolean sendEmail,
-            String groupName,
-            final YukonUserContext userContext, 
-            ModelMap map) {
-        
+    public boolean doCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection,
+            String commandSelectValue, String commandString, final String emailAddress, final boolean sendEmail,
+            String groupName, final YukonUserContext userContext, ModelMap map) {
+
         // get host string
         final URL hostURL = ServletUtil.getHostURL(request);
 
-        boolean error = false;
+        boolean isSuccess = false;
         if (StringUtils.isBlank(commandString)) {
-            error = true;
             addErrorStateToMap(map, "No Command Selected", commandSelectValue, commandString, groupName);
-        } else if (rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, userContext.getYukonUser())) {
-            // check that it is authorized
-            if (!commandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
-                error = true;
-                addErrorStateToMap(map, "You are not authorized to execute that command.", commandSelectValue, commandString, groupName);
-            }
+        //If the user entered a custom command such as "test" the check look like this "Is user Authorized to execute "OTHER_COMMAND" for MCT410IL?".
+        } else if (!commandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
+            addErrorStateToMap(map, "You are not authorized to execute that command.", commandSelectValue,
+                commandString, groupName);
         } else {
-            // check that the command is in the authorized list (implies that it is authorized)
-            //TODO Get commands allowed for devicegroup/user
-            List<LiteCommand> allowedCommands = new ArrayList<>();
-            
-            List<LiteCommand> commands = commandDao.filterCommandsForUser(allowedCommands, userContext.getYukonUser());
-            List<String> commandStrings = new MappingList<LiteCommand, String>(commands, new ObjectMapper<LiteCommand, String>() {
+            SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
                 @Override
-                public String map(LiteCommand from)
-                        throws ObjectMappingException {
-                    return from.getCommand();
+                public void handle(GroupCommandResult result) {
+                    commanderEventLogService.groupCommandCompleted(result.getSuccessCollection().getDeviceCount(),
+                        result.getFailureCollection().getDeviceCount(),
+                        result.getUnsupportedCollection() != null ? result.getUnsupportedCollection().getDeviceCount():0,
+                        result.getExceptionReason(),
+                        result.getKey());
+                    GroupCommandCompletionAlert commandCompletionAlert =
+                        new GroupCommandCompletionAlert(new Date(), result);
+                    alertService.add(commandCompletionAlert);
+                    if (sendEmail) {
+                        sendEmail(emailAddress, hostURL, result, userContext);
+                    }
                 }
-            });
-            if (!commandStrings.contains(commandString)) {
-                throw NotAuthorizedException.trueProperty(userContext.getYukonUser(), YukonRoleProperty.EXECUTE_MANUAL_COMMAND);
-            }
+            };
+            String key = groupCommandExecutor.execute(deviceCollection, commandString, DeviceRequestType.GROUP_COMMAND,
+                callback, userContext.getYukonUser());
+            commanderEventLogService.groupCommandInitiated(deviceCollection.getDeviceCount(), commandString, key, userContext.getYukonUser());   //logging after the action so we have the key
+            map.addAttribute("resultKey", key);
+            isSuccess = true;
         }
-        
-        if (error) {
-            return false;
-        }
-        
-        SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
-            @Override
-            public void handle(GroupCommandResult result) {
-                commanderEventLogService.groupCommandCompleted(result.getSuccessCollection().getDeviceCount(),
-                                                               result.getFailureCollection().getDeviceCount(),
-                                                               result.getUnsupportedCollection() != null ? result.getUnsupportedCollection().getDeviceCount():0,
-                                                               result.getExceptionReason(),
-                                                               result.getKey());
-                GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
-                alertService.add(commandCompletionAlert);
-                if (sendEmail) {
-                    sendEmail(emailAddress, hostURL, result, userContext);
-                }
-            }
-
-        };
-
-        String key = groupCommandExecutor.execute(deviceCollection, commandString, DeviceRequestType.GROUP_COMMAND, callback, userContext.getYukonUser());
-        commanderEventLogService.groupCommandInitiated(deviceCollection.getDeviceCount(), commandString, key, userContext.getYukonUser());   //logging after the action so we have the key
-        
-
-        map.addAttribute("resultKey", key);
-        return true;
+        return isSuccess;
     }
 
     private void addErrorStateToMap(ModelMap map, String errorMsg, String commandSelectValue, String commandString, String groupName) {

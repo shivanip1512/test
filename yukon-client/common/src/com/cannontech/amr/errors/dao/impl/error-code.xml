@@ -1005,6 +1005,78 @@
         <troubleshooting>
         </troubleshooting>
     </error>
+    <error code="285">
+        <category>Network Manager</category>
+        <porter>Device address is unknown.</porter>
+        <description>
+            Network Manager does not have a record of a device with that address.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
+    <error code="286">
+        <category>Network Manager</category>
+        <porter>Network is unavailable.</porter>
+        <description>
+            Network Manager is indicating that the network cannot be reached.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
+    <error code="287">
+        <category>Network Manager</category>
+        <porter>Request packet is too large.</porter>
+        <description>
+            Yukon attempted to send an oversized request to the RF network.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
+    <error code="288">
+        <category>Network Manager</category>
+        <porter>Protocol is unsupported.</porter>
+        <description>
+            Yukon attempted to send an unsupported protocol to the RF network.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
+    <error code="289">
+        <category>Network Manager</category>
+        <porter>Network server ID is invalid.</porter>
+        <description>
+            Yukon's Network Manager server registration is not correct.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
+    <error code="290">
+        <category>Network Manager</category>
+        <porter>Application service ID is invalid.</porter>
+        <description>
+            Yukon attempted to send to an invalid service in the end device.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
+    <error code="291">
+        <category>Network Manager</category>
+        <porter>Network traffic limiting.</porter>
+        <description>
+            Network Manager indicated that the message could not be sent because the network is being throttled.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
+    <error code="292">
+        <category>Network Manager</category>
+        <porter>Did not receive a response from the device.</porter>
+        <description>
+            Network Manager sent the request, but the device did not respond in time.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
     <error code="293">
         <category>Network Manager</category>
         <porter>Did not receive a response from Network Manager.</porter>
@@ -1013,6 +1085,33 @@
         </description>
         <troubleshooting>
             Check Network Manager server logs to identify the root cause of the failure.
+        </troubleshooting>
+    </error>
+    <error code="294">
+        <category>Network Manager</category>
+        <porter>E2E request payload too large.</porter>
+        <description>
+            Yukon attempted to form an oversized request packet.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
+    <error code="295">
+        <category>Network Manager</category>
+        <porter>Endpoint indicated request not acceptable.</porter>
+        <description>
+            The end device rejected the request.
+        </description>
+        <troubleshooting>
+        </troubleshooting>
+    </error>
+    <error code="297">
+        <category>Network Manager</category>
+        <porter>Network service failure.</porter>
+        <description>
+            Network Manager indicated that the network could not send the request.
+        </description>
+        <troubleshooting>
         </troubleshooting>
     </error>
     <error code="1024">
