@@ -18,12 +18,19 @@ yukon.tools.group.command = (function () {
             $('#groupName').on('change', function () {
                 var input = $(this);
                 var groupName = input.val();
+
+                if (groupName === '') {
+                    $('.js-no-group-chosen').removeClass('dn');
+                    $('.js-group-chosen').addClass('dn');
+                    return;
+                }
+                $('.js-no-group-chosen').addClass('dn');
+                $('.js-group-chosen').removeClass('dn');
+
                 var url = yukon.url('/group/commander/initCommands?groupName=' + groupName);
-
-                var selectField = $('#select-group-command');
-                var originalValue = selectField.val();
-
                 $.getJSON(url, function (commands) {
+                    var selectField = $('#select-group-command');
+                    var originalValue = selectField.val();
                     selectField.empty();
 
 
@@ -58,18 +65,6 @@ yukon.tools.group.command = (function () {
                         $('#no-command-options').hide();
                     }
                 });
-            });
-
-            $('.js-group-commander-btn').on('click', function () {
-                var btn = $(this);
-                if ($('#groupName').val() === '') {
-                    var message = btn.data('noGroupSelectedText');
-                    alert(message);
-                    return;
-                }
-
-                yukon.ui.busy(btn);
-                $('#groupCommanderForm').submit();
             });
         }
     };

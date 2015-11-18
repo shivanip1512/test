@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -60,7 +59,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
@@ -74,6 +72,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
@@ -106,22 +105,6 @@ public class GroupCommanderController {
     @Resource(name="groupCommanderFailureResultDefinition")
     public void setFailureReportDefinition(SimpleYukonReportDefinition<GroupCommanderFailureResultsModel> failureReportDefinition) {
         this.failureReportDefinition = failureReportDefinition;
-    }
-    
-    // available meter commands
-    private List<LiteCommand> meterCommands;
-
-    @PostConstruct
-    public void init() {
-            
-        this.meterCommands = new ArrayList<LiteCommand>();
-        
-        List<LiteDeviceTypeCommand> devTypeCmds = commandDao.getAllDevTypeCommands(DeviceTypes.STRING_MCT_410IL[0]);
-        for (LiteDeviceTypeCommand devTypeCmd : devTypeCmds) {
-            int cmdId = devTypeCmd.getCommandId();
-            LiteCommand liteCmd = commandDao.getCommand(cmdId);
-            this.meterCommands.add(liteCmd);
-        }
     }
 
     @RequestMapping("collectionProcessing")
@@ -185,8 +168,14 @@ public class GroupCommanderController {
     @RequestMapping("groupProcessing")
     public void groupProcessing(YukonUserContext userContext, ModelMap model) {
 
-        List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
+        /*
+         * This is just to get the commandSelector tag to render the dropdown we need.
+         * Once a group is selected, this list will be replaced with the actual options via ajax.
+         */
+        LiteCommand command = new LiteCommand(-1, "placeholder", "placeholder", "placeholder");
+        List<LiteCommand> commands = ImmutableList.of(command);
         model.addAttribute("commands", commands);
+
         model.addAttribute("email", contactDao.getUserEmail(userContext.getYukonUser()));
         boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
         model.addAttribute("isSmtpConfigured", isSmtpConfigured);
@@ -250,7 +239,10 @@ public class GroupCommanderController {
             }
         } else {
             // check that the command is in the authorized list (implies that it is authorized)
-            List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
+            //TODO Get commands allowed for devicegroup/user
+            List<LiteCommand> allowedCommands = new ArrayList<>();
+            
+            List<LiteCommand> commands = commandDao.filterCommandsForUser(allowedCommands, userContext.getYukonUser());
             List<String> commandStrings = new MappingList<LiteCommand, String>(commands, new ObjectMapper<LiteCommand, String>() {
                 @Override
                 public String map(LiteCommand from)

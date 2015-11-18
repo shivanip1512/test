@@ -7,6 +7,8 @@
 
 <cti:standardPage module="tools" page="deviceGroupsCommander">
 
+<cti:includeScript link="/resources/js/pages/yukon.tools.group.command.js"/>
+
 <cti:linkTabbedContainer mode="section">
     <cti:linkTab selectorKey="yukon.web.deviceGroups.editor.tab.title">
         <c:url value="/group/editor/home" />
@@ -25,7 +27,6 @@
     </cti:linkTab>
 </cti:linkTabbedContainer>
 
-<cti:includeScript link="/resources/js/pages/yukon.tools.group.command.js"/>
 
 <%-- ERROR MSG --%>
 <c:if test="${not empty param.errorMsg}">
@@ -56,29 +57,41 @@
     </div>
 
     <%-- SELECT COMMAND --%>
-    <div><i:inline key="yukon.common.device.commander.commandSelector.selectCommand"/></div>
-    <div id="no-command-options" class="dn empty-list"><i:inline key=".noCommands"/></div>
-    <amr:commandSelector id="select-group-command" selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
-        selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}"/>
-
-    <br><br>
-    <c:if test="${!isSmtpConfigured}">
-        <%-- EMAIL --%>
+    <h3><i:inline key="yukon.common.device.commander.commandSelector.selectCommand"/></h3>
+    <div class="js-no-group-chosen empty-list">
+        <i:inline key=".noGroup"/>
+    </div>
+    <div class="js-group-chosen dn">
+        <div id="no-command-options" class="dn empty-list"><i:inline key=".noCommands"/></div>
         <div class="stacked">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey="yukon.common.email.send">
-                    <tags:switchButton name="sendEmail" toggleGroup="email-address" offClasses="M0" offNameKey=".no.label" onNameKey=".yes.label"/>
-                    <input type="text" name="emailAddress"  size="40" disabled="disabled" value="${email}" data-toggle-group="email-address">
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
+            <amr:commandSelector id="select-group-command"
+                selectName="commandSelectValue"
+                fieldName="commandString"
+                commands="${commands}"
+                selectedCommandString="${param.commandString}"
+                selectedSelectValue="${param.commandSelectValue}"/>
         </div>
-    </c:if>
-    <%-- EXECUTE BUTTON --%>
-    <div class="page-action-area stacked half-width">
-        <cti:msg2 var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
-        <cti:button nameKey="execute"
-            classes="js-group-commander-btn primary action M0"
-            data-no-group-selected-text="${noGroupSelectedAlertText}"/>
+
+        <c:if test="${!isSmtpConfigured}">
+            <%-- EMAIL --%>
+            <div class="stacked">
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey="yukon.common.email.send">
+                        <tags:switchButton name="sendEmail" toggleGroup="email-address" offClasses="M0" offNameKey=".no.label" onNameKey=".yes.label"/>
+                        <input type="text" name="emailAddress"  size="40" disabled="disabled" value="${email}" data-toggle-group="email-address">
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </div>
+        </c:if>
+        <%-- EXECUTE BUTTON --%>
+        <div class="page-action-area stacked half-width">
+            <cti:msg2 var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
+            <cti:button nameKey="execute"
+                type="submit"
+                classes="js-group-commander-btn primary action M0"
+                busy="true"
+                data-no-group-selected-text="${noGroupSelectedAlertText}"/>
+        </div>
     </div>
 </form>
 
