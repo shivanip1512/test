@@ -15,13 +15,17 @@ yukon.tools.group.command = (function () {
 
         init : function () {
 
+            $('#commandString').on('change', function () {
+                var command = $(this).val().trim();
+                $('.js-group-commander-btn').prop('disabled', command === '');
+            });
+
             $('#groupName').on('change', function () {
                 var input = $(this);
                 var groupName = input.val();
 
                 if (groupName === '') {
                     $('#no-group-chosen').removeClass('dn');
-                    $('#no-commands-available').addClass('dn');
                     $('#commands-available').addClass('dn');
                     return;
                 }
@@ -32,14 +36,17 @@ yukon.tools.group.command = (function () {
                     var selectField = $('#select-group-command');
                     var originalValue = selectField.val();
                     selectField.empty();
+                    var commandsContainer = $('#commands-available');
+                    var noCommandsSpan = commandsContainer.find('.empty-list');
 
+                    $('#commands-available').removeClass('dn');
                     if (commands.length === 0) {
-                        $('#no-commands-available').removeClass('dn');
-                        $('#commands-available').addClass('dn');
+                        $('#commandString').val('').trigger('change');
+                        selectField.next('.chosen-container').addClass('dn');
+                        noCommandsSpan.removeClass('dn');
                         return;
                     }
-                    $('#no-commands-available').addClass('dn');
-                    $('#commands-available').removeClass('dn');
+                    noCommandsSpan.addClass('dn');
 
                     var originalValueStillAvailable = false;
 

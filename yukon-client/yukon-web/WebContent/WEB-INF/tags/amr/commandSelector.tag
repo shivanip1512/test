@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="id" %>
@@ -13,12 +14,15 @@
 <cti:uniqueIdentifier var="uniqueId" prefix="commandSelector_"/>
 <cti:default var="id" value="uniqueId"/>
 
-<cti:msg var="noAuthorizedCommandsText" key="yukon.common.device.commander.commandSelector.noAuthorizedCommands"/>
 <cti:msg var="selectOneLabel" key="yukon.common.device.commander.selector.selectOne"/>
-
 <c:choose>
-    <c:when test="${fn:length(commands) <= 0}">${noAuthorizedCommandsText}</c:when>
+    <c:when test="${empty commands}">
+        <div class="empty-list">
+            <i:inline key="yukon.common.device.commander.commandSelector.noAuthorizedCommands"/>
+        </div>
+    </c:when>
     <c:otherwise>
+        <div>
         <tags:commanderPrompter/>
         <select id="${id}" data-placeholder="${selectOneLabel}" 
             name="${selectName}" class="js-loadCommanderCommand js-init-chosen" data-cmdfield="${fieldName}">
@@ -30,12 +34,21 @@
                 </c:if>
                 <option value="${fn:escapeXml(commandOption.command)}" ${selected}>${commandOption.label}</option>
             </c:forEach>
-        </select><br>
+        </select>
+        </div>
     </c:otherwise>
 </c:choose>
-<input type="text" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse>
+<c:set var="manualCommands" value="false" />
+<cti:checkRolesAndProperties value="EXECUTE_MANUAL_COMMAND">
+    <c:set var="manualCommands" value="true"/>
+</cti:checkRolesAndProperties>
+
+<c:if test="${not empty commands or manualCommands}">
+<input type="text" 
+       <c:if test="${not manualCommands}">readonly</c:if>
        id="${fieldName}"  
        style="margin-top:8px;" 
        name="${fieldName}" 
        value="${pageScope.selectedCommandString}" 
        size="60">
+</c:if>

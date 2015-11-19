@@ -40,8 +40,8 @@
                     "<cti:msg key="yukon.web.components.dialog.ok"/>": function () {
                         $( this ).dialog( "close" );
                         replacement = $( this ).find("input:text").val();
-                        cmd = cmd.replace(param, replacement);
-                        $(document.getElementById(cmdField)).val(cmd);
+                        cmd = cmd.replace(param, replacement + ' ');
+                        $(document.getElementById(cmdField)).val(cmd).trigger('change');
                         // try next replacements
                         processCommanderReplacement(paramIdx + 1, originalCmd, cmd, cmdField);
                     },
@@ -58,7 +58,7 @@
         else {
             // no parameter on first attempt, set command value as-is
             if (paramIdx === 0) {
-                $('#' + cmdField).val(originalCmd);
+                $('#' + cmdField).val(originalCmd).trigger('change');
             }
         }
     }

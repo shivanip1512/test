@@ -26,19 +26,26 @@
                     selectedCommandString="${param.commandString}"
                     selectedSelectValue="${param.commandSelectValue}"/>
             </div>
-            <c:if test="${!isSmtpConfigured}">
-                <tags:nameValueContainer2 tableClass="with-form-controls name-collapse">
-                    <tags:nameValue2 nameKey="yukon.common.email.send">
-                        <tags:switchButton offNameKey=".no.label" onNameKey=".yes.label" name="sendEmail" classes="fn"
-                            toggleGroup="email-address"/>
-                        <input type="text" name="emailAddress" value="${email}" size="40" disabled
-                            data-toggle-group="email-address">
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
+            <c:set var="manualCommands" value="false" />
+            <cti:checkRolesAndProperties value="EXECUTE_MANUAL_COMMAND">
+                <c:set var="manualCommands" value="true"/>
+            </cti:checkRolesAndProperties>
+
+            <c:if test="${not empty commands or manualCommands}">
+                <c:if test="${!isSmtpConfigured}">
+                    <tags:nameValueContainer2 tableClass="with-form-controls name-collapse">
+                        <tags:nameValue2 nameKey="yukon.common.email.send">
+                            <tags:switchButton offNameKey=".no.label" onNameKey=".yes.label" name="sendEmail" classes="fn"
+                                toggleGroup="email-address"/>
+                            <input type="text" name="emailAddress" value="${email}" size="40" disabled
+                                data-toggle-group="email-address">
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </c:if>
+                <div class="page-action-area">
+                    <cti:button nameKey="execute" type="submit" classes="primary action" busy="true"/>
+                </div>
             </c:if>
-            <div class="page-action-area">
-                <cti:button nameKey="execute" type="submit" classes="primary action" busy="true"/>
-            </div>
         </form>
         
     </tags:bulkActionContainer>

@@ -59,9 +59,9 @@
     <%-- SELECT COMMAND --%>
     <h3><i:inline key="yukon.common.device.commander.commandSelector.selectCommand"/></h3>
     <div id="no-group-chosen" class="empty-list"><i:inline key=".noGroup"/></div>
-    <div id="no-commands-available" class="dn empty-list"><i:inline key=".noCommands"/></div>
     <div id="commands-available" class="dn">
         <div class="stacked">
+            <div class="empty-list"><i:inline key=".noCommands"/></div>
             <amr:commandSelector id="select-group-command"
                 selectName="commandSelectValue"
                 fieldName="commandString"
