@@ -1280,7 +1280,6 @@ void CtiLMManualControlRequestExecutor::Execute()
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
             // startTime is not used, but may impact things during constraint checking.  Move it out of the way
             startTime = CtiTime::neg_infin;
-            stopTime = CtiTime::now();
             CoerceStartStopTime( program, startTime, stopTime, controlArea );
             StopProgram(program, controlArea, stopTime);
             if( response != NULL )
@@ -1591,7 +1590,11 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPt
 
 void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop)
 {
-    CTILOG_DEBUG( dout, "StopDirectProgram stop@" << stop );
+    CtiTime stopTime;
+    if( _controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP )
+    {
+        stopTime = stop;
+    }
 
     // Check the stop time to see if it is before the start time
     if( stop.seconds() < lmProgramDirect->getDirectStartTime().seconds() )
