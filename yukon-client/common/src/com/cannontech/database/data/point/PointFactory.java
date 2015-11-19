@@ -56,6 +56,10 @@ public final class PointFactory {
             retPoint = new CalcStatusPoint();
             retPoint.getPoint().setPointType(PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT));
             break;
+        case PointTypes.SYSTEM_POINT:
+            retPoint = new SystemPoint();
+            retPoint.getPoint().setPointType(PointTypes.getType(PointTypes.SYSTEM_POINT));
+            break;
         default: // this is bad
             throw new Error("PointFactory::createPoint - Unrecognized point type"); // this is also bad
         }

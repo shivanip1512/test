@@ -29,7 +29,8 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.AnalogPoint;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.spring.YukonSpringHook;
 import com.klg.jclass.field.DataProperties;
 import com.klg.jclass.field.JCInvalidInfo;
@@ -39,6 +40,10 @@ import com.klg.jclass.util.value.JCValueEvent;
 import com.klg.jclass.util.value.JCValueListener;
 import com.klg.jclass.util.value.MutableValueModel;
 
+
+/**
+ * This panel is also being used for "System" point types.
+ */
 public class PointAnalogPhysicalSettingsEditorPanel extends DataInputPanel implements ActionListener, ItemListener,
         CaretListener, JCValueListener {
     private JLabel ivjPointOffsetLabel = null;
@@ -665,6 +670,9 @@ public class PointAnalogPhysicalSettingsEditorPanel extends DataInputPanel imple
      */
     @Override
     public Object getValue(Object val) {
+        
+        PointBase pointBase = (PointBase)val;
+        
         Integer pointOffset = null;
         Object pointOffsetSpinVal = getPointOffsetSpinner().getValue();
         if (pointOffsetSpinVal instanceof Long) {
@@ -673,15 +681,16 @@ public class PointAnalogPhysicalSettingsEditorPanel extends DataInputPanel imple
             pointOffset = new Integer(((Integer) pointOffsetSpinVal).intValue());
         }
 
-        Double deadband = null;
-        Object deadbandSpinVal = getDeadbandSpinner().getValue();
-        if (deadbandSpinVal instanceof Long) {
-            deadband = new Double(((Long) deadbandSpinVal).intValue());
-        } else if (deadbandSpinVal instanceof Integer) {
-            deadband = new Double(((Integer) deadbandSpinVal).intValue());
+        if ((getUsedPointOffsetLabel().getText()) == "") {
+            pointBase.getPoint().setPointOffset(pointOffset);
+        } else {
+            pointBase.getPoint().setPointOffset(null);
         }
 
-
+        if (pointBase.getPoint().getPointTypeEnum() == PointType.System) {
+            return pointBase;
+        }
+        
         // set all the values below
         AnalogPoint point = (AnalogPoint) val;
 
@@ -699,18 +708,19 @@ public class PointAnalogPhysicalSettingsEditorPanel extends DataInputPanel imple
             CTILogger.error(n.getMessage(), n);
         }
 
-        if ((getUsedPointOffsetLabel().getText()) == "") {
-            point.getPoint().setPointOffset(pointOffset);
-        } else {
-            point.getPoint().setPointOffset(null);
-        }
-
         if (getDeadbandCheckBox().isSelected()) {
+            Double deadband = null;
+            Object deadbandSpinVal = getDeadbandSpinner().getValue();
+            if (deadbandSpinVal instanceof Long) {
+                deadband = new Double(((Long) deadbandSpinVal).intValue());
+            } else if (deadbandSpinVal instanceof Integer) {
+                deadband = new Double(((Integer) deadbandSpinVal).intValue());
+            }
             point.getPointAnalog().setDeadband(deadband);
         } else {
             point.getPointAnalog().setDeadband(-1.0);
         }
-
+        
         Integer controlPointOffset = null;
         Object controlPointOffsetSpinVal = getControlPointOffsetSpinner().getValue();
         if (controlPointOffsetSpinVal instanceof Long) {
@@ -858,30 +868,32 @@ public class PointAnalogPhysicalSettingsEditorPanel extends DataInputPanel imple
 
     @Override
     public boolean isInputValid() {
-        if (getMultiplierTextField().getText() != null && getMultiplierTextField().getText().length() >= 1) {
-            try {
-                Double.parseDouble(getMultiplierTextField().getText());
-            } catch (NumberFormatException e) {
-                setErrorString("The Multiplier text field must contain a valid number");
+        if (getRawValuePanel().isVisible()) {
+            if (getMultiplierTextField().getText() != null && getMultiplierTextField().getText().length() >= 1) {
+                try {
+                    Double.parseDouble(getMultiplierTextField().getText());
+                } catch (NumberFormatException e) {
+                    setErrorString("The Multiplier text field must contain a valid number");
+                    return false;
+                }
+    
+            } else {
+                setErrorString("The Multiplier text field must be filled in");
                 return false;
             }
 
-        } else {
-            setErrorString("The Multiplier text field must be filled in");
-            return false;
-        }
-
-        if (getDataOffsetTextField().getText() != null && getDataOffsetTextField().getText().length() >= 1) {
-            try {
-                Double.parseDouble(getDataOffsetTextField().getText());
-            } catch (NumberFormatException e) {
-                setErrorString("The Data Offset text field must contain a valid number");
+            if (getDataOffsetTextField().getText() != null && getDataOffsetTextField().getText().length() >= 1) {
+                try {
+                    Double.parseDouble(getDataOffsetTextField().getText());
+                } catch (NumberFormatException e) {
+                    setErrorString("The Data Offset text field must contain a valid number");
+                    return false;
+                }
+    
+            } else {
+                setErrorString("The Data Offset text field must be filled in");
                 return false;
             }
-
-        } else {
-            setErrorString("The Data Offset text field must be filled in");
-            return false;
         }
 
         if (getPhysicalPointOffsetCheckBox().isSelected()) {
@@ -915,33 +927,42 @@ public class PointAnalogPhysicalSettingsEditorPanel extends DataInputPanel imple
 
     @Override
     public void setValue(Object val) {
-        AnalogPoint point = (AnalogPoint) val;
-        if (point.getPointAnalog().getMultiplier() != null) {
-            getMultiplierTextField().setText(point.getPointAnalog().getMultiplier().toString());
-        }
-        if (point.getPointAnalog().getDataOffset() != null) {
-            getDataOffsetTextField().setText(point.getPointAnalog().getDataOffset().toString());
-        }
 
-        getUsedPointOffsetLabel().setText("");
+        PointBase pointBase = (PointBase)val;
 
-        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(point.getPoint() .getPaoID());
-        usedPointOffsetsVector = new Vector<LitePoint>(points.size());
-        for (LitePoint currPoint : points) {
-            if (point.getPoint().getPointID() != currPoint.getPointID() && point.getPoint() .getPointType() .equals(PointTypes.getType(currPoint.getPointType()))) {
-                usedPointOffsetsVector.add(currPoint);
-            }
-        }
-
-        Integer pointOffset = point.getPoint().getPointOffset();
-        Double deadband = point.getPointAnalog().getDeadband();
-
+        Integer pointOffset = pointBase.getPoint().getPointOffset();
         if (pointOffset != null) {
             getPhysicalPointOffsetCheckBox().setSelected(pointOffset.intValue() != 0);
             getPointOffsetSpinner().setValue(pointOffset);
         } else {
             getPhysicalPointOffsetCheckBox().setSelected(false);
             getPointOffsetSpinner().setValue(new Integer(0));
+        }
+
+        getUsedPointOffsetLabel().setText("");
+
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(pointBase.getPoint() .getPaoID());
+        usedPointOffsetsVector = new Vector<LitePoint>(points.size());
+        for (LitePoint currPoint : points) {
+            if (pointBase.getPoint().getPointID() != currPoint.getPointID() && 
+                    pointBase.getPoint().getPointTypeEnum() == currPoint.getPointTypeEnum()) {
+                usedPointOffsetsVector.add(currPoint);
+            }
+        }
+
+        if (pointBase.getPoint().getPointTypeEnum() == PointType.System) {
+            getDeadbandPanel().setVisible(false);
+            getRawValuePanel().setVisible(false);
+            getControlSettingsPanel().setVisible(false);
+            return;
+        }
+        
+        AnalogPoint point = (AnalogPoint) pointBase;
+        if (point.getPointAnalog().getMultiplier() != null) {
+            getMultiplierTextField().setText(point.getPointAnalog().getMultiplier().toString());
+        }
+        if (point.getPointAnalog().getDataOffset() != null) {
+            getDataOffsetTextField().setText(point.getPointAnalog().getDataOffset().toString());
         }
 
         getControlTypeComboBox().setSelectedItem(point.getPointAnalogControl().getControlType());
@@ -953,6 +974,7 @@ public class PointAnalogPhysicalSettingsEditorPanel extends DataInputPanel imple
             getControlPointOffsetSpinner().setValue(0);
         }
 
+        Double deadband = point.getPointAnalog().getDeadband();
         if (deadband != null) {
             getDeadbandCheckBox().setSelected(deadband.intValue() > -1);
             getDeadbandSpinner().setValue(new Integer(deadband.intValue()));

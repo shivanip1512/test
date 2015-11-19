@@ -20,6 +20,7 @@ import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.database.data.point.SystemPoint;
 import com.cannontech.spring.YukonSpringHook;
 
 public class PointBaseEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -673,6 +674,10 @@ public void setValue(Object val)
 	{
 		sp = new CalcBasePanel();
 	}
+	else if (val instanceof SystemPoint) {
+	    sp = new SystemPointBasePanel();
+	}
+	
 	
 	if( sp != null )
 	{

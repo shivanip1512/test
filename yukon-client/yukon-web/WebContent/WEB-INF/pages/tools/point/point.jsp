@@ -138,6 +138,23 @@
 
                     </tags:nameValueContainer2>
                 </c:if>
+                
+                <c:if test="${isSystemPoint}">
+                    <tags:nameValueContainer2 tableClass="${nameValueClass}">
+
+                        <tags:nameValue2 nameKey=".archive">
+                            <tags:selectWithItems path="pointBase.point.archiveType" items="${scalarArchiveTypes}"
+                                inputClass="js-archive-type" />
+                            <span class="js-archive-interval">
+                                <c:if test="${viewMode}">(</c:if>
+                                <tags:intervalStepper path="pointBase.point.archiveInterval" intervals="${archiveIntervals}" />
+                                <c:if test="${viewMode}">)</c:if>
+                            </span>
+                        </tags:nameValue2>
+
+                        <form:hidden path="pointBase.point.stateGroupID"/>
+                    </tags:nameValueContainer2>
+                </c:if>
             </cti:tab>
 
             <c:if test="${not isCalcType}">
@@ -284,9 +301,22 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </c:if>
+
+                 <c:if test="${isSystemPoint}">
+                    <tags:nameValueContainer2 tableClass="${nameValueClass}">
+                        <tags:nameValue2 nameKey=".physicalOffset">
+                            <tags:switchButton path="pointBase.point.physicalOffset" offClasses="M0"
+                                toggleGroup="physicalOffset" toggleAction="hide" inputClass="js-use-offset"/>
+                            <%-- The physical offset value within the current device or parent this point belongs to --%>
+                            <tags:input path="pointBase.point.pointOffset" size="6" toggleGroup="physicalOffset"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </c:if>
+                
             </cti:tab>
             </c:if>
 
+            <c:if test="${not isSystemPoint}">
             <cti:msg2 var="limitsTab" key=".tab.limits"/>
             <cti:tab title="${limitsTab}">
 
@@ -385,6 +415,7 @@
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </cti:tab>
+            </c:if>
 
             <cti:msg2 var="alarmingTab" key=".tab.alarming"/>
             <cti:tab title="${alarmingTab}">

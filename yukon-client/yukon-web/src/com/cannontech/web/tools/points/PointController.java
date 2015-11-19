@@ -44,8 +44,9 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.database.data.point.SystemPoint;
+import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.database.db.point.*;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -137,6 +138,7 @@ public class PointController {
         model.addAttribute("isStatusPoint", base instanceof StatusPoint && !(base instanceof CalcStatusPoint));
         model.addAttribute("isAnalogPoint", base instanceof AnalogPoint);
         model.addAttribute("isAccumulatorPoint", base instanceof AccumulatorPoint);
+        model.addAttribute("isSystemPoint", base instanceof SystemPoint);
 
         model.addAttribute("logicalGroups", PointLogicalGroups.values());
         model.addAttribute("scalarArchiveTypes", PointArchiveType.values());
@@ -207,6 +209,7 @@ public class PointController {
     public static class CalculatedPointModel extends PointModel<CalculatedPoint> {}
     public static class StatusPointModel extends PointModel<StatusPoint> {}
     public static class CalcStatusPointModel extends PointModel<CalcStatusPoint> {}
+    public static class SystemPointModel extends PointModel<SystemPoint> {}
 
     @RequestMapping(value = "/points/Analog", method = RequestMethod.POST)
     public String saveAnalog(@ModelAttribute("pointModel") AnalogPointModel pointModel, BindingResult result,
@@ -246,6 +249,14 @@ public class PointController {
 
         verifyRoles(userContext.getYukonUser());
 
+        return save(pointModel, result, redirectAttributes);
+    }
+
+    @RequestMapping(value = "/points/System", method = RequestMethod.POST)
+    public String saveSystem(@ModelAttribute("pointModel") SystemPointModel pointModel, BindingResult result,
+            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+
+        verifyRoles(userContext.getYukonUser());
         return save(pointModel, result, redirectAttributes);
     }
 

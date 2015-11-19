@@ -17,7 +17,7 @@ public class PointEditorPanel extends com.cannontech.common.editor.PropertyPanel
 	{
 		{  //0 - PointBaseEditorPanel
 			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, 
-			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT
+			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT, PointTypes.SYSTEM_POINT
 		},
 		{  //1 - PointStatusPhysicalSettingsEditorPanel
 			PointTypes.STATUS_POINT
@@ -26,7 +26,7 @@ public class PointEditorPanel extends com.cannontech.common.editor.PropertyPanel
 		 	PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT
 		},
 		{  //3 - PointAnalogPhysicalSettingsEditoraPanel
-			PointTypes.ANALOG_POINT
+			PointTypes.ANALOG_POINT, PointTypes.SYSTEM_POINT
 		},
 		{  //4 - 
 			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT
@@ -36,11 +36,11 @@ public class PointEditorPanel extends com.cannontech.common.editor.PropertyPanel
 		},
 		{  //6 - PointDataOptionsEditorPanel
 			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, 
-			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT
+			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT, PointTypes.SYSTEM_POINT
 		},
 		{  //7 - PointAlarmOptionsEditorPanel
 			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, 
-			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT
+			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT, PointTypes.SYSTEM_POINT
 		}	,
 		{  //8 - PointCalcComponent
 			PointTypes.CALCULATED_POINT, PointTypes.CALCULATED_STATUS_POINT
@@ -115,6 +115,7 @@ public Object[] createNewPanel(int panelIndex)
  * This method was created in VisualAge.
  * @return DataInputPanel[]
  */
+@Override
 public DataInputPanel[] getInputPanels() {
 	return this.inputPanels;
 }
@@ -144,6 +145,7 @@ private javax.swing.JTabbedPane getPointEditorTabbedPane() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public java.awt.Dimension getPreferredSize() {
 	return new java.awt.Dimension( 400, 465 );
 }
@@ -151,6 +153,7 @@ public java.awt.Dimension getPreferredSize() {
  * This method was created in VisualAge.
  * @return java.lang.String[]
  */
+@Override
 public String[] getTabNames() {
 	return this.inputPanelTabNames;
 }
@@ -187,6 +190,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) 
 {
 	//Vector to hold the panels temporarily
@@ -229,6 +233,7 @@ public void setValue(Object val)
  * This method was created in VisualAge.
  * @return java.lang.String
  */
+@Override
 public String toString() {
 	return "Point Editor";
 }

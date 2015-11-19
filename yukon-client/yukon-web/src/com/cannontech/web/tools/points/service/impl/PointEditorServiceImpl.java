@@ -234,15 +234,17 @@ public class PointEditorServiceImpl implements PointEditorService {
      */
     private void saveStaleData(int pointId, StaleData staleData) {
         
-        PointPropertyValue timeProperty = new PointPropertyValue(pointId, StaleData.TIME_PROPERTY, staleData.getTime());
-        PointPropertyValue updateProperty = new PointPropertyValue(pointId, StaleData.UPDATE_PROPERTY, staleData.getUpdateStyle());
-        
-        pointPropertyValueDao.remove(timeProperty);
-        pointPropertyValueDao.remove(updateProperty);
-
-        if (staleData.isEnabled()) {
-            pointPropertyValueDao.add(timeProperty);
-            pointPropertyValueDao.add(updateProperty);
+        if (staleData != null) {
+            PointPropertyValue timeProperty = new PointPropertyValue(pointId, StaleData.TIME_PROPERTY, staleData.getTime());
+            PointPropertyValue updateProperty = new PointPropertyValue(pointId, StaleData.UPDATE_PROPERTY, staleData.getUpdateStyle());
+            
+            pointPropertyValueDao.remove(timeProperty);
+            pointPropertyValueDao.remove(updateProperty);
+    
+            if (staleData.isEnabled()) {
+                pointPropertyValueDao.add(timeProperty);
+                pointPropertyValueDao.add(updateProperty);
+            }
         }
     }
     
