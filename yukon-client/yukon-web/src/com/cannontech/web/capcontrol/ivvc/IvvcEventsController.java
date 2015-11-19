@@ -20,7 +20,7 @@ import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.service.IvvcEventsService;
-import com.cannontech.web.capcontrol.ivvc.service.impl.IvvcEventsServiceImpl.IvvcEvent;
+import com.cannontech.web.capcontrol.ivvc.service.IvvcEventsService.IvvcEvent;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;

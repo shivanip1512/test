@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +42,9 @@ public class IvvcEventsServiceImpl implements IvvcEventsService {
         ImmutableMap.Builder<EventType, String> regulatorBuilder = ImmutableMap.builder();
         
         regulatorBuilder.put(EventType.TAP_UP, "icon-arrow-up-green");
-        regulatorBuilder.put(EventType.TAP_DOWN, "icon-arrow-down-orange");
+        regulatorBuilder.put(EventType.TAP_DOWN, "icon-arrow-down-green");
         regulatorBuilder.put(EventType.INCREASE_SETPOINT, "icon-arrow-up-green");
-        regulatorBuilder.put(EventType.DECREASE_SETPOINT, "icon-arrow-down-orange");
+        regulatorBuilder.put(EventType.DECREASE_SETPOINT, "icon-arrow-down-green");
         regulatorBuilder.put(EventType.INTEGRITY_SCAN, "icon-transmit-blue");
         regulatorBuilder.put(EventType.ENABLE_REMOTE_CONTROL, "icon-accept");
         regulatorBuilder.put(EventType.DISABLE_REMOTE_CONTROL, "icon-delete");
@@ -86,7 +85,7 @@ public class IvvcEventsServiceImpl implements IvvcEventsService {
 
         Map<OddEven, String> iconClassNames = new HashMap<>();
         iconClassNames.put(OddEven.ODD, "icon-arrow-down-orange");
-        iconClassNames.put(OddEven.EVEN, "icon-arrow-up-green");
+        iconClassNames.put(OddEven.EVEN, "icon-arrow-up-orange");
         List<CcEvent> capBankEvents = zoneService.getLatestCapBankEvents(zoneIds, range);
         return getIvvcEvents(capBankEvents, iconClassNames);
     }
@@ -95,8 +94,8 @@ public class IvvcEventsServiceImpl implements IvvcEventsService {
     public List<IvvcEvent> getCommStatusEvents(int subBusId, TimeRange range) {
 
         Map<OddEven, String> iconClassNames = new HashMap<>();
-        iconClassNames.put(OddEven.ODD, "icon-arrow-up-green");
-        iconClassNames.put(OddEven.EVEN, "icon-arrow-down-orange");
+        iconClassNames.put(OddEven.ODD, " icon-accept");
+        iconClassNames.put(OddEven.EVEN, "icon-error");
         List<CcEvent> capBankEvents = zoneService.getLatestCommStatusEvents(subBusId, range);
         return getIvvcEvents(capBankEvents, iconClassNames);
     }
@@ -118,74 +117,5 @@ public class IvvcEventsServiceImpl implements IvvcEventsService {
             events.add(event);
         }
         return events;
-    }
-    
-   public class IvvcEvent {
-        private String id;
-        private Instant timestamp;
-        private String message;
-        private String deviceName;
-        private String user;
-        private String icon;
-
-        public Instant getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(Instant timestamp) {
-            this.timestamp = timestamp;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public String getDeviceName() {
-            return deviceName;
-        }
-
-        public void setDeviceName(String deviceName) {
-            this.deviceName = deviceName;
-        }
-
-        public String getUser() {
-            return user;
-        }
-
-        public void setUser(String user) {
-            this.user = user;
-        }
-
-        public String getIcon() {
-            return icon;
-        }
-
-        public void setIcon(String icon) {
-            this.icon = icon;
-        }
-      
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-        
-        /* Returns event as JSON */
-        public Map<String, Object> getEventMap() {
-            Map<String, Object> event = new HashMap<>();
-            event.put("id", id);
-            event.put("timestamp", timestamp.getMillis());
-            event.put("message", message);
-            event.put("deviceName", deviceName);
-            event.put("user", user);
-            event.put("icon", icon);
-            return event;
-        }
     }
 }
