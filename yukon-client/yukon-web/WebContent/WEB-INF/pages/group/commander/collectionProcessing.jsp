@@ -17,7 +17,7 @@
         
         <form id="collectionProcessingForm" action="<cti:url value="/group/commander/executeCollectionCommand"/>" method="post">
             <c:choose>
-                <c:when test="${fn:length(commands) <= 0}">${noAuthorizedCommandsText}</c:when>
+                <c:when test="${empty commands}">${noAuthorizedCommandsText}</c:when>
                 <c:otherwise>
                     <cti:csrfToken />
                     <cti:deviceCollection deviceCollection="${deviceCollection}"/>

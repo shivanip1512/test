@@ -52,7 +52,6 @@ import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -85,7 +84,6 @@ public class GroupCommanderController {
     @Autowired private ContactDao contactDao;
     @Autowired private AlertService alertService;
     @Autowired private EmailService emailService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GroupCommandExecutor groupCommandExecutor;
@@ -119,43 +117,40 @@ public class GroupCommanderController {
     /**
      * Returns all commands that can be executed by the user for the devices selected.
      * Authorization checks:
-     *  - If the user can execute a manual command
-     *  - If command is visible
-     *  - If the user is authorized to execute commands
-     * Sort order 
-     *  - By PaoType db string 
-     *  - By Display Order of the command
-     *  
-     *  If the duplicate command is found the first command will be kept.
+     * - If command is visible
+     * - If the user is authorized to execute commands
+     * Sort order
+     * - By PaoType db string
+     * - By Display Order of the command
+     * 
+     * If the duplicate command is found the first command will be kept.
      */
     private List<LiteCommand> getCommands(List<SimpleDevice> devices, LiteYukonUser user) {
         Map<String, LiteCommand> authorized = new LinkedHashMap<String, LiteCommand>();
-        if (rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user)) {
-            ImmutableMap<Integer, LiteCommand> commands =
-                Maps.uniqueIndex(commandDao.getAllCommands(), new Function<LiteCommand, Integer>() {
-                    @Override
-                    public Integer apply(LiteCommand from) {
-                        return from.getLiteID();
-                    }
-                });
-
-            Set<PaoType> paoTypes = new TreeSet<PaoType>(new Comparator<PaoType>() {
+        ImmutableMap<Integer, LiteCommand> commands =
+            Maps.uniqueIndex(commandDao.getAllCommands(), new Function<LiteCommand, Integer>() {
                 @Override
-                public int compare(PaoType o1, PaoType o2) {
-                    return o1.getDbString().compareTo(o2.getDbString());
+                public Integer apply(LiteCommand from) {
+                    return from.getLiteID();
                 }
             });
-            paoTypes.addAll(Collections2.transform(devices, SimpleDevice.TO_PAO_TYPE));
 
-            for (PaoType type : paoTypes) {
-                List<LiteDeviceTypeCommand> all = commandDao.getAllDevTypeCommands(type.getDbString());
-                for (LiteDeviceTypeCommand command : all) {
-                    if (command.isVisible()) {
-                        LiteCommand liteCommand = commands.get(command.getCommandId());
-                        if (!authorized.containsKey(liteCommand.getCommand())
-                            && commandAuthorizationService.isAuthorized(user, liteCommand.getCommand())) {
-                            authorized.put(liteCommand.getCommand(), liteCommand);
-                        }
+        Set<PaoType> paoTypes = new TreeSet<PaoType>(new Comparator<PaoType>() {
+            @Override
+            public int compare(PaoType o1, PaoType o2) {
+                return o1.getDbString().compareTo(o2.getDbString());
+            }
+        });
+        paoTypes.addAll(Collections2.transform(devices, SimpleDevice.TO_PAO_TYPE));
+
+        for (PaoType type : paoTypes) {
+            List<LiteDeviceTypeCommand> all = commandDao.getAllDevTypeCommands(type.getDbString());
+            for (LiteDeviceTypeCommand command : all) {
+                if (command.isVisible()) {
+                    LiteCommand liteCommand = commands.get(command.getCommandId());
+                    if (!authorized.containsKey(liteCommand.getCommand())
+                        && commandAuthorizationService.isAuthorized(user, liteCommand.getCommand())) {
+                        authorized.put(liteCommand.getCommand(), liteCommand);
                     }
                 }
             }
@@ -223,7 +218,8 @@ public class GroupCommanderController {
         boolean isSuccess = false;
         if (StringUtils.isBlank(commandString)) {
             addErrorStateToMap(map, "No Command Selected", commandSelectValue, commandString, groupName);
-        //If the user entered a custom command such as "test" the check look like this "Is user Authorized to execute "OTHER_COMMAND" for MCT410IL?".
+        //If the user entered a custom command such as "test" the check:"Is user Authorized to execute "OTHER_COMMAND" for MCT410IL?"
+        //YukonRoleProperty.EXECUTE_MANUAL_COMMAND is false the user will not be able to enter a manual command.
         } else if (!commandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
             addErrorStateToMap(map, "You are not authorized to execute that command.", commandSelectValue,
                 commandString, groupName);
