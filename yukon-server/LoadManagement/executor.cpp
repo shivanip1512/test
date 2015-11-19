@@ -1597,14 +1597,14 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
     }
 
     // Check the stop time to see if it is before the start time
-    if( stop.seconds() < lmProgramDirect->getDirectStartTime().seconds() )
+    if( stopTime.seconds() < lmProgramDirect->getDirectStartTime().seconds() )
     {
         CTILOG_DEBUG( dout, "Scheduling stop time before scheduled start time" );
 
         // If we have already notified of start then we need to notify of stop.
         if( (lmProgramDirect->getDirectStartTime().seconds() - lmProgramDirect->getNotifyActiveOffset()) < CtiTime::now().seconds() )
         {
-            lmProgramDirect->scheduleStopNotification(stop);
+            lmProgramDirect->scheduleStopNotification(stopTime);
         }
         else
         {
@@ -1622,10 +1622,10 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
     {
         lmProgramDirect->setManualControlReceivedFlag(FALSE);
         lmProgramDirect->setControlActivatedByStatusTrigger(FALSE);
-        lmProgramDirect->setDirectStopTime(stop);
+        lmProgramDirect->setDirectStopTime(stopTime);
 
-        lmProgramDirect->scheduleStopNotification(stop);
-        lmProgramDirect->requestAdjustNotification(stop);
+        lmProgramDirect->scheduleStopNotification(stopTime);
+        lmProgramDirect->requestAdjustNotification(stopTime);
 
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);
