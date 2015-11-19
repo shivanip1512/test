@@ -1719,9 +1719,11 @@ void CtiLMManualControlRequestExecutor::fitTimeToNotifications( CtiTime &propose
     // Postpone start time to allow for activationOffset.  We have to make sure that there is enough 
     // time between now and the proposed start to send the notice.  A positive offset means we have to 
     // send the notice before the activation.  
-    if(activationOffset > 0 && proposedStart.isValid()) {
+    if(activationOffset > 0 && proposedStart.isValid())
+    {
         CtiTime newStart = std::max( proposedStart, CtiTime::now().addSeconds( activationOffset ) );
-        if(newStart != proposedStart) {
+        if(newStart != proposedStart)
+        {
             CTILOG_DEBUG( dout, "activationOffset " << activationOffset << " start time was " <<
                 proposedStart << " and is now " << newStart );
             proposedStart = newStart;
@@ -1731,9 +1733,11 @@ void CtiLMManualControlRequestExecutor::fitTimeToNotifications( CtiTime &propose
     long inactivationOffset = programDirect.getNotifyInactiveOffset();
 
     // Postpone stop time to allow for inactivationOffset
-    if(inactivationOffset < 0 && proposedStop.isValid()) {
+    if(inactivationOffset < 0 && proposedStop.isValid())
+    {
         CtiTime newStop = std::max( proposedStop, CtiTime::now().addSeconds( -1 * inactivationOffset ) );
-        if(newStop != proposedStop) {
+        if(newStop != proposedStop)
+        {
             CTILOG_DEBUG( dout, "inactivationOffset " << inactivationOffset << " stop time was " <<
                 proposedStop << " and is now " << newStop );
             proposedStop = newStop;
@@ -1741,9 +1745,11 @@ void CtiLMManualControlRequestExecutor::fitTimeToNotifications( CtiTime &propose
     }
 
     // Make sure the new stop time is on or after the new start time
-    if(proposedStart.isValid() && proposedStop.isValid()) {
+    if(proposedStart.isValid() && proposedStop.isValid())
+    {
         CtiTime newStop = std::max( proposedStop, proposedStart );
-        if(newStop != proposedStop) {
+        if(newStop != proposedStop)
+        {
             CTILOG_DEBUG( dout, "inactivationOffset " << inactivationOffset << " stop time was " <<
                 proposedStop << " and is now " << newStop );
             proposedStop = newStop;
