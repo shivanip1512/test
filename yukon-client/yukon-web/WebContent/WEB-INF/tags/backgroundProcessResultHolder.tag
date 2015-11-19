@@ -38,7 +38,7 @@
 <%-- SUCCESS DEVICE COLLECTION --%>
 <c:if test="${callbackResult.successDevicesSupported}">
     <div id="js-success-actions" class="dn stacked">
-        <cti:link href="/bulk/collectionActions" key=".${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel">
+        <cti:link href="/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel">
             <cti:mapParam value="${callbackResult.successDeviceCollection.collectionParameters}"/>
         </cti:link>
         <tags:selectedDevicesPopup deviceCollection="${callbackResult.successDeviceCollection}"/>
@@ -62,7 +62,7 @@
         <%-- FAILURE DEVICE COLLECTION --%> 
         <c:if test="${callbackResult.failureDevicesSupported}">
             <li>
-                <cti:link href="/bulk/collectionActions" key=".${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel">
+                <cti:link href="/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel">
                     <cti:mapParam value="${callbackResult.failureDeviceCollection.collectionParameters}"/>
                 </cti:link>
                 <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}"/>
