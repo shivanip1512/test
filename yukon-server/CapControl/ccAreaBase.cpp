@@ -213,7 +213,11 @@ CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlPointId(long pointId)
 ---------------------------------------------------------------------------*/
 CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlValue(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_voltReductionControlValue, flag);
+    const bool hasChanged = setVariableIfDifferent(_voltReductionControlValue, flag);
+
+    _dirty |= hasChanged;
+    _areaUpdatedFlag |= hasChanged;
+
     return *this;
 }
 
@@ -225,7 +229,11 @@ CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlValue(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCAreaBase& CtiCCAreaBase::setOvUvDisabledFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
+    const bool hasChanged = setVariableIfDifferent(_ovUvDisabledFlag, flag);
+
+    _dirty |= hasChanged;
+    _areaUpdatedFlag |= hasChanged;
+
     return *this;
 }
 
