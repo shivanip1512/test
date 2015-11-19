@@ -24,7 +24,8 @@ CtiCCAreaBase::CtiCCAreaBase()
       _pfactor(0),
       _estPfactor(0),
       _ovUvDisabledFlag(false),
-      _dirty(false)
+      _dirty(false),
+      _areaUpdatedFlag(false)
 {
 }
 
@@ -35,7 +36,8 @@ CtiCCAreaBase::CtiCCAreaBase(StrategyManager * strategyManager)
       _pfactor(0),
       _estPfactor(0),
       _ovUvDisabledFlag(false),
-      _dirty(false)
+      _dirty(false),
+      _areaUpdatedFlag(false)
 {
 }
 
@@ -96,8 +98,9 @@ CtiCCAreaBase& CtiCCAreaBase::operator=(const CtiCCAreaBase& right)
 
         _operationStats = right._operationStats;
         _confirmationStats = right._confirmationStats;
-        _dirty = right._dirty;
 
+        _dirty = right._dirty;
+        _areaUpdatedFlag = right._areaUpdatedFlag;
     }
     return *this;
 }
@@ -119,7 +122,9 @@ void CtiCCAreaBase::restore(Cti::RowReader& rdr)
     setPFactor(-1);
     setEstPFactor(-1);
     setDirty(false);
+    setAreaUpdatedFlag(false);
 }
+
 void CtiCCAreaBase::setDynamicData(Cti::RowReader& rdr)
 {
     std::string tempBoolString;
@@ -231,7 +236,7 @@ CtiCCAreaBase& CtiCCAreaBase::setOvUvDisabledFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCAreaBase& CtiCCAreaBase::setPFactor(double pfactor)
 {
-    _pfactor = pfactor;
+    _areaUpdatedFlag |= setVariableIfDifferent(_pfactor, pfactor);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -241,7 +246,28 @@ CtiCCAreaBase& CtiCCAreaBase::setPFactor(double pfactor)
 ---------------------------------------------------------------------------*/
 CtiCCAreaBase& CtiCCAreaBase::setEstPFactor(double estpfactor)
 {
-    _estPfactor = estpfactor;
+    _areaUpdatedFlag |= setVariableIfDifferent(_estPfactor, estpfactor);
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    getAreaUpdatedFlag()
+
+    Returns the getAreaUpdatedFlag() of the area
+---------------------------------------------------------------------------*/
+bool CtiCCAreaBase::getAreaUpdatedFlag() const
+{
+    return _areaUpdatedFlag;
+}
+
+/*---------------------------------------------------------------------------
+    setAreaUpdatedFlag
+
+    Sets the AreaUpdated flag of the area
+---------------------------------------------------------------------------*/
+CtiCCAreaBase& CtiCCAreaBase::setAreaUpdatedFlag(bool flag)
+{
+    _areaUpdatedFlag = flag;
     return *this;
 }
 

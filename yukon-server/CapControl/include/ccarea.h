@@ -18,13 +18,11 @@ public:
 
     bool getReEnableAreaFlag() const;
     bool getChildVoltReductionFlag() const;
-    bool getAreaUpdatedFlag() const;
 
     void deleteCCSubs(long subId);
 
     CtiCCArea& setReEnableAreaFlag(bool flag);
     CtiCCArea& setChildVoltReductionFlag(bool flag);
-    CtiCCArea& setAreaUpdatedFlag(bool flag);
 
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     void checkAndUpdateChildVoltReductionFlags();
@@ -43,7 +41,6 @@ private:
 
        //don't stream
     bool _insertDynamicDataFlag;
-    bool _areaUpdatedFlag;
 
     void restore(Cti::RowReader& rdr);
 };

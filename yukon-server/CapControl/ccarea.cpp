@@ -21,8 +21,7 @@ CtiCCArea::CtiCCArea()
     : CtiCCAreaBase(0),
       _reEnableAreaFlag(false),
       _childVoltReductionFlag(false),
-      _insertDynamicDataFlag(false),
-      _areaUpdatedFlag(false)
+      _insertDynamicDataFlag(false)
 {
 }
 
@@ -30,8 +29,7 @@ CtiCCArea::CtiCCArea(StrategyManager * strategyManager)
     : CtiCCAreaBase(strategyManager),
       _reEnableAreaFlag(false),
       _childVoltReductionFlag(false),
-      _insertDynamicDataFlag(false),
-      _areaUpdatedFlag(false)
+      _insertDynamicDataFlag(false)
 {
 }
 
@@ -67,7 +65,6 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
     {
         _childVoltReductionFlag = right._childVoltReductionFlag;
         _reEnableAreaFlag = right._reEnableAreaFlag;
-        _areaUpdatedFlag = right._areaUpdatedFlag;
         _insertDynamicDataFlag = right._insertDynamicDataFlag;
 
     }
@@ -94,7 +91,6 @@ void CtiCCArea::restore(Cti::RowReader& rdr)
     CtiCCAreaBase::restore(rdr);
     _reEnableAreaFlag = false;
     _childVoltReductionFlag = false;
-    _areaUpdatedFlag = false;
 
     _insertDynamicDataFlag = true;
     setDirty(false);
@@ -115,7 +111,7 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
             addFlags[0] = (getOvUvDisabledFlag()?'Y':'N');
             addFlags[1] = (_reEnableAreaFlag?'Y':'N');
             addFlags[2] = (_childVoltReductionFlag?'Y':'N');
-            addFlags[3] = (_areaUpdatedFlag?'Y':'N');
+            addFlags[3] = (getAreaUpdatedFlag()?'Y':'N');
             string additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) +
                                 char2string(*(addFlags+3)));
             additionalFlags.append("NNNNNNNNNNNNNNNN");
@@ -157,22 +153,10 @@ void CtiCCArea::setDynamicData(Cti::RowReader& rdr)
     CtiCCAreaBase::setDynamicData(rdr);
     _reEnableAreaFlag = (getAdditionalFlags()[1]=='y');
     _childVoltReductionFlag = (getAdditionalFlags()[2]=='y');
-    _areaUpdatedFlag = (getAdditionalFlags()[3]=='y');
+    setAreaUpdatedFlag(getAdditionalFlags()[3]=='y');
 
     _insertDynamicDataFlag = false;
     setDirty(false);
-
-
-}
-
-/*---------------------------------------------------------------------------
-    getAreaUpdatedFlag()
-
-    Returns the getAreaUpdatedFlag() of the area
----------------------------------------------------------------------------*/
-bool CtiCCArea::getAreaUpdatedFlag() const
-{
-    return _areaUpdatedFlag;
 }
 
 /*---------------------------------------------------------------------------
@@ -190,16 +174,6 @@ bool CtiCCArea::getChildVoltReductionFlag() const
     return _childVoltReductionFlag;
 }
 
-/*---------------------------------------------------------------------------
-    setAreaUpdatedFlag
-
-    Sets the AreaUpdated flag of the area
----------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setAreaUpdatedFlag(bool flag)
-{
-    _areaUpdatedFlag = flag;
-    return *this;
-}
 /*---------------------------------------------------------------------------
     setChildVoltReductionflag
 

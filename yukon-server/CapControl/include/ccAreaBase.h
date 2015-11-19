@@ -52,6 +52,10 @@ public:
 
     CtiCCAreaBase& operator=(const CtiCCAreaBase& right);
 
+    CtiCCAreaBase& setAreaUpdatedFlag(bool flag);
+    bool getAreaUpdatedFlag() const;
+
+
 public:
 
     double getPFactor() const;
@@ -67,7 +71,9 @@ private:
     double _estPfactor;
     std::string _additionalFlags;
     bool _ovUvDisabledFlag;
+
     bool _dirty;
+    bool _areaUpdatedFlag;
 
     Cti::CapControl::PaoIdVector _subStationIds;
 
