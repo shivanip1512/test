@@ -79,7 +79,11 @@ function ${widgetParameters.widgetId}_updateDifference() {
         return false;
     }
     var previousVal = $(document.getElementById('${widgetParameters.widgetId}_prevSelect')).val();
-    var totalUsage = currentUsage - previousVal;
+    if (+currentUsage >= +previousVal) {
+        var totalUsage = currentUsage - previousVal;
+    } else {
+        var totalUsage = previousVal - currentUsage;
+    }
     var elem = $(document.getElementById('${widgetParameters.widgetId}_totalConsumption'));
     var previousTotalUsage = elem.data("totalUsage"); 
     elem.data("totalUsage", totalUsage);
