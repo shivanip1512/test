@@ -82,6 +82,9 @@ public class PointController {
 
         model.addAttribute("mode", PageEditMode.VIEW);
         PointModel pointModel = pointEditorService.getModelForId(id);
+        if (pointModel.getPointBase().getPoint().getPseudoFlag().equals(Point.PSEUDOFLAG_PSEUDO)) {
+            pointModel.getPointBase().getPoint().setPhysicalOffset(false);
+        }
         return setUpModel(model, pointModel, userContext);
     }
 
@@ -210,8 +213,6 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext) {
 
         verifyRoles(userContext.getYukonUser());
-        if (!pointModel.getPointBase().getPoint().isPhysicalOffset())
-            pointModel.getPointBase().getPoint().setPointOffset(0);
         return save(pointModel, result, redirectAttributes);
     }
 
@@ -220,8 +221,6 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext) {
 
         verifyRoles(userContext.getYukonUser());
-        if (!pointModel.getPointBase().getPoint().isPhysicalOffset())
-            pointModel.getPointBase().getPoint().setPointOffset(0);
         return save(pointModel, result, redirectAttributes);
     }
 
@@ -238,8 +237,6 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext) {
 
         verifyRoles(userContext.getYukonUser());
-        if (!pointModel.getPointBase().getPoint().isPhysicalOffset())
-            pointModel.getPointBase().getPoint().setPointOffset(0);
         return save(pointModel, result, redirectAttributes);
     }
 

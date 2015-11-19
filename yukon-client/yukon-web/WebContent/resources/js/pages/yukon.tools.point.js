@@ -28,16 +28,6 @@ yukon.tools.point = (function () {
             });
         });
     };
-
-    var _togglePhysicalOffset = function () {
-        if ($('.js-use-offset').is(':checked')) {
-            $('.js-point-offset').val(1);
-            _setOffsetDisabled(false);
-        } else {
-        	$('.js-point-offset').val(0);
-        	_setOffsetDisabled(true);
-        }
-    };
     
     var _setOffsetDisabled = function (disabled) {
         $('.js-point-offset').prop('disabled', disabled);
@@ -134,6 +124,21 @@ yukon.tools.point = (function () {
                 input.val(0);
             }
         }
+    };
+
+    /**
+     * When disabling Physical Point Offset, make the value 0
+     */
+    var updatePointOffset = function (event) {
+        
+        var checkbox = $(event.currentTarget);
+        
+        var toggleGroup = checkbox.data('toggle');
+        var input = $('[data-toggle-group="' + toggleGroup + '"]');
+        
+        if (!checkbox.is(':checked')) {
+                input.val(0);
+         }
     };
 
     /**
@@ -283,8 +288,6 @@ yukon.tools.point = (function () {
                 	 _setOffsetDisabled(true);
                  }
              }
-        	$(document).on('click', '.js-use-offset', _togglePhysicalOffset);
-        	
             $('.js-state-group').on('change', updateStateGroup);
 
             updateArchive();
@@ -303,6 +306,7 @@ yukon.tools.point = (function () {
             $('.js-stale-data-enabled').on('change', updateStaleData);
 
             $('.js-reasonability').on('change', updateReasonability);
+            $('.js-use-offset').on('change', updatePointOffset);
 
             $('.js-add-fdr').on('click', addFdr);
 
