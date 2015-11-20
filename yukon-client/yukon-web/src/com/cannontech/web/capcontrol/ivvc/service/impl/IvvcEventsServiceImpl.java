@@ -84,8 +84,8 @@ public class IvvcEventsServiceImpl implements IvvcEventsService {
     public List<IvvcEvent> getCapBankEvents(List<Integer> zoneIds, TimeRange range) {
 
         Map<OddEven, String> iconClassNames = new HashMap<>();
-        iconClassNames.put(OddEven.ODD, "icon-arrow-down-orange");
-        iconClassNames.put(OddEven.EVEN, "icon-arrow-up-orange");
+        iconClassNames.put(OddEven.ODD, "icon-stop");
+        iconClassNames.put(OddEven.EVEN, "icon-enabled");
         List<CcEvent> capBankEvents = zoneService.getLatestCapBankEvents(zoneIds, range);
         return getIvvcEvents(capBankEvents, iconClassNames);
     }
