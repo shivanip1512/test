@@ -1018,7 +1018,7 @@
         <category>Network Manager</category>
         <porter>Network is unavailable.</porter>
         <description>
-            Network Manager is indicating that the network cannot be reached.
+            Network Manager indicated that the network could not be reached.
         </description>
         <troubleshooting>
         </troubleshooting>
