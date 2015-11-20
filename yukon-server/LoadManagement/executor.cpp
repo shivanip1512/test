@@ -1713,7 +1713,7 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
 /** Given the requested start/stop time, adjust start/stop time to allow for a notification */ 
 
 void CtiLMManualControlRequestExecutor::fitTimeToNotifications( CtiTime &proposedStart, CtiTime &proposedStop,
-    CtiLMProgramBaseSPtr program )
+                                                                CtiLMProgramBaseSPtr program )
 {
     CtiLMProgramDirect &programDirect = dynamic_cast<CtiLMProgramDirect&>(*program);
 
