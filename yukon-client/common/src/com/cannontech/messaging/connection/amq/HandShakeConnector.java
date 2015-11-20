@@ -15,13 +15,13 @@ import com.cannontech.messaging.connection.transport.amq.TwoWayTransport;
 
 class HandShakeConnector {
 
-    private static final long INITIAL_WAIT_REPLY_TIME_MILLIS = 1000 * 15;       // 15 seconds
-    private static final long WAIT_REPLY_TIME_MILLIS         = 1000 * 60 * 60;  // 1 hour
-    private static final long TIME_TO_LIVE_MILLIS            = 1000 * 60 * 120; // 2 hours
+    private static final long INITIAL_WAIT_REPLY_TIME_MILLIS = 1000 * 15; // 15 seconds
+    private static final long WAIT_REPLY_TIME_MILLIS = 1000 * 60 * 60; // 1 hour
+    private static final long TIME_TO_LIVE_MILLIS = 1000 * 60 * 120; // 2 hours
 
-    public static final String HAND_SHAKE_REQ_MSG_TYPE  = "com.eaton.eas.yukon.clientinit";
+    public static final String HAND_SHAKE_REQ_MSG_TYPE = "com.eaton.eas.yukon.clientinit";
     public static final String HAND_SHAKE_RESP_MSG_TYPE = "com.eaton.eas.yukon.serverresp";
-    public static final String HAND_SHAKE_ACK_MSG_TYPE  = "com.eaton.eas.yukon.clientack";
+    public static final String HAND_SHAKE_ACK_MSG_TYPE = "com.eaton.eas.yukon.clientack";
 
     // create a logger for instances of this class and its subclasses
     private static org.apache.log4j.Logger logger = YukonLogManager.getLogger("com.cannontech.messaging.connection.amq.HandShakeConnector");
@@ -51,18 +51,27 @@ class HandShakeConnector {
                 Message reqMsg = reqProducer.getSession().createMessage();
                 reqMsg.setJMSReplyTo(consumer.getDestination());
                 reqMsg.setJMSType(HAND_SHAKE_REQ_MSG_TYPE);
-                reqProducer.sendMessage(reqMsg);
 
-                long replyTimeMillis = (clientConnection.isConnectionFailed()) ? 
-                        WAIT_REPLY_TIME_MILLIS : 
+                long replyTimeMillis = (clientConnection.isConnectionFailed()) ?
+                        WAIT_REPLY_TIME_MILLIS :
                         INITIAL_WAIT_REPLY_TIME_MILLIS;
 
+                logger.debug("Sending " + reqMsg.getJMSType() + " on "
+                             + reqProducer.getDestination().getPhysicalName()
+                             + " set to expire in " + replyTimeMillis / 1000 + " seconds");
+                reqProducer.sendMessage(reqMsg, replyTimeMillis);
+
                 // and wait <replyTimeMillis> seconds for the reply
+                logger.debug("Waiting up to " + replyTimeMillis / 1000 + " Seconds for reply on "
+                             + reqProducer.getDestination().getPhysicalName());
                 rspMessage = consumer.receiveMessage(replyTimeMillis);
 
                 if (rspMessage == null) {
                     // log warning and fire disconnect state event change
                     clientConnection.warnConnectingFailure("Timeout while waiting for the server to reply to a connection request");
+                } else {
+                    logger.debug("Received " + rspMessage.getJMSType() + " from "
+                            + consumer.getDestination().getPhysicalName());
                 }
 
             } while (rspMessage == null);
@@ -79,26 +88,28 @@ class HandShakeConnector {
             producer.start();
 
             logger.info("Connection request from "+reqProducer.getDestination()+" connected through "+producer.getDestination());
-            logger.info("  via "+producer.getConnection());
-            
+            logger.info("  via " + producer.getConnection());
+
             // Create the resulting 2 way transport
             TwoWayTransport transport = new TwoWayTransport(producer, consumer);
-            
+
             // start monitoring after validating a reply message
             clientConnection.setupConnectionMonitor(transport);
-            
+
             // Create and send client connection acknowledge message
             Message ackMsg = producer.getSession().createMessage();
             ackMsg.setJMSReplyTo(consumer.getDestination());
             ackMsg.setJMSType(HAND_SHAKE_ACK_MSG_TYPE);
-            
+
+            logger.debug("Sending " + ackMsg.getJMSType() + " on "
+                         + producer.getDestination().getPhysicalName());
             producer.sendMessage(ackMsg);
-            
+
             // Connection established, return the resulting 2 way transport
             return transport;
         }
         catch (TransportException e) {
-        	throw e;
+            throw e;
         }
         catch (Exception e) {
             try {
@@ -133,35 +144,41 @@ class HandShakeConnector {
 
             // Create the resulting 2 way transport
             TwoWayTransport transport = new TwoWayTransport(producer, consumer);
-            
+
             // Create, setup and send the response message to the clientConnection
             Message rspMsg = producer.getSession().createMessage();
             rspMsg.setJMSReplyTo(consumer.getDestination());
             rspMsg.setJMSType(HAND_SHAKE_RESP_MSG_TYPE);
+
+            logger.debug("Sending " + rspMsg.getJMSType() + " on "
+                         + producer.getDestination().getPhysicalName());
             producer.sendMessage(rspMsg);
 
             // wait for a reply from client connection
             Message ackMsg = consumer.receiveMessage(WAIT_REPLY_TIME_MILLIS);
-            
+
             // Validate
             if (ackMsg == null) {
                 throw new TransportException("Timeout while waiting client acknowledge message");
+            } else {
+                logger.debug("Received " + ackMsg.getJMSType() + " from "
+                             + consumer.getDestination().getPhysicalName());
             }
-
+            
             if (!HAND_SHAKE_ACK_MSG_TYPE.equals(ackMsg.getJMSType())) {
                 throw new TransportException("The client acknowledge message is not of the expected type: " +
                                               ackMsg.getJMSType() + ", expected " + HAND_SHAKE_ACK_MSG_TYPE);
             }
-            
-            if ( ackMsg.getJMSReplyTo() == null )
+
+            if (ackMsg.getJMSReplyTo() == null)
             {
                 throw new TransportException("The client acknowledge message replyto destination is null " +
                                              ", expected " + producer.getDestination().getPhysicalName());
             }
-            
+
             ActiveMQDestination clientAckDest = (ActiveMQDestination) ackMsg.getJMSReplyTo();
-            
-            if ( ! producer.getDestination().getPhysicalName().equals(clientAckDest.getPhysicalName()))
+
+            if (!producer.getDestination().getPhysicalName().equals(clientAckDest.getPhysicalName()))
             {
                 throw new TransportException("The client acknowledge message does not have the expected replyto destination: " +
                                               clientAckDest.getPhysicalName() + ", expected " + producer.getDestination().getPhysicalName());

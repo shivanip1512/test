@@ -74,6 +74,10 @@ public class AmqTransport implements Transport {
         throw new TransportException("Operation not supported on this transport");
     }
 
+    public void sendMessage(Message message, long timeToLive) {
+        throw new TransportException("Operation not supported on this transport");
+    }
+
     public Message receiveMessage() throws TransportException {
         throw new TransportException("Operation not supported on this transport");
     }

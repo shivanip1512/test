@@ -63,6 +63,16 @@ public class AmqProducerTransport extends AmqDestinationTransport {
         }
     }
 
+    @Override
+    public void sendMessage(Message message, long timeToLive) {
+        try {
+            producer.send(message, producer.getDeliveryMode(), producer.getPriority(), timeToLive);
+        }
+        catch (JMSException e) {
+            throw new TransportException("Error while sending a message on a Producer Transport, msg=" + message, e);
+        }
+    }
+
     public ActiveMQMessageProducer getProducer() {
         return producer;
     }
