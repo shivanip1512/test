@@ -63,7 +63,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -604,23 +604,24 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public Multimap<Short, String> getDuplicateColorGateways(Collection<RfnGateway> gateways) {
-        Multimap<Short, String> colorGateways = ArrayListMultimap.create();
+        Multimap<Short, String> duplicateColorGateways = HashMultimap.create();
+        Map<Short, String> collisionCheckMap = new HashMap<>();
         
-        // Populate the map with all color/gateway pairs
         for (RfnGateway gateway : gateways) {
             RfnGatewayData data = gateway.getData();
+            
+            // Insert all gateways by color into the collision check map and check for insert conflicts, which are
+            // duplicates.
             if (data != null) {
-                colorGateways.put(data.getRouteColor(), gateway.getName());
+                String duplicateGateway = collisionCheckMap.put(data.getRouteColor(), gateway.getName());
+                
+                // When a duplicate is found, add it to the duplicate gateways map
+                if (duplicateGateway != null) {
+                    duplicateColorGateways.put(data.getRouteColor(), duplicateGateway);
+                    duplicateColorGateways.put(data.getRouteColor(), gateway.getName());
+                }
             }
         }
-        
-        // Trim all entries where color is only used by a single gateway
-        for (Short color : colorGateways.keySet()) {
-            if (colorGateways.get(color).size() == 1) {
-                colorGateways.removeAll(color);
-            }
-        }
-        return colorGateways;
+        return duplicateColorGateways;
     }
-    
 }
