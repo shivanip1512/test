@@ -136,7 +136,7 @@ public class ContactController extends AbstractConsumerController {
                                 ModelMap map) {
 
         if (contact.getLoginID() != UserUtils.USER_NONE_ID) {
-            log.error("Malicious access identified!");
+            log.warn("Malicious access identified!");
             setupPageMode(user, map, PageEditMode.CREATE, contact.getContactID(), false);
             map.addAttribute("actionUrl", "/stars/consumer/contacts/create");
             return "consumer/contacts/edit.jsp";
@@ -192,7 +192,7 @@ public class ContactController extends AbstractConsumerController {
 
         if (contact.getLoginID() != UserUtils.USER_NONE_ID)
             if (contact.getLoginID() != contactDao.getContact(contact.getContactID()).getLoginID()) {
-                log.error("Malicious access identified!");
+                log.warn("Malicious access identified!");
                 if (checkPrimaryContact(account, contact.getContactID())) {
                     map.put("primaryContact", true);
                 }
