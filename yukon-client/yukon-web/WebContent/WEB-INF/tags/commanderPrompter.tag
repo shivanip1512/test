@@ -10,7 +10,7 @@
     
     function loadCommanderCommand (event) {
         var selectElement = $(event.currentTarget),
-            originalCmd = selectElement.val();
+            originalCmd = selectElement.val() || '';
         // init params for this command
         params = [];
         // parse for parameters

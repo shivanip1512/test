@@ -15,7 +15,7 @@ yukon.tools.group.command = (function () {
 
         init : function () {
 
-            $('#commandString').on('change', function () {
+            $('#commandString').on('change input', function () {
                 var command = $(this).val().trim();
                 $('.js-group-commander-btn').prop('disabled', command === '');
             });
@@ -52,8 +52,8 @@ yukon.tools.group.command = (function () {
 
                     commands.forEach(function (command) {
                         var htmlOption = $('<option>')
-                        .val(command.command)
-                        .text(command.label);
+                            .val(command.command)
+                            .text(command.label);
                         selectField.append(htmlOption);
 
                         if (command.command === originalValue) {
@@ -64,7 +64,7 @@ yukon.tools.group.command = (function () {
                     if (originalValueStillAvailable) {
                         selectField.val(originalValue);
                     } else {
-                        selectField.val(commands[0].command).trigger('change');
+                        selectField.val('').trigger('change');
                     }
 
                     selectField.next('.chosen-container').removeClass('dn');
