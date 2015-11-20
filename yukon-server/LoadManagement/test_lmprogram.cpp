@@ -2103,6 +2103,229 @@ BOOST_AUTO_TEST_CASE(test_util_fit_to_window)
     delete window2;
 }
 
+// Test CoerceStartStopTime
+BOOST_AUTO_TEST_CASE( test_CoerceStartStopTime )
+{
+    BOOST_TEST_MESSAGE( "Test with notifyactiveoffset of 600 seconds (10 minutes) "
+        "and notifyinactiveoffset of -600 seconds." );
+    {
+        typedef Cti::Test::TestReader<std::vector<std::string>> LMProgramDirectReader;
+
+        // Create test DB record
+        LMProgramDirectReader reader( {
+            {"paobjectid", "1234567890"},
+            {"category", "category"},
+            {"paoclass", "paoclass"},
+            {"paoname", "paoname"},
+            {"type", "type"},
+            {"description", "description"},
+            {"disableflag", "N"},
+            {"controltype", "controltype"},
+            {"constraintid", "1"},
+            {"constraintname", "constraintname"},
+            {"availableweekdays", "availableweekdays"},
+            {"maxhoursdaily", "0"},
+            {"maxhoursmonthly", "0"},
+            {"maxhoursseasonal", "0"},
+            {"maxhoursannually", "0"},
+            {"minactivatetime", "0"},
+            {"minrestarttime", "0"},
+            {"maxdailyops", "0"},
+            {"maxactivatetime", "0"},
+            {"holidayscheduleid", "0"},
+            {"seasonscheduleid", "0"},
+            {"programstate", LMProgramDirectReader::getNullString()},
+            {"pointid", LMProgramDirectReader::getNullString()},
+            {"heading", "heading"},
+            {"messageheader", "messageheader"},
+            {"messagefooter", "messagefooter"},
+            {"triggeroffset", "triggeroffset"},
+            {"restoreoffset", "restoreoffset"},
+            {"notifyactiveoffset", "600"},
+            {"notifyinactiveoffset", "-600"},
+            {"notifyadjust", "notifyadjust"},
+            {"currentgearnumber", LMProgramDirectReader::getNullString()},
+            {"notifyschedule", "-1"}
+        } );
+
+        reader.execute();           // Read first record
+
+        CtiLMProgramDirectSPtr lmProgram = CtiLMProgramDirectSPtr( CTIDBG_new CtiLMProgramDirect( reader ) );
+
+        Test_CtiLMManualControlRequestExecutor executor;
+        CtiLMControlArea controlArea;
+
+        CtiTime start = CtiTime::now();
+        CtiTime stop = CtiTime::now();
+        /*
+         * Remember that notifyactiveoffset is 600 seconds (10 minutes) and
+         * notifyinactiveoffset is -600 seconds.  Therefore, start time should be
+         * moved up 600 seconds and stop time will be moved back 600 seconds
+         */
+        BOOST_TEST_MESSAGE("        Start time " << start.asString() << "         Stop time " << stop.asString());
+        executor.CoerceStartStopTime( lmProgram, start, stop, &controlArea );
+        BOOST_TEST_MESSAGE( "Coerced Start time " << start.asString() << " Coerced Stop time " << stop.asString());
+        BOOST_CHECK_EQUAL( start, CtiTime::now().addSeconds( 600 ) );
+        BOOST_CHECK_EQUAL( stop, CtiTime::now().addSeconds( 600 ) );
+
+        start = CtiTime::now().addMinutes( 30 );
+        stop = CtiTime::now().addMinutes( 30 );
+        /*
+         * With a start time well in the future, no adjustment should be made.
+         */
+        BOOST_TEST_MESSAGE("        Start time " << start.asString() << "         Stop time " << stop.asString());
+        executor.CoerceStartStopTime( lmProgram, start, stop, &controlArea );
+        BOOST_TEST_MESSAGE( "Coerced Start time " << start.asString() << " Coerced Stop time " << stop.asString());
+        BOOST_CHECK_EQUAL( start, CtiTime::now().addMinutes( 30 ) );
+        BOOST_CHECK_EQUAL( stop, CtiTime::now().addMinutes( 30 ) );
+    }
+
+    BOOST_TEST_MESSAGE( "Test with notifyactiveoffset of 0 seconds "
+        "and notifyinactiveoffset of 0 seconds." );
+    {
+        typedef Cti::Test::TestReader<std::vector<std::string>> LMProgramDirectReader;
+
+        // Create test DB record
+        LMProgramDirectReader reader( {
+            {"paobjectid", "1234567890"},
+            {"category", "category"},
+            {"paoclass", "paoclass"},
+            {"paoname", "paoname"},
+            {"type", "type"},
+            {"description", "description"},
+            {"disableflag", "N"},
+            {"controltype", "controltype"},
+            {"constraintid", "1"},
+            {"constraintname", "constraintname"},
+            {"availableweekdays", "availableweekdays"},
+            {"maxhoursdaily", "0"},
+            {"maxhoursmonthly", "0"},
+            {"maxhoursseasonal", "0"},
+            {"maxhoursannually", "0"},
+            {"minactivatetime", "0"},
+            {"minrestarttime", "0"},
+            {"maxdailyops", "0"},
+            {"maxactivatetime", "0"},
+            {"holidayscheduleid", "0"},
+            {"seasonscheduleid", "0"},
+            {"programstate", LMProgramDirectReader::getNullString()},
+            {"pointid", LMProgramDirectReader::getNullString()},
+            {"heading", "heading"},
+            {"messageheader", "messageheader"},
+            {"messagefooter", "messagefooter"},
+            {"triggeroffset", "triggeroffset"},
+            {"restoreoffset", "restoreoffset"},
+            {"notifyactiveoffset", "0"},
+            {"notifyinactiveoffset", "0"},
+            {"notifyadjust", "notifyadjust"},
+            {"currentgearnumber", LMProgramDirectReader::getNullString()},
+            {"notifyschedule", "-1"}
+        } );
+
+        reader.execute();           // Read first record
+
+        CtiLMProgramDirectSPtr lmProgram = CtiLMProgramDirectSPtr( CTIDBG_new CtiLMProgramDirect( reader ) );
+
+        Test_CtiLMManualControlRequestExecutor executor;
+        CtiLMControlArea controlArea;
+
+        CtiTime start = CtiTime::now();
+        CtiTime stop = CtiTime::now();
+        /*
+         * No adjustments should occur
+         */
+        BOOST_TEST_MESSAGE( "        Start time " << start.asString() << "         Stop time " << stop.asString() );
+        executor.CoerceStartStopTime( lmProgram, start, stop, &controlArea );
+        BOOST_TEST_MESSAGE( "Coerced Start time " << start.asString() << " Coerced Stop time " << stop.asString() );
+        BOOST_CHECK_EQUAL( start, CtiTime::now() );
+        BOOST_CHECK_EQUAL( stop, CtiTime::now() );
+
+        start = CtiTime::now().addMinutes( 30 );
+        stop = CtiTime::now().addMinutes( 30 );
+        /*
+        * With a start time well in the future, no adjustment should be made.
+        */
+        BOOST_TEST_MESSAGE( "        Start time " << start.asString() << "         Stop time " << stop.asString() );
+        executor.CoerceStartStopTime( lmProgram, start, stop, &controlArea );
+        BOOST_TEST_MESSAGE( "Coerced Start time " << start.asString() << " Coerced Stop time " << stop.asString() );
+        BOOST_CHECK_EQUAL( start, CtiTime::now().addMinutes( 30 ) );
+        BOOST_CHECK_EQUAL( stop, CtiTime::now().addMinutes( 30 ) );
+    }
+
+
+    BOOST_TEST_MESSAGE( "Test with notifyactiveoffset of -600 seconds (-10 minutes) "
+        "and notifyinactiveoffset of 600 seconds." );
+    {
+        typedef Cti::Test::TestReader<std::vector<std::string>> LMProgramDirectReader;
+
+        // Create test DB record
+        LMProgramDirectReader reader( {
+            {"paobjectid", "1234567890"},
+            {"category", "category"},
+            {"paoclass", "paoclass"},
+            {"paoname", "paoname"},
+            {"type", "type"},
+            {"description", "description"},
+            {"disableflag", "N"},
+            {"controltype", "controltype"},
+            {"constraintid", "1"},
+            {"constraintname", "constraintname"},
+            {"availableweekdays", "availableweekdays"},
+            {"maxhoursdaily", "0"},
+            {"maxhoursmonthly", "0"},
+            {"maxhoursseasonal", "0"},
+            {"maxhoursannually", "0"},
+            {"minactivatetime", "0"},
+            {"minrestarttime", "0"},
+            {"maxdailyops", "0"},
+            {"maxactivatetime", "0"},
+            {"holidayscheduleid", "0"},
+            {"seasonscheduleid", "0"},
+            {"programstate", LMProgramDirectReader::getNullString()},
+            {"pointid", LMProgramDirectReader::getNullString()},
+            {"heading", "heading"},
+            {"messageheader", "messageheader"},
+            {"messagefooter", "messagefooter"},
+            {"triggeroffset", "triggeroffset"},
+            {"restoreoffset", "restoreoffset"},
+            {"notifyactiveoffset", "-600"},
+            {"notifyinactiveoffset", "600"},
+            {"notifyadjust", "notifyadjust"},
+            {"currentgearnumber", LMProgramDirectReader::getNullString()},
+            {"notifyschedule", "-1"}
+        } );
+
+        reader.execute();           // Read first record
+
+        CtiLMProgramDirectSPtr lmProgram = CtiLMProgramDirectSPtr( CTIDBG_new CtiLMProgramDirect( reader ) );
+
+        Test_CtiLMManualControlRequestExecutor executor;
+        CtiLMControlArea controlArea;
+
+        CtiTime start = CtiTime::now();
+        CtiTime stop = CtiTime::now();
+        /*
+        * No adjustments should occur.
+        */
+        BOOST_TEST_MESSAGE( "        Start time " << start.asString() << "         Stop time " << stop.asString() );
+        executor.CoerceStartStopTime( lmProgram, start, stop, &controlArea );
+        BOOST_TEST_MESSAGE( "Coerced Start time " << start.asString() << " Coerced Stop time " << stop.asString() );
+        BOOST_CHECK_EQUAL( start, CtiTime::now());
+        BOOST_CHECK_EQUAL( stop, CtiTime::now());
+
+        start = CtiTime::now().addMinutes( 30 );
+        stop = CtiTime::now().addMinutes( 30 );
+        /*
+        * With a start time well in the future, no adjustment should be made.
+        */
+        BOOST_TEST_MESSAGE( "        Start time " << start.asString() << "         Stop time " << stop.asString() );
+        executor.CoerceStartStopTime( lmProgram, start, stop, &controlArea );
+        BOOST_TEST_MESSAGE( "Coerced Start time " << start.asString() << " Coerced Stop time " << stop.asString() );
+        BOOST_CHECK_EQUAL( start, CtiTime::now().addMinutes( 30 ) );
+        BOOST_CHECK_EQUAL( stop, CtiTime::now().addMinutes( 30 ) );
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_timed_notification_setup)
 {
     {
