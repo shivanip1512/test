@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
@@ -147,8 +148,8 @@ public class LogExplorerController {
                 FlashScopeMessageType.WARNING);
         }
 
-        map.addAttribute("sortBy", sortBy);
-        map.addAttribute("show", show);
+        map.addAttribute("sortBy", StringEscapeUtils.escapeXml(sortBy));
+        map.addAttribute("show", StringEscapeUtils.escapeXml(show));
 
         return "logging/menu.jsp";
     }

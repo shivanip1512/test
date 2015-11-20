@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -37,10 +38,10 @@ public class PickerController {
     @RequestMapping("build")
     public String build(Model model, String type, String id, Boolean multiSelectMode, Boolean immediateSelectMode,
             String mode, YukonUserContext userContext) {
-        Picker<?> picker = pickerFactory.getPicker(type);
+        Picker<?> picker = pickerFactory.getPicker(StringEscapeUtils.escapeXml(type));
 
         model.addAttribute("title", picker.getDialogTitle());
-        model.addAttribute("id", id);
+        model.addAttribute("id", StringEscapeUtils.escapeXml(id));
         model.addAttribute("multiSelectMode", multiSelectMode);
         model.addAttribute("immediateSelectMode", immediateSelectMode);
 

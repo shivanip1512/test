@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -32,7 +33,7 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
             Enumeration parameterNames = request.getParameterNames();
             while (parameterNames.hasMoreElements()) {
                 String name = (String) parameterNames.nextElement();
-                String value = request.getParameter(name);
+                String value = request.getParameter(StringEscapeUtils.escapeXml(name));
                 reqParams.put(name, value);
             }
 
