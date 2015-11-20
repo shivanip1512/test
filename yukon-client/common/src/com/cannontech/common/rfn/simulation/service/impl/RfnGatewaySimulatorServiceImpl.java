@@ -34,6 +34,7 @@ import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
+import com.cannontech.common.rfn.message.gateway.GatewaySaveData;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 import com.cannontech.common.rfn.message.gateway.Radio;
@@ -72,6 +73,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     private static final String firmwareAvailableVersionQueue = "yukon.qr.obj.common.rfn.UpdateServerAvailableVersionRequest";
     
     private static final int incomingMessageWaitMillis = 1000;
+    
+    private static Map<RfnIdentifier, GatewaySaveData> gatewayDataCache = new HashMap<>();
     
     private volatile boolean autoDataReplyActive;
     private volatile boolean autoDataReplyStopping;
@@ -532,6 +535,9 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             throw new MethodNotImplementedException("Simulator currently does not handle gateway create messages (yet)!");
         } else if (request instanceof GatewayEditRequest) {
             GatewayEditRequest editRequest = (GatewayEditRequest) request;
+            // Cache the data so that it can be used to respond to data requests
+            cacheGatewayData(editRequest);
+            
             response.setRfnIdentifier(editRequest.getRfnIdentifier());
             response.setResult(settings.getEditResult());
         } else if (request instanceof GatewayDeleteRequest) {
@@ -542,37 +548,86 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         return response;
     }
     
+    private void cacheGatewayData(GatewayEditRequest request) {
+        RfnIdentifier id = request.getRfnIdentifier();
+        GatewaySaveData newData = request.getData();
+        
+        synchronized (gatewayDataCache) {
+            GatewaySaveData oldData = gatewayDataCache.get(id);
+            if (oldData != null) {
+                if (newData.getAdmin() == null && oldData.getAdmin() != null) {
+                    newData.setAdmin(oldData.getAdmin());
+                }
+                if (newData.getIpAddress() == null && oldData.getIpAddress() != null) {
+                    newData.setIpAddress(oldData.getIpAddress());
+                }
+                if (newData.getSuperAdmin() == null && oldData.getSuperAdmin() != null) {
+                    newData.setSuperAdmin(oldData.getSuperAdmin());
+                }
+                if (newData.getUpdateServerLogin() == null && oldData.getUpdateServerLogin() != null) {
+                    newData.setUpdateServerLogin(oldData.getUpdateServerLogin());
+                }
+                if (newData.getUpdateServerUrl() == null && oldData.getUpdateServerUrl() != null) {
+                    newData.setUpdateServerUrl(oldData.getUpdateServerUrl());
+                }
+            }
+            gatewayDataCache.put(id, newData);
+        }
+    }
+    
     private GatewayDataResponse setUpDataResponse(RfnIdentifier rfnId, SimulatedGatewayDataSettings settings) {
         GatewayDataResponse response = new GatewayDataResponse();
         
+        RfnIdentifier returnedRfnId = rfnId;
         if (settings != null && settings.isReturnGwy800Model()) {
-            RfnIdentifier modifiedId = new RfnIdentifier(rfnId.getSensorSerialNumber(), 
+            returnedRfnId = new RfnIdentifier(rfnId.getSensorSerialNumber(), 
                                                          rfnId.getSensorManufacturer(), 
                                                          RfnDeviceCreationService.GATEWAY_2_MODEL_STRING);
-            response.setRfnIdentifier(modifiedId);
+        }
+        response.setRfnIdentifier(returnedRfnId);
+        
+        // Check the cache - if any edits have been made to the data for this gateway, return the edited data instead
+        // of the default values.
+        boolean hasCachedData = gatewayDataCache.containsKey(returnedRfnId);
+             
+        GatewaySaveData cachedData = gatewayDataCache.get(returnedRfnId);
+        if (hasCachedData && cachedData.getAdmin() != null) {
+            response.setAdmin(cachedData.getAdmin());
         } else {
-            response.setRfnIdentifier(rfnId);
+            Authentication admin = new Authentication();
+            admin.setUsername("admin");
+            admin.setPassword("password");
+            response.setAdmin(admin);
+        }
+        if (hasCachedData && cachedData.getAdmin() != null) {
+            response.setIpAddress(cachedData.getIpAddress());
+        } else {
+            response.setIpAddress("123.123.123.123");
+        }
+        if (hasCachedData && cachedData.getSuperAdmin() != null) {
+            response.setSuperAdmin(cachedData.getSuperAdmin());
+        } else {
+            Authentication superAdmin = new Authentication();
+            superAdmin.setUsername("superAdmin");
+            superAdmin.setPassword("superPassword");
+            response.setSuperAdmin(superAdmin);
+        }
+        if (hasCachedData && cachedData.getUpdateServerLogin() != null) {
+            response.setUpdateServerLogin(cachedData.getUpdateServerLogin());
+        } else {
+            Authentication updateServerAdmin = new Authentication();
+            updateServerAdmin.setUsername("updateAdmin");
+            updateServerAdmin.setPassword("updatePassword");
+            response.setUpdateServerLogin(updateServerAdmin);
+        }
+        if (hasCachedData && cachedData.getUpdateServerUrl() != null) {
+            response.setUpdateServerUrl(cachedData.getUpdateServerUrl());
+        } else {
+            response.setUpdateServerUrl("http://127.0.0.1:8081/simulatedUpdateServer/latest/");
         }
         
-        Authentication admin = new Authentication();
-        admin.setUsername("admin");
-        admin.setPassword("password");
-        response.setAdmin(admin);
-        
-        Authentication superAdmin = new Authentication();
-        superAdmin.setUsername("superAdmin");
-        superAdmin.setPassword("superPassword");
-        response.setSuperAdmin(superAdmin);
-        
-        Authentication updateServerAdmin = new Authentication();
-        admin.setUsername("updateAdmin");
-        admin.setPassword("updatePassword");
-        response.setUpdateServerLogin(updateServerAdmin);
-        
-        response.setIpAddress("123.123.123.123");
         response.setPort("1234");
         response.setConnectionType(ConnectionType.TCP_IP);
-        response.setUpdateServerUrl("http://127.0.0.1:8081/simulatedUpdateServer/latest/");
         
         response.setConnectionStatus(ConnectionStatus.CONNECTED);
         response.setLastCommStatus(LastCommStatus.SUCCESSFUL);
