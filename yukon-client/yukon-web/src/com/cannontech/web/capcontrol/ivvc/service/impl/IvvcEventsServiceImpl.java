@@ -94,7 +94,7 @@ public class IvvcEventsServiceImpl implements IvvcEventsService {
     public List<IvvcEvent> getCommStatusEvents(int subBusId, TimeRange range) {
 
         Map<OddEven, String> iconClassNames = new HashMap<>();
-        iconClassNames.put(OddEven.ODD, " icon-accept");
+        iconClassNames.put(OddEven.ODD, "icon-accept");
         iconClassNames.put(OddEven.EVEN, "icon-error");
         List<CcEvent> capBankEvents = zoneService.getLatestCommStatusEvents(subBusId, range);
         return getIvvcEvents(capBankEvents, iconClassNames);
