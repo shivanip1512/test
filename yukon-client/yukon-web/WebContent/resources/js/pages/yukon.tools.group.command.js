@@ -43,6 +43,7 @@ yukon.tools.group.command = (function () {
                     if (commands.length === 0) {
                         $('#commandString').val('').trigger('change');
                         selectField.next('.chosen-container').addClass('dn');
+                        selectField.before(noCommandsSpan);
                         noCommandsSpan.removeClass('dn');
                         return;
                     }

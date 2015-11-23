@@ -61,7 +61,7 @@
     <div id="no-group-chosen" class="empty-list"><i:inline key=".noGroup"/></div>
     <div id="commands-available" class="dn">
         <div class="stacked">
-            <div class="empty-list"><i:inline key=".noCommands"/></div>
+            <div class="empty-list dn"><i:inline key=".noCommands"/></div>
             <amr:commandSelector id="select-group-command"
                 selectName="commandSelectValue"
                 fieldName="commandString"
