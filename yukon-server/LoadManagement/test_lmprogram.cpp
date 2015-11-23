@@ -6,6 +6,7 @@
 #include "lmconstraint.h"
 #include "executor.h"
 #include "test_reader.h"
+#include "boost_test_helpers.h"
 #include "lmgroupexpresscom.h"
 
 #include "ConstraintViolation.h"
@@ -2106,6 +2107,9 @@ BOOST_AUTO_TEST_CASE(test_util_fit_to_window)
 // Test CoerceStartStopTime
 BOOST_AUTO_TEST_CASE( test_CoerceStartStopTime )
 {
+    const CtiTime Now( CtiDate( 1, 2, 2013 ), 12, 34, 56 );
+    Cti::Test::Override_CtiTime_Now scopedTimeOverride( Now );
+
     BOOST_TEST_MESSAGE( "Test with notifyactiveoffset of 600 seconds (10 minutes) "
         "and notifyinactiveoffset of -600 seconds." );
     {
