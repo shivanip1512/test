@@ -391,6 +391,17 @@
         inherits="OUTAGE_STATUS_BASE, SUPPORTS_COMMANDER_REQUESTS_TAG">
         <displayGroup>MCT</displayGroup>
         <changeGroup>meter</changeGroup>
+        <points>
+            <point type="Status" offset="2000">
+                <name>Comm Status</name>
+                <stategroup value="SystemState" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status" />
+            </attribute>
+        </attributes>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
                 <value>0-4194303</value>    <!-- max 22bit (positive values only) -->
@@ -812,11 +823,6 @@
                 <unitofmeasure value="kWH" />
                 <decimalplaces value="4" />
             </point>
-
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
-                <stategroup value="SystemState" />
-            </point>
         </points>
         <commands>
             <command id="READ_USAGE">
@@ -1129,9 +1135,6 @@
             <!-- Should this just be DEMAND_RESET_COUNT?? -->
             <attribute name="IED_DEMAND_RESET_COUNT">
                 <basicLookup point="IED Demand Reset Count" />
-            </attribute>
-            <attribute name="COMM_STATUS">
-                <basicLookup point="Comm Status" />
             </attribute>
             <attribute name="POWER_FACTOR">
                 <basicLookup point="Average Power Factor" />
@@ -2612,10 +2615,6 @@
                 <name>Zero Usage (24 Hours)</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
-                <stategroup value="SystemState" />
-            </point>
             <point type="Status" offset="3000">
                 <name>Phase</name>
                 <stategroup value="PhaseStatus" />
@@ -2888,9 +2887,6 @@
             </attribute>
             <attribute name="REVERSE_POWER_FLAG">
                 <basicLookup point="Reverse Power" />
-            </attribute>
-            <attribute name="COMM_STATUS">
-                <basicLookup point="Comm Status" />
             </attribute>
         </attributes>
     </pao>
@@ -3179,10 +3175,6 @@
                 <name>Over Flow Flag</name>
                 <stategroup value="SystemState" />
             </point>
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
-                <stategroup value="SystemState" />
-            </point>
         </points>
         <commands>
             <command id="READ_USAGE">
@@ -3221,9 +3213,6 @@
             </attribute>
             <attribute name="DEMAND">
                 <basicLookup point="Last Interval kW" />
-            </attribute>
-            <attribute name="COMM_STATUS">
-                <basicLookup point="Comm Status" />
             </attribute>
             <attribute name="KVAR">
                 <basicLookup point="Last Interval kVAr" />
@@ -3636,10 +3625,6 @@
                 <name>Over Flow Flag</name>
                 <stategroup value="SystemState" />
             </point>
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
-                <stategroup value="SystemState" />
-            </point>
         </points>
         <commands>
             <command id="READ_BLINK_COUNT">
@@ -3670,9 +3655,6 @@
             </attribute>
             <attribute name="PEAK_DEMAND">
                 <basicLookup point="Max OR Off Peak Demand (Pulse Input 1)" />
-            </attribute>
-            <attribute name="COMM_STATUS">
-                <basicLookup point="Comm Status" />
             </attribute>
         </attributes>
     </pao>
@@ -3767,10 +3749,6 @@
                 <name>Over Flow Flag</name>
                 <stategroup value="SystemState" />
             </point>
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
-                <stategroup value="SystemState" />
-            </point>
         </points>
         <commands>
             <command id="READ_BLINK_COUNT">
@@ -3790,9 +3768,6 @@
             </attribute>
             <attribute name="BLINK_COUNT">
                 <basicLookup point="Blink Count" />
-            </attribute>
-            <attribute name="COMM_STATUS">
-                <basicLookup point="Comm Status" />
             </attribute>
         </attributes>
     </pao>
@@ -4055,10 +4030,6 @@
                 <name>Tamper Flag</name>
                 <stategroup value="SystemState" />
             </point>
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
-                <stategroup value="SystemState" />
-            </point>
         </points>
         <commands>
             <command id="READ_BLINK_COUNT">
@@ -4214,10 +4185,6 @@
                 <name>Disconnect Status</name>
                 <stategroup value="ThreeStateStatus" />
             </point>
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
-                <stategroup value="SystemState" />
-            </point>
         </points>
         <commands>
             <command id="READ_DISCONNECT_STATUS">
@@ -4363,10 +4330,6 @@
                 <name>TOU Rate Status</name>
                 <stategroup value="SystemState" />
             </point>
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
-                <stategroup value="SystemState" />
-            </point>
         </points>
         <commands>
             <command id="READ_USAGE">
@@ -4446,10 +4409,6 @@
             </point>
             <point type="Status" offset="16">
                 <name>TOS Mode</name>
-                <stategroup value="SystemState" />
-            </point>
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
                 <stategroup value="SystemState" />
             </point>
         </points>
