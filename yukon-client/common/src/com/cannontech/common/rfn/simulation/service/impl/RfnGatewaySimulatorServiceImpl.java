@@ -6,27 +6,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.gateway.AppMode;
-import com.cannontech.common.rfn.message.gateway.Authentication;
-import com.cannontech.common.rfn.message.gateway.ConflictType;
-import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
-import com.cannontech.common.rfn.message.gateway.ConnectionType;
-import com.cannontech.common.rfn.message.gateway.DataSequence;
-import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayCreateRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataRequest;
@@ -36,9 +27,7 @@ import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.message.gateway.GatewaySaveData;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
-import com.cannontech.common.rfn.message.gateway.LastCommStatus;
-import com.cannontech.common.rfn.message.gateway.Radio;
-import com.cannontech.common.rfn.message.gateway.RadioType;
+import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateRequest;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequest;
@@ -48,7 +37,6 @@ import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponse;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionRequest;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResponse;
-import com.cannontech.common.rfn.message.gateway.SequenceBlock;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
@@ -57,8 +45,6 @@ import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySetting
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
-import com.cannontech.common.util.MethodNotImplementedException;
-import com.google.common.collect.Sets;
 
 //Switch info logs to debug
 public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorService {
@@ -524,20 +510,27 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         return responses;
     }
     
+    /**
+     * Builds an update response for a create, edit or delete request based on the specified settings. The data provided
+     * in a create or edit request is cached for use in data replies, so the simulator "remembers" edited gateway data.
+     */
     private GatewayUpdateResponse setUpUpdateResponse(Serializable request, SimulatedUpdateReplySettings settings) {
         GatewayUpdateResponse response = new GatewayUpdateResponse();
         if (request instanceof GatewayCreateRequest) {
-            //TODO handle gateway create
-            
-            //GatewayCreateRequest createRequest = (GatewayCreateRequest) request;
-            //GatewayUpdateResponse response = new GatewayUpdateResponse();
-            //response.setRfnIdentifier(?);
-            throw new MethodNotImplementedException("Simulator currently does not handle gateway create messages (yet)!");
+            GatewayCreateRequest createRequest = (GatewayCreateRequest) request;
+            RfnIdentifier rfnId = new RfnIdentifier(generateGatewaySerial(), "CPS", "RFGateway2");
+            // Cache the data so that it can be used to respond to data requests
+            if (settings.getCreateResult() == GatewayUpdateResult.SUCCESSFUL) {
+                cacheGatewayData(rfnId, createRequest.getData());
+            }
+            response.setRfnIdentifier(rfnId);
+            response.setResult(settings.getCreateResult());
         } else if (request instanceof GatewayEditRequest) {
             GatewayEditRequest editRequest = (GatewayEditRequest) request;
             // Cache the data so that it can be used to respond to data requests
-            cacheGatewayData(editRequest);
-            
+            if (settings.getEditResult() == GatewayUpdateResult.SUCCESSFUL) {
+                cacheGatewayData(editRequest.getRfnIdentifier(), editRequest.getData());
+            }
             response.setRfnIdentifier(editRequest.getRfnIdentifier());
             response.setResult(settings.getEditResult());
         } else if (request instanceof GatewayDeleteRequest) {
@@ -548,12 +541,41 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         return response;
     }
     
-    private void cacheGatewayData(GatewayEditRequest request) {
-        RfnIdentifier id = request.getRfnIdentifier();
-        GatewaySaveData newData = request.getData();
+    /**
+     * Builds a data response based on the specified rfn identifier and data settings. Any cached data from create or
+     * edit requests will be used in this response. All data values not in the cache will be set to default values.
+     */
+    private GatewayDataResponse setUpDataResponse(RfnIdentifier rfnId, SimulatedGatewayDataSettings settings) {
+        if (settings != null && settings.isReturnGwy800Model()) {
+            rfnId = new RfnIdentifier(rfnId.getSensorSerialNumber(), 
+                                      rfnId.getSensorManufacturer(), 
+                                      RfnDeviceCreationService.GATEWAY_2_MODEL_STRING);
+        }
         
+        // Check the cache - if any edits have been made to the data for this gateway, return the edited data instead
+        // of the default values.
+        GatewaySaveData cachedData = gatewayDataCache.get(rfnId);
+        GatewayDataResponse response = DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData);
+        
+        return response;
+    }
+    
+    /**
+     * Randomly generates a serial between 7,000,000,000 and 8,000,000,000. Yes, this could cause collisions, but it's
+     * easy, and the risk is fairly low.
+     */
+    private String generateGatewaySerial() {
+        Random random = new Random();
+        long serial = 7_000_000_000L + random.nextInt(1_000_000_000);
+        return Long.toString(serial);
+    }
+    
+    /**
+     * Add the gateway data to the cache, to be put into data replies for this device.
+     */
+    private void cacheGatewayData(RfnIdentifier rfnId, GatewaySaveData newData) {
         synchronized (gatewayDataCache) {
-            GatewaySaveData oldData = gatewayDataCache.get(id);
+            GatewaySaveData oldData = gatewayDataCache.get(rfnId);
             if (oldData != null) {
                 if (newData.getAdmin() == null && oldData.getAdmin() != null) {
                     newData.setAdmin(oldData.getAdmin());
@@ -571,146 +593,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                     newData.setUpdateServerUrl(oldData.getUpdateServerUrl());
                 }
             }
-            gatewayDataCache.put(id, newData);
+            gatewayDataCache.put(rfnId, newData);
         }
-    }
-    
-    private GatewayDataResponse setUpDataResponse(RfnIdentifier rfnId, SimulatedGatewayDataSettings settings) {
-        GatewayDataResponse response = new GatewayDataResponse();
-        
-        RfnIdentifier returnedRfnId = rfnId;
-        if (settings != null && settings.isReturnGwy800Model()) {
-            returnedRfnId = new RfnIdentifier(rfnId.getSensorSerialNumber(), 
-                                                         rfnId.getSensorManufacturer(), 
-                                                         RfnDeviceCreationService.GATEWAY_2_MODEL_STRING);
-        }
-        response.setRfnIdentifier(returnedRfnId);
-        
-        // Check the cache - if any edits have been made to the data for this gateway, return the edited data instead
-        // of the default values.
-        boolean hasCachedData = gatewayDataCache.containsKey(returnedRfnId);
-             
-        GatewaySaveData cachedData = gatewayDataCache.get(returnedRfnId);
-        if (hasCachedData && cachedData.getAdmin() != null) {
-            response.setAdmin(cachedData.getAdmin());
-        } else {
-            Authentication admin = new Authentication();
-            admin.setUsername("admin");
-            admin.setPassword("password");
-            response.setAdmin(admin);
-        }
-        if (hasCachedData && cachedData.getAdmin() != null) {
-            response.setIpAddress(cachedData.getIpAddress());
-        } else {
-            response.setIpAddress("123.123.123.123");
-        }
-        if (hasCachedData && cachedData.getSuperAdmin() != null) {
-            response.setSuperAdmin(cachedData.getSuperAdmin());
-        } else {
-            Authentication superAdmin = new Authentication();
-            superAdmin.setUsername("superAdmin");
-            superAdmin.setPassword("superPassword");
-            response.setSuperAdmin(superAdmin);
-        }
-        if (hasCachedData && cachedData.getUpdateServerLogin() != null) {
-            response.setUpdateServerLogin(cachedData.getUpdateServerLogin());
-        } else {
-            Authentication updateServerAdmin = new Authentication();
-            updateServerAdmin.setUsername("updateAdmin");
-            updateServerAdmin.setPassword("updatePassword");
-            response.setUpdateServerLogin(updateServerAdmin);
-        }
-        if (hasCachedData && cachedData.getUpdateServerUrl() != null) {
-            response.setUpdateServerUrl(cachedData.getUpdateServerUrl());
-        } else {
-            response.setUpdateServerUrl("http://127.0.0.1:8081/simulatedUpdateServer/latest/");
-        }
-        
-        response.setPort("1234");
-        response.setConnectionType(ConnectionType.TCP_IP);
-        
-        response.setConnectionStatus(ConnectionStatus.CONNECTED);
-        response.setLastCommStatus(LastCommStatus.SUCCESSFUL);
-        response.setLastCommStatusTimestamp(Instant.now().getMillis());
-        
-        response.setUpperStackVersion("1.0");
-        response.setSoftwareVersion("2.0");
-        response.setReleaseVersion("3.0");
-        response.setRadioVersion("4.0");
-        response.setHardwareVersion("5.0");
-        response.setVersionConflicts(new HashSet<ConflictType>());
-        
-        response.setCollectionSchedule("0 0 * * * ?");
-        response.setRouteColor((short) 123);
-        response.setMode(AppMode.NORMAL);
-        
-        Set<Radio> radios = new HashSet<>();
-        Radio radio = new Radio();
-        radio.setType(RadioType.EKANET_915);
-        radio.setTimestamp(Instant.now().getMillis());
-        radio.setMacAddress("01:23:45:67:89:ab");
-        radios.add(radio);
-        response.setRadios(radios);
-        
-        Set<DataSequence> sequences = new HashSet<>();
-        
-        DataSequence gatewayLogsSequence = new DataSequence();
-        gatewayLogsSequence.setType(DataType.GATEWAY_LOGS);
-        gatewayLogsSequence.setCompletionPercentage(100);
-        SequenceBlock gatewayLogsBlock = new SequenceBlock();
-        gatewayLogsBlock.setStart(Instant.now().minus(Duration.standardDays(7)).getMillis());
-        gatewayLogsBlock.setEnd(Instant.now().getMillis());
-        gatewayLogsSequence.setBlocks(Sets.newHashSet(gatewayLogsBlock));
-        sequences.add(gatewayLogsSequence);
-        
-        DataSequence generalDataSequence = new DataSequence();
-        generalDataSequence.setType(DataType.GENERAL_PURPOSE_DATA);
-        generalDataSequence.setCompletionPercentage(100);
-        SequenceBlock generalDataBlock = new SequenceBlock();
-        generalDataBlock.setStart(Instant.now().minus(Duration.standardDays(7)).getMillis());
-        generalDataBlock.setEnd(Instant.now().getMillis());
-        generalDataSequence.setBlocks(Sets.newHashSet(generalDataBlock));
-        sequences.add(generalDataSequence);
-        
-        DataSequence nodeAlarmsSequence = new DataSequence();
-        nodeAlarmsSequence.setType(DataType.NODE_ALARMS);
-        nodeAlarmsSequence.setCompletionPercentage(100);
-        SequenceBlock nodeAlarmsBlock = new SequenceBlock();
-        nodeAlarmsBlock.setStart(Instant.now().minus(Duration.standardDays(7)).getMillis());
-        nodeAlarmsBlock.setEnd(Instant.now().getMillis());
-        nodeAlarmsSequence.setBlocks(Sets.newHashSet(nodeAlarmsBlock));
-        sequences.add(nodeAlarmsSequence);
-        
-        DataSequence nodeDataSequence = new DataSequence();
-        nodeDataSequence.setType(DataType.NODE_DATA);
-        nodeDataSequence.setCompletionPercentage(100);
-        SequenceBlock nodeDataBlock = new SequenceBlock();
-        nodeDataBlock.setStart(Instant.now().minus(Duration.standardDays(7)).getMillis());
-        nodeDataBlock.setEnd(Instant.now().getMillis());
-        nodeDataSequence.setBlocks(Sets.newHashSet(nodeDataBlock));
-        sequences.add(nodeDataSequence);
-        
-        DataSequence nodeLogsSequence = new DataSequence();
-        nodeLogsSequence.setType(DataType.NODE_LOGS);
-        nodeLogsSequence.setCompletionPercentage(100);
-        SequenceBlock nodeLogsBlock = new SequenceBlock();
-        nodeLogsBlock.setStart(Instant.now().minus(Duration.standardDays(7)).getMillis());
-        nodeLogsBlock.setEnd(Instant.now().getMillis());
-        nodeLogsSequence.setBlocks(Sets.newHashSet(nodeLogsBlock));
-        sequences.add(nodeLogsSequence);
-        
-        DataSequence sensorDataSequence = new DataSequence();
-        sensorDataSequence.setType(DataType.SENSOR_DATA);
-        sensorDataSequence.setCompletionPercentage(100);
-        SequenceBlock sensorDataBlock = new SequenceBlock();
-        sensorDataBlock.setStart(Instant.now().minus(Duration.standardDays(7)).getMillis());
-        sensorDataBlock.setEnd(Instant.now().getMillis());
-        sensorDataSequence.setBlocks(Sets.newHashSet(sensorDataBlock));
-        sequences.add(sensorDataSequence);
-        
-        response.setSequences(sequences);
-        
-        return response;
     }
     
     @Override
