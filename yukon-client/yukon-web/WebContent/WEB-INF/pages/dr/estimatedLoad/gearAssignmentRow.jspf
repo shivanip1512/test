@@ -1,5 +1,5 @@
 <input id="assignment-input_${assignmentId}" type="hidden" name="assignments" value="${assignmentId}"/> 
-<div id="assignment-add_${assignmentId}" class="column-8-8-8 clearfix form-control has-show-on-hover js-formula-removeable">
+<div id="assignment-add_${assignmentId}" style="${assignmentId eq -1 ? 'display:none' : ''}" class="column-8-8-8 clearfix form-control has-show-on-hover js-formula-removeable">
     <div class="column one js-formula-name">${fn:escapeXml(assignments[assignmentId].gearName)}</div>
     <div class="column two js-formula-control-method"><i:inline key="${assignments[assignmentId].controlMethod}"/></div>
     <div class="column three nogutter">
