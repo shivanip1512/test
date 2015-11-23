@@ -33,7 +33,7 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
             Enumeration parameterNames = request.getParameterNames();
             while (parameterNames.hasMoreElements()) {
                 String name = (String) parameterNames.nextElement();
-                String value = request.getParameter(StringEscapeUtils.escapeXml(name));
+                String value = StringEscapeUtils.escapeXml(request.getParameter(name));
                 reqParams.put(name, value);
             }
 

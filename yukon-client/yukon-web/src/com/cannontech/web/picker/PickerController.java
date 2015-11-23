@@ -38,7 +38,7 @@ public class PickerController {
     @RequestMapping("build")
     public String build(Model model, String type, String id, Boolean multiSelectMode, Boolean immediateSelectMode,
             String mode, YukonUserContext userContext) {
-        Picker<?> picker = pickerFactory.getPicker(StringEscapeUtils.escapeXml(type));
+        Picker<?> picker = pickerFactory.getPicker(type);
 
         model.addAttribute("title", picker.getDialogTitle());
         model.addAttribute("id", StringEscapeUtils.escapeXml(id));
