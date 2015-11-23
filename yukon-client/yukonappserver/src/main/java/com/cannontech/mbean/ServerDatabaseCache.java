@@ -554,7 +554,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         
         allSystemPoints = new ArrayList<>();
-        SystemPointLoader systemPointLoader = new SystemPointLoader(allSystemPoints, databaseAlias);
+        SystemPointLoader systemPointLoader = new SystemPointLoader(allSystemPoints);
         systemPointLoader.run();
         return allSystemPoints;
     }
