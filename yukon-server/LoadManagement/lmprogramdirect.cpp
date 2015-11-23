@@ -5884,16 +5884,13 @@ void CtiLMProgramDirect::scheduleNotification(const CtiTime& start_time, const C
 {
     CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();
 
-    // Don't bother to send a schedule notification if start is within 2 minutes
-    if(CtiTime::now().addMinutes(2) < start_time)
+    if(_LM_DEBUG & LM_DEBUG_STANDARD)
     {
-        if(_LM_DEBUG & LM_DEBUG_STANDARD)
-        {
-            CTILOG_DEBUG(dout, getPAOName() << " notify of scheduled curtailment from " 
-                << start_time << " to " << stop_time);
-        }
-        notifyGroupsOfSchedule(start_time, stop_time, multiNotifMsg);
+        CTILOG_DEBUG( dout, getPAOName() << " notify of scheduled curtailment from "
+            << start_time << " to " << stop_time );
     }
+    notifyGroupsOfSchedule( start_time, stop_time, multiNotifMsg );
+
     scheduleStartNotification(start_time);
     scheduleStopNotification(stop_time);
 
