@@ -443,23 +443,21 @@ std::string CtiThreadMonitor::getString( void)
 //===========================================================================================================
 int CtiThreadMonitor::getPointIDFromOffset(int offset)
 {
-    if(_pointIDList.empty())
-    {
-        PointIDList tempList;
-        for(int i=FirstPoint;i<LastPoint;i++)//note this inserts in the same order as
-        {
-            //the enumerated list!
-            tempList.push_back(GetPIDFromDeviceAndOffset(0,i));
-        }
-        CtiLockGuard<CtiMutex> guard(_vectorMux);
-        _pointIDList = tempList;
-    }
+    getPointIDList();
 
-    if(_pointIDList.size()>(offset-FirstPoint))
-        return _pointIDList[offset-FirstPoint]; //return by value.
-    else
-        return 0;
+    return _pointIDList[offset]; //return by value.
 }
+
+long threadPoints[] = {
+    CtiThreadMonitor::Porter, 
+    CtiThreadMonitor::Dispatch,
+    CtiThreadMonitor::Scanner,
+    CtiThreadMonitor::Calc,
+    CtiThreadMonitor::CapControl,
+    CtiThreadMonitor::FDR,
+    CtiThreadMonitor::Macs,
+    CtiThreadMonitor::LoadManager
+};
 
 //===========================================================================================================
 // Return all point ID's
@@ -470,29 +468,13 @@ CtiThreadMonitor::PointIDList CtiThreadMonitor::getPointIDList(void)
     if(_pointIDList.empty())
     {
         PointIDList tempList;
-        for(int i=FirstPoint;i<LastPoint;i++)//note this inserts in the same order as
+        for(int i:threadPoints)
         {
-            //the enumerated list!
-            tempList.push_back(GetPIDFromDeviceAndOffset(0,i));
+            tempList[i]=GetPIDFromDeviceAndOffset(0,i);
         }
         CtiLockGuard<CtiMutex> guard(_vectorMux);
         _pointIDList = tempList;
     }
     return _pointIDList; //return by value.
-}
-
-//===========================================================================================================
-// Re-fills the _pointIDList vector with new information.
-//===========================================================================================================
-void CtiThreadMonitor::recalculatePointIDList(void)
-{
-    PointIDList tempList;
-    for(int i=FirstPoint;i<LastPoint;i++)//note this inserts in the same order as
-    {
-        //the enumerated list!
-        tempList.push_back(GetPIDFromDeviceAndOffset(0,i));
-    }
-    CtiLockGuard<CtiMutex> guard(_vectorMux);
-    _pointIDList = tempList;
 }
 

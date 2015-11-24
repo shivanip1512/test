@@ -41,8 +41,8 @@ void DispatchMsgHandlerThread()
     CtiTime         nextCPULoadReportTime;
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
-    long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PorterCPU);
-    long memoryPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PorterMemory);
+    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::PorterCPU );
+    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::PorterMemory );
 
     CTILOG_INFO(dout, "DispatchMsgHandlerThd started");
 

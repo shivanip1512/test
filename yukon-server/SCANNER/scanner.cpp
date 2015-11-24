@@ -392,8 +392,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     }
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Scanner);
-    long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::ScannerCPU);
-    long memoryPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::ScannerMemory);
+    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::ScannerCPU);
+    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::ScannerMemory);
 
     CtiTime NextThreadMonitorReportTime;
     CtiTime nextCPULoadReportTime;

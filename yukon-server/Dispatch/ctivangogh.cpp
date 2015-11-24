@@ -4456,8 +4456,8 @@ void CtiVanGogh::VGAppMonitorThread()
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
     CtiPointDataMsg vgStatusPoint;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Dispatch);
-    long cpuPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::DispatchCPU);
-    long memoryPointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::DispatchMemory);
+    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::DispatchCPU );
+    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::DispatchMemory );
 
     //on startup wait for 10 minutes!
     for(int i=0;i<120 && !bGCtrlC;i++)
@@ -4495,7 +4495,6 @@ void CtiVanGogh::VGAppMonitorThread()
     {
         //First find all of my point ID's so I dont ever have to look them up again.
         CtiThreadMonitor::PointIDList pointIDList = ThreadMonitor.getPointIDList();
-        CtiThreadMonitor::PointIDList::iterator pointListWalker;
         CtiTime compareTime;
 
         while(!bGCtrlC)
@@ -4503,19 +4502,19 @@ void CtiVanGogh::VGAppMonitorThread()
             compareTime = CtiTime::now();
             compareTime -= 600;//take away 10 minutes
 
-            for(pointListWalker = pointIDList.begin();pointListWalker!=pointIDList.end();pointListWalker++)
+            for(auto pointListWalker: pointIDList)
             {
-                if(*pointListWalker !=0)
+                if(pointListWalker.second != 0)
                 {
                     // This call probably hits the database.
-                    if( CtiPointSPtr pPt = PointMgr.getPoint(*pointListWalker) )
+                    if( CtiPointSPtr pPt = PointMgr.getPoint(pointListWalker.second) )
                     {
                         if( CtiDynamicPointDispatchSPtr pDynPt = PointMgr.getDynamic(*pPt) )
                         {
                             if((pDynPt->getTimeStamp()).seconds()<(compareTime))
                             {
                                 //its been more than 15 minutes, set the alarms!!!
-                                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes.");
+                                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(pointListWalker.second, CtiThreadMonitor::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes.");
                                 pData->setSource(DISPATCH_APPLICATION_NAME);
                                 MainQueue_.putQueue(pData);
                             }
