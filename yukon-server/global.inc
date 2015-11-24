@@ -180,7 +180,7 @@ DBGHELP_DLL       = dbghelp.dll
 DBGHELP_LIBS =\
 $(DBGHELP)\lib\dbghelp.lib
 
-OPENSSL         = $(CPP_LIBRARIES)\openssl\1.0.1o-1
+OPENSSL         = $(CPP_LIBRARIES)\openssl\1.0.1p-1
 OPENSSL_BIN     = $(OPENSSL)\$(CONFIGURATION)\bin
 OPENSSL_LIB     = $(OPENSSL)\$(CONFIGURATION)\lib
 OPENSSL_DLL_1   = libeay32.dll
