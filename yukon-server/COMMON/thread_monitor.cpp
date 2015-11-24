@@ -448,7 +448,7 @@ int CtiThreadMonitor::getPointIDFromOffset(int offset)
     return _pointIDList[offset]; //return by value.
 }
 
-long threadPoints[] = {
+const long threadPoints[] = {
     CtiThreadMonitor::Porter, 
     CtiThreadMonitor::Dispatch,
     CtiThreadMonitor::Scanner,
@@ -468,9 +468,9 @@ CtiThreadMonitor::PointIDList CtiThreadMonitor::getPointIDList(void)
     if(_pointIDList.empty())
     {
         PointIDList tempList;
-        for(int i:threadPoints)
+        for( int i : threadPoints )
         {
-            tempList[i]=GetPIDFromDeviceAndOffset(0,i);
+            tempList[i] = GetPIDFromDeviceAndOffset( 0, i );
         }
         CtiLockGuard<CtiMutex> guard(_vectorMux);
         _pointIDList = tempList;
