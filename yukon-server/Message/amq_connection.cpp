@@ -297,7 +297,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
 
             _temporaryExpirations.insert(
                     std::make_pair(
-                            e->replyListener->expiration,
+                            CtiTime::now() + e->replyListener->timeout.count(),  //  extract raw seconds out of the timeout duration
                             ExpirationHandler{
                                 destinationPhysicalName,
                                 e->replyListener->timedOut }));
@@ -453,7 +453,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
         const ActiveMQ::Queues::OutboundQueue &queue,
         StreamableMessage::auto_type message,
         typename CallbackFor<Msg>::type callback,
-        CtiTime timeout,
+        std::chrono::seconds timeout,
         TimeoutCallback timedOut)
 {
     MessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
@@ -466,7 +466,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallback(
         const ActiveMQ::Queues::OutboundQueue &queue,
         const SerializedMessage &message,
         MessageCallback callback,
-        CtiTime timeout,
+        std::chrono::seconds timeout,
         TimeoutCallback timedOut)
 {
     gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ callback, timeout, timedOut });
@@ -774,7 +774,7 @@ const IM_EX_MSG InboundQueue
 }
 
 
-template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, CtiTime expiration, TimeoutCallback timedOut);
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
 
 }

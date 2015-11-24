@@ -393,7 +393,7 @@ void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callb
 
                 _pendingCallbacks[msg.header.messageId] = MessageCallbacks{ callback, timeout };
             },
-            CtiTime::now() + E2EDT_NM_TIMEOUT,
+            std::chrono::seconds{ E2EDT_NM_TIMEOUT },
             [=]
             {
                 timeout();
@@ -428,7 +428,7 @@ void E2eMessenger::cancel(const long id, NetworkManagerCancelRequest::CancelType
             {
                 //  ignore the ack message itself
             },
-            CtiTime::now() + NM_TIMEOUT,
+            std::chrono::seconds{ NM_TIMEOUT },
             [=]
             {
                 CTILOG_ERROR(dout, "Cancel request for id " << id << " timed out");

@@ -12,6 +12,8 @@
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
+#include <chrono>
+
 namespace cms {
 class Connection;
 class Session;
@@ -111,10 +113,10 @@ public:
     template<class Msg>
     static void enqueueMessageWithCallbackFor(
             const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message,
-            typename CallbackFor<Msg>::type callback, CtiTime timeout, TimeoutCallback timedOut);
+            typename CallbackFor<Msg>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
     static void enqueueMessageWithCallback(
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
-            MessageCallback callback, CtiTime timeout, TimeoutCallback timedOut);
+            MessageCallback callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
     static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
     static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
@@ -126,7 +128,7 @@ protected:
     struct TemporaryListener
     {
         MessageCallback callback;
-        CtiTime expiration;
+        std::chrono::seconds timeout;
         TimeoutCallback timedOut;
     };
 

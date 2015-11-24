@@ -219,7 +219,7 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
             OutboundQueue::RfnBroadcast,
             streamableMessage,
             callback,
-            CtiTime::now() + expirationDuration,
+            std::chrono::seconds{ expirationDuration },
             []{ /* ignore failures */ });
 }
 
