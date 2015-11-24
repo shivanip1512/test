@@ -237,7 +237,7 @@ typedef enum
 
 // SystemMetric Point IDs
 #define SYSTEM_DEVICE 0
-enum SystemMetricPoint_t
+enum SystemDevicePointOffsets
 {
     PorterCPU = 1007,
     DispatchCPU = 1008,
@@ -262,4 +262,4 @@ enum SystemMetricPoint_t
     LoadManager = 1027,
     LoadManagerCPU = 1028,
     LoadManagerMemory = 1029,
-};
+} ;

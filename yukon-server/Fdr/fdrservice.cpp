@@ -238,8 +238,8 @@ void CtiFDRService::Run( )
     }
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
-    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::FDRCPU);
-    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::FDRMemory);
+    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::FDRCPU);
+    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::FDRMemory);
 
     CtiTime NextThreadMonitorReportTime;
     CtiTime nextCPULoadReportTime;

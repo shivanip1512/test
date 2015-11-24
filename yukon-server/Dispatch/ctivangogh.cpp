@@ -4456,8 +4456,8 @@ void CtiVanGogh::VGAppMonitorThread()
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
     CtiPointDataMsg vgStatusPoint;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Dispatch);
-    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::DispatchCPU );
-    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::DispatchMemory );
+    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::DispatchCPU );
+    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::DispatchMemory );
 
     //on startup wait for 10 minutes!
     for(int i=0;i<120 && !bGCtrlC;i++)

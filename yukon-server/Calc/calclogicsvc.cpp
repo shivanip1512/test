@@ -177,8 +177,8 @@ void CtiCalcLogicService::Run( )
     CtiThreadMonitor::State previous;
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Calc);
-    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::CalcCPU );
-    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemMetricPoint_t::CalcMemory);
+    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CalcCPU );
+    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CalcMemory);
 
     if(_running_in_console)
     {
