@@ -6,6 +6,8 @@ import java.util.Set;
 public enum MasterConfigString {
 
     AUTHENTICATION_TIMEOUT_STYLE,
+    CAP_CONTROL_AMFM_DB_USERNAME,
+    CAP_CONTROL_AMFM_DB_PASSWORD,
     CMEP_UNITS,
     CYME_DIST_BASE_URL,
     CYME_INTEGRATION_SUBBUS,
@@ -51,6 +53,8 @@ public enum MasterConfigString {
     
     static {
         sensitiveData = new HashSet<MasterConfigString>();
+        sensitiveData.add(CAP_CONTROL_AMFM_DB_USERNAME);
+        sensitiveData.add(CAP_CONTROL_AMFM_DB_PASSWORD);
         sensitiveData.add(DB_USERNAME);
         sensitiveData.add(DB_PASSWORD);
         sensitiveData.add(DB_SQLSERVER);
