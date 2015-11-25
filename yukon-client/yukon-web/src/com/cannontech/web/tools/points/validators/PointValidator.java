@@ -18,6 +18,7 @@ import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.ScalarPoint;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
@@ -224,6 +225,10 @@ public class PointValidator extends SimpleValidator<PointModel> {
         
         YukonValidationUtils.checkRange(errors, "pointBase.point.pointOffset", 
             point.getPoint().getPointOffset(), 0, 99999999, true);
+        
+        if (point.getPointStatusControl().getControlType() == StatusControlType.NONE.getControlName()) {
+            return;
+        }
         
         YukonValidationUtils.checkRange(errors, "pointBase.pointStatusControl.controlOffset", 
             point.getPointStatusControl().getControlOffset(), -99999999, 99999999, true);
