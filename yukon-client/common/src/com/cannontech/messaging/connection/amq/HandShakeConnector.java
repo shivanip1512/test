@@ -6,6 +6,7 @@ import javax.jms.MessageListener;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.messaging.connection.transport.TransportException;
@@ -24,7 +25,7 @@ class HandShakeConnector {
     public static final String HAND_SHAKE_ACK_MSG_TYPE = "com.eaton.eas.yukon.clientack";
 
     // create a logger for instances of this class and its subclasses
-    private static org.apache.log4j.Logger logger = YukonLogManager.getLogger("com.cannontech.messaging.connection.amq.HandShakeConnector");
+    private static Logger logger = YukonLogManager.getLogger(HandShakeConnector.class);
 
     static TwoWayTransport createClientConnectionTransport(AmqClientConnection clientConnection) {
         AmqConsumerTransport consumer = null;
