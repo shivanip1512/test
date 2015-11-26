@@ -159,7 +159,9 @@ public class PointEditorServiceImpl implements PointEditorService {
         int i = 0;
         for (i = 0; i < alarm_cats.length; i++) {
             AlarmTableEntry entry = new AlarmTableEntry();
-            setupAlarmTableEntry(entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i));
+            LiteAlarmCategory liteAlarmCategory = alarmCatDao.getAlarmCategoryFromCache(alarmStates.charAt(i));
+            setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i),
+                liteAlarmCategory.getCategoryName());
 
             entry.setCondition(alarm_cats[i]);
             notifEntries.add(entry);
@@ -173,7 +175,9 @@ public class PointEditorServiceImpl implements PointEditorService {
                         ", too many states for Status point "+ pointBase.getPoint().getPointName() + " defined.");
                 }
                 AlarmTableEntry entry = new AlarmTableEntry();
-                setupAlarmTableEntry(entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i));
+                LiteAlarmCategory liteAlarmCategory = alarmCatDao.getAlarmCategoryFromCache(alarmStates.charAt(i));
+                setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i),
+                    liteAlarmCategory.getCategoryName());
 
                 entry.setCondition(stateNames[j]);
                 notifEntries.add(entry);
@@ -185,13 +189,8 @@ public class PointEditorServiceImpl implements PointEditorService {
     /**
      * Helper method for use within getAlarmTableEntries
      */
-    private static void setupAlarmTableEntry(AlarmTableEntry entry, int alarmStateId, List<LiteAlarmCategory> allAlarmStates, char gen) {
-
-        if ((alarmStateId - 1) < allAlarmStates.size()) {
-            entry.setGenerate(allAlarmStates.get((alarmStateId - 1)).getCategoryName());
-        } else {
-            entry.setGenerate(allAlarmStates.get(0).getCategoryName());
-        }
+    private static void setupAlarmTableEntry(AlarmTableEntry entry, char gen,String categoryName) {
+        entry.setGenerate(categoryName);
         entry.setExcludeNotify(PointAlarming.getExcludeNotifyString(gen));
     }
     
