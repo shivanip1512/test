@@ -42,14 +42,16 @@
     data-title="<cti:msg2 key=".edit" arguments="${meter.name}"/>"
     data-ok-text="<cti:msg2 key="yukon.common.save"/>"
     data-url="${editUrl}"></div>
-
+    
 <div class="action-area">
     <c:if test="${supportsPing}">
             <div class="dib fl" id="${widgetParameters.widgetId}_results"></div>
             <tags:widgetActionUpdate method="ping" nameKey="ping" container="${widgetParameters.widgetId}_results" 
                     icon="icon-ping" classes="M0"/>
     </c:if>
-    <cti:button nameKey="edit" icon="icon-pencil" data-popup="#meter-info-popup"/>
+    <cti:checkRolesAndProperties value="HIERARCHICAL_PERMISSION" level="LIMITED">
+        <cti:button nameKey="edit" icon="icon-pencil" data-popup="#meter-info-popup"/>
+    </cti:checkRolesAndProperties>
 </div>
 
 <cti:includeScript link="/resources/js/widgets/yukon.widget.meter.info.js"/>

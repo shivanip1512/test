@@ -61,7 +61,7 @@ public class PointAlarmAlertGenerator implements SignalListener {
         	alarmAlert.setCondition(signal.getCondition());
         	boolean isUnacknowledgedAlarm = TagUtils.isAlarmUnacked(signal.getTags());
         	alarmAlert.setUnacknowledgedAlarm(isUnacknowledgedAlarm);
-        	UserChecker userChecker = userCheckerFactory.createPropertyChecker(YukonRoleProperty.VIEW_ALARMS_AS_ALERTS);
+        	UserChecker userChecker = userCheckerFactory.createBooleanPropertyChecker(YukonRoleProperty.VIEW_ALARMS_AS_ALERTS);
         	alarmAlert.setUserChecker(userChecker);
         
         	alertService.add(alarmAlert);

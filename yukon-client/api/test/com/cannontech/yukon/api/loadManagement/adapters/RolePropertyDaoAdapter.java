@@ -3,6 +3,7 @@ package com.cannontech.yukon.api.loadManagement.adapters;
 import java.util.Set;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
@@ -134,5 +135,15 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
     @Override
     public Number getPropertyNumberValue(LiteYukonGroup roleGroup, YukonRoleProperty property) {
         throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public boolean checkLevel(HierarchyPermissionLevel level, LiteYukonUser user) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public void verifyLevel(HierarchyPermissionLevel minLevel, LiteYukonUser user){
+        throw new UnsupportedOperationException("not implemented");    
     }
 }

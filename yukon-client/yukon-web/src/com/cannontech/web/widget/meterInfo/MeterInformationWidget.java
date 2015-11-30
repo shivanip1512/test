@@ -39,7 +39,9 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.device.range.DlcAddressRangeService;
@@ -140,6 +142,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     @Autowired private ServerDatabaseCache cache;
     @Autowired private DlcAddressRangeService addressRangeService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
     @RequestMapping("render")
     public String render(ModelMap model, int deviceId) {
@@ -209,13 +212,25 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("meter", MeterModel.of(meter));
         }
         
+        if (rolePropertyDao.checkLevel(HierarchyPermissionLevel.UPDATE, user)) {
+            model.addAttribute("editable", true);
+        } else {
+            model.addAttribute("editable", false);
+        }       
         return "meterInformationWidget/edit.jsp";
     }
     
     @RequestMapping(value="edit-plc", method=RequestMethod.PUT)
     public String editPlc(HttpServletResponse resp, ModelMap model, FlashScope flash,
-            @ModelAttribute("meter") PlcMeterModel meter, BindingResult result) throws IOException {
+            @ModelAttribute("meter") PlcMeterModel meter, BindingResult result,  LiteYukonUser user) throws IOException {
         
+        rolePropertyDao.verifyLevel(HierarchyPermissionLevel.LIMITED, user);
+        if (!rolePropertyDao.checkLevel(HierarchyPermissionLevel.UPDATE, user)) {
+            PlcMeter originalMeter = meterDao.getPlcMeterForId(meter.getDeviceId());
+            meter.setMeterNumber(originalMeter.getMeterNumber());
+            meter.setAddress(Integer.parseInt(originalMeter.getAddress()));
+            meter.setName(originalMeter.getName());
+        }
         validator.validate(meter, result);
         
         if (result.hasErrors()) {
@@ -229,7 +244,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             }
             return "meterInformationWidget/edit.jsp";
         }
-        
+               
         LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
         PlcMeter plc = new PlcMeter(pao.getPaoIdentifier(), meter.getMeterNumber(), meter.getName(), meter.isDisabled(), 
                 null, meter.getRouteId(), Integer.toString(meter.getAddress()));
@@ -249,8 +264,17 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     
     @RequestMapping(value="edit-rf", method=RequestMethod.PUT)
     public String editRf(HttpServletResponse resp, ModelMap model, FlashScope flash, YukonUserContext userContext,
-            @ModelAttribute("meter") RfMeterModel meter, BindingResult result) throws IOException {
+            @ModelAttribute("meter") RfMeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
         
+        rolePropertyDao.verifyLevel(HierarchyPermissionLevel.LIMITED, user);
+        if (!rolePropertyDao.checkLevel(HierarchyPermissionLevel.UPDATE, user)) {
+            RfnMeter originalMeter = meterDao.getRfnMeterForId(meter.getDeviceId());
+            meter.setMeterNumber(originalMeter.getMeterNumber());
+            meter.setManufacturer(originalMeter.getRfnIdentifier().getSensorManufacturer());
+            meter.setModel(originalMeter.getRfnIdentifier().getSensorModel());
+            meter.setSerialNumber(originalMeter.getRfnIdentifier().getSensorSerialNumber());
+            meter.setName(originalMeter.getName());
+        }
         validator.validate(meter, result);
         
         if (result.hasErrors()) {
@@ -290,8 +314,14 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     
     @RequestMapping(value="edit-ied", method=RequestMethod.PUT)
     public String editIed(HttpServletResponse resp, ModelMap model, FlashScope flash,
-            @ModelAttribute("meter") MeterModel meter, BindingResult result) throws IOException {
-        
+            @ModelAttribute("meter") MeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
+ 
+        rolePropertyDao.verifyLevel(HierarchyPermissionLevel.LIMITED, user);
+        if (!rolePropertyDao.checkLevel(HierarchyPermissionLevel.UPDATE, user)) {
+            YukonMeter originalMeter = meterDao.getForId(meter.getDeviceId());
+            meter.setMeterNumber(originalMeter.getMeterNumber());
+            meter.setName(originalMeter.getName());
+        }
         validator.validate(meter, result);
         
         if (result.hasErrors()) {

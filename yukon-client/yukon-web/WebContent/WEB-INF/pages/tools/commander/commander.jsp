@@ -74,7 +74,9 @@
         
         <cm:dropdown type="button" id="device-actions-menu" triggerClasses="js-device-actions-btn vab" showLabel="false">
             <c:set var="clazz" value="${!routable ? 'dn' : ''}"/>
-            <cm:dropdownOption id="change-route-btn" key=".changeRoute" icon="icon-pencil" classes="${clazz}"/>
+            <c:if test="${changeRoute}">
+                <cm:dropdownOption id="change-route-btn" key=".changeRoute" icon="icon-pencil" classes="${clazz}"/>
+            </c:if>
             <c:if test="${deviceChosen}">
                 <cti:url var="viewMeterUrl" value="/meter/home">
                     <cti:param name="deviceId" value="${paoId}"/>

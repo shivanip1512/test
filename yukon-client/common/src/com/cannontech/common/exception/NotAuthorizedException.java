@@ -3,6 +3,7 @@ package com.cannontech.common.exception;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -38,5 +39,9 @@ public class NotAuthorizedException extends YukonSecurityException {
     }
     public static NotAuthorizedException category(LiteYukonUser user, YukonRoleCategory roleCategory) {
         return new NotAuthorizedException("User " + user + " requires a role in category " + roleCategory);
+    }
+    public static NotAuthorizedException hierarchicalProperty(LiteYukonUser user, HierarchyPermissionLevel minLevel) {
+        return new NotAuthorizedException("User " + user + " requires level lower then " + minLevel
+            + " for roleProperty " + YukonRoleProperty.HIERARCHICAL_PERMISSION);
     }
 }

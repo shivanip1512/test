@@ -26,6 +26,7 @@ import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.BadPropertyTypeException;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.NotInRoleException;
 import com.cannontech.core.roleproperties.RoleGroupNotInRoleException;
@@ -204,6 +205,17 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         try {
             value = getPropertyBooleanValue(property, user);
             return value;
+        } catch (UserNotInRoleException e) {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean checkLevel(HierarchyPermissionLevel minLevel, LiteYukonUser user) {
+        try {
+            HierarchyPermissionLevel level = getPropertyEnumValue(YukonRoleProperty.HIERARCHICAL_PERMISSION,
+                HierarchyPermissionLevel.class, user);
+            return level.grantAccess(minLevel);
         } catch (UserNotInRoleException e) {
             return false;
         }
@@ -524,6 +536,13 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     public void verifyProperty(YukonRoleProperty property, LiteYukonUser user) throws NotAuthorizedException {
         if (!checkProperty(property, user)) {
             throw NotAuthorizedException.trueProperty(user, property);
+        }
+    }
+    
+    @Override
+    public void verifyLevel(HierarchyPermissionLevel minLevel,  LiteYukonUser user) throws NotAuthorizedException {
+        if (!checkLevel(minLevel, user)) {
+            throw NotAuthorizedException.hierarchicalProperty(user, minLevel);
         }
     }
 

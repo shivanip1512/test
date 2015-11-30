@@ -3,6 +3,7 @@ package com.cannontech.user.checker;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -24,7 +25,23 @@ public class RolePropertyUserCheckerFactory {
     @Autowired private EnergyCompanySettingDao energyCompanSettingDao;
     @Autowired private EnergyCompanyDao ecDao;
     
-    public UserChecker createPropertyChecker(final YukonRoleProperty property) {
+    public UserChecker createHeirarchicalLevelChecker(String level) {
+        HierarchyPermissionLevel permissionLevel = HierarchyPermissionLevel.valueOf(level);
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                return rolePropertyDao.checkLevel(permissionLevel, user);
+            };
+            
+            @Override
+            public String toString() {
+                return YukonRoleProperty.HIERARCHICAL_PERMISSION + " checker";
+            }
+        };
+        return checker;
+    }
+    
+    public UserChecker createBooleanPropertyChecker(final YukonRoleProperty property) {
         Validate.isTrue(rolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
 
         UserCheckerBase checker = new UserCheckerBase() {

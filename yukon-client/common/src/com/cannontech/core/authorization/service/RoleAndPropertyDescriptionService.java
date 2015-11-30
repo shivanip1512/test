@@ -2,6 +2,7 @@ package com.cannontech.core.authorization.service;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
@@ -10,9 +11,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.checker.AggregateOrUserChecker;
@@ -27,8 +26,6 @@ public class RoleAndPropertyDescriptionService {
     @Autowired private RolePropertyUserCheckerFactory userCheckerFactory;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private EnergyCompanyDao ecDao;
 
     /**
      * This will check that the user has the given roles, categories, has a
@@ -45,11 +42,19 @@ public class RoleAndPropertyDescriptionService {
      * Specific categories or roles can be not'd by prepending a !. Properties
      * can be checked with the False Checks by prepending a !.
      */
-    public boolean checkIfAtLeaseOneExists(final String rolePropDescription, final LiteYukonUser user) {
-        return compile(rolePropDescription).check(user);
+    public boolean checkIfAtLeaseOneExists(String rolePropDescription, LiteYukonUser user) {
+        return checkIfAtLeaseOneExists(rolePropDescription, null, user);
     }
 
-    public UserChecker compile(final String rolePropDescription) {
+    public boolean checkIfAtLeaseOneExists(String rolePropDescription, String level, LiteYukonUser user) {
+        return compile(rolePropDescription, level).check(user);
+    }
+
+    public UserChecker compile(String rolePropDescription) {
+        return compile(rolePropDescription, null);
+    }
+    
+    public UserChecker compile(String rolePropDescription, String level) {
         if (rolePropDescription.equals("*")) {
             return NullUserChecker.getInstance();
         }
@@ -97,10 +102,12 @@ public class RoleAndPropertyDescriptionService {
             try {
                 YukonRoleProperty property = YukonRoleProperty.valueOf(someEnumName);
                 UserChecker propertyChecker;
-                if (inverted) {
+                if (!StringUtils.isEmpty(level)) {
+                    propertyChecker = userCheckerFactory.createHeirarchicalLevelChecker(level);
+                } else if (inverted) {
                     propertyChecker = userCheckerFactory.createFalsePropertyChecker(property);
                 } else {
-                    propertyChecker = userCheckerFactory.createPropertyChecker(property);
+                    propertyChecker = userCheckerFactory.createBooleanPropertyChecker(property);
                 }
                 checkers.add(propertyChecker);
                 continue;

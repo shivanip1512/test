@@ -2,6 +2,8 @@ package com.cannontech.core.authentication.service.impl;
 
 import java.util.Map;
 
+import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -14,6 +16,11 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 
 public class MockRolePropertyDaoImpl extends RolePropertyDaoImpl {
+    
+    public static final LiteYukonUser LEVEL_OWNER_USER = new LiteYukonUser(1, "LEVEL_OWNER", LoginStatusEnum.ENABLED);
+    public static final LiteYukonUser LEVEL_UPDATE_USER = new LiteYukonUser(2, "LEVEL_UPDATE", LoginStatusEnum.ENABLED);
+    public static final LiteYukonUser LEVEL_RESTRICTED_USER= new LiteYukonUser(3, "LEVEL_RESTRICTED", LoginStatusEnum.ENABLED);
+    public static final LiteYukonUser LEVEL_UNKNOWN_USER = new LiteYukonUser(4, "LEVEL_UNKNOWN", LoginStatusEnum.ENABLED);
     
     private LoadingCache<LiteYukonUser, RolePropertyHolder> userRolePropertyHolders = CacheBuilder.newBuilder().build(new CacheLoader<LiteYukonUser, RolePropertyHolder>() {
         @Override
@@ -85,6 +92,19 @@ public class MockRolePropertyDaoImpl extends RolePropertyDaoImpl {
         RolePropertyHolder rolePropertyHolder = groupRolePropertyHolders.getUnchecked(liteYukonGroup);
         Object rolePropertyValue = rolePropertyHolder.getRolePropertyValue(roleProperty);
         return (String) rolePropertyValue;
+    }
+    
+    @Override
+    public <E extends Enum<E>> E getPropertyEnumValue(YukonRoleProperty property, Class<E> enumClass, LiteYukonUser user)
+    throws UserNotInRoleException {
+        if(user == LEVEL_OWNER_USER){
+            return enumClass.cast(HierarchyPermissionLevel.OWNER);
+        }else if (user == LEVEL_UPDATE_USER){
+            return enumClass.cast(HierarchyPermissionLevel.UPDATE);
+        }else if (user == LEVEL_RESTRICTED_USER){
+            return enumClass.cast(HierarchyPermissionLevel.RESTRICTED);
+        }
+        throw new UserNotInRoleException(property, user.getLiteID());
     }
 
     public class RolePropertyHolder {

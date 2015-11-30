@@ -13,6 +13,7 @@ import com.cannontech.util.ServletUtil;
  */
 public class CheckRolesAndPropertiesTag extends TagSupport {
     private String value;
+    private String level;
 
     @Override
     public int doStartTag() throws JspException {
@@ -21,10 +22,14 @@ public class CheckRolesAndPropertiesTag extends TagSupport {
         RoleAndPropertyDescriptionService descriptionService =
             YukonSpringHook.getBean(RoleAndPropertyDescriptionService.class);
 
-        return descriptionService.checkIfAtLeaseOneExists(value, user) ? EVAL_BODY_INCLUDE : SKIP_BODY;
+        return descriptionService.checkIfAtLeaseOneExists(value, level, user) ? EVAL_BODY_INCLUDE : SKIP_BODY;
     }
 
     public void setValue(String value) {
         this.value = value;
+    }
+    
+    public void setLevel(String level) {
+        this.level = level;
     }
 }

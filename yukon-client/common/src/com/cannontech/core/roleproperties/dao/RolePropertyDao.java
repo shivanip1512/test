@@ -3,6 +3,7 @@ package com.cannontech.core.roleproperties.dao;
 import java.util.Set;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
@@ -330,5 +331,29 @@ public interface RolePropertyDao {
 
     Number getPropertyNumberValue(LiteYukonGroup roleGroup, YukonRoleProperty property)
             throws UserNotInRoleException;
+
+    /**
+     * Checks HIERARCHICAL_PERMISSION role property.
+     * Returns true if the user access level is less or equal the minimum level.
+     * Examples:
+     * If the user level is UPDATE , the user is allowed access to UPDATE, LIMITED and RESTRICTED.
+     * 
+     * If the user level is UPDATE and minLevel is LIMITED, UPDATE(3) <=  LIMITED(4) = true, the user is allowed access.
+     * If the user level is LIMITED  and minLevel is UPDATE, LIMITED(4) <= UPDATE(3) = false, the user is not allowed access.
+     * @param level - minimum level that grants access
+     * @param user
+     * @return
+     */
+    boolean checkLevel(HierarchyPermissionLevel level, LiteYukonUser user);
+
+    /**
+     * Equivalent to calling checkProperty and returning if true, and throwing
+     * a NotAuthorizedException if false.
+     * 
+     * @param minLevel -
+     * @param user a valid user
+     * @throws NotAuthorizedException
+     */
+    void verifyLevel(HierarchyPermissionLevel minLevel, LiteYukonUser user) throws NotAuthorizedException;
 
 }

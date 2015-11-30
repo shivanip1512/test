@@ -41,7 +41,9 @@ import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -80,6 +82,7 @@ public class CommanderController {
     @Autowired private DeviceUpdateService deviceUpdateService;
     @Autowired private WebUtilityService webUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     
     private static final TypeReference<List<RecentTarget>> recentTargetsType = new TypeReference<List<RecentTarget>>() {};
@@ -123,6 +126,9 @@ public class CommanderController {
                         LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
                         model.addAttribute("route", route);
                     }
+                    if(rolePropertyDao.checkLevel(HierarchyPermissionLevel.LIMITED, user)){
+                        model.addAttribute("changeRoute", true);
+                    }
                 }
             } else {
                 model.addAttribute("serialNumber", webUtil.getYukonCookieValue(req, "commander", "lastSerialNumber", null, 
@@ -159,7 +165,9 @@ public class CommanderController {
             LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
             data.put("route", route);
         }
-        
+        if(rolePropertyDao.checkLevel(HierarchyPermissionLevel.LIMITED, user)){
+            data.put("changeRoute", true);
+        }
         return data;
     }
     
@@ -188,6 +196,8 @@ public class CommanderController {
     @RequestMapping(value="/commander/{paoId}/route/{routeId}", method=RequestMethod.POST)
     public @ResponseBody LiteYukonPAObject changeRoute(HttpServletResponse resp, ModelMap model, LiteYukonUser user,
             @PathVariable int paoId, @PathVariable int routeId) {
+        
+        rolePropertyDao.verifyLevel(HierarchyPermissionLevel.LIMITED, user);
         
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
         Map<Integer, LiteYukonPAObject> routes = cache.getAllRoutesMap();
