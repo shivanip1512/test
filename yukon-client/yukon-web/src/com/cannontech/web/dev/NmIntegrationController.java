@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.ConnectionFactory;
 import javax.management.ObjectName;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -46,16 +47,20 @@ import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySetting
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.development.model.DataSimulatorParameters;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
+import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dev.model.DataSimulatorStatus;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
@@ -63,6 +68,7 @@ import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/rfn/*")
@@ -76,6 +82,8 @@ public class NmIntegrationController {
     @Autowired private YsmJmxQueryService jmxQueryService;
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
+    private final DataSimulatorStatus dataSimulatorStatus = new DataSimulatorStatus();
+    @Autowired private DateFormattingService dateFormattingService;
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
@@ -536,34 +544,114 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("viewLcrDataSimulator")
-    public String viewLcrDataSimulator(ModelMap model) {
+    public String viewLcrDataSimulator(ModelMap model, YukonUserContext userContext) {
         model.addAttribute("isRunning", dataSimulator.isRunning());
         SimulatorSettings currentSettings = dataSimulator.getCurrentSettings();
         if (currentSettings == null) {
             currentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 123456789, 1390000000, 0.0);
         }
         model.addAttribute("currentSettings", currentSettings);
+        model.addAttribute("dataSimulatorStatus", dataSimulatorStatus(userContext));
         return "rfn/dataSimulator.jsp";
     }
 
-    @RequestMapping(value="startDataSimulator", method=RequestMethod.GET)
-    public String startDataSimulator(@RequestParam int lcr6200serialFrom, @RequestParam int lcr6200serialTo,
-            @RequestParam int lcr6600serialFrom, @RequestParam int lcr6600serialTo,
-            @RequestParam long messageId, @RequestParam long messageIdTimestamp, double daysBehind) {
-        SimulatorSettings settings = new SimulatorSettings(lcr6200serialFrom, lcr6200serialTo,
-            lcr6600serialFrom, lcr6600serialTo, messageId, messageIdTimestamp, daysBehind);
+    @RequestMapping(value = "startDataSimulator")
+    @ResponseBody
+    public void startDataSimulator(final DataSimulatorParameters dataSimulatorParameters) {
+        final AtomicBoolean isRunning6200 = dataSimulatorStatus.getIsRunning6200();
+        if (!isRunning6200.compareAndSet(false, true)) {
+            return;
+        }
 
+        final AtomicBoolean isCanceled6200 = dataSimulatorStatus.getIsCanceled6200();
+        isCanceled6200.set(false);
+        dataSimulatorStatus.setErrorMessage(null);
+        SimulatorSettings settings =
+            new SimulatorSettings(dataSimulatorParameters.getLcr6200serialFrom(),
+                dataSimulatorParameters.getLcr6200serialTo(), dataSimulatorParameters.getLcr6600serialFrom(),
+                dataSimulatorParameters.getLcr6600serialTo(), dataSimulatorParameters.getMessageId(),
+                dataSimulatorParameters.getMessageIdTimestamp(), dataSimulatorParameters.getDaysBehind());
+        dataSimulatorStatus.getNumComplete6200().set(0);
+        dataSimulatorStatus.setNumTotal6200(dataSimulatorParameters.getLcr6200serialTo()
+            - dataSimulatorParameters.getLcr6200serialFrom());
+        // 6600
+        final AtomicBoolean isRunning6600 = dataSimulatorStatus.getIsRunning6600();
+        if (!isRunning6600.compareAndSet(false, true)) {
+            return;
+        }
+
+        final AtomicBoolean isCanceled6600 = dataSimulatorStatus.getIsCanceled6600();
+        isCanceled6600.set(false);
+
+        dataSimulatorStatus.getNumComplete6600().set(0);
+        dataSimulatorStatus.setNumTotal6600(dataSimulatorParameters.getLcr6600serialTo()
+            - dataSimulatorParameters.getLcr6600serialFrom());
+        // End
         dataSimulator.startSimulator(settings);
 
-        return "redirect:viewLcrDataSimulator";
     }
 
-    @RequestMapping(value="stopDataSimulator", method=RequestMethod.GET)
-    public String stopDataSimulator() {
+    @RequestMapping(value = "stopDataSimulator")
+    public void stopDataSimulator() {
+        dataSimulatorStatus.getIsCanceled6200().set(true);
+        dataSimulatorStatus.getIsCanceled6600().set(true);
         dataSimulator.stopSimulator();
-        return "redirect:viewLcrDataSimulator";
     }
 
+    @RequestMapping("datasimulator-status")
+    @ResponseBody
+    public Map<String, Object> dataSimulatorStatus(YukonUserContext userContext) {
+        RfnLcrDataSimulatorStatus rfnLcrDataSimulatorStatus = dataSimulator.getRfnLcrDataSimulatorStatus();
+        dataSimulatorStatus.setErrorMessage(rfnLcrDataSimulatorStatus.getErrorMessage());
+        dataSimulatorStatus.setLastFinishedInjection6200(rfnLcrDataSimulatorStatus.getLastFinishedInjection6200());
+        dataSimulatorStatus.getIsRunning6200().set(rfnLcrDataSimulatorStatus.getIsRunning6200().get());
+        dataSimulatorStatus.getNumComplete6200().set(rfnLcrDataSimulatorStatus.getNumComplete6200().get());
+
+        dataSimulatorStatus.setLastFinishedInjection6600(rfnLcrDataSimulatorStatus.getLastFinishedInjection6600());
+        dataSimulatorStatus.getIsRunning6600().set(rfnLcrDataSimulatorStatus.getIsRunning6600().get());
+        dataSimulatorStatus.getNumComplete6600().set(rfnLcrDataSimulatorStatus.getNumComplete6600().get());
+
+        Map<String, Object> dataSimularotStatusJson = Maps.newHashMapWithExpectedSize(10);
+        dataSimularotStatusJson.put("isRunning6200", dataSimulatorStatus.getIsRunning6200().get());
+        dataSimularotStatusJson.put("isCanceled6200", dataSimulatorStatus.getIsCanceled6200().get());
+        dataSimularotStatusJson.put("numTotal6200", dataSimulatorStatus.getNumTotal6200());
+        dataSimularotStatusJson.put("numComplete6200", dataSimulatorStatus.getNumComplete6200().get());
+        Instant lastRun6200 = dataSimulatorStatus.getLastFinishedInjection6200();
+
+        dataSimularotStatusJson.put("isRunning6600", dataSimulatorStatus.getIsRunning6600().get());
+        dataSimularotStatusJson.put("isCanceled6600", dataSimulatorStatus.getIsCanceled6600().get());
+        dataSimularotStatusJson.put("numTotal6600", dataSimulatorStatus.getNumTotal6600());
+        dataSimularotStatusJson.put("numComplete6600", dataSimulatorStatus.getNumComplete6600().get());
+        Instant lastRun6600 = dataSimulatorStatus.getLastFinishedInjection6600();
+
+        if (dataSimulatorStatus.getIsRunning6200().get()) {
+            dataSimularotStatusJson.put("status6200", "running");
+        } else if (lastRun6200 != null) {
+            String lastSimulationStr = dateFormattingService.format(lastRun6200, DateFormatEnum.DATEHM, userContext);
+            dataSimularotStatusJson.put("status6200", "notRunning");
+            dataSimularotStatusJson.put("lastSimulation6200", lastSimulationStr);
+        } else {
+            dataSimularotStatusJson.put("status6200", "neverRan");
+        }
+
+        String errorMessage = dataSimulatorStatus.getErrorMessage();
+        if (!StringUtils.isBlank(errorMessage)) {
+            dataSimularotStatusJson.put("hasError", true);
+            dataSimularotStatusJson.put("errorMessage", "Error Occured: " + errorMessage);
+        }
+        // 6600
+        if (dataSimulatorStatus.getIsRunning6600().get()) {
+            dataSimularotStatusJson.put("status6600", "running");
+        } else if (lastRun6600 != null) {
+            String lastSimulationStr = dateFormattingService.format(lastRun6600, DateFormatEnum.DATEHM, userContext);
+            dataSimularotStatusJson.put("status6600", "notRunning");
+            dataSimularotStatusJson.put("lastSimulation6600", lastSimulationStr);
+        } else {
+            dataSimularotStatusJson.put("status6600", "neverRan");
+        }
+        // End
+        return dataSimularotStatusJson;
+    }
     private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event) {
         List<RfnConditionType> rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
         model.addAttribute("rfnConditionTypes", rfnConditionTypes);

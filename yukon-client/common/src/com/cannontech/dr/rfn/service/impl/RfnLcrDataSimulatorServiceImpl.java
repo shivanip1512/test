@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
@@ -29,6 +31,7 @@ import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
+import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnLcrReadSimulatorDeviceParameters;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.jaxb.DRReport;
@@ -55,6 +58,11 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService exiParsingService;
     @Autowired private ConnectionFactory connectionFactory;
+    private final RfnLcrDataSimulatorStatus rfnLcrDataSimulatorStatus = new RfnLcrDataSimulatorStatus();
+
+    public RfnLcrDataSimulatorStatus getRfnLcrDataSimulatorStatus() {
+        return rfnLcrDataSimulatorStatus;
+    }
 
     private Simulator simulator = new Simulator();
     private ScheduledFuture<?> simulatorFuture = null;
@@ -115,8 +123,15 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
          * Generate and send the RFN LCR archive request messages for the current messaging group.
          */
         private void simulateRfnLcrNetwork() {
+            final AtomicBoolean isRunning6200 = rfnLcrDataSimulatorStatus.getIsRunning6200();
+            isRunning6200.set(true);
+            final AtomicBoolean isRunning6600 = rfnLcrDataSimulatorStatus.getIsRunning6600();
+            isRunning6600.set(true);
+            try {
             int lcr6200serialTo = simulatorSettings.getLcr6200serialTo();
             int lcr6600serialTo = simulatorSettings.getLcr6600serialTo();
+                int lcr6200serialCount = 0;
+                int lcr6600serialCount = 0;
             // Loop through LCR 6200 serial numbers, sending messages for those in the current messaging group.
             for (int id = simulatorSettings.getLcr6200serialFrom() + currentMessagingGroup; 
                     id <= lcr6200serialTo;
@@ -125,7 +140,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                         new RfnIdentifier(String.valueOf(id), "CPS", "1077"),
                         0, 0, 3,
                         60, 24 * 60);
+                AtomicLong numComplete = rfnLcrDataSimulatorStatus.getNumComplete6200();
                 simulateLcrReadRequest(simulatorSettings, deviceParameters);
+                lcr6200serialCount++;
+                numComplete.addAndGet(lcr6200serialCount);
             }
             // Loop through LCR 6600 serial numbers, sending messages for those in the current messaging group.
             for (int id = simulatorSettings.getLcr6600serialFrom() + currentMessagingGroup; 
@@ -135,10 +153,23 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                         new RfnIdentifier(String.valueOf(id), "CPS", "1082"),
                         0, 0, 3,
                         60, 24 * 60);
+                AtomicLong numComplete = rfnLcrDataSimulatorStatus.getNumComplete6600();
                 simulateLcrReadRequest(simulatorSettings, deviceParameters);
+                lcr6600serialCount++;
+                numComplete.addAndGet(lcr6600serialCount);
             }
             // Advance to the next messaging group for the next thread wake-up.
             currentMessagingGroup = (++currentMessagingGroup) % messageGroupCount;
+            } catch (Exception e) {
+                log.error("Data Simulator has encountered an unexpected error.", e);
+                rfnLcrDataSimulatorStatus.setErrorMessage(e.getMessage());
+            } finally {
+                log.info("Data Simulator  worker has finished.");
+                rfnLcrDataSimulatorStatus.setLastFinishedInjection6200(Instant.now());
+                rfnLcrDataSimulatorStatus.setLastFinishedInjection6600(Instant.now());
+                isRunning6200.set(false);
+                isRunning6600.set(false);
+            }
         }
         
         public void initializeSimulator(SimulatorSettings simulatorSettings) {
