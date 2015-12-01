@@ -189,7 +189,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     /**
      * Helper method for use within getAlarmTableEntries
      */
-    private static void setupAlarmTableEntry(AlarmTableEntry entry, char gen,String categoryName) {
+    private static void setupAlarmTableEntry(AlarmTableEntry entry, char gen, String categoryName) {
         entry.setGenerate(categoryName);
         entry.setExcludeNotify(PointAlarming.getExcludeNotifyString(gen));
     }
