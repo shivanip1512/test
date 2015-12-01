@@ -41,7 +41,6 @@ public class NotAuthorizedException extends YukonSecurityException {
         return new NotAuthorizedException("User " + user + " requires a role in category " + roleCategory);
     }
     public static NotAuthorizedException hierarchicalProperty(LiteYukonUser user, HierarchyPermissionLevel minLevel) {
-        return new NotAuthorizedException("User " + user + " requires level lower then " + minLevel
-            + " for roleProperty " + YukonRoleProperty.HIERARCHICAL_PERMISSION);
+        return new NotAuthorizedException("User " + user + " requires the minimum permission level " + minLevel + " to access.");
     }
 }

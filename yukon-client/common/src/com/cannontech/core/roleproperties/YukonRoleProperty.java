@@ -1,33 +1,10 @@
 package com.cannontech.core.roleproperties;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
-import static com.cannontech.core.roleproperties.YukonRole.APPLICATION_BILLING;
-import static com.cannontech.core.roleproperties.YukonRole.CBC_ONELINE_CAP_SETTINGS;
-import static com.cannontech.core.roleproperties.YukonRole.CBC_SETTINGS;
-import static com.cannontech.core.roleproperties.YukonRole.CI_CURTAILMENT;
-import static com.cannontech.core.roleproperties.YukonRole.COMMANDER;
-import static com.cannontech.core.roleproperties.YukonRole.CONSUMER_INFO;
-import static com.cannontech.core.roleproperties.YukonRole.DATABASE_EDITOR;
-import static com.cannontech.core.roleproperties.YukonRole.DEMAND_RESPONSE;
-import static com.cannontech.core.roleproperties.YukonRole.DEVICE_ACTIONS;
-import static com.cannontech.core.roleproperties.YukonRole.DEVICE_MANAGEMENT;
-import static com.cannontech.core.roleproperties.YukonRole.INVENTORY;
-import static com.cannontech.core.roleproperties.YukonRole.IVR;
-import static com.cannontech.core.roleproperties.YukonRole.METERING;
-import static com.cannontech.core.roleproperties.YukonRole.NOTIFICATION_CONFIGURATION;
-import static com.cannontech.core.roleproperties.YukonRole.ODDS_FOR_CONTROL;
-import static com.cannontech.core.roleproperties.YukonRole.OPERATOR_ADMINISTRATOR;
-import static com.cannontech.core.roleproperties.YukonRole.PASSWORD_POLICY;
-import static com.cannontech.core.roleproperties.YukonRole.REPORTING;
-import static com.cannontech.core.roleproperties.YukonRole.RESIDENTIAL_CUSTOMER;
-import static com.cannontech.core.roleproperties.YukonRole.SCHEDULER;
-import static com.cannontech.core.roleproperties.YukonRole.TABULAR_DISPLAY_CONSOLE;
-import static com.cannontech.core.roleproperties.YukonRole.TRENDING;
-import static com.cannontech.core.roleproperties.YukonRole.WEB_CLIENT;
-import static com.cannontech.core.roleproperties.YukonRole.WORK_ORDER;
-import static com.google.common.base.Preconditions.checkArgument;
+
+import static com.cannontech.core.roleproperties.InputTypeFactory.*;
+import static com.cannontech.core.roleproperties.YukonRole.*;
+import static com.google.common.base.Preconditions.*;
+
 
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
@@ -310,7 +287,7 @@ public enum YukonRoleProperty {
     INFRASTRUCTURE_DELETE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 1, booleanType()),
     INFRASTRUCTURE_ADMIN(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 2, booleanType()),
     INFRASTRUCTURE_VIEW(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 3, booleanType()),
-    HIERARCHICAL_PERMISSION(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 4, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
+    ENDPOINT_PERMISSION(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 4, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
     ;
     
     private final YukonRole role;

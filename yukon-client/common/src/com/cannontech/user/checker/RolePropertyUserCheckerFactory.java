@@ -35,7 +35,7 @@ public class RolePropertyUserCheckerFactory {
             
             @Override
             public String toString() {
-                return YukonRoleProperty.HIERARCHICAL_PERMISSION + " checker";
+                return YukonRoleProperty.ENDPOINT_PERMISSION + " checker";
             }
         };
         return checker;

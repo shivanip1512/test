@@ -213,7 +213,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     @Override
     public boolean checkLevel(HierarchyPermissionLevel minLevel, LiteYukonUser user) {
         try {
-            HierarchyPermissionLevel level = getPropertyEnumValue(YukonRoleProperty.HIERARCHICAL_PERMISSION,
+            HierarchyPermissionLevel level = getPropertyEnumValue(YukonRoleProperty.ENDPOINT_PERMISSION,
                 HierarchyPermissionLevel.class, user);
             return level.grantAccess(minLevel);
         } catch (UserNotInRoleException e) {

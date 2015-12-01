@@ -18,13 +18,13 @@ public class YukonRolePropertyTest {
 
     {
         rolePropertyDaoMock.setupRolesFor(MockRolePropertyDaoImpl.LEVEL_OWNER_USER).withRoleProperty(
-            YukonRoleProperty.HIERARCHICAL_PERMISSION, HierarchyPermissionLevel.OWNER);
+            YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.OWNER);
 
         rolePropertyDaoMock.setupRolesFor(MockRolePropertyDaoImpl.LEVEL_UPDATE_USER).withRoleProperty(
-            YukonRoleProperty.HIERARCHICAL_PERMISSION, HierarchyPermissionLevel.UPDATE);
+            YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE);
 
         rolePropertyDaoMock.setupRolesFor(MockRolePropertyDaoImpl.LEVEL_RESTRICTED_USER).withRoleProperty(
-            YukonRoleProperty.HIERARCHICAL_PERMISSION, HierarchyPermissionLevel.RESTRICTED);
+            YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.RESTRICTED);
     }
 
     /**
