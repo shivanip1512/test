@@ -49,7 +49,7 @@
             <tags:widgetActionUpdate method="ping" nameKey="ping" container="${widgetParameters.widgetId}_results" 
                     icon="icon-ping" classes="M0"/>
     </c:if>
-    <cti:checkRolesAndProperties value="HIERARCHICAL_PERMISSION" level="LIMITED">
+    <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="LIMITED">
         <cti:button nameKey="edit" icon="icon-pencil" data-popup="#meter-info-popup"/>
     </cti:checkRolesAndProperties>
 </div>
