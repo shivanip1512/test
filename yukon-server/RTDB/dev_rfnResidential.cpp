@@ -454,12 +454,12 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
         {
             if( !touScheduleMatches )
             {
-                reportConfigMismatchDetails<void>( "TOU Schedule", pReq, returnMsgs );
+                reportConfigMismatchDetails( "TOU Schedule", pReq, returnMsgs );
             }
 
             if( !touEnableMatches )
             {
-                reportConfigMismatchDetails<void>( "TOU Enable", pReq, returnMsgs );
+                reportConfigMismatchDetails( "TOU Enable", pReq, returnMsgs );
             }
 
             return ClientErrors::ConfigNotCurrent;
