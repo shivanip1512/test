@@ -159,9 +159,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         int i = 0;
         for (i = 0; i < alarm_cats.length; i++) {
             AlarmTableEntry entry = new AlarmTableEntry();
-            LiteAlarmCategory liteAlarmCategory = alarmCatDao.getAlarmCategoryFromCache(alarmStates.charAt(i));
-            setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i),
-                liteAlarmCategory.getCategoryName());
+            setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i), alarmStates.charAt(i));
 
             entry.setCondition(alarm_cats[i]);
             notifEntries.add(entry);
@@ -175,9 +173,7 @@ public class PointEditorServiceImpl implements PointEditorService {
                         ", too many states for Status point "+ pointBase.getPoint().getPointName() + " defined.");
                 }
                 AlarmTableEntry entry = new AlarmTableEntry();
-                LiteAlarmCategory liteAlarmCategory = alarmCatDao.getAlarmCategoryFromCache(alarmStates.charAt(i));
-                setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i),
-                    liteAlarmCategory.getCategoryName());
+                setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i), alarmStates.charAt(i));
 
                 entry.setCondition(stateNames[j]);
                 notifEntries.add(entry);
@@ -189,8 +185,9 @@ public class PointEditorServiceImpl implements PointEditorService {
     /**
      * Helper method for use within getAlarmTableEntries
      */
-    private static void setupAlarmTableEntry(AlarmTableEntry entry, char gen, String categoryName) {
-        entry.setGenerate(categoryName);
+    private void setupAlarmTableEntry(AlarmTableEntry entry, char gen, char category) {
+        LiteAlarmCategory liteAlarmCategory = alarmCatDao.getAlarmCategoryFromCache(category);
+        entry.setGenerate(liteAlarmCategory.getCategoryName());
         entry.setExcludeNotify(PointAlarming.getExcludeNotifyString(gen));
     }
     
