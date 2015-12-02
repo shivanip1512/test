@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/13/2015 3:44:27 PM                        */
+/* Created on:     12/2/2015 1:48:15 PM                         */
 /*==============================================================*/
 
 
@@ -9607,6 +9607,7 @@ INSERT INTO YukonRoleProperty VALUES(-21400, -214, 'Infrastructure Create/Edit',
 INSERT INTO YukonRoleProperty VALUES(-21401, -214, 'Infrastructure Delete', 'false', 'Controls the ability to delete infrastructure devices. i.e. RF Gateways.');
 INSERT INTO YukonRoleProperty VALUES(-21402, -214, 'Infrastructure Administration', 'false', 'Controls the ability to send configuration commands to infrastructure devices. i.e. RF Gateways.');
 INSERT INTO YukonRoleProperty VALUES(-21403, -214, 'Infrastructure View', 'false', 'Controls the ability to view infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21404, -214, 'Endpoint Permission', 'UPDATE', 'Controls the ability to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.');
 
 /* Residential Customer Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-40001,-400,'Account General','true','Controls whether to show the general account information');

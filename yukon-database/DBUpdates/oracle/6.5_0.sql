@@ -377,6 +377,11 @@ ALTER TABLE YukonWebConfiguration
 MODIFY AlternateDisplayName VARCHAR2(200);
 /* End YUK-14818 */
 
+/* Start YUK-14891 */
+INSERT INTO YukonRoleProperty 
+VALUES (-21404, -214, 'Endpoint Permission', 'UPDATE', 'Controls the ability to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.');
+/* End YUK-14891 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
