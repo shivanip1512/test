@@ -2201,6 +2201,34 @@ YukonError_t CtiDeviceSingle::reportConfigErrorDetails(
 }
 
 /**
+* Add a configuration mismatch detail to message list.
+*
+* @param msg the message to send.
+* @param pReg pointer to Request Message
+* @param returnMsgs list of messages to return to the client.
+*/
+void CtiDeviceSingle::reportConfigDetails(
+    std::string &msg,
+    CtiRequestMsg *pReq,
+    CtiDeviceSingle::ReturnMsgList &returnMsgs )
+{
+    CTILOG_DEBUG( dout, msg );
+
+    auto retMsg = std::make_unique<CtiReturnMsg>(
+        pReq->DeviceId(),
+        pReq->CommandString(),
+        msg,
+        ClientErrors::ConfigNotCurrent,
+        0,
+        Cti::MacroOffset::none,
+        0,
+        pReq->GroupMessageId(),
+        pReq->UserMessageId() );
+
+    returnMsgs.push_back( retMsg.release() );
+}
+
+/**
 * Report a configuration mismatch to the client.
 *
 * @param setting Setting title
@@ -2216,20 +2244,7 @@ void CtiDeviceSingle::reportConfigMismatchDetails(
 {
     std::string msg( "Config " + setting + " did not match." );
 
-    CTILOG_DEBUG( dout, msg );
-
-    auto retMsg = std::make_unique<CtiReturnMsg>(
-        pReq->DeviceId(),
-        pReq->CommandString(),
-        msg,
-        ClientErrors::ConfigNotCurrent,
-        0,
-        Cti::MacroOffset::none,
-        0,
-        pReq->GroupMessageId(),
-        pReq->UserMessageId() );
-
-    returnMsgs.push_back( retMsg.release() );
+    reportConfigDetails( msg, pReq, returnMsgs );
 }
 
 /**
@@ -2254,20 +2269,7 @@ void CtiDeviceSingle::reportConfigMismatchDetails(
         ", Device: " +
         ( deviceSetting ? ( deviceSetting.get() ? "True" : "False" ) : "Uninitialized" ) );
 
-    CTILOG_DEBUG( dout, msg );
-
-    auto retMsg = std::make_unique<CtiReturnMsg>(
-        pReq->DeviceId(),
-        pReq->CommandString(),
-        msg,
-        ClientErrors::ConfigNotCurrent,
-        0,
-        Cti::MacroOffset::none,
-        0,
-        pReq->GroupMessageId(),
-        pReq->UserMessageId() );
-
-    returnMsgs.push_back( retMsg.release() );
+    reportConfigDetails( msg, pReq, returnMsgs );
 }
 
 /**
@@ -2292,20 +2294,7 @@ void CtiDeviceSingle::reportConfigMismatchDetails(
         ", Device: " +
         ( deviceSetting ? std::to_string( deviceSetting.get() ) : "Uninitialized" ) );
 
-    CTILOG_DEBUG( dout, msg );
-
-    auto retMsg = std::make_unique<CtiReturnMsg>(
-        pReq->DeviceId(),
-        pReq->CommandString(),
-        msg,
-        ClientErrors::ConfigNotCurrent,
-        0,
-        Cti::MacroOffset::none,
-        0,
-        pReq->GroupMessageId(),
-        pReq->UserMessageId() );
-
-    returnMsgs.push_back( retMsg.release() );
+    reportConfigDetails( msg, pReq, returnMsgs );
 }
 
 /**
@@ -2330,20 +2319,7 @@ void CtiDeviceSingle::reportConfigMismatchDetails(
         ", Device: " +
         ( deviceSetting ? std::string( CtiNumStr( deviceSetting.get(), 1 ) ) : "Uninitialized" ) );
 
-    CTILOG_DEBUG( dout, msg );
-
-    auto retMsg = std::make_unique<CtiReturnMsg>(
-        pReq->DeviceId(),
-        pReq->CommandString(),
-        msg,
-        ClientErrors::ConfigNotCurrent,
-        0,
-        Cti::MacroOffset::none,
-        0,
-        pReq->GroupMessageId(),
-        pReq->UserMessageId() );
-
-    returnMsgs.push_back( retMsg.release() );
+    reportConfigDetails( msg, pReq, returnMsgs );
 }
 
 /**
@@ -2382,20 +2358,7 @@ void CtiDeviceSingle::reportConfigMismatchDetails(
 
     std::string msg( "Config " + setting + " did not match. Config: " + config + ", Device: " + device );
 
-    CTILOG_DEBUG( dout, msg );
-
-    auto retMsg = std::make_unique<CtiReturnMsg>(
-        pReq->DeviceId(),
-        pReq->CommandString(),
-        msg,
-        ClientErrors::ConfigNotCurrent,
-        0,
-        Cti::MacroOffset::none,
-        0,
-        pReq->GroupMessageId(),
-        pReq->UserMessageId() );
-
-    returnMsgs.push_back( retMsg.release() );
+    reportConfigDetails( msg, pReq, returnMsgs );
 }
 
 template void IM_EX_DEVDB CtiDeviceSingle::reportConfigMismatchDetails<double>(

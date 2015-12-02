@@ -133,6 +133,18 @@ protected:
         ReturnMsgList &returnMsgs );
 
     /**
+    * Add a configuration mismatch detail to message list.
+    *
+    * @param msg the message to send.
+    * @param pReg pointer to Request Message
+    * @param returnMsgs list of messages to return to the client.
+    */
+    void CtiDeviceSingle::reportConfigDetails(
+        std::string &msg,
+        CtiRequestMsg *pReq,
+        CtiDeviceSingle::ReturnMsgList &returnMsgs );
+
+    /**
     * Report a configuration mismatch to the client.
     *
     * @param setting Setting title

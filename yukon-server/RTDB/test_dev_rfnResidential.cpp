@@ -2284,7 +2284,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_disconnect_m
         BOOST_TEST_MESSAGE( std::to_string( m.ExpectMore() ) << ": " << m.ResultString() );
         expectMoreRcv.push_back( m.ExpectMore() );
     }
-    BOOST_TEST_MESSAGE("");
+    BOOST_TEST_MESSAGE("");             // Add a blank line for clarity
     returnExpectMoreRcv.push_back( expectMoreRcv );
 
     ////// add each configuration //////
