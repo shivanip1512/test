@@ -136,12 +136,20 @@
                 $('#taskStatusMessage').addMessage({message:errorMsg, messageClass:'error'}).show();
             });
           },
+          
+        _sendMessageButtonClick = function() {
+              $.ajax({
+                  url: yukon.url('/dev/rfn/sendLcrDeviceMessages'),
+                  type: 'GET'
+              });
+        },
 
         mod = {
             init : function() {
                 if (_initialized) return;
                 $('#start-button').click(_startButtonClick);
                 $(document).on('click', '#stop-button', _stopButtonClick);
+                $(document).on('click', '#send-message', _sendMessageButtonClick);
                 _checkStatus();
 
                 _initialized = true;
@@ -182,6 +190,7 @@
         <%-- <cti:button nameKey="start" id="start"/> --%>
         <cti:button id="start-button" nameKey="start"/>
         <cti:button id="stop-button" nameKey="stop" />
+        <cti:button id="send-message" nameKey="sendLcrDeviceMessages"/>
     </div>
 </tags:sectionContainer2>
 </form>

@@ -26,20 +26,24 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
@@ -84,6 +88,7 @@ public class NmIntegrationController {
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     private final DataSimulatorStatus dataSimulatorStatus = new DataSimulatorStatus();
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
@@ -597,7 +602,14 @@ public class NmIntegrationController {
         dataSimulatorStatus.getIsCanceled6600().set(true);
         dataSimulator.stopSimulator();
     }
-
+    
+    @RequestMapping(value = "sendLcrDeviceMessages", method = RequestMethod.GET)
+    public String sendLcrDeviceMessages() {
+        List<RfnDevice> rfnLcrDeviceList = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfLcrTypes());
+        dataSimulator.sendLcrDeviceMessages(rfnLcrDeviceList);
+        return "redirect:viewLcrDataSimulator";
+    }
+    
     @RequestMapping("datasimulator-status")
     @ResponseBody
     public Map<String, Object> dataSimulatorStatus(YukonUserContext userContext) {

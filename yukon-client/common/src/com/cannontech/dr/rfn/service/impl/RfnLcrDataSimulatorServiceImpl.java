@@ -3,6 +3,7 @@ package com.cannontech.dr.rfn.service.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,6 +28,7 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -49,6 +51,7 @@ import com.cannontech.dr.rfn.model.jaxb.DRReport.Relays.Relay.IntervalData.Inter
 import com.cannontech.dr.rfn.model.jaxb.ObjectFactory;
 import com.cannontech.dr.rfn.service.ExiParsingService;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
+import com.google.common.collect.Lists;
 
 public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorService {
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
@@ -66,6 +69,23 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
 
     private Simulator simulator = new Simulator();
     private ScheduledFuture<?> simulatorFuture = null;
+    private ScheduledFuture<?> msgSimulatorFt = null;
+    private boolean msgSimulatorRunning = true;
+    private final Integer devicePartitionCount = 1000;
+
+    @Override
+    public synchronized void sendLcrDeviceMessages(List<RfnDevice> rfnLcrDeviceList) {
+
+        if (msgSimulatorRunning || msgSimulatorFt.isDone()) {
+            msgSimulatorRunning = false;
+            for (List<RfnDevice> partition : Lists.partition(rfnLcrDeviceList, devicePartitionCount)) {
+                msgSimulatorFt = executor.schedule(new MessageSimulator(partition), 1, TimeUnit.MINUTES);
+            }
+        } else {
+            log.debug("RFN LCR Message simulator is already running.");
+        }
+
+    }
 
     @Override
     public synchronized void startSimulator(SimulatorSettings settings) {
@@ -186,6 +206,38 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         }
     }
 
+    private class MessageSimulator implements Runnable {
+        List<RfnDevice> rfnLcrDeviceList = null;
+
+        MessageSimulator(List<RfnDevice> rfnLcrDeviceList) {
+            this.rfnLcrDeviceList = rfnLcrDeviceList;
+        }
+
+        @Override
+        public void run() {
+            log.debug("RFN LCR message simulator sending message...");
+            if (rfnLcrDeviceList != null) {
+                insertRfnLcrMessages();
+            } else {
+                log.debug("RFN LCR message simulator settings have not been initialized. Messages will not be sent.");
+            }
+            log.debug("RFN LCR message simulator sleeping...");
+        }
+
+        private void insertRfnLcrMessages() {
+
+            for (RfnDevice device : rfnLcrDeviceList) {
+
+                RfnIdentifier rfnIdentifier = device.getRfnIdentifier();
+                RfnLcrReadSimulatorDeviceParameters deviceParameters =
+                    new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60);
+                SimulatorSettings settings = new SimulatorSettings(0, 0, 0, 0, 123456789, 1390000000, 0);
+                simulateLcrReadRequest(settings, deviceParameters);
+
+            }
+        }
+
+    }
     /** 
      * This method creates an RFN LCR read archive request and places it into the appropriate messaging queue.
      * 
