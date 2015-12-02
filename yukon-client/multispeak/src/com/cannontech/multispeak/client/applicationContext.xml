@@ -88,14 +88,20 @@
            
   <oxm:jaxb2-marshaller id="domainMarshaller" contextPath="com.cannontech.msp.beans.v3" />  
         
-   
-  <bean class="org.springframework.ws.client.core.WebServiceTemplate">
-     <qualifier value="webServiceTemplate" />
-     <constructor-arg ref="soap11MessageFactory" />
-     <property name="messageSender" ref="messageSender" />
-     <property name="marshaller" ref="domainMarshaller" />
-     <property name="unmarshaller" ref="domainMarshaller" />
-  </bean>
+  <bean id="clientInterceptor" class="com.cannontech.multispeak.client.ClientMessageContextHolderInterceptor" />
+    
+    <bean class="org.springframework.ws.client.core.WebServiceTemplate">
+        <qualifier value="webServiceTemplate" />
+        <constructor-arg ref="soap11MessageFactory" />
+        <property name="messageSender" ref="messageSender" />
+        <property name="marshaller" ref="domainMarshaller" />
+        <property name="unmarshaller" ref="domainMarshaller" />
+        <property name="interceptors">
+            <list>
+                <ref bean="clientInterceptor" />
+            </list>
+        </property>
+    </bean>
     
     <bean id="objectFactory" class="com.cannontech.msp.beans.v3.ObjectFactory"/>
     

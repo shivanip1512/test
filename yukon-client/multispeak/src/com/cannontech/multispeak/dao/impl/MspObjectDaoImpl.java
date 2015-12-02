@@ -1,7 +1,6 @@
 package com.cannontech.multispeak.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -215,39 +214,38 @@ public class MspObjectDaoImpl implements MspObjectDao {
             // get service locations
             GetAllServiceLocationsResponse getAllServiceLocationsResponse =
                 cbClient.getAllServiceLocations(mspVendor, endpointUrl, getAllServiceLocations);
-            ServiceLocation[] serviceLocations =
-                (ServiceLocation[]) getAllServiceLocationsResponse.getGetAllServiceLocationsResult().getServiceLocation().toArray();
+            List<ServiceLocation> serviceLocations = getAllServiceLocationsResponse.getGetAllServiceLocationsResult()
+                                                                                   .getServiceLocation();
             int serviceLocationCount = 0;
             if (serviceLocations != null) {
-                serviceLocationCount = serviceLocations.length;
+                serviceLocationCount = serviceLocations.size();
             }
 
             // objectsRemaining
             int objectsRemaining = 0;
-            String objectsRemainingStr = getAttributeValue("objectsRemaining");
+            String objectsRemainingStr = getAttributeValue("ObjectsRemaining");
             if (!StringUtils.isBlank(objectsRemainingStr)) {
                 try {
                     objectsRemaining = Integer.valueOf(objectsRemainingStr);
                 } catch (NumberFormatException e) {
-                    log.error("Non-integer value in header for objectsRemaining: " + objectsRemainingStr, e);
+                    log.error("Non-integer value in header for ObjectsRemaining: " + objectsRemainingStr, e);
                 }
             }
 
             if (objectsRemaining != 0) {
-                lastSent = getAttributeValue("lastSent");
+                lastSent = getAttributeValue("LastSent");
                 log.info("getMoreServiceLocations responded, received " + serviceLocationCount
-                    + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = "
-                    + objectsRemaining + ", lastSent = " + lastSent);
+                    + " ServiceLocations using lastReceived = " + lastReceived + ". Response: ObjectsRemaining = "
+                    + objectsRemaining + ", LastSent = " + lastSent);
             } else {
                 log.info("getMoreServiceLocations responded, received " + serviceLocationCount
-                    + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = "
+                    + " ServiceLocations using LastSent = " + lastReceived + ". Response: ObjectsRemaining = "
                     + objectsRemaining);
             }
 
             // process service locations
             if (serviceLocationCount > 0) {
-                List<ServiceLocation> mspServiceLocations = Arrays.asList(serviceLocations);
-                callback.processServiceLocations(mspServiceLocations);
+                callback.processServiceLocations(serviceLocations);
             }
         } catch (MultispeakWebServiceClientException e) {
 
