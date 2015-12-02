@@ -211,12 +211,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         } else {
             model.addAttribute("meter", MeterModel.of(meter));
         }
-        
-        if (rolePropertyDao.checkLevel(HierarchyPermissionLevel.UPDATE, user)) {
-            model.addAttribute("editable", true);
-        } else {
-            model.addAttribute("editable", false);
-        }       
+              
         return "meterInformationWidget/edit.jsp";
     }
     

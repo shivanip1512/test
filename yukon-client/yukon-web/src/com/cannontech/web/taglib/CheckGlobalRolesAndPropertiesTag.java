@@ -22,8 +22,8 @@ public class CheckGlobalRolesAndPropertiesTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
         
-        boolean checkIfAtLeaseOneExists = descriptionService.checkIfAtLeaseOneExists(getValue(), null);
-        if (checkIfAtLeaseOneExists) {
+        boolean checkIfAtLeastOneExists = descriptionService.checkIfAtLeastOneExists(getValue(), null);
+        if (checkIfAtLeastOneExists) {
             getJspBody().invoke(null);
         }
     }

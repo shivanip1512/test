@@ -42,7 +42,7 @@ public class VerifyGlobalRolesAndPropertiesTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
         
-        boolean checkIfAtLeaseOneExists = descriptionService.checkIfAtLeaseOneExists(value, null);
+        boolean checkIfAtLeaseOneExists = descriptionService.checkIfAtLeastOneExists(value, null);
         if (!checkIfAtLeaseOneExists) {
             throw new NotAuthorizedException("Missing a required role or property to view this page: " + value);
         }

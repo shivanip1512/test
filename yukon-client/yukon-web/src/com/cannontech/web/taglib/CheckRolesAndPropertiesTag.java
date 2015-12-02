@@ -22,7 +22,7 @@ public class CheckRolesAndPropertiesTag extends TagSupport {
         RoleAndPropertyDescriptionService descriptionService =
             YukonSpringHook.getBean(RoleAndPropertyDescriptionService.class);
 
-        return descriptionService.checkIfAtLeaseOneExists(value, level, user) ? EVAL_BODY_INCLUDE : SKIP_BODY;
+        return descriptionService.checkIfAtLeastOneExists(value, level, user) ? EVAL_BODY_INCLUDE : SKIP_BODY;
     }
 
     public void setValue(String value) {

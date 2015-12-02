@@ -25,20 +25,20 @@
     <input type="hidden" name="identity" value="false">
     
     <tags:nameValueContainer2 naturalWidth="false" tableClass="with-form-controls">
-        <tags:inputNameValue nameKey=".deviceName" path="name" valueClass="full-width" maxlength="60" size="40" disabled="${!editable}"/>
+        <tags:inputNameValue nameKey=".deviceName" path="name" valueClass="full-width" maxlength="60" size="40" minPermissionLevel="UPDATE"/>
         <tags:inputNameValue nameKey=".meterNumber" path="meterNumber" maxlength="50" size="40" 
-            valueClass="js-meter-info-meter-number" disabled="${!editable}"/>
+            valueClass="js-meter-info-meter-number" minPermissionLevel="UPDATE"/>
         <c:if test="${showCarrierSettings}">
-            <tags:inputNameValue nameKey=".physicalAddress" path="address" maxlength="18" size="18" disabled="${!editable}"/>
+            <tags:inputNameValue nameKey=".physicalAddress" path="address" maxlength="18" size="18" minPermissionLevel="UPDATE"/>
             <c:if test="${routable}">
                 <tags:selectNameValue nameKey=".route" items="${routes}" path="routeId" itemLabel="paoName" 
                     itemValue="liteID"/>
             </c:if>
         </c:if>
         <c:if test="${showRFMeshSettings}">
-            <tags:inputNameValue nameKey=".serialNumber" path="serialNumber" disabled="${!editable}"/>
-            <tags:inputNameValue nameKey=".manufacturer" path="manufacturer" disabled="${!editable}"/>
-            <tags:inputNameValue nameKey=".model" path="model" disabled="${!editable}"/>
+            <tags:inputNameValue nameKey=".serialNumber" path="serialNumber" minPermissionLevel="UPDATE"/>
+            <tags:inputNameValue nameKey=".manufacturer" path="manufacturer" minPermissionLevel="UPDATE" />
+            <tags:inputNameValue nameKey=".model" path="model" minPermissionLevel="UPDATE"/>
         </c:if>
         <tags:nameValue2 nameKey=".status">
             <tags:switchButton path="disabled" onNameKey=".enabled" offNameKey=".disabled" inverse="true"/>

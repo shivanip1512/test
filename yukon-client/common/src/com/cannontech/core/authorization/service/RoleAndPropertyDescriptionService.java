@@ -42,11 +42,11 @@ public class RoleAndPropertyDescriptionService {
      * Specific categories or roles can be not'd by prepending a !. Properties
      * can be checked with the False Checks by prepending a !.
      */
-    public boolean checkIfAtLeaseOneExists(String rolePropDescription, LiteYukonUser user) {
-        return checkIfAtLeaseOneExists(rolePropDescription, null, user);
+    public boolean checkIfAtLeastOneExists(String rolePropDescription, LiteYukonUser user) {
+        return checkIfAtLeastOneExists(rolePropDescription, null, user);
     }
 
-    public boolean checkIfAtLeaseOneExists(String rolePropDescription, String level, LiteYukonUser user) {
+    public boolean checkIfAtLeastOneExists(String rolePropDescription, String level, LiteYukonUser user) {
         return compile(rolePropDescription, level).check(user);
     }
 
