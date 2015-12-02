@@ -50,7 +50,6 @@ import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInput;
 import com.cannontech.dr.estimatedload.FormulaInput.InputType;
 import com.cannontech.dr.estimatedload.GearAssignment;
-import com.cannontech.dr.estimatedload.GearNotFoundException;
 import com.cannontech.dr.estimatedload.InputOutOfRangeException;
 import com.cannontech.dr.estimatedload.InputValueNotFoundException;
 import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
@@ -331,11 +330,7 @@ public class EstimatedLoadController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
               
         EstimatedLoadResult result;
-        try {
-            result = helper.findScenarioProgramValue(programId, scenarioId, true);
-        } catch (GearNotFoundException e) {
-            result = e;
-        }
+        result = helper.findScenarioProgramValue(programId, scenarioId, true);
         
         String programName = cache.getAllPaosMap().get(programId).getPaoName();
         
@@ -348,10 +343,10 @@ public class EstimatedLoadController {
     }
     
     @RequestMapping("summary-error")
-    public String summaryErrorPopup(ModelMap model, YukonUserContext userContext, int paoId) {
+    public String summaryErrorPopup(ModelMap model, YukonUserContext userContext, int scenarioId) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(scenarioId);
         String name = pao.getPaoName();
         model.addAttribute("title", accessor.getMessage(elKey + "popup.program.title", name));
         
@@ -374,7 +369,12 @@ public class EstimatedLoadController {
         } else {
             model.addAttribute("initialMessage", accessor.getMessage(elKey + "error.summary", summary.getErrors()));
             for (int programId : summary.getProgramsInError()) {
-                EstimatedLoadResult result = helper.findProgramValue(programId, true);
+                EstimatedLoadResult result;
+                if (pao.getPaoIdentifier().getPaoType() == PaoType.LM_SCENARIO) {
+                    result = helper.findScenarioProgramValue(programId, scenarioId, true);
+                } else {
+                    result = helper.findProgramValue(programId, true);
+                }
                 String programName = cache.getAllPaosMap().get(programId).getPaoName();
                 errors.add(buildProgramError(userContext, programId, accessor, result, programName));
             }

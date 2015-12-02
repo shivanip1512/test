@@ -2,21 +2,17 @@ package com.cannontech.web.updater.dr;
 
 import java.util.Map;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
-
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
 import com.cannontech.dr.estimatedload.EstimatedLoadException;
 import com.cannontech.dr.estimatedload.EstimatedLoadResult;
-import com.cannontech.dr.estimatedload.GearNotFoundException;
 import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
-import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -64,15 +60,9 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
             return createErrorJson(programId, e, userContext);
         }
         if(!program.isActive()) {
-             // The program is not active so find the scenario start gear
-                try {
-                    loadResult = backingServiceHelper.findScenarioProgramValue(programId, scenarioId, false);
-                    return buildJson(programId, userContext, loadResult);
-                } catch (GearNotFoundException e) {
-                    return createErrorJson(programId, e, userContext);
-                }
-                
-          }
+             loadResult = backingServiceHelper.findScenarioProgramValue(programId, scenarioId, false);
+             return buildJson(programId, userContext, loadResult);
+        }
         return getValue(programId, userContext);
     }
 

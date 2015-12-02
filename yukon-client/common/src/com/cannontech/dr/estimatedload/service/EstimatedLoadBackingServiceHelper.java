@@ -34,7 +34,7 @@ public interface EstimatedLoadBackingServiceHelper {
      * If false, the cache will be checked for a result.  If not present, null is returned immediately and 
      * the result is calculated in a new runnable and inserted into cache. 
      * @throws GearNotFoundException */
-    EstimatedLoadResult findScenarioProgramValue(int programId, int scenarioId, boolean blocking) throws GearNotFoundException;
+    EstimatedLoadResult findScenarioProgramValue(int programId, int scenarioId, boolean blocking);
 
     /** Retrieves an EstimatedLoadSummary object for a given LM control area.
      * This includes estimated load fields: connected load, diversified load, and kW savings max/now.

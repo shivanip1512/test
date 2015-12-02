@@ -126,14 +126,19 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
     }
 
     @Override
-    public EstimatedLoadResult findScenarioProgramValue(final int programId, final int scenarioId, boolean blocking) throws GearNotFoundException {
+    public EstimatedLoadResult findScenarioProgramValue(final int programId, final int scenarioId, boolean blocking) {
         Map<Integer, ScenarioProgram> scenarioPrograms = scenarioDao.findScenarioProgramsForScenario(scenarioId);
         ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
         if(scenarioProgram == null)
         {
-            throw new GearNotFoundException(scenarioId, scenarioId);
+            return new LmDataNotFoundException(scenarioId);
         }
-        int gearId = estimatedLoadDao.getGearIdForProgramAndGearNumber(programId, scenarioProgram.getStartGear());
+        int gearId;
+        try {
+            gearId = estimatedLoadDao.getGearIdForProgramAndGearNumber(programId, scenarioProgram.getStartGear());
+        } catch (GearNotFoundException e) {
+            return e;
+        }
         return getProgramValue(programId, gearId, blocking);
     }
 
