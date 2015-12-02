@@ -56,7 +56,7 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
 
         if( !deviceConfig )
         {
-            return ClientErrors::NoConfigData;
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
         const auto configItems = getDisplayConfigItems(deviceConfig);
@@ -89,13 +89,13 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \"" << getName() << "\"");
 
-        return ClientErrors::InvalidConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
     catch( const MissingConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
-
-        return ClientErrors::NoConfigData;
+ 
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 }
 

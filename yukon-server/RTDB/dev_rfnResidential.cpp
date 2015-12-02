@@ -112,13 +112,14 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
                                                                     ReturnMsgList     & returnMsgs,
                                                                     RfnCommandList    & rfnRequests )
 {
+    YukonError_t ret = ClientErrors::ConfigCurrent;
     try
     {
         Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
         if( ! deviceConfig )
         {
-            return ClientErrors::NoConfigData;
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
         const unsigned char configFreezeDay               = getConfigData   <unsigned char> ( deviceConfig, Config::RfnStrings::demandFreezeDay );
@@ -133,24 +134,30 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
         // if this is verify only
         if( parse.isKeyValid("verify") )
         {
-            return ClientErrors::ConfigNotCurrent;
+            reportConfigMismatchDetails<unsigned char>( "Scheduled Demand Freeze Day",
+                configFreezeDay, paoFreezeDay,
+                pReq, returnMsgs );
+            ret = ClientErrors::ConfigNotCurrent;
+        }
+        else
+        {
+            rfnRequests.push_back( boost::make_shared<Commands::RfnDemandFreezeConfigurationCommand>( configFreezeDay ) );
+            ret = ClientErrors::None;
         }
 
-        rfnRequests.push_back( boost::make_shared<Commands::RfnDemandFreezeConfigurationCommand>( configFreezeDay ) );
-
-        return ClientErrors::None;
+        return ret;
     }
     catch( const MissingConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::NoConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
     catch( const InvalidConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::InvalidConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 }
 
@@ -424,7 +431,7 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
 
         if( ! deviceConfig )
         {
-            return ClientErrors::NoConfigData;
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
         const bool sendForced = parse.isKeyValid("force");
@@ -445,6 +452,16 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
         // if this is verify only
         if( parse.isKeyValid("verify") )
         {
+            if( !touScheduleMatches )
+            {
+                reportConfigMismatchDetails<void>( "TOU Schedule", pReq, returnMsgs );
+            }
+
+            if( !touEnableMatches )
+            {
+                reportConfigMismatchDetails<void>( "TOU Enable", pReq, returnMsgs );
+            }
+
             return ClientErrors::ConfigNotCurrent;
         }
 
@@ -573,7 +590,7 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::NoConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 }
 
@@ -728,7 +745,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
 
         if( ! deviceConfig )
         {
-            return ClientErrors::NoConfigData;
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
         const std::string configDisconnectMode               = getConfigData   <std::string> ( deviceConfig, Config::RfnStrings::DisconnectMode );
@@ -839,13 +856,13 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::NoConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
     catch( const InvalidConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::InvalidConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 }
 

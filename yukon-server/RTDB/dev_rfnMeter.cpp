@@ -197,7 +197,7 @@ void RfnMeterDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandP
         {
             case ClientErrors::NoConfigData:
             {
-                result = "ERROR: Invalid config data. Config name:" + configPart;
+                result = "ERROR: Device had no configuration for config:" + configPart;
 
                 CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - had no configuration for config: "<< configPart);
 
@@ -207,7 +207,7 @@ void RfnMeterDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandP
             {
                 result = "Config " + configPart + " is current.";
 
-                nRet = ClientErrors::None; //This is an OK return! Note that nRet is no longer propogated!
+                nRet = ClientErrors::None; //This is an OK return! Note that nRet is no longer propagated!
 
                 break;
             }
@@ -378,12 +378,13 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
     typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
     typedef std::vector<unsigned long> PaoMetricIds;
 
+    YukonError_t ret = ClientErrors::ConfigCurrent;
     try
     {
         Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
         if( ! deviceConfig )
         {
-            return ClientErrors::NoConfigData;
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
         std::set<unsigned> midnightMetrics;
@@ -443,14 +444,18 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
 
             if( cfgMidnightMetrics != paoMidnightMetrics || parse.isKeyValid("force") )
             {
-                if( parse.isKeyValid("verify") )
+                if( parse.isKeyValid( "verify" ) )
                 {
-                    return ClientErrors::ConfigNotCurrent;
+                    reportConfigMismatchDetails<PaoMetricIds>( "Midnight Channel Metrics",
+                        cfgMidnightMetrics, paoMidnightMetrics,
+                        pReq, returnMsgs );
+                    ret = ClientErrors::ConfigNotCurrent;
                 }
-
-                rfnRequests.push_back(
-                        boost::make_shared<RfnSetChannelSelectionCommand>(
-                                midnightMetrics ));
+                else
+                {
+                    rfnRequests.push_back(
+                        boost::make_shared<RfnSetChannelSelectionCommand>( midnightMetrics ) );
+                }
             }
         }
 
@@ -473,36 +478,49 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
                 cfgReportingIntervalSeconds != paoReportingIntervalSeconds ||
                 parse.isKeyValid("force") )
             {
-                if( parse.isKeyValid("verify") )
+                if( parse.isKeyValid( "verify" ) )
                 {
-                    return ClientErrors::ConfigNotCurrent;
-                }
+                    if( cfgIntervalMetrics != paoIntervalMetrics )
+                    {
+                        reportConfigMismatchDetails<PaoMetricIds>( "Interval Channel Metrics",
+                            cfgIntervalMetrics, paoIntervalMetrics,
+                            pReq, returnMsgs );
 
-                rfnRequests.push_back( boost::make_shared<Commands::RfnChannelIntervalRecording::SetConfigurationCommand>(
+                        reportConfigMismatchDetails<unsigned>( "Channel Recording Interval (sec)",
+                            cfgRecordingIntervalSeconds, paoRecordingIntervalSeconds,
+                            pReq, returnMsgs );
+
+                        reportConfigMismatchDetails<unsigned>( "Channel Reporting Interval (sec)",
+                            cfgReportingIntervalSeconds, paoReportingIntervalSeconds,
+                            pReq, returnMsgs );
+
+                        ret = ClientErrors::ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnChannelIntervalRecording::SetConfigurationCommand>(
                         intervalMetrics,
                         cfgRecordingIntervalSeconds,
-                        cfgReportingIntervalSeconds));
+                        cfgReportingIntervalSeconds ) );
+                    ret = ClientErrors::None;
+                }
             }
         }
 
-        if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
-        {
-            return ClientErrors::ConfigCurrent;
-        }
-
-        return ClientErrors::None;
+        return ret;
     }
     catch( const MissingConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::NoConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
     catch( const InvalidConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::InvalidConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 }
 
@@ -522,13 +540,14 @@ YukonError_t RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * p
     using Commands::RfnTemperatureAlarmCommand;
     using Commands::RfnSetTemperatureAlarmConfigurationCommand;
 
+    YukonError_t ret = ClientErrors::ConfigCurrent;
     try
     {
         Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
         if ( ! deviceConfig )
         {
-            return ClientErrors::NoConfigData;
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
         if ( hasDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported ) )
@@ -561,30 +580,44 @@ YukonError_t RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * p
         {
             if ( parse.isKeyValid("verify") )
             {
-                return ClientErrors::ConfigNotCurrent;
+                reportConfigMismatchDetails<>( "Temperature Alarm Enabled",
+                    configuration.alarmEnabled, paoAlarmEnabled,
+                    pReq, returnMsgs );
+
+                reportConfigMismatchDetails<>( "Temperature Alarm Repeat Interval",
+                    configuration.alarmRepeatInterval, paoAlarmRepeatInterval,
+                    pReq, returnMsgs );
+
+                reportConfigMismatchDetails<>( "Temperature Alarm Repeat Count",
+                    configuration.alarmRepeatCount, paoAlarmRepeatCount,
+                    pReq, returnMsgs );
+
+                reportConfigMismatchDetails<>( "High Temperature Threshold",
+                    configuration.alarmHighTempThreshold, paoAlarmThreshold,
+                    pReq, returnMsgs );
+
+                ret = ClientErrors::ConfigNotCurrent;
             }
-
-            rfnRequests.push_back( boost::make_shared<RfnSetTemperatureAlarmConfigurationCommand>( configuration ) );
+            else
+            {
+                rfnRequests.push_back( boost::make_shared<RfnSetTemperatureAlarmConfigurationCommand>( configuration ) );
+                ret = ClientErrors::None;
+            }
         }
 
-        if ( ! parse.isKeyValid("force") && rfnRequests.empty() )
-        {
-            return ClientErrors::ConfigCurrent;
-        }
-
-        return ClientErrors::None;
+        return ret;
     }
     catch ( const MissingConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::NoConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
     catch ( const InvalidConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::InvalidConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 }
 

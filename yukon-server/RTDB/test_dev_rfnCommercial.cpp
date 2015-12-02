@@ -351,9 +351,9 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
             ;
 
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(false) )    // no config data                   -> 2 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true) )     // add temperature alarming config  -> 1 error message + 1 config sent message
-            ( list_of<bool>(true) )           // add channel config               -> 2 config sent message
+            ( list_of<bool>(true)(true)(true)(false) ) // no config data             -> 4 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true) )  // add temperature alarming config  -> 3 error message + 1 config sent message
+            ( list_of<bool>(true) )              // add channel config               -> 1 config sent message
             ;
 
     std::vector<int> requestMsgsRcv;

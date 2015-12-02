@@ -19,7 +19,6 @@ public:
     RfnDevice() {};
 
     typedef std::vector<Commands::RfnCommandSPtr> RfnCommandList;
-    typedef boost::ptr_deque<CtiReturnMsg> ReturnMsgList;
 
     YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 

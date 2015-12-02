@@ -18,6 +18,7 @@
 #include "exceptions.h"
 #include "prot_base.h"
 #include "desolvers.h"
+#include "config_exceptions.h"
 
 using namespace std;
 
@@ -2136,3 +2137,67 @@ void CtiDeviceSingle::returnErrorMessage( int retval, OUTMESS *&om, CtiMessageLi
     delete om;
     om = NULL;
 }
+
+/**
+* Report a configuration error to the client.
+*
+ * @param errcode Yukon error code
+ * @param msg message provided by the command processor
+ * @param pReg pointer to Request Message
+ * @param returnMsgs list of messages to return to the client.
+ */
+YukonError_t CtiDeviceSingle::reportConfigErrorDetails( 
+    const YukonError_t errcode, 
+    std::string msg, 
+    CtiRequestMsg *pReq, 
+    CtiDeviceSingle::ReturnMsgList &returnMsgs )
+{
+    std::auto_ptr<CtiReturnMsg> retMsg(
+        new CtiReturnMsg(
+        pReq->DeviceId(),
+        pReq->CommandString(),
+        msg,
+        errcode,
+        0,
+        MacroOffset::none,
+        0,
+        pReq->GroupMessageId(),
+        pReq->UserMessageId() ) );
+
+    returnMsgs.push_back( retMsg );
+
+    return errcode;
+}
+
+/**
+* Report a configuration error to the client.
+*
+* @param ex Invalid Configuration Data Exception
+* @param msg message provided by the command processor
+* @param pReg pointer to Request Message
+* @param returnMsgs list of messages to return to the client.
+*/
+YukonError_t CtiDeviceSingle::reportConfigErrorDetails( 
+    const Cti::Devices::InvalidConfigDataException &ex, 
+    CtiRequestMsg *pReq, 
+    CtiDeviceSingle::ReturnMsgList &returnMsgs )
+{
+    return reportConfigErrorDetails( ClientErrors::InvalidConfigData, Cti::Logging::getExceptionCause( ex ), pReq, returnMsgs );
+}
+
+/**
+* Report a configuration error to the client.
+*
+* @param ex Missing Config DataException
+* @param msg message provided by the command processor
+* @param pReg pointer to Request Message
+* @param returnMsgs list of messages to return to the client.
+*/
+YukonError_t CtiDeviceSingle::reportConfigErrorDetails( 
+    const Cti::Devices::MissingConfigDataException &ex, 
+    CtiRequestMsg *pReq, 
+    CtiDeviceSingle::ReturnMsgList &returnMsgs )
+{
+    return reportConfigErrorDetails( ClientErrors::NoConfigData, Cti::Logging::getExceptionCause( ex ), pReq, returnMsgs );
+}
+

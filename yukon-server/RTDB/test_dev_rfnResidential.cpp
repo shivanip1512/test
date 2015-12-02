@@ -14,6 +14,11 @@ struct test_RfnResidentialDevice : RfnResidentialDevice
 {
     using RfnResidentialDevice::handleCommandResult;
     using CtiTblPAOLite::_type;
+
+    test_RfnResidentialDevice()
+    {
+        _name= "test";
+    }
 };
 
 struct test_state_rfnResidential
@@ -500,11 +505,19 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
             BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
-            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
+            BOOST_REQUIRE_EQUAL( 3, returnMsgs.size()  );
 
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            auto returnMsgItr = returnMsgs.begin();
+            CtiReturnMsg &returnMsg = *returnMsgItr;
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Schedule did not match." );
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+            returnMsg = *( ++returnMsgItr );
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Enable did not match." );
+
+            returnMsg = *( ++returnMsgItr );
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
         }
 
@@ -705,11 +718,19 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
             BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
-            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
+            BOOST_REQUIRE_EQUAL( 3, returnMsgs.size()  );
 
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            auto returnMsgItr = returnMsgs.begin();
+            CtiReturnMsg &returnMsg = *returnMsgItr;
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Schedule did not match." );
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
+            returnMsg = *( ++returnMsgItr );
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Enable did not match." );
+
+            returnMsg = *( ++returnMsgItr );
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
         }
 
@@ -1164,14 +1185,19 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_disconnect_inval
         CtiCommandParser parse("putconfig install disconnect");
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            auto returnMsgItr = returnMsgs.begin();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::NoConfigData );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: Invalid config data. Config name:disconnect" );
+            CtiReturnMsg &returnMsg = *returnMsgItr;
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::NoConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Missing data for config key \"disconnectMode\"." );
+
+            returnMsg = *( ++returnMsgItr );
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::NoConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: Device had no configuration for config:disconnect" );
         }
 
     }
@@ -1189,13 +1215,17 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_disconnect_inval
         CtiCommandParser parse("putconfig install disconnect");
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            auto returnMsgItr = returnMsgs.begin();
+            CtiReturnMsg &returnMsg = *returnMsgItr;
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::InvalidConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid data for config key \"disconnectMode\" : invalid value NOT_A_DISCONNECT_MODE, expected [CYCLING; DEMAND_THRESHOLD; ON_DEMAND]." );
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::InvalidConfigData );
+            returnMsg = *( ++returnMsgItr );
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::InvalidConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:disconnect" );
         }
     }
@@ -1758,10 +1788,12 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_device )
             ;
 
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(false) )              // no config data                   -> 4 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true) )               // add demand freeze day config     -> 3 error messages
-            ( list_of<bool>(true)(true)(true) )                     // add TOU config                   -> 2 error messages
-            ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages
+            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true)(false) )
+                                                                    // no config data                   -> 8 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true) )
+                                                                    // add demand freeze day config     -> 7 error messages
+            ( list_of<bool>(true)(true)(true)(true)(true) )         // add TOU config                   -> 5 error messages
+            ( list_of<bool>(true)(true)(true) )                     // add temperature alarming config  -> 3 error messages
             ( list_of<bool>(true) )                                 // add channel config               -> config sent successfully
             ;
 
@@ -2223,11 +2255,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_disconnect_m
 
 
     const std::vector< std::vector<bool> > returnExpectMoreExp = list_of< std::vector<bool> >
-            ( list_of<bool>(true)(true)(true)(true)(false) )                // no config data                   -> 5 error messages, NOTE: last expectMore expected to be false
-            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add remote disconnect config     -> 4 error messages
-            ( list_of<bool>(true)(true)(true)(true) )                       // add demand freeze day config     -> 3 error messages
-            ( list_of<bool>(true)(true)(true) )                             // add TOU config                   -> 2 error messages
-            ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages
+            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true)(true)(true)(false) )
+                                                                            // no config data                   -> 10 error messages, NOTE: last expectMore expected to be false
+            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true)(true)(true) )
+                                                                            // add remote disconnect config     -> 9 error messages
+            ( list_of<bool>(true)(true)(true)(true)(true)(true)(true) )     // add demand freeze day config     -> 7 error messages
+            ( list_of<bool>(true)(true)(true)(true)(true) )                 // add TOU config                   -> 5 error messages
+            ( list_of<bool>(true)(true)(true) )                             // add temperature alarming config  -> 3 error messages
             ( list_of<bool>(true) )                                         // add channel config               -> config sent successfully
             ;
 
@@ -2238,15 +2272,19 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_disconnect_m
 
     ////// empty configuration (no valid configuration) //////
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
     std::vector<bool> expectMoreRcv;
     for each( const CtiReturnMsg &m in returnMsgs )
     {
+        BOOST_TEST_MESSAGE( std::to_string( m.ExpectMore() ) << ": " << m.ResultString() );
         expectMoreRcv.push_back( m.ExpectMore() );
     }
+    BOOST_TEST_MESSAGE("");
     returnExpectMoreRcv.push_back( expectMoreRcv );
 
     ////// add each configuration //////
@@ -2261,16 +2299,20 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_disconnect_m
                 Cti::Config::Category::ConstructCategory(
                         category.first,
                         category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
-        std::vector<bool> expectMoreRcv;
+            std::vector<bool> expectMoreRcv;
         for each( const CtiReturnMsg &m in returnMsgs )
         {
+            BOOST_TEST_MESSAGE( std::to_string( m.ExpectMore() ) << ": " << m.ResultString() );
             expectMoreRcv.push_back( m.ExpectMore() );
         }
+        BOOST_TEST_MESSAGE( "" );
         returnExpectMoreRcv.push_back( expectMoreRcv );
     }
 

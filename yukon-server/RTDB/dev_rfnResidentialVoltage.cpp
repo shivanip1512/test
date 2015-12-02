@@ -143,7 +143,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterv
 
     if( ! deviceConfig )
     {
-        return ClientErrors::NoConfigData;
+        return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
     }
 
     struct IntervalSettings
@@ -168,13 +168,13 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterv
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \"" << getName() << "\"");
 
-        return ClientErrors::InvalidConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
     catch( const MissingConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \"" << getName() << "\"");
 
-        return ClientErrors::NoConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 
     {
@@ -204,17 +204,27 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterv
     }
     else
     {
-        if( parse.isKeyValid("verify") )
+        if( parse.isKeyValid( "verify" ) )
         {
+            reportConfigMismatchDetails<>( "Voltage Averaging Interval",
+                configSettings.voltageAveragingInterval.get(), paoSettings.voltageAveragingInterval,
+                pReq, returnMsgs );
+
+            reportConfigMismatchDetails<>( "Voltage Data Streaming Interval",
+                configSettings.voltageDataStreamingInterval.get(), paoSettings.voltageDataStreamingInterval,
+                pReq, returnMsgs );
+
             return ClientErrors::ConfigNotCurrent;
         }
+        else
+        {
+            rfnRequests.push_back(
+                boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>(
+                *configSettings.voltageAveragingInterval,
+                *configSettings.voltageDataStreamingInterval ) );
+            return ClientErrors::None;
+        }
     }
-
-    rfnRequests.push_back(
-            boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>(
-                    *configSettings.voltageAveragingInterval,
-                    *configSettings.voltageDataStreamingInterval));
-
     return ClientErrors::None;
 }
 
@@ -260,13 +270,14 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
     using Commands::RfnSetOvUvSetOverVoltageThresholdCommand;
     using Commands::RfnSetOvUvSetUnderVoltageThresholdCommand;
 
+    YukonError_t ret = ClientErrors::ConfigCurrent;
     try
     {
         Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
         if( ! deviceConfig )
         {
-            return ClientErrors::NoConfigData;
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
         {
@@ -277,14 +288,20 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ClientErrors::ConfigNotCurrent;
+                    reportConfigMismatchDetails<bool>( "OV/UV Enabled", 
+                        configOvUvEnabled, paoOvUvEnabled,
+                        pReq, returnMsgs );
+                    ret = ClientErrors::ConfigNotCurrent;
                 }
+                else
+                {
+                    RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = configOvUvEnabled
+                        ? RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
+                        : RfnSetOvUvAlarmProcessingStateCommand::DisableOvUv;
 
-                RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = configOvUvEnabled
-                      ? RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
-                      : RfnSetOvUvAlarmProcessingStateCommand::DisableOvUv;
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmProcessingStateCommand>( state ) );
+                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmProcessingStateCommand>( state ) );
+                    ret = ClientErrors::None;
+                }
             }
         }
 
@@ -296,10 +313,16 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ClientErrors::ConfigNotCurrent;
+                    reportConfigMismatchDetails<unsigned>( "Alarm Reporting Interval",
+                        configOvUvReportingInterval, paoOvUvReportingInterval,
+                        pReq, returnMsgs );
+                    ret = ClientErrors::ConfigNotCurrent;
                 }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvNewAlarmReportIntervalCommand>( configOvUvReportingInterval ) );
+                else
+                {
+                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvNewAlarmReportIntervalCommand>( configOvUvReportingInterval ) );
+                    ret = ClientErrors::None;
+                }
             }
         }
 
@@ -311,10 +334,16 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
              {
                  if( parse.isKeyValid("verify") )
                  {
-                     return ClientErrors::ConfigNotCurrent;
+                     reportConfigMismatchDetails<unsigned>( "Alarm Repeat Interval",
+                         configOvUvRepeatInterval, paoOvUvRepeatInterval,
+                         pReq, returnMsgs );
+                     ret = ClientErrors::ConfigNotCurrent;
                  }
-
-                 rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatIntervalCommand>( configOvUvRepeatInterval ) );
+                 else
+                 {
+                     rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatIntervalCommand>( configOvUvRepeatInterval ) );
+                     ret = ClientErrors::None;
+                 }
              }
         }
 
@@ -326,10 +355,16 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ClientErrors::ConfigNotCurrent;
+                    reportConfigMismatchDetails<unsigned>( "OV/UV Alarm Repeat Count",
+                        configOvUvRepeatCount, paoOvUvRepeatCount,
+                        pReq, returnMsgs );
+                    ret = ClientErrors::ConfigNotCurrent;
                 }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatCountCommand>( configOvUvRepeatCount ) );
+                else
+                {
+                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatCountCommand>( configOvUvRepeatCount ) );
+                    ret = ClientErrors::None;
+                }
             }
         }
 
@@ -344,10 +379,16 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ClientErrors::ConfigNotCurrent;
+                    reportConfigMismatchDetails<double>( "Over Voltage Threshold",
+                        configOvThreshold, paoOvThreshold,
+                        pReq, returnMsgs );
+                    ret = ClientErrors::ConfigNotCurrent;
                 }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, configOvThreshold ) );
+                else
+                {
+                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, configOvThreshold ) );
+                    ret = ClientErrors::None;
+                }
             }
         }
 
@@ -359,31 +400,32 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ClientErrors::ConfigNotCurrent;
+                    reportConfigMismatchDetails<double>( "Under Voltage Threshold",
+                        configUvThreshold, paoUvThreshold,
+                        pReq, returnMsgs );
+                    ret = ClientErrors::ConfigNotCurrent;
                 }
-
-                rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, configUvThreshold ) );
+                else
+                {
+                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, configUvThreshold ) );
+                    ret = ClientErrors::None;
+                }
             }
         }
 
-        if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
-        {
-            return ClientErrors::ConfigCurrent;
-        }
-
-        return ClientErrors::None;
+        return ret;
     }
     catch( const MissingConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::NoConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
     catch( const InvalidConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::InvalidConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 }
 
@@ -466,7 +508,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigPermanentVoltageProfil
 
         if( ! deviceConfig )
         {
-            return ClientErrors::NoConfigData;
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
         {
@@ -500,13 +542,13 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigPermanentVoltageProfil
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::NoConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
     catch( const InvalidConfigDataException &e )
     {
         CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-        return ClientErrors::InvalidConfigData;
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 }
 

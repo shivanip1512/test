@@ -361,14 +361,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_inva
         CtiCommandParser parse("putconfig install ovuv");
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         {
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::NoConfigData );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: Invalid config data. Config name:ovuv" );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Missing data for config key \"ovuvEnabled\"." );
         }
     }
 
@@ -389,14 +389,15 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_inva
         CtiCommandParser parse("putconfig install ovuv");
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 3, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
         {
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::InvalidConfigData );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:ovuv" );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), 
+                "Invalid data for config key \"alarmRepeatInterval\" : invalid value -60 is out of range, expected [0 - 4294967295]." );
         }
     }
 }
@@ -544,12 +545,15 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
 
     const std::vector< std::vector<bool> > returnExpectMoreExp
     {
-        { true, true, true, true, true, false },    // no config data                   -> 6 error messages, NOTE: last expectMore expected to be false
-        { true, true, true, true, true, true },     // add demand freeze day config     -> 5 error messages
-        { true, true, true, true, true },           // add OVUV config                  -> 4 error messages
-        { true, true, true, true },                 // add TOU config                   -> 3 error messages
-        { true, true, true },                       // add temperature alarming config  -> 2 error messages
-        { true }                                    // add channel config               -> config sent successfully
+        { true, true, true, true, true, true, true, true, true, true, true, false }, 
+                                                             // no config data -> 12 error messages, NOTE: last expectMore expected to be false
+        { true, true, true, true, true, true, true, true, true, true, true },        
+                                                             // add demand freeze day config     -> 11 error messages
+        { true, true, true, true, true, true, true, true, true },              
+                                                             // add OVUV config                  -> 9 error messages
+        { true, true, true, true, true, true, true },        // add TOU config                   -> 7 error messages
+        { true, true, true, true, true },                    // add temperature alarming config  -> 5 error messages
+        { true }                                             // add channel config               -> config sent successfully
     };
 
     std::vector<int> requestMsgsRcv;
@@ -1039,13 +1043,16 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
 
     const std::vector< std::vector<bool> > returnExpectMoreExp
     {
-        { true, true, true, true, true, true, false },      // no config data                   -> 7 error messages, NOTE: last expectMore expected to be false
-        { true, true, true, true, true, true, true },       // add remote disconnect config     -> 6 error messages
-        { true, true, true, true, true, true },             // add demand freeze day config     -> 5 error messages
-        { true, true, true, true, true },                   // add OVUV config                  -> 4 error messages
-        { true, true, true, true },                         // add TOU config                   -> 3 error messages
-        { true, true, true },                               // add temperature alarming config  -> 2 error messages
-        { true }                                            // add channel config               -> config sent successfully
+        { true, true, true, true, true, true, true, true, true, true, true, true, true, false }, 
+                                                                   // no config data                  -> 14 error messages, NOTE: last expectMore expected to be false
+        { true, true, true, true, true, true, true, true, true, true, true, true, true },        
+                                                                   // add remote disconnect config    -> 13 error messages
+        { true, true, true, true, true, true, true, true, true, true, true },
+                                                                   // add demand freeze day config    -> 11 error messages
+        { true, true, true, true, true, true, true, true, true },  // add OVUV config                 -> 9 error messages
+        { true, true, true, true, true, true, true },              // add TOU config                  -> 7 error messages
+        { true, true, true, true, true },                          // add temperature alarming config -> 5 error messages
+        { true }                                                   // add channel config              -> config sent successfully
     };
 
     std::vector<int> requestMsgsRcv;

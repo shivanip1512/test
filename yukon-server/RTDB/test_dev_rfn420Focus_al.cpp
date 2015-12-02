@@ -179,13 +179,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Focus_al_putconfig_display_out_of_order_slo
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
     }
 
-    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
 
     {
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       284 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:display" );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Device \"\" - Invalid value (DELIVERED_KWH) seen after SLOT_DISABLED for config key \"displayItem2\"" );
     }
 
     BOOST_CHECK_EQUAL( 0, rfnRequests.size() );

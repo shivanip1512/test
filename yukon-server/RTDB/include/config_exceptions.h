@@ -39,7 +39,7 @@ public:
     InvalidConfigDataException( const std::string& key, const std::string& cause_ ) :
         configKey( key ),
         cause( cause_ ),
-        message( "Invalid data for config key \"" + key + "\" : " + cause_ + "\"." )
+        message( "Invalid data for config key \"" + key + "\" : " + cause_ + "." )
     {
     }
 
