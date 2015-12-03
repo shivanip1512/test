@@ -340,20 +340,25 @@ public interface RolePropertyDao {
      * 
      * If the user level is UPDATE and minLevel is LIMITED, UPDATE(3) <=  LIMITED(4) = true, the user is allowed access.
      * If the user level is LIMITED  and minLevel is UPDATE, LIMITED(4) <= UPDATE(3) = false, the user is not allowed access.
-     * @param level - minimum level that grants access
+     * @param property - property to check
+     * @param minLevel - minimum level that grants access
      * @param user
      * @return
      */
-    boolean checkLevel(HierarchyPermissionLevel level, LiteYukonUser user);
+    
+    boolean checkLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel, LiteYukonUser user);
 
     /**
      * Equivalent to calling checkProperty and returning if true, and throwing
      * a NotAuthorizedException if false.
      * 
-     * @param minLevel -
+     * 
+     * @param property - property to check
+     * @param minLevel - minimum level that grants access
      * @param user a valid user
      * @throws NotAuthorizedException
      */
-    void verifyLevel(HierarchyPermissionLevel minLevel, LiteYukonUser user) throws NotAuthorizedException;
 
+    void verifyLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel, LiteYukonUser user)
+            throws NotAuthorizedException;
 }

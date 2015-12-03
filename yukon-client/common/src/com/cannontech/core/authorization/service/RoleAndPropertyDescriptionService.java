@@ -103,7 +103,7 @@ public class RoleAndPropertyDescriptionService {
                 YukonRoleProperty property = YukonRoleProperty.valueOf(someEnumName);
                 UserChecker propertyChecker;
                 if (!StringUtils.isEmpty(level)) {
-                    propertyChecker = userCheckerFactory.createHeirarchicalLevelChecker(level);
+                    propertyChecker = userCheckerFactory.createHeirarchicalLevelChecker(property, level);
                 } else if (inverted) {
                     propertyChecker = userCheckerFactory.createFalsePropertyChecker(property);
                 } else {

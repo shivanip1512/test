@@ -25,12 +25,12 @@ public class RolePropertyUserCheckerFactory {
     @Autowired private EnergyCompanySettingDao energyCompanSettingDao;
     @Autowired private EnergyCompanyDao ecDao;
     
-    public UserChecker createHeirarchicalLevelChecker(String level) {
+    public UserChecker createHeirarchicalLevelChecker(YukonRoleProperty property, String level) {
         HierarchyPermissionLevel permissionLevel = HierarchyPermissionLevel.valueOf(level);
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                return rolePropertyDao.checkLevel(permissionLevel, user);
+                return rolePropertyDao.checkLevel(property, permissionLevel, user);
             };
             
             @Override

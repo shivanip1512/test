@@ -126,7 +126,7 @@ public class CommanderController {
                         LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
                         model.addAttribute("route", route);
                     }
-                    if(rolePropertyDao.checkLevel(HierarchyPermissionLevel.LIMITED, user)){
+                    if(rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user)){
                         model.addAttribute("changeRoute", true);
                     }
                 }
@@ -165,7 +165,7 @@ public class CommanderController {
             LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
             data.put("route", route);
         }
-        if(rolePropertyDao.checkLevel(HierarchyPermissionLevel.LIMITED, user)){
+        if(rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user)){
             data.put("changeRoute", true);
         }
         return data;
@@ -197,7 +197,7 @@ public class CommanderController {
     public @ResponseBody LiteYukonPAObject changeRoute(HttpServletResponse resp, ModelMap model, LiteYukonUser user,
             @PathVariable int paoId, @PathVariable int routeId) {
         
-        rolePropertyDao.verifyLevel(HierarchyPermissionLevel.LIMITED, user);
+        rolePropertyDao.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user);
         
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
         Map<Integer, LiteYukonPAObject> routes = cache.getAllRoutesMap();

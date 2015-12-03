@@ -211,10 +211,9 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
     
     @Override
-    public boolean checkLevel(HierarchyPermissionLevel minLevel, LiteYukonUser user) {
+    public boolean checkLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel, LiteYukonUser user) {
         try {
-            HierarchyPermissionLevel level = getPropertyEnumValue(YukonRoleProperty.ENDPOINT_PERMISSION,
-                HierarchyPermissionLevel.class, user);
+            HierarchyPermissionLevel level = getPropertyEnumValue(property, HierarchyPermissionLevel.class, user);
             return level.grantAccess(minLevel);
         } catch (UserNotInRoleException e) {
             return false;
@@ -540,8 +539,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
     
     @Override
-    public void verifyLevel(HierarchyPermissionLevel minLevel,  LiteYukonUser user) throws NotAuthorizedException {
-        if (!checkLevel(minLevel, user)) {
+    public void verifyLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel,  LiteYukonUser user) throws NotAuthorizedException {
+        if (!checkLevel(property, minLevel, user)) {
             throw NotAuthorizedException.hierarchicalProperty(user, minLevel);
         }
     }

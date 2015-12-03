@@ -32,50 +32,56 @@ public class YukonRolePropertyTest {
      */
     @Test
     public void checkOwnerAccessToUpdate() {
-        boolean hasAccess = rolePropertyDaoMock.checkLevel(HierarchyPermissionLevel.UPDATE, MockRolePropertyDaoImpl.LEVEL_OWNER_USER);
+        boolean hasAccess = rolePropertyDaoMock.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION,
+            HierarchyPermissionLevel.UPDATE, MockRolePropertyDaoImpl.LEVEL_OWNER_USER);
         assertEquals(true, hasAccess);
     }
-    
+
     /**
      * Verifies that user with an "UPDATE" level doesn't have access to "OWNER" functionality.
      */
     @Test
     public void checkUpdateAccessToOwner() {
-        boolean hasAccess = rolePropertyDaoMock.checkLevel(HierarchyPermissionLevel.OWNER, MockRolePropertyDaoImpl.LEVEL_UPDATE_USER);
+        boolean hasAccess = rolePropertyDaoMock.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION,
+            HierarchyPermissionLevel.OWNER, MockRolePropertyDaoImpl.LEVEL_UPDATE_USER);
         assertEquals(false, hasAccess);
     }
-    
+
     /**
      * Verifies that user with an "RESTRICTED" level doesn't have access to "UPDATED" functionality.
      */
     @Test
     public void checkRestrictedAccessToUpdate() {
-        boolean hasAccess = rolePropertyDaoMock.checkLevel(HierarchyPermissionLevel.UPDATE, MockRolePropertyDaoImpl.LEVEL_RESTRICTED_USER);
+        boolean hasAccess = rolePropertyDaoMock.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION,
+            HierarchyPermissionLevel.UPDATE, MockRolePropertyDaoImpl.LEVEL_RESTRICTED_USER);
         assertEquals(false, hasAccess);
     }
-    
+
     /**
      * Verifies that user that with no Hierarchy Permission role property has no access.
      */
-    @Test(expected=NotAuthorizedException.class)
+    @Test(expected = NotAuthorizedException.class)
     public void checkNotInRole() {
-        rolePropertyDaoMock.verifyLevel(HierarchyPermissionLevel.RESTRICTED, MockRolePropertyDaoImpl.LEVEL_UNKNOWN_USER);
+        rolePropertyDaoMock.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.RESTRICTED,
+            MockRolePropertyDaoImpl.LEVEL_UNKNOWN_USER);
     }
-    
+
     /**
      * Verifies that user with an "RESTRICTED" level doesn't have access to "UPDATE" functionality.
      */
-   @Test(expected=NotAuthorizedException.class)
-   public void verifyRestrictedAccessToUpdate() {
-       rolePropertyDaoMock.verifyLevel(HierarchyPermissionLevel.UPDATE, MockRolePropertyDaoImpl.LEVEL_RESTRICTED_USER);
-   }
-   
-   /**
-    * Verifies that user with an "OWNER" level has access to "UPDATE" functionality.
-    */
-   public void verifyOwnerAccessToUpdate() {
-       rolePropertyDaoMock.verifyLevel(HierarchyPermissionLevel.UPDATE, MockRolePropertyDaoImpl.LEVEL_OWNER_USER);
-   }
+    @Test(expected = NotAuthorizedException.class)
+    public void verifyRestrictedAccessToUpdate() {
+        rolePropertyDaoMock.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE,
+            MockRolePropertyDaoImpl.LEVEL_RESTRICTED_USER);
+    }
+
+    /**
+     * Verifies that user with an "OWNER" level has access to "UPDATE" functionality.
+     */
+    public void verifyOwnerAccessToUpdate() {
+        rolePropertyDaoMock.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE,
+            MockRolePropertyDaoImpl.LEVEL_OWNER_USER);
+    }
    
     @Test
     public void checkNameForCollisions() {

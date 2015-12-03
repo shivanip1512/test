@@ -138,12 +138,13 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
     }
 
     @Override
-    public boolean checkLevel(HierarchyPermissionLevel level, LiteYukonUser user) {
+    public boolean checkLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel, LiteYukonUser user) {
         throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public void verifyLevel(HierarchyPermissionLevel minLevel, LiteYukonUser user){
-        throw new UnsupportedOperationException("not implemented");    
+    public void verifyLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel, LiteYukonUser user)
+            throws NotAuthorizedException {
+        throw new UnsupportedOperationException("not implemented");  
     }
 }

@@ -13,14 +13,15 @@
 <%@ attribute name="path" required="true" %>
 <%@ attribute name="rowClass" rtexprvalue="true" %>
 <%@ attribute name="size" %>
+<%@ attribute name="property" %>
 <%@ attribute name="minPermissionLevel" %>
 
 <tags:nameValue2 nameKey="${nameKey}" labelForId="${path}" rowClass="${rowClass}" nameClass="${nameClass}" 
         valueClass="${valueClass}">
         
     <c:set var="disable" value="${pageScope.disabled}"/>
-    <c:if test="${!disable && !empty minPermissionLevel}">
-        <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="${minPermissionLevel}">
+    <c:if test="${!disable && !empty property && !empty minPermissionLevel}">
+        <cti:checkRolesAndProperties value="${property}" level="${minPermissionLevel}">
              <c:set var="hasAccess" value="true"/>
         </cti:checkRolesAndProperties>
          <c:if test="${!hasAccess}">

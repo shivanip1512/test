@@ -41,6 +41,7 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -219,8 +220,8 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     public String editPlc(HttpServletResponse resp, ModelMap model, FlashScope flash,
             @ModelAttribute("meter") PlcMeterModel meter, BindingResult result,  LiteYukonUser user) throws IOException {
         
-        rolePropertyDao.verifyLevel(HierarchyPermissionLevel.LIMITED, user);
-        if (!rolePropertyDao.checkLevel(HierarchyPermissionLevel.UPDATE, user)) {
+        rolePropertyDao.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user);
+        if (!rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE, user)) {
             PlcMeter originalMeter = meterDao.getPlcMeterForId(meter.getDeviceId());
             meter.setMeterNumber(originalMeter.getMeterNumber());
             meter.setAddress(Integer.parseInt(originalMeter.getAddress()));
@@ -261,8 +262,8 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     public String editRf(HttpServletResponse resp, ModelMap model, FlashScope flash, YukonUserContext userContext,
             @ModelAttribute("meter") RfMeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
         
-        rolePropertyDao.verifyLevel(HierarchyPermissionLevel.LIMITED, user);
-        if (!rolePropertyDao.checkLevel(HierarchyPermissionLevel.UPDATE, user)) {
+        rolePropertyDao.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user);
+        if (!rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE, user)) {
             RfnMeter originalMeter = meterDao.getRfnMeterForId(meter.getDeviceId());
             meter.setMeterNumber(originalMeter.getMeterNumber());
             meter.setManufacturer(originalMeter.getRfnIdentifier().getSensorManufacturer());
@@ -311,8 +312,8 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     public String editIed(HttpServletResponse resp, ModelMap model, FlashScope flash,
             @ModelAttribute("meter") MeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
  
-        rolePropertyDao.verifyLevel(HierarchyPermissionLevel.LIMITED, user);
-        if (!rolePropertyDao.checkLevel(HierarchyPermissionLevel.UPDATE, user)) {
+        rolePropertyDao.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user);
+        if (!rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE, user)) {
             YukonMeter originalMeter = meterDao.getForId(meter.getDeviceId());
             meter.setMeterNumber(originalMeter.getMeterNumber());
             meter.setName(originalMeter.getName());
