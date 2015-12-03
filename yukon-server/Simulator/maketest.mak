@@ -92,6 +92,8 @@ test_simulator.exe:    $(SIMULATOR_TEST_FULLBUILD) $(SIMULATOR_TEST_OBJS) Makefi
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
+	-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	-copy $(BIN)\$(@B).pdb $(YUKONDEBUG)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
 	@%cd $(CWD)

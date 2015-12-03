@@ -41,6 +41,8 @@ service.dll:  $(DLLOBJS) Makedll.mak $(OBJ)\service.res
               $(CC) /Gd $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) /Fe..\$@ service.res
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+	      -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	      -if exist ..\bin\$(@B).pdb copy ..\bin\$(@B).pdb $(YUKONDEBUG)
               -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
               -@if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
               @%cd $(CWD)
@@ -48,6 +50,8 @@ service.dll:  $(DLLOBJS) Makedll.mak $(OBJ)\service.res
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -if exist bin\service.dll copy bin\service.dll $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+           -if exist bin\service.pdb copy bin\service.pdb $(YUKONDEBUG)
            -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
            -if exist bin\service.lib copy bin\service.lib $(COMPILEBASE)\lib
 

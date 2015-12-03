@@ -168,6 +168,8 @@ capcontrol.exe: $(CAPCONTROL_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\capcontrol.r
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+	      -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+              -if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
               @%cd $(CWD)
               @echo Done building Target ..\$@
               @echo:
@@ -175,6 +177,8 @@ capcontrol.exe: $(CAPCONTROL_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\capcontrol.r
 copy:       $(TARGS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+           -if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 deps:
                 scandeps -Output makeexe.mak *.cpp

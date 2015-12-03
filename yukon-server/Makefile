@@ -59,5 +59,8 @@ clean:
         %cd $(COMPILEBASE)\bin
         -del *.dll *.lib *.exe *.xml *.tcl
         -del $(COMPILEBASE)\bin\unittests\*.xml
+        -mkdir $(COMPILEBASE)\debug
+        %cd $(COMPILEBASE)\debug
+        -del *.pdb
         %cd $(CWD)
 

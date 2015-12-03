@@ -66,18 +66,22 @@ portglob.dll:  $(PORTER_DLL_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\portglob.re
                $(CC) $(CCOPTS) $(DLLFLAGS) $(DLLOBJS) id_pgdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(BOOST_LIBS) portglob.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
 
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist bin\portglob.dll copy bin\portglob.dll $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -if exist bin\portglob.pdb copy bin\portglob.pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist bin\portglob.lib copy bin\portglob.lib $(COMPILEBASE)\lib
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.pdb
 
 deps:
                 scandeps -Output makedll.mak *.cpp

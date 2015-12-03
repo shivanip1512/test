@@ -90,6 +90,8 @@ dispatch.exe:   $(VGOBJS) makeexe.mak $(OBJ)\dispatch.res
 $(VGOBJS) id_vg.obj -link $(BOOST_LIBS) $(VGLIBS) dispatch.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @%cd $(CWD)
 
 
@@ -101,6 +103,8 @@ sigsinktest.exe: $(SIGTESTOBJS) makeexe.mak $(OBJ)\sigsinktest.res
 $(SIGTESTOBJS) -link $(BOOST_LIBS) $(TESTLIBS) sigsinktest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @%cd $(CWD)
 
 poker.exe: $(PORTERPOKE) makeexe.mak $(OBJ)\poker.res
@@ -111,6 +115,8 @@ poker.exe: $(PORTERPOKE) makeexe.mak $(OBJ)\poker.res
 $(PORTERPOKE) -link $(BOOST_LIBS) $(TESTLIBS) poker.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @%cd $(CWD)
 
 
@@ -122,11 +128,15 @@ sigsrctest.exe: $(SIGSRCTESTOBJS) makeexe.mak $(OBJ)\sigsrctest.res
 $(SIGSRCTESTOBJS) -link $(BOOST_LIBS) $(TESTLIBS) sigsrctest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @%cd $(CWD)
 
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 deps:
@@ -142,6 +152,7 @@ clean:
         -del *.adb
         -del *.ilk
         -del *.exe
+        -del *.pdb
 
 
 ########################### Conversions ##############################

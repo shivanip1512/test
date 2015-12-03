@@ -137,6 +137,8 @@ porter.exe:     $(PORTER_EXE_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\porter.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\$(@B).pdb $(YUKONDEBUG)
                 @echo Done building Target ..\$@
                 @echo:
                 @%cd $(CWD)
@@ -147,11 +149,15 @@ traceset.exe:   traceset.obj
 $(TRACESET_OBJS) -link $(LIBS) $(COMPILEBASE)\lib\portglob.lib
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\$(@B).pdb $(YUKONDEBUG)
                 @%cd $(CWD)
 
 copy:           $(EXECS)
                -if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 clean:
@@ -161,6 +167,7 @@ clean:
                 -del *.pdb
                 -del *.lib
                 -del *.exp
+                -del *.pdb
 
 .cpp.obj:
                 @echo:

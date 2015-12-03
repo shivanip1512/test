@@ -85,6 +85,8 @@ ctivg.dll:      $(DISPATCH_VG_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\ctivg.res
                 $(CC) $(DLLFLAGS) $(DLLOBJS) id_vgdll.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIVGLIBS) /Fe..\$@ ctivg.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		-if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -92,12 +94,14 @@ ctivg.dll:      $(DISPATCH_VG_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\ctivg.res
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist bin\ctivg.dll copy bin\ctivg.dll $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+                -if exist bin\ctivg.pdb copy bin\ctivg.pdb $(YUKONDEBUG)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist bin\ctivg.lib copy bin\ctivg.lib $(COMPILEBASE)\lib
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.pdb
 
 
 deps:

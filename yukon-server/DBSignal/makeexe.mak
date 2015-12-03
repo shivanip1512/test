@@ -52,12 +52,16 @@ $(BASEOBJS) -link $(LIBS) $(BOOST_LIBS) $(TABLETESTLIBS) sigsend.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @echo Done building Target ..\$@
                 @%cd $(CWD)
 
 copy:           $(EXECS)
                -if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               -@if exist *.exe copy *.exe $(YUKONOUTPUT)
+               -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 clean:

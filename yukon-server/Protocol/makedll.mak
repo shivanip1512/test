@@ -183,6 +183,8 @@ ctiprot.dll:   $(PROTOCOL_FULLBUILD) $(OBJS) Makefile $(OBJ)\ctiprot.res
                 $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctiprot.obj -link $(PROTLIBS) $(BOOST_LIBS) ctiprot.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @echo:
@@ -204,6 +206,8 @@ saprotocol.dll:
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist bin\*.dll copy bin\*.dll $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist bin\*.lib copy bin\*.lib $(COMPILEBASE)\lib
 
@@ -222,7 +226,8 @@ $(BIN)\*.ilk \
 $(BIN)\*.exp \
 $(BIN)\*.lib \
 $(BIN)\*.dll \
-$(BIN)\*.exe
+$(BIN)\*.exe \
+$(BIN)\*.pdb
 
 # The lines below accomplish the ID'ing of the project!
 id:

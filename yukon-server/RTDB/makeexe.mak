@@ -69,6 +69,8 @@ $(RTPTTESTOBJS) \
 -link $(COMPILEBASE)\lib\ctisvr.lib rtpttest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @echo:
                 @echo Done building Target ..\$@
                 @echo:
@@ -82,6 +84,8 @@ memtest.exe:    $(MEMTESTOBJS) makeexe.mak $(OBJ)\memtest.res
 -link $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) memtest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @echo:
                 @echo Done building Target ..\$@
                 @echo:
@@ -95,6 +99,8 @@ routetest.exe:   $(RTESTOBJS) makeexe.mak $(OBJ)\routetest.res
 -link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(BOOST_LIBS) routetest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @echo:
                 @echo Done building Target ..\$@
                 @echo:
@@ -108,6 +114,8 @@ conntest.exe:   $(CONNTESTOBJS) makeexe.mak $(OBJ)\conntest.res
 -link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(BOOST_LIBS) conntest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @echo:
                 @echo Done building Target ..\$@
                 @echo:
@@ -123,6 +131,8 @@ key_password_encryptor.exe:   $(KEYPSWDENCRYPTOROBJS) makeexe.mak $(OBJ)\key_pas
 			$(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(BOOST_LIBS) $(OPENSSL_LIBS) key_password_encryptor.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @echo:
                 @echo Done building Target ..\$@
                 @echo:
@@ -133,6 +143,8 @@ key_password_encryptor.exe:   $(KEYPSWDENCRYPTOROBJS) makeexe.mak $(OBJ)\key_pas
 copy:           $(CTIPROGS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 deps:

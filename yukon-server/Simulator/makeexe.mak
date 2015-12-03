@@ -99,6 +99,8 @@ ccu_simulator.exe:      $(SIMULATOR_FULLBUILD) $(CCU_SIMULATOR_OBJS) makeexe.mak
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(CCU_SIMULATOR_OBJS) -link $(CCU_SIMULATOR_LIBS) $(BOOST_LIBS) ccu_simulator.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		-copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @echo:
                 @echo Done building Target ..\$@
                 @echo:
@@ -107,6 +109,8 @@ ccu_simulator.exe:      $(SIMULATOR_FULLBUILD) $(CCU_SIMULATOR_OBJS) makeexe.mak
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+                -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 deps:

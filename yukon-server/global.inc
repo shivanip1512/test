@@ -19,6 +19,9 @@ BIN             = .\bin
         %Abort
 %ENDIF
 
+# Location for PDB files
+YUKONDEBUG=$(COMPILEBASE)\debug
+
 # Many directories are differentiated with Debug or Release
 %IF !%Defined(CONFIGURATION)
 %IF %Defined(DEBUG)

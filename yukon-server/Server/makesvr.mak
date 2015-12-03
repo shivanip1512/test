@@ -75,6 +75,8 @@ ctisvr.dll:     $(SERVER_FULLBUILD) $(SERVEROBJS) makesvr.mak $(OBJ)\ctisvr.res
                 $(CC) $(DLLFLAGS) $(SERVEROBJS) $(INCLPATHS) $(BOOST_LIBS) $(SVRLIBS) /Fe..\$@ ctisvr.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		-if exist ..\bin\$(@B).pdb copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -82,12 +84,14 @@ ctisvr.dll:     $(SERVER_FULLBUILD) $(SERVEROBJS) makesvr.mak $(OBJ)\ctisvr.res
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist bin\ctisvr.dll copy bin\ctisvr.dll $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+                -if exist bin\ctisvr.pdb copy bin\ctisvr.pdb $(YUKONDEBUG)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist bin\ctisvr.lib copy bin\ctisvr.lib $(COMPILEBASE)\lib
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.pdb
 
 
 deps:

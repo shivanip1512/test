@@ -137,6 +137,8 @@ ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) $(LOGGEROBJS) Makefile $(OBJ)\ct
                 $(CC) $(BASEOBJS) $(LOGGEROBJS) id_ctibase.obj $(WINLIBS) $(SQLAPI_LIB) $(XERCES_LIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(BOOST_LIBS) $(DBGHELP_LIBS) $(LOG4CXX_LIB) $(APR_LIB) /Fe..\$@ ctibase.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+                -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
@@ -144,6 +146,8 @@ ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) $(LOGGEROBJS) Makefile $(OBJ)\ct
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy bin\ctibase.dll $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+                -copy bin\ctibase.pdb $(YUKONDEBUG)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist bin\ctibase.lib copy bin\ctibase.lib $(COMPILEBASE)\lib
 
@@ -166,7 +170,8 @@ $(BIN)\*.lib \
 $(BIN)\*.dll \
 $(BIN)\*.map \
 $(BIN)\*.manifest \
-$(BIN)\*.exe
+$(BIN)\*.exe \
+$(BIN)\*.pdb
 
 
 allclean:   clean all

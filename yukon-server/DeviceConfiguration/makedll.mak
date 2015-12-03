@@ -68,6 +68,8 @@ cticonfig.dll:  $(DEVCONF_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\cticonfig.res
                 $(CC) $(CCOPTS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(BOOST_LIBS) cticonfig.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -if exist ..\bin\$(@B).pdb copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @echo:
@@ -78,12 +80,14 @@ cticonfig.dll:  $(DEVCONF_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\cticonfig.res
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist bin\*.dll copy bin\*.dll $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist bin\*.lib copy bin\*.lib $(COMPILEBASE)\lib
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.pdb
 
 deps:
                 scandeps -Output makedll.mak *.cpp

@@ -94,6 +94,8 @@ $(BASEOBJS) -link $(LIBS) $(BOOST_LIBS) macs.res
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+	      -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	      -if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
               -if exist ..\tcl\*.* copy ..\tcl\*.* $(YUKONOUTPUT)
               @%cd $(CWD)
               @echo Done building Target ..\$@
@@ -102,6 +104,8 @@ $(BASEOBJS) -link $(LIBS) $(BOOST_LIBS) macs.res
 copy:       $(TARGS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+           -if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
            -if exist tcl\*.* copy tcl\*.* $(YUKONOUTPUT)
 
 
@@ -119,7 +123,8 @@ $(BIN)\*.ilk \
 $(BIN)\*.exp \
 $(BIN)\*.lib \
 $(BIN)\*.dll \
-$(BIN)\*.exe
+$(BIN)\*.exe \
+$(BIN)\*.pdb
 
 
 allclean:   clean all

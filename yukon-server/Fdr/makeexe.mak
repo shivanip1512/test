@@ -63,6 +63,8 @@ fdr.exe:    $(FDROBJS) makeexe.mak $(OBJ)\fdr.res
         $(FDROBJS) -link $(BOOST_LIBS) $(FDRLIBS) fdr.res
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	   -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
         @%cd $(CWD)
 
 
@@ -70,6 +72,8 @@ fdr.exe:    $(FDROBJS) makeexe.mak $(OBJ)\fdr.res
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+           -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 deps:
@@ -85,6 +89,7 @@ clean:
     -del *.adb
     -del *.ilk
     -del *.exe
+    -del *.pdb
 
 
 ########################### Conversions ##############################

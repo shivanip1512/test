@@ -122,6 +122,8 @@ loadmanagement.exe: $(LOADMANAGEMENT_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\load
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+	      -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	      -if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
               @%cd $(CWD)
               @echo Done building Target ..\$@
               @echo:
@@ -129,6 +131,8 @@ loadmanagement.exe: $(LOADMANAGEMENT_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\load
 copy:       $(TARGS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+           -if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 deps:
                 scandeps -Output makeexe.mak *.cpp
@@ -145,7 +149,8 @@ $(BIN)\*.ilk \
 $(BIN)\*.exp \
 $(BIN)\*.lib \
 $(BIN)\*.dll \
-$(BIN)\*.exe
+$(BIN)\*.exe \
+$(BIN)\*.pdb
 
 
 allclean:   clean all

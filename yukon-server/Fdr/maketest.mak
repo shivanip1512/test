@@ -103,6 +103,8 @@ test_fdr.exe:  $(FDR_TEST_FULLBUILD) $(FDR_TEST_OBJS) Makefile
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+	-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	-copy $(BIN)\*.pdb $(YUKONDEBUG)
         @%cd $(CWD)
         @echo.
 
@@ -120,7 +122,8 @@ $(BIN)\test*.ilk \
 $(BIN)\test*.exp \
 $(BIN)\test*.lib \
 $(BIN)\test*.dll \
-$(BIN)\test*.exe
+$(BIN)\test*.exe \
+$(BIN)\test*.pdb
 
 
 allclean:   clean test
@@ -128,6 +131,8 @@ allclean:   clean test
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+           -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 ########################### Conversions ##############################

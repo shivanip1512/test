@@ -57,6 +57,8 @@ scansup.dll:   $(DLLOBJS) Makedll.mak $(OBJ)\scansup.res
                $(CC) $(DLLFLAGS) $(DLLOBJS) id_sgdll.obj $(INCLPATHS) $(BOOST_LIBS) $(COMPILEBASE)\lib\ctibase.lib /Fe..\$@ scansup.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -if exist ..\bin\$(@B).pdb copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                @%cd $(CWD)
@@ -64,12 +66,14 @@ scansup.dll:   $(DLLOBJS) Makedll.mak $(OBJ)\scansup.res
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist bin\scansup.dll copy bin\scansup.dll $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -if exist bin\scansup.pdb copy bin\scansup.pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist bin\scansup.lib copy bin\scansup.lib $(COMPILEBASE)\lib
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.pdb
 
 deps:
                 scandeps -Output makedll.mak *.cpp

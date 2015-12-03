@@ -25,6 +25,8 @@ ctiscn.dll:     $(SCNDLLOBJS) Makefile $(OBJ)\ctiscn.res
                 $(SCNDLLOBJS) -link $(SCNLIBS) $(OBJ)\ctiscn.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist $@ copy $@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -if exist $(@B).pdb copy $(@B).pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist $(@B).lib copy $(@B).lib $(COMPILEBASE)\lib
                 @echo:
@@ -33,7 +35,7 @@ ctiscn.dll:     $(SCNDLLOBJS) Makefile $(OBJ)\ctiscn.res
 
 
 clean:
-        -del *.obj *.pch *.pdb *.sdb *.adb *.ilk *.exp *.lib
+        -del *.obj *.pch *.pdb *.sdb *.adb *.ilk *.exp *.lib *.pdb
 
 
 ########################### Conversions ##############################

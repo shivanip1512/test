@@ -181,6 +181,8 @@ test_capcontrol.exe:  $(CAPCONTROL_TEST_FULLBUILD) $(CAPCTRLTESTOBJS) Makefile
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+	-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	-copy $(BIN)\*.pdb $(YUKONDEBUG)
 	@%cd $(CWD)
 	@echo.
 
@@ -195,12 +197,16 @@ cc_server_client_serialization_test.exe:  $(CAPCONTROL_TEST_FULLBUILD) cc_server
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+	-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	-copy $(BIN)\*.pdb $(YUKONDEBUG)
 	@%cd $(CWD)
 	@echo.
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+           -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 deps:

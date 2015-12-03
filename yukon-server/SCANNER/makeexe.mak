@@ -86,6 +86,8 @@ scanner.exe:    $(SCANNER_EXE_FULLBUILD) $(BASEOBJS) makeexe.mak $(OBJ)\scanner.
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @echo Done building Target ..\$@
                 @echo:
                 @%cd $(CWD)
@@ -98,6 +100,8 @@ killscan.exe:   poker.obj makeexe.mak $(OBJ)\killscan.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	       -copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 @echo Done building Target ..\$@
                 @echo:
                 @%cd $(CWD)
@@ -105,10 +109,12 @@ killscan.exe:   poker.obj makeexe.mak $(OBJ)\killscan.res
 copy:           scanner.exe
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@if exist bin\scanner.exe copy bin\scanner.exe $(YUKONOUTPUT)
+	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -@if exist bin\scanner.pdb copy bin\scanner.pdb $(YUKONDEBUG)
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.pdb
 
 
 deps:

@@ -76,6 +76,8 @@ ctipil.dll:     $(PIL_FULLBUILD) $(DLLOBJS) makedll.mak $(OBJ)\ctipil.res
                 $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(BOOST_LIBS) $(DLLLIBS) -Fe..\$@ ctipil.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		-if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
 

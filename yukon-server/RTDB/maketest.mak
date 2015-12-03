@@ -137,6 +137,8 @@ test_rtdb.exe:	$(RTDB_TEST_FULLBUILD) $(RTDB_TEST_OBJS) Makefile
 	@%cd ..
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
+	-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	-copy $(BIN)\*.pdb $(YUKONDEBUG)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
 	@%cd $(CWD)
@@ -156,7 +158,8 @@ $(BIN)\test*.ilk \
 $(BIN)\test*.exp \
 $(BIN)\test*.lib \
 $(BIN)\test*.dll \
-$(BIN)\test*.exe
+$(BIN)\test*.exe \
+$(BIN)\test*.pdb
 
 
 allclean:   clean test
@@ -164,6 +167,8 @@ allclean:   clean test
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy bin\*.exe $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+                -copy bin\*.pdb $(YUKONDEBUG)
 
 
 ########################### Conversions ##############################

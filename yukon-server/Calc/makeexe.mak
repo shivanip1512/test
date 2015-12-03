@@ -115,6 +115,8 @@ calc_logic.exe:  $(CALC_FULLBUILD) $(CALCOBJS) makeexe.mak $(OBJ)\calc_logic.res
         $(CC) /Fm $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(CALCOBJS) -link $(BOOST_LIBS) $(CALCLIBS) calc_logic.res
 	   -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	   -copy ..\$(@B).pdb $(YUKONDEBUG)
         @%cd $(CWD)
 #--  START TEST APPLICATIONS
 lurk.exe:       $(LURKOBJS) makeexe.mak $(OBJ)\lurk.res
@@ -124,6 +126,8 @@ lurk.exe:       $(LURKOBJS) makeexe.mak $(OBJ)\lurk.res
         $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(LURKOBJS) -link $(BOOST_LIBS) $(TESTLIBS) lurk.res
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	   -copy ..\$(@B).pdb $(YUKONDEBUG)
         @%cd $(CWD)
 
 log.exe:        $(LOGOBJS) makeexe.mak $(OBJ)\log.res
@@ -133,6 +137,8 @@ log.exe:        $(LOGOBJS) makeexe.mak $(OBJ)\log.res
         $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(LOGOBJS) -link $(BOOST_LIBS) $(TESTLIBS) log.res
 	   -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	   -copy ..\$(@B).pdb $(YUKONDEBUG)
         @%cd $(CWD)
 
 newval.exe:     $(NEWVALOBJS) makeexe.mak $(OBJ)\newval.res
@@ -142,6 +148,8 @@ newval.exe:     $(NEWVALOBJS) makeexe.mak $(OBJ)\newval.res
         $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(NEWVALOBJS) -link $(BOOST_LIBS) $(TESTLIBS) newval.res
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	   -copy ..\$(@B).pdb $(YUKONDEBUG)
         @%cd $(CWD)
 
 newvalrng.exe:     $(NEWVALRNGOBJS) makeexe.mak $(OBJ)\newvalrng.res
@@ -151,12 +159,16 @@ newvalrng.exe:     $(NEWVALRNGOBJS) makeexe.mak $(OBJ)\newvalrng.res
         $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(NEWVALRNGOBJS) -link $(BOOST_LIBS) $(TESTLIBS) newvalrng.res
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	   -copy ..\$(@B).pdb $(YUKONDEBUG)
         @%cd $(CWD)
 #--  END TEST APPLICATIONS
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+           -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 deps:
@@ -172,6 +184,7 @@ clean:
     -del *.adb
     -del *.ilk
     -del *.exe
+    -del *.pdb
 
 
 ########################### Conversions ##############################

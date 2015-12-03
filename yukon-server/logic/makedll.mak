@@ -34,6 +34,8 @@ logic.dll:  $(INTERPOBJS) Makefile $(OBJ)\logic.res
                 $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(BOOST_LIBS) $(CTILIBS) $(TCL_LIBS) advapi32.lib -link /def:$(DLLDEF) logic.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		-if exist ..\bin\$(@B).pdb copy ..\bin\$(@B).pdb $(YUKONDEBUG)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @echo:
@@ -44,6 +46,8 @@ logic.dll:  $(INTERPOBJS) Makefile $(OBJ)\logic.res
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist bin\*.dll copy bin\*.dll $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+                -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist bin\*.lib copy bin\*.lib $(COMPILEBASE)\lib
 
@@ -58,6 +62,7 @@ clean:
         -del *.exe
         -del *.dll
         -del *.lib
+        -del *.pdb
 
 
 ########################### Conversions ##############################

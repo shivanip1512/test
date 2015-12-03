@@ -154,6 +154,8 @@ cti_fdr.dll: $(FDR_DLL_FULLBUILD) $(FDRINTERFACEOBJS) $(OBJ)\cti_fdr.res
                 @%cd $(OBJ)
                 $(CC) $(DLLFLAGS) $(FDRINTERFACEOBJS) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) Ws2_32.lib /Fe..\$@ cti_fdr.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -162,6 +164,8 @@ fdrtextexport.dll: fdrtextexport.obj Makefile $(OBJ)\fdrtextexport.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrtextexport.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrtextexport.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -170,6 +174,8 @@ fdrtextimport.dll: fdrtextimport.obj Makefile $(OBJ)\fdrtextimport.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrtextimport.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrtextimport.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -178,6 +184,8 @@ fdrdsm2import.dll: fdrdsm2import.obj Makefile $(OBJ)\fdrdsm2import.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrdsm2import.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrdsm2import.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -186,6 +194,8 @@ fdrdsm2filein.dll: fdrdsm2filein.obj Makefile $(OBJ)\fdrdsm2filein.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrdsm2filein.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrdsm2filein.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -194,6 +204,8 @@ fdrrdex.dll: fdrrdex.obj Makefile $(OBJ)\fdrrdex.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrrdex.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ fdrrdex.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -203,6 +215,8 @@ fdrcygnet.dll: fdrcygnet.obj Makefile $(OBJ)\fdrcygnet.res
                 @if exist ..\cygnet\dclnd.lib copy ..\cygnet\dclnd.lib $(COMPILEBASE)\lib
                 $(CC) $(DLLFLAGS) fdrcygnet.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib $(COMPILEBASE)\lib\dclnd.lib /Fe..\$@ fdrcygnet.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -211,6 +225,8 @@ fdracs.dll:     fdracs.obj Makefile $(OBJ)\fdracs.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) $(<F) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdracs.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -219,6 +235,8 @@ fdracsmulti.dll: fdracsmulti.obj Makefile $(OBJ)\fdracsmulti.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) $(<F) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ fdracsmulti.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -227,6 +245,8 @@ fdracsmulti.dll: fdracsmulti.obj Makefile $(OBJ)\fdracsmulti.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) $(<F) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS)
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -235,6 +255,8 @@ fdrvalmet.dll:  fdrvalmet.obj $(FDRINTERFACES)  Makefile $(OBJ)\fdrvalmet.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrvalmet.obj $(FDRINTERFACES) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrvalmet.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -243,6 +265,8 @@ fdrvalmetmulti.dll: fdrvalmetmulti.obj $(FDRINTERFACES)  Makefile $(OBJ)\fdrvalm
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrvalmetmulti.obj $(FDRINTERFACES) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrvalmetmulti.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -251,6 +275,8 @@ fdrinet.dll: fdrinet.obj Makefile $(OBJ)\fdrinet.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrinet.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ fdrinet.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -259,6 +285,8 @@ fdrstec.dll: fdrstec.obj Makefile $(OBJ)\fdrstec.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrstec.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrstec.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -267,6 +295,8 @@ fdrtristate.dll: fdrtristate.obj Makefile $(OBJ)\fdrtristate.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrtristate.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrtristate.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -275,6 +305,8 @@ fdrrccs.dll: fdrrccs.obj Makefile $(OBJ)\fdrrccs.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrrccs.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib $(COMPILEBASE)\lib\fdrinet.lib Ws2_32.lib /Fe..\$@ fdrrccs.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -283,6 +315,8 @@ fdrlivedata.dll: fdrlivedata.obj livedata_rtp_api.obj RTP_API.obj livedatatypes.
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrlivedata.obj livedata_rtp_api.obj RTP_API.obj livedatatypes.obj $(INCLPATHS) ws2_32.lib $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrlivedata.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -291,6 +325,8 @@ fdrlodestarimport_enh.dll: fdrlodestarimport_enh.obj Makefile $(OBJ)\fdrlodestar
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrlodestarimport_enh.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrlodestarimport_enh.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -299,6 +335,8 @@ fdrlodestarimport_std.dll: fdrlodestarimport_std.obj Makefile $(OBJ)\fdrlodestar
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrlodestarimport_std.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrlodestarimport_std.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -311,6 +349,8 @@ fdrtelegyr.dll: $(FDRTELEGYROBJS) Makefile $(OBJ)\fdrtelegyr.res
                 @if exist ..\telegyr\lib\psapi.lib copy ..\telegyr\lib\psapi.lib $(COMPILEBASE)\lib
                 $(CC) $(DLLFLAGS) $(FDRTELEGYROBJS) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(FDRTELEGYRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ /link $(IGNORE_LIB) fdrtelegyr.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -319,6 +359,8 @@ fdrpi.dll: $(FDRPIOBJS) Makefile $(OBJ)\fdrpi.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) $(FDRPIOBJS) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(FDRPILIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrpi.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -327,6 +369,8 @@ fdrxa21lm.dll: fdrxa21lm.obj Makefile $(OBJ)\fdrxa21lm.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrxa21lm.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ fdrxa21lm.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -335,6 +379,8 @@ fdrbepc.dll: fdrbepc.obj Makefile $(OBJ)\fdrbepc.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrbepc.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrbepc.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -343,6 +389,8 @@ fdrwabash.dll: fdrwabash.obj Makefile $(OBJ)\fdrwabash.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrwabash.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrwabash.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -351,6 +399,8 @@ fdrtristatesub.dll: fdrtristatesub.obj Makefile $(OBJ)\fdrtristatesub.res
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrtristatesub.obj $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ fdrtristatesub.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
@@ -359,6 +409,8 @@ fdrdnpslave.dll: fdrdnpslave.obj $(PRECOMPILED_OBJ) Makefile $(OBJ)\fdrdnpslave.
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrdnpslave.obj $(PRECOMPILED_OBJ) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\ctidevdb.lib $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ fdrdnpslave.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 apiclilib.lib:
@@ -371,12 +423,14 @@ apiclilib.lib:
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@if exist bin\*.dll copy bin\*.dll $(YUKONOUTPUT)
+		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+               -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist bin\*.lib copy bin\*.lib $(COMPILEBASE)\lib
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.map
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.map *.pdb
 
 
 deps:

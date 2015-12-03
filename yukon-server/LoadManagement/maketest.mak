@@ -121,6 +121,8 @@ test_loadmanagement.exe:    $(LOADMANAGEMENT_TEST_FULLBUILD) $(LOADMANAGEMENT_TE
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+	-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	-copy $(BIN)\*.pdb $(YUKONDEBUG)
         @%cd $(CWD)
         @echo.
 
@@ -135,12 +137,16 @@ lm_server_client_serialization_test.exe:    $(LOADMANAGEMENT_TEST_FULLBUILD) lm_
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
+	-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+	-copy $(BIN)\*.pdb $(YUKONDEBUG)
         @%cd $(CWD)
         @echo.
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
+           -@if exist bin\*.pdb copy bin\*.pdb $(YUKONDEBUG)
 
 
 deps:
