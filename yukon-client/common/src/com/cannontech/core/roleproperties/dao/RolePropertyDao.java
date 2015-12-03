@@ -333,7 +333,6 @@ public interface RolePropertyDao {
             throws UserNotInRoleException;
 
     /**
-     * Checks ENDPOINT_PERMISSION role property.
      * Returns true if the user access level is less or equal the minimum level.
      * Examples:
      * If the user level is UPDATE , the user is allowed access to UPDATE, LIMITED and RESTRICTED.
