@@ -79,8 +79,7 @@ $(BIN)\test*.ilk \
 $(BIN)\test*.exp \
 $(BIN)\test*.lib \
 $(BIN)\test*.dll \
-$(BIN)\test*.exe \
-$(BIN)\test*.pdb
+$(BIN)\test*.exe
 
 
 allclean:   clean test

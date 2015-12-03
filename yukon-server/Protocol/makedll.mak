@@ -226,8 +226,7 @@ $(BIN)\*.ilk \
 $(BIN)\*.exp \
 $(BIN)\*.lib \
 $(BIN)\*.dll \
-$(BIN)\*.exe \
-$(BIN)\*.pdb
+$(BIN)\*.exe
 
 # The lines below accomplish the ID'ing of the project!
 id:

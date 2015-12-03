@@ -170,8 +170,7 @@ $(BIN)\*.lib \
 $(BIN)\*.dll \
 $(BIN)\*.map \
 $(BIN)\*.manifest \
-$(BIN)\*.exe \
-$(BIN)\*.pdb
+$(BIN)\*.exe
 
 
 allclean:   clean all

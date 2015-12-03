@@ -175,8 +175,7 @@ $(BIN)\*.ilk \
 $(BIN)\*.exp \
 $(BIN)\*.lib \
 $(BIN)\*.dll \
-$(BIN)\*.exe \
-$(BIN)\*.pdb
+$(BIN)\*.exe
 
 
 
