@@ -243,6 +243,7 @@
     <entry key="yukon.web.modules.tools.point.attachment.RAW_POINT_HISTORY">Point has point history associated with it.</entry>
     <entry key="yukon.web.modules.tools.point.attachment.SYSTEM_LOG">Point has system log entries associated with it.</entry>
     <entry key="yukon.web.modules.tools.point.attachment.NO_CONFLICT"></entry>
+    <entry key="yukon.web.modules.tools.point.physicalOffset.pseudo">Pseudo</entry>
 
     <entry key="yukon.web.modules.tools.search.pageName">Search</entry>
     <entry key="yukon.web.modules.tools.search.emptySearch">Please enter some text to search for.</entry>

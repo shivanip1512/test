@@ -165,7 +165,7 @@
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
                         <tags:nameValue2 nameKey=".physicalOffset">
                             <tags:switchButton path="pointBase.point.physicalOffset" offClasses="M0"
-                                toggleGroup="physicalOffset" toggleAction="hide" inputClass="js-use-offset"/>
+                                toggleGroup="physicalOffset" toggleAction="hide" inputClass="js-use-offset" offNameKey=".physicalOffset.pseudo"/>
                             <%-- The physical offset value within the current device or parent this point belongs to --%>
                             <tags:input path="pointBase.point.pointOffset" size="6" toggleGroup="physicalOffset"/>
                         </tags:nameValue2>
@@ -221,7 +221,7 @@
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
                         <tags:nameValue2 nameKey=".physicalOffset">
                             <tags:switchButton path="pointBase.point.physicalOffset" offClasses="M0"
-                                toggleGroup="physicalOffset" toggleAction="hide" inputClass="js-use-offset"/>
+                                toggleGroup="physicalOffset" toggleAction="hide" inputClass="js-use-offset" offNameKey=".physicalOffset.pseudo"/>
                             <%-- The physical offset value within the current device or parent this point belongs to --%>
                             <tags:input path="pointBase.point.pointOffset" size="6" toggleGroup="physicalOffset"/>
                         </tags:nameValue2>
@@ -243,7 +243,7 @@
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
                         <tags:nameValue2 nameKey=".physicalOffset">
                             <tags:switchButton path="pointBase.point.physicalOffset" offClasses="M0"
-                                toggleGroup="physicalOffset" toggleAction="hide" inputClass="js-use-offset"/>
+                                toggleGroup="physicalOffset" toggleAction="hide" inputClass="js-use-offset" offNameKey=".physicalOffset.pseudo"/>
                             <%-- The physical offset value within the current device or parent this point belongs to --%>
                             <tags:input path="pointBase.point.pointOffset" size="6" toggleGroup="physicalOffset"/>
                         </tags:nameValue2>
@@ -306,7 +306,7 @@
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
                         <tags:nameValue2 nameKey=".physicalOffset">
                             <tags:switchButton path="pointBase.point.physicalOffset" offClasses="M0"
-                                toggleGroup="physicalOffset" toggleAction="hide" inputClass="js-use-offset"/>
+                                toggleGroup="physicalOffset" toggleAction="hide" inputClass="js-use-offset" offNameKey=".physicalOffset.pseudo"/>
                             <%-- The physical offset value within the current device or parent this point belongs to --%>
                             <tags:input path="pointBase.point.pointOffset" size="6" toggleGroup="physicalOffset"/>
                         </tags:nameValue2>
