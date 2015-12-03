@@ -430,7 +430,7 @@ copy:
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.map *.pdb
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.map
 
 
 deps:

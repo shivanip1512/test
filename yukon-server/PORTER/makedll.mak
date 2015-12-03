@@ -81,7 +81,7 @@ copy:
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.pdb
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp
 
 deps:
                 scandeps -Output makedll.mak *.cpp

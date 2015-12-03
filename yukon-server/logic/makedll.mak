@@ -62,7 +62,6 @@ clean:
         -del *.exe
         -del *.dll
         -del *.lib
-        -del *.pdb
 
 
 ########################### Conversions ##############################

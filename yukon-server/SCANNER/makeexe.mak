@@ -114,7 +114,7 @@ copy:           scanner.exe
 
 
 clean:
-                -del *.obj *.dll *.ilk *.pdb *.lib *.exp *.pdb
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp
 
 
 deps:

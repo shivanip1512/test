@@ -167,7 +167,6 @@ clean:
                 -del *.pdb
                 -del *.lib
                 -del *.exp
-                -del *.pdb
 
 .cpp.obj:
                 @echo:

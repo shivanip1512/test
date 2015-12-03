@@ -184,7 +184,6 @@ clean:
     -del *.adb
     -del *.ilk
     -del *.exe
-    -del *.pdb
 
 
 ########################### Conversions ##############################

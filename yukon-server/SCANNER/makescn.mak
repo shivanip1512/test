@@ -35,7 +35,7 @@ ctiscn.dll:     $(SCNDLLOBJS) Makefile $(OBJ)\ctiscn.res
 
 
 clean:
-        -del *.obj *.pch *.pdb *.sdb *.adb *.ilk *.exp *.lib *.pdb
+        -del *.obj *.pch *.pdb *.sdb *.adb *.ilk *.exp *.lib
 
 
 ########################### Conversions ##############################
