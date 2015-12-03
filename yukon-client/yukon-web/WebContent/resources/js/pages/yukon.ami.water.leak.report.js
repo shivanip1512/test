@@ -41,7 +41,11 @@ yukon.ami.waterLeakReport = (function () {
                 url = 'intervalData?' + $('#filter-form').serialize() + '&paoIds=';
                 
                 // add selected pao id's
-                $('#leaks-table tbody :checkbox').each(function () { paos.push($(this).data('paoId')); });
+                $('#leaks-table tbody :checkbox').each(function() {
+                    if ($(this).prop('checked')) {
+                        paos.push($(this).data('paoId'));
+                    }
+                });
                 url += paos.join(',');
                 
                 window.location.href = url;
