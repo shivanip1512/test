@@ -363,6 +363,20 @@ INSERT INTO YukonRoleProperty
 VALUES (-21404, -214, 'Endpoint Permission', 'UPDATE', 'Controls the ability to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.');
 /* End YUK-14891 */
 
+/* Start YUK-14912 */
+INSERT INTO DeviceConfigCategoryItem
+    SELECT
+        (SELECT ISNULL(MAX(DeviceConfigCategoryItemId) + T.RowNum, 0) AS Id FROM DeviceConfigCategoryItem),
+        T.DeviceConfigCategoryId,
+        'enableDataStreaming',
+        'false'
+    FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryId) as RowNum,
+               DeviceConfigCategoryId
+        FROM DeviceConfigCategory
+        WHERE CategoryType = 'rfnChannelConfiguration') T;
+/* End YUK-14912 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
