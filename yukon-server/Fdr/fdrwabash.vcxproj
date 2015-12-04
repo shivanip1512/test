@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -80,7 +80,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">fdrwabash</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetPath)</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -90,7 +91,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">fdrwabash</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetPath)</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
@@ -100,7 +102,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fdrwabash</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetPath)</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
@@ -110,7 +113,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fdrwabash</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetPath)</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
@@ -149,7 +153,8 @@
       <AdditionalDependencies>..\lib\cti_fdr.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)fdrwabash.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>$(OutDir)\fdrwabash_dll.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
       <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -160,10 +165,10 @@ if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -210,10 +215,10 @@ if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -249,14 +254,15 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
       <AdditionalDependencies>..\lib\cti_fdr.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)fdrwabash.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>$(OutDir)\fdrwabash_dll.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
       <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
-<!--
+      <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need
   to set it by ourselves.
 -->
-<!--      <TargetMachine>0</TargetMachine>-->
+      <!--      <TargetMachine>0</TargetMachine>-->
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -267,10 +273,10 @@ if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -308,12 +314,12 @@ if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(So
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
-<!--
+      <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need
   to set it by ourselves.
 -->
-<!--      <TargetMachine>0</TargetMachine>-->
+      <!--      <TargetMachine>0</TargetMachine>-->
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -324,10 +330,10 @@ if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemGroup>

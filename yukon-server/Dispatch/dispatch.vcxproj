@@ -156,7 +156,8 @@
       <AdditionalDependencies>$(DBGHELP)\lib\dbghelp.lib;..\lib\service.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;advapi32.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)dispatch.exe</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>$(OutDir)\dispatch_exe.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
@@ -254,7 +255,8 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <AdditionalDependencies>$(DBGHELP)\lib\dbghelp.lib;..\lib\service.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;advapi32.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)dispatch.exe</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>$(OutDir)\dispatch_exe.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
       <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need

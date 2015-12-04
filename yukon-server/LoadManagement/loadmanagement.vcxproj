@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -80,7 +80,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">loadmanagement</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bin\$(TargetName).exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -90,7 +91,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">loadmanagement</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bin\$(TargetName).exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
@@ -100,7 +102,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">loadmanagement</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">bin\$(TargetName).exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
@@ -110,7 +113,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">loadmanagement</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|x64'">bin\$(TargetName).exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
@@ -152,17 +156,18 @@
       <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;advapi32.lib;..\lib\service.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;..\lib\ctiholidaydb.lib;..\lib\ctiseasondb.lib;..\lib\ctidbsrc.lib;..\lib\ctithriftmsg.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)loadmanagement.exe</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>$(OutDir)\loadmanagement_exe.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -208,10 +213,10 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -250,13 +255,14 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <AdditionalDependencies>$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;advapi32.lib;..\lib\service.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;..\lib\ctiholidaydb.lib;..\lib\ctiseasondb.lib;..\lib\ctidbsrc.lib;..\lib\ctithriftmsg.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)loadmanagement.exe</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>$(OutDir)\loadmanagement_exe.pdb</ProgramDatabaseFile>
-<!--
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need
   to set it by ourselves.
 -->
-<!--      <TargetMachine>0</TargetMachine>-->
+      <!--      <TargetMachine>0</TargetMachine>-->
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -264,10 +270,10 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -307,12 +313,12 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-<!--
+      <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need
   to set it by ourselves.
 -->
-<!--      <TargetMachine>0</TargetMachine>-->
+      <!--      <TargetMachine>0</TargetMachine>-->
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/machine:AMD64 %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -320,10 +326,10 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </PostBuildEvent>
-<!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
+    <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
-<!-- No known equivalent for DeploymentTool in vc10:
+    <!-- No known equivalent for DeploymentTool in vc10:
 -->
   </ItemDefinitionGroup>
   <ItemGroup>

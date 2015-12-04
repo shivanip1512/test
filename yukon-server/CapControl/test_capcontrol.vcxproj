@@ -157,7 +157,8 @@
       <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctiholidaydb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)test_capcontrol.exe</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>$(OutDir)\test_capcontrol_exe.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
@@ -257,7 +258,8 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
       <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctiholidaydb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_system-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_filesystem-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_regex-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_thread-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_date_time-vc120-mt-gd-1_58.lib;$(BOOST)\lib\boost_chrono-vc120-mt-gd-1_58.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)test_capcontrol.exe</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>$(OutDir)\test_capcontrol_exe.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
       <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need
