@@ -56,7 +56,6 @@
                 url: yukon.url('datasimulator-status'),
                 type: 'get'
             }).done(function(data) {
-                debugger;
                 if (data.hasError) {
                     $('#taskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
                 } else {
