@@ -6,6 +6,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -78,6 +79,10 @@ public class WebSecurityChecker {
             	throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
             }
         }
+    }
+    
+    public void checkLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel) {
+        rolePropertyDao.verifyLevel(property, minLevel, getYukonUser());
     }
     
     private LiteYukonUser getYukonUser() {

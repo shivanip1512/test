@@ -51,6 +51,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.widget.meterInfo.model.MeterModel;
 import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
 import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
@@ -194,6 +195,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit", method=RequestMethod.GET)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public String edit(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
         
         YukonMeter meter = meterDao.getForId(deviceId);
@@ -217,10 +219,10 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit-plc", method=RequestMethod.PUT)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public String editPlc(HttpServletResponse resp, ModelMap model, FlashScope flash,
             @ModelAttribute("meter") PlcMeterModel meter, BindingResult result,  LiteYukonUser user) throws IOException {
         
-        rolePropertyDao.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user);
         if (!rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE, user)) {
             PlcMeter originalMeter = meterDao.getPlcMeterForId(meter.getDeviceId());
             meter.setMeterNumber(originalMeter.getMeterNumber());
@@ -259,10 +261,10 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit-rf", method=RequestMethod.PUT)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public String editRf(HttpServletResponse resp, ModelMap model, FlashScope flash, YukonUserContext userContext,
             @ModelAttribute("meter") RfMeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
         
-        rolePropertyDao.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user);
         if (!rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE, user)) {
             RfnMeter originalMeter = meterDao.getRfnMeterForId(meter.getDeviceId());
             meter.setMeterNumber(originalMeter.getMeterNumber());
@@ -309,10 +311,10 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit-ied", method=RequestMethod.PUT)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public String editIed(HttpServletResponse resp, ModelMap model, FlashScope flash,
             @ModelAttribute("meter") MeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
  
-        rolePropertyDao.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user);
         if (!rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE, user)) {
             YukonMeter originalMeter = meterDao.getForId(meter.getDeviceId());
             meter.setMeterNumber(originalMeter.getMeterNumber());

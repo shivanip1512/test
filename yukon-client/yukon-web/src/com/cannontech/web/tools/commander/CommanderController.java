@@ -52,6 +52,7 @@ import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.commander.model.CommandParams;
 import com.cannontech.web.tools.commander.model.CommandRequest;
@@ -194,11 +195,10 @@ public class CommanderController {
     
     /** Change route */
     @RequestMapping(value="/commander/{paoId}/route/{routeId}", method=RequestMethod.POST)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public @ResponseBody LiteYukonPAObject changeRoute(HttpServletResponse resp, ModelMap model, LiteYukonUser user,
             @PathVariable int paoId, @PathVariable int routeId) {
-        
-        rolePropertyDao.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user);
-        
+                
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
         Map<Integer, LiteYukonPAObject> routes = cache.getAllRoutesMap();
         LiteYukonPAObject oldRoute = routes.get(pao.getRouteID());

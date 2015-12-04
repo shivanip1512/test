@@ -14,6 +14,7 @@ import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckEnergyCompanySetting;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -29,6 +30,7 @@ public class WebSecurityAnnotationProcessor {
         check(AnnotationUtils.findAnnotation(method, CheckEnergyCompanySetting.class));
         check(AnnotationUtils.findAnnotation(method, CheckRoleProperty.class));
         check(AnnotationUtils.findAnnotation(method, CheckFalseRoleProperty.class));
+        check(AnnotationUtils.findAnnotation(method, CheckPermissionLevel.class));
     }
 
     public void processClass(Class<?> clazz) throws Exception {
@@ -38,6 +40,7 @@ public class WebSecurityAnnotationProcessor {
         check(AnnotationUtils.findAnnotation(clazz, CheckEnergyCompanySetting.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckRoleProperty.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckPermissionLevel.class));
     }
 
     private void check(CheckCparm annotation) {
@@ -81,6 +84,12 @@ public class WebSecurityAnnotationProcessor {
         if (annotation != null) {
             YukonRoleProperty[] roleProperties = annotation.value();
             webSecurityChecker.checkFalseRoleProperty(roleProperties);
+         }
+    }
+    
+    private void check(CheckPermissionLevel annotation) {
+        if (annotation != null) {
+            webSecurityChecker.checkLevel(annotation.property(), annotation.level());
          }
     }
 }
