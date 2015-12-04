@@ -610,6 +610,12 @@ public class NmIntegrationController {
         return "redirect:viewLcrDataSimulator";
     }
     
+    @RequestMapping(value = "stopSendingLcrDeviceMessages", method = RequestMethod.GET)
+    public String stopSendLcrDeviceMessages() {
+        dataSimulator.stopMessageSimulator();
+        return "redirect:viewLcrDataSimulator";
+    }
+
     @RequestMapping("datasimulator-status")
     @ResponseBody
     public Map<String, Object> dataSimulatorStatus(YukonUserContext userContext) {

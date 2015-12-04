@@ -136,11 +136,23 @@
             });
           },
           
-        _sendMessageButtonClick = function() {
-              $.ajax({
-                  url: yukon.url('/dev/rfn/sendLcrDeviceMessages'),
-                  type: 'GET'
-              });
+        _sendMessageButtonClick = function(event) {
+           
+            if($(this).attr('id') === 'send-message') {
+                $.ajax({
+                    url: yukon.url('/dev/rfn/sendLcrDeviceMessages'),
+                    type: 'GET'
+                    });
+            };
+              
+            if($(this).attr('id') === 'stop-send-message') {
+                $.ajax({
+                    url: yukon.url('/dev/rfn/stopSendingLcrDeviceMessages'),
+                    type: 'GET'
+                    });
+            };
+            $(this).hide();
+            $(this).siblings('button').show();
         },
 
         mod = {
@@ -148,7 +160,7 @@
                 if (_initialized) return;
                 $('#start-button').click(_startButtonClick);
                 $(document).on('click', '#stop-button', _stopButtonClick);
-                $(document).on('click', '#send-message', _sendMessageButtonClick);
+                $('#send-message, #stop-send-message').click(_sendMessageButtonClick);
                 _checkStatus();
 
                 _initialized = true;
@@ -190,6 +202,7 @@
         <cti:button id="start-button" nameKey="start"/>
         <cti:button id="stop-button" nameKey="stop" />
         <cti:button id="send-message" nameKey="sendLcrDeviceMessages"/>
+        <cti:button id="stop-send-message" nameKey="stopSendingLcrDeviceMessages" classes="dn"/>
     </div>
 </tags:sectionContainer2>
 </form>

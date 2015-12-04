@@ -78,8 +78,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
 
         if (msgSimulatorRunning || msgSimulatorFt.isDone()) {
             msgSimulatorRunning = false;
+            // increment counter (minute) for Threads created for X number devices per list
+            int minsCounter=0;
             for (List<RfnDevice> partition : Lists.partition(rfnLcrDeviceList, devicePartitionCount)) {
-                msgSimulatorFt = executor.schedule(new MessageSimulator(partition), 1, TimeUnit.MINUTES);
+                msgSimulatorFt = executor.scheduleAtFixedRate(new MessageSimulator(partition), minsCounter++ , 24 * 60, TimeUnit.MINUTES);
             }
         } else {
             log.debug("RFN LCR Message simulator is already running.");
@@ -105,6 +107,15 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         simulator.isRunning = false;
         if (simulatorFuture != null) {
             simulatorFuture.cancel(true);
+        }
+    }
+
+    @Override
+    @PreDestroy
+    public synchronized void stopMessageSimulator() {
+        log.debug("RFN LCR message simulator shutting down...");
+        if (msgSimulatorFt != null) {
+            msgSimulatorFt.cancel(true);
         }
     }
 
@@ -206,6 +217,9 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         }
     }
 
+    /**
+     * Loop through LCR meters and send the messages.
+     */
     private class MessageSimulator implements Runnable {
         List<RfnDevice> rfnLcrDeviceList = null;
 
@@ -224,6 +238,9 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             log.debug("RFN LCR message simulator sleeping...");
         }
 
+        /**
+         * Send the RFN LCR archive request messages for existing LCR meters.
+         */
         private void insertRfnLcrMessages() {
 
             for (RfnDevice device : rfnLcrDeviceList) {

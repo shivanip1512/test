@@ -45,7 +45,12 @@ public interface RfnLcrDataSimulatorService {
     public RfnLcrDataSimulatorStatus getRfnLcrDataSimulatorStatus();
     
     /**
-     * send message for LCR devices.
+     * Send message for LCR devices.
      */
     void sendLcrDeviceMessages(List<RfnDevice> rfnLcrDeviceList);
+
+    /**
+     * Stop sending message to LCR devices.
+     */
+    void stopMessageSimulator();
 }
