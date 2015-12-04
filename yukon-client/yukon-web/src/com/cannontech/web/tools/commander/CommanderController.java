@@ -174,6 +174,7 @@ public class CommanderController {
     
     /** Change route popup */
     @RequestMapping("/commander/route/{routeId}/change")
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public String changeRoute(ModelMap model, @PathVariable int routeId) {
         
         Map<Integer, LiteYukonPAObject> all = cache.getAllRoutesMap();
