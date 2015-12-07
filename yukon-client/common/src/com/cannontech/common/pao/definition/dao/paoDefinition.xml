@@ -278,7 +278,7 @@
     </pao>
 
     <pao id="CENTRON_410_DISPLAY_CONFIGURATION" abstract="true"
-        inherits="SUPPORTS_DEVICE_CONFIGURATION">
+        inherits="LCD_CONFIGURATION">
         <configuration>
             <category type="centron410Display" />
         </configuration>
