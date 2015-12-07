@@ -156,7 +156,7 @@ WHERE CategoryType = 'rfnOvUv';
 
 INSERT INTO DeviceConfigCategoryItem
     SELECT
-       (SELECT ISNULL(MAX(DeviceConfigCategoryItemId) + T.RowNum, 0) AS Id FROM DeviceConfigCategoryItem),
+       (SELECT ISNULL(MAX(DeviceConfigCategoryItemId), 0) + T.RowNum AS Id FROM DeviceConfigCategoryItem),
        T.DeviceConfigCategoryId,
        'voltageAveragingInterval',
        60
@@ -202,7 +202,7 @@ AND DeviceConfigCategoryId IN (
 /* Start YUK-14684 */
 INSERT INTO DeviceConfigCategoryItem
     SELECT
-       (SELECT ISNULL(MAX(DeviceConfigCategoryItemId) + T.RowNum, 0) AS Id FROM DeviceConfigCategoryItem),
+       (SELECT ISNULL(MAX(DeviceConfigCategoryItemId), 0) + T.RowNum AS Id FROM DeviceConfigCategoryItem),
        T.DeviceConfigCategoryId,
        'voltageDataStreamingIntervalMinutes',
        5
@@ -366,7 +366,7 @@ VALUES (-21404, -214, 'Endpoint Permission', 'UPDATE', 'Controls the ability to 
 /* Start YUK-14912 */
 INSERT INTO DeviceConfigCategoryItem
     SELECT
-        (SELECT ISNULL(MAX(DeviceConfigCategoryItemId) + T.RowNum, 0) AS Id FROM DeviceConfigCategoryItem),
+        (SELECT ISNULL(MAX(DeviceConfigCategoryItemId), 0) + T.RowNum AS Id FROM DeviceConfigCategoryItem),
         T.DeviceConfigCategoryId,
         'enableDataStreaming',
         'false'
