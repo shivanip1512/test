@@ -90,7 +90,7 @@ private:
         unsigned maxRetransmits;
     };
 
-    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned priority, const CtiTime timeout);
+    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned priority, const long groupMessageId, const CtiTime timeout);
     void sendE2eDataAck(const std::vector<unsigned char> &e2eAck, const ApplicationServiceIdentifiers &asid,  const RfnIdentifier &rfnIdentifier);
 
     void checkForNewRequest(const RfnIdentifier &rfnId);

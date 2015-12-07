@@ -145,6 +145,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                                     activeRequest.request.command->getApplicationServiceId(),
                                     activeRequest.request.rfnIdentifier,
                                     activeRequest.request.priority,
+                                    activeRequest.request.groupMessageId,
                                     activeRequest.timeout);
 
                     activeRequest.status = ActiveRfnRequest::PendingConfirm;
@@ -308,6 +309,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                             activeRequest.request.command->getApplicationServiceId(),
                             activeRequest.request.rfnIdentifier,
                             E2EDT_RETRANSMIT_PRIORITY,
+                            activeRequest.request.groupMessageId,
                             CtiTime::now() + activeRequest.currentPacket.retransmissionDelay);
                             //  expire the message if it hasn't gone out by the time we will send the next one
 
@@ -445,6 +447,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                             newRequest.request.command->getApplicationServiceId(),
                             newRequest.request.rfnIdentifier,
                             newRequest.request.priority,
+                            newRequest.request.groupMessageId,
                             newRequest.timeout);
 
             stats.incrementRequests(newRequest.request.deviceId, newRequest.currentPacket.timeSent);
@@ -636,6 +639,7 @@ RfnRequestManager::PacketInfo
         const ApplicationServiceIdentifiers &asid,
         const RfnIdentifier &rfnIdentifier,
         const unsigned priority,
+        const long groupMessageId,
         const CtiTime expiration)
 {
     E2eMessenger::Request msg;
@@ -644,6 +648,7 @@ RfnRequestManager::PacketInfo
     msg.payload       = e2ePacket;
     msg.priority      = clamp<1, MAXPRIORITY>(priority);
     msg.expiration    = expiration;
+    msg.groupId       = groupMessageId;
 
     E2eMessenger::sendE2eDt(msg, asid,
             [this](const E2eMessenger::Confirm &msg)

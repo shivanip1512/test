@@ -51,7 +51,7 @@ public:
     struct Request : PayloadMessage
     {
         CtiTime expiration;
-        unsigned long long groupId;
+        long long groupId;
         unsigned char priority : 7;  //  7 bits - this needs to fit into a signed byte
     };
 
