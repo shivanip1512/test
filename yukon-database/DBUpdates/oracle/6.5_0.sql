@@ -397,4 +397,4 @@ WHERE CategoryType = 'rfnChannelConfiguration';
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.5', '31-JUL-2015', 'Latest Update', 0, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.5', '07-DEC-2015', 'Latest Update', 0, SYSDATE);
