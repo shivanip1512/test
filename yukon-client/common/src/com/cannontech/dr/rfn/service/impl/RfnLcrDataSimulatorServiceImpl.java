@@ -3,7 +3,10 @@ package com.cannontech.dr.rfn.service.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,6 +65,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     @Autowired private ExiParsingService exiParsingService;
     @Autowired private ConnectionFactory connectionFactory;
     private final RfnLcrDataSimulatorStatus rfnLcrDataSimulatorStatus = new RfnLcrDataSimulatorStatus();
+    private static List<Future<?>> futures;
 
     public RfnLcrDataSimulatorStatus getRfnLcrDataSimulatorStatus() {
         return rfnLcrDataSimulatorStatus;
@@ -75,13 +79,15 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
 
     @Override
     public synchronized void sendLcrDeviceMessages(List<RfnDevice> rfnLcrDeviceList) {
-
+        futures = new ArrayList<Future<?>>();
+        
         if (msgSimulatorRunning || msgSimulatorFt.isDone()) {
             msgSimulatorRunning = false;
             // increment counter (minute) for Threads created for X number devices per list
             int minsCounter=0;
             for (List<RfnDevice> partition : Lists.partition(rfnLcrDeviceList, devicePartitionCount)) {
-                msgSimulatorFt = executor.scheduleAtFixedRate(new MessageSimulator(partition), minsCounter++ , 24 * 60, TimeUnit.MINUTES);
+                msgSimulatorFt = executor.scheduleAtFixedRate(new MessageSimulator(partition), minsCounter++ , 24*60, TimeUnit.MINUTES);
+                futures.add(msgSimulatorFt);
             }
         } else {
             log.debug("RFN LCR Message simulator is already running.");
@@ -114,8 +120,9 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     @PreDestroy
     public synchronized void stopMessageSimulator() {
         log.debug("RFN LCR message simulator shutting down...");
-        if (msgSimulatorFt != null) {
-            msgSimulatorFt.cancel(true);
+        Iterator<Future<?>> futureIter = futures.iterator();
+        while (futureIter.hasNext()) {
+            futureIter.next().cancel(true);
         }
     }
 
