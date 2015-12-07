@@ -297,7 +297,8 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
 
 void E2eMessenger::handleNetworkManagerResponseMsg(const SerializedMessage &msg, const std::string &type)
 {
-    auto omsg = nmMessageFactory.deserialize( type, msg );
+    //  Force the message type until Network Manager sends the type in the header
+    auto omsg = nmMessageFactory.deserialize( "com.eaton.eas.yukon.networkmanager.NetworkManagerCancelResponse", msg );
 
     // check for any deserialize failure
     if( ! omsg.get() )
