@@ -57,15 +57,14 @@
                 <td>
                     <c:choose>
                         <c:when test="${viewableCapBank.cbcId != 0}">
-                            <%-- <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+                            <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                                 <cti:param name="type" value="2" />
                                 <cti:param name="itemid" value="${viewableCapBank.cbcId}" />
                             </cti:url>
-                            <a href="${editUrl}">
-                                ${fn:escapeXml(viewableCapBank.cbcName)}
-                            </a> --%>
+                            <%-- 
                             <cti:url var="editUrl" value="/capcontrol/cbc/${viewableCapBank.cbcId}/edit" />
-                                <a href="${editUrl}">${fn:escapeXml(viewableCapBank.cbcName)}</a> 
+                            --%>
+                            <a href="${editUrl}">${fn:escapeXml(viewableCapBank.cbcName)}</a> 
                         </c:when>
                         <c:otherwise>
                             <i:inline key="yukon.common.dashes"/>
