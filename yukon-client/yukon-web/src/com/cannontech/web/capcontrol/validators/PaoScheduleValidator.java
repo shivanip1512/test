@@ -1,5 +1,6 @@
 package com.cannontech.web.capcontrol.validators;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -21,7 +22,7 @@ public class PaoScheduleValidator extends SimpleValidator<PaoSchedule> {
 
     @Override
     public void doValidation(PaoSchedule schedule, Errors errors) {
-        
+        Instant nowTime = Instant.now();
         YukonValidationUtils.rejectIfEmptyOrWhitespace(
             errors, "name", "yukon.web.error.isBlank");
 
@@ -41,6 +42,8 @@ public class PaoScheduleValidator extends SimpleValidator<PaoSchedule> {
         if (schedule.isLater()) {
             if (schedule.getNextRunTime() == null) {
                 errors.rejectValue("nextRunTime", key + "date");
+            } else if (nowTime.isAfter(schedule.getNextRunTime())) {
+                errors.rejectValue("nextRunTime", key + "date.past");
             }
         }
     }

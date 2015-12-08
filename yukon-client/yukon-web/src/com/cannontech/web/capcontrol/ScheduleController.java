@@ -161,7 +161,8 @@ public class ScheduleController {
     private String setupEditModelMap(ModelMap model, PaoSchedule schedule) {
         model.addAttribute("schedule", schedule);
         model.addAttribute("epoch1990", epoch1990.plus(Duration.standardSeconds(1)));
-        
+        Instant nowTime = Instant.now();
+        model.addAttribute("nowTime", nowTime);
         model.addAttribute("intervals", PaoSchedule.ScheduleInterval.values());
         return "schedule/schedule.jsp";
     }
