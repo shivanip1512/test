@@ -163,7 +163,7 @@
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
 if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
-if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin
+
 if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
 if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
 </Command>
@@ -216,7 +216,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
 if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
-if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin
+
 if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
 if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
 </Command>
@@ -277,7 +277,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
 if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
-if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin
+
 if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
 if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
 </Command>
@@ -337,7 +337,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
 if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
 if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
-if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)bin
+
 if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
 if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
 </Command>

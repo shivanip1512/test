@@ -163,6 +163,8 @@
     <PostBuildEvent>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+xcopy /d/y/f $(ProjectDir)tcl\init.tcl $(SolutionDir)bin
+
 if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
 if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
 </Command>
@@ -215,6 +217,8 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <PostBuildEvent>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+xcopy /d/y/f $(ProjectDir)tcl\init.tcl $(SolutionDir)bin
+
 if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
 if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
 </Command>
@@ -275,6 +279,8 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <PostBuildEvent>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+xcopy /d/y/f $(ProjectDir)tcl\init.tcl $(SolutionDir)bin
+
 if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
 if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
 </Command>
@@ -334,6 +340,8 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <PostBuildEvent>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
 xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+xcopy /d/y/f $(ProjectDir)tcl\init.tcl $(SolutionDir)bin
+
 if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
 if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
 </Command>
