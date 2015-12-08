@@ -2169,19 +2169,22 @@ BOOST_AUTO_TEST_CASE( test_CoerceStartStopTime )
         BOOST_TEST_MESSAGE("        Start time " << start.asString() << "         Stop time " << stop.asString());
         executor.CoerceStartStopTime( lmProgram, start, stop, &controlArea );
         BOOST_TEST_MESSAGE( "Coerced Start time " << start.asString() << " Coerced Stop time " << stop.asString());
-        BOOST_CHECK_EQUAL( start, CtiTime::now().addSeconds( 600 ) );
-        BOOST_CHECK_EQUAL( stop, CtiTime::now().addSeconds( 600 ) );
 
-        start = CtiTime::now().addMinutes( 30 );
-        stop = CtiTime::now().addMinutes( 30 );
+        CtiTime tenMinutesInTheFuture = CtiTime::now().addMinutes( 10 );
+        BOOST_CHECK_EQUAL( start, tenMinutesInTheFuture );
+        BOOST_CHECK_EQUAL( stop, tenMinutesInTheFuture );
+
+        CtiTime thirtyMinutesInTheFuture = CtiTime::now().addMinutes( 30 );
+        start = thirtyMinutesInTheFuture;
+        stop = thirtyMinutesInTheFuture;
         /*
          * With a start time well in the future, no adjustment should be made.
          */
         BOOST_TEST_MESSAGE("        Start time " << start.asString() << "         Stop time " << stop.asString());
         executor.CoerceStartStopTime( lmProgram, start, stop, &controlArea );
         BOOST_TEST_MESSAGE( "Coerced Start time " << start.asString() << " Coerced Stop time " << stop.asString());
-        BOOST_CHECK_EQUAL( start, CtiTime::now().addMinutes( 30 ) );
-        BOOST_CHECK_EQUAL( stop, CtiTime::now().addMinutes( 30 ) );
+        BOOST_CHECK_EQUAL( start, thirtyMinutesInTheFuture );
+        BOOST_CHECK_EQUAL( stop, thirtyMinutesInTheFuture );
     }
 
     BOOST_TEST_MESSAGE( "Test with notifyactiveoffset of 0 seconds "

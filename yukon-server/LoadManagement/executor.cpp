@@ -1715,7 +1715,7 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
 void CtiLMManualControlRequestExecutor::fitTimeToNotifications( CtiTime &proposedStart, CtiTime &proposedStop,
                                                                 CtiLMProgramBaseSPtr program )
 {
-    CtiLMProgramDirect &programDirect = dynamic_cast<CtiLMProgramDirect&>(*program);
+    CtiLMProgramDirect &programDirect = static_cast<CtiLMProgramDirect&>(*program);
 
     long activationOffset = programDirect.getNotifyActiveOffset();
 
