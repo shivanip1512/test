@@ -38,16 +38,6 @@ using std::string;
 /** global used to start the interface by c functions **/
 CtiFDR_Inet * inetInterface;
 
-const CHAR * CtiFDR_Inet::KEY_LISTEN_PORT_NUMBER = "FDR_INET_PORT_NUMBER";
-const CHAR * CtiFDR_Inet::KEY_IP_MASK = "FDR_INET_IP_MASK";
-const CHAR * CtiFDR_Inet::KEY_TIMESTAMP_WINDOW = "FDR_INET_TIMESTAMP_VALIDITY_WINDOW";
-const CHAR * CtiFDR_Inet::KEY_DB_RELOAD_RATE = "FDR_INET_DB_RELOAD_RATE";
-const CHAR * CtiFDR_Inet::KEY_SOURCE_NAME = "FDR_INET_SOURCE_NAME";
-const CHAR * CtiFDR_Inet::KEY_SERVER_LIST = "FDR_INET_SERVER_LIST";
-const CHAR * CtiFDR_Inet::KEY_DEBUG_MODE = "FDR_INET_DEBUG_MODE";
-const CHAR * CtiFDR_Inet::KEY_QUEUE_FLUSH_RATE = "FDR_INET_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDR_Inet::KEY_LINK_TIMEOUT = "FDR_INET_LINK_TIMEOUT_SECONDS";
-
 // Constructors, Destructor, and Operators
 CtiFDR_Inet::CtiFDR_Inet(string aName) :
     CtiFDRSocketInterface(aName),
@@ -127,6 +117,17 @@ CtiMutex & CtiFDR_Inet::getClientListMux ()
 {
     return iClientListMux;
 }
+
+std::string CtiFDR_Inet::getServerList() const
+{
+    return iServerList;
+}
+
+void CtiFDR_Inet::setServerList( const std::string & serverList )
+{
+    iServerList = serverList;
+}
+
 
 /*************************************************
 * Function Name: CtiFDR_INET::init
@@ -412,7 +413,6 @@ bool CtiFDR_Inet::loadClientList()
 {
     bool                successful(FALSE);
     CtiFDRPointSPtr     translationPoint;
-    string              receiveConnections;
     int                 entries;
 
     try
@@ -473,20 +473,19 @@ bool CtiFDR_Inet::loadClientList()
         * because of this, the server list is always empty
         *******************************
         */
-        receiveConnections = getCparmValueAsString(KEY_SERVER_LIST);
-        if(receiveConnections.length() != 0)
+
+        std::string serverList = getServerList();
+
+        if ( serverList.length() != 0 )
         {
             boost::char_separator<char> sep(",");
-            Boost_char_tokenizer next(receiveConnections, sep);
+            Boost_char_tokenizer next(serverList, sep);
             Boost_char_tokenizer::iterator tok_iter = next.begin();
-
-            string       myInterfaceName;
-            string       tempString;
 
             // parse the interfaces
             while ( tok_iter != next.end() )
             {
-                myInterfaceName = *tok_iter;tok_iter++;
+                string myInterfaceName = *tok_iter;tok_iter++;
                 bool foundDestination = false;
 
                 for (int y=0; y < iClientList.size(); y++)
@@ -521,108 +520,60 @@ bool CtiFDR_Inet::loadClientList()
 */
 bool CtiFDR_Inet::readConfig()
 {
-    string   tempStr;
+    //
+    //  Supported INET CParms
+    //
+    static const std::string
+        KEY_LISTEN_PORT_NUMBER ( "FDR_INET_PORT_NUMBER"                 ),
+        KEY_IP_MASK            ( "FDR_INET_IP_MASK"                     ),
+        KEY_TIMESTAMP_WINDOW   ( "FDR_INET_TIMESTAMP_VALIDITY_WINDOW"   ),
+        KEY_DB_RELOAD_RATE     ( "FDR_INET_DB_RELOAD_RATE"              ),
+        KEY_SOURCE_NAME        ( "FDR_INET_SOURCE_NAME"                 ),
+        KEY_SERVER_LIST        ( "FDR_INET_SERVER_LIST"                 ),
+        KEY_DEBUG_MODE         ( "FDR_INET_DEBUG_MODE"                  ),
+        KEY_QUEUE_FLUSH_RATE   ( "FDR_INET_QUEUE_FLUSH_RATE"            ),
+        KEY_LINK_TIMEOUT       ( "FDR_INET_LINK_TIMEOUT_SECONDS"        );
 
+    setPortNumber( gConfigParms.getValueAsInt( KEY_LISTEN_PORT_NUMBER, INET_PORTNUMBER ) );
 
-    tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);
-    if (tempStr.length() > 0)
-    {
-        setPortNumber (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        setPortNumber (INET_PORTNUMBER);
-    }
-    // since inet and rccs are the only interfaces that intiate the connection, we must make sure we set the
-    // connect port number also
-    setConnectPortNumber (getPortNumber());
+    // Since INET and RCCS are the only interfaces that initiate the connection, we must make sure we set the
+    //  connect port number also.
+    setConnectPortNumber( getPortNumber() );
 
-    tempStr = getCparmValueAsString(KEY_LINK_TIMEOUT);
-    if (tempStr.length() > 0)
-    {
-        setLinkTimeout (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        setLinkTimeout (60);
-    }
+    setLinkTimeout( gConfigParms.getValueAsInt( KEY_LINK_TIMEOUT, 60 ) );
 
-    tempStr = getCparmValueAsString(KEY_IP_MASK);
-    if (tempStr.length() > 0)
-    {
-        setIpMask(tempStr);
-    }
-    else
-    {
-        setIpMask("");
-    }
+    setIpMask( gConfigParms.getValueAsString( KEY_IP_MASK ) );
 
-    tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
-    if (tempStr.length() > 0)
-    {
-        setTimestampReasonabilityWindow (atoi (tempStr.c_str()));
-    }
-    else
-    {
-        setTimestampReasonabilityWindow (120);
-    }
+    setTimestampReasonabilityWindow( gConfigParms.getValueAsInt( KEY_TIMESTAMP_WINDOW, 120 ) );
 
-    tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
-    if (tempStr.length() > 0)
-    {
-        setReloadRate (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        setReloadRate (86400);
-    }
+    setReloadRate( gConfigParms.getValueAsInt( KEY_DB_RELOAD_RATE, 86400 ) );
 
-    tempStr = getCparmValueAsString(KEY_SOURCE_NAME);
-    if (tempStr.length() > 0)
-    {
-        iSourceName = tempStr;
-    }
-    else
-    {
-        iSourceName = string("YUKON");
-    }
+    setSourceName( gConfigParms.getValueAsString( KEY_SOURCE_NAME, "YUKON" ) );
 
+    setInterfaceDebugMode( gConfigParms.isTrue( KEY_DEBUG_MODE ) );
 
-    tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-        setInterfaceDebugMode (true);
-    else
-        setInterfaceDebugMode (false);
+    setQueueFlushRate( gConfigParms.getValueAsInt( KEY_QUEUE_FLUSH_RATE, 1 ) );
 
-    tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
-    if (tempStr.length() > 0)
-    {
-        setQueueFlushRate (atoi(tempStr.c_str()));
-    }
-    else
-    {
-        // default to 5 seconds for inet
-        setQueueFlushRate (1);
-    }
+    setServerList( gConfigParms.getValueAsString( KEY_SERVER_LIST ) );
 
-    tempStr = getCparmValueAsString(KEY_SERVER_LIST);
-
-    if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
+    if ( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
     {
         Cti::FormattedList loglist;
 
         loglist.add("INET port number")      << getPortNumber();
         loglist.add("INET timestamp window") << getTimestampReasonabilityWindow();
-        loglist.add("INET db reload rate")   << getReloadRate();
-        loglist.add("INET source name")      << iSourceName;
+        loglist.add("INET DB reload rate")   << getReloadRate();
+        loglist.add("INET source name")      << getSourceName();
+        loglist.add("INET link timeout")     << getLinkTimeout();
+        loglist.add("INET queue flush rate") << getQueueFlushRate();
+        loglist.add("INET IP mask")          << getIpMask();
 
-        if(tempStr.length() != 0)
-            loglist <<"INET receive only connections will be initialized";
+        if ( getServerList().length() != 0 )
+        {
+            loglist << "INET receive only connections will be initialized";
+        }
 
-        if (isInterfaceInDebugMode())
-            loglist <<"INET running in debug mode";
-        else
-            loglist <<"INET running in normal mode";
+        loglist << "INET running in " << ( isInterfaceInDebugMode() ? "debug" : "normal" ) << " mode";
 
         CTILOG_DEBUG(dout, loglist);
     }

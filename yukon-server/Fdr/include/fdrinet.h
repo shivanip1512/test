@@ -109,24 +109,16 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         std::string  getSourceName() const;
         CtiFDR_Inet &setSourceName (std::string &aName);
 
-        // end getters and setters
-        static const CHAR * KEY_LISTEN_PORT_NUMBER;
-        static const CHAR * KEY_IP_MASK;
-        static const CHAR * KEY_TIMESTAMP_WINDOW;
-        static const CHAR * KEY_DB_RELOAD_RATE;
-        static const CHAR * KEY_SOURCE_NAME;
-        static const CHAR * KEY_SERVER_LIST;
-        static const CHAR * KEY_DEBUG_MODE;
-        static const CHAR * KEY_QUEUE_FLUSH_RATE;
-        static const CHAR * KEY_LINK_TIMEOUT;
-
-        enum {Inet_Invalid=0,
-              Inet_Open,
-              Inet_Closed,
-              Inet_Indeterminate,
-              Inet_State_Four,
-              Inet_State_Five,
-              Inet_State_Six};
+        enum
+        {
+            Inet_Invalid = 0,
+            Inet_Open,
+            Inet_Closed,
+            Inet_Indeterminate,
+            Inet_State_Four,
+            Inet_State_Five,
+            Inet_State_Six
+        };
 
     protected:
 
@@ -167,6 +159,9 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         std::vector< std::string > getClientList () const;
         CtiMutex & getClientListMux ();
 
+        std::string getServerList() const;
+        void setServerList( const std::string & serverList );
+
     private:
         //translateSingle Point
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
@@ -182,5 +177,5 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         std::vector< std::string > iClientList;
         CtiMutex                    iClientListMux;
 
-
+        std::string                   iServerList;
 };
