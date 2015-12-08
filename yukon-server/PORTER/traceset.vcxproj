@@ -162,7 +162,10 @@
     </Link>
     <PostBuildEvent>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
-xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
+if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
+</Command>
     </PostBuildEvent>
     <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
@@ -211,7 +214,10 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </Link>
     <PostBuildEvent>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
-xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
+if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
+</Command>
     </PostBuildEvent>
     <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
@@ -268,7 +274,10 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </Link>
     <PostBuildEvent>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
-xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
+if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
+</Command>
     </PostBuildEvent>
     <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
@@ -324,7 +333,10 @@ xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
     </Link>
     <PostBuildEvent>
       <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
-xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin</Command>
+xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
+if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
+if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
+</Command>
     </PostBuildEvent>
     <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
