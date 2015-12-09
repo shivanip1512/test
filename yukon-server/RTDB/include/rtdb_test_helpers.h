@@ -12,7 +12,6 @@
 #include "test_reader.h"
 
 #include <numeric>
-#include <regex>
 
 namespace Cti {
 namespace Test {
