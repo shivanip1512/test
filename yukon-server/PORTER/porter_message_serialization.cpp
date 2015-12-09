@@ -73,7 +73,7 @@ MessagePtr<Thrift::Porter::DynamicPaoInfoResponse>::type populateThrift( const R
     {
         if( auto key = mapping(kv.first) )
         {
-            omsg->_durationValues.emplace(*key, kv.second.count());
+            omsg->_durationValues.emplace(*key, duration_cast<milliseconds>(kv.second).count());
         }
         else
         {
