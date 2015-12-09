@@ -383,6 +383,10 @@ void msgsEqual(
             oracleMsgItr++;
         }
     }
+    else
+    {
+        BOOST_CHECK( returnMsgs.size() == oracleMsgs.size() );
+    }
 }
 
 }
