@@ -1,5 +1,7 @@
 package com.cannontech.amr.meter.model;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -56,7 +58,10 @@ public abstract class YukonMeter extends SimpleMeter implements DisplayablePao {
     
     @Override
     public String toString() {
-        return String.format("YukonMeter [name=%s, disabled=%s]", name, disabled);
+        ToStringBuilder tsb = new ToStringBuilder(this);
+        tsb.appendSuper(super.toString());
+        tsb.append("name", getName());
+        tsb.append("disabled", isDisabled());
+        return tsb.toString();
     }
-    
 }
