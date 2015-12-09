@@ -408,27 +408,15 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify )
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
 
-        /* Log the response */
-        for( auto msg : returnMsgs )
-        {
-            BOOST_TEST_MESSAGE( msg.ResultString() );
-        }
-
-        BOOST_REQUIRE_EQUAL( 5, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
-        /* Check some important information in the messages */
-        BOOST_CHECK( Cti::Test::msgsContain( "Midnight.*Config: \\(1, 2, 3, 4, 5\\), Device: \\(1, 2, 3\\)", returnMsgs ) );
-        BOOST_CHECK( Cti::Test::msgsContain( "missing 2 midnight channels", returnMsgs ) );
-        BOOST_CHECK( Cti::Test::msgsContain( "Interval.*Config: \\(3, 4, 5\\), Device: \\(3, 4\\)", returnMsgs ) );
-        BOOST_CHECK( Cti::Test::msgsContain( "missing 1 interval channels", returnMsgs ) );
-        BOOST_CHECK( Cti::Test::msgsContain( "Config channelconfig is NOT current", returnMsgs ) );
-
-        /* And make sure we noted that the Config was not current */
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
-        }
+        Cti::Test::msgsEqual( returnMsgs, ClientErrors::ConfigNotCurrent, {
+            "Config Midnight Channel Metrics did not match. Config: (1, 2, 3, 4, 5), Device: (1, 2, 3)",
+            "The meter device is missing 2 midnight channels which suggests the meter may not be configured for them.",
+            "Config Interval Channel Metrics did not match. Config: (3, 4, 5), Device: (3, 4)",
+            "The meter device is missing 1 interval channels which suggests the meter may not be configured for them.",
+            "Config channelconfig is NOT current."
+        } );
     }
 
 }

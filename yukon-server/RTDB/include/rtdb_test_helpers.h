@@ -358,20 +358,33 @@ struct DevicePointHelper
 };
 
 
+/**
+Runs through a list of return messages, comparing them to the oracle expected messages, as well 
+as verifying the return status.
+*/
 
-bool msgsContain( std::string regex, CtiDeviceSingle::ReturnMsgList &returnMsgs )
+void msgsEqual( 
+    CtiDeviceSingle::ReturnMsgList &returnMsgs, 
+    int status, 
+    std::vector<std::string> oracleMsgs )
 {
-    std::regex myRegex( regex );
-
-    for( auto msg : returnMsgs )
+    if( returnMsgs.size() == oracleMsgs.size() )
     {
-        if( std::regex_search( msg.ResultString(), myRegex ) )
+        auto returnMsgItr = returnMsgs.begin();
+        auto oracleMsgItr = oracleMsgs.begin();
+
+        while( returnMsgItr != returnMsgs.end() )
         {
-            return true;
+            CtiReturnMsg &returnMsg = *returnMsgItr;
+            std::string &oracleMsg = *oracleMsgItr;
+            BOOST_TEST_MESSAGE( returnMsg.ResultString() );
+            BOOST_CHECK_EQUAL( returnMsg.Status(), status );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), oracleMsg );
+            returnMsgItr++;
+            oracleMsgItr++;
         }
     }
-    return false;
-};
+}
 
 }
 }
