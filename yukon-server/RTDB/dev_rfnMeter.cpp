@@ -449,6 +449,27 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
                     reportConfigMismatchDetails<PaoMetricIds>( "Midnight Channel Metrics",
                         cfgMidnightMetrics, paoMidnightMetrics,
                         pReq, returnMsgs );
+
+                    /* 
+                     * If we have channels mismatched, it may be that the meter is not configured for them, 
+                     * in which case the device channels will contain a subset of the config channels. 
+                     */
+                    if( paoMidnightMetrics )
+                    {
+                        PaoMetricIds diff;
+
+                        std::set_difference( cfgMidnightMetrics.begin(), cfgMidnightMetrics.end(),
+                            paoMidnightMetrics.get().begin(), paoMidnightMetrics.get().end(),
+                            std::inserter( diff, diff.begin() ) );
+
+                        if( !diff.empty() )
+                        {
+                            std::string msg = "The meter device is missing " + std::to_string( diff.size() ) +
+                                " midnight channels which suggests the meter may not be configured for them.";
+                            reportConfigDetails( msg, pReq, returnMsgs );
+                        }
+                    }
+
                     ret = ClientErrors::ConfigNotCurrent;
                 }
                 else
@@ -486,14 +507,39 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
                             cfgIntervalMetrics, paoIntervalMetrics,
                             pReq, returnMsgs );
 
-                        reportConfigMismatchDetails<unsigned>( "Channel Recording Interval (sec)",
-                            cfgRecordingIntervalSeconds, paoRecordingIntervalSeconds,
-                            pReq, returnMsgs );
+                        /*
+                         * If we have channels mismatched, it may be that the meter is not configured for them,
+                         * in which case the device channels will contain a subset of the config channels.
+                         */
+                        if( paoIntervalMetrics )
+                        {
+                            PaoMetricIds diff;
 
-                        reportConfigMismatchDetails<unsigned>( "Channel Reporting Interval (sec)",
-                            cfgReportingIntervalSeconds, paoReportingIntervalSeconds,
-                            pReq, returnMsgs );
+                            std::set_difference( cfgIntervalMetrics.begin(), cfgIntervalMetrics.end(),
+                                paoIntervalMetrics.get().begin(), paoIntervalMetrics.get().end(),
+                                std::inserter( diff, diff.begin() ) );
 
+                            if( !diff.empty() )
+                            {
+                                std::string msg = "The meter device is missing " + std::to_string( diff.size() ) +
+                                    " interval channels which suggests the meter may not be configured for them.";
+                                reportConfigDetails( msg, pReq, returnMsgs );
+                            }
+                        }
+
+                        if( cfgRecordingIntervalSeconds != paoRecordingIntervalSeconds )
+                        {
+                            reportConfigMismatchDetails<unsigned>( "Channel Recording Interval (sec)",
+                                cfgRecordingIntervalSeconds, paoRecordingIntervalSeconds,
+                                pReq, returnMsgs );
+                        }
+
+                        if( cfgReportingIntervalSeconds != paoReportingIntervalSeconds )
+                        {
+                            reportConfigMismatchDetails<unsigned>( "Channel Reporting Interval (sec)",
+                                cfgReportingIntervalSeconds, paoReportingIntervalSeconds,
+                                pReq, returnMsgs );
+                        }
                         ret = ClientErrors::ConfigNotCurrent;
                     }
                 }

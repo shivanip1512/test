@@ -1,8 +1,10 @@
 #include <boost/test/unit_test.hpp>
+#include <boost/assign/list_of.hpp>
 
 #include "dev_rfnMeter.h"
 #include "ctidate.h"
 #include "cmd_rfn.h"
+#include "config_device.h"
 #include "config_data_rfn.h"
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
@@ -348,4 +350,87 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_temperaturealarm_unsup
         BOOST_CHECK_EQUAL( tempAlarmUnsupported, "1" );
     }
 }
+
+/**
+This test does a "putconfig install channelconfig verify" and checks that it properly notices that the 
+device configuration is missing several midnight and interval channel settings.
+*/
+BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify )
+{
+    test_RfnMeterDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    /* Device settings */
+    std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3 };
+    std::vector<unsigned long> paoIntervalMetrics = { 3, 4 };
+
+    dut.setID( 1234 );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60 );
+
+    /* Configuration settings */
+    const std::map<std::string, std::string> configItems = boost::assign::map_list_of
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "5" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "RECEIVED_KWH" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".2."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "SUM_KWH" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".2."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "NET_KWH" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DEMAND" )
+        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" )
+        ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
+        ( RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" );
+
+    cfg.addCategory(
+        Cti::Config::Category::ConstructCategory(
+        "rfnChannelConfiguration",
+        configItems ) );
+
+    /* And now we run the command. */
+    {
+        CtiCommandParser parse( "putconfig install channelconfig verify" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
+
+        /* Log the response */
+        for( auto msg : returnMsgs )
+        {
+            BOOST_TEST_MESSAGE( msg.ResultString() );
+        }
+
+        BOOST_REQUIRE_EQUAL( 5, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+        /* Check some important information in the messages */
+        BOOST_CHECK( Cti::Test::msgsContain( "Midnight.*Config: \\(1, 2, 3, 4, 5\\), Device: \\(1, 2, 3\\)", returnMsgs ) );
+        BOOST_CHECK( Cti::Test::msgsContain( "missing 2 midnight channels", returnMsgs ) );
+        BOOST_CHECK( Cti::Test::msgsContain( "Interval.*Config: \\(3, 4, 5\\), Device: \\(3, 4\\)", returnMsgs ) );
+        BOOST_CHECK( Cti::Test::msgsContain( "missing 1 interval channels", returnMsgs ) );
+        BOOST_CHECK( Cti::Test::msgsContain( "Config channelconfig is NOT current", returnMsgs ) );
+
+        /* And make sure we noted that the Config was not current */
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+        }
+    }
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()

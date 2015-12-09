@@ -7,10 +7,12 @@
 #include "pt_analog.h"
 #include "pt_accum.h"
 #include "pt_status.h"
+#include "dev_single.h"
 
 #include "test_reader.h"
 
 #include <numeric>
+#include <regex>
 
 namespace Cti {
 namespace Test {
@@ -353,6 +355,22 @@ struct DevicePointHelper
 
         return point;
     }
+};
+
+
+
+bool msgsContain( std::string regex, CtiDeviceSingle::ReturnMsgList &returnMsgs )
+{
+    std::regex myRegex( regex );
+
+    for( auto msg : returnMsgs )
+    {
+        if( std::regex_search( msg.ResultString(), myRegex ) )
+        {
+            return true;
+        }
+    }
+    return false;
 };
 
 }
