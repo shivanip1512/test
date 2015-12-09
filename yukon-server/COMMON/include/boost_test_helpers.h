@@ -1,3 +1,5 @@
+#pragma once
+
 #include "millisecond_timer.h"
 #include "ctitime.h"
 #include "ctidate.h"

@@ -10,6 +10,9 @@
 #include "dev_single.h"
 
 #include "test_reader.h"
+#include "boost_test_helpers.h"
+#include <boost/range/algorithm/count.hpp>
+#include <boost/test/unit_test.hpp>
 
 #include <numeric>
 
@@ -367,27 +370,12 @@ void msgsEqual(
     int status, 
     std::vector<std::string> oracleMsgs )
 {
-    if( returnMsgs.size() == oracleMsgs.size() )
-    {
-        auto returnMsgItr = returnMsgs.begin();
-        auto oracleMsgItr = oracleMsgs.begin();
+    auto resultStrings = returnMsgs | boost::adaptors::transformed( []( const CtiReturnMsg &msg ){ return msg.ResultString(); } );
+    auto resultStatuses = returnMsgs | boost::adaptors::transformed( []( const CtiReturnMsg &msg ){ return msg.Status(); } );
 
-        while( returnMsgItr != returnMsgs.end() )
-        {
-            CtiReturnMsg &returnMsg = *returnMsgItr;
-            std::string &oracleMsg = *oracleMsgItr;
-            BOOST_TEST_MESSAGE( returnMsg.ResultString() );
-            BOOST_CHECK_EQUAL( returnMsg.Status(), status );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), oracleMsg );
-            returnMsgItr++;
-            oracleMsgItr++;
-        }
-    }
-    else
-    {
-        BOOST_CHECK( returnMsgs.size() == oracleMsgs.size() );
-    }
-}
+    BOOST_CHECK_EQUAL_RANGES( resultStrings, oracleMsgs );
+    BOOST_CHECK_EQUAL( resultStatuses.size(), boost::range::count( resultStatuses, status ) );
+};
 
 }
 }
