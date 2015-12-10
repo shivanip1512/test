@@ -23,13 +23,11 @@ import com.cannontech.cbc.exceptions.MissingSearchType;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -39,7 +37,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.capcontrol.models.ControlEventSet;
 import com.cannontech.web.capcontrol.models.ResultRow;
-import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ParamUtil;
 import com.google.common.collect.Lists;
@@ -126,6 +123,8 @@ public class ResultsController {
             model.addAttribute("pageName", "orphanedRegulators");
         }
         
+        model.addAttribute("searchType", searchType);
+
         model.addAttribute("label", label);
         
         List<ResultRow> results = new ArrayList<ResultRow>();

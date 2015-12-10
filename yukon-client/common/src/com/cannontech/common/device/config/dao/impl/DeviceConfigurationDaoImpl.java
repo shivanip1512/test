@@ -953,6 +953,20 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                         device.getPaoIdentifier().getPaoId());
         }
     }
+
+    @Override
+    public LightDeviceConfiguration getLiteConfigurationById(int id) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceConfigurationId, Name, Description");
+        sql.append("FROM DeviceConfiguration");
+        sql.append("WHERE DeviceConfigurationId").eq(id);
+
+        try {
+            return jdbcTemplate.queryForObject(sql, new LightConfigurationRowMapper());
+        } catch(IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("No configuration exists with id " + id);
+        }
+    }
     
     @Override
     public LightDeviceConfiguration getLightDeviceConfigurationByName(String name) {

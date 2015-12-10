@@ -138,7 +138,7 @@ public class CapbankDaoImpl implements CapbankDao {
     public boolean assignCapbank(YukonPao capbank, String feederName) {
         YukonPao feeder = paoDao.findYukonPao(feederName, PaoType.CAP_CONTROL_FEEDER);
         return (feeder == null) ? false : assignCapbank(feeder, capbank);
-    };
+    }
 
     @Override
     public boolean assignCapbank(YukonPao feeder, YukonPao capbank) {

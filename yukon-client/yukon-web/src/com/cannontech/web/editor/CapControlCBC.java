@@ -2,10 +2,14 @@ package com.cannontech.web.editor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.Device;
@@ -14,36 +18,71 @@ import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.device.DeviceWindow;
-import com.cannontech.database.db.pao.YukonPAObject;
+import com.google.common.collect.ImmutableSet;
 
 
-public class CapControlCBC {
+public class CapControlCBC implements YukonPao {
 
+    private Integer id;
+    private String name;
+    private PaoType paoType;
     private boolean disableFlag;
-    private String cbcParent;
+    private LiteYukonPAObject parent;
     private Map<PointType, List<String>> points;
     private Device device;
     private DeviceCBC deviceCBC;
     private DeviceWindow deviceWindow;
-    Map<String, DeviceScanRate> deviceScanRateMap;
+    private Map<String, DeviceScanRate> deviceScanRateMap;
     private DeviceDirectCommSettings deviceDirectCommSettings;
     private DeviceDialupSettings deviceDialupSettings;
     private String ipAddress = CtiUtilities.STRING_NONE;
     private String port = CtiUtilities.STRING_NONE;
     private DeviceAddress deviceAddress;
-    private DNPConfiguration dnpConfiguration;
+    private Integer dnpConfigId;
     private boolean editingController;
-    private boolean twoWay;
-    private boolean editingIntegrity;
-    private boolean editingException;
-    private YukonPAObject yukonPAObject;
-    
-    public String getCbcParent() {
-        return cbcParent;
+
+    private static final Set<PaoType> twoWayTypes = ImmutableSet.of(PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024,
+        PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP);
+
+    public static final boolean isTwoType(PaoType type) {
+        return twoWayTypes.contains(type);
     }
 
-    public void setCbcParent(String cbcParent) {
-        this.cbcParent = cbcParent;
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public PaoType getPaoType() {
+        return paoType;
+    }
+
+    public void setPaoType(PaoType paoType) {
+        this.paoType = paoType;
+    }
+
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return PaoIdentifier.of(id, paoType);
+    }
+    
+    public LiteYukonPAObject getParent() {
+        return parent;
+    }
+
+    public void setParent(LiteYukonPAObject parent) {
+        this.parent = parent;
     }
 
     public boolean isDisableFlag() {
@@ -134,12 +173,12 @@ public class CapControlCBC {
         this.deviceAddress = deviceAddress;
     }
 
-    public DNPConfiguration getDnpConfiguration() {
-        return dnpConfiguration;
+    public Integer getDnpConfigId() {
+        return dnpConfigId;
     }
 
-    public void setDnpConfiguration(DNPConfiguration dnpConfiguration) {
-        this.dnpConfiguration = dnpConfiguration;
+    public void setDnpConfigId(Integer dnpConfiguration) {
+        this.dnpConfigId = dnpConfiguration;
     }
 
     public boolean isEditingController() {
@@ -151,35 +190,15 @@ public class CapControlCBC {
     }
 
     public boolean isTwoWay() {
-        return twoWay;
-    }
-
-    public void setTwoWay(boolean twoWay) {
-        this.twoWay = twoWay;
+        return twoWayTypes.contains(getPaoIdentifier().getPaoType());
     }
 
     public boolean isEditingIntegrity() {
         return isTwoWay() && (this.deviceScanRateMap.containsKey(DeviceScanRate.TYPE_INTEGRITY));
     }
 
-    public void setEditingIntegrity(boolean editingIntegrity) {
-        this.editingIntegrity = editingIntegrity;
-    }
-
     public boolean isEditingException() {
         return isTwoWay() && (this.deviceScanRateMap.containsKey(DeviceScanRate.TYPE_EXCEPTION));
-    }
-
-    public void setEditingException(boolean editingException) {
-        this.editingException = editingException;
-    }
-
-    public YukonPAObject getYukonPAObject() {
-        return yukonPAObject;
-    }
-
-    public void setYukonPAObject(YukonPAObject yukonPAObject) {
-        this.yukonPAObject = yukonPAObject;
     }
 
     public static enum ScanGroup implements DisplayableEnum {
@@ -203,5 +222,5 @@ public class CapControlCBC {
         public String getFormatKey() {
             return baseKey + name();
         }
-    }   
+    }
 }

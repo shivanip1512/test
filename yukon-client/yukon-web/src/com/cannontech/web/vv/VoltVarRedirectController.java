@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -22,7 +21,7 @@ public class VoltVarRedirectController {
     @Autowired private CapbankDao capbankDao;
 
     @RequestMapping("area/{id}")
-    public String area(ModelMap model, @PathVariable int id) {
+    public String area(@PathVariable int id) {
         return "redirect:/capcontrol/areas/" + id;
     }
 
@@ -48,12 +47,7 @@ public class VoltVarRedirectController {
 
     @RequestMapping("cbc/{id}")
     public String cbc(ModelMap model, @PathVariable int id) {
-
-        PaoIdentifier bank = capbankDao.findCapBankByCbc(id);
-
-        if (bank == null) return editorPage(id);
-
-        return bank(model, bank.getPaoId());
+        return editorOrSubstationDetail(model, id);
     }
 
     private String editorOrSubstationDetail(ModelMap model, int id) {
@@ -80,6 +74,11 @@ public class VoltVarRedirectController {
 
 
     private String editorPage(int id) {
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        if (pao.getPaoType().isCbc()) {
+            return "redirect:/capcontrol/cbc/" + id;
+        }
+
         return "redirect:/editor/cbcBase.jsf?type=2&itemid="+ id;
     }
 }

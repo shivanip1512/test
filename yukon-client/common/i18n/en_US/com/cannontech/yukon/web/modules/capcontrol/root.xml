@@ -850,6 +850,10 @@
     <!-- <entry key="yukon.web.modules.capcontrol.capControlCBC.capControlCBC.EDIT.pageTitle">CBC Editor: {0} Edit</entry> -->
     <entry key="yukon.web.modules.capcontrol.cbc.EDIT.pageHeading">Edit {0}</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.EDIT.pageTitle">CBC: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.VIEW.pageTitle">CBC: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.VIEW.pageHeading">H{0}</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.points.title">CBC Points</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.config.title">Configuration</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.dnpConfiguration.title">DNP Configuration</entry>
@@ -857,6 +861,7 @@
     <entry key="yukon.web.modules.capcontrol.cbc.class">Class</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.parent">Parent</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.name">Name</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.status">Status</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.serialNumber">Serial Number</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.masterAddr">Master Address</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.slaveAddr">Slave Address</entry>
@@ -872,7 +877,6 @@
     <entry key="yukon.web.modules.capcontrol.cbc.altInterval">Alt. Interval</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.scanGroup">Scan Group</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.commChannel">Comm Channel</entry>
-    <entry key="yukon.web.modules.capcontrol.cbc.return">Return</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.dnpConfig">DNP Config</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.internalRetries">Internal Retries</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.useLocal">Use Local Time</entry>
@@ -881,7 +885,11 @@
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit1">Unsolicited Class 1</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit2">Unsolicited Class 2</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit3">Unsolicited Class 3</entry>
-    <entry key="yukon.web.modules.capcontrol.cbc.edit.saveFailed">Unable to Save CBC: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.save.fail">Unable to Save CBC: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.copy.success">Now editing copy</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.copy.fail">Name not available</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.delete.success">Deleted CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.delete.fail">Unable to delete</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.scanGroup.DEFAULT">Default</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.scanGroup.FIRST">First</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.scanGroup.SECOND">Second</entry>

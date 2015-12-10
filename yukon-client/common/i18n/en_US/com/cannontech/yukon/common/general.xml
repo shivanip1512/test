@@ -224,6 +224,7 @@
 <entry key="yukon.common.reports">Reports</entry>
 <entry key="yukon.common.requestFailed">Request Failed</entry>
 <entry key="yukon.common.result">Result</entry>
+<entry key="yukon.common.return">Return</entry>
 <entry key="yukon.common.rfnExpressComMessage.error">RF ExpressCom message error: {0}</entry>
 <entry key="yukon.common.right">Right</entry>
 <entry key="yukon.common.role.group">Role Group</entry>

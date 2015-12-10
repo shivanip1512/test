@@ -1,13 +1,11 @@
 package com.cannontech.web.capcontrol.service.impl;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
@@ -15,150 +13,161 @@ import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.pao.model.CompleteCbcBase;
+import com.cannontech.common.pao.model.CompleteOneWayCbc;
+import com.cannontech.common.pao.model.CompleteTwoWayCbc;
+import com.cannontech.common.pao.service.PaoPersistenceService;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoPropertyDao;
-import com.cannontech.database.PoolManager;
+import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceScanRate;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.capcontrol.service.CbcService;
 import com.cannontech.web.editor.CapControlCBC;
+import com.cannontech.web.util.CBCCopyUtils;
+import com.cannontech.yukon.IDatabaseCache;
 
 @Service
 public class CbcServiceImpl implements CbcService {
+
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoPropertyDao propertyDao;
     @Autowired private DeviceConfigurationDao configurationDao;
+    @Autowired private DeviceConfigurationService deviceConfigService;
     @Autowired private CapbankDao capbankDao;
     @Autowired private PaoDao paoDao;
-    private transient Logger logger = YukonLogManager.getLogger(RemoteBase.class);
+    @Autowired private PaoPersistenceService paoPersistenceService;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private IDatabaseCache dbCache;
+    
+    private static final Logger log = YukonLogManager.getLogger(CbcServiceImpl.class);
 
     @Override
-    public CapControlCBC getCapControlCBC(int id) {
+    public CapControlCBC getCbc(int id) {
 
-        CapControlCBC capControlCBC = new CapControlCBC();
-        YukonPAObject pao = PAOFactory.createPAObject(id);
-        DBPersistent dbPersistent = retrieveDBPersistent(pao);
-        DeviceBase deviceBase = (DeviceBase) dbPersistent;
-        com.cannontech.database.db.pao.YukonPAObject yukonPAObject = new com.cannontech.database.db.pao.YukonPAObject();
-        yukonPAObject.setPaObjectID(pao.getPAObjectID());
-        yukonPAObject.setPaoClass(pao.getPAOClass());
-        yukonPAObject.setPaoName(pao.getPAOName());
-        yukonPAObject.setPaoType(pao.getPaoType());
-        yukonPAObject.setDisableFlag(pao.getPAODisableFlag());
-        capControlCBC.setYukonPAObject(yukonPAObject);
-        capControlCBC.setDisableFlag(yukonPAObject.getDisableFlag()=='N'?false:true);
+        CapControlCBC cbc = new CapControlCBC();
         
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        DBPersistent dbPersistent = dbPersistentDao.retrieveDBPersistent(pao);
+        DeviceBase deviceBase = (DeviceBase) dbPersistent;
+
+        cbc.setName(deviceBase.getPAOName());
+        cbc.setId(deviceBase.getPAObjectID());
+        cbc.setPaoType(deviceBase.getPaoType());
         PaoIdentifier capbank = capbankDao.findCapBankByCbc(id);
-        int parentID = (capbank != null) ? capbank.getPaoId() : 0;
-        if (parentID == CtiUtilities.NONE_ZERO_ID) {
-            capControlCBC.setCbcParent(CtiUtilities.STRING_NONE);
+
+        if (capbank == null) {
+            cbc.setParent(null);
         } else {
-            try {
-                LiteYukonPAObject parentPAO = paoDao.getLiteYukonPAO(parentID);
-                capControlCBC.setCbcParent(parentPAO.getPaoName() + "   (" + parentPAO.getPaoType().getDbString()
-                    + ",  id: " + parentPAO.getLiteID() + ")");
-            } catch (NotFoundException nfe) {
-                capControlCBC.setCbcParent(CtiUtilities.STRING_NONE);
-            }
+            LiteYukonPAObject parent = dbCache.getAllPaosMap().get(capbank.getPaoId());
+            cbc.setParent(parent);
         }
 
-        capControlCBC.setDevice(deviceBase.getDevice());
+        cbc.setDevice(deviceBase.getDevice());
         PaoType paoType = deviceBase.getPaoType();
         // Start
 
         if (dbPersistent instanceof TwoWayDevice) {
-            capControlCBC.setTwoWay(true);
             DNPBase dnpBase = (DNPBase) dbPersistent;
 
-            capControlCBC.setDeviceWindow(dnpBase.getDeviceWindow());
+            cbc.setDeviceWindow(dnpBase.getDeviceWindow());
 
-            capControlCBC.setDeviceScanRateMap(dnpBase.getDeviceScanRateMap());
+            cbc.setDeviceScanRateMap(dnpBase.getDeviceScanRateMap());
 
-            capControlCBC.setDeviceDialupSettings(dnpBase.getDeviceDialupSettings());
+            cbc.setDeviceDialupSettings(dnpBase.getDeviceDialupSettings());
 
-            capControlCBC.setDeviceDirectCommSettings(dnpBase.getDeviceDirectCommSettings());
+            cbc.setDeviceDirectCommSettings(dnpBase.getDeviceDirectCommSettings());
             int portId = dnpBase.getDeviceDirectCommSettings().getPortID();
 
             if (paoType.isTcpPortEligible() && DeviceTypesFuncs.isTcpPort(portId)) {
                 try {
                     PaoProperty ipProperty = propertyDao.getByIdAndName(id, PaoPropertyName.TcpIpAddress);
-                    capControlCBC.setIpAddress(ipProperty.getPropertyValue());
+                    cbc.setIpAddress(ipProperty.getPropertyValue());
                 } catch (EmptyResultDataAccessException e) {
-                    logger.error(dnpBase.getPAOName() + " is missing TCP IP Address property.");
+                    log.error(dnpBase.getPAOName() + " is missing TCP IP Address property.");
                 }
 
                 try {
                     PaoProperty portProperty = propertyDao.getByIdAndName(id, PaoPropertyName.TcpPort);
-                    capControlCBC.setPort(portProperty.getPropertyValue());
+                    cbc.setPort(portProperty.getPropertyValue());
                 } catch (EmptyResultDataAccessException e) {
-                    logger.error(dnpBase.getPAOName() + " is missing TCP Port property.");
+                    log.error(dnpBase.getPAOName() + " is missing TCP Port property.");
                 }
             }
 
-            capControlCBC.setDeviceAddress(dnpBase.getDeviceAddress());
+            cbc.setDeviceAddress(dnpBase.getDeviceAddress());
 
             YukonDevice device = new SimpleDevice(id, paoType);
 
-            LightDeviceConfiguration configuration = configurationDao.findConfigurationForDevice(device);
-            if (configuration != null) {
-                capControlCBC.setDnpConfiguration(dnpBase.getDnpConfiguration());
+            LightDeviceConfiguration liteConfig = configurationDao.findConfigurationForDevice(device);
+            int configId;
+            if (liteConfig != null) {
+                configId = liteConfig.getConfigurationId();
+            } else {
+                DeviceConfiguration configuration = configurationDao.getDefaultDNPConfiguration();
+                configId = configuration.getConfigurationId();
             }
-
+            cbc.setDnpConfigId(configId);
         }
+
         if (dbPersistent instanceof CapBankController) {
             CapBankController capBankController = (CapBankController) dbPersistent;
-            capControlCBC.setDeviceCBC(capBankController.getDeviceCBC());
+            cbc.setDeviceCBC(capBankController.getDeviceCBC());
         } else if (dbPersistent instanceof CapBankController702x) {
             CapBankController702x capBankController702x = (CapBankController702x) dbPersistent;
-            capControlCBC.setDeviceCBC(capBankController702x.getDeviceCBC());
+            cbc.setDeviceCBC(capBankController702x.getDeviceCBC());
         } else if (dbPersistent instanceof CapBankControllerDNP) {
             CapBankControllerDNP capBankControllerDNP = (CapBankControllerDNP) dbPersistent;
-            capControlCBC.setDeviceCBC(capBankControllerDNP.getDeviceCBC());
+            cbc.setDeviceCBC(capBankControllerDNP.getDeviceCBC());
         }
 
-        // End
-
-        return capControlCBC;
+        return cbc;
     }
 
-    private void checkForErrorsAndSave(CapControlCBC capControlCBC) throws PortDoesntExistException,
-            MultipleDevicesOnPortException, SameMasterSlaveCombinationException, SQLException,
-            SerialNumberExistsException {
-        int cbcId = capControlCBC.getYukonPAObject().getPaObjectID();
-        YukonPAObject pao = PAOFactory.createPAObject(cbcId);
-        DBPersistent dbPersistent = retrieveDBPersistent(pao);
-        Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-        dbPersistent.setDbConnection(connection);
+    @Override
+    public DNPConfiguration getDnpConfigForDevice(CapControlCBC cbc) {
+        DeviceConfiguration configuration = configurationDao.getDeviceConfiguration(cbc.getDnpConfigId());
+        DNPConfiguration dnpConfig = configurationDao.getDnpConfiguration(configuration);
+        return dnpConfig;
+    }
+
+    private void checkForErrorsAndSave(CapControlCBC cbc) throws PortDoesntExistException,
+            MultipleDevicesOnPortException, SameMasterSlaveCombinationException, SerialNumberExistsException {
+
+        int id = cbc.getId();
+
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        DBPersistent dbPersistent = dbPersistentDao.retrieveDBPersistent(pao);
 
         // error handling when serial number exists
-        handleSerialNumber(capControlCBC, cbcId);
+        handleSerialNumber(cbc, id);
 
         if (dbPersistent instanceof TwoWayDevice) {
             /*
@@ -170,17 +179,17 @@ public class CbcServiceImpl implements CbcService {
             DeviceAddress currentDeviceAddress;
             Integer commPortId;
 
-            currentDeviceAddress = capControlCBC.getDeviceAddress();
-            commPortId = capControlCBC.getDeviceDirectCommSettings().getPortID();
+            currentDeviceAddress = cbc.getDeviceAddress();
+            commPortId = cbc.getDeviceDirectCommSettings().getPortID();
 
             List<Integer> devicesWithSameAddress =
                 deviceDao.getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(),
                     currentDeviceAddress.getSlaveAddress());
             List<Integer> devicesByPort = deviceDao.getDevicesByPort(commPortId.intValue());
             // remove the current device from the list
-            devicesWithSameAddress.remove(new Integer(cbcId));
+            devicesWithSameAddress.remove(new Integer(id));
 
-            if (commPortId.intValue() <= 0) {
+            if (commPortId <= 0) {
                 throw new PortDoesntExistException();
             }
 
@@ -189,72 +198,83 @@ public class CbcServiceImpl implements CbcService {
                 for (int i = 0; i < devicesWithSameAddress.size(); i++) {
                     Integer paoId = devicesWithSameAddress.get(i);
                     if (devicesByPort.contains(paoId)) {
-                        LiteYukonPAObject litePAO =
-                            YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(paoId.intValue());
+                        LiteYukonPAObject litePAO = dbCache.getAllPaosMap().get(paoId);
                         throw new MultipleDevicesOnPortException(litePAO.getPaoName());
                     }
                 }
-                LiteYukonPAObject litePAO =
-                    YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(devicesWithSameAddress.get(0).intValue());
+                LiteYukonPAObject litePAO = dbCache.getAllPaosMap().get(devicesWithSameAddress.get(0));
                 throw new SameMasterSlaveCombinationException(litePAO.getPaoName());
             }
 
             DNPBase dnpBase = (DNPBase) dbPersistent;
 
-            dnpBase.getDeviceAddress().setMasterAddress(capControlCBC.getDeviceAddress().getMasterAddress());
-            dnpBase.getDeviceAddress().setSlaveAddress(capControlCBC.getDeviceAddress().getSlaveAddress());
-            dnpBase.getDeviceAddress().setPostCommWait(capControlCBC.getDeviceAddress().getPostCommWait());
-            dnpBase.getDeviceDirectCommSettings().setPortID(capControlCBC.getDeviceDirectCommSettings().getPortID());
+            dnpBase.getDeviceAddress().setMasterAddress(cbc.getDeviceAddress().getMasterAddress());
+            dnpBase.getDeviceAddress().setSlaveAddress(cbc.getDeviceAddress().getSlaveAddress());
+            dnpBase.getDeviceAddress().setPostCommWait(cbc.getDeviceAddress().getPostCommWait());
+            dnpBase.getDeviceDirectCommSettings().setPortID(cbc.getDeviceDirectCommSettings().getPortID());
 
-            if (capControlCBC.getDeviceScanRateMap().containsKey("Exception")) {
+            if (cbc.getDeviceScanRateMap().containsKey("Exception")) {
                 if (dnpBase.getDeviceScanRateMap().get("Exception") == null)
-                    dnpBase.getDeviceScanRateMap().put("Exception", new DeviceScanRate(cbcId, "Exception"));
+                    dnpBase.getDeviceScanRateMap().put("Exception", new DeviceScanRate(id, "Exception"));
                 dnpBase.getDeviceScanRateMap().get("Exception").setAlternateRate(
-                    capControlCBC.getDeviceScanRateMap().get("Exception").getAlternateRate());
+                    cbc.getDeviceScanRateMap().get("Exception").getAlternateRate());
                 dnpBase.getDeviceScanRateMap().get("Exception").setScanGroup(
-                    (capControlCBC.getDeviceScanRateMap().get("Exception").getScanGroup()));
+                    (cbc.getDeviceScanRateMap().get("Exception").getScanGroup()));
                 dnpBase.getDeviceScanRateMap().get("Exception").setIntervalRate(
-                    (capControlCBC.getDeviceScanRateMap().get("Exception").getIntervalRate()));
+                    (cbc.getDeviceScanRateMap().get("Exception").getIntervalRate()));
             }
-            if (capControlCBC.getDeviceScanRateMap().containsKey("Integrity")) {
+            if (cbc.getDeviceScanRateMap().containsKey("Integrity")) {
                 if (dnpBase.getDeviceScanRateMap().get("Integrity") == null)
-                    dnpBase.getDeviceScanRateMap().put("Integrity", new DeviceScanRate(cbcId, "Integrity"));
+                    dnpBase.getDeviceScanRateMap().put("Integrity", new DeviceScanRate(id, "Integrity"));
                 dnpBase.getDeviceScanRateMap().get("Integrity").setAlternateRate(
-                    capControlCBC.getDeviceScanRateMap().get("Integrity").getAlternateRate());
+                    cbc.getDeviceScanRateMap().get("Integrity").getAlternateRate());
                 dnpBase.getDeviceScanRateMap().get("Integrity").setScanGroup(
-                    (capControlCBC.getDeviceScanRateMap().get("Integrity").getScanGroup()));
+                    (cbc.getDeviceScanRateMap().get("Integrity").getScanGroup()));
                 dnpBase.getDeviceScanRateMap().get("Integrity").setIntervalRate(
-                    (capControlCBC.getDeviceScanRateMap().get("Integrity").getIntervalRate()));
+                    (cbc.getDeviceScanRateMap().get("Integrity").getIntervalRate()));
             }
 
         }
         if (dbPersistent instanceof CapBankController) {
-            CapBankController cbc = (CapBankController) dbPersistent;
-            cbc.setPAOName(capControlCBC.getYukonPAObject().getPaoName());
-            cbc.setDisableFlag(capControlCBC.isDisableFlag()?'Y':'N');
-            cbc.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
-            cbc.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
-            cbc.getDeviceCBC().setRouteID(capControlCBC.getDeviceCBC().getRouteID());
+            CapBankController capBankController = (CapBankController) dbPersistent;
+            capBankController.setPAOName(cbc.getName());
+            capBankController.setDisableFlag(cbc.isDisableFlag() ? 'Y' : 'N');
+            capBankController.getDeviceCBC().setSerialNumber(cbc.getDeviceCBC().getSerialNumber());
+            capBankController.getDeviceCBC().setSerialNumber(cbc.getDeviceCBC().getSerialNumber());
+            capBankController.getDeviceCBC().setRouteID(cbc.getDeviceCBC().getRouteID());
         } else if (dbPersistent instanceof CapBankController702x) {
             CapBankController702x capBankController702x = (CapBankController702x) dbPersistent;
-            capBankController702x.setDisableFlag(capControlCBC.isDisableFlag()?'Y':'N');
-            capBankController702x.setPAOName(capControlCBC.getYukonPAObject().getPaoName());
-            capBankController702x.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
-            capBankController702x.getDeviceCBC().setRouteID(capControlCBC.getDeviceCBC().getRouteID());
+            capBankController702x.setDisableFlag(cbc.isDisableFlag() ? 'Y' : 'N');
+            capBankController702x.setPAOName(cbc.getName());
+            capBankController702x.getDeviceCBC().setSerialNumber(cbc.getDeviceCBC().getSerialNumber());
+            capBankController702x.getDeviceCBC().setRouteID(cbc.getDeviceCBC().getRouteID());
         } else if (dbPersistent instanceof CapBankControllerDNP) {
             CapBankControllerDNP capBankControllerDNP = (CapBankControllerDNP) dbPersistent;
-            capBankControllerDNP.setDisableFlag(capControlCBC.isDisableFlag()?'Y':'N');
-            capBankControllerDNP.setPAOName(capControlCBC.getYukonPAObject().getPaoName());
-            capBankControllerDNP.getDeviceCBC().setSerialNumber(capControlCBC.getDeviceCBC().getSerialNumber());
-            capBankControllerDNP.getDeviceCBC().setRouteID(capControlCBC.getDeviceCBC().getRouteID());
+            capBankControllerDNP.setDisableFlag(cbc.isDisableFlag() ? 'Y' : 'N');
+            capBankControllerDNP.setPAOName(cbc.getName());
+            capBankControllerDNP.getDeviceCBC().setSerialNumber(cbc.getDeviceCBC().getSerialNumber());
+            capBankControllerDNP.getDeviceCBC().setRouteID(cbc.getDeviceCBC().getRouteID());
         }
-		dbPersistent.setDbConnection(connection);
-        dbPersistent.update();
+        
+        SimpleDevice device = SimpleDevice.of(cbc.getPaoIdentifier());
+        LightDeviceConfiguration config = configurationDao.getLiteConfigurationById(cbc.getDnpConfigId());
+        
+        try {
+            deviceConfigService.assignConfigToDevice(config, device);
+        } catch (InvalidDeviceTypeException e) {
+            /*
+             *  This only happens if config is null for a DNP CBC or if we try to assign a
+             *  non-DNP configuration to a DNP paoType. We've covered both cases, so this
+             *  isn't possible. Let's log it just to be safe.
+             */
+            log.error("An error occurred attempting to assign a DNP configuration to CBC " +
+                      "'" + cbc.getName() + "'. Please assign this device a configuration manually.", e);
+        }
 
+        dbPersistentDao.performDBChange(dbPersistent, TransactionType.UPDATE);
     }
 
-    private void handleSerialNumber(CapControlCBC capControlCBC, int cbcId) throws SQLException,
-            SerialNumberExistsException {
+    private void handleSerialNumber(CapControlCBC capControlCBC, int cbcId) throws SerialNumberExistsException {
         String[] paos = null;
         // find out if the serial number is unique
         if (capControlCBC != null) {
@@ -279,34 +299,54 @@ public class CbcServiceImpl implements CbcService {
     }
 
     @Override
-    public int save(CapControlCBC capControlCBC) throws SerialNumberExistsException, SQLException,
-            PortDoesntExistException, MultipleDevicesOnPortException, SameMasterSlaveCombinationException {
+    public int save(CapControlCBC capControlCBC) throws SerialNumberExistsException, SQLException, PortDoesntExistException,
+            MultipleDevicesOnPortException, SameMasterSlaveCombinationException {
 
         checkForErrorsAndSave(capControlCBC);
-        return capControlCBC.getYukonPAObject().getPaObjectID();
+        return capControlCBC.getId();
     }
 
-    protected DBPersistent retrieveDBPersistent(com.cannontech.database.data.pao.YukonPAObject yukonPAObject) {
 
-        Connection conn = null;
+    @Override
+    public boolean delete(int id) {
 
-        try {
-            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-            yukonPAObject.setDbConnection(conn);
-            yukonPAObject.retrieve();
-        } catch (SQLException sql) {
-            CTILogger.error("Unable to retrieve DB Object", sql);
-            return null;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        } finally {
-            yukonPAObject.setDbConnection(null);
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (java.sql.SQLException e2) {}
+        PaoIdentifier capbank = capbankDao.findCapBankByCbc(id);
+        if (capbank != null) {
+            return false;
         }
 
-        return yukonPAObject;
+        LiteYukonPAObject lite = dbCache.getAllPaosMap().get(id);
+
+        boolean twoWayDevice = CapControlCBC.isTwoType(lite.getPaoType());
+
+        Class<? extends CompleteCbcBase> clazz = twoWayDevice ? CompleteTwoWayCbc.class : CompleteOneWayCbc.class;
+
+        CompleteCbcBase completeCbc= paoPersistenceService.retreivePao(lite, clazz);
+
+        paoPersistenceService.deletePao(completeCbc);
+        return true;
+
+    }
+
+    @Override
+    public int copy(int originalId, String newName, boolean copyPoints) {
+
+        LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(originalId);
+        DBPersistent original = dbPersistentDao.retrieveDBPersistent(litePao);
+        YukonPAObject copy = (YukonPAObject) CBCCopyUtils.copy(original);
+
+        if (!paoDao.isNameAvailable(newName, copy.getPaoType())) {
+            throw new IllegalArgumentException("Name is not available");
+        }
+        copy.setPAOName(newName);
+        try {
+            dbPersistentDao.performDBChange(copy, TransactionType.INSERT);
+        } catch (PersistenceException e) {
+            // TODO Auto-generated catch block
+        }
+        if (copyPoints) {
+            CBCCopyUtils.copyAllPointsForPAO(originalId, copy.getPAObjectID());
+        }
+        return copy.getPAObjectID();
     }
 }

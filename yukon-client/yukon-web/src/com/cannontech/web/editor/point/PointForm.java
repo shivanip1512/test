@@ -662,6 +662,8 @@ public class PointForm extends DBEditorForm {
             String location;
             if (pao != null && pao.getPaoType().isRegulator()) {
                 location = "/capcontrol/regulators/" + itemId;
+            } else if (pao != null && pao.getPaoType().isCbc()) {
+                location = "/capcontrol/cbc/" + itemId;
             } else {
                 location = "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL + "&itemid=" + itemId;
             }

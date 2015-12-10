@@ -225,6 +225,8 @@ public class IvvcAnalysisScenarioProcessor {
         String url;
         if (pao != null && pao.getPaoType().isRegulator()) {
             url = "/capcontrol/regulator/" + ccId;
+        } else if (pao != null && pao.getPaoType().isCbc()) {
+            url = "/capcontrol/cbc/" + ccId;
         } else {
             url = "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL + "&amp;itemid=" + ccId;
         }

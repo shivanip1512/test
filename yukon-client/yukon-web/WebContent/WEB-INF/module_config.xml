@@ -702,14 +702,14 @@
               </page>
             </pages>
           </page>
-          <page name="CBC Editor" type="BASIC">
-        	
-        	<pages>
-          		<page name="cbc.EDIT" type="BASIC">
-                	<labelArgument>${capControlCBC.yukonPAObject.paoName}</labelArgument>
-	            </page>
-        	</pages>
-      	  </page>
+          <page name="cbc.VIEW" type="BASIC">
+            <labelArgument>${cbc.name}</labelArgument>
+            <pages>
+                <page name="cbc.EDIT" type="BASIC">
+                    <labelArgument>${cbc.name}</labelArgument>
+                </page>
+            </pages>
+          </page>
           <page name="movedCapBanks" type="BASIC">
             <link>/capcontrol/move/movedCapBanks</link>
           </page>

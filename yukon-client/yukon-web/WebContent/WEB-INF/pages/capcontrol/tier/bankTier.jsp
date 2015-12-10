@@ -57,13 +57,7 @@
                 <td>
                     <c:choose>
                         <c:when test="${viewableCapBank.cbcId != 0}">
-                            <cti:url var="editUrl" value="/editor/cbcBase.jsf">
-                                <cti:param name="type" value="2" />
-                                <cti:param name="itemid" value="${viewableCapBank.cbcId}" />
-                            </cti:url>
-                            <%-- 
-                            <cti:url var="editUrl" value="/capcontrol/cbc/${viewableCapBank.cbcId}/edit" />
-                            --%>
+                            <cti:url var="editUrl" value="/capcontrol/cbc/${viewableCapBank.cbcId}" />
                             <a href="${editUrl}">${fn:escapeXml(viewableCapBank.cbcName)}</a> 
                         </c:when>
                         <c:otherwise>

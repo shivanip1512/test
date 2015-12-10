@@ -1,5 +1,8 @@
 package com.cannontech.database.db.capcontrol;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -36,7 +39,7 @@ public DeviceCBC(Integer deviceID) {
  */
 public static DeviceCBC[] getAllDeviceCBCs()
 {
-	java.util.Vector returnVector = null;
+    List<DeviceCBC> returnVector = new ArrayList<>();
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
@@ -57,14 +60,13 @@ public static DeviceCBC[] getAllDeviceCBCs()
 			pstmt = conn.prepareStatement(sql.toString());
 				
 			rset = pstmt.executeQuery();
-			returnVector = new java.util.Vector(64); //rset.getFetchSize()
 		
 			while( rset.next() ) {
 				DeviceCBC devCBC = new DeviceCBC( new Integer(rset.getInt(1)) );
 				devCBC.setSerialNumber( new Integer(rset.getInt(2)) );
 				devCBC.setRouteID( new Integer(rset.getInt(3)) );
 				
-				returnVector.addElement( devCBC );
+				returnVector.add( devCBC );
 			}
 
 		}		
@@ -78,13 +80,13 @@ public static DeviceCBC[] getAllDeviceCBCs()
 	
 	
 	DeviceCBC[] cbcs = new DeviceCBC[returnVector.size()];
-	return (DeviceCBC[])returnVector.toArray( cbcs );
+	return returnVector.toArray( cbcs );
 }
 
 /**
  * add method comment.
  */
-public final static String usedCapBankController(Integer controllerID) throws java.sql.SQLException
+public final static String usedCapBankController(Integer controllerID)
 {
   com.cannontech.database.SqlStatement stmt =
      new com.cannontech.database.SqlStatement(
@@ -151,14 +153,14 @@ public Integer getSerialNumber() {
  * This method returns the name of the PAOBjects that have the same address,
  *  or it will return null if the address is unique
  */
-public static String[] isSerialNumberUnique(long serialnumber_, Integer excludedPAOId) throws java.sql.SQLException
+public static String[] isSerialNumberUnique(long serialnumber_, Integer excludedPAOId)
 {
 	java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(
 											com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
 	java.sql.Statement stmt = null;
 	java.sql.ResultSet rset = null;
-	java.util.Vector devices = new java.util.Vector(5);
+	List<String> devices = new ArrayList<>();
 
 	String sql = 
 			"select y.paoname " +
@@ -194,7 +196,7 @@ public static String[] isSerialNumberUnique(long serialnumber_, Integer excluded
 	else
 	{
 		String[] s = new String[devices.size()];
-		return (String[])devices.toArray(s);
+		return devices.toArray(s);
 	}
 
 }

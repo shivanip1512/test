@@ -16,6 +16,9 @@ import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -46,29 +49,80 @@ public class CbcController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private IDatabaseCache dbCache;
-    private static final String baseKey = "yukon.web.modules.capcontrol.cbc.edit";
+    @Autowired private DeviceConfigurationDao deviceConfigDao;
 
-    @RequestMapping(value = "cbc/{id}/edit", method = RequestMethod.GET)
+    private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
+
+    @RequestMapping(value = "cbc/{id}", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
-        CapControlCBC capControlCBC = cbcService.getCapControlCBC(id);
-        Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(id);
-        model.addAttribute("mode", PageEditMode.EDIT);
 
-        return setUpModel(model, capControlCBC, points);
+        CapControlCBC cbc = cbcService.getCbc(id);
+
+        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
+        PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
+        model.addAttribute("mode", mode);
+
+        return setUpModel(model, cbc);
     }
 
-    private String setUpModel(ModelMap model, CapControlCBC capControlCBC, Map<PointType, List<PointInfo>> points) {
-        Object modelCapControlCBC = model.get("capControlCBC");
-        if (modelCapControlCBC instanceof CapControlCBC) {
-            capControlCBC = (CapControlCBC) modelCapControlCBC;
+    @RequestMapping(value="cbc", method = RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    public String save(@ModelAttribute("cbc") CapControlCBC cbc, FlashScope flashScope) {
+        try {
+            cbcService.save(cbc);
+        } catch (SerialNumberExistsException | PortDoesntExistException | MultipleDevicesOnPortException
+            | SameMasterSlaveCombinationException | SQLException e) {
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".save.fail", e.getMessage()));
         }
+
+        return "redirect:/capcontrol/cbc/" + cbc.getId() + "/edit";
+    }
+
+    @RequestMapping(value="cbc/{id}/copy", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    public String copy(
+            FlashScope flash,
+            @PathVariable int id,
+            String newName,
+            boolean copyPoints) {
+        try {
+            int newId = cbcService.copy(id, newName, copyPoints);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".copy.success"));
+            return "redirect:/capcontrol/cbc/" + newId + "/edit";
+        } catch (IllegalArgumentException e) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".copy.fail"));
+            return "redirect:/capcontrol/cbc/" + id + "/edit";
+        }
+    }
+
+    @RequestMapping(value="cbc/{id}", method=RequestMethod.DELETE)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    public String delete(ModelMap model, @PathVariable int id, FlashScope flash) {
+
+        if (!cbcService.delete(id)) {
+            CapControlCBC cbc = cbcService.getCbc(id);
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".delete.fail"));
+            return setUpModel(model, cbc);
+        }
+
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".delete.success"));
+
+        return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__";
+    }
+
+    private String setUpModel(ModelMap model, CapControlCBC cbc) {
+        Object modelCbc = model.get("cbc");
+        if (modelCbc instanceof CapControlCBC) {
+            cbc = (CapControlCBC) modelCbc;
+        }
+        Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
 
         List<LiteYukonPAObject> ports = dbCache.getAllPorts();
         model.addAttribute("availablePorts", ports);
         List<LiteYukonPAObject> routes = dbCache.getAllRoutes();
         model.addAttribute("availableRoutes", routes);
-        model.addAttribute("capControlCBC", capControlCBC);
+        model.addAttribute("cbc", cbc);
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
         model.addAttribute("analogPoints", points.get(PointType.Analog));
         model.addAttribute("pulseAccumulatorPoints", points.get(PointType.PulseAccumulator));
@@ -77,21 +131,13 @@ public class CbcController {
         model.addAttribute("calcStatusPoints", points.get(PointType.CalcStatus));
         model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
 
+        DNPConfiguration dnpConfig = cbcService.getDnpConfigForDevice(cbc);
+        model.addAttribute("dnpConfig", dnpConfig);
+
+        List<LightDeviceConfiguration> configs = deviceConfigDao.getAllConfigurationsByType(cbc.getPaoType());
+        model.addAttribute("configs", configs);
+
         return "cbc.jsp";
-    }
-
-    @RequestMapping(value = { "cbc" }, method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String save(@ModelAttribute("capControlCBC") CapControlCBC capControlCBC, FlashScope flashScope,
-            YukonUserContext userContext) {
-        try {
-            cbcService.save(capControlCBC);
-        } catch (SerialNumberExistsException | PortDoesntExistException | MultipleDevicesOnPortException
-            | SameMasterSlaveCombinationException | SQLException e) {
-            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".saveFailed", e.getMessage()));
-        }
-
-        return "redirect:cbc/" + capControlCBC.getYukonPAObject().getPaObjectID() + "/edit";
     }
 
 }

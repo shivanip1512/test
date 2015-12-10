@@ -71,7 +71,7 @@
                 </c:if>
             </c:otherwise>
         </c:choose>
-        <label for="${id}" class="${offClasses}"><span class="b-label"><cti:msg2 key="${offNameKey}"/></span></label
+        <label for="${id}" class="${offClasses} M0"><span class="b-label"><cti:msg2 key="${offNameKey}"/></span></label
         ><label for="${id}" class="${onClasses}"><span class="b-label"><cti:msg2 key="${onNameKey}"/></span></label>
     </label>
 </cti:displayForPageEditModes>

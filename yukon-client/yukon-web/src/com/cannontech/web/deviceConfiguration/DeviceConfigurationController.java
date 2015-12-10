@@ -6,9 +6,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -79,5 +82,11 @@ public class DeviceConfigurationController {
         model.addAttribute("editingRoleProperty", YukonRoleProperty.ADMIN_EDIT_CONFIG);
         
         return "home.jsp";
+    }
+
+    @RequestMapping("{id}")
+    public @ResponseBody DeviceConfiguration deviceConfig(@PathVariable int id) {
+        DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(id);
+        return deviceConfig;
     }
 }

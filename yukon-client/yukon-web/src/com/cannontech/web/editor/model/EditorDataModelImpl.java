@@ -72,6 +72,8 @@ public class EditorDataModelImpl implements EditorDataModel {
         } else {
             if (pao != null && pao.getPaoType().isRegulator()) {
                 url = "/capcontrol/regulators/" + itemId;
+            } else if (pao != null && pao.getPaoType().isCbc()) {
+                url = "/capcontrol/cbc/" + itemId;
             } else {
                 url = "/editor/cbcBase.jsf?type=" + type + "&itemid=" + itemId;
             }

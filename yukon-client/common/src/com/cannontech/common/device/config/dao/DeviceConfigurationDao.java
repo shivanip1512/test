@@ -208,6 +208,14 @@ public interface DeviceConfigurationDao {
     LightDeviceConfiguration getConfigurationForDevice(YukonDevice device) throws NotFoundException;
 
     /**
+     * Get the LightDeviceConfiguration with the supplied id
+     *
+     * @return a {@link LightDeviceConfiguration} object representing the configuration with that id if it exists
+     * @throws NotFoundException if no configuration exists with that id
+     */
+    LightDeviceConfiguration getLiteConfigurationById(int id);
+
+    /**
      * Get the LightDeviceConfiguration with the supplied name
      *
      * @return a {@link LightDeviceConfiguration} object representing the configuration with that name if it

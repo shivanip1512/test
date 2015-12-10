@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -7,264 +8,366 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="capcontrol" page="cbc.${mode}">
- <cti:msgScope paths="yukon.web.modules.capcontrol.cbc">
 
-  <tags:setFormEditMode mode="${mode}" />
+    <tags:setFormEditMode mode="${mode}" />
 
-  <cti:url var="action" value="/capcontrol/cbc" />
-  <form:form id="cbcEditor-form" commandName="capControlCBC"
-   action="${action}" method="POST">
-   <cti:csrfToken />
-   <form:hidden path="yukonPAObject.paObjectID" />
-   <form:hidden path="yukonPAObject.paoType" />
-   <cti:tabs containerName="yukon:capcontrol:cbcEditor:tab">
-    <cti:msg2 var="generalTab" key=".tab.general" />
-    <cti:tab title="${generalTab}">
-
-     <tags:nameValueContainer2 tableClass="natural-width">
-      <%-- <tags:inputNameValue nameKey=".type" path="type"/> --%>
-      <tags:nameValue2 nameKey=".type">${capControlCBC.yukonPAObject.paoType.dbString}</tags:nameValue2>
-      <tags:nameValue2 nameKey=".class">${capControlCBC.yukonPAObject.paoClass}</tags:nameValue2>
-      <tags:nameValue2 nameKey=".parent">${capControlCBC.cbcParent}</tags:nameValue2>
-      <tags:nameValue2 nameKey=".name">
-       <tags:input path="yukonPAObject.paoName" size="25" />
-      </tags:nameValue2>
-
-      <tags:checkboxNameValue id="" path="disableFlag"
-       nameKey=".disable" excludeColon="true" />
-
-     </tags:nameValueContainer2>
-    </cti:tab>
-    <cti:msg2 var="setupTab" key=".tab.setup" />
-    <cti:tab title="${setupTab}">
-
-     <div class="column-12-12 clearfix">
-      <div class="column one">
-       <tags:sectionContainer2 nameKey="config" styleClass="stacked-lg">
-
-        <tags:nameValueContainer2 tableClass="natural-width">
-         <tags:nameValue2 nameKey=".serialNumber">
-          <tags:input path="deviceCBC.serialNumber" size="25" />
-         </tags:nameValue2>
-         <c:choose>
-          <c:when test="${capControlCBC.twoWay}">
-           <tags:nameValue2 nameKey=".masterAddr" valueClass="tar">
-            <tags:input path="deviceAddress.masterAddress" size="25" />
-           </tags:nameValue2>
-           <tags:nameValue2 nameKey=".slaveAddr" valueClass="tar">
-            <tags:input path="deviceAddress.slaveAddress" size="25" />
-           </tags:nameValue2>
-
-           <tags:nameValue2 nameKey=".commChannel">
-            <tags:selectWithItems path="deviceDirectCommSettings.portID"
-             items="${availablePorts}" itemValue="liteID"
-             itemLabel="paoName" inputClass="with-option-hiding" />
-           </tags:nameValue2>
-
-           <tags:nameValue2 nameKey=".postCommWait" valueClass="tar">
-            <tags:input path="deviceAddress.postCommWait" size="25" />
-           </tags:nameValue2>
-
-           <div class="column-6-6 clearfix">
+    <cti:url var="action" value="/capcontrol/cbc" />
+    <form:form id="cbc-edit-form" commandName="cbc" action="${action}" method="POST">
+        <cti:csrfToken />
+        <form:hidden path="id" />
+        <%-- TODO --%>
+        <form:hidden path="paoType" />
+        <div class="column-12-12 clearfix">
             <div class="column one">
-             <tags:checkboxNameValue nameKey=".integrityScanRate"
-              path="editingIntegrity" inputClass="js-is-scan-cbc"
-              excludeColon="true" />
-             <tags:nameValue2 nameKey=".interval">
-              <tags:intervalStepper
-               path="deviceScanRateMap['Integrity'].intervalRate"
-               intervals="${timeIntervals}" id="scan1" />
-             </tags:nameValue2>
-             <tags:nameValue2 nameKey=".altInterval">
-              <tags:intervalStepper
-               path="deviceScanRateMap['Integrity'].alternateRate"
-               intervals="${timeIntervals}" />
-             </tags:nameValue2>
-             <tags:nameValue2 nameKey=".scanGroup">
-              <tags:selectWithItems
-               path="deviceScanRateMap['Integrity'].scanGroup"
-               items="${scanGroups}" itemValue="dbValue"
-               inputClass="with-option-hiding" />
-             </tags:nameValue2>
+                <cti:msg2 var="generalTab" key=".tab.general" />
+                <tags:sectionContainer title="${generalTab}">
+                    <tags:nameValueContainer2 tableClass="natural-width">
+                        <tags:nameValue2 nameKey=".name">
+                            <tags:input path="name" size="25" />
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".type">
+                            <i:inline key="${cbc.paoType}" />
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".parent">
+                            <c:if test="${empty cbc.parent }">
+                                <span class="empty-list">No Parent</span>
+                            </c:if>
+                            <c:if test="${not empty cbc.parent}">
+                                <cti:url var="editParent" value="/editor/cbcBase.jsf">
+                                    <cti:param name="itemid" value="${cbc.parent.liteID}" />
+                                    <cti:param name="type" value="2" />
+                                </cti:url>
+                                <a href="${editParent}">${fn:escapeXml(cbc.parent.paoName)}</a>
+                            </c:if>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".status">
+                            <tags:switchButton path="disableFlag" inverse="${true}"
+                                offNameKey=".disabled.label" onNameKey=".enabled.label" />
+                        </tags:nameValue2>
+
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer>
+
+                <tags:sectionContainer2 nameKey="config">
+
+                    <tags:nameValueContainer2 tableClass="natural-width">
+                        <tags:nameValue2 nameKey=".serialNumber">
+                            <tags:input path="deviceCBC.serialNumber"
+                                size="25" />
+                        </tags:nameValue2>
+                        <c:choose>
+                            <c:when test="${cbc.twoWay}">
+                                <tags:nameValue2 nameKey=".masterAddr">
+                                    <tags:input path="deviceAddress.masterAddress" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".slaveAddr">
+                                    <tags:input path="deviceAddress.slaveAddress" />
+                                </tags:nameValue2>
+
+                                <tags:nameValue2 nameKey=".commChannel">
+                                    <tags:selectWithItems path="deviceDirectCommSettings.portID"
+                                        items="${availablePorts}"
+                                        itemValue="liteID" itemLabel="paoName"
+                                        inputClass="with-option-hiding" />
+                                </tags:nameValue2>
+
+                                <tags:nameValue2 nameKey=".postCommWait">
+                                    <tags:input path="deviceAddress.postCommWait" />
+                                </tags:nameValue2>
+                                <%-- TODO Toggle next few fields --%>
+                                <tags:nameValueGap2/>
+                                <tags:nameValueGap2/>
+                                <tags:nameValue2 nameKey=".integrityScanRate">
+                                    <tags:switchButton path="editingIntegrity" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".interval">
+                                    <tags:intervalStepper path="deviceScanRateMap['Integrity'].intervalRate"
+                                        intervals="${timeIntervals}"
+                                        id="scan1" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".altInterval">
+                                    <tags:intervalStepper path="deviceScanRateMap['Integrity'].alternateRate"
+                                        intervals="${timeIntervals}" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".scanGroup">
+                                    <div class="button-group">
+                                        <c:forEach var="scanGroup"
+                                            items="${scanGroups}">
+                                            <tags:radio
+                                                path="deviceScanRateMap['Integrity'].scanGroup"
+                                                value="${scanGroup.dbValue}"
+                                                key="${scanGroup}"
+                                                classes="yes M0" />
+                                        </c:forEach>
+                                    </div>
+                                </tags:nameValue2>
+
+                                <%-- TODO Toggle next few fields --%>
+                                <tags:nameValueGap2/>
+                                <tags:nameValueGap2/>
+                                <tags:nameValue2 nameKey=".exceptionScanRate">
+                                    <tags:switchButton path="editingIntegrity" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".interval">
+                                    <tags:intervalStepper path="deviceScanRateMap['Exception'].intervalRate"
+                                        intervals="${timeIntervals}" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".altInterval">
+                                    <tags:intervalStepper path="deviceScanRateMap['Exception'].alternateRate"
+                                        intervals="${timeIntervals}" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".scanGroup">
+                                    <div class="button-group">
+                                        <c:forEach var="scanGroup" items="${scanGroups}">
+                                            <tags:radio path="deviceScanRateMap['Exception'].scanGroup"
+                                                key="${scanGroup}" value="${scanGroup.dbValue}"
+                                                classes="yes M0" />
+                                        </c:forEach>
+                                    </div>
+                                </tags:nameValue2>
+                            </c:when>
+                            <c:otherwise>
+                                <tags:nameValue2 nameKey=".controlRoute">
+                                    <tags:selectWithItems path="deviceCBC.routeID"
+                                        items="${availableRoutes}"
+                                        itemLabel="paoName" itemValue="liteID"
+                                        inputClass="with-option-hiding" />
+                                </tags:nameValue2>
+                            </c:otherwise>
+                        </c:choose>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
             </div>
+
             <div class="column two nogutter">
-             <tags:checkboxNameValue nameKey=".exceptionScanRate"
-              path="editingException" inputClass="js-is-scan-cbc"
-              excludeColon="true" />
-             <tags:nameValue2 nameKey=".interval">
-              <tags:intervalStepper
-               path="deviceScanRateMap['Exception'].intervalRate"
-               intervals="${timeIntervals}" />
-             </tags:nameValue2>
-             <tags:nameValue2 nameKey=".altInterval">
-              <tags:intervalStepper
-               path="deviceScanRateMap['Exception'].alternateRate"
-               intervals="${timeIntervals}" />
-             </tags:nameValue2>
-             <tags:nameValue2 nameKey=".scanGroup">
-              <tags:selectWithItems
-               path="deviceScanRateMap['Exception'].scanGroup"
-               items="${scanGroups}" itemValue="dbValue"
-               inputClass="with-option-hiding" />
-             </tags:nameValue2>
+                <tags:sectionContainer2 nameKey="points"
+                    styleClass="stacked-lg">
+                    <div id="CBCCtlEditorScrollDiv" class="scroll-md">
+                        <c:if test="${not empty statusPoints}">
+                            <h4>Status</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${statusPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator">
+                                                <cti:pointStatus pointId="${point.pointId}" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                        <c:if test="${not empty analogPoints}">
+                            <h4>Analog</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${analogPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator"></td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                        <c:if test="${not empty pulseAccumulatorPoints}">
+                            <h4>Accumulator</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${pulseAccumulatorPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator"></td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                        <c:if test="${not empty calcAnalogPoints}">
+                            <h4>Calc Analog</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${calcAnalogPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator"></td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                        <c:if test="${not empty calcStatusPoints}">
+                            <h4>Calc Status</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${calcStatusPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator">
+                                                <cti:pointStatus pointId="${point.pointId}" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                    </div>
+                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                        <div class="action-area">
+                            <tags:pointCreation paoId="${cbc.id}" />
+                        </div>
+                    </cti:checkRolesAndProperties>
+                </tags:sectionContainer2>
+
+                <c:if test="${cbc.twoWay}">
+                    <tags:sectionContainer2 nameKey="dnpConfiguration" styleClass="stacked-lg">
+                        <tags:nameValueContainer2 tableClass="natural-width">
+                            <tags:nameValue2 nameKey=".dnpConfig">
+                                <tags:selectWithItems id="dnp-config"
+                                    items="${configs}"
+                                    path="dnpConfigId"
+                                    itemLabel="name"
+                                    itemValue="configurationId" />
+                            </tags:nameValue2>
+                        </tags:nameValueContainer2>
+                        <tags:nameValueContainer2
+                            tableClass="natural-width js-dnp-fields js-block-this">
+                            <tags:nameValue2 nameKey=".internalRetries"
+                                valueClass="js-dnp-field js-dnp-internalRetries">
+                                ${dnpConfig.internalRetries}
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".useLocal"
+                                valueClass="js-dnp-field js-dnp-localTime">
+                                ${dnpConfig.localTime}
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".enableTimeSync"
+                                valueClass="js-dnp-field js-dnp-enableDnpTimesyncs">
+                                ${dnpConfig.enableDnpTimesyncs}
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".omitTimeReq"
+                                valueClass="js-dnp-field js-dnp-omitTimeRequest">
+                                ${dnpConfig.omitTimeRequest}
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".unsolicit1"
+                                valueClass="js-dnp-field js-dnp-enableUnsolicitedMessageClass1">
+                                ${dnpConfig.enableUnsolicitedMessageClass1}
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".unsolicit2"
+                                valueClass="js-dnp-field js-dnp-enableUnsolicitedMessageClass2">
+                                ${dnpConfig.enableUnsolicitedMessageClass2}
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".unsolicit3"
+                                valueClass="js-dnp-field js-dnp-enableUnsolicitedMessageClass3">
+                                ${dnpConfig.enableUnsolicitedMessageClass3}
+                            </tags:nameValue2>
+                        </tags:nameValueContainer2>
+                    </tags:sectionContainer2>
+                </c:if>
+
             </div>
-           </div>
-          </c:when>
-          <c:otherwise>
-           <tags:nameValue2 nameKey=".controlRoute">
-            <tags:selectWithItems path="deviceCBC.routeID"
-             items="${availableRoutes}" itemValue="liteID"
-             itemLabel="paoName" inputClass="with-option-hiding" />
-           </tags:nameValue2>
-          </c:otherwise>
-         </c:choose>
-        </tags:nameValueContainer2>
-       </tags:sectionContainer2>
-      </div>
-      <div class="column two nogutter">
-       <tags:sectionContainer2 nameKey="points" styleClass="stacked-lg">
-        <tags:nameValueContainer2 tableClass="natural-width">
-         <div id="CBCCtlEditorScrollDiv" class="scroll-md">
-          <c:if test="${not empty statusPoints}">
-           <li>Status
-            <ul>
-             <c:forEach var="statusPoint" items="${statusPoints}">
-              <input type="hidden" name="statusPoints"
-               value="${statusPoint.name}" />
+        </div>
 
-              <li><cti:url var="editUrl"
-                value="/tools/points/${statusPoint.pointId}" /> <a
-               href="${editUrl}">${fn:escapeXml(statusPoint.name)}</a></li>
-             </c:forEach>
-            </ul>
-           </li>
-          </c:if>
-          <c:if test="${not empty analogPoints}">
-           <li>Analog
-            <ul>
-             <c:forEach var="analogPoint" items="${analogPoints}">
-              <input type="hidden" name="analogPoints"
-               value="${analogPoint}" />
-              <li><cti:url var="editUrl"
-                value="/tools/points/${analogPoint.pointId}" /> <a
-               href="${editUrl}">${fn:escapeXml(analogPoint.name)}</a></li>
-             </c:forEach>
-            </ul>
-           </li>
-          </c:if>
-          <c:if test="${not empty pulseAccumulatorPoints}">
-           <li>Accumulator
-            <ul>
-             <c:forEach var="pulseAccumulatorPoint"
-              items="${pulseAccumulatorPoints}">
-              <input type="hidden" name="pulseAccumulatorPoints"
-               value="${pulseAccumulatorPoint}" />
-              <li><cti:url var="editUrl"
-                value="/tools/points/${pulseAccumulatorPoint.pointId}" />
-               <a href="${editUrl}">${fn:escapeXml(pulseAccumulatorPoint.name)}</a></li>
-             </c:forEach>
-            </ul>
-           </li>
-          </c:if>
-          <c:if test="${not empty calcAnalogPoints}">
-           <li>Calc Analog
-            <ul>
-             <c:forEach var="calcAnalogPoint"
-              items="${calcAnalogPoints}">
-              <input type="hidden" name="calcAnalogPoints"
-               value="${caclAnalogPoint}" />
-              <li><cti:url var="editUrl"
-                value="/tools/points/${calcAnalogPoint.pointId}" /> <a
-               href="${editUrl}">${fn:escapeXml(calcAnalogPoint.name)}</a></li>
-             </c:forEach>
-            </ul>
-           </li>
-          </c:if>
-          <c:if test="${not empty calcStatusPoints}">
-           <li>Calc Status
-            <ul>
-             <c:forEach var="calcStatusPoint"
-              items="${calcStatusPoints}">
-              <input type="hidden" name="calcStatusPoints"
-               value="${calcStatusPoint}" />
-              <li><cti:url var="editUrl"
-                value="/tools/points/${calcStatusPoint.pointId}" /> <a
-               href="${editUrl}">${fn:escapeXml(calcStatusPoint.name)}</a></li>
-             </c:forEach>
-            </ul>
-           </li>
-          </c:if>
-          <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-           <div class="action-area">
-            <tags:pointCreation
-             paoId="${capControlCBC.yukonPAObject.paObjectID}" />
-           </div>
-          </cti:checkRolesAndProperties>
+        <div class="page-action-area">
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
 
-         </div>
-        </tags:nameValueContainer2>
-       </tags:sectionContainer2>
+                <cti:button nameKey="save" type="submit" classes="primary action" />
 
-       <c:if test="${capControlCBC.twoWay}">
-        <tags:sectionContainer2 nameKey="dnpConfiguration"
-         styleClass="stacked-lg">
-         <tags:nameValueContainer2 tableClass="natural-width">
-          <tags:nameValue2 nameKey=".dnpConfig">${dnpConfiguration.name}</tags:nameValue2>
-         </tags:nameValueContainer2>
-         <tags:nameValueContainer2 tableClass="natural-width">
-          <tags:nameValue2 nameKey=".internalRetries">${dnpConfiguration.internalRetries}</tags:nameValue2>
-         </tags:nameValueContainer2>
-         <tags:nameValueContainer2 tableClass="natural-width">
-          <tags:nameValue2 nameKey=".useLocal">${dnpConfiguration.localTime}</tags:nameValue2>
-         </tags:nameValueContainer2>
-         <tags:nameValueContainer2 tableClass="natural-width">
-          <tags:nameValue2 nameKey=".enableTimeSync">${dnpConfiguration.enableDnpTimesyncs}</tags:nameValue2>
-         </tags:nameValueContainer2>
-         <tags:nameValueContainer2 tableClass="natural-width">
-          <tags:nameValue2 nameKey=".omitTimeReq">${dnpConfiguration.omitTimeRequest}</tags:nameValue2>
-         </tags:nameValueContainer2>
-         <tags:nameValueContainer2 tableClass="natural-width">
-          <tags:nameValue2 nameKey=".unsolicit1">${dnpConfiguration.enableUnsolicitedMessageClass1}</tags:nameValue2>
-         </tags:nameValueContainer2>
-         <tags:nameValueContainer2 tableClass="natural-width">
-          <tags:nameValue2 nameKey=".unsolicit2">${dnpConfiguration.enableUnsolicitedMessageClass2}</tags:nameValue2>
-         </tags:nameValueContainer2>
-         <tags:nameValueContainer2 tableClass="natural-width">
-          <tags:nameValue2 nameKey=".unsolicit3">${dnpConfiguration.enableUnsolicitedMessageClass3}</tags:nameValue2>
-         </tags:nameValueContainer2>
-        </tags:sectionContainer2>
-       </c:if>
+                <c:if test="${not empty cbc.parent}">
+                    <c:set var="deleteDisabled" value="true" />
+                    <c:set var="deleteTitle" value="Can not delete while attached to a cap bank" />
+                </c:if>
 
-      </div>
-     </div>
-    </cti:tab>
-   </cti:tabs>
+                <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:cbc:delete"
+                    disabled="${deleteDisabled}" title="${deleteTitle}"/>
+                <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${cbc.name}"/>
 
-   <div class="page-action-area">
-    <cti:button nameKey="save" type="submit" classes="primary action" />
-    <cti:msgScope paths="capcontrol.cbcBase">
-     <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
-      <cti:param name="value"
-       value="${capControlCBC.yukonPAObject.paObjectID}" />
-     </cti:url>
-     <cti:button nameKey="delete" href="${deleteUrl}" />
+                <%-- Copy CBC Button --%>
+                <cti:button nameKey="copy" icon="icon-disk-multiple"
+                    data-popup="#copy-cbc"/>
 
-     <%-- Copy CBC Button --%>
-     <cti:url var="copyUrl" value="/editor/copyBase.jsf">
-      <cti:param name="itemid"
-       value="${capControlCBC.yukonPAObject.paObjectID}" />
-      <cti:param name="type" value="1" />
-     </cti:url>
-     <cti:button nameKey="copy" href="${copyUrl}" />
+            </cti:displayForPageEditModes>
 
-     <cti:url var="returnUrl" value="" />
-     <cti:button label="Return" href="javascript:window.history.back()" />
+            <cti:msg2 var="returnText" key="yukon.common.return"/>
+            <cti:button label="${returnText}" href="javascript:window.history.back()" />
 
-    </cti:msgScope>
-   </div>
-  </form:form>
+        </div>
+    </form:form>
 
+    <cti:msg2 var="copyText" key="components.button.copy.label"/>
+    <div id="copy-cbc" class="dn" data-title="Copy CBC" data-dialog data-ok-text="${copyText}" data-event="yukon:da:cbc:copy">
+        <cti:url var="copyUrl" value="/capcontrol/cbc/${cbc.id}/copy"/>
+        <form action="${copyUrl}" method="POST">
+            <cti:csrfToken/>
+            <tags:nameValueContainer>
+                <tags:nameValue name="New Name">
+                    <cti:msg2 var="newName" key="yukon.common.copyof" argument="${cbc.name}"/>
+                    <input name="newName" value="${newName}">
+                </tags:nameValue>
+                <tags:nameValue name="Copy Points">
+                    <tags:switchButton name="copyPoints" offNameKey=".no.label" onNameKey=".yes.label"/>
+                </tags:nameValue>
+            </tags:nameValueContainer>
+        </form>
+    </div>
 
- </cti:msgScope>
- <cti:includeScript link="/resources/js/pages/yukon.da.cbc.js" />
+    <cti:url var="url" value="/capcontrol/cbc/${cbc.id}"/>
+    <form:form id="delete-cbc" method="DELETE" action="${url}"></form:form>
+
+    <cti:includeScript link="/resources/js/pages/yukon.da.cbc.js" />
 </cti:standardPage>
