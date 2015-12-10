@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
@@ -41,7 +39,6 @@ import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -69,15 +66,15 @@ public class DeviceConfigurationCategoryController {
 
     private final Set<PaoType> voltageDataStreamingTypes = ImmutableSet.of(PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN420FX,
         PaoType.RFN420FD, PaoType.RFN420FL, PaoType.RFN420FRX, PaoType.RFN420FRD, PaoType.RFN420CD);
+    private final Set<PaoType> disconnectDisplayDisabledTypes =
+        ImmutableSet.of(PaoType.RFN420CL, PaoType.MCT420FD, PaoType.MCT420CL, PaoType.MCT420CD);
     
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationCategoryController.class);
 
     @Autowired private DeviceConfigurationDao deviceConfigDao;
     @Autowired private DeviceConfigurationHelper deviceConfigHelper;
     @Autowired private DeviceConfigurationService deviceConfigService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private NMConfigurationService nmConfigurationService;
 
@@ -473,20 +470,15 @@ public class DeviceConfigurationCategoryController {
 
         CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
         
-        boolean enableVoltageDataStreamingOptions = false;
-        if (type == CategoryType.RFN_CHANNEL_CONFIGURATION) {
-            if (nmConfigurationService.isNewVoltageProfileUpdateSupported()) {
-                if (configId == null) {
-                    enableVoltageDataStreamingOptions = true;
-                } else {
-                    DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
-                    // Returns true if the two specified collections have no elements in common.
-                    enableVoltageDataStreamingOptions =
-                        !Collections.disjoint(config.getSupportedDeviceTypes(), voltageDataStreamingTypes);
-                }
-            }
+        if (nmConfigurationService.isNewVoltageProfileUpdateSupported()) {
+            boolean enableVoltageDataStreamingOptions =
+                isEnabled(type, CategoryType.RFN_CHANNEL_CONFIGURATION, configId, voltageDataStreamingTypes);
+            model.addAttribute("enableVoltageDataStreamingOptions", enableVoltageDataStreamingOptions);
         }
-        model.addAttribute("enableVoltageDataStreamingOptions", enableVoltageDataStreamingOptions);
+
+        boolean enableDisconnectDisplayDisabled =
+            isEnabled(type, CategoryType.METER_PARAMETERS, configId, disconnectDisplayDisabledTypes);
+        model.addAttribute("enableDisconnectDisplayDisabled", enableDisconnectDisplayDisabled);
         
         CategoryTemplate categoryTemplate = deviceConfigHelper.createTemplate(
                 deviceConfigDao.getCategoryByType(type), categoryEditBean.getCategoryInputs(), configId, userContext);
@@ -511,4 +503,26 @@ public class DeviceConfigurationCategoryController {
         
     }
     
+    /**
+     * Returns true if the option should be enabled.
+     * 
+     * @param currentType - Category Type to check
+     * @param typeRequired - Category Type required for this check
+     * @param configId 
+     * @param validTypes - pao types that should have the option enabled.
+     * @return
+     */
+    private boolean isEnabled(CategoryType currentType, CategoryType typeRequired, Integer configId, Set<PaoType> validTypes) {
+        boolean isEnabled = false;
+        if (currentType == typeRequired) {
+            if (configId == null) {
+                isEnabled = true;
+            } else {
+                DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
+                // Returns true if the two specified collections have no elements in common.
+                isEnabled = !Collections.disjoint(config.getSupportedDeviceTypes(), disconnectDisplayDisabledTypes);
+            }
+        }
+        return isEnabled;
+    }
 }

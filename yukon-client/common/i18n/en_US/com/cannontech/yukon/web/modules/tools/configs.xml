@@ -148,7 +148,7 @@
     <entry key="yukon.web.modules.tools.configs.category.centron410Display.displayItem25">Display Item 25</entry>
     <entry key="yukon.web.modules.tools.configs.category.centron410Display.displayItem26">Display Item 26</entry>
 
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.title">Centron C2SX Meter Parameters</entry>
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.title">Centron Meter Parameters</entry>
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.definition">Front panel LCD configuration for the Centron C2SX (420 device types).</entry>
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.lcdCycleTime">LCD Cycle Time</entry>
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.lcdCycleTime.description">The number of seconds the LCD displays an item before cycling.</entry>

@@ -28,6 +28,12 @@
                 <c:set var="classes" value="${classes} dn" />
             </c:if>
         </c:if>
+        
+        <c:if test="${field.fieldName == 'disconnectDisplayDisabled'}">
+            <c:if test="${not enableDisconnectDisplayDisabled}">
+                <c:set var="classes" value="${classes} dn" />
+            </c:if>
+        </c:if>
 
         <div class="setting clearfix column-6-18 ${classes}" data-field="${field.fieldName}">
             <div class="column one form-control">${field.displayName}</div>
