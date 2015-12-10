@@ -357,10 +357,9 @@ public class StrategyDaoImpl implements StrategyDao {
         jdbcTemplate.update(deleteSql.getSql(), deleteSql.getArguments());
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        for(Entry<TargetSettingType, PeakTargetSetting> entry : targetSettings.entrySet()) {
-            
-            TargetSettingType type = entry.getKey();
-            PeakTargetSetting setting = entry.getValue();
+        for(Entry<TargetSettingType, PeakTargetSetting> targetSettingEntry : targetSettings.entrySet()) {
+            PeakTargetSetting setting = strategy.getTargetSettings().get(targetSettingEntry.getKey());
+            TargetSettingType type = targetSettingEntry.getKey();
             
             sql.append("INSERT INTO CCStrategyTargetSettings");
             sql.values(strategyId, type, setting.getPeakValue(), peak);
