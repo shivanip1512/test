@@ -66,6 +66,7 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
+import com.cannontech.database.db.point.stategroup.TrueFalse;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
@@ -93,6 +94,7 @@ import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExpo
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -121,9 +123,17 @@ public class MeterEventsReportController {
     private ScheduledFileExportValidator exportValidator = 
             new ScheduledFileExportValidator(MeterEventsReportController.class);
     
-    private final static Set<String> NON_ABNORMAL_VALUES = Sets.newHashSet(
-            OutageStatus.GOOD.name().toLowerCase(),
-            EventStatus.CLEARED.name().toLowerCase());
+    private final static Set<Integer> NON_ABNORMAL_VALUE = Sets.filter(
+        Sets.newHashSet(OutageStatus.GOOD.getRawState(), EventStatus.CLEARED.getRawState(),
+            TrueFalse.FALSE.getRawState()), new Predicate<Integer>() {
+            @Override
+            public boolean apply(Integer rawValue) {
+                if (rawValue == 0) {
+                    return true;
+                }
+                return false;
+            }
+        });
     
     private final String baseKey = "yukon.web.modules.amr.meterEventsReport";
 
@@ -287,7 +297,7 @@ public class MeterEventsReportController {
                 Sets.newHashSet(collection.getDeviceList()), meterEventsFilter.getAttributes(),
                 Range.inclusive(meterEventsFilter.getFromInstant(), meterEventsFilter.getToInstant()),
                 meterEventsFilter.isOnlyLatestEvent() ? 1 : null,  meterEventsFilter.isIncludeDisabledPaos(),
-                meterEventsFilter.isOnlyAbnormalEvents() ? NON_ABNORMAL_VALUES : null, userContext);
+                meterEventsFilter.isOnlyAbnormalEvents() ? NON_ABNORMAL_VALUE : null, userContext);
         } else {
             events = Collections.emptyList();
         }
@@ -491,7 +501,7 @@ public class MeterEventsReportController {
                     Sets.newHashSet(collection.getDeviceList()), meterEventsFilter.getAttributes(),
                     Range.inclusive(meterEventsFilter.getFromInstant(), meterEventsFilter.getToInstant()),
                     meterEventsFilter.isOnlyLatestEvent() ? 1 : null,  meterEventsFilter.isIncludeDisabledPaos(),
-                    meterEventsFilter.isOnlyAbnormalEvents() ? NON_ABNORMAL_VALUES : null, userContext);
+                    meterEventsFilter.isOnlyAbnormalEvents() ? NON_ABNORMAL_VALUE : null, userContext);
 
             if (desc) {
                 Collections.sort(events, Collections.reverseOrder(getSorter(sort, userContext)));

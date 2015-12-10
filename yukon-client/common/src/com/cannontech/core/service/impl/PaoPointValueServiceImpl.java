@@ -54,7 +54,7 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
                                                                                 ReadableRange<Instant> range,
                                                                                 Integer maxRows,
                                                                                 boolean includeDisabledPaos,
-                                                                                Set<String> discludedPointStateValues,
+                                                                                Set<Integer> discludedPointStateValues,
                                                                                 YukonUserContext userContext) {
         
         Set<? extends Attribute> attributeSet = Sets.newHashSet(attributes);
@@ -154,8 +154,8 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
                                         pointValueHolder,
                                     pointInfo.getName());
                 if (!CollectionUtils.isEmpty(discludedPointStateValues)) {
-                    String valueString = meterPointValue.getFormattedValue(pointFormattingService, userContext);
-                    if (discludedPointStateValues.contains(valueString.toLowerCase())) continue;
+                    String valueString = meterPointValue.getFormattedRawValue(pointFormattingService, userContext);
+                    if (discludedPointStateValues.contains(Double.valueOf(valueString).intValue())) continue;
                 }
                 meterPointValues.add(meterPointValue);
             }

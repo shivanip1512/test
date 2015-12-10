@@ -31,6 +31,6 @@ public interface PaoPointValueService {
                                                                    ReadableRange<Instant> range,
                                                                    Integer maxRows,
                                                                    boolean includeDisabledPaos,
-                                                                   Set<String> discludedPointStateValues,
+                                                                   Set<Integer> discludedPointStateValues,
                                                                    YukonUserContext userContext);
 }

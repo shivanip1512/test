@@ -247,13 +247,24 @@ yukon.ami.meterEventsReport = (function () {
                 $('#download-meter-events-btn').click(function () {
                     var _meterEventsTableModel = yukon.fromJson('#meterEventsTableModelData'),
                         downloadForm = $('#downloadFormContents').empty();
-                    $('#filter-form').find(':input[name]').each(function() {
+                    $('#filter-form').find(':input[name]:not(:checkbox)').each(function() {
                         var self = $(this);
                         downloadForm.append($('<input>')
                                     .attr('name', self.attr('name'))
                                     .attr('type', self.attr('type'))
                                     .val(self.val()));
                     });
+
+                    $('#filter-form').find(':input[type = checkbox]').each(function() {
+                        var self = $(this);
+                        if (self.is(":checked")) {
+                            downloadForm.append($('<input>')
+                                    .attr('name', self.attr('name'))
+                                    .attr('type', self.attr('type'))
+                                    .prop("checked", true));
+                        }
+                    });
+
                     downloadForm.append($('<input>').attr('name', 'sort').val(_meterEventsTableModel.sort));
                     downloadForm.append($('<input>').attr('name', 'descending').val(_meterEventsTableModel.descending));
                     $('#downloadForm').submit();

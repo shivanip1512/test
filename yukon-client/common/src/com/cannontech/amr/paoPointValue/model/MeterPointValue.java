@@ -21,6 +21,7 @@ public class MeterPointValue implements YukonPao {
     private final PointValueHolder pointValueHolder;
     private final String pointName;
     private String formattedValue;
+    private String formattedRawValue;
 
     public MeterPointValue(YukonMeter meter, PaoPointIdentifier paoPointIdentifier,
                            PointValueHolder pointValueHolder, String pointName) {
@@ -51,6 +52,13 @@ public class MeterPointValue implements YukonPao {
             this.formattedValue = pointFormattingService.getValueString(pointValueHolder, Format.VALUE, userContext);
         }
         return formattedValue;
+    }
+
+    public String getFormattedRawValue(final PointFormattingService pointFormattingService, final YukonUserContext userContext) {
+        if (formattedRawValue == null) {
+            this.formattedRawValue = pointFormattingService.getValueString(pointValueHolder, Format.RAWVALUE, userContext);
+        }
+        return formattedRawValue;
     }
 
     @Override

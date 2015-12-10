@@ -30,9 +30,11 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
+import com.cannontech.database.db.point.stategroup.TrueFalse;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask {
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -41,9 +43,18 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 	@Autowired private PointFormattingService pointFormattingService;
 	@Autowired private DeviceCollectionService deviceCollectionService;
 	
-	private final static Set<String> NORMAL_VALUES = ImmutableSet.of(OutageStatus.GOOD.name().toLowerCase(),
-            EventStatus.CLEARED.name().toLowerCase());
-	
+    private final static Set<Integer> NORMAL_VALUE = Sets.filter(
+        Sets.newHashSet(OutageStatus.GOOD.getRawState(), EventStatus.CLEARED.getRawState(),
+            TrueFalse.FALSE.getRawState()), new Predicate<Integer>() {
+            @Override
+            public boolean apply(Integer rawValue) {
+                if (rawValue == 0) {
+                    return true;
+                }
+                return false;
+            }
+        });
+    
 	private int daysPrevious;
 	private boolean onlyLatestEvent;
 	private boolean onlyAbnormalEvents;
@@ -149,7 +160,7 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
                 Range.inclusiveExclusive(fromInstant, toInstant),
                 onlyLatestEvent ? 1 : null,
                 includeDisabledDevices,
-                onlyAbnormalEvents ? NORMAL_VALUES : null,
+                onlyAbnormalEvents ? NORMAL_VALUE : null,
                 getUserContext());
         
         List<String[]> dataRows = Lists.newArrayList();
