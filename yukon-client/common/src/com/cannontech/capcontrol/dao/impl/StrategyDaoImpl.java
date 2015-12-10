@@ -337,7 +337,8 @@ public class StrategyDaoImpl implements StrategyDao {
     @Transactional
     private void savePeakSettings(CapControlStrategy strategy) {
         
-        Map<TargetSettingType, PeakTargetSetting> targetSettings = strategy.getTargetSettings();
+        Map<TargetSettingType, PeakTargetSetting> targetSettings =
+            StrategyPeakSettingsHelper.getSettingDefaults(strategy.getAlgorithm());
         int strategyId = strategy.getId();
         
         PeaksTargetType peak;
