@@ -2,18 +2,18 @@
 
 #include "dlldefs.h"
 
-#include <boost/noncopyable.hpp>
-
 #include <windows.h>
-#include <assert.h>
 
-class IM_EX_CTIBASE CtiMutex : boost::noncopyable
+
+class IM_EX_CTIBASE CtiMutex final
 {
 public:
     CtiMutex();
-    virtual ~CtiMutex();
+    ~CtiMutex();
 
-    bool acquire();
+    CtiMutex(const CtiMutex &) = delete;
+    CtiMutex &operator=(const CtiMutex &) = delete;
+
     bool acquire(unsigned long millis);
     void release();
     void reset();

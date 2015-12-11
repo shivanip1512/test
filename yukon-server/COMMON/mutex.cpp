@@ -22,31 +22,6 @@ CtiMutex::~CtiMutex()
 /*-----------------------------------------------------------------------------
     acquire
 
-    Blocks until the mux is acquired.
------------------------------------------------------------------------------*/
-bool CtiMutex::acquire()
-{
-    const DWORD result = WaitForSingleObject( hMutex, INFINITE );
-
-    if( result == WAIT_OBJECT_0 )
-    {
-        std::copy_backward(begin(_threadIDs), end(_threadIDs) - 1, end(_threadIDs));
-        _threadIDs[0] = GetCurrentThreadId();
-
-        return true;
-    }
-    if( result == WAIT_FAILED )
-    {
-        const DWORD error = GetLastError();
-        CTILOG_ERROR(dout, "Wait to acquire mutex failed, last error: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
-    }
-
-    return false;
-}
-
-/*-----------------------------------------------------------------------------
-    acquire
-
     Blocks until the mux is acquired or millis milliseconds have elapsed.
     Returns true if the mux is successfully acquired.
     False if there was a timeout.
@@ -54,7 +29,6 @@ bool CtiMutex::acquire()
 bool CtiMutex::acquire(unsigned long millis)
 {
     const DWORD result = WaitForSingleObject( hMutex, millis );
-    //assert(result != WAIT_FAILED);   // Why??? CGP 021502
 
     if( result == WAIT_OBJECT_0 )
     {
@@ -63,10 +37,17 @@ bool CtiMutex::acquire(unsigned long millis)
 
         return true;
     }
+
+    //if( result == WAIT_TIMEOUT )  //  just return false, no error handling necessary for a timeout
+
     if( result == WAIT_FAILED )
     {
         const DWORD error = GetLastError();
         CTILOG_ERROR(dout, "Wait to acquire mutex failed, last error: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+
+        //  Prevent a tight loop by sleeping for a bit.
+        //    WaitForSingleObject returns immediately if the underlying failure is ERR_INVALID_HANDLE (6).
+        Sleep(500);
     }
 
     return false;

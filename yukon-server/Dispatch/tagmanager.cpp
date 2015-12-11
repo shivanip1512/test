@@ -205,6 +205,8 @@ void CtiTagManager::setDirty(bool flag)
 
 void CtiTagManager::run()
 {
+    CTILOG_INFO(dout, "starting");
+
     try
     {
         int stc = loadStaticTags();
@@ -235,7 +237,7 @@ void CtiTagManager::run()
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    CTILOG_INFO(dout, "exiting");
+    CTILOG_INFO(dout, "shutting down");
 
     set(TM_THREAD_TERMINATED);
 }

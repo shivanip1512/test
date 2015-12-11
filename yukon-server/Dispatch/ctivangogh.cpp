@@ -4459,6 +4459,8 @@ void CtiVanGogh::VGAppMonitorThread()
     long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::DispatchCPU );
     long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::DispatchMemory );
 
+    CTILOG_INFO(dout, "Dispatch Application Monitor Thread starting");
+
     //on startup wait for 10 minutes!
     for(int i=0;i<120 && !bGCtrlC;i++)
     {
@@ -4564,6 +4566,8 @@ void CtiVanGogh::VGAppMonitorThread()
             }
         }
     }
+
+    CTILOG_INFO(dout, "Dispatch Application Monitor Thread shutting down");
 }
 
 

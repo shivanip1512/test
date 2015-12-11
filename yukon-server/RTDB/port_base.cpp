@@ -1387,32 +1387,25 @@ bool CtiPort::resetDeviceQueued(LONG id)
 void CtiPort::addDeviceQueuedWork(long deviceID, unsigned workCount)
 {
     device_queue_counts::iterator iter;
-    try
+
+    CtiLockGuard<CtiCriticalSection> guard(_criticalSection);
+    if( (iter = _queuedWork.find(deviceID)) != _queuedWork.end() )
     {
-        _criticalSection.acquire();
-        if( (iter = _queuedWork.find(deviceID)) != _queuedWork.end() )
+        if(workCount > 0)
         {
-            if(workCount > 0)
-            {
-                iter->second = workCount;
-            }
+            iter->second = workCount;
         }
-        else
-        {
-            if( workCount > 0 )
-            {
-                _queuedWork.insert(make_pair(deviceID, workCount));
-            }
-            else if(workCount == -1) // -1 means I exist, but 0 count. This device is registering.
-            {
-                _queuedWork.insert(make_pair(deviceID, 0));
-            }
-        }
-        _criticalSection.release();
     }
-    catch( ... )
+    else
     {
-        _criticalSection.release();
+        if( workCount > 0 )
+        {
+            _queuedWork.insert(make_pair(deviceID, workCount));
+        }
+        else if(workCount == -1) // -1 means I exist, but 0 count. This device is registering.
+        {
+            _queuedWork.insert(make_pair(deviceID, 0));
+        }
     }
 }
 
@@ -1433,20 +1426,14 @@ vector<long> CtiPort::getQueuedWorkDevices()
 
 void CtiPort::setPortCommunicating(bool state, DWORD ticks)
 {
-    try
     {
-        _criticalSection.acquire();
+        CtiLockGuard<CtiCriticalSection> guard(_criticalSection);
         _communicating = state;
-        _criticalSection.release();
-
-        if( ticks > 0 )
-        {
-            addPortTiming(ticks);
-        }
     }
-    catch( ... )
+
+    if( ticks > 0 )
     {
-        _criticalSection.release();
+        addPortTiming(ticks);
     }
 }
 
@@ -1464,35 +1451,26 @@ int CtiPort::getWorkCount(long requestID)
 {
     ULONG workCount = 0;
     map< LONG, int >::iterator iter;
-    try
-    {
-        if( requestID == 0 )
-        {
-            if( _communicating )
-            {
-                workCount++;
-            }
-            workCount += queueCount();
 
-            _criticalSection.acquire();
+    if( requestID == 0 )
+    {
+        if( _communicating )
+        {
+            workCount++;
+        }
+        workCount += queueCount();
+
+        {
+            CtiLockGuard<CtiCriticalSection> guard(_criticalSection);
             for each( device_queue_counts::value_type queue_count in _queuedWork )
             {
                 workCount += queue_count.second;
             }
-            _criticalSection.release();
-        }
-        else
-        {
-            if(_portQueue != NULL)
-            {
-                GetRequestCount(_portQueue, requestID, workCount);
-            }
         }
     }
-    catch( ... )
+    else if(_portQueue != NULL)
     {
-        _criticalSection.release();
-        workCount = 0;
+        GetRequestCount(_portQueue, requestID, workCount);
     }
 
     return workCount;

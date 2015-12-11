@@ -5,22 +5,24 @@
 #include <assert.h>
 #include "dlldefs.h"
 
-class IM_EX_CTIBASE CtiCriticalSection
+class IM_EX_CTIBASE CtiCriticalSection final
 {
 public:
     CtiCriticalSection();
-    virtual ~CtiCriticalSection();
+    ~CtiCriticalSection();
 
-    bool acquire();
-    bool acquire(unsigned long ignored_millis);     // 20050426 CGP.  I need this for debug.  It is not timed
+    CtiCriticalSection(const CtiCriticalSection &) = delete;
+    CtiCriticalSection &operator=(const CtiCriticalSection &) = delete;
+
+    void acquire();
     bool tryAcquire();
     void release();
 
-    DWORD lastAcquiredByTID() const;
+    unsigned long long lastAcquiredByTID() const;
 
 private:
 
     CRITICAL_SECTION _critical_section;
-    DWORD  _threadID;
+    HANDLE _threadID;
 };
 

@@ -12,52 +12,15 @@
 
 #pragma pack(push, LockGuardPack, 8)
 template<class T>
-class CtiLockGuard
+class IM_EX_CTIBASE CtiLockGuard
 {
 public:
-    CtiLockGuard(T& resource) :  _res(resource)
-    {
-        static bool hasDumped = false;
-        while(!(_acquired = _res.acquire(900000)))
-        {
-            CTILOG_WARN(dout, "guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
+    CtiLockGuard(T& resource);
+    CtiLockGuard(T& resource, unsigned long millis);
+    ~CtiLockGuard();
 
-            if( !hasDumped )
-            {
-                hasDumped = true;
-
-                std::ostringstream os;
-
-                os << "lockguard-" << GetCurrentThreadId();
-
-                CreateMiniDump(os.str());
-            }
-        }
-        _acquired = true;
-    }
-
-    CtiLockGuard(T& resource, unsigned long millis ) : _res(resource)
-    {
-        _acquired = _res.acquire(millis);
-    }
-
-    ~CtiLockGuard()
-    {
-        if(_acquired)
-            _res.release();
-    }
-
-    bool isAcquired() const { return _acquired;}
-    bool tryAcquire(unsigned long millis)
-    {
-        if(!_acquired)
-        {
-            _acquired = _res.acquire(millis);
-        }
-
-        return _acquired;
-    }
-
+    bool isAcquired() const;
+    bool tryAcquire(unsigned long millis);
 
 private:
 
@@ -116,25 +79,6 @@ public:
 private:
 
     bool _acquired;
-    T& _res;
-};
-
-template<class T>
-class IM_EX_CTIBASE CtiUnlockGuard
-{
-public:
-    CtiUnlockGuard(T& resource) :  _res(resource)
-    {
-        _res.release();
-    }
-
-    ~CtiUnlockGuard()
-    {
-        _res.aquire();
-    }
-
-private:
-
     T& _res;
 };
 
