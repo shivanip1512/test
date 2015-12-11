@@ -182,6 +182,9 @@ public class WaterLeakReportController {
                 } else if(filter.getToInstant().isAfterNow()) {
                     // If the to date is in the future
                     errors.rejectValue("toInstant", "yukon.web.error.date.inThePast");
+                } else if(filter.getFromInstant().equals(filter.getToInstant())) {
+                    // FromDate and ToDate should be atleast 24 hours apart
+                    errors.rejectValue("toInstant", "yukon.web.error.date.dateDifference");
                 }
 
                 // Threshold
