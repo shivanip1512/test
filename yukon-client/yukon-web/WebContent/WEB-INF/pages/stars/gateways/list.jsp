@@ -130,7 +130,7 @@
                                     <c:set var="dn" value="dn"/>
                                 </c:if>
                                 <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
-                                <cti:icon icon="icon-download" classes="js-gateway-update-available fn ${dn}" title="${updateAvailable}"/>
+                                <cti:icon icon="icon-download" data-popup="#send-firmware-upgrade-popup" classes="js-gateway-update-available fn cp ${dn}" title="${updateAvailable}"/>
                             </td>
                         </c:if>
                         <c:set var="clazz" value="green"/>
@@ -318,7 +318,7 @@
             <c:if test="${enableNMGatewayVersion}">
                 <td class="js-gw-rv">
                 <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
-                <cti:icon icon="icon-download" classes="js-gateway-update-available fn dn" title="${updateAvailable}"/>
+                <cti:icon icon="icon-download" data-popup="#send-firmware-upgrade-popup" classes="js-gateway-update-available fn cp dn" title="${updateAvailable}"/>
                 </td>
             </c:if>
             <td class="js-gw-last-comm"></td>
