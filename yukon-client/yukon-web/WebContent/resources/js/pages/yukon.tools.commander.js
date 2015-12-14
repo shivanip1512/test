@@ -413,7 +413,7 @@ yukon.tools.commander = (function () {
                 }
                 for (var i in result.unAuthorizedCommand) {
                     _logRequestUnAuthorized(i, result.unAuthorizedCommand[i]);
-                    _logError(i,'You do not have permission to execute this command');
+                    _logError(i,result.unAuthorizedErrorMsg);
                 }
             }).fail(function (xhr, status, errorThrown) {
                 var 

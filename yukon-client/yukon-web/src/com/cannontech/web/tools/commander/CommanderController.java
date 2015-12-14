@@ -317,8 +317,15 @@ public class CommanderController {
                 requests.add(request);
             }
             result.put("requests", requests);
+        } 
+        
+        if (!unAuthorizedCommand.isEmpty()) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String unAuthorizedMessage = accessor.getMessage(keyBase + ".error.unAuthorizedMessage",
+                                                             commanderService.getPorterHost());
+            result.put("unAuthorizedCommand", unAuthorizedCommand);
+            result.put("unAuthorizedErrorMsg", unAuthorizedMessage);
         }
-        result.put("unAuthorizedCommand", unAuthorizedCommand);
         return result;
     }
     
