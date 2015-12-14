@@ -3,6 +3,7 @@ package com.cannontech.web.tools.commander.service;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.commander.model.CommandParams;
@@ -33,5 +34,12 @@ public interface CommanderService {
     
     /** Returns the Porter authority which is the hostname and port number for the connection to Porter. */
     String getPorterHost();
+    
+    /**
+     * Check if the user is authorized to execute this command on the pao.
+     */
+
+    Map<String, Boolean> authorizeCommand(CommandParams params, YukonUserContext userContext,
+            LiteYukonPAObject pao);
     
 }

@@ -175,7 +175,21 @@ yukon.tools.commander = (function () {
         
         return result;
     },
-    
+    _logRequestUnAuthorized = function (req, command) {
+        
+        var timestamp = moment().tz(yg.timezone).format(yg.formats.date.long_date_time_hms),
+            result = $('<div>'), 
+            resultReq = $('<div>'),
+            console = $('#commander-results');
+        
+            result.addClass('cmd-req-resp').data('requestId', req).attr('data-request-id', req);
+            resultReq.addClass('cmd-req').text('[' + timestamp + '] - ' + command).appendTo(result);
+        
+        console.append(result);
+        if (!_scrollLock) console.scrollTo(result); 
+        
+        return result;
+    },
     /** 
      * Log a response for a request in the console window.
      * @param {object} req - The request object for the response. 
@@ -396,6 +410,10 @@ yukon.tools.commander = (function () {
             }).done(function (result, status, xhr) {
                 for (var i in result.requests) {
                     _logRequest(result.requests[i].request);
+                }
+                for (var i in result.unAuthorizedCommand) {
+                    _logRequestUnAuthorized(i, result.unAuthorizedCommand[i]);
+                    _logError(i,'You do not have permission to execute this command');
                 }
             }).fail(function (xhr, status, errorThrown) {
                 var 

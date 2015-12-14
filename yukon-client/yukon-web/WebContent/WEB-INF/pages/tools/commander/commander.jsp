@@ -131,7 +131,12 @@
     </tags:nameValue2>
     
     <tags:nameValue2 nameKey=".command">
-        <input id="command-text" type="text" size="60" tabindex="0">
+        <c:if test="${executeManualCommand == true}">
+            <input id="command-text" type="text" size="60" tabindex="0" readOnly>
+        </c:if>
+        <c:if test="${executeManualCommand == false}">
+            <input id="command-text" type="text" size="60" tabindex="0">
+        </c:if>  
         <cti:button id="cmd-execute-btn" nameKey="execute" classes="primary action fn vat"/>
     </tags:nameValue2>
     

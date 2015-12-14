@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -65,6 +66,7 @@ import com.cannontech.web.tools.commander.service.CommanderService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebUtilityService;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -89,6 +91,7 @@ public class CommanderController {
     private static final TypeReference<List<RecentTarget>> recentTargetsType = new TypeReference<List<RecentTarget>>() {};
     private static final String keyBase = "yukon.web.modules.tools.commander";
     private static final String json = MediaType.APPLICATION_JSON_VALUE;
+    private static final Random unAuthorizedcommandIds = new Random(System.currentTimeMillis());
     private static final Comparator<CommandRequest> onTimestamp = new Comparator<CommandRequest>() {
         @Override
         public int compare(CommandRequest o1, CommandRequest o2) {
@@ -147,6 +150,7 @@ public class CommanderController {
         if (recentTargets != null) {
             model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
         }
+        model.addAttribute("executeManualCommand", !rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user));
         
         return "commander/commander.jsp";
     }
@@ -261,39 +265,60 @@ public class CommanderController {
         Map<String, Object> result = new HashMap<>();
         
         List<CommandRequest> commands = null;
-        try {
-            commands = commanderService.sendCommand(userContext, params);
-            
-            if (params.getTarget() == CommandTarget.DEVICE || params.getTarget() == CommandTarget.LOAD_GROUP) {
-                LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
-                eventLogger.executeOnPao(userContext.getYukonUser(), params.getCommand(), 
-                        pao.getPaoName(), pao.getLiteID());
-            } else {
-                LiteYukonPAObject route = cache.getAllPaosMap().get(params.getRouteId());
-                eventLogger.executeOnSerial(userContext.getYukonUser(), params.getCommand(), 
-                        params.getSerialNumber(), route.getPaoName(), route.getLiteID());
-            }
-            
-        } catch (CommandRequestException e) {
-            commands = e.getRequests();
-            if (e.getType() == CommandRequestExceptionType.PORTER_CONNECTION_INVALID) {
-                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-                String reason = accessor.getMessage(keyBase + ".error.porter.invalid", commanderService.getPorterHost());
-                result.put("reason", reason);
-            } else {
-                result.put("reason", e.getMessage());
-            }
-            
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-        }
+        List<String> authorizedCommand = new ArrayList<String>();
+        Map<Integer, String> unAuthorizedCommand = new HashMap<Integer, String>();
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
         
-        List<Map<String, CommandRequest>> requests = new ArrayList<>();
-        for (CommandRequest command : commands) {
-            ImmutableMap<String, CommandRequest> request = ImmutableMap.of("request", command);
-            requests.add(request);
-        }
-        result.put("requests", requests);
+        Map<String, Boolean> commandWithAuthorization = commanderService.authorizeCommand(params, userContext, pao);;
         
+        for (String key : commandWithAuthorization.keySet()) {
+            if (commandWithAuthorization.get(key) == true) {
+                authorizedCommand.add(key);
+            } else {
+                unAuthorizedCommand.put(unAuthorizedcommandIds.nextInt(), key);
+            }
+        }
+        if (authorizedCommand.size() != 0) {
+            params.setCommand(Joiner.on('&').join(authorizedCommand));
+            try {
+                commands = commanderService.sendCommand(userContext, params);
+
+                if (params.getTarget() == CommandTarget.DEVICE || params.getTarget() == CommandTarget.LOAD_GROUP) {
+                    eventLogger.executeOnPao(userContext.getYukonUser(),
+                                             params.getCommand(),
+                                             pao.getPaoName(),
+                                             pao.getLiteID());
+                } else {
+                    LiteYukonPAObject route = cache.getAllPaosMap().get(params.getRouteId());
+                    eventLogger.executeOnSerial(userContext.getYukonUser(),
+                                                params.getCommand(),
+                                                params.getSerialNumber(),
+                                                route.getPaoName(),
+                                                route.getLiteID());
+                }
+
+            } catch (CommandRequestException e) {
+                commands = e.getRequests();
+                if (e.getType() == CommandRequestExceptionType.PORTER_CONNECTION_INVALID) {
+                    MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                    String reason = accessor.getMessage(keyBase + ".error.porter.invalid",
+                                                        commanderService.getPorterHost());
+                    result.put("reason", reason);
+                } else {
+                    result.put("reason", e.getMessage());
+                }
+
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            }
+
+            List<Map<String, CommandRequest>> requests = new ArrayList<>();
+            for (CommandRequest command : commands) {
+                ImmutableMap<String, CommandRequest> request = ImmutableMap.of("request", command);
+                requests.add(request);
+            }
+            result.put("requests", requests);
+        }
+        result.put("unAuthorizedCommand", unAuthorizedCommand);
         return result;
     }
     
