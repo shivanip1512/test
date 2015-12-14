@@ -107,7 +107,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
 <cti:dataUpdaterCallback
     function="${widgetParameters.widgetId}_updateCurrent"
     initialize="true"
-    valueIdentifier="POINT/${pointId}/{value}"/>
+    valueIdentifier="POINT/${pointId}/RAWVALUE"/>
     
 </c:if>
 
