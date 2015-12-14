@@ -480,6 +480,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="sema.cpp">
     </ClCompile>
+    <ClCompile Include="GlobalSettings.cpp" />
     <ClCompile Include="stdexcepthdlr.cpp">
     </ClCompile>
     <ClCompile Include="streamBuffer.cpp">
@@ -569,6 +570,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\exception_helper.h" />
     <ClInclude Include="include\Exceptions.h" />
     <ClInclude Include="include\fileint.h" />
+    <ClInclude Include="include\GlobalSettings.h" />
     <ClInclude Include="include\guard.h" />
     <ClInclude Include="include\id_ctibase.h" />
     <ClInclude Include="include\immutable.h" />

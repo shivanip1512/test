@@ -7,11 +7,11 @@ namespace Messaging {
 namespace ActiveMQ {
 
 namespace Broker {
-    const std::string defaultURI      = "tcp://localhost:61616";
+    // Listener URI
+    const std::string defaultURI = "tcp://localhost:61616";
 
-    // producerWindowSize sets the size in Bytes of messages that a producer can send before it is blocked
-    // to await a ProducerAck from the broker that frees enough memory to allow another message to be sent.
-    const std::string flowControlURI  = defaultURI + "?connection.producerWindowSize=1048576";
+    // Client URI
+    const std::string flowControlURI = defaultURI;
 }
 
 namespace MessageType {

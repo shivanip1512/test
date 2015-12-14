@@ -26,7 +26,7 @@ import com.sun.management.GcInfo;
 
 
 /**
- *  This class runs a thread that monitors the ActiveMQ broker.  It perodically outputs queue depths
+ *  This class runs a thread that monitors the ActiveMQ broker.  It periodically outputs queue depths
  *  and memory usage as well as JVM memory statistics from the GC. 
  */
 public class BrokerServiceMonitor extends Thread implements NotificationListener {

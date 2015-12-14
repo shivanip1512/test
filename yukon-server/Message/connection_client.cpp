@@ -4,6 +4,7 @@
 #include "dllbase.h"
 #include "amq_constants.h"
 #include "amq_util.h"
+#include "GlobalSettings.h"
 
 #include <activemq/core/ActiveMQConnection.h>
 
@@ -121,7 +122,16 @@ bool CtiClientConnection::establishConnection()
                     // clean up activemq objects before resetting the connection
                     CtiConnection::releaseResources();
 
-                    _connection.reset( new ManagedConnection( Broker::flowControlURI ));
+                    // producerWindowSize sets the size in Bytes of messages that a producer can send before it is blocked
+                    // to await a ProducerAck from the broker that frees enough memory to allow another message to be sent.
+                    const std::string producerWindowSize = "connection.producerWindowSize=" +
+                        GlobalSettings::instance()->getString( "PRODUCER_WINDOW_SIZE", "1048576" );
+
+                    // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from it.
+                    const std::string maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
+                        GlobalSettings::instance()->getString( "MAX_INACTIVITY_DURATION", "30000" );
+
+                    _connection.reset( new ManagedConnection( Broker::flowControlURI + "?" + producerWindowSize + "&" + maxInactivityDuration ) );
                 }
 
                 CTILOG_INFO(dout, who() << " - connecting to \"" << _serverQueueName << "\"\n"

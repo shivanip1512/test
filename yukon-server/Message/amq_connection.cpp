@@ -17,6 +17,7 @@
 #include "message_factory.h"
 
 #include "std_helper.h"
+#include "GlobalSettings.h"
 
 #include <boost/optional.hpp>
 #include <boost/range/algorithm/for_each.hpp>
@@ -155,7 +156,11 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
                 return false; // prevent starting a new connection while closing
             }
 
-            _connection.reset( new ActiveMQ::ManagedConnection( _broker_uri ));
+            // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from it.
+            const std::string maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
+                GlobalSettings::instance()->getString( "MAX_INACTIVITY_DURATION", "30000" );
+
+            _connection.reset( new ActiveMQ::ManagedConnection( _broker_uri + "?" + maxInactivityDuration ) );
         }
 
         _connection->start(); // start the connection outside the lock

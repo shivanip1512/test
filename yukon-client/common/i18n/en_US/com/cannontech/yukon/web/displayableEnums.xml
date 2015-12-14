@@ -359,6 +359,12 @@
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
     <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS">Scheduled Requests Timeout</entry>
     <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS.description">The maximum number of hours a scheduled request may run before automatically being cancelled.</entry>
+    
+    <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
+    <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in bytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>
+    <entry key="yukon.common.setting.MAX_INACTIVITY_DURATION">Connection Inactivity Timeout</entry>
+    <entry key="yukon.common.setting.MAX_INACTIVITY_DURATION.description">The time, in milliseconds, of inactivity before the service connection is reset. (Requires restart to take effect.)</entry>
+    
     <entry key="yukon.common.setting.PRESERVE_ENDPOINT_LOCATION">Preserve Endpoint Location</entry>
     <entry key="yukon.common.setting.PRESERVE_ENDPOINT_LOCATION.description">When true, location coordinates are retained following remove, disable, or return to warehouse action. Otherwise they are deleted</entry>
     

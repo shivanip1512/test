@@ -144,6 +144,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     CONTACT_EMAIL(GlobalSettingSubCategory.MISC, stringType(), "EAS-Support@Eaton.com"),
     CONTACT_PHONE(GlobalSettingSubCategory.MISC, stringType(), "1-800-815-2258"),
     SCHEDULED_REQUEST_MAX_RUN_HOURS(GlobalSettingSubCategory.MISC, integerType(), 23),
+    PRODUCER_WINDOW_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1048576),
+    MAX_INACTIVITY_DURATION(GlobalSettingSubCategory.MISC, integerType(), 30000),
+
     // Misc. > Web Graph
     HOME_DIRECTORY(GlobalSettingSubCategory.MISC, stringType(), "c:\\yukon\\client\\webgraphs\\"),
     RUN_INTERVAL(GlobalSettingSubCategory.MISC, integerType(), 900),

@@ -9,7 +9,6 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
 import org.apache.activemq.command.ActiveMQTempQueue;
-import org.apache.activemq.plugin.StatisticsBrokerPlugin;
 import org.apache.log4j.Logger;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
@@ -72,13 +71,13 @@ public class ServerEmbeddedBroker {
             broker.setBrokerName(name);
 
             broker.setUseJmx(true);
-            
+
             broker.addConnector(listenerHost);
-            if (!listenerHost.equals(anyhostConnector) && !listenerHost.equals(localhostConnector)) {
+            if (!listenerHost.startsWith(anyhostConnector) && !listenerHost.startsWith(localhostConnector)) {
                 log.info("Specified listener (" + listenerHost + ") doesn't include localhost:61616, adding localhost to broker.");
                 // They didn't specify a listener for localhost:61616, so we will
                 try {
-                     broker.addConnector(localhostConnector);
+                    broker.addConnector(localhostConnector);
                 } catch (IOException e) {
                     log.error("Unable to add localhost JMS listener (localhost:61616). The specified host and port in global settings might already be bound to this address. listenerHost: (" + listenerHost + ")", e);
                 }
