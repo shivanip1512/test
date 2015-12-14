@@ -155,7 +155,7 @@
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.displayDigits">Display Digits</entry>
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.displayDigits.description">The number of kWh digits displayed on the LCD panel.</entry>
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled">Disconnect Display Disabled</entry>
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled.description">When true, disable the meter's disconnect display.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled.description">When true, disable the meter's disconnect display (only for 420-model meters supporting disconnect).</entry>
     
     <entry key="yukon.web.modules.tools.configs.category.centron420DisplayItems.title">Centron C2SX Display Items</entry>
     <entry key="yukon.web.modules.tools.configs.category.centron420DisplayItems.definition">Items displayed on the front panel LCD of Centron C2SX MCT and RFN devices (420 device types).</entry>
