@@ -61,6 +61,7 @@ public class ClientEmbeddedBroker {
             //  network manager -> remote proxy -> local proxy -> service manager -> web
             networkConnector.setNetworkTTL(5);
             broker.setUseJmx(true);
+            broker.getManagementContext().setConnectorPort(1098);
             
             broker.start();
         } catch (Exception e) {

@@ -19,7 +19,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 public class YsmJmxQueryService {
 
     private static final Logger log = YukonLogManager.getLogger(YsmJmxQueryService.class);
-    private static final String service = "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi";
+    private static final String service = "service:jmx:rmi:///jndi/rmi://localhost:1097/jmxrmi";
     
     private JMXServiceURL serviceUrl;
     private JMXConnector jmxConnector;
@@ -61,7 +61,7 @@ public class YsmJmxQueryService {
                 serviceUrl = new JMXServiceURL(service);
                 jmxConnector = JMXConnectorFactory.connect(serviceUrl, null);
             } catch (IOException e) {
-                log.error("Could not init jmx connection", e);
+                log.error("Could not init jmx connection for Service Manager.");
             }
         }
     }

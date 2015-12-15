@@ -71,6 +71,7 @@ public class ServerEmbeddedBroker {
             broker.setBrokerName(name);
 
             broker.setUseJmx(true);
+            broker.getManagementContext().setConnectorPort(1097);
 
             broker.addConnector(listenerHost);
             if (!listenerHost.startsWith(anyhostConnector) && !listenerHost.startsWith(localhostConnector)) {
