@@ -52,7 +52,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             @Override
             public String getValueString(PointValueHolder data, String format, YukonUserContext userContext) {
                 FormattingTemplateProcessor templateProcessor = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
-                Object value = data.getValue(); // may be overwritten with state text for status points.
+                Object value = "";
                 Double rawValue = data.getValue();
                 String valueStr = "";
                 String unitString = "";
@@ -111,6 +111,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 }
                     
                 if (pointType.hasUnitMeasure()) {
+                    value = data.getValue();
                     if (templateProcessor.contains(format, "unit") || templateProcessor.contains(format, "default")) {
                         // point unit
                         LitePointUnit pointUnit = pointUnitCache.get(data.getId());
