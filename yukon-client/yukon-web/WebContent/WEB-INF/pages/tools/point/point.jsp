@@ -508,8 +508,7 @@
                             <cti:displayForPageEditModes modes="VIEW">
                                 <span class="name"><i:inline key=".fdr.translation"/>:</span>
                                 <span class="value">
-                                    <input readonly disabled value="${fdrTranslation.translation}"
-                                        size="${fn:length(fdrTranslation.translation)}">
+                                    <input readonly disabled value="${fdrTranslation.translation}" class="full-width">
                                 </span>
                             </cti:displayForPageEditModes>
 
