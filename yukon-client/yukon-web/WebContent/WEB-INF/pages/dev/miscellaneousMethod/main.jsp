@@ -47,38 +47,6 @@
             </form>
             </tags:sectionContainer>
             
-            <tags:sectionContainer title="Control Notification Tester"> 
-            <form action="sendControlStartNotificationMessage" method="post">
-                <cti:csrfToken/>
-                <input type="hidden" name="loadProgramId" id="loadProgramId3">
-                    <tags:pickerDialog  type="lmProgramPicker"
-                                                        extraArgs="${energyCompanyId}"
-                                                        id="programPicker3" 
-                                                        immediateSelectMode="true"
-                                                        destinationFieldId="loadProgramId3"
-                                                        selectionProperty="paoName"
-                                                        linkType="selection">
-                        <cti:icon icon="icon-add"/>
-                        Choose Program
-                    </tags:pickerDialog>
-                <cti:button nameKey="sendControlStartNotificationMessage" type="submit"/>
-            </form>
-            <form action="sendControlStopNotificationMessage" method="post">
-                <cti:csrfToken/>
-                <input type="hidden" name="loadProgramId" id="loadProgramId4">
-                    <tags:pickerDialog  type="lmProgramPicker"
-                                                        extraArgs="${energyCompanyId}"
-                                                        id="programPicker4" 
-                                                        immediateSelectMode="true"
-                                                        destinationFieldId="loadProgramId4"
-                                                        selectionProperty="paoName"
-                                                        linkType="selection">
-                        <cti:icon icon="icon-add"/>
-                        Choose Program
-                    </tags:pickerDialog>
-                <cti:button nameKey="sendControlStopNotificationMessage" type="submit"/>
-            </form>
-        </tags:sectionContainer>
     </cti:dataGridCell>
 </cti:dataGrid>
  </cti:checkEnergyCompanyOperator>

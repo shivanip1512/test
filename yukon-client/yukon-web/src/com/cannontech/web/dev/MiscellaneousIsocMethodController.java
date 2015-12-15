@@ -20,6 +20,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
+@RequestMapping("/miscellaneousMethod/*")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class MiscellaneousIsocMethodController {
     
@@ -28,7 +29,7 @@ public class MiscellaneousIsocMethodController {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private EnergyCompanyDao ecDao;
     
-    @RequestMapping("/development/miscellaneousMethod/insertProgramTypes")
+    @RequestMapping("insertProgramTypes")
     public String insertProgramTypes(LiteYukonUser user, FlashScope flashScope) {
         
         try {

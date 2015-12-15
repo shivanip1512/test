@@ -3,19 +3,24 @@ package com.cannontech.web.dev;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.Sets;
 
@@ -28,12 +33,16 @@ public class MiscellaneousControlMessageSender {
     @Autowired EnrollmentDao enrollmentDao;
     @Autowired NextValueHelper nextValueHelper;
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
-
+    private static final String baseKey ="yukon.web.modules.dev.miscellaneousMethod";
     private int controlId = 0;
     
     @RequestMapping("/miscellaneousMethod/sendTestTextMessage")
-    public String sendTestTextMessage(int loadProgramId) {
-
+    public String sendTestTextMessage(ModelMap model, HttpServletRequest request, Integer loadProgramId,
+            FlashScope flashScope) {
+        if (loadProgramId == null) {
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".noProgramSelected"));
+            return "redirect:main";
+        }
         List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(loadProgramId));
         Set<Integer> inventoryIds = enrollmentDao.getActiveEnrolledInventoryIdsForGroupIds(groupIds);
         
@@ -55,8 +64,13 @@ public class MiscellaneousControlMessageSender {
         return "redirect:main";
     }
     
-    @RequestMapping("/development/miscellaneousMethod/sendTestCancelMessage")
-    public String sendTestCancelMessage(int loadProgramId) {
+    @RequestMapping("/miscellaneousMethod/sendTestCancelMessage")
+    public String sendTestCancelMessage(ModelMap model, HttpServletRequest request, Integer loadProgramId,
+            FlashScope flashScope) {
+        if (loadProgramId == null) {
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".noProgramSelected"));
+            return "redirect:main";
+        }
         List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(loadProgramId));
         Set<Integer> inventoryIds = enrollmentDao.getActiveEnrolledInventoryIdsForGroupIds(groupIds);
 
@@ -69,39 +83,4 @@ public class MiscellaneousControlMessageSender {
         return "redirect:main";
     }
     
-    
-    @RequestMapping("/development/miscellaneousMethod/sendControlStartNotificationMessage")
-    public String sendControlStartNotificationMessage(int loadProgramId) {
-        
-//        ControlNotification controlNotification = new ControlNotification();  
-//        
-//        Instant now = new Instant();
-//        
-//        controlNotification.setNotifType(NotifType.IHD);
-//        controlNotification.setControlNotificationType(ControlNotificationType.STARTING_CONTROL_NOTIFICATION);
-//        controlNotification.setProgramId(4442);
-//        controlNotification.setStartTime(now);
-//        controlNotification.setStopTime(now.plus(7200000));
-//
-//        jmsTemplate.convertAndSend("yukon.notif.stream.dr.ControlNotification", controlNotification);
-        return "redirect:main";
-    }
-    
-    @RequestMapping("/development/miscellaneousMethod/sendControlStopNotificationMessage")
-    public String sendControlStopNotificationMessage(int loadProgramId) {
-        
-//        ControlNotification controlNotification = new ControlNotification();  
-//        
-//        Instant now = new Instant();
-//        
-//        controlNotification.setNotifType(NotifType.IHD);
-//        controlNotification.setControlNotificationType(ControlNotificationType.FINISHING_CONTROL_NOTIFICATION);
-//        controlNotification.setProgramId(4442);
-//        controlNotification.setStartTime(now);
-//        controlNotification.setStopTime(now.plus(7200000));
-//
-//        
-//        jmsTemplate.convertAndSend("yukon.notif.stream.dr.ControlNotification", controlNotification);
-        return "redirect:main";
-    }
 }
