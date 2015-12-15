@@ -237,18 +237,12 @@
                     </td>
                     <td>
                         <c:if test="${scheduleInfo.showToggleButton}">
-                            <form action="${toggleUrl}" method="POST">
+                            <form id="scriptsForm_${scheduleInfo.schedule.id}" action="${toggleUrl}" method="POST">
                                 <cti:csrfToken/>
-                                <c:choose>
-                                    <c:when test="${scheduleInfo.disabledState}">
-                                        <c:set var="icon" value="icon-disabled" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:set var="icon" value="icon-enabled" />
-                                    </c:otherwise>
-                                </c:choose>
-                                <cti:button renderMode="image" icon="${icon}" type="submit"/>
-
+   
+                                <tags:switch checked="${!scheduleInfo.disabledState}" name="toggleState" data-script-id="${scheduleInfo.schedule.id}" 
+                                 classes="js-scripts-toggle toggle-sm"/>
+                             
                                 <input type="hidden" name="id" value="${scheduleInfo.schedule.id}" />
                                 <input type="hidden" name="sortBy" value="${sortBy}" />
                                 <input type="hidden" name="descending" value="${descending}" />
@@ -261,3 +255,4 @@
     </table>
 </div>
 </cti:msgScope>
+<cti:includeScript link="/resources/js/widgets/yukon.widget.scripts.js"/>
