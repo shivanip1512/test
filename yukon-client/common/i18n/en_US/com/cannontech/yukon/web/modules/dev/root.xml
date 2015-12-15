@@ -210,6 +210,7 @@
     <entry key="yukon.web.modules.dev.miscellaneousMethod.sendTestCancelMessage.label">Send Cancel Message Event</entry>
     <entry key="yukon.web.modules.dev.miscellaneousMethod.sendControlStopNotificationMessage.label">Send Control Notification Stop</entry>
     <entry key="yukon.web.modules.dev.miscellaneousMethod.sendControlStartNotificationMessage.label">Send Control Notification Start</entry>
+    <entry key="yukon.web.modules.dev.miscellaneousMethod.noProgramSelected">No Program Selected.</entry>
     
     <!-- RFN Test -->
     <entry key="yukon.web.modules.dev.rfnTest.pageName">RFN Test</entry>
