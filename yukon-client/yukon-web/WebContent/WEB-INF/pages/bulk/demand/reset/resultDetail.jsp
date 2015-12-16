@@ -129,7 +129,7 @@
             <div class="dn js-action">
                 <div>
                     <cti:url var="unconfirmedUrl" value="/bulk/collectionActions">
-                        <cti:mapParam value="${result.confirmedCollection.collectionParameters}" />
+                        <cti:mapParam value="${result.unconfirmedCollection.collectionParameters}" />
                     </cti:url>
                     <a href="${unconfirmedUrl}"><i:inline key=".bulk.demandReset.results.newOperation" /></a>
                     <tags:selectedDevicesPopup deviceCollection="${result.unconfirmedCollection}" />
