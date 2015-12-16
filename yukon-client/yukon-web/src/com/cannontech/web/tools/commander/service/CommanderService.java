@@ -37,9 +37,11 @@ public interface CommanderService {
     
     /**
      * Check if the user is authorized to execute this command on the pao.
+     * CommandParams may contain a command string that has multiple commands in it.
+     * Returns a Map of commands and a boolean value representing true if authorized, else false.
      */
 
     Map<String, Boolean> authorizeCommand(CommandParams params, YukonUserContext userContext,
-            LiteYukonPAObject pao);
+            Object obj);
     
 }

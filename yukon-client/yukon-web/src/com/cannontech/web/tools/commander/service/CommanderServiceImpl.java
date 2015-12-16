@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.PaoDao;
@@ -70,6 +71,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @Autowired private PaoDao paoDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthService;
+    @Autowired private LMCommandAuthorizationService lmCommandAuthService;
     
     @Override
     public List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params) throws CommandRequestException {
@@ -242,14 +244,21 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     }
     
     public Map<String, Boolean> authorizeCommand(CommandParams params,
-            YukonUserContext userContext, LiteYukonPAObject pao) {
+            YukonUserContext userContext, Object obj) {
         List<String> commands = splitCommands(params);
         Map<String, Boolean> authorizedCommand = new HashMap<String, Boolean>();
         for (String command : commands) {
-            authorizedCommand.put(command,
-                                  paoCommandAuthService.isAuthorized(userContext.getYukonUser(),
-                                                                     command,
-                                                                     pao));
+            if (obj instanceof LiteYukonPAObject) {
+                authorizedCommand.put(command,
+                                      paoCommandAuthService.isAuthorized(userContext.getYukonUser(),
+                                                                         command,
+                                                                         (LiteYukonPAObject) obj));
+            } else if (obj instanceof String) {
+                authorizedCommand.put(command,
+                                      lmCommandAuthService.isAuthorized(userContext.getYukonUser(),
+                                                                        command,
+                                                                        (String) obj));
+            }
         }
         return authorizedCommand;
     }

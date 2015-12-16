@@ -150,7 +150,7 @@ public class CommanderController {
         if (recentTargets != null) {
             model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
         }
-        model.addAttribute("executeManualCommand", !rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user));
+        model.addAttribute("executeManualCommand", rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user));
         
         return "commander/commander.jsp";
     }
@@ -259,18 +259,23 @@ public class CommanderController {
     
     /** Execute a command */
     @RequestMapping("/commander/execute")
-    public @ResponseBody Map<String, Object> execute(HttpServletResponse resp, YukonUserContext userContext, 
-            @ModelAttribute CommandParams params) {
-        
+    public @ResponseBody Map<String, Object> execute(HttpServletResponse resp,
+            YukonUserContext userContext, @ModelAttribute CommandParams params) {
+
         Map<String, Object> result = new HashMap<>();
-        
+
         List<CommandRequest> commands = null;
         List<String> authorizedCommand = new ArrayList<String>();
         Map<Integer, String> unAuthorizedCommand = new HashMap<Integer, String>();
-        LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
-        
-        Map<String, Boolean> commandWithAuthorization = commanderService.authorizeCommand(params, userContext, pao);;
-        
+        Map<String, Boolean> commandWithAuthorization = new HashMap<String, Boolean>();
+
+        if (params.getPaoId() != null) {
+            LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
+            commandWithAuthorization = commanderService.authorizeCommand(params, userContext, pao);
+        } else {
+            commandWithAuthorization = commanderService.authorizeCommand(params, userContext, "lmdevice");
+        }
+
         for (String key : commandWithAuthorization.keySet()) {
             if (commandWithAuthorization.get(key) == true) {
                 authorizedCommand.add(key);
@@ -284,6 +289,7 @@ public class CommanderController {
                 commands = commanderService.sendCommand(userContext, params);
 
                 if (params.getTarget() == CommandTarget.DEVICE || params.getTarget() == CommandTarget.LOAD_GROUP) {
+                    LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
                     eventLogger.executeOnPao(userContext.getYukonUser(),
                                              params.getCommand(),
                                              pao.getPaoName(),
@@ -317,8 +323,8 @@ public class CommanderController {
                 requests.add(request);
             }
             result.put("requests", requests);
-        } 
-        
+        }
+
         if (!unAuthorizedCommand.isEmpty()) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             String unAuthorizedMessage = accessor.getMessage(keyBase + ".error.unAuthorizedMessage",
