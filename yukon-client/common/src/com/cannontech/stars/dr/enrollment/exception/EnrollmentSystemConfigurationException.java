@@ -12,6 +12,10 @@ public class EnrollmentSystemConfigurationException extends EnrollmentException 
         super(message);
     }
     
+    public EnrollmentSystemConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    
     @Override
     public String getKey() {
         return key;

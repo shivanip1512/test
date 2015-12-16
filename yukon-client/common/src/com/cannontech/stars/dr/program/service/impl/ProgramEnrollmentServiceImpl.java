@@ -54,6 +54,8 @@ import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlHistory.service.StarsControlHistoryService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -191,10 +193,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 }
             } catch(SystemConfigurationException e) {
                 log.error(e);
-                return ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY;
-            } catch (CommandCompletionException e2) {
-                log.error(e2);
-                return ProgramEnrollmentResultEnum.FAILURE;
+                throw new EnrollmentSystemConfigurationException("System configuration error in enrollment.", e);
+            } catch (CommandCompletionException e) {
+                log.error(e);
+                throw new EnrollmentException("Error sending enrollment command.", e);
             }
 
             // Log activity

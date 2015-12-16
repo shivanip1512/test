@@ -31,8 +31,6 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
-import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
@@ -44,7 +42,6 @@ import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
-import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.program.service.ProgramService;
@@ -126,8 +123,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                 addedEnrollments.add(enrollment);
             }
         }
-
-        applyEnrollments(enrollments, customerAccount, userContext.getYukonUser());
+        programEnrollmentService.applyEnrollmentRequests(customerAccount, enrollments, userContext.getYukonUser());
         
         // Log the new enrollments.
         for (ProgramEnrollment programEnrollment : addedEnrollments) {
@@ -217,7 +213,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         
         // Create/Remove the supplied enrollments.  This includes adding them to the database and
         // also sending out the commands to the device.
-        applyEnrollments(enrollmentData, customerAccount, user);
+        programEnrollmentService.applyEnrollmentRequests(customerAccount, enrollmentData, user);
         
         // Updates the applianceKW if the process was an enrollment.
         updateApplianceKW(enrollmentEnum, customerAccount, enrollmentHelper, programEnrollment);
@@ -258,28 +254,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                                                     enrollmentHelper.getSerialNumber(),
                                                     enrollmentHelper.getProgramName(),
                                                     enrollmentHelper.getLoadGroupName());
-        }
-    }
-    
-    /**
-     * This method takes a list of enrollment data and makes that list the exact
-     * list of enrollments for the customer. If they are enrolled in something
-     * not in the list, they will be unenrolled. If they are not enrolled in
-     * something in the list, they will be enrolled in it.
-     */
-    private void applyEnrollments(List<ProgramEnrollment> enrollmentData,
-                                  CustomerAccount customerAccount,
-                                  LiteYukonUser user) {
-
-        // Processes the enrollment requests
-        ProgramEnrollmentResultEnum applyEnrollmentRequests = 
-            programEnrollmentService.applyEnrollmentRequests(customerAccount, enrollmentData, user);
-        
-        if (applyEnrollmentRequests == ProgramEnrollmentResultEnum.FAILURE){
-            throw new EnrollmentException();
-        }
-        if (applyEnrollmentRequests == ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY){
-            throw new EnrollmentSystemConfigurationException();
         }
     }
     

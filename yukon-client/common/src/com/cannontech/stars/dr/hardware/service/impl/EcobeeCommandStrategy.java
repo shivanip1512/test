@@ -12,13 +12,13 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -34,7 +34,6 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommandStrategy.class);
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
-    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
 
     @Override
@@ -80,9 +79,9 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
             default:
                 break;
             }
-        } catch (EcobeeDeviceDoesNotExistException | EcobeeSetDoesNotExistException e) {
-            log.error("Unable to send command.", e);
-            throw new CommandCompletionException("Unable to send command.", e);
+        } catch (EcobeeDeviceDoesNotExistException | EcobeeSetDoesNotExistException | EcobeeCommunicationException e) {
+            log.error("Error sending command to ecobee server.", e);
+            throw new CommandCompletionException("Error sending command to ecobee server.", e);
         }
     }
 

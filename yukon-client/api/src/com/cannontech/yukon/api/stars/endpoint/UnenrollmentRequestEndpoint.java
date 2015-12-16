@@ -10,10 +10,8 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
-import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
@@ -61,12 +59,8 @@ public class UnenrollmentRequestEndpoint {
             try {
                 enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, user);
                 resultElement = new Element("success", ns);
-            } catch(NotFoundException e) {
-                resultElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "NotFoundException", e.getMessage(), ns);
-            } catch(IllegalArgumentException e) {
-                resultElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "IllegalArgumentException", e.getMessage(), ns);
-            } catch(DuplicateEnrollmentException e) {
-                resultElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "DuplicateEnrollmentException", e.getMessage(), ns);
+            } catch (Exception e) {
+                resultElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, e.getClass().getSimpleName(), e.getMessage(), ns);
             }
             programEnrollmentResult.addContent(resultElement);
     
