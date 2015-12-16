@@ -13,41 +13,6 @@
 
 <%-- CHANGE PASSWORD POPUP --%>
 <cti:msg2 var="passwordTitle" key=".changePasswordPopup" arguments="${user.username}"/>
-<div class="dn" id="change-password-popup" data-dialog 
-        data-title="${passwordTitle}"
-        data-ok-class="js-save-pw-btn"
-        data-event="yukon:admin:user:password:save"
-        data-ok-disabled="true">
-    <tags:setFormEditMode mode="${pwChangeFormMode}"/>
-    <c:if test="${not empty passwordErrorMsg}">
-        <tags:alertBox>${fn:escapeXml(passwordErrorMsg)}</tags:alertBox>
-    </c:if>
-    <div class="column-12-12">
-        <div class="column one">
-            <cti:url var="url" value="/admin/users/${userId}/change-password"/>
-            <form:form id="change-password-form" commandName="password" action="${url}" method="post">
-                <cti:csrfToken/>
-                <input type="hidden" name="userId" value="${userId}">
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".password">
-                        <tags:password path="password" cssClass="js-new-password" autocomplete="off"/>
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".confirmPassword">
-                        <tags:password path="confirmPassword" cssClass="js-confirm-password" autocomplete="off"/>
-                    </tags:nameValue2>
-                    <tags:nameValue2 excludeColon="true">
-                        <div class="js-password-mismatch error">
-                            <i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/>
-                        </div>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-            </form:form>
-        </div>
-        <div class="column two nogutter">
-            <tags:passwordHelper passwordPolicy="${passwordPolicy}" userId="${userId}" saveButton=".js-save-pw-btn"/>
-        </div>
-    </div>
-</div>
 
 <tags:setFormEditMode mode="${mode}"/>
 
@@ -145,6 +110,14 @@
                         
                         <c:if test="${supportsPasswordSet[user.authCategory]}">
                             <cti:button nameKey="changePassword" data-popup="#change-password-popup" icon="icon-key"/>
+                            <div id="change-password-popup" class="dn"
+                            data-dialog
+                            data-event="yukon:admin:user:password:save"
+                            data-title="${passwordTitle}"
+                            data-ok-class="js-save-pw-btn"
+                            data-ok-disabled
+                            data-width="750"
+                            data-url="<cti:url value="/admin/users/{userId}/change-password"/>"></div>
                         </c:if>
                         
                         <cti:url var="url" value="/admin/users/${user.userId}/unlock"/>

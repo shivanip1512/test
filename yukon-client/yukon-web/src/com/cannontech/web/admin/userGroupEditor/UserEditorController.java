@@ -1,6 +1,5 @@
 package com.cannontech.web.admin.userGroupEditor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.user.Password;
 import com.cannontech.common.user.User;
 import com.cannontech.common.user.UserAuthenticationInfo;
@@ -184,25 +181,22 @@ public class UserEditorController {
         return "redirect:/admin/users-groups/home";
     }
     
-    @RequestMapping(value="users/{userId}/change-password", method=RequestMethod.POST)
-    public @ResponseBody List<String> changePassword(HttpServletResponse resp, YukonUserContext userContext, 
+    @RequestMapping(value = "users/{userId}/change-password", method = RequestMethod.POST)
+    public String changePassword(HttpServletResponse resp, ModelMap model, YukonUserContext userContext,
             FlashScope flash, @PathVariable int userId, @ModelAttribute Password password, BindingResult result) {
         
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
-        PasswordValidator validator = new PasswordValidator(yukonUser,  "password", "confirmPassword");
+        PasswordValidator validator = new PasswordValidator(yukonUser, "password", "confirmPassword");
         validator.validate(password, result);
         
         if (result.hasErrors()) {
             
-            MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
-            List<MessageSourceResolvable> messages = validator.getMessages();
-            List<String> errors = new ArrayList<>();
-            for (MessageSourceResolvable message : messages) {
-                errors.add(accessor.getMessage(message));
-            }
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flash.setMessage(messages, FlashScopeMessageType.ERROR);
+            model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(yukonUser));
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             
-            return errors;
+            return "userGroupEditor/userChangePasswordPopup.jsp";
         }
         
         authService.setPassword(yukonUser, password.getPassword());
@@ -217,6 +211,17 @@ public class UserEditorController {
         return "redirect:/admin/users/" + userId + "";
     }
     
+    @RequestMapping(value = "users/{userId}/change-password", method = RequestMethod.GET)
+    public String changePassword(ModelMap model, LiteYukonUser user) {
+
+        Password password = new Password();
+        model.addAttribute("password", password);
+        model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(user));
+        model.addAttribute("userId", user.getUserID());
+        model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
+        return "userGroupEditor/userChangePasswordPopup.jsp";
+    }
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         if (binder.getTarget() != null) {
@@ -253,9 +258,6 @@ public class UserEditorController {
             LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
             model.addAttribute("userGroupName", liteUserGroup.getUserGroupName());
         }
-        
-        model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
-        
         Multimap<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndGroupsForUser(user.getUserId());
         Multimap<YukonRoleCategory, RoleAndGroup> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
         model.addAttribute("roles", sortedRoles.asMap());
