@@ -220,8 +220,6 @@
     <entry key="yukon.web.modules.dev.rfnTest.viewDataSimulator.pageName">LCR Data Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.tests.title">Archive Request Test Pages</entry>
     <entry key="yukon.web.modules.dev.rfnTest.send.label">Send Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.sendLcrDeviceMessages.label">Send LCR Device Messages</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.stopSendingLcrDeviceMessages.label">Stop Sending LCR Device Messages</entry>
     <entry key="yukon.web.modules.dev.rfnTest.broadcast.label">Send Verification Command</entry>
     <entry key="yukon.web.modules.dev.rfnTest.meterReadArchiveRequest.label">Meter Read Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrReadArchiveRequest.label">LCR Read Archive Request</entry>
@@ -251,6 +249,11 @@
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.messageId">MessageId</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.messageIdTimestamp">MessageId Timestamp</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.daysBehind">Number of days behind</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.sendLcrDeviceMessages.label">Simulate Existing Devices</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.stopSendingLcrDeviceMessages.label">Stop Simulating Existing Devices</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.startSimulator.label">Simulate Serial Number Range</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.stopSimulator.label">Stop Simulating Serial Number Range</entry>
+    
     
     <!-- Ecobee Test -->
     <entry key="yukon.web.modules.dev.ecobee.mockTest.pageName">Ecobee Test</entry>

@@ -45,6 +45,11 @@ public interface RfnLcrDataSimulatorService {
     public RfnLcrDataSimulatorStatus getRfnLcrDataSimulatorStatus();
     
     /**
+     * Get the LCR data simulator status for existing devices if the simulator has been running.
+     */
+    public RfnLcrDataSimulatorStatus getRfnLcrExistingDataSimulatorStatus();
+
+    /**
      * Send message for LCR devices.
      */
     void sendLcrDeviceMessages(List<RfnDevice> rfnLcrDeviceList);
@@ -53,4 +58,9 @@ public interface RfnLcrDataSimulatorService {
      * Stop sending message to LCR devices.
      */
     void stopMessageSimulator();
+
+    /**
+     * Return the Sent messages count for a minute
+     */
+    public long getPerMinuteMsgCount();
 }

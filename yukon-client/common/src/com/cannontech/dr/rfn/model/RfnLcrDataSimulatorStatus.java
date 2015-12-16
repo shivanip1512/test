@@ -7,13 +7,13 @@ import org.joda.time.Instant;
 
 public class RfnLcrDataSimulatorStatus {
     private volatile Instant lastFinishedInjection6200;
-    private final AtomicLong numComplete6200;
+    private AtomicLong numComplete6200;
     private volatile String errorMessage;
-    private final AtomicBoolean isRunning6200;
+    private AtomicBoolean isRunning6200;
 
     private volatile Instant lastFinishedInjection6600;
-    private final AtomicLong numComplete6600;
-    private final AtomicBoolean isRunning6600;
+    private AtomicLong numComplete6600;
+    private AtomicBoolean isRunning6600;
 
     public RfnLcrDataSimulatorStatus() {
         this.numComplete6200 = new AtomicLong();
@@ -22,6 +22,13 @@ public class RfnLcrDataSimulatorStatus {
         this.isRunning6600 = new AtomicBoolean();
     }
 
+    public static void reInitializeStatus(RfnLcrDataSimulatorStatus status) {
+        status.numComplete6200 = new AtomicLong();
+        status.isRunning6200 = new AtomicBoolean();
+        status.numComplete6600 = new AtomicLong();
+        status.isRunning6600 = new AtomicBoolean();
+        status.errorMessage = null;
+    }
     public Instant getLastFinishedInjection6200() {
         return lastFinishedInjection6200;
     }

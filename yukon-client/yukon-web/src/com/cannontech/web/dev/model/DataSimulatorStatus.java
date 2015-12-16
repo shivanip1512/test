@@ -7,7 +7,7 @@ import org.joda.time.Instant;
 
 public class DataSimulatorStatus {
     private final AtomicBoolean isRunning6200;
-    private final AtomicBoolean isCanceled6200;
+    private final AtomicBoolean isCancelled6200;
     private final AtomicLong numComplete6200;
 
     private volatile Instant lastFinishedInjection6200;
@@ -15,7 +15,7 @@ public class DataSimulatorStatus {
     private volatile String errorMessage;
 
     private final AtomicBoolean isRunning6600;
-    private final AtomicBoolean isCanceled6600;
+    private final AtomicBoolean isCancelled6600;
     private final AtomicLong numComplete6600;
 
     private volatile Instant lastFinishedInjection6600;
@@ -23,12 +23,12 @@ public class DataSimulatorStatus {
 
     public DataSimulatorStatus() {
         this.isRunning6200 = new AtomicBoolean();
-        this.isCanceled6200 = new AtomicBoolean();
+        this.isCancelled6200 = new AtomicBoolean();
         this.numComplete6200 = new AtomicLong();
         this.numTotal6200 = 0;
 
         this.isRunning6600 = new AtomicBoolean();
-        this.isCanceled6600 = new AtomicBoolean();
+        this.isCancelled6600 = new AtomicBoolean();
         this.numComplete6600 = new AtomicLong();
         this.numTotal6600 = 0;
     }
@@ -49,6 +49,14 @@ public class DataSimulatorStatus {
         this.numTotal6200 = numTotal6200;
     }
 
+    public void setIsRunning6200(boolean isRunning) {
+        this.isRunning6200.set(isRunning);
+    }
+
+    public void setIsRunning6600(boolean isRunning) {
+        this.isRunning6600.set(isRunning);
+    }
+    
     public String getErrorMessage() {
         return errorMessage;
     }
@@ -77,8 +85,8 @@ public class DataSimulatorStatus {
         return isRunning6200;
     }
 
-    public AtomicBoolean getIsCanceled6200() {
-        return isCanceled6200;
+    public AtomicBoolean getIsCancelled6200() {
+        return isCancelled6200;
     }
 
     public AtomicLong getNumComplete6200() {
@@ -89,8 +97,8 @@ public class DataSimulatorStatus {
         return isRunning6600;
     }
 
-    public AtomicBoolean getIsCanceled6600() {
-        return isCanceled6600;
+    public AtomicBoolean getIsCancelled6600() {
+        return isCancelled6600;
     }
 
     public AtomicLong getNumComplete6600() {
