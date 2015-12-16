@@ -45,7 +45,9 @@ $(function() {
 </c:choose>
 
 <div class="js-page-additional-actions dn">
-    <li class="divider" />
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <li class="divider" />
+    </cti:checkRolesAndProperties>
     <cti:url var="locationsUrl" value="/capcontrol/capbank/capBankLocations">
         <cti:param name="value" value="${substationId}" />
     </cti:url>
@@ -167,11 +169,6 @@ $(function() {
 
 <%@ include file="busTier.jspf" %>
 <%@ include file="feederTier.jspf" %>
- <cti:checkGlobalRolesAndProperties value="!DEVELOPMENT_MODE">
-  <%@ include file="bankTier.jspf"%>
- </cti:checkGlobalRolesAndProperties>
- <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-  <%@ include file="bankTier.jsp"%>
- </cti:checkGlobalRolesAndProperties>
+<%@ include file="bankTier.jspf"%>
 
 </cti:standardPage>

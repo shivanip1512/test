@@ -8,9 +8,12 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapControlArea;
@@ -34,8 +37,8 @@ import com.cannontech.web.util.JSFParamUtil;
 public abstract class DeleteForm extends DBEditorForm {
 	private int[] itemIDs = new int[0];
 	private Deleteable[] deletables = null; // new Deleteable[0];
-	private CapControlCache capControlCache = (CapControlCache) YukonSpringHook
-			.getBean("capControlCache");
+	private CapControlCache capControlCache = YukonSpringHook.getBean(CapControlCache.class);
+	private RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 
 	public DeleteForm() {
 		super();
@@ -52,6 +55,11 @@ public abstract class DeleteForm extends DBEditorForm {
 	 * Calls the delete() method for each item that we are able to delete
 	 */
 	public void update() {
+
+        if(!isEditingAuthorized()) {
+            throw new NotAuthorizedException("User " + JSFParamUtil.getYukonUser() + " is not authorized to delete this object.");
+        }
+
 		ExternalContext ex = FacesContext.getCurrentInstance()
 				.getExternalContext();
 		if (deletables != null) {
@@ -297,5 +305,9 @@ public abstract class DeleteForm extends DBEditorForm {
 	protected void setItemIDs(int[] is) {
 		itemIDs = is;
 	}
+
+    private boolean isEditingAuthorized() {
+        return rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, JSFParamUtil.getYukonUser());
+    }
 
 }

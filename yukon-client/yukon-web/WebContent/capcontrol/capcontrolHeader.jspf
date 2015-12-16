@@ -28,6 +28,11 @@
 
 <jsp:setProperty name="CtiNavObject" property="moduleLabel" value="Cap Control"/>
 
+<cti:msg2 var="commentsTitle" key="yukon.web.modules.capcontrol.comments.title"/>
+<div id="cc-i18n-text"
+    data-comments-title="${commentsTitle}"
+></div>
+
 <!-- Popup for simple content -->
 <div id="contentPopup" class="dn"></div>
 
@@ -37,7 +42,9 @@
 <!-- Page Dropdown Actions -->
 <div id="page-actions" class="dn">
 
-    <cm:dropdownOption classes="js-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <cm:dropdownOption classes="js-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>
+    </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">

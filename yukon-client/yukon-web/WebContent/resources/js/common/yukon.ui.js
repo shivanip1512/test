@@ -516,14 +516,13 @@ yukon.ui = (function () {
         /** Init page 'Actions' button */
         var pageActions = $('#page-actions');
         var pageActionsButton = $('#b-page-actions');
+        var menu = pageActionsButton.find('.dropdown-menu');
         if (pageActions.length) {
             pageActions.remove();
-            var menu = pageActionsButton.find('.dropdown-menu');
             menu.html(pageActions.html());
             if (menu.find('.icon').length === menu.find('.icon-blank').length) {
                 menu.addClass('no-icons');
             }
-            pageActionsButton.show();
         }
 
         /** Init page buttons */
@@ -536,9 +535,13 @@ yukon.ui = (function () {
         /** Add additional options to page 'Actions' button */
         $(document).find('.js-page-additional-actions').each(function (index, elem) {
             elem = $(elem);
-            pageActionsButton.find('.dropdown-menu').append(elem.html());
+            menu.append(elem.html());
             elem.remove();
         });
+
+        if (menu.children().length) {
+            pageActionsButton.show();
+        }
     };
 
     var mod = {
