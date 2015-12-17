@@ -47,14 +47,12 @@ IM_EX_CTIBASE GlobalSettings::GlobalSettings() {
 IM_EX_CTIBASE GlobalSettings& GlobalSettings::getSingleton()
 {
     CtiLockGuard<CtiMutex> guard( g_mux );
-    GlobalSettings* gs = gGlobalSettings.get();
 
-    if(  gs == 0 )
+    if( gGlobalSettings )
     {
         gGlobalSettings.reset( new GlobalSettings() );
-        gs = gGlobalSettings.get();
     }
-    return *gs;
+    return *gGlobalSettings;
 }
 
 /** Public string accessor. */
