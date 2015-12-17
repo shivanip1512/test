@@ -15,7 +15,7 @@ private:
     GlobalSettings();
 
     /** Private static singleton constructor.  Reads settings from database. */
-    static GlobalSettings* GlobalSettings::getSingleton();
+    static GlobalSettings& GlobalSettings::getSingleton();
 
     /** Private string accessor that initializes the singleton. */
     std::string getStringImpl( const std::string &name, std::string default );

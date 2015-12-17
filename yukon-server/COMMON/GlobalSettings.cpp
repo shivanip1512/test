@@ -44,7 +44,7 @@ IM_EX_CTIBASE GlobalSettings::GlobalSettings() {
 }
 
 /** Private static singleton constructor.  Reads settings from database. */
-IM_EX_CTIBASE GlobalSettings* GlobalSettings::getSingleton()
+IM_EX_CTIBASE GlobalSettings& GlobalSettings::getSingleton()
 {
     CtiLockGuard<CtiMutex> guard( g_mux );
     GlobalSettings* gs = gGlobalSettings.get();
@@ -54,13 +54,13 @@ IM_EX_CTIBASE GlobalSettings* GlobalSettings::getSingleton()
         gGlobalSettings.reset( new GlobalSettings() );
         gs = gGlobalSettings.get();
     }
-    return gs;
+    return *gs;
 }
 
 /** Public string accessor. */
 IM_EX_CTIBASE string GlobalSettings::getString( const std::string &name, string default )
 {
-    return getSingleton()->getStringImpl( name, default );
+    return getSingleton().getStringImpl( name, default );
 }
 
 /** Private string accessor that initializes the singleton. */
@@ -76,7 +76,7 @@ IM_EX_CTIBASE string GlobalSettings::getStringImpl( const std::string &name, str
 /** Public int accessor. */
 IM_EX_CTIBASE int GlobalSettings::getInteger( const std::string &name, int default )
 {
-    return getSingleton()->getIntegerImpl( name, default );
+    return getSingleton().getIntegerImpl( name, default );
 }
 
 /** Private int accessor that initializes the singleton. */
@@ -92,7 +92,7 @@ IM_EX_CTIBASE int GlobalSettings::getIntegerImpl( const std::string &name, int d
 /** Public bool accessor. */
 IM_EX_CTIBASE bool GlobalSettings::getBoolean( const std::string &name, bool default )
 {
-    return getSingleton()->getBooleanImpl( name, default );
+    return getSingleton().getBooleanImpl( name, default );
 }
 
 /** Private bool accessor that initializes the singleton. */
