@@ -39,10 +39,11 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
         String hostUri = "tcp://" + globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
         Integer port = globalSettingDao.getNullableInteger(GlobalSettingType.JMS_BROKER_PORT);
 
-        // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from it.
+        // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from
+        // it.
         String maxInactivityDuration =
-                "wireFormat.MaxInactivityDuration=" +
-                        globalSettingDao.getInteger(GlobalSettingType.MAX_INACTIVITY_DURATION);
+            "wireFormat.MaxInactivityDuration=" +
+                    (globalSettingDao.getInteger(GlobalSettingType.MAX_INACTIVITY_DURATION) * 1000);
 
         String jmsHost = hostUri + (port == null ? ":61616" : ":" + port) + "?" + maxInactivityDuration;
 
