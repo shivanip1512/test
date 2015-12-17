@@ -69,4 +69,9 @@ public class RfnLcrDataSimulatorStatus {
         return isRunning6600;
     }
 
+    public void resetCompletionState() {
+        this.numComplete6200 = new AtomicLong();
+        this.numComplete6600 = new AtomicLong();
+    }
+
 }

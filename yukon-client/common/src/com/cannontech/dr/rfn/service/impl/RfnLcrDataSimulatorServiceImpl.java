@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PreDestroy;
@@ -202,6 +203,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             log.debug("RFN LCR data simulator sending next message group...");
             if (simulatorSettings != null) {
                 // Simulate the unsolicited RFN LCR read archive requests.
+                if (new Instant().get(DateTimeFieldType.minuteOfDay()) == 0) {
+                    // Reinitialize counter for the fresh day
+                    rfnLcrDataSimulatorStatus.resetCompletionState();
+                }
                 simulateRfnLcrNetwork();
             } else {
                 // The simulator settings haven't been set, so we may as well shut down.
@@ -217,30 +222,56 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         private void simulateRfnLcrNetwork() {
             int lcr6200serialTo = simulatorSettings.getLcr6200serialTo();
             int lcr6600serialTo = simulatorSettings.getLcr6600serialTo();
+            AtomicInteger id6200 = new AtomicInteger();
+            AtomicInteger id6600 = new AtomicInteger();
+            boolean useCurrentMsgGrp6200 = true;
+            boolean useCurrentMsgGrp6600 = true;
+
             try {
                 // Loop through LCR 6200 serial numbers, sending messages for those in the current messaging
                 // group.
-                for (int id = simulatorSettings.getLcr6200serialFrom() + currentMessagingGroup; id <= lcr6200serialTo; id +=
-                    messageGroupCount) {
+                if (simulatorSettings.getLcr6200serialFrom() < currentMessagingGroup) {
+                    useCurrentMsgGrp6200 = false;
+                    id6200.set(simulatorSettings.getLcr6200serialFrom());
+                } else {
+                    id6200.set(simulatorSettings.getLcr6200serialFrom() + currentMessagingGroup);
+                }
+
+                while (id6200.get() < lcr6200serialTo) {
                     RfnLcrReadSimulatorDeviceParameters deviceParameters =
-                        new RfnLcrReadSimulatorDeviceParameters(new RfnIdentifier(String.valueOf(id), "CPS", "1077"),
-                            0, 0, 3, 60, 24 * 60);
-                    AtomicLong numComplete = rfnLcrDataSimulatorStatus.getNumComplete6200();
+                        new RfnLcrReadSimulatorDeviceParameters(
+                            new RfnIdentifier(String.valueOf(id6200), "CPS", "1077"), 0, 0, 3, 60, 24 * 60);
+                    AtomicLong numComplete6200 = rfnLcrDataSimulatorStatus.getNumComplete6200();
                     simulateLcrReadRequest(simulatorSettings, deviceParameters);
-                    numComplete.incrementAndGet();
+                    numComplete6200.incrementAndGet();
                     rfnLcrDataSimulatorStatus.setLastFinishedInjection6200(Instant.now());
+                    if (useCurrentMsgGrp6200) {
+                        id6200.set(simulatorSettings.getLcr6200serialFrom() + currentMessagingGroup);
+                    } else {
+                        id6200.incrementAndGet();
+                    }
                 }
                 // Loop through LCR 6600 serial numbers, sending messages for those in the current messaging
                 // group.
-                for (int id = simulatorSettings.getLcr6600serialFrom() + currentMessagingGroup; id <= lcr6600serialTo; id +=
-                    messageGroupCount) {
+                if (simulatorSettings.getLcr6600serialFrom() < currentMessagingGroup) {
+                    useCurrentMsgGrp6600 = false;
+                    id6600.set(simulatorSettings.getLcr6600serialFrom());
+                } else {
+                    id6600.set(simulatorSettings.getLcr6600serialFrom() + currentMessagingGroup);
+                }
+                while (id6600.get() < lcr6600serialTo) {
                     RfnLcrReadSimulatorDeviceParameters deviceParameters =
-                        new RfnLcrReadSimulatorDeviceParameters(new RfnIdentifier(String.valueOf(id), "CPS", "1082"),
-                            0, 0, 3, 60, 24 * 60);
-                    AtomicLong numComplete = rfnLcrDataSimulatorStatus.getNumComplete6600();
+                        new RfnLcrReadSimulatorDeviceParameters(
+                            new RfnIdentifier(String.valueOf(id6600), "CPS", "1082"), 0, 0, 3, 60, 24 * 60);
+                    AtomicLong numComplete6600 = rfnLcrDataSimulatorStatus.getNumComplete6600();
                     simulateLcrReadRequest(simulatorSettings, deviceParameters);
-                    numComplete.incrementAndGet();
+                    numComplete6600.incrementAndGet();
                     rfnLcrDataSimulatorStatus.setLastFinishedInjection6600(Instant.now());
+                    if (useCurrentMsgGrp6600) {
+                        id6600.set(simulatorSettings.getLcr6600serialFrom() + currentMessagingGroup);
+                    } else {
+                        id6600.incrementAndGet();
+                    }
                 }
                 // Advance to the next messaging group for the next thread wake-up.
                 currentMessagingGroup = (++currentMessagingGroup) % messageGroupCount;
@@ -278,6 +309,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         public void run() {
             log.debug("RFN LCR message simulator sending message...");
             if (rfnLcrDeviceList != null) {
+                if (new Instant().get(DateTimeFieldType.minuteOfDay()) == 0) {
+                    // Reinitialize counter for the fresh day
+                    rfnLcrExistingDataSimulatorStatus.resetCompletionState();
+                }
                 insertRfnLcrMessages();
             } else {
                 log.debug("RFN LCR message simulator settings have not been initialized. Messages will not be sent.");

@@ -677,13 +677,13 @@ public class NmIntegrationController {
         Map<String, Object> dataSimulatorStatusJson = Maps.newHashMapWithExpectedSize(10);
         dataSimulatorStatusJson.put("isRunning6200", dataSimulatorStatus.getIsRunning6200().get());
         dataSimulatorStatusJson.put("isCancelled6200", dataSimulatorStatus.getIsCancelled6200().get());
-        dataSimulatorStatusJson.put("numTotal6200", dataSimulatorStatus.getNumTotal6200());
+        dataSimulatorStatusJson.put("numTotal6200", dataSimulatorStatus.getNumTotal6200() * 1440);
         dataSimulatorStatusJson.put("numComplete6200", dataSimulatorStatus.getNumComplete6200().get());
         Instant lastRun6200 = dataSimulatorStatus.getLastFinishedInjection6200();
 
         dataSimulatorStatusJson.put("isRunning6600", dataSimulatorStatus.getIsRunning6600().get());
         dataSimulatorStatusJson.put("isCancelled6600", dataSimulatorStatus.getIsCancelled6600().get());
-        dataSimulatorStatusJson.put("numTotal6600", dataSimulatorStatus.getNumTotal6600());
+        dataSimulatorStatusJson.put("numTotal6600", dataSimulatorStatus.getNumTotal6600() * 1440);
         dataSimulatorStatusJson.put("numComplete6600", dataSimulatorStatus.getNumComplete6600().get());
         Instant lastRun6600 = dataSimulatorStatus.getLastFinishedInjection6600();
 
@@ -750,13 +750,13 @@ public class NmIntegrationController {
         Map<String, Object> dataSimulatorStatusJson = Maps.newHashMapWithExpectedSize(10);
         dataSimulatorStatusJson.put("isRunning6200", existingDataSimulatorStatus.getIsRunning6200().get());
         dataSimulatorStatusJson.put("isCancelled6200", existingDataSimulatorStatus.getIsCancelled6200().get());
-        dataSimulatorStatusJson.put("numTotal6200", existingDataSimulatorStatus.getNumTotal6200());
+        dataSimulatorStatusJson.put("numTotal6200", existingDataSimulatorStatus.getNumTotal6200() * 1440);
         dataSimulatorStatusJson.put("numComplete6200", existingDataSimulatorStatus.getNumComplete6200().get());
         Instant lastRun6200 = existingDataSimulatorStatus.getLastFinishedInjection6200();
 
         dataSimulatorStatusJson.put("isRunning6600", existingDataSimulatorStatus.getIsRunning6600().get());
         dataSimulatorStatusJson.put("isCancelled6600", existingDataSimulatorStatus.getIsCancelled6600().get());
-        dataSimulatorStatusJson.put("numTotal6600", existingDataSimulatorStatus.getNumTotal6600());
+        dataSimulatorStatusJson.put("numTotal6600", existingDataSimulatorStatus.getNumTotal6600() * 1440);
         dataSimulatorStatusJson.put("numComplete6600", existingDataSimulatorStatus.getNumComplete6600().get());
         Instant lastRun6600 = existingDataSimulatorStatus.getLastFinishedInjection6600();
 
