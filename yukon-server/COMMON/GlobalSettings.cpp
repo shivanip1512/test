@@ -11,16 +11,21 @@
 #include <boost/algorithm/string.hpp>
 #include "boost/optional/optional.hpp"
 
-#include <string.h>
-#include <stdio.h>
-
 using namespace std;
 
+/** Public string accessor. */
+static CtiMutex g_mux;
+
+/** 
+ * Global singleton.  This is initialized by the private accessors or could be 
+ * initialized ahead of time by unit tests. 
+ */
+IM_EX_CTIBASE std::unique_ptr<GlobalSettings> gGlobalSettings;
+
+/** Private constructor for the getSingleton process */
 IM_EX_CTIBASE GlobalSettings::GlobalSettings() {
-    
     //  Load all settings to start
-    static const string sqlCore = "SELECT GS.NAME,GS.VALUE "
-        "FROM GlobalSetting GS ";
+    static const string sqlCore = "SELECT GS.NAME,GS.VALUE FROM GlobalSetting GS ";
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr( connection, sqlCore );
@@ -34,52 +39,77 @@ IM_EX_CTIBASE GlobalSettings::GlobalSettings() {
         rdr["NAME"] >> name;
         rdr["VALUE"] >> value;
 
-        {
-            _critical_section.acquire();
-            _settingMap[name] = value;
-        }
+        _settingMap[name] = value;
     }
 }
 
-IM_EX_CTIBASE string GlobalSettings::getString( std::string name, string default )
+/** Private static singleton constructor.  Reads settings from database. */
+IM_EX_CTIBASE GlobalSettings* GlobalSettings::getSingleton()
 {
-    _critical_section.acquire();
-    const boost::optional<string> value = Cti::mapFind( _settingMap, name );
-    if( value ) return *value;
+    CtiLockGuard<CtiMutex> guard( g_mux );
+    GlobalSettings* gs = gGlobalSettings.get();
+
+    if(  gs == 0 )
+    {
+        gGlobalSettings.reset( new GlobalSettings() );
+        gs = gGlobalSettings.get();
+    }
+    return gs;
+}
+
+/** Public string accessor. */
+IM_EX_CTIBASE string GlobalSettings::getString( const std::string &name, string default )
+{
+    return getSingleton()->getStringImpl( name, default );
+}
+
+/** Private string accessor that initializes the singleton. */
+IM_EX_CTIBASE string GlobalSettings::getStringImpl( const std::string &name, string default )
+{
+    if( const auto value = Cti::mapFind( _settingMap, name ) )
+    {
+        return *value;
+    }
     return default;
 }
 
-IM_EX_CTIBASE int GlobalSettings::getInteger( std::string name, int default )
+/** Public int accessor. */
+IM_EX_CTIBASE int GlobalSettings::getInteger( const std::string &name, int default )
 {
-    _critical_section.acquire();
-    const boost::optional<string> value = Cti::mapFind( _settingMap, name );
-    if( value ) return stoi( *value );
+    return getSingleton()->getIntegerImpl( name, default );
+}
+
+/** Private int accessor that initializes the singleton. */
+IM_EX_CTIBASE int GlobalSettings::getIntegerImpl( const std::string &name, int default )
+{
+    if( const auto value = Cti::mapFind( _settingMap, name ) )
+    {
+        return stoi( *value );
+    }
     return default;
 }
 
-IM_EX_CTIBASE int GlobalSettings::getBoolean( std::string name, boolean default )
+/** Public bool accessor. */
+IM_EX_CTIBASE bool GlobalSettings::getBoolean( const std::string &name, bool default )
 {
-    _critical_section.acquire();
-    const boost::optional<string> value = Cti::mapFind( _settingMap, name );
-    if( !value ) return default;
-    if( boost::iequals( *value, "false" ) || (*value).compare( "0" ) ) return false;
+    return getSingleton()->getBooleanImpl( name, default );
+}
+
+/** Private bool accessor that initializes the singleton. */
+IM_EX_CTIBASE bool GlobalSettings::getBooleanImpl( const std::string &name, bool default )
+{
+    const auto value = Cti::mapFind( _settingMap, name );
+    if( !value ) 
+    {
+        return default;
+    }
+
+    if( boost::iequals( *value, "false" ) || ( *value ).compare( "0" ) ) 
+    {
+        return false;
+    }
+
     return true;
 }
 
 
-static CtiMutex g_mux;
-
-IM_EX_CTIBASE GlobalSettings* GlobalSettings::instance()
-{
-    static GlobalSettings* s_instance;
-
-    if( s_instance == 0 )
-    {
-        CtiLockGuard<CtiMutex> guard( g_mux );
-        if( s_instance == 0 )
-        {
-            s_instance = new GlobalSettings();
-        }
-    }
-    return s_instance;
-}

@@ -157,8 +157,8 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
             }
 
             // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from it.
-            const std::string maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
-                GlobalSettings::instance()->getString( "MAX_INACTIVITY_DURATION", "30000" );
+            const string maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
+                std::to_string( GlobalSettings::getInteger( "MAX_INACTIVITY_DURATION", 30 ) * 1000 );
 
             _connection.reset( new ActiveMQ::ManagedConnection( _broker_uri + "?" + maxInactivityDuration ) );
         }
