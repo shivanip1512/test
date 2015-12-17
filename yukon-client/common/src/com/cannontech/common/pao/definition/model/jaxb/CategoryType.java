@@ -55,7 +55,7 @@ public enum CategoryType {
     @XmlEnumValue("timeZone")
     TIME_ZONE("timeZone"),
     @XmlEnumValue("lcdConfiguration")
-    METER_PARAMETERS("lcdConfiguration"),
+    LCD_CONFIGURATION("lcdConfiguration"),
     @XmlEnumValue("centron410Display")
     CENTRON_410_DISPLAY("centron410Display"),
     @XmlEnumValue("centron420DisplayItems")
