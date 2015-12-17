@@ -148,14 +148,14 @@
     <entry key="yukon.web.modules.tools.configs.category.centron410Display.displayItem25">Display Item 25</entry>
     <entry key="yukon.web.modules.tools.configs.category.centron410Display.displayItem26">Display Item 26</entry>
 
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.title">Centron Meter Parameters</entry>
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.definition">Front panel LCD configuration for the Centron C2SX (420 device types).</entry>
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.lcdCycleTime">LCD Cycle Time</entry>
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.lcdCycleTime.description">The number of seconds the LCD displays an item before cycling.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.displayDigits">Display Digits</entry>
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.displayDigits.description">The number of kWh digits displayed on the LCD panel.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled">Disconnect Display Disabled</entry>
-    <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled.description">When true, disable the meter's disconnect display (only for 420-model meters supporting disconnect).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.lcdConfiguration.title">LCD Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.lcdConfiguration.definition">Front panel LCD configuration for the Centron.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.lcdConfiguration.lcdCycleTime">LCD Cycle Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.lcdConfiguration.lcdCycleTime.description">The number of seconds the LCD displays an item before cycling.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.lcdConfiguration.displayDigits">Display Digits</entry>
+    <entry key="yukon.web.modules.tools.configs.category.lcdConfiguration.displayDigits.description">The number of kWh digits displayed on the LCD panel.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.lcdConfiguration.disconnectDisplayDisabled">Disconnect Display Disabled</entry>
+    <entry key="yukon.web.modules.tools.configs.category.lcdConfiguration.disconnectDisplayDisabled.description">When true, disable the meter's disconnect display (only for 420-model meters supporting disconnect).</entry>
     
     <entry key="yukon.web.modules.tools.configs.category.centron420DisplayItems.title">Centron C2SX Display Items</entry>
     <entry key="yukon.web.modules.tools.configs.category.centron420DisplayItems.definition">Items displayed on the front panel LCD of Centron C2SX MCT and RFN devices (420 device types).</entry>

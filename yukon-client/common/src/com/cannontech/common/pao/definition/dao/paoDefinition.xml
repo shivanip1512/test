@@ -273,7 +273,7 @@
     <pao id="LCD_CONFIGURATION" abstract="true"
         inherits="SUPPORTS_DEVICE_CONFIGURATION">
         <configuration>
-            <category type="meterParameters" />
+            <category type="lcdConfiguration" />
         </configuration>
     </pao>
 

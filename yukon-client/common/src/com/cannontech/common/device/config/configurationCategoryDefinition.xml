@@ -8,7 +8,7 @@
         <enum field="timeZoneOffset" type="TimeZoneInput"/>
     </category>
     
-    <category type="meterParameters">
+    <category type="lcdConfiguration">
         <integer field="lcdCycleTime" minValue="0" maxValue="15" default="8"/>
         <integer field="displayDigits" minValue="4" maxValue="6" default="5"/>
         <boolean field="disconnectDisplayDisabled" default="false"/>
