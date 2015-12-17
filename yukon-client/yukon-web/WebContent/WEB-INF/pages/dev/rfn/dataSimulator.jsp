@@ -76,10 +76,12 @@
                         $('#status-last-simulator-6600').text(data.lastSimulation6600);
                         $('#messages-sent-per-minute').text(data.perMinuteMsgCount);
                         $('#message-sent-counter').show();
+                        $("#lcrForm :input").prop("disabled", true);
                     } else if (data.status6200 == 'notRunning' || data.status6600 == 'notRunning') {
                         $('#messages-sent-per-minute').text(data.perMinuteMsgCount);
                         $('#stop-simulator').hide();
                         $('#start-simulator').show();
+                        $("#lcrForm :input").prop("disabled", false);
                     } else {
                         // Never Ran
                         $('#message-sent-counter').hide();
@@ -307,25 +309,27 @@
 <div class="column one">
 <form id='dataSimulatorForm'>
 <tags:sectionContainer2 nameKey="lcrDataSimulator">
-    <tags:nameValueContainer2 id="lcrInputs">
+	<div id='lcrForm'>
+    <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6200">
-            <input id="lcr6200serialFrom" name="lcr6200serialFrom" type="text" value="100000"> <i:inline key="yukon.common.to"/>
-            <input id="lcr6200serialTo" name="lcr6200serialTo" type="text" value="200000"> 
+            <input id="lcr6200serialFrom" name="lcr6200serialFrom" type="text" value=${currentSettings.lcr6200serialFrom}> <i:inline key="yukon.common.to"/>
+            <input id="lcr6200serialTo" name="lcr6200serialTo" type="text" value=${currentSettings.lcr6200serialTo}> 
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6600">
-            <input id="lcr6600serialFrom" name="Lcr6600serialFrom" type="text" value="300000"> <i:inline key="yukon.common.to"/> 
-            <input id="lcr6600serialTo" name="lcr6600serialTo" type="text" value="320000">
+            <input id="lcr6600serialFrom" name="Lcr6600serialFrom" type="text" value=${currentSettings.lcr6600serialFrom}> <i:inline key="yukon.common.to"/> 
+            <input id="lcr6600serialTo" name="lcr6600serialTo" type="text" value=${currentSettings.lcr6600serialTo}>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.messageId">
-            <input id="messageId" name="messageId" type="text" value="123456789">
+            <input id="messageId" name="messageId" type="text" value=${currentSettings.messageId}>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.messageIdTimestamp">
-            <input id="messageIdTimestamp" name="messageIdTimestamp" type="text" value="1390000000">
+            <input id="messageIdTimestamp" name="messageIdTimestamp" type="text" value=${currentSettings.messageIdTimestamp}>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.daysBehind">
-            <input id="daysBehind" name="daysBehind" type="text" value="0">
+            <input id="daysBehind" name="daysBehind" type="text" value=${currentSettings.daysBehind}>
         </tags:nameValue2>
     </tags:nameValueContainer2>
+    </div>
     <div>
         <cti:button id="start-simulator" nameKey="startSimulator" />
         <cti:button id="stop-simulator" nameKey="stopSimulator" classes="dn"/>
@@ -514,7 +518,7 @@
     <tags:sectionContainer title="Simulator Statistics">
          <div id="message-sent-counter" >
            <em>
-                Messages sent per minute
+                Messages sent this minute
                 <span id="messages-sent-per-minute"></span>
            </em>
         </div>

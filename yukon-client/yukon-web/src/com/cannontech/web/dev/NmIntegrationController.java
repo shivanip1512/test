@@ -687,8 +687,7 @@ public class NmIntegrationController {
         dataSimulatorStatusJson.put("numComplete6600", dataSimulatorStatus.getNumComplete6600().get());
         Instant lastRun6600 = dataSimulatorStatus.getLastFinishedInjection6600();
 
-        if (dataSimulatorStatus.getNumTotal6200() != 0 && !dataSimulatorStatus.getIsCancelled6200().get()
-            && dataSimulatorStatus.getNumTotal6200() != dataSimulatorStatus.getNumComplete6200().get()) {
+        if (dataSimulatorStatus.getNumTotal6200() != 0 && !dataSimulatorStatus.getIsCancelled6200().get()) {
             dataSimulatorStatus.setIsRunning6200(true);
             dataSimulatorStatusJson.put("status6200", "running");
             dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
@@ -712,8 +711,7 @@ public class NmIntegrationController {
             dataSimulatorStatusJson.put("errorMessage", "Error Occured: " + errorMessage);
         }
         // 6600
-        if (dataSimulatorStatus.getNumTotal6600() != 0 && !dataSimulatorStatus.getIsCancelled6600().get()
-            && dataSimulatorStatus.getNumTotal6600() != dataSimulatorStatus.getNumComplete6600().get()) {
+        if (dataSimulatorStatus.getNumTotal6600() != 0 && !dataSimulatorStatus.getIsCancelled6600().get()) {
             dataSimulatorStatus.setIsRunning6600(true);
             dataSimulatorStatusJson.put("status6600", "running");
             dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
@@ -763,8 +761,7 @@ public class NmIntegrationController {
         Instant lastRun6600 = existingDataSimulatorStatus.getLastFinishedInjection6600();
 
         if (existingDataSimulatorStatus.getNumTotal6200() != 0
-            && !existingDataSimulatorStatus.getIsCancelled6200().get()
-            && existingDataSimulatorStatus.getNumTotal6200() != existingDataSimulatorStatus.getNumComplete6200().get()) {
+            && !existingDataSimulatorStatus.getIsCancelled6200().get()) {
             existingDataSimulatorStatus.setIsRunning6200(true);
             dataSimulatorStatusJson.put("status6200", "running");
             dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
@@ -789,8 +786,7 @@ public class NmIntegrationController {
         }
         // 6600
         if (existingDataSimulatorStatus.getNumTotal6600() != 0
-            && !existingDataSimulatorStatus.getIsCancelled6600().get()
-            && existingDataSimulatorStatus.getNumTotal6600() != existingDataSimulatorStatus.getNumComplete6600().get()) {
+            && !existingDataSimulatorStatus.getIsCancelled6600().get()) {
             existingDataSimulatorStatus.setIsRunning6600(true);
             dataSimulatorStatusJson.put("status6600", "running");
             dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());

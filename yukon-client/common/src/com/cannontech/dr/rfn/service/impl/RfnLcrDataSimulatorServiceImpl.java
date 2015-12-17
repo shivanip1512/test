@@ -76,12 +76,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     public long getPerMinuteMsgCount() {
         int minuteOfHour = new Instant().get(DateTimeFieldType.minuteOfHour());
 
-        if (perMinuteMsgCount.isEmpty()) {
+        if (perMinuteMsgCount.isEmpty() || !perMinuteMsgCount.containsKey(minuteOfHour)) {
             return 0;
-        } else if (perMinuteMsgCount.containsKey(minuteOfHour)) {
-            return perMinuteMsgCount.get(minuteOfHour);
         } else {
-            return perMinuteMsgCount.get(perMinuteMsgCount.keySet().iterator().next());
+            return perMinuteMsgCount.get(minuteOfHour);
         }
     }
 
