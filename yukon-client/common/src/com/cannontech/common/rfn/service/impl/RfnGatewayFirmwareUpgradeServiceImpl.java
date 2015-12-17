@@ -109,11 +109,11 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
                 String version = null;
                 if (url != null) {
                     version = firmwareUpdateVersionCache.getIfPresent(url);
-                }
-                if (version != null) {
-                    updateServerVersions.put(url, version);
-                } else {
-                    uncachedValueGateways.add(gateway);
+                    if (version != null) {
+                        updateServerVersions.put(url, version);
+                    } else {
+                        uncachedValueGateways.add(gateway);
+                    }
                 }
             }
         }
