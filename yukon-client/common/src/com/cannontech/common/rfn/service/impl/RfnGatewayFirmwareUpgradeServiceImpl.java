@@ -53,7 +53,7 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
     @PostConstruct
     public void init() {
         firmwareUpdateVersionCache = CacheBuilder.newBuilder()
-                                                 .expireAfterWrite(5, TimeUnit.MINUTES)
+                                                 .expireAfterWrite(1, TimeUnit.MINUTES)
                                                  .initialCapacity(2) //We expect only 1 or 2 firmware update servers
                                                  .build();
     }
@@ -106,7 +106,10 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
         for (RfnGateway gateway : gateways) {
             if (gateway.getData() != null) {
                 String url = gateway.getData().getUpdateServerUrl();
-                String version = firmwareUpdateVersionCache.getIfPresent(url);
+                String version = null;
+                if (url != null) {
+                    version = firmwareUpdateVersionCache.getIfPresent(url);
+                }
                 if (version != null) {
                     updateServerVersions.put(url, version);
                 } else {
