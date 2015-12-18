@@ -432,7 +432,7 @@ begin
 		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
     endif;
     Enable(BACKBUTTON);
-
+	CleanupTomcatWebapps();
 	Dialog_StartServices:
 	//only give the option to start services if services were installed
 	//and only if a restart is not necessary

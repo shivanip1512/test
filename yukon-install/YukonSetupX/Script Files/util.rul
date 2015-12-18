@@ -248,6 +248,42 @@ begin
 	endif;
 end;
 
+//-------------------------------------------------------
+// Helper function to build up a list of the Yukon
+// service names in the provided string array.
+//-------------------------------------------------------
+export prototype void PopulateDirNameList(BYREF VARIANT); //array parameters must
+function void PopulateDirNameList(sdirArray) //be prototyped as VARIANT
+begin
+	//if the array is too small, increase the size
+	if(SizeOf(sdirArray) < 4) then
+		Resize(sdirArray, 4);
+	endif;
+	//populate
+	sdirArray(0) = "docs";
+	sdirArray(1) = "examples";
+	sdirArray(2) = "host-manager";
+	sdirArray(3) = "manager";
+end;
+
+//-------------------------------------------------------
+// Helper function to remove WebApp directories
+//-------------------------------------------------------
+export prototype CleanupTomcatWebapps();
+function CleanupTomcatWebapps()
+string sDir;
+string sdirArray(4);
+number i;
+begin
+	PopulateDirNameList(sdirArray);
+	TARGETDIR = "C:\\Yukon";
+    sDir = TARGETDIR ^ "\\Server\\web\\webapps\\";
+	
+	for i = 0 to (SizeOf(sdirArray)-1)
+		DeleteDir(sDir+sdirArray(i), ALLCONTENTS);
+	endfor;
+end;
+
 //---------------------------------------------------
 // Helper function to start or stop the Yukon services.
 // TRUE to start services, FALSE to stop them
