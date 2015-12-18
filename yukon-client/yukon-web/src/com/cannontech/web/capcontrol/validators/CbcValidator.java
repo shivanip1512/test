@@ -1,0 +1,128 @@
+package com.cannontech.web.capcontrol.validators;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
+import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.web.editor.CapControlCBC;
+import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
+
+@Service
+public class CbcValidator extends SimpleValidator<CapControlCBC> {
+
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private IDatabaseCache dbCache;
+    @Autowired private PaoDao paoDao;
+
+    private static final String basekey = "yukon.web.modules.capcontrol.cbc.error";
+
+    public CbcValidator() {
+        super(CapControlCBC.class);
+    }
+
+    @Override
+    public void doValidation(CapControlCBC cbc, Errors errors) {
+
+        validateName(cbc, errors);
+
+        validateSerialNumber(cbc, errors);
+
+        if (cbc.isTwoWay()) {
+            validateDnpConfig(cbc, errors);
+            validateCommPort(cbc, errors);
+        }
+
+    }
+
+    private void validateName(CapControlCBC cbc, Errors errors) {
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
+
+        boolean idSpecified = cbc.getId() != null;
+
+        boolean nameAvailable = paoDao.isNameAvailable(cbc.getName(), cbc.getPaoType());
+
+        if (!nameAvailable) {
+            if (!idSpecified) {
+                //For create, we must have an available name
+                errors.rejectValue("name", "yukon.web.error.nameConflict");
+            } else {
+                //For edit, we can use our own existing name
+                LiteYukonPAObject existingPao = dbCache.getAllPaosMap().get(cbc.getId());
+                if (!existingPao.getPaoName().equals(cbc.getName())) {
+                    errors.rejectValue("name", "yukon.web.error.nameConflict");
+                }
+            }
+        }
+    }
+    private void validateDnpConfig(CapControlCBC cbc, Errors errors) {
+        LightDeviceConfiguration config = new LightDeviceConfiguration(cbc.getDnpConfigId(), null, null);
+        if (!deviceConfigurationDao.isTypeSupportedByConfiguration(config, cbc.getPaoType())) {
+            errors.rejectValue("dnpConfigId", basekey + ".invalidConfig");
+        }
+    }
+
+    private void validateSerialNumber(CapControlCBC cbc, Errors errors) {
+        Integer serialNumber = cbc.getDeviceCBC().getSerialNumber();
+        YukonValidationUtils.checkRange(errors, "deviceCBC.serialNumber", serialNumber,
+            0, Integer.MAX_VALUE, true);
+        String[] paos = DeviceCBC.isSerialNumberUnique(serialNumber, cbc.getId());
+        if (paos != null && paos.length > 0) {
+            errors.rejectValue("deviceCBC.serialNumber", basekey + ".duplicateSerial", paos, "Serial Number in use");
+        }
+    }
+
+    private void validateCommPort(CapControlCBC cbc, Errors errors) {
+
+        Integer portId = cbc.getDeviceDirectCommSettings().getPortID();
+        YukonValidationUtils.checkRange(errors, "deviceDirectCommSettings.portID", portId,
+            0, Integer.MAX_VALUE, true);
+
+        DeviceAddress deviceAddress = cbc.getDeviceAddress();
+
+        List<Integer> devicesWithSameAddress = deviceDao.getDevicesByDeviceAddress(
+            deviceAddress.getMasterAddress(), deviceAddress.getSlaveAddress());
+
+        devicesWithSameAddress.removeAll(Collections.singleton(cbc.getId()));
+
+        if (!devicesWithSameAddress.isEmpty()) {
+
+            List<Integer> devicesOnPort = deviceDao.getDevicesByPort(portId);
+             SetView<Integer> masterSlavePortConflicts = Sets.intersection(
+                 ImmutableSet.copyOf(devicesOnPort), ImmutableSet.copyOf(devicesWithSameAddress));
+
+             if (!masterSlavePortConflicts.isEmpty()) {
+
+                 String deviceName = masterSlavePortConflicts.stream()
+                     .findFirst()
+                     .map(new Function<Integer, String>() {
+                        @Override
+                        public String apply(Integer id) {
+                            return dbCache.getAllPaosMap().get(id).getPaoName();
+                        }
+                     }).get();
+
+                 errors.rejectValue("deviceAddress.masterAddress", 
+                     basekey + ".masterSlave", new Object[] {deviceName}, "Master/Slave combination in use");
+                 errors.rejectValue("deviceAddress.slaveAddress", "yukon.common.blank");
+             }
+
+        }
+    }
+}

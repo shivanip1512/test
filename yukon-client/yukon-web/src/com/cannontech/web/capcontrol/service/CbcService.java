@@ -1,11 +1,5 @@
 package com.cannontech.web.capcontrol.service;
 
-import java.sql.SQLException;
-
-import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
-import com.cannontech.cbc.exceptions.PortDoesntExistException;
-import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
-import com.cannontech.cbc.exceptions.SerialNumberExistsException;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.web.editor.CapControlCBC;
 
@@ -17,19 +11,12 @@ public interface CbcService {
     CapControlCBC getCbc(int id);
 
     /**
-     * Attempts to save capControlCbc
+     * Persist the cbc. If the cbc id exists, update it,
+     * if cbc.id is null, inserts the cbc as a new device.
      * @param capControlCBC
      * @return id of saved cbc
-     *
-     * Throws the following exceptions if cbc has invalid setup:
-     * @throws SerialNumberExistsException
-     * @throws SQLException
-     * @throws PortDoesntExistException
-     * @throws MultipleDevicesOnPortException
-     * @throws SameMasterSlaveCombinationException
      */
-    int save(CapControlCBC capControlCBC) throws SerialNumberExistsException, SQLException, PortDoesntExistException,
-            MultipleDevicesOnPortException, SameMasterSlaveCombinationException;
+    int save(CapControlCBC capControlCBC);
 
     /**
      * Deletes a cbc of the given id

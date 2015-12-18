@@ -1,25 +1,24 @@
 package com.cannontech.web.capcontrol;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
-import com.cannontech.cbc.exceptions.PortDoesntExistException;
-import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
-import com.cannontech.cbc.exceptions.SerialNumberExistsException;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -31,7 +30,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.service.CbcService;
-import com.cannontech.web.capcontrol.validators.StrategyValidator;
+import com.cannontech.web.capcontrol.validators.CbcValidator;
 import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.CapControlCBC;
@@ -42,8 +41,7 @@ import com.cannontech.yukon.IDatabaseCache;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CbcController {
 
-    @Autowired private PaoDao paoDao;
-    @Autowired private StrategyValidator validator;
+    @Autowired private CbcValidator cbcValidator;
     @Autowired private PointDao pointDao;
     @Autowired private CbcService cbcService;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -54,7 +52,6 @@ public class CbcController {
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
 
     @RequestMapping(value = "cbc/{id}", method = RequestMethod.GET)
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
 
         CapControlCBC cbc = cbcService.getCbc(id);
@@ -63,20 +60,37 @@ public class CbcController {
         PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
         model.addAttribute("mode", mode);
 
-        return setUpModel(model, cbc);
+        return setUpModel(model, cbc, userContext);
+    }
+
+    @RequestMapping(value = "cbc/create", method = RequestMethod.GET)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    public String create(ModelMap model, YukonUserContext userContext) {
+
+        CapControlCBC cbc = new CapControlCBC();
+        int defaultDnpConfig = deviceConfigDao.getDefaultDNPConfiguration().getConfigurationId();
+        cbc.setDnpConfigId(defaultDnpConfig);
+
+        model.addAttribute("mode", PageEditMode.CREATE);
+
+        return setUpModel(model, cbc, userContext);
     }
 
     @RequestMapping(value="cbc", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String save(@ModelAttribute("cbc") CapControlCBC cbc, FlashScope flashScope) {
-        try {
-            cbcService.save(cbc);
-        } catch (SerialNumberExistsException | PortDoesntExistException | MultipleDevicesOnPortException
-            | SameMasterSlaveCombinationException | SQLException e) {
-            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".save.fail", e.getMessage()));
-        }
+    public String save(
+            @ModelAttribute("cbc") CapControlCBC cbc, 
+            BindingResult result, 
+            RedirectAttributes redirectAttributes) {
 
-        return "redirect:/capcontrol/cbc/" + cbc.getId() + "/edit";
+        cbcValidator.validate(cbc, result);
+
+        if (result.hasErrors()) {
+            return bindAndForward(cbc, result, redirectAttributes);
+        }
+        cbcService.save(cbc);
+
+        return "redirect:/capcontrol/cbc/" + cbc.getId();
     }
 
     @RequestMapping(value="cbc/{id}/copy", method=RequestMethod.POST)
@@ -89,21 +103,21 @@ public class CbcController {
         try {
             int newId = cbcService.copy(id, newName, copyPoints);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".copy.success"));
-            return "redirect:/capcontrol/cbc/" + newId + "/edit";
+            return "redirect:/capcontrol/cbc/" + newId;
         } catch (IllegalArgumentException e) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".copy.fail"));
-            return "redirect:/capcontrol/cbc/" + id + "/edit";
+            return "redirect:/capcontrol/cbc/" + id;
         }
     }
 
     @RequestMapping(value="cbc/{id}", method=RequestMethod.DELETE)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String delete(ModelMap model, @PathVariable int id, FlashScope flash) {
+    public String delete(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext userContext) {
 
         if (!cbcService.delete(id)) {
             CapControlCBC cbc = cbcService.getCbc(id);
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".delete.fail"));
-            return setUpModel(model, cbc);
+            return setUpModel(model, cbc, userContext);
         }
 
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".delete.success"));
@@ -111,33 +125,57 @@ public class CbcController {
         return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__";
     }
 
-    private String setUpModel(ModelMap model, CapControlCBC cbc) {
+    private String setUpModel(ModelMap model, CapControlCBC cbc, YukonUserContext userContext) {
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        
         Object modelCbc = model.get("cbc");
         if (modelCbc instanceof CapControlCBC) {
             cbc = (CapControlCBC) modelCbc;
         }
-        Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
-
-        List<LiteYukonPAObject> ports = dbCache.getAllPorts();
-        model.addAttribute("availablePorts", ports);
-        List<LiteYukonPAObject> routes = dbCache.getAllRoutes();
-        model.addAttribute("availableRoutes", routes);
         model.addAttribute("cbc", cbc);
-        model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
-        model.addAttribute("analogPoints", points.get(PointType.Analog));
-        model.addAttribute("pulseAccumulatorPoints", points.get(PointType.PulseAccumulator));
-        model.addAttribute("calcAnalogPoints", points.get(PointType.CalcAnalog));
-        model.addAttribute("statusPoints", points.get(PointType.Status));
-        model.addAttribute("calcStatusPoints", points.get(PointType.CalcStatus));
-        model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
 
-        DNPConfiguration dnpConfig = cbcService.getDnpConfigForDevice(cbc);
-        model.addAttribute("dnpConfig", dnpConfig);
+        model.addAttribute("paoTypes", PaoType.getCbcTypes());
+        model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
+        model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
+        model.addAttribute("availablePorts", dbCache.getAllPorts());
+
+        if (cbc.getId() != null) {
+            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
+            model.addAttribute("analogPoints", points.get(PointType.Analog));
+            model.addAttribute("pulseAccumulatorPoints", points.get(PointType.PulseAccumulator));
+            model.addAttribute("calcAnalogPoints", points.get(PointType.CalcAnalog));
+            model.addAttribute("statusPoints", points.get(PointType.Status));
+            model.addAttribute("calcStatusPoints", points.get(PointType.CalcStatus));
+        }
+
+        List<LiteYukonPAObject> routes = new ArrayList<>(dbCache.getAllRoutes());
+        String noneOption = accessor.getMessage("yukon.common.none.choice");
+        LiteYukonPAObject none = new LiteYukonPAObject(0, noneOption, null, null, null);
+        routes.add(0, none);
+        model.addAttribute("availableRoutes", routes);
+        if (cbc.isTwoWay()) {
+            DNPConfiguration dnpConfig = cbcService.getDnpConfigForDevice(cbc);
+            model.addAttribute("dnpConfig", dnpConfig);
+        }
+        model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
 
         List<LightDeviceConfiguration> configs = deviceConfigDao.getAllConfigurationsByType(cbc.getPaoType());
         model.addAttribute("configs", configs);
 
         return "cbc.jsp";
+    }
+    
+    private String bindAndForward(CapControlCBC cbc, BindingResult result, RedirectAttributes attrs) {
+
+        attrs.addFlashAttribute("cbc", cbc);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.cbc", result);
+
+        if (cbc.getId() == null) {
+            return "redirect:cbc/create";
+        }
+
+        return "redirect:cbc/" + cbc.getId();
     }
 
 }

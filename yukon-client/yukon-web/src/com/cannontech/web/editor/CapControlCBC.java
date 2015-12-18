@@ -44,8 +44,8 @@ public class CapControlCBC implements YukonPao {
     private static final Set<PaoType> twoWayTypes = ImmutableSet.of(PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024,
         PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP);
 
-    public static final boolean isTwoType(PaoType type) {
-        return twoWayTypes.contains(type);
+    public static final Set<PaoType> getTwoWayTypes() {
+        return twoWayTypes;
     }
 
     public Integer getId() {
@@ -190,7 +190,7 @@ public class CapControlCBC implements YukonPao {
     }
 
     public boolean isTwoWay() {
-        return twoWayTypes.contains(getPaoIdentifier().getPaoType());
+        return twoWayTypes.contains(getPaoType());
     }
 
     public boolean isEditingIntegrity() {

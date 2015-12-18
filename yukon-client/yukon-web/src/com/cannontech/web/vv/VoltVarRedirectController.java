@@ -6,7 +6,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
@@ -18,7 +17,6 @@ public class VoltVarRedirectController {
 
     @Autowired private ServerDatabaseCache dbCache;
     @Autowired private CapControlCache cache;
-    @Autowired private CapbankDao capbankDao;
 
     @RequestMapping("area/{id}")
     public String area(@PathVariable int id) {

@@ -213,7 +213,7 @@ public interface DeviceConfigurationDao {
      * @return a {@link LightDeviceConfiguration} object representing the configuration with that id if it exists
      * @throws NotFoundException if no configuration exists with that id
      */
-    LightDeviceConfiguration getLiteConfigurationById(int id);
+    LightDeviceConfiguration getLightConfigurationById(int id);
 
     /**
      * Get the LightDeviceConfiguration with the supplied name

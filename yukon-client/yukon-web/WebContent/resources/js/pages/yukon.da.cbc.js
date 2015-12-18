@@ -15,6 +15,16 @@ yukon.da.cbc = (function () {
         /** Initialize this module. */
         init: function () {
 
+            var twoWayTypes = yukon.fromJson('#two-way-types');
+
+            $('#pao-type').on('change', function () {
+                var paoType = $(this).val();
+                var twoWay = twoWayTypes.indexOf(paoType) !== -1;
+
+                $('.js-two-way').toggleClass('dn', !twoWay);
+                $('.js-one-way').toggleClass('dn', twoWay);
+            });
+
             $(document).on('yukon:da:cbc:delete', function () {
                 $('#delete-cbc').submit();
             });

@@ -893,6 +893,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
      */
     @Override
     public String create() {
+        if(!isEditingAuthorized()) {
+            throw new NotAuthorizedException("User " + JSFParamUtil.getYukonUser() + " is not authorized to create this object.");
+        }
         FacesMessage facesMsg = new FacesMessage();
         FacesContext facesContext = FacesContext.getCurrentInstance();
 
@@ -961,6 +964,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         /* Redirect to the editor after creation */
         facesMsg.setDetail("Database add was SUCCESSFUL");
         String url = "/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemId;
+        if (type == CapControlTypes.CAP_CONTROL_AREA) {
+            url = "/capcontrol/areas/" + itemId;
+        } else if (type == CapControlTypes.CAP_CONTROL_AREA) {
+            url = "/capcontrol/areas/" + itemId;
+        }
 
         /* Sets the navigation history so the return buttons work */
         HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);

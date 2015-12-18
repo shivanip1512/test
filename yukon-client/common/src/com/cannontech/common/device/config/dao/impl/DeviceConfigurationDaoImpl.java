@@ -955,7 +955,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
 
     @Override
-    public LightDeviceConfiguration getLiteConfigurationById(int id) {
+    public LightDeviceConfiguration getLightConfigurationById(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceConfigurationId, Name, Description");
         sql.append("FROM DeviceConfiguration");

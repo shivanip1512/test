@@ -39,7 +39,7 @@ public DeviceCBC(Integer deviceID) {
  */
 public static DeviceCBC[] getAllDeviceCBCs()
 {
-    List<DeviceCBC> returnVector = new ArrayList<>();
+    List<DeviceCBC> deviceCbcs = new ArrayList<>();
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
@@ -66,7 +66,7 @@ public static DeviceCBC[] getAllDeviceCBCs()
 				devCBC.setSerialNumber( new Integer(rset.getInt(2)) );
 				devCBC.setRouteID( new Integer(rset.getInt(3)) );
 				
-				returnVector.add( devCBC );
+				deviceCbcs.add( devCBC );
 			}
 
 		}		
@@ -79,8 +79,8 @@ public static DeviceCBC[] getAllDeviceCBCs()
 	}
 	
 	
-	DeviceCBC[] cbcs = new DeviceCBC[returnVector.size()];
-	return returnVector.toArray( cbcs );
+	DeviceCBC[] cbcs = new DeviceCBC[deviceCbcs.size()];
+	return deviceCbcs.toArray( cbcs );
 }
 
 /**
