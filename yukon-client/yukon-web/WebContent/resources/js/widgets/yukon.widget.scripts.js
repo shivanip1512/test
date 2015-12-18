@@ -4,8 +4,7 @@
 $(function() {
     $(document).on('change', '.js-scripts-toggle .checkbox-input', function() {
         var checkbox = $(this);
-        var scriptId = checkbox.data('scriptId');
-        var form = $('#scriptsForm_' + scriptId);
+        var form = checkbox.closest('form');
         form.submit();
     });
 });

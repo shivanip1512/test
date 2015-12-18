@@ -237,7 +237,7 @@
                     </td>
                     <td>
                         <c:if test="${scheduleInfo.showToggleButton}">
-                            <form id="scriptsForm_${scheduleInfo.schedule.id}" action="${toggleUrl}" method="POST">
+                            <form action="${toggleUrl}" method="POST">
                                 <cti:csrfToken/>
    
                                 <tags:switch checked="${!scheduleInfo.disabledState}" name="toggleState" data-script-id="${scheduleInfo.schedule.id}" 
