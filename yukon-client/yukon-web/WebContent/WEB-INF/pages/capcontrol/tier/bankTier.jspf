@@ -43,6 +43,7 @@
 
             <tr class="bank"
                 data-bank-id="${bankId}"
+                data-bank-name="${fn:escapeXml(viewableCapBank.ccName)}"
                 data-cbc-id="${viewableCapBank.cbcId}"
                 data-parent-id="${parentId}"
                 data-move-bank-title="${fn:escapeXml(moveBankTitle)}"
@@ -159,6 +160,10 @@
                                 <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.cbcName}" javaScriptEscape="true"/>
                                 <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="js-cbc-info" href="javascript:void(0);" />
                         </c:if>
+                        <li class="divider" />
+                        <cm:dropdownOption classes="js-show-bank-comments" key=".menu.viewComments" icon="icon-comment" />
+                        <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${bankId}" />
+                        <cm:dropdownOption href="${recentEventsUrl}" key=".menu.viewRecentEvents" icon="icon-calendar-view-month"/>
                         <c:if test="${hasCapbankControl}">
                             <li class="divider" />
                             <c:if test="${not viewableCapBank.bankMoved}">

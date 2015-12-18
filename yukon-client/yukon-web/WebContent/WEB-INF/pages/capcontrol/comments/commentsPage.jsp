@@ -26,14 +26,17 @@
                             <th><i:inline key=".user"/></th>
                             <th><i:inline key=".time"/></th>
                             <th><i:inline key=".altered"/></th>
-                            <th class="remove-column"><i:inline key=".delete.label"/></th>
+                            <c:if test="${modifyPermission}">
+                                <th class="remove-column"><i:inline key=".delete.label"/></th>
+                            </c:if>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="comment" items="${comments}">
                             <tr id="commentRow_${comment.id}">
-                                <td class="editable">
+
+                                <td class="${modifyPermission ? 'editable' : '' }">
                                     <div id="editCommentSpan_${comment.id}" style="display: none;">
                                         <input id="editComment_${comment.id}" type="text" 
                                             style="margin-right: 5px;width:350px;" 
@@ -60,9 +63,11 @@
                                         <c:otherwise><i:inline key="yukon.common.no"/></c:otherwise>
                                     </c:choose>
                                 </td>
-                                <td class="remove-column">
-                                    <cti:button nameKey="remove" renderMode="image" onclick="yukon.da.comments.deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
-                                </td>
+                                <c:if test="${modifyPermission}">
+                                    <td class="remove-column">
+                                        <cti:button nameKey="remove" renderMode="image" onclick="yukon.da.comments.deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
+                                    </td>
+                                </c:if>
                             </tr>
                         </c:forEach>
                     </tbody>

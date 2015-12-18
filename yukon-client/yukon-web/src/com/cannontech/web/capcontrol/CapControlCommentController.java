@@ -3,9 +3,6 @@ package com.cannontech.web.capcontrol;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,7 +33,7 @@ public class CapControlCommentController {
     @Autowired private FilterCacheFactory filterCacheFactory;
     
     @RequestMapping(value="add", method=RequestMethod.POST)
-    public String add(int paoId, String comment, boolean submitNormal, LiteYukonUser user, ModelMap model) throws Exception {
+    public String add(int paoId, String comment, boolean submitNormal, LiteYukonUser user, ModelMap model) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADD_COMMENTS, user);
         
@@ -55,7 +52,7 @@ public class CapControlCommentController {
     }
     
     @RequestMapping(value="update", method=RequestMethod.POST)
-    public String update(int commentId, int paoId, String comment, boolean submitNormal, LiteYukonUser user, ModelMap model) throws Exception {
+    public String update(int commentId, int paoId, String comment, boolean submitNormal, LiteYukonUser user, ModelMap model) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
         
         CapControlComment capControlComment = commentDao.getById(commentId);
@@ -69,7 +66,7 @@ public class CapControlCommentController {
     }
     
     @RequestMapping(value="remove", method=RequestMethod.POST)
-    public String remove(int commentId, int paoId, boolean submitNormal, LiteYukonUser user, ModelMap model) throws Exception {
+    public String remove(int commentId, int paoId, boolean submitNormal, LiteYukonUser user, ModelMap model) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
         CapControlComment comment = new CapControlComment();
         comment.setId(commentId);
@@ -80,7 +77,7 @@ public class CapControlCommentController {
     }
     
     @RequestMapping("paoComments")
-    public String paoComments(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model) {
+    public String paoComments(int paoId, LiteYukonUser user, ModelMap model) {
         
         setupPaoComments(paoId, user, model);
         model.addAttribute("submitNormal", false);

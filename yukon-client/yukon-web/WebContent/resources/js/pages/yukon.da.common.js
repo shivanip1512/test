@@ -68,6 +68,18 @@ yukon.da.common = (function () {
     /** Initialize the cap bank tier.*/
     _initBankTier = function () {
         
+        var hasControl = $('[data-has-control]').length;
+
+        $('.js-show-bank-comments').on('click', function () {
+            var link = $(this);
+            var menu = link.closest('.dropdown-menu');
+            var trigger = menu.data('trigger');
+            var bankId = trigger.closest('[data-bank-id]').data('bankId');
+            var bankName = trigger.closest('[data-bank-name').data('bankName');
+
+            mod.showComments(bankId, bankName);
+        });
+
         var banks = $('[data-bank-id]');
         banks.each(function (idx, item){
             
@@ -85,26 +97,34 @@ yukon.da.common = (function () {
                 bankInfoOpener = menu.find('.js-bank-info'),
                 cbcInfoOpener = menu.find('.js-cbc-info');
             
-            moveBankOpener.click(function (event) {
+            if (hasControl) {
+                moveBankOpener.click(function (event) {
                     mod.showDialog(moveBankTitle,
-                                yukon.url('/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)), 
-                                {'height': 650, 'width': 650, 'modal': true}, 
-                                '#contentPopup'); 
-            });
-            
-            assignMovedBankOpener.click(function () {
-                
-                var command = $(this).is('.js-assign') ? 'assign-here': 'move-back',
-                    url = yukon.url('/capcontrol/command/' + bankId + '/' + command);
-                
-                $.getJSON(url).always(function (data) {
-                    window.location.reload();
+                            yukon.url('/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)), 
+                            {'height': 650, 'width': 650, 'modal': true}, 
+                    '#contentPopup');
                 });
-            });
-            
-            bankCommandOpener.click(function (event){
-                mod.getCommandMenu(bankId, event);
-            });
+
+                assignMovedBankOpener.click(function () {
+
+                    var command = $(this).is('.js-assign') ? 'assign-here': 'move-back',
+                            url = yukon.url('/capcontrol/command/' + bankId + '/' + command);
+
+                    $.getJSON(url).always(function (data) {
+                        window.location.reload();
+                    });
+                });
+
+                bankCommandOpener.click(function (event){
+                    mod.getCommandMenu(bankId, event);
+                });
+
+                stateMenuOpener.click(function (event){
+                    mod.getMenuFromURL(yukon.url('/capcontrol/menu/capBankState?id=' + bankId), 
+                            event, 
+                            { showNote: true });
+                });
+            }
             
             bankInfoOpener.click(function (event) {
                 mod.showDialog(bankInfoTitle, 
@@ -117,12 +137,7 @@ yukon.da.common = (function () {
                         '../capbank/cbcPoints?cbcId=' + encodeURIComponent(cbcId), 
                         { width: 600, height: 600 });
             });
-            
-            stateMenuOpener.click(function (event){
-                mod.getMenuFromURL(yukon.url('/capcontrol/menu/capBankState?id=' + bankId), 
-                        event, 
-                        { showNote: true });
-            });
+
         });
     },
     
@@ -176,9 +191,7 @@ yukon.da.common = (function () {
                 return true;
             });
             
-            if ($('[data-has-control]').length) {
-                _initBankTier();
-            }
+            _initBankTier();
             
             /* creation menu popup */
             $('.js-cc-create').click(function () {
@@ -427,6 +440,17 @@ yukon.da.common = (function () {
             $('#menuPopup').dialog(dialogArgs);
         },
         
+        showComments: function (id, name) {
+            var title = $('#cc-i18n-text').data('commentsTitle')
+                .replace('{0}', name);
+
+            mod.showDialog(title,
+                yukon.url('/capcontrol/comments/paoComments?paoId=' + id), 
+                {}, 
+                '#contentPopup'
+            );
+        },
+
         /**  
          * Select/check all the checkboxes
          * @param {Object} allCheckBox - Check Box List
