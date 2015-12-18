@@ -28,6 +28,8 @@ import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateResult;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -39,6 +41,7 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
     @Autowired private RfnGatewayFirmwareUpgradeDao firmwareUpgradeDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     private Cache<String, String> firmwareUpdateVersionCache;
     private JmsTemplate firmwareUpdateRequestTemplate;
@@ -119,7 +122,8 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
         }
         
         // If any values aren't in the cache, retrieve them from Network Manager and update the cache
-        if (uncachedValueGateways.size() > 0) {
+        String defaultUpdateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+        if (uncachedValueGateways.size() > 0 || firmwareUpdateVersionCache.getIfPresent(defaultUpdateServerUrl) == null) {
             Map<String, String> uncachedVersions = firmwareUpgradeDao.getFirmwareUpdateServerVersions(uncachedValueGateways);
             firmwareUpdateVersionCache.putAll(uncachedVersions);
             updateServerVersions.putAll(uncachedVersions);

@@ -21,6 +21,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.dao.RfnGatewayFirmwareUpgradeDao;
+import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionRequest;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResponse;
@@ -43,6 +44,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgradeDao {
     
@@ -59,6 +62,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configSource;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     private GatewayFirmwareUpdateSummaryRowMapper summaryRowMapper = new GatewayFirmwareUpdateSummaryRowMapper();
     private GatewayFirmwareUpdateResultRowMapper resultRowMapper = new GatewayFirmwareUpdateResultRowMapper();
@@ -258,30 +262,59 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
     public Map<String, String> getFirmwareUpdateServerVersions(Collection<RfnGateway> gateways) throws NmCommunicationException {
         Map<String, String> updateServerAvailableVersionMap = new HashMap<String, String>();
         
-        // iterating all rfnGateways to set the RfnUpdateData with available version for the update server
+        // Iterating over all rfnGateways to set the RfnUpdateData with available version for the update server
         for (RfnGateway rfnGateway : gateways) {
             RfnGatewayData rfnGatewayData = rfnGateway.getData();
-            if (rfnGatewayData != null 
-                    && !updateServerAvailableVersionMap.containsKey(rfnGatewayData.getUpdateServerUrl())) {
+            String updateServerUrl = rfnGatewayData.getUpdateServerUrl();
+            Authentication updateServerLogin = rfnGatewayData.getUpdateServerLogin();
+            
+            if (rfnGatewayData != null && !updateServerAvailableVersionMap.containsKey(updateServerUrl)) {
                 
                 RfnUpdateServerAvailableVersionRequest rfnUpdateServerAvailableVersionRequest =
-                    new RfnUpdateServerAvailableVersionRequest();
+                    buildVersionRequest(updateServerUrl, updateServerLogin);
                 
-                // setting update server to the rfnUpdateServerAvailableVersionRequest for which available
-                // version has to be fetched
-                rfnUpdateServerAvailableVersionRequest.setUpdateServerUrl(rfnGatewayData.getUpdateServerUrl());
-                rfnUpdateServerAvailableVersionRequest.setUpdateServerLogin(rfnGatewayData.getUpdateServerLogin());
-
                 RfnUpdateServerAvailableVersionResponse response =
                     sendUpdateServerVersionRequest(rfnUpdateServerAvailableVersionRequest);
 
                 if (response != null && response.getResult() == RfnUpdateServerAvailableVersionResult.SUCCESS) {
-                    updateServerAvailableVersionMap.put(rfnGatewayData.getUpdateServerUrl(),
-                        response.getAvailableVersion());
+                    updateServerAvailableVersionMap.put(updateServerUrl, response.getAvailableVersion());
                 }
             }
         }
+        
+        // Send a request for the default url if not already retrieved
+        String defaultUpdateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+        if (!updateServerAvailableVersionMap.containsKey(defaultUpdateServerUrl)) {
+            String defaultUser = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER);
+            String defaultPass = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD);
+            Authentication defaultUpdateServerLogin = new Authentication();
+            defaultUpdateServerLogin.setUsername(defaultUser);
+            defaultUpdateServerLogin.setPassword(defaultPass);
+                    
+            RfnUpdateServerAvailableVersionRequest rfnUpdateServerAvailableVersionRequest =
+                    buildVersionRequest(defaultUpdateServerUrl, defaultUpdateServerLogin);
+            RfnUpdateServerAvailableVersionResponse response =
+                    sendUpdateServerVersionRequest(rfnUpdateServerAvailableVersionRequest);
+            
+            if (response != null && response.getResult() == RfnUpdateServerAvailableVersionResult.SUCCESS) {
+                updateServerAvailableVersionMap.put(defaultUpdateServerUrl, response.getAvailableVersion());
+            }
+        }
+        
         return updateServerAvailableVersionMap;
+    }
+    
+    private RfnUpdateServerAvailableVersionRequest buildVersionRequest(String updateServerUrl, 
+                                                                       Authentication updateServerLogin) 
+                                                                           throws NmCommunicationException {
+        
+        RfnUpdateServerAvailableVersionRequest rfnUpdateServerAvailableVersionRequest =
+                new RfnUpdateServerAvailableVersionRequest();
+        
+        rfnUpdateServerAvailableVersionRequest.setUpdateServerUrl(updateServerUrl);
+        rfnUpdateServerAvailableVersionRequest.setUpdateServerLogin(updateServerLogin);
+        
+        return rfnUpdateServerAvailableVersionRequest;
     }
 
     /**

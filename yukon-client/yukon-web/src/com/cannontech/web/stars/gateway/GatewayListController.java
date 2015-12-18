@@ -43,6 +43,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
@@ -72,6 +74,7 @@ public class GatewayListController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
     @Autowired private NMConfigurationService nmConfigurationService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     private Map<SortBy, Comparator<CertificateUpdate>> sorters;
     
     @PostConstruct
@@ -144,6 +147,8 @@ public class GatewayListController {
     
     @RequestMapping("/gateways/data")
     public @ResponseBody Map<Integer, Object> data(YukonUserContext userContext) {
+        String defaultUpdateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+        
         Map<Integer, Object> json = new HashMap<>();
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         try {
@@ -153,6 +158,9 @@ public class GatewayListController {
                 public void accept(RfnGateway gateway) {
                    if (gateway.getData() != null) {
                        String updateServerUrl = gateway.getData().getUpdateServerUrl();
+                       if (updateServerUrl == null) {
+                           updateServerUrl = defaultUpdateServerUrl;
+                       }
                        String upgradeVersion = upgradeVersions.get(updateServerUrl);
                        gateway.setUpgradeVersion(upgradeVersion); 
                    }

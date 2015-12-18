@@ -159,14 +159,19 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
 
     @Override
     public Set<RfnGateway> getAllGatewaysWithUpdateServer() throws NmCommunicationException {
-
+        
+        String defaultUpdateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
         Set<RfnGateway> gateways = getAllGatewaysWithData();
         Map<String, String>  upgradeVersions = rfnFirmwareUpgradeService.getFirmwareUpdateServerVersions();
+        
         gateways.forEach(new Consumer<RfnGateway>() {
             @Override
             public void accept(RfnGateway gateway) {
                 if (gateway.getData() != null) {
                     String updateServerUrl = gateway.getData().getUpdateServerUrl();
+                    if (updateServerUrl == null) {
+                        updateServerUrl = defaultUpdateServerUrl;
+                    }
                     String upgradeVersion = upgradeVersions.get(updateServerUrl);
                     gateway.setUpgradeVersion(upgradeVersion); 
                 }
