@@ -750,13 +750,13 @@ public class NmIntegrationController {
         Map<String, Object> dataSimulatorStatusJson = Maps.newHashMapWithExpectedSize(10);
         dataSimulatorStatusJson.put("isRunning6200", existingDataSimulatorStatus.getIsRunning6200().get());
         dataSimulatorStatusJson.put("isCancelled6200", existingDataSimulatorStatus.getIsCancelled6200().get());
-        dataSimulatorStatusJson.put("numTotal6200", existingDataSimulatorStatus.getNumTotal6200() * 1440);
+        dataSimulatorStatusJson.put("numTotal6200", existingDataSimulatorStatus.getNumTotal6200());
         dataSimulatorStatusJson.put("numComplete6200", existingDataSimulatorStatus.getNumComplete6200().get());
         Instant lastRun6200 = existingDataSimulatorStatus.getLastFinishedInjection6200();
 
         dataSimulatorStatusJson.put("isRunning6600", existingDataSimulatorStatus.getIsRunning6600().get());
         dataSimulatorStatusJson.put("isCancelled6600", existingDataSimulatorStatus.getIsCancelled6600().get());
-        dataSimulatorStatusJson.put("numTotal6600", existingDataSimulatorStatus.getNumTotal6600() * 1440);
+        dataSimulatorStatusJson.put("numTotal6600", existingDataSimulatorStatus.getNumTotal6600());
         dataSimulatorStatusJson.put("numComplete6600", existingDataSimulatorStatus.getNumComplete6600().get());
         Instant lastRun6600 = existingDataSimulatorStatus.getLastFinishedInjection6600();
 
