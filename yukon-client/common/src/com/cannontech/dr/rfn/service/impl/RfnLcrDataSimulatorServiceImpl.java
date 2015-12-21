@@ -156,6 +156,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         if (simulatorFuture != null) {
             simulatorFuture.cancel(true);
         }
+        
         RfnLcrDataSimulatorStatus.reInitializeStatus(rfnLcrDataSimulatorStatus);
         if (!rfnLcrExistingDataSimulatorStatus.getIsRunning6200().get()) {
             // Flush the counter if both simulators are off
@@ -171,6 +172,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         while (futureIter.hasNext()) {
             futureIter.next().cancel(true);
         }
+        msgSimulatorRunning = true;
         RfnLcrDataSimulatorStatus.reInitializeStatus(rfnLcrExistingDataSimulatorStatus);
         if (!rfnLcrDataSimulatorStatus.getIsRunning6200().get()) {
             // Flush the counter if both simulators are off
@@ -226,7 +228,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             AtomicInteger id6600 = new AtomicInteger();
             boolean useCurrentMsgGrp6200 = true;
             boolean useCurrentMsgGrp6600 = true;
-
+            boolean hasFailed = false;
             try {
                 // Loop through LCR 6200 serial numbers, sending messages for those in the current messaging
                 // group.
@@ -242,13 +244,15 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                         new RfnLcrReadSimulatorDeviceParameters(
                             new RfnIdentifier(String.valueOf(id6200), "CPS", "1077"), 0, 0, 3, 60, 24 * 60);
                     AtomicLong numComplete6200 = rfnLcrDataSimulatorStatus.getNumComplete6200();
-                    simulateLcrReadRequest(simulatorSettings, deviceParameters);
-                    numComplete6200.incrementAndGet();
-                    rfnLcrDataSimulatorStatus.setLastFinishedInjection6200(Instant.now());
-                    if (useCurrentMsgGrp6200) {
-                        id6200.set(simulatorSettings.getLcr6200serialFrom() + currentMessagingGroup);
-                    } else {
-                        id6200.incrementAndGet();
+                    hasFailed = simulateLcrReadRequest(simulatorSettings, deviceParameters);
+                    if (!hasFailed) {
+                        numComplete6200.incrementAndGet();
+                        rfnLcrDataSimulatorStatus.setLastFinishedInjection6200(Instant.now());
+                        if (useCurrentMsgGrp6200) {
+                            id6200.set(simulatorSettings.getLcr6200serialFrom() + currentMessagingGroup);
+                        } else {
+                            id6200.incrementAndGet();
+                        }
                     }
                 }
                 // Loop through LCR 6600 serial numbers, sending messages for those in the current messaging
@@ -264,13 +268,15 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                         new RfnLcrReadSimulatorDeviceParameters(
                             new RfnIdentifier(String.valueOf(id6600), "CPS", "1082"), 0, 0, 3, 60, 24 * 60);
                     AtomicLong numComplete6600 = rfnLcrDataSimulatorStatus.getNumComplete6600();
-                    simulateLcrReadRequest(simulatorSettings, deviceParameters);
-                    numComplete6600.incrementAndGet();
-                    rfnLcrDataSimulatorStatus.setLastFinishedInjection6600(Instant.now());
-                    if (useCurrentMsgGrp6600) {
-                        id6600.set(simulatorSettings.getLcr6600serialFrom() + currentMessagingGroup);
-                    } else {
-                        id6600.incrementAndGet();
+                    hasFailed = simulateLcrReadRequest(simulatorSettings, deviceParameters);
+                    if (!hasFailed) {
+                        numComplete6600.incrementAndGet();
+                        rfnLcrDataSimulatorStatus.setLastFinishedInjection6600(Instant.now());
+                        if (useCurrentMsgGrp6600) {
+                            id6600.set(simulatorSettings.getLcr6600serialFrom() + currentMessagingGroup);
+                        } else {
+                            id6600.incrementAndGet();
+                        }
                     }
                 }
                 // Advance to the next messaging group for the next thread wake-up.
@@ -327,18 +333,21 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
 
             AtomicLong lcr6200NumComplete = rfnLcrExistingDataSimulatorStatus.getNumComplete6200();
             AtomicLong lcr6600NumComplete = rfnLcrExistingDataSimulatorStatus.getNumComplete6600();
+            boolean hasFailed = false;
             for (RfnDevice device : rfnLcrDeviceList) {
                 RfnIdentifier rfnIdentifier = device.getRfnIdentifier();
                 RfnLcrReadSimulatorDeviceParameters deviceParameters =
                     new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60);
                 SimulatorSettings settings = new SimulatorSettings(0, 0, 0, 0, 123456789, 1390000000, 0);
-                simulateLcrReadRequest(settings, deviceParameters);
-                if (device.getPaoIdentifier().getPaoType().equals(PaoType.LCR6200_RFN)) {
-                    lcr6200NumComplete.incrementAndGet();
-                    rfnLcrExistingDataSimulatorStatus.setLastFinishedInjection6200(Instant.now());
-                } else if (device.getPaoIdentifier().getPaoType().equals(PaoType.LCR6600_RFN)) {
-                    lcr6600NumComplete.incrementAndGet();
-                    rfnLcrExistingDataSimulatorStatus.setLastFinishedInjection6600(Instant.now());
+                hasFailed = simulateLcrReadRequest(settings, deviceParameters);
+                if (!hasFailed) {
+                    if (device.getPaoIdentifier().getPaoType().equals(PaoType.LCR6200_RFN)) {
+                        lcr6200NumComplete.incrementAndGet();
+                        rfnLcrExistingDataSimulatorStatus.setLastFinishedInjection6200(Instant.now());
+                    } else if (device.getPaoIdentifier().getPaoType().equals(PaoType.LCR6600_RFN)) {
+                        lcr6600NumComplete.incrementAndGet();
+                        rfnLcrExistingDataSimulatorStatus.setLastFinishedInjection6600(Instant.now());
+                    }
                 }
             }
         }
@@ -349,32 +358,40 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * 
      * @param deviceParameters Specifies the parameters of the device that generated the request.
      */
-    private void simulateLcrReadRequest(SimulatorSettings simulatorSettings,
+    private boolean simulateLcrReadRequest(SimulatorSettings simulatorSettings,
             RfnLcrReadSimulatorDeviceParameters deviceParameters) {
         RfnLcrReadingArchiveRequest readArchiveRequest;
         long msgCount = 0;
+        boolean hasFailed = false;
         try {
             readArchiveRequest = createReadArchiveRequest(simulatorSettings, deviceParameters);
             sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
-            int minuteOfHour = new Instant().get(DateTimeFieldType.minuteOfHour());
-            if (perMinuteMsgCount.containsKey(minuteOfHour)) {
-                msgCount = perMinuteMsgCount.get(minuteOfHour);
-            }
-            msgCount++;
-            perMinuteMsgCount.clear();
-            // the record will have the number of messages sent for the current minute only
-            if (rfnLcrDataSimulatorStatus.getIsRunning6200().get()
-                || rfnLcrExistingDataSimulatorStatus.getIsRunning6200().get()) {
-                perMinuteMsgCount.put(minuteOfHour, msgCount);
-            } else {
-                perMinuteMsgCount.clear();
-            }
+            
         } catch (RfnLcrSimulatorException | IOException e) {
+            hasFailed = true ;
             log.warn("There was a problem creating an RFN LCR archive read request for device: "
                 + deviceParameters.getRfnIdentifier().getSensorManufacturer() + "/"
                 + deviceParameters.getRfnIdentifier().getSensorModel() + "/"
                 + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
+        } finally {
+            if (!hasFailed) {
+                int minuteOfHour = new Instant().get(DateTimeFieldType.minuteOfHour());
+                if (perMinuteMsgCount.containsKey(minuteOfHour)) {
+                    msgCount = perMinuteMsgCount.get(minuteOfHour);
+                }
+                msgCount++;
+                perMinuteMsgCount.clear();
+                // the record will have the number of messages sent for the current minute only
+                if (rfnLcrDataSimulatorStatus.getIsRunning6200().get()
+                    || rfnLcrExistingDataSimulatorStatus.getIsRunning6200().get()) {
+                    perMinuteMsgCount.put(minuteOfHour, msgCount);
+                } else {
+                    perMinuteMsgCount.clear();
+                }
+            }
         }
+        return hasFailed;
+        
     }
 
     /**
@@ -416,6 +433,9 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         } catch (JAXBException e) {
             throw new RfnLcrSimulatorException("There was an error generating the XML payload for serial number "
                 + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
+        } catch (Exception e) {
+            throw new RfnLcrSimulatorException("There was an error generating the XML payload for serial number "
+                    + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
         }
         // Create EXI encoded payload with status header.
         byte[] encodedXml = null;
@@ -449,66 +469,70 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      */
     private String getLcrReadXmlPayload(SimulatorSettings simulatorSettings,
             RfnLcrReadSimulatorDeviceParameters deviceParameters) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance("com.cannontech.dr.rfn.model.jaxb");
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        ObjectFactory objectFactory = new ObjectFactory();
-
-        Instant now = new Instant();
-
-        // DR report spec states the utc attribute is UTC seconds from 1970.
-        DRReport drReport = objectFactory.createDRReport();
-        drReport.setUtc(now.getMillis() / 1000);
-        drReport.setUniqueID(Integer.parseInt(deviceParameters.getRfnIdentifier().getSensorSerialNumber()));
-
-        HostDeviceID hostDeviceId = objectFactory.createDRReportHostDeviceID();
-        hostDeviceId.setRevision(771);
-        hostDeviceId.setValue(Integer.parseInt(deviceParameters.getRfnIdentifier().getSensorModel()));
-        drReport.getHostDeviceID().add(hostDeviceId);
-
-        ExtendedAddresssing extendedAddresssing = objectFactory.createDRReportExtendedAddresssing();
-        extendedAddresssing.setSPID(1);
-        extendedAddresssing.setGeo(0);
-        extendedAddresssing.setFeeder(0);
-        extendedAddresssing.setZip(0L);
-        extendedAddresssing.setUDA(0);
-        extendedAddresssing.setRequired(128);
-        drReport.getExtendedAddresssing().add(extendedAddresssing);
-
-        Info info = objectFactory.createDRReportInfo();
-        info.setFlags(0);
-        info.setReportingInterval(1440);
-        info.setRecordingInterval(60);
-        info.setTotalLUFEvents(0);
-        info.setTotalLUVEvents(0);
-        info.setBlinkCount(0);
-        drReport.getInfo().add(info);
-
-        Relays relays = objectFactory.createDRReportRelays();
-        for (int i = 0; i < 3; i++) {
-            Relay relay = createRelay(i, deviceParameters, objectFactory, now);
-            relays.getRelay().add(relay);
-        }
-        drReport.getRelays().add(relays);
-
-        ControlEvents controlEvents = objectFactory.createDRReportControlEvents();
-        drReport.getControlEvents().add(controlEvents);
-
-        LUVEvents luvEvents = objectFactory.createDRReportLUVEvents();
-        drReport.getLUVEvents().add(luvEvents);
-
-        // Create broadcast verification message ids.
-        BroadcastVerificationMessages verificationMessages =
-            objectFactory.createDRReportBroadcastVerificationMessages();
-        Event event = objectFactory.createDRReportBroadcastVerificationMessagesEvent();
-        event.setUnused(0); // This element is not used and should be set to 0 to match firmware message
-                            // format.
-        event.setUniqueIdentifier(simulatorSettings.getMessageId());
-        event.setReceivedTimestamp(simulatorSettings.getMessageIdTimestamp());
-        verificationMessages.getEvent().add(event);
-        drReport.getBroadcastVerificationMessages().add(verificationMessages);
-
         StringWriter sw = new StringWriter();
-        marshaller.marshal(drReport, sw);
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance("com.cannontech.dr.rfn.model.jaxb");
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            ObjectFactory objectFactory = new ObjectFactory();
+
+            Instant now = new Instant();
+
+            // DR report spec states the utc attribute is UTC seconds from 1970.
+            DRReport drReport = objectFactory.createDRReport();
+            drReport.setUtc(now.getMillis() / 1000);
+            drReport.setUniqueID(Integer.parseInt(deviceParameters.getRfnIdentifier().getSensorSerialNumber()));
+
+            HostDeviceID hostDeviceId = objectFactory.createDRReportHostDeviceID();
+            hostDeviceId.setRevision(771);
+            hostDeviceId.setValue(Integer.parseInt(deviceParameters.getRfnIdentifier().getSensorModel()));
+            drReport.getHostDeviceID().add(hostDeviceId);
+
+            ExtendedAddresssing extendedAddresssing = objectFactory.createDRReportExtendedAddresssing();
+            extendedAddresssing.setSPID(1);
+            extendedAddresssing.setGeo(0);
+            extendedAddresssing.setFeeder(0);
+            extendedAddresssing.setZip(0L);
+            extendedAddresssing.setUDA(0);
+            extendedAddresssing.setRequired(128);
+            drReport.getExtendedAddresssing().add(extendedAddresssing);
+
+            Info info = objectFactory.createDRReportInfo();
+            info.setFlags(0);
+            info.setReportingInterval(1440);
+            info.setRecordingInterval(60);
+            info.setTotalLUFEvents(0);
+            info.setTotalLUVEvents(0);
+            info.setBlinkCount(0);
+            drReport.getInfo().add(info);
+
+            Relays relays = objectFactory.createDRReportRelays();
+            for (int i = 0; i < 3; i++) {
+                Relay relay = createRelay(i, deviceParameters, objectFactory, now);
+                relays.getRelay().add(relay);
+            }
+            drReport.getRelays().add(relays);
+
+            ControlEvents controlEvents = objectFactory.createDRReportControlEvents();
+            drReport.getControlEvents().add(controlEvents);
+
+            LUVEvents luvEvents = objectFactory.createDRReportLUVEvents();
+            drReport.getLUVEvents().add(luvEvents);
+
+            // Create broadcast verification message ids.
+            BroadcastVerificationMessages verificationMessages =
+                objectFactory.createDRReportBroadcastVerificationMessages();
+            Event event = objectFactory.createDRReportBroadcastVerificationMessagesEvent();
+            event.setUnused(0); // This element is not used and should be set to 0 to match firmware message
+                                // format.
+            event.setUniqueIdentifier(simulatorSettings.getMessageId());
+            event.setReceivedTimestamp(simulatorSettings.getMessageIdTimestamp());
+            verificationMessages.getEvent().add(event);
+            drReport.getBroadcastVerificationMessages().add(verificationMessages);
+
+            marshaller.marshal(drReport, sw);
+        } catch (Exception e) {
+            throw e;
+        }
         return sw.toString();
     }
 
