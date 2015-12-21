@@ -37,7 +37,7 @@
                 <c:forEach items="${result.resultHolder.successfulDevices}" var="device">
                     <tr>
                         <td class="wsnw"><cti:deviceName device="${device}"/></td>
-                        <td class="wsnw tar"><cti:pointValueFormatter format="FULL" value="${result.resultHolder.values[device][0]}"/></td>
+                        <td class="wsnw tar fl"><cti:pointValueFormatter format="FULL" value="${result.resultHolder.values[device][0]}"/></td>
                         <td>${fn:escapeXml(result.resultHolder.resultStrings[device])}</td>
                     </tr>
                 </c:forEach>
