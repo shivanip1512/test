@@ -172,7 +172,7 @@
                     }).done(function(data) {
                         _checkExistingDeviceStatus(true);
                     }).fail(function(data) {
-                        yukon.ui.alertError("send-message failed Failed to run LCR Data Simulator on existing devices. Try again.");
+                        yukon.ui.alertError("send-message failed to run LCR Data Simulator on existing devices. Try again.");
                     });
             };
               
