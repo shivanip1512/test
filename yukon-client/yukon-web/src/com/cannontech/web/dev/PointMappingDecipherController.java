@@ -64,6 +64,9 @@ public class PointMappingDecipherController {
         return "rfn/pointMappingDecipher.jsp";
     }
 
+    /**
+     * Matches user-entered data to rfnPointMapping.xml and paoDefinition.xml and returns the result.
+     */
     private Set<MatchedMapping> getDecipherMappings(String unitOfMeasure, Set<String> unitOfMeasureModifiers,
             String baseUnitOfMeasure, Set<String> baseUnitOfMeasureModifiers) {
 
@@ -228,12 +231,17 @@ public class PointMappingDecipherController {
         }
     }
 
+    /**
+     * Checks modifiers for a match.
+     */
     private boolean checkModifiersForMatch(Set<String> modifiers, Iterable<ModifiersMatcher> matchers) {
         for (ModifiersMatcher matcher : matchers) {
             Set<String> matcherModifiers = new HashSet<String>(matcher.getModifiers());
-            matcherModifiers.removeAll(modifiers);
-            if (matcherModifiers.isEmpty()) {
-                return true;
+            if (modifiers.size() == matcherModifiers.size()) {
+                matcherModifiers.removeAll(modifiers);
+                if (matcherModifiers.isEmpty()) {
+                    return true;
+                }
             }
         }
         return false;
