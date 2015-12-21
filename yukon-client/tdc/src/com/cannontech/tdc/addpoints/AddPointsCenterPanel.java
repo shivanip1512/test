@@ -17,6 +17,7 @@ import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.TDCMainFrame;
@@ -512,8 +513,11 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 					{
                         int paoId = ((LiteYukonPAObject)userObject).getYukonID();
                         List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoId);
-                        
-						getRightTable().addDevice(points);
+                        for (LitePoint point : points) {
+                            if (point.getPointTypeEnum() != PointType.System) {
+                                getRightTable().addPoint(point);
+                            }
+                        }
 					} 
 					else if( userObject instanceof LitePoint )
 					{
