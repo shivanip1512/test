@@ -7,7 +7,7 @@
 
 
 <cti:msgScope paths="modules.adminSetup.auth.user">
-    <tags:setFormEditMode mode="${pwChangeFormMode}" />
+
     <div class="column-12-12">
         <div class="column one">
             <cti:url var="url" value="/admin/users/${userId}/change-password" />
