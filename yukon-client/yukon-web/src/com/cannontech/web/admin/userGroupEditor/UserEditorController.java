@@ -190,7 +190,7 @@ public class UserEditorController {
         validator.validate(password, result);
         
         if (result.hasErrors()) {
-            
+
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
             model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(yukonUser));
@@ -218,7 +218,6 @@ public class UserEditorController {
         model.addAttribute("password", password);
         model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(user));
         model.addAttribute("userId", user.getUserID());
-        model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
         return "userGroupEditor/userChangePasswordPopup.jsp";
     }
 
