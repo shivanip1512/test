@@ -276,7 +276,6 @@ string sdirArray(4);
 number i;
 begin
 	PopulateDirNameList(sdirArray);
-	TARGETDIR = "C:\\Yukon";
     sDir = TARGETDIR ^ "\\Server\\web\\webapps\\";
 	
 	for i = 0 to (SizeOf(sdirArray)-1)
