@@ -17,6 +17,9 @@
     </cti:displayForPageEditModes>
 	<input type="hidden" class="js-page-mode" value="${mode}">
     <c:set var="nameValueClass" value="natural-width ${viewMode ? '' : 'with-form-controls' }" />
+    
+    <c:if test="${not empty pointModel}">
+    
 
     <cti:url var="action" value="/tools/points/${pointModel.pointBase.point.pointType}" />
     <form:form id="point-form" commandName="pointModel" action="${action}" method="POST" data-view-mode="${viewMode}">
@@ -591,6 +594,8 @@
         </div>
 
     </form:form>
+    
+    </c:if>
 
     <cti:url var="deleteUrl" value="/tools/points/${pointModel.id}" />
     <form:form id="delete-point" action="${deleteUrl}" method="DELETE"></form:form>

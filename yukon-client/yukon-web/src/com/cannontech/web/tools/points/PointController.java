@@ -23,6 +23,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -79,26 +80,36 @@ public class PointController {
     private static final String baseKey = "yukon.web.modules.tools.point";
 
     @RequestMapping(value = "/points/{id}", method = RequestMethod.GET)
-    public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
-
+    public String view(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        PointModel pointModel = pointEditorService.getModelForId(id);
-        if (pointModel.getPointBase().getPoint().getPseudoFlag().equals(Point.PSEUDOFLAG_PSEUDO)) {
-            pointModel.getPointBase().getPoint().setPhysicalOffset(false);
+        return retrievePointAndModel(model, userContext, flashScope, id);
+    }
+    
+    private String retrievePointAndModel(ModelMap model, YukonUserContext userContext, FlashScope flashScope, int id){
+        PointModel pointModel = null;
+        try {
+            pointModel = pointEditorService.getModelForId(id);
+        } catch (NotFoundException e){
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", id));
+            return "point/point.jsp";
         }
-        return setUpModel(model, pointModel, userContext);
+        
+        PointBase base = pointModel.getPointBase();
+        if (base instanceof SystemPoint){
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".viewError", id));
+            return "point/point.jsp";
+        } else {
+            if (pointModel.getPointBase().getPoint().getPseudoFlag().equals(Point.PSEUDOFLAG_PSEUDO)) {
+                pointModel.getPointBase().getPoint().setPhysicalOffset(false);
+            }
+            return setUpModel(model, pointModel, userContext);
+        }
     }
 
     @RequestMapping(value = "/points/{id}/edit", method = RequestMethod.GET)
-    public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
-
+    public String edit(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        PointModel pointModel = pointEditorService.getModelForId(id);
-        Character pseudoFlag = pointModel.getPointBase().getPoint().getPseudoFlag();
-		if (pseudoFlag.equals(Point.PSEUDOFLAG_PSEUDO)) {
-			pointModel.getPointBase().getPoint().setPhysicalOffset(false);
-		}
-        return setUpModel(model, pointModel, userContext);
+        return retrievePointAndModel(model, userContext, flashScope, id);
     }
 
     @RequestMapping("/points/{type}/create")
