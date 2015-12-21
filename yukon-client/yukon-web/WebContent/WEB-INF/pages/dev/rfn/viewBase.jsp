@@ -92,6 +92,10 @@ $(function () { yukon.dev.rfn.init(); });
 </script>
 <div class="column-12-12 clearfix">
     <div class="column one">
+        <h3>Tools</h3>
+        <ul class="simple-list stacked">
+            <li><a href="decipher/view"><i:inline key=".pointMappingDecipher.label"/></a></li>
+        </ul>   
         <h3>Pages</h3>
         <ul class="simple-list stacked">
             <li><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></li>

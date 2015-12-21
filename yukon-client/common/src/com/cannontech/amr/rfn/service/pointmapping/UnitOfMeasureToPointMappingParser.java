@@ -36,6 +36,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -463,6 +464,11 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
     @ManagedAttribute
     public long getCacheSize() {
         return computingCache.size();
+    }
+    
+    @Override
+    public Multimap<PaoType, PointMapper> getPointMapper() {
+        return pointMapperMap;
     }
 
 }
