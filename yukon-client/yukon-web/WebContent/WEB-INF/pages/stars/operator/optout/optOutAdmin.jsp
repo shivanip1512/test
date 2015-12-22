@@ -27,20 +27,22 @@
 
         function systemOptOutInfoRequest() {
             var assignedProgramIds = $('#systemProgramPaoIds').val();
-
+            
             var programIdArrayJson;
             if (assignedProgramIds.length == 0) {
                 // Otherwise str.split(',') returns [""], we really want an empty array
                 programIdArrayJson = '[]';
             } else {
-                programIdArrayJson = JSON.stringify(assignedProgramIds.split(','));
+                programIdArrayJson = assignedProgramIds.split(',');
             }
-
+            var data = {
+            		assignedProgramIds : programIdArrayJson	
+            };
             $.ajax({
                 contentType: 'application/json',
                 dataType: 'json',
                 url: "${systemOptOutsUrl}",
-                data: programIdArrayJson,
+                data: JSON.stringify(data),
                 type: 'post'
             }).done(function(json, status, xhrobj) {
                 $('.totalAccounts .value').html(json.totalNumberOfAccounts);

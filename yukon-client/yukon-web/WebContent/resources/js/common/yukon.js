@@ -685,3 +685,54 @@ yukon.namespace = function (ns) {
     });
     
 })(jQuery);
+
+$(function () {
+    var csrfToken = $('#ajax-csrf-token');
+    var csrfName = csrfToken.attr('name');
+    var csrfVal = csrfToken.val();
+    var csrfData = {};
+    csrfData[csrfName] = csrfVal;
+
+    $(document).ajaxSend(function (ev, req, settings) {
+        if (settings.type === 'POST' || settings.type === 'post' ||
+            settings.method === 'POST' || settings.method === 'post') {
+            var data = {};
+            var type = 'object';
+            if (typeof settings.data === 'string') {
+                try {
+                    data = JSON.parse(settings.data);
+                    type = 'json';
+                } catch (e) {
+                    type = 'urlEncode';
+                    data = settings.data;
+                    var joiner = '';
+                    if(data.indexOf('?') === -1){
+                        if(data.indexOf('=') === -1){
+                            joiner = '?';
+                        }else{
+                            joiner = '&';
+                        }
+                    }else{
+                        joiner = '&';
+                    }
+                    data = data + joiner + $.param(csrfData);
+                }
+            }
+           
+            if (typeof settings.data === 'object') {
+                data = settings.data;
+            }
+            if(typeof settings.data != 'string' && typeof settings.data != 'object' && typeof settings.data != 'json'){
+                var mapData = {"com.cannontech.yukon.request.csrf.token" : csrfVal};
+                data = JSON.stringify(mapData);
+            }else{
+                data[csrfName] = csrfVal;	
+            }
+            
+            if (type === 'json') {
+                data = JSON.stringify(data);
+            }
+            settings.data = data;
+        }
+    });
+});

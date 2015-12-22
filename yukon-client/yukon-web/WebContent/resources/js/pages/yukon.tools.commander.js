@@ -249,12 +249,17 @@ yukon.tools.commander = (function () {
      * recorded and any completed requests are deleted from the pending cache.
      */
     _update = function () {
+    	
         if (Object.keys(_pending).length > 0) {
+        	var data = {
+                    requestIds : Object.keys(_pending)
+                };
+
             $.ajax({
                 url: 'commander/requests',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify(Object.keys(_pending)),
+                data: JSON.stringify(data),
                 dataType: 'json'
             }).done(function (requests, status, xhr) {
                 

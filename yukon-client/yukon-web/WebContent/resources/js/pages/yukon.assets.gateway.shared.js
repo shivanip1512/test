@@ -88,12 +88,14 @@ yukon.assets.gateway.shared = (function () {
                     types = [];
                 
                 popup.find('.js-select-all-item:checked').each(function (idx, item) { types.push(item.name); });
-                
+                var data={
+                        types : types
+                };
                 yukon.ui.alertPending(_text['collect.data.pending'].replace('{0}', name));
                 
                 $.ajax({
                     url: yukon.url('/stars/gateways/' + id + '/collect-data'), 
-                    data: JSON.stringify(types),
+                    data: JSON.stringify(data),
                     contentType: 'application/json', 
                     type: 'post'
                 }).done(function (result) {

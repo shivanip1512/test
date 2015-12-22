@@ -58,6 +58,9 @@
 </head>
 <body>
     <cti:msgScope paths="layout.standard">
+    
+    <cti:csrfToken var="csrfToken"/>
+    <input type="hidden" id="ajax-csrf-token" name="com.cannontech.yukon.request.csrf.token" value="${csrfToken}">
         
         <div id="modal-glass" style="display: none;">
             <div class="tint"></div>

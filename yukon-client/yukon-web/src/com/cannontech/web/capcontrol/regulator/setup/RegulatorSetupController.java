@@ -37,6 +37,7 @@ import com.cannontech.web.capcontrol.regulator.setup.model.RegulatorMappingTask;
 import com.cannontech.web.capcontrol.regulator.setup.service.RegulatorMappingService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -104,12 +105,11 @@ public class RegulatorSetupController {
     }
     
     /** Build a mapping import file. */
-    @RequestMapping(value="regulator-setup/map-attributes/build", method=RequestMethod.POST, consumes=json, produces=json)
-    public @ResponseBody Map<String, String> build(HttpServletResponse resp, YukonUserContext userContext, 
-            @RequestBody List<Integer> ids)
-    throws IOException{
-        
-        String key = fileExporter.build(resp, ids, userContext);
+    @RequestMapping(value = "regulator-setup/map-attributes/build", method = RequestMethod.POST, consumes = json, produces = json)
+    public @ResponseBody Map<String, String> build(HttpServletResponse resp, YukonUserContext userContext,
+            @RequestBody IdsContainer idsContainer) throws IOException {
+
+        String key = fileExporter.build(resp, idsContainer.ids, userContext);
         return ImmutableMap.of("key", key);
     }
     
@@ -120,10 +120,10 @@ public class RegulatorSetupController {
     }
     
     /** Start a mapping task. */
-    @RequestMapping(value="regulator-setup/map-attributes", method=RequestMethod.POST, produces=json, consumes=json)
-    public @ResponseBody RegulatorMappingTask map(YukonUserContext userContext, @RequestBody List<Integer> ids) {
-        
-        List<YukonPao> regulators = Lists.transform(ids, new Function<Integer, YukonPao>() {
+    @RequestMapping(value = "regulator-setup/map-attributes", method = RequestMethod.POST, produces = json, consumes = json)
+    public @ResponseBody RegulatorMappingTask map(YukonUserContext userContext, @RequestBody IdsContainer idsContainer) {
+
+        List<YukonPao> regulators = Lists.transform(idsContainer.ids, new Function<Integer, YukonPao>() {
             @Override
             public YukonPao apply(Integer id) {
                 return dbCache.getAllPaosMap().get(id);
@@ -192,4 +192,8 @@ public class RegulatorSetupController {
         return "regulator/mapping-results.jsp";
     }
     
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class IdsContainer {
+        public List<Integer> ids;
+    }
 }

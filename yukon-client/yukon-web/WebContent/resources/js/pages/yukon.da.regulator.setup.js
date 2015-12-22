@@ -202,11 +202,15 @@ yukon.da.regulatorSetup = (function () {
                 debug.debug('Regulators chosen for mapping task:', items);
                 var ids = items.map(function (item) { return item.paoId; });
                 
+                var data = {
+                    ids:ids
+                };
+                
                 $.ajax({
                     url: yukon.url('/capcontrol/regulator-setup/map-attributes'),
                     type: 'post',
                     contentType: 'application/json',
-                    data: JSON.stringify(ids),
+                    data: JSON.stringify(data),
                     dataType: 'json'
                 })
                 .done(function (task) {
@@ -216,15 +220,18 @@ yukon.da.regulatorSetup = (function () {
             
             /** Build a attribute to point mapping file after regulators were picked. */
             $(document).on('yukon:da:regulator:mapping:build', function (ev, items, picker) {
-                
+            
                 debug.debug('Regulators chosen for mapping file:', items);
                 var ids = items.map(function (item) { return item.paoId; });
+                var data={
+                    ids:ids
+                };
                 
                 $.ajax({
                     url: yukon.url('/capcontrol/regulator-setup/map-attributes/build'),
                     type: 'post',
                     contentType: 'application/json',
-                    data: JSON.stringify(ids)
+                    data: JSON.stringify(data)
                 }).done(function (data) {
                     window.location.href = yukon.url('/capcontrol/regulator-setup/map-attributes/export/' + data.key);
                 });

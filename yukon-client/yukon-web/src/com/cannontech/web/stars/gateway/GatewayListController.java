@@ -49,6 +49,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -215,15 +216,15 @@ public class GatewayListController {
         return json;
     }
     
-    @RequestMapping(value="/gateways/{id}/collect-data", consumes=json, produces=json)
+    @RequestMapping(value = "/gateways/{id}/collect-data", consumes = json, produces = json)
     public @ResponseBody Map<String, Object> collectData(YukonUserContext userContext, @PathVariable int id,
-            @RequestBody DataType[] types) {
-        
+            @RequestBody DataTypeContainer dataTypeContainer) {
+
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         LiteYukonPAObject gateway = cache.getAllPaosMap().get(id);
         try {
-            boolean success = rfnGatewayService.collectData(gateway.getPaoIdentifier(), types);
+            boolean success = rfnGatewayService.collectData(gateway.getPaoIdentifier(), dataTypeContainer.types);
             json.put("success", success);
         } catch (NmCommunicationException e) {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
@@ -268,4 +269,8 @@ public class GatewayListController {
         }
     }
     
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class DataTypeContainer {
+        public DataType[] types;
+    }
 }

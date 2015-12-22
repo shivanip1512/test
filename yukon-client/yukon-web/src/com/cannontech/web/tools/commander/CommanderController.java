@@ -65,6 +65,7 @@ import com.cannontech.web.tools.commander.model.ViewableTarget;
 import com.cannontech.web.tools.commander.service.CommanderService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebUtilityService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
@@ -244,12 +245,13 @@ public class CommanderController {
     }
     
     /** Retrieve the list of requests asked for. */
-    @RequestMapping(value="/commander/requests", method=RequestMethod.POST, produces=json, consumes=json)
-    public @ResponseBody List<CommandRequest> requests(LiteYukonUser user, @RequestBody List<String> requestIds) {
+    @RequestMapping(value = "/commander/requests", method = RequestMethod.POST, produces = json, consumes = json)
+    public @ResponseBody List<CommandRequest> requests(LiteYukonUser user,
+            @RequestBody RequestIdsContainer requestIdsContainer) {
         
         Map<Integer, CommandRequest> requests = commanderService.getRequests(user);
         List<CommandRequest> desired = new ArrayList<>();
-        for (String id : requestIds) {
+        for (String id : requestIdsContainer.requestIds) {
             CommandRequest request = requests.get(Integer.parseInt(id));
             if (request != null) desired.add(request);
         }
@@ -424,4 +426,8 @@ public class CommanderController {
         return viewables;
     }
     
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class RequestIdsContainer {
+        public List<String> requestIds;
+    }
 }

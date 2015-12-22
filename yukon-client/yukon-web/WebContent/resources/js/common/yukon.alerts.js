@@ -93,6 +93,10 @@ yukon.alerts = (function () {
             var alertIds = [],
                 remainingAlerts;
             
+            var data = {
+                alertIds : alertIds
+            };
+
             if (alertId) {
                 alertIds.push(alertId);
                 $('[data-alert-id="' + alertId + '"]').remove();
@@ -110,7 +114,7 @@ yukon.alerts = (function () {
                 url: _clearAlertUrl,
                 contentType: 'application/json', 
                 type: 'POST',
-                data: JSON.stringify(alertIds)
+                data: JSON.stringify(data)
             });
         }
     };

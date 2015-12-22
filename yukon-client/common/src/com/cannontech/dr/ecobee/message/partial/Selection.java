@@ -9,6 +9,7 @@ import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.TO_BASIC_CSV;
 import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.TO_SELECTION_TYPE;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,6 +22,7 @@ import com.google.common.collect.ImmutableSet;
  * 
  * https://www.ecobee.com/home/developer/api/documentation/v1/objects/Selection.shtml
  */
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Selection {
     private final SelectionType selectionType;
     private final Collection<String> serialNumbers;

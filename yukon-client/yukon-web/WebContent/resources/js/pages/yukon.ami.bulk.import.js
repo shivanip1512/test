@@ -62,15 +62,22 @@ function addRowsToTable(table, items, itemFieldNames) {
 }
 
 function setupRefreshStuff(url, refreshPeriod) {
-       
+
     var onRefreshFailure = function (transport, json) {
         alert("Unable to refresh results:\n" + transport.responseText);
     },
     updateResults = function () {
+    	
+        var csrfToken = $('#ajax-csrf-token');
+        var csrfVal = csrfToken.val();
+    	var data={"com.cannontech.yukon.request.csrf.token":csrfVal};
         $.ajax({
             url: url,
             type: 'POST',
-            data: {}
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            dataType: 'json'
+        	
         }).done(function (data, textStatus, jqXHR) {
             onRefreshComplete(jqXHR);
         }).fail(function (jqXHR, textStatus, errorThrown) {

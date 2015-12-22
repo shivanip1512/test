@@ -55,6 +55,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -94,7 +95,7 @@ public class OptOutAdminController {
             EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
             model.addAttribute("energyCompanyId", energyCompany.getId());
     
-            Map<String, Object> optOutsJson = systemOptOuts(new ArrayList<Integer>(0), userContext);
+            Map<String, Object> optOutsJson = systemOptOuts(new AssignedProgramIdsContainer(), userContext);
             model.addAttribute("totalNumberOfAccounts", optOutsJson.get("totalNumberOfAccounts"));
             model.addAttribute("currentOptOuts", optOutsJson.get("currentOptOuts"));
             model.addAttribute("scheduledOptOuts", optOutsJson.get("scheduledOptOuts"));
@@ -153,14 +154,19 @@ public class OptOutAdminController {
     }
 
     @RequestMapping(value = "/operator/optOut/systemOptOuts", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object>  systemOptOuts(@RequestBody List<Integer> assignedProgramIds, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> systemOptOuts(
+            @RequestBody AssignedProgramIdsContainer assignedProgramIdsContainer, YukonUserContext userContext) {
         YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
         Map<String, Object> json = new HashMap<>();
 
-        json.put("totalNumberOfAccounts", customerAccountDao.getTotalNumberOfAccounts(yukonEnergyCompany, assignedProgramIds));
-        json.put("currentOptOuts", optOutEventDao.getTotalNumberOfActiveOptOuts(yukonEnergyCompany, assignedProgramIds));
-        json.put("scheduledOptOuts", optOutEventDao.getTotalNumberOfScheduledOptOuts(yukonEnergyCompany, assignedProgramIds));
-        json.put("alternateEnrollments", programToAlternameProgramDao.getTotalNumberOfDevicesInSeasonalOptOuts(yukonEnergyCompany, assignedProgramIds));
+        json.put("totalNumberOfAccounts", customerAccountDao.getTotalNumberOfAccounts(yukonEnergyCompany,
+            assignedProgramIdsContainer.assignedProgramIds));
+        json.put("currentOptOuts", optOutEventDao.getTotalNumberOfActiveOptOuts(yukonEnergyCompany,
+            assignedProgramIdsContainer.assignedProgramIds));
+        json.put("scheduledOptOuts", optOutEventDao.getTotalNumberOfScheduledOptOuts(yukonEnergyCompany,
+            assignedProgramIdsContainer.assignedProgramIds));
+        json.put("alternateEnrollments", programToAlternameProgramDao.getTotalNumberOfDevicesInSeasonalOptOuts(
+            yukonEnergyCompany, assignedProgramIdsContainer.assignedProgramIds));
 
         return json;
     }
@@ -396,5 +402,10 @@ public class OptOutAdminController {
         public void setSerialNumber(String serialNumber) {
             this.serialNumber = serialNumber;
         }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class AssignedProgramIdsContainer {
+        public List<Integer> assignedProgramIds;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.alert.model.IdentifiableAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Controller
 @RequestMapping("/alert/*")
@@ -34,8 +35,13 @@ public class AlertController {
     
     @RequestMapping(value="clear", method=RequestMethod.POST)
     @ResponseBody
-    public void clear(LiteYukonUser user, @RequestBody int[] alertIds) {
-        alertService.remove(alertIds, user);
+    public void clear(LiteYukonUser user, @RequestBody AlertIdsContainer alertIdsContainer) {
+        alertService.remove(alertIdsContainer.alertIds, user);
     }
-    
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class AlertIdsContainer {
+        public int[] alertIds;
+    }
+
 }
