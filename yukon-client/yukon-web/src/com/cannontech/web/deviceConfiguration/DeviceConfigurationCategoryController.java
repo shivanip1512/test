@@ -477,7 +477,7 @@ public class DeviceConfigurationCategoryController {
         }
 
         boolean enableDisconnectDisplayDisabled =
-            isEnabled(type, CategoryType.METER_PARAMETERS, configId, disconnectDisplayDisabledTypes);
+            isEnabled(type, CategoryType.LCD_CONFIGURATION, configId, disconnectDisplayDisabledTypes);
         model.addAttribute("enableDisconnectDisplayDisabled", enableDisconnectDisplayDisabled);
         
         CategoryTemplate categoryTemplate = deviceConfigHelper.createTemplate(
