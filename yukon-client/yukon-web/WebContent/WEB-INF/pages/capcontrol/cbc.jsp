@@ -70,10 +70,19 @@
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".commChannel" rowClass="${twoWayClass}">
-                            <tags:selectWithItems path="deviceDirectCommSettings.portID"
+                            <tags:selectWithItems
+                                id="comm-port"
+                                path="deviceDirectCommSettings.portID"
                                 items="${availablePorts}"
                                 itemValue="liteID" itemLabel="paoName"
                                 inputClass="with-option-hiding" />
+                        </tags:nameValue2>
+
+                        <tags:nameValue2 nameKey="yukon.common.ipaddress" rowClass="${twoWayClass}" data-tcp-port="true">
+                            <tags:input path="ipAddress"/>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".port" rowClass="${twoWayClass}" data-tcp-port="true">
+                            <tags:input path="port"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".postCommWait" rowClass="${twoWayClass}">
@@ -377,5 +386,6 @@
     <form:form id="delete-cbc" method="DELETE" action="${url}"></form:form>
 
     <cti:toJson id="two-way-types" object="${twoWayTypes}"/>
+    <cti:toJson id="tcp-comm-ports" object="${tcpCommPorts}"/>
     <cti:includeScript link="/resources/js/pages/yukon.da.cbc.js" />
 </cti:standardPage>

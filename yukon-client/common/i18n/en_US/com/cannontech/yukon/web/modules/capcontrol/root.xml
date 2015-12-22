@@ -877,6 +877,7 @@
     <entry key="yukon.web.modules.capcontrol.cbc.altInterval">Alt. Interval</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.scanGroup">Scan Group</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.commChannel">Comm Channel</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.port">Port</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.dnpConfig">DNP Config</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.internalRetries">Internal Retries</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.useLocal">Use Local Time</entry>

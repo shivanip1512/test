@@ -10,20 +10,42 @@ yukon.da.cbc = (function () {
 
     'use strict';
 
+    /**
+     * @type Array.string
+     *
+     * Filled out in yukon.da.cbc.init().
+     * Array of strings of paoTypes that represent 2 way cbcs
+     */
+    var twoWayTypes = [];
+
+    var updatePaoTypeFields = function () {
+        var paoType = $('#pao-type').val();
+        var isTwoWay = twoWayTypes.indexOf(paoType) !== -1;
+
+        $('.js-two-way').toggleClass('dn', !isTwoWay);
+        $('.js-one-way').toggleClass('dn', isTwoWay);
+    };
+
+    /**
+     * @type Array.number
+     *
+     * Filled out in yukon.da.cbc.init().
+     * Array of ids of comm ports that use tcp fields
+     */
+    var tcpCommPorts = [];
+    var updateCommPortFields = function () {
+        var commPort = +$('#comm-port').val();
+        var isTcp = tcpCommPorts.indexOf(commPort) !== -1;
+        $('[data-tcp-port]').toggleClass('dn', !isTcp);
+    };
+
     var mod = {
 
         /** Initialize this module. */
         init: function () {
 
-            var twoWayTypes = yukon.fromJson('#two-way-types');
-
-            $('#pao-type').on('change', function () {
-                var paoType = $(this).val();
-                var twoWay = twoWayTypes.indexOf(paoType) !== -1;
-
-                $('.js-two-way').toggleClass('dn', !twoWay);
-                $('.js-one-way').toggleClass('dn', twoWay);
-            });
+            twoWayTypes = yukon.fromJson('#two-way-types');
+            tcpCommPorts = yukon.fromJson('#tcp-comm-ports');
 
             $(document).on('yukon:da:cbc:delete', function () {
                 $('#delete-cbc').submit();
@@ -31,6 +53,12 @@ yukon.da.cbc = (function () {
             $(document).on('yukon:da:cbc:copy', function () {
                 $('#copy-cbc').find('form').submit();
             });
+
+            $('#pao-type').on('change', updatePaoTypeFields);
+            updatePaoTypeFields();
+
+            $('#comm-port').on('change', updateCommPortFields);
+            updateCommPortFields();
 
             $('#dnp-config').on('change', function () {
                 var configId = $(this).val();

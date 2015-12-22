@@ -96,6 +96,13 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
 
         DeviceAddress deviceAddress = cbc.getDeviceAddress();
 
+        YukonValidationUtils.checkRange(errors, "deviceAddress.postCommWait", deviceAddress.getPostCommWait(),
+            0, 99999, true);
+        YukonValidationUtils.checkRange(errors, "deviceAddress.masterAddress", deviceAddress.getMasterAddress(),
+            0, 65535, true);
+        YukonValidationUtils.checkRange(errors, "deviceAddress.slaveAddress", deviceAddress.getSlaveAddress(),
+            0, 65535, true);
+
         List<Integer> devicesWithSameAddress = deviceDao.getDevicesByDeviceAddress(
             deviceAddress.getMasterAddress(), deviceAddress.getSlaveAddress());
 

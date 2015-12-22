@@ -3,6 +3,10 @@ package com.cannontech.web.capcontrol;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -159,6 +163,25 @@ public class CbcController {
             model.addAttribute("dnpConfig", dnpConfig);
         }
         model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
+
+        Set<Integer> tcpPorts = dbCache.getAllPorts().stream()
+            .filter(new Predicate<LiteYukonPAObject> () {
+
+                @Override
+                public boolean test(LiteYukonPAObject port) {
+                    return port.getPaoType() == PaoType.TCPPORT;
+                }
+
+            }).map(new Function<LiteYukonPAObject, Integer>(){
+
+                @Override
+                public Integer apply(LiteYukonPAObject port) {
+                    return port.getLiteID();
+                }
+
+            }).collect(Collectors.toSet());
+
+        model.addAttribute("tcpCommPorts", tcpPorts);
 
         List<LightDeviceConfiguration> configs = deviceConfigDao.getAllConfigurationsByType(cbc.getPaoType());
         model.addAttribute("configs", configs);
