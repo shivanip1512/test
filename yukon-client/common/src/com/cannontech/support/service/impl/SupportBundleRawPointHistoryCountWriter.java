@@ -8,8 +8,8 @@ import com.cannontech.database.vendor.DatabaseVendorResolver;
 
 public class SupportBundleRawPointHistoryCountWriter extends SupportBundleSqlWriter {
 
-    @Autowired
-    private DatabaseVendorResolver dbVendorResolver;
+    
+    @Autowired private DatabaseVendorResolver dbVendorResolver;
 
     @Override
     protected SqlFragmentSource getSqlFragmentSource() {
