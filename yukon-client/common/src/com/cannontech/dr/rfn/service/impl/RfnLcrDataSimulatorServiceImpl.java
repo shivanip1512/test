@@ -370,7 +370,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         boolean hasFailed = false;
         try {
             readArchiveRequest = createReadArchiveRequest(simulatorSettings, deviceParameters);
-            //sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
+            sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
             
         } catch (RfnLcrSimulatorException | IOException e) {
             hasFailed = true ;
