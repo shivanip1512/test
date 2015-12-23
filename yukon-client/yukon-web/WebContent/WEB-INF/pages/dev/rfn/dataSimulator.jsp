@@ -209,10 +209,7 @@
                         $('#stop-send-message').hide();
                         $('#send-message').show();
                         $('#messages-sent-per-minute').text(data.perMinuteMsgCount);
-                    } else {
-                        //Never Ran
-                        $('#message-sent-counter').hide();
-                    }
+                    } 
                     if (data.status6200 != 'neverRan') {
                         var numRemaining6200 = data.numTotal6200 - data.numComplete6200;
                         if (parseInt($('#existing-device-status-num-remaining').text()) < numRemaining6200) {

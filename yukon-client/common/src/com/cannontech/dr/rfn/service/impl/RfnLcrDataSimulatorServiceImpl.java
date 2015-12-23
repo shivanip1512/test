@@ -194,7 +194,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         private SimulatorSettings simulatorSettings = null;
         private volatile boolean isRunning = false;
         // # of message groups. Currently there are 1440, one for each minute of the day.
-        private final static int messageGroupCount = 24 * 60;
+        private static final int messageGroupCount = 24 * 60;
         // The messaging group that will simulate RfnLcrReadArchiveRequest messages when the thread next
         // wakes.
         private int currentMessagingGroup ;
@@ -222,13 +222,17 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
          * Generate and send the RFN LCR archive request messages for the current messaging group.
          */
         private void simulateRfnLcrNetwork() {
-            int lcr6200serialTo = simulatorSettings.getLcr6200serialTo();
-            int lcr6600serialTo = simulatorSettings.getLcr6600serialTo();
+            
             AtomicInteger id6200 = new AtomicInteger();
             AtomicInteger id6600 = new AtomicInteger();
             boolean useCurrentMsgGrp6200 = true;
             boolean useCurrentMsgGrp6600 = true;
             boolean hasFailed = false;
+            int lcr6200serialTo = simulatorSettings.getLcr6200serialTo();
+            int lcr6600serialTo = simulatorSettings.getLcr6600serialTo();
+            AtomicLong numComplete6200 = rfnLcrDataSimulatorStatus.getNumComplete6200();
+            AtomicLong numComplete6600 = rfnLcrDataSimulatorStatus.getNumComplete6600();
+            RfnLcrReadSimulatorDeviceParameters deviceParameters = null;
             try {
                 // Loop through LCR 6200 serial numbers, sending messages for those in the current messaging
                 // group.
@@ -240,10 +244,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                 }
 
                 while (id6200.get() < lcr6200serialTo) {
-                    RfnLcrReadSimulatorDeviceParameters deviceParameters =
+                    deviceParameters =
                         new RfnLcrReadSimulatorDeviceParameters(
                             new RfnIdentifier(String.valueOf(id6200), "CPS", "1077"), 0, 0, 3, 60, 24 * 60);
-                    AtomicLong numComplete6200 = rfnLcrDataSimulatorStatus.getNumComplete6200();
+                    
                     hasFailed = simulateLcrReadRequest(simulatorSettings, deviceParameters);
                     if (!hasFailed) {
                         numComplete6200.incrementAndGet();
@@ -264,10 +268,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                     id6600.set(simulatorSettings.getLcr6600serialFrom() + currentMessagingGroup);
                 }
                 while (id6600.get() < lcr6600serialTo) {
-                    RfnLcrReadSimulatorDeviceParameters deviceParameters =
+                    deviceParameters =
                         new RfnLcrReadSimulatorDeviceParameters(
                             new RfnIdentifier(String.valueOf(id6600), "CPS", "1082"), 0, 0, 3, 60, 24 * 60);
-                    AtomicLong numComplete6600 = rfnLcrDataSimulatorStatus.getNumComplete6600();
+                    
                     hasFailed = simulateLcrReadRequest(simulatorSettings, deviceParameters);
                     if (!hasFailed) {
                         numComplete6600.incrementAndGet();
@@ -333,12 +337,13 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
 
             AtomicLong lcr6200NumComplete = rfnLcrExistingDataSimulatorStatus.getNumComplete6200();
             AtomicLong lcr6600NumComplete = rfnLcrExistingDataSimulatorStatus.getNumComplete6600();
+            SimulatorSettings settings = new SimulatorSettings(0, 0, 0, 0, 123456789, 1390000000, 0);
+            RfnLcrReadSimulatorDeviceParameters deviceParameters = null;
             boolean hasFailed = false;
+            
             for (RfnDevice device : rfnLcrDeviceList) {
                 RfnIdentifier rfnIdentifier = device.getRfnIdentifier();
-                RfnLcrReadSimulatorDeviceParameters deviceParameters =
-                    new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60);
-                SimulatorSettings settings = new SimulatorSettings(0, 0, 0, 0, 123456789, 1390000000, 0);
+                deviceParameters = new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60);
                 hasFailed = simulateLcrReadRequest(settings, deviceParameters);
                 if (!hasFailed) {
                     if (device.getPaoIdentifier().getPaoType().equals(PaoType.LCR6200_RFN)) {
@@ -365,7 +370,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         boolean hasFailed = false;
         try {
             readArchiveRequest = createReadArchiveRequest(simulatorSettings, deviceParameters);
-            sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
+            //sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
             
         } catch (RfnLcrSimulatorException | IOException e) {
             hasFailed = true ;
@@ -382,12 +387,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                 msgCount++;
                 perMinuteMsgCount.clear();
                 // the record will have the number of messages sent for the current minute only
-                if (rfnLcrDataSimulatorStatus.getIsRunning6200().get()
-                    || rfnLcrExistingDataSimulatorStatus.getIsRunning6200().get()) {
-                    perMinuteMsgCount.put(minuteOfHour, msgCount);
-                } else {
-                    perMinuteMsgCount.clear();
-                }
+                perMinuteMsgCount.put(minuteOfHour, msgCount);
             }
         }
         return hasFailed;
