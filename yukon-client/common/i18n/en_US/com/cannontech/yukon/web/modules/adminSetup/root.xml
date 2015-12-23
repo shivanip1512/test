@@ -211,7 +211,7 @@
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.active.column.jobName">Job Name</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.active.column.startTime">Start Time</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.active.column.running">Running</entry>
-    <entry key="yukon.web.modules.adminSetup.jobsscheduler.active.abortButton">Abort</entry>
+    <entry key="yukon.web.modules.adminSetup.jobsscheduler.active.cancelButton">Cancel</entry>
                                   
     <!-- jobs/status.jsp --> 
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.status.pageName">Job Status</entry>
@@ -220,7 +220,7 @@
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.status.column.start">Start</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.status.column.stop">Stop</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.status.column.state">State</entry>
-    <entry key="yukon.web.modules.adminSetup.jobsscheduler.status.column.disabled">Disabled</entry>
+    <entry key="yukon.web.modules.adminSetup.jobsscheduler.status.column.enabled">Enabled</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.status.column.errorMessage">Error Message</entry>
                          
     <!-- jobs/all.jsp -->
@@ -233,7 +233,7 @@
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.jobName">Job Name</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.beanName">Bean Name</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.username">Username</entry>
-    <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.cronString">Cron String</entry>
+    <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.cronString">Run Schedule</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.scheduledStart">Scheduled Start</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.all.column.enabled">Enable/Disable</entry>
     

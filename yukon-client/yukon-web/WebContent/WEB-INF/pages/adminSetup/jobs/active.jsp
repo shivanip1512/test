@@ -20,15 +20,24 @@
       <th><i:inline key=".column.startTime"/></th>
       <th><i:inline key=".column.running"/></th>
     </tr>
-    <c:forEach items="${activeJobs}" var="job">
+    <c:forEach items="${activeJobs}" var="jobStatus">
       <tr>
-        <td title="${job.id}">${fn:escapeXml(job.jobDefinition.title)}</td>
+        <td title="${jobStatus.job.id}">
+<%--             <cti:msg2 var="jobNameMsg" key=".${job.beanName}.title"/>
+ --%>            <cti:url var="editScheduleDetailsUrl" value="/admin/maintenance/edit" >
+                <cti:param name="jobId" value="${jobStatus.job.id}"/>
+            </cti:url>
+<%--             <a href="${editScheduleDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${jobNameMsg}"/>"><i class="icon icon-script"></i></a>
+ --%>            <a href="${editScheduleDetailsUrl}">${fn:escapeXml(jobStatus.job.jobDefinition.title)}</a>
+
+        </td>
+        <td><cti:formatDate value="${jobStatus.startTime}" type="TIME" /></td>
         <td>
             <form action="abortJob" method="post">
                 <cti:csrfToken/>
-                <input type="hidden" name="jobId" value="${job.id}"> 
-                <cti:msg2 var="abortButtonLabel" key=".abortButton"/>
-                <cti:button type="submit" label="${abortButtonLabel}"/>
+                <input type="hidden" name="jobId" value="${jobStatus.job.id}"> 
+                <cti:msg2 var="cancelButtonLabel" key=".cancelButton"/>
+                <cti:button type="submit" label="${cancelButtonLabel}"/>
             </form>
         </td>
       </tr>

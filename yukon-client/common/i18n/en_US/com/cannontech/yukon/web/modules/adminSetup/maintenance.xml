@@ -17,6 +17,7 @@
     <!-- weather data update -->
     <entry key="yukon.web.modules.adminSetup.maintenance.repeatingEstimatedLoadTaskJobDefinition.title">Estimated Load Data Update</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.repeatingWeatherDataTaskJobDefinition.title">Weather Data Update</entry>
+    <entry key="yukon.web.modules.adminSetup.title">Job Maintenance</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.edit.hoverText">Edit Schedule Details ({0})</entry>
    	<entry key="yukon.web.modules.adminSetup.maintenance.enable.circle.hoverText">Enable ({0})</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.disable.circle.hoverText">Disable ({0})</entry>
