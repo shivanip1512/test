@@ -272,14 +272,14 @@
                         <tags:nameValue2 nameKey=".close.time1"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- Specify how long each relay stays energized --%>
-                            <tags:input path="pointBase.pointStatusControl.closeTime1" size="6"/>
+                            <tags:input path="pointBase.pointStatusControl.closeTime1" size="6" maxlength="8" id="pointStatusControl-closeTime1"/>
                             <i:inline key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.singular"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".close.time2"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- Specify how long each relay stays energized --%>
-                            <tags:input path="pointBase.pointStatusControl.closeTime2" size="6"/>
+                            <tags:input path="pointBase.pointStatusControl.closeTime2" size="6" maxlength="8" id="pointStatusControl-closeTime2"/>
                             <i:inline key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.singular"/>
                         </tags:nameValue2>
 
