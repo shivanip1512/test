@@ -318,6 +318,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    public boolean validateOldPassword(String username, String password) {
+        try {
+            login(username, password);
+            return true;
+        } catch (BadAuthenticationException e) {
+            return false;
+        } catch (PasswordExpiredException e) {
+            return true;
+        }
+    }
+
     enum AuthenticationTimeoutStyleEnum {
         STATIC,
         INCREMENTAL,

@@ -134,4 +134,10 @@ public interface AuthenticationService {
      * (Because {@link UserAuthenticationInfo} is read-only, we return a copy.)
      */
     void encryptPlainTextPassword(LiteYukonUser user);
+
+    /**
+     * Validates the old Password before changing the password.
+     * Returns true if the old Password entered is correct else returns false.
+     */
+    boolean validateOldPassword(String username, String password);
 }

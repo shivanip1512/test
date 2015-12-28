@@ -10,6 +10,7 @@ public class Login {
     private String username;
     private String password1 = "";
     private String password2 = "";
+    private String oldPassword;
     
     public String getUserGroupName() {
         return userGroupName;
@@ -77,6 +78,14 @@ public class Login {
         return userId;
     }
     
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
+
     @Override
     public String toString() {
         return String.format("Login [userId=%s, userGroupName=%s, loginEnabled=%s, username=%s, " 

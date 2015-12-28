@@ -25,6 +25,7 @@
             <form:form commandName="user" action="${url}" method="post">
                 <cti:csrfToken/>
                 <form:hidden path="userId"/>
+                <tags:hidden path="password.oldPassword"/>
                 <tags:hidden path="password.password"/>
                 <tags:hidden path="password.confirmPassword"/>
                 

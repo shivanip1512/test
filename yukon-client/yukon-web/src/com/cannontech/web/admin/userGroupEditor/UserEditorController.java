@@ -71,7 +71,7 @@ public class UserEditorController {
     @Autowired private PasswordResetService passwordResetService;
     @Autowired private CsrfTokenService csrfTokenService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    
+    @Autowired private AuthenticationService authenticationService;
     private final static String key = "yukon.web.modules.adminSetup.auth.user.";
     
     /* VIEW PAGE */
@@ -186,6 +186,11 @@ public class UserEditorController {
             FlashScope flash, @PathVariable int userId, @ModelAttribute Password password, BindingResult result) {
         
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
+        boolean isValidPassword = authService.validateOldPassword(yukonUser.getUsername(), password.getOldPassword());
+        if (!isValidPassword) {
+            flash.setMessage(new YukonMessageSourceResolvable(key + "incorrectPassword"), FlashScopeMessageType.ERROR);
+            return null;
+        }
         PasswordValidator validator = new PasswordValidator(yukonUser, "password", "confirmPassword");
         validator.validate(password, result);
         

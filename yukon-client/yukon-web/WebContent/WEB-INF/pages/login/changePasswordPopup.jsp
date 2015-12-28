@@ -12,6 +12,10 @@
         <form:form id="change-password-form" action="${url}" method="post" commandName="login">
             <form:hidden path="userId" cssClass="js-user-id"/>
             <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".oldPassword">
+                    <tags:input path="oldPassword" password="true" inputClass="js-old-password" maxlength="64" 
+                            autocomplete="off"/>
+                </tags:nameValue2>
                 <tags:nameValue2 nameKey=".newPassword">
                     <tags:input path="password1" password="true" inputClass="js-new-password" maxlength="64" 
                             autocomplete="off"/>

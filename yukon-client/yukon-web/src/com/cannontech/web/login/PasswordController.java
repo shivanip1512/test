@@ -187,6 +187,13 @@ public class PasswordController {
     public String authenticatedPasswordChange(HttpServletResponse resp,
             @ModelAttribute Login login, BindingResult result,
             FlashScope flashScope, ModelMap model, LiteYukonUser user) {
+        boolean isValidPassword = authService.validateOldPassword(user.getUsername(), login.getOldPassword());
+        if (!isValidPassword) {
+            flashScope.setMessage(new YukonMessageSourceResolvable(
+                "yukon.web.modules.adminSetup.auth.user.incorrectPassword"), FlashScopeMessageType.ERROR);
+            return null;
+        }
+
         if (!authService.isPasswordExpired(user)) {
             globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         }

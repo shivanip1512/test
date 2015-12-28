@@ -36,6 +36,7 @@
     <entry key="yukon.web.modules.adminSetup.auth.user.password.required">Password is required</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.passwordUpdateSuccessful">Password Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.confirmPassword">Confirm Password</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.oldPassword">Old Password</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.changePasswordPopup">Change Password for User: {0}</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.changePassword.label">Change Password</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.unlockUser.label">Unlock User</entry>
@@ -57,6 +58,7 @@
     <entry key="yukon.web.modules.adminSetup.auth.user.retryEndTime">Throttle Expires</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.waitDuration">Throttle Duration</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.remove.login.wait.label">Remove Throttle</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.incorrectPassword">Old Password did not match.</entry>
     
     <!-- User Permissions  -->
     <entry key="yukon.web.modules.adminSetup.auth.user.permissions.pageName">Permissions</entry>
