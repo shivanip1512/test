@@ -5,10 +5,12 @@
 <%@ attribute name="passwordPolicy" required="true" type="com.cannontech.core.authentication.model.PasswordPolicy" %>
 <%@ attribute name="userId" required="true" description="The user id for this password change attempt." %>
 
+<%@ attribute name="oldPassword" description="CSS selector for the old password input. Default: '.js-old-password'." %>
 <%@ attribute name="confirmPassword" description="CSS selector for the confirm password input. Default: '.js-confirm-password'." %>
 <%@ attribute name="newPassword" description="CSS selector for the new password input. Default: '.js-new-password'." %>
 <%@ attribute name="saveButton" description="CSS selector for the save button. Default: 'button.unlock'." %>
 
+<cti:default var="oldPassword" value=".js-old-password"/>
 <cti:default var="newPassword" value=".js-new-password"/>
 <cti:default var="confirmPassword" value=".js-confirm-password"/>
 <cti:default var="saveButton" value=".js-save-pw-btn"/>
@@ -26,6 +28,7 @@
 
 <div class="password-manager" 
     data-min-length="${passwordPolicy.minPasswordLength}"
+    data-old-password="${oldPassword}"
     data-new-password="${newPassword}"
     data-confirm-password="${confirmPassword}"
     data-save-button="${saveButton}"
