@@ -79,8 +79,7 @@ yukon.tools.point = (function () {
         /* TODO these enum names should come from the controller */
         var inputsNeeded = controlType !== 'None';
         if(!inputsNeeded){
-        	$('#pointStatusControl-closeTime1').val(0);
-        	$('#pointStatusControl-closeTime2').val(0);
+        	$('.js-close-time').val(0);
         }
         $('.js-status-control-input').toggle(inputsNeeded);
     };
