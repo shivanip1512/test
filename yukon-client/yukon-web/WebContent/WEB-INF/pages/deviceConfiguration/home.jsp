@@ -19,56 +19,9 @@
                     <div class="empty-list"><i:inline key=".configDetails.table.noConfigs"/></div>
                 </c:when>
                 <c:otherwise>
-                    <table id="configList" class="compact-results-table has-actions dashed">
-                        <thead>
-                            <tr>
-                                <th><i:inline key="yukon.common.name"/></th>
-                                <th><i:inline key="yukon.common.Devices"/></th>
-                            </tr>
-                        </thead>
-                        <tfoot></tfoot>
-                        <tbody>
-                            <c:forEach var="config" items="${configurations}">
-                                <c:set var="id" value="${config.configurationId}"/>
-                                <tr>
-                                    <td>
-                                        <cti:url var="url" value="config/view">
-                                            <cti:param name="configId" value="${id}"/>
-                                        </cti:url>
-                                        <a href="${url}">${fn:escapeXml(config.name)}</a>
-                                    </td>
-                                    <td>
-                                        <span class="fl">${fn:escapeXml(config.numDevices)}</span>
-                                        <c:if test="${config.numDevices > 0}">
-                                            <c:url var="url" value="/bulk/selectedDevicesTableForGroupName">
-                                                <c:set var="fullName" value="/System/Device Configs/${config.name}"/>
-                                                <c:param name="groupName" value="${fullName}"/>
-                                            </c:url>
-                                            <cti:icon icon="icon-magnifier" classes="cp show-on-hover"
-                                                data-popup=".js-device-count-${id}"/>
-                                            <div data-title="${fn:escapeXml(config.name)}"
-                                                data-url="${url}"
-                                                data-width="450" data-height="300"
-                                                class="dn js-device-count-${id}"></div>
-                                        </c:if>
-                                        
-                                        <cm:dropdown triggerClasses="fr">
-                                            <cti:url var="groupUrl" value="/group/editor/home">
-                                                <cti:param name="groupName" value="/System/Device Configs/${config.name}"/>
-                                            </cti:url>
-                                            <cm:dropdownOption icon="icon-folder-magnify" href="${groupUrl}" 
-                                                key=".deviceGroup"/>
-                                            <cti:url var="url" value="/bulk/collectionActions">
-                                                <cti:param name="collectionType" value="group"/>
-                                                <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
-                                            </cti:url>
-                                            <cm:dropdownOption icon="icon-cog-go" href="${url}" key=".collectionAction"/>
-                                        </cm:dropdown>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
+                    <div data-url="configTable">
+                        <%@ include file="configTable.jsp" %>
+                    </div>
                 </c:otherwise>
             </c:choose>
             
@@ -92,42 +45,9 @@
                     <div><i:inline key=".categoryDetails.table.noCategories"/></div>
                 </c:when>
                 <c:otherwise>
-                    <table id="categoryList" class="compact-results-table dashed">
-                        <thead>
-                            <tr>
-                                <th><i:inline key="yukon.common.name"/></th>
-                                <th><i:inline key="yukon.common.type"/></th>
-                                <th><i:inline key="yukon.common.assignments"/></th>
-                            </tr>
-                        </thead>
-                        <tfoot></tfoot>
-                        <tbody>
-                            <c:forEach var="category" items="${categories}">
-                                <tr>
-                                    <td>
-                                        <cti:url var="url" value="category/view">
-                                            <cti:param name="categoryId" value="${category.categoryId}"/>
-                                        </cti:url>
-                                        <a href="${url}">${fn:escapeXml(category.categoryName)}</a>
-                                    </td>
-                                    <td>
-                                        <cti:msg2 var="catType" key=".category.${category.categoryType}.title"/>
-                                        ${fn:escapeXml(catType)}
-                                    </td>
-                                    <td>
-                                        <div id="category-assignments-${category.categoryId}" class="dn">
-                                            <c:forEach var="configName" items="${category.configNames}">
-                                                <div class="detail">${fn:escapeXml(configName)}</div>
-                                            </c:forEach>
-                                        </div>
-                                        <div data-tooltip="#category-assignments-${category.categoryId}">
-                                            ${fn:length(category.configNames)}
-                                        </div>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
+                    <div data-url="categoryTable">
+                        <%@ include file="categoryTable.jsp" %>
+                    </div>
                 </c:otherwise>
             </c:choose>
             
