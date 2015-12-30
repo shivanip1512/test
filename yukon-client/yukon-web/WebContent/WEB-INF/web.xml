@@ -813,6 +813,19 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
+    <!-- WebServer methods limitation to those that are needed. All listed methods are restricted  -->
+    <security-constraint>
+      <web-resource-collection>
+        <web-resource-name>restricted methods</web-resource-name>
+        <url-pattern>/*</url-pattern>
+        <http-method>PUT</http-method>
+        <http-method>DELETE</http-method>
+        <http-method>OPTIONS</http-method>
+        <http-method>TRACE</http-method>
+      </web-resource-collection>
+      <auth-constraint />
+    </security-constraint>
+
     <!-- for internal errors thrown by the WebServer -->
     <error-page>
         <exception-type>java.lang.Throwable</exception-type>
