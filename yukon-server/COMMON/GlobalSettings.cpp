@@ -48,7 +48,7 @@ IM_EX_CTIBASE GlobalSettings& GlobalSettings::getSingleton()
 {
     CtiLockGuard<CtiMutex> guard( g_mux );
 
-    if( gGlobalSettings )
+    if( ! gGlobalSettings )
     {
         gGlobalSettings.reset( new GlobalSettings() );
     }
