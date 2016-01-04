@@ -429,6 +429,13 @@ yukon.tools.commander = (function () {
                     _logRequest(requests[i].request);
                     _logError(requests[i].request.id, reason);
                 }
+                var
+                unAuthorizedCommand = xhr.responseJSON.unAuthorizedCommand,
+                unAuthorizedErrorMsg = xhr.responseJSON.unAuthorizedErrorMsg;
+                for (var i in unAuthorizedCommand) {
+                    _logRequestUnAuthorized(i, unAuthorizedCommand[i]);
+                    _logError(i,unAuthorizedErrorMsg);
+                }
             }).always(function () {
                 yukon.ui.unbusy(btn);
                 field.prop('disabled', false);
