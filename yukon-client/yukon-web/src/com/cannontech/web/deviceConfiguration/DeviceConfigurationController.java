@@ -53,7 +53,7 @@ public class DeviceConfigurationController {
     public void initialize() {
         Builder<ConfigurationSortBy, Comparator<DisplayableConfigurationData>> builder = ImmutableMap.builder();
         builder.put(ConfigurationSortBy.name, getConfigurationNameComparator());
-        builder.put(ConfigurationSortBy.devices, getDevicesComparator());
+        builder.put(ConfigurationSortBy.Devices, getDevicesComparator());
         configurationSorters = builder.build();
         
         Builder<CategorySortBy, Comparator<DisplayableConfigurationCategory>> catBuilder = ImmutableMap.builder();
@@ -111,7 +111,7 @@ public class DeviceConfigurationController {
         return "categoryTable.jsp";
     }
     
-    private void getConfigurations(ModelMap model, @DefaultSort(dir=Direction.asc, sort="name") SortingParameters sorting, YukonUserContext userContext) {
+    private void getConfigurations(ModelMap model, SortingParameters sorting, YukonUserContext userContext) {
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
 
         List<DisplayableConfigurationData> displayables = new ArrayList<>();
@@ -143,7 +143,7 @@ public class DeviceConfigurationController {
         model.addAttribute("configurations", itemList);
     }
     
-    private void getCategories(ModelMap model, @DefaultSort(dir=Direction.asc, sort="type") SortingParameters sorting, YukonUserContext userContext) {
+    private void getCategories(ModelMap model, SortingParameters sorting, YukonUserContext userContext) {
         List<DisplayableConfigurationCategory> categories = deviceConfigurationDao.getAllDeviceConfigurationCategories();
         
         List<DisplayableCategoryType> categoryTypes = new ArrayList<>();
@@ -182,7 +182,7 @@ public class DeviceConfigurationController {
     public enum ConfigurationSortBy implements DisplayableEnum {
         
         name,
-        devices;
+        Devices;
 
         @Override
         public String getFormatKey() {
