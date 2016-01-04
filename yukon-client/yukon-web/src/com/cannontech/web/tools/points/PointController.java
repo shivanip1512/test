@@ -96,7 +96,7 @@ public class PointController {
         
         PointBase base = pointModel.getPointBase();
         if (base instanceof SystemPoint){
-            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".viewError", id));
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".viewError", base.getPoint().getPointName()));
             return "point/point.jsp";
         } else {
             if (pointModel.getPointBase().getPoint().getPseudoFlag().equals(Point.PSEUDOFLAG_PSEUDO)) {
