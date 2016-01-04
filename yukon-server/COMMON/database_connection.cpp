@@ -25,7 +25,10 @@ DatabaseConnection::DatabaseConnection()
 
 DatabaseConnection::~DatabaseConnection()
 {
-    releaseDBConnection(connection);
+    if( connection )
+    {
+        releaseDBConnection(connection);
+    }
 }
 
 DatabaseConnection::operator SAConnection*()
