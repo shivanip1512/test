@@ -6,12 +6,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.SiteMapCategory;
@@ -34,6 +37,8 @@ import com.google.common.collect.Ordering;
 
 @Controller
 public class HomeController {
+    
+    private final Logger log = YukonLogManager.getLogger(HomeController.class);
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserPageDao userPageDao;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
@@ -101,11 +106,20 @@ public class HomeController {
     }
 
     @RequestMapping("/toggleFavorite")
-    public @ResponseBody Map<String, Boolean> toggleFavorite(String module, String name, String labelArgs,
-            String path, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Boolean> toggleFavorite(String module, String name, String labelArgs, String path,
+            YukonUserContext userContext) {
+        boolean isFavorite = false;
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
-        boolean isFavorite = userPageDao.toggleFavorite(new Key(userContext.getYukonUser().getUserID(), path),
-            SiteModule.getByName(module), name, arguments);
+        SiteModule moduleName = SiteModule.getByName(module);
+        if (null != name && null != path && null != moduleName) {
+
+            try {
+                isFavorite = userPageDao.toggleFavorite(new Key(userContext.getYukonUser().getUserID(), path), moduleName, name,
+                        arguments);
+            } catch (DataIntegrityViolationException e) {
+                log.error("Unable to save Favorite data .", e);
+            }
+        }
         return Collections.singletonMap("isFavorite", isFavorite);
     }
 
@@ -116,13 +130,19 @@ public class HomeController {
     }
 
     @RequestMapping("/addToHistory")
-    public @ResponseBody Map<String, Object> addToHistory(String module, String name, String labelArgs, String path, 
+    public @ResponseBody Map<String, Object> addToHistory(String module, String name, String labelArgs, String path,
             YukonUserContext userContext) {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
+        SiteModule moduleName = SiteModule.getByName(module);
+        if (null != name && null != path && null != moduleName) {
 
-        userPageDao.updateHistory(new Key(userContext.getYukonUser().getUserID(), path), SiteModule.getByName(module),
-            name, arguments);
-
+            try {
+                userPageDao.updateHistory(new Key(userContext.getYukonUser().getUserID(), path), moduleName, name,
+                    arguments);
+            } catch (DataIntegrityViolationException e) {
+                log.error("Unable to save History data .", e);
+            }
+        }
         return Collections.emptyMap();
     }
 
