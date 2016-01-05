@@ -16,7 +16,7 @@
                 <input type="hidden" name="userId" value="${userId}">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".oldPassword">
-                        <tags:password path="oldPassword" cssClass="js-old-password" autocomplete="off" />
+                        <tags:password path="oldPassword" autocomplete="off" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".password">
                         <tags:password path="password" cssClass="js-new-password" autocomplete="off" />
