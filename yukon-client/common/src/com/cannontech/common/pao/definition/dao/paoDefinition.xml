@@ -5369,6 +5369,20 @@
     </pao>
     <pao id="WCTP_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>WCTP TERMINAL</displayName>
+        <points>
+            <point type="PulseAccumulator" offset="2001">
+                <name>Paging Count</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Counts" />
+                <decimalplaces value="1" />
+            </point>
+            <point type="PulseAccumulator" offset="2002">
+                <name>Paging Character Count</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Counts" />
+                <decimalplaces value="1" />
+            </point>
+        </points>
     </pao>
 
     <!-- ELECTRONIC METERS -->
