@@ -5374,13 +5374,13 @@
                 <name>Paging Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="1" />
+                <decimalplaces value="0" />
             </point>
             <point type="PulseAccumulator" offset="2002">
                 <name>Paging Character Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="1" />
+                <decimalplaces value="0" />
             </point>
         </points>
     </pao>
