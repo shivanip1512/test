@@ -191,7 +191,6 @@ yukon.ui.dateTimePickers = function () {
                 defaultArgs = {};
                 $.extend(defaultArgs, datetimepickerArgs);
                 self.datepicker($.extend(defaultArgs, args));
-                _insertTimezone(self);
             }).removeClass('js-datePickerUI');
     
             // Date + Time

@@ -43,19 +43,8 @@ public class DateFormattingServiceImpl implements DateFormattingService {
             throws IllegalArgumentException {
         Validate.notNull(object, "Date object is null in DateFormattingServiceImpl.formatDate()");
         if (object instanceof Date) {
-
             Date date = (Date) object;
-            DateFormat df = getDateFormatter(type, userContext);
-
-            // will result in dates that would normally format to midnight of a
-            // date, to format instead to the previous date.
-            // MidnightMode.INCLUDES_MIDNIGHT is only set on date-only type
-            // DateFormatEnum values
-            if (type.getMidnightMode() == MidnightMode.INCLUDES_MIDNIGHT) {
-                date = DateUtils.addMilliseconds(date, -1);
-            }
-
-            return df.format(date);
+            return formatDate(date, type, userContext);
         } else if (object instanceof ReadablePartial) {
             ReadablePartial partial = (ReadablePartial) object;
 
@@ -65,16 +54,28 @@ public class DateFormattingServiceImpl implements DateFormattingService {
 
         } else if (object instanceof ReadableInstant) {
             ReadableInstant instant = (ReadableInstant) object;
-
-            DateTimeFormatter formatter = getDateTimeFormatter(type,
-                                                               userContext);
-            return formatter.print(instant);
+            Date date = instant.toInstant().toDate();
+            return formatDate(date, type, userContext);
         } else if (object instanceof Long && object != null) {
         	DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
         	return formatter.print(((Long) object).longValue());
         } else {
             throw new IllegalArgumentException("Date object is not supported in DateFormattingServiceImpl.format()");
         }
+    }
+    
+    private String formatDate(Date date, DateFormatEnum type, YukonUserContext userContext){
+        DateFormat df = getDateFormatter(type, userContext);
+
+        // will result in dates that would normally format to midnight of a
+        // date, to format instead to the previous date.
+        // MidnightMode.INCLUDES_MIDNIGHT is only set on date-only type
+        // DateFormatEnum values
+        if (type.getMidnightMode() == MidnightMode.INCLUDES_MIDNIGHT) {
+            date = DateUtils.addMilliseconds(date, -1);
+        }
+
+        return df.format(date);
     }
 
     @Override
