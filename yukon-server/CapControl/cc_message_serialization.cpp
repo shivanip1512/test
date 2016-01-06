@@ -532,8 +532,8 @@ MessagePtr<Thrift::CCFeeder>::type populateThrift( const ::CtiCCFeeder& imsg )
                                                  ( imsg.getRecentlyControlledFlag() || imsg.getPerformingVerificationFlag() );
     omsg->__set__lastOperationTime               ( CtiTimeToMilliseconds( imsg.getLastOperationTime() ));
     omsg->__set__varValueBeforeControl           ( imsg.getVarValueBeforeControl() );
-    omsg->__set__powerFactorValue                ( imsg.getPowerFactorValue() );
-    omsg->__set__estimatedPowerFactorValue       ( imsg.getEstimatedPowerFactorValue() );
+    omsg->__set__powerFactorValue                ( temppowerfactorvalue );
+    omsg->__set__estimatedPowerFactorValue       ( tempestimatedpowerfactorvalue );
     omsg->__set__currentVarPointQuality          ( imsg.getCurrentVarPointQuality() );
     omsg->__set__waiveControlFlag                ( imsg.getWaiveControlFlag() );
     omsg->__set__strategy_controlUnits           ( imsg.getStrategy()->getControlUnits() );
