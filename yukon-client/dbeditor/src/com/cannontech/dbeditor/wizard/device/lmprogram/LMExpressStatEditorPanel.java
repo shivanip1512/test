@@ -3,6 +3,8 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 /**
  * This type was created in VisualAge.
  */
+import java.awt.Dimension;
+
 import com.cannontech.common.gui.util.LineLabel;
 import com.cannontech.dbeditor.wizard.device.lmgroup.ExpressComCellRenderer;
 import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressComEditorPanel;
@@ -251,6 +253,10 @@ public javax.swing.JButton getJButtonFahrenheitCelsius() {
 			ivjJButtonFahrenheitCelsius.setName("JButtonFahrenheitCelsius");
 			ivjJButtonFahrenheitCelsius.setMnemonic('e');
 			ivjJButtonFahrenheitCelsius.setText("Fahrenheit");
+			ivjJButtonFahrenheitCelsius.setMaximumSize(new java.awt.Dimension(95, 25));
+			ivjJButtonFahrenheitCelsius.setPreferredSize(new java.awt.Dimension(95, 25));
+			ivjJButtonFahrenheitCelsius.setMinimumSize(new java.awt.Dimension(95, 25));
+
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -273,6 +279,7 @@ public javax.swing.JCheckBox getJCheckBoxCoolMode() {
 			ivjJCheckBoxCoolMode.setName("JCheckBoxCoolMode");
 			ivjJCheckBoxCoolMode.setFont(new java.awt.Font("Arial", 1, 10));
 			ivjJCheckBoxCoolMode.setText("Cool Mode");
+			ivjJCheckBoxCoolMode.setMinimumSize(new java.awt.Dimension(95, 25));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -593,6 +600,9 @@ public javax.swing.JPanel getJPanelData() {
 			ivjJPanelData.setName("JPanelData");
 			//ivjJPanelData.setBorder(new com.ibm.uvm.abt.edit.DeletedClassView());
 			ivjJPanelData.setLayout(new java.awt.GridBagLayout());
+			ivjJPanelData.setMinimumSize(new Dimension(350,264));
+			ivjJPanelData.setMaximumSize(new Dimension(350,264));
+			ivjJPanelData.setPreferredSize(new Dimension(350,264));
 
 			java.awt.GridBagConstraints constraintsJCheckBoxHeatMode = new java.awt.GridBagConstraints();
 			constraintsJCheckBoxHeatMode.gridx = 2; constraintsJCheckBoxHeatMode.gridy = 1;
