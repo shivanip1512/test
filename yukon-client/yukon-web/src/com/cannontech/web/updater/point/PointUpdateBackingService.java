@@ -23,7 +23,6 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.BulkUpdateBackingService;
 import com.cannontech.web.updater.UpdateIdentifier;
-import com.google.common.base.Joiner;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
@@ -46,6 +45,14 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
                 @Override
                 public void onRemoval(RemovalNotification<Integer, DatedPointValue> notification) {
                     if (notification.getCause() != RemovalCause.REPLACED) {
+                        log.debug("<> Unregistering Listener:PointUpdateBackingService for point id="+notification.getKey());
+                        DatedPointValue value = cache.getIfPresent(notification.getKey());
+                        if(value != null){
+                            log.debug("<> Point in cache DatedPointValue="+notification.getKey());
+                        }else{
+                            log.debug("<> Removed point data from cache point id=" + notification.getKey());
+                        }
+                        log.debug("<> Cache size="+cache.size());
                         asyncDataSource.unRegisterForPointData(PointUpdateBackingService.this,
                             Collections.singleton(notification.getKey()));
                     }
@@ -56,7 +63,7 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
     public Map<UpdateIdentifier, String> getLatestValues(List<UpdateIdentifier> updateIdentifiers, long afterDate,
                                                          YukonUserContext userContext, boolean canWait) {
         if (log.isDebugEnabled()) {
-            log.debug("getLatestValues - handling " + Joiner.on("; ").join(updateIdentifiers));
+           // log.debug("getLatestValues - handling " + Joiner.on("; ").join(updateIdentifiers));
         }
         ListMultimap<Integer, PointIdentifier> identifiers = ArrayListMultimap.create();
         for (UpdateIdentifier updateIdentifier : updateIdentifiers) {
@@ -65,7 +72,7 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
         }
         List<DatedPointValue> latestValues = getLatestValues(identifiers.keySet(), afterDate, canWait);
         Map<UpdateIdentifier, String> formattedValues = formatValues(identifiers, latestValues, userContext);
-        log.debug("getLatestValues - done");
+       // log.debug("getLatestValues - done-"+ formattedValues);
         return formattedValues;
     }
         
@@ -83,7 +90,7 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
             }
         }
         if (!pointsToRegister.isEmpty()) {
-            log.debug("Registering points");
+            log.debug("<> Registering points"+ pointsToRegister);
             Set<? extends PointValueQualityHolder> points =
                 asyncDataSource.getAndRegisterForPointData(this, pointsToRegister);
             for (PointValueQualityHolder point : points) {
@@ -145,6 +152,7 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
 
     @Override
     public void pointDataReceived(PointValueQualityHolder pointData) {
+        log.debug("<> Point data received for point id=" + pointData.getId());
         DatedPointValue old = cache.getIfPresent(pointData.getId());
         if (old == null) {
             usePointData(pointData);
@@ -168,6 +176,7 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
     
     private void usePointData(PointValueQualityHolder pointData) {
         DatedPointValue value = new DatedPointValue(pointData);
+        log.debug("<> Added Point data to cache for point id=" + pointData.getId());
         cache.put(pointData.getId(), value);
     }
 }
