@@ -289,7 +289,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
         if (temperatureUnitsButton == null) {
             temperatureUnitsButton = new JButton();
             temperatureUnitsButton.setName("JButtonTemperatureUnits");
-            temperatureUnitsButton.setText("°F / °C");
+            temperatureUnitsButton.setText("\u00B0F / \u00B0C");
             temperatureUnitsButton.setFont(new Font("dialog", 0, 12));
             temperatureUnitsButton.setSize(42, 16);
             temperatureUnitsButton.setAlignmentY(TOP_ALIGNMENT);
@@ -928,7 +928,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
     public void setTemperatureUnits(char temperatureUnit) {
         if (temperatureUnit == 'C') {
             setIsFahrenheit(false);
-            getJLabelOffsetUnits().setText("�C");
+            getJLabelOffsetUnits().setText("\u00B0C");
             ((JCDoubleValidator) getJCSpinFieldOffsetAmount().getValidator()).setMax(SepTemperatureOffsetGear.MAX_CELSIUS);
 
             if (toDouble(getJCSpinFieldOffsetAmount().getValue()) > SepTemperatureOffsetGear.MAX_CELSIUS) {
@@ -938,7 +938,7 @@ public class SepTemperatureOffsetGearPanel extends GenericGearPanel {
             getJCSpinFieldOffsetAmount().revalidate();
         } else {
             setIsFahrenheit(true);
-            getJLabelOffsetUnits().setText("�F");
+            getJLabelOffsetUnits().setText("\u00B0F");
 
             ((JCDoubleValidator) getJCSpinFieldOffsetAmount().getValidator()).setMax(SepTemperatureOffsetGear.MAX_FAHRENHEIT);
 
