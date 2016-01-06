@@ -3499,6 +3499,26 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 currentCapBank->setIgnoreReasonTimeUpdated(timestamp);
                             }
 
+                            if ( currentCapBank->getPointIdByAttribute( PointAttribute::LastControlReason ) == pointID )
+                            {
+                                if ( value == 5 )   // 5 == OVUV Control
+                                {
+                                    if ( ! currentCapBank->getOvUvSituationFlag() )
+                                    {
+                                        currentCapBank->setOvUvSituationFlag( true );
+                                        currentSubstationBus->setBusUpdatedFlag( true );
+                                    }
+                                }
+                                else
+                                {
+                                    if ( currentCapBank->getOvUvSituationFlag() )
+                                    {
+                                        currentCapBank->setOvUvSituationFlag( false );
+                                        currentSubstationBus->setBusUpdatedFlag( true );
+                                    }
+                                }
+                            }
+
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
                                 CTILOG_DEBUG(dout, "Set a cbc 2 way Analog point... pointID ("<<pointID<<") = "<<value);
