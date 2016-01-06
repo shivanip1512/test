@@ -28,16 +28,11 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
     private final String payload;
     private final Logger log = YukonLogManager.getLogger(AuthenticationRequestWrapper.class);
 
-    /**
-     * @param request
-     */
     public AuthenticationRequestWrapper(HttpServletRequest request) {
         super(request);
         // read the original payload into the payload variable
         String body = null;
-        try {
-            @SuppressWarnings("resource")
-            Scanner scanner = new Scanner(request.getInputStream(), "UTF-8").useDelimiter("\\A");
+        try (Scanner scanner = new Scanner(request.getInputStream(), "UTF-8").useDelimiter("\\A")) {
             body = scanner.hasNext() ? scanner.next() : "";
         } catch (IOException e) {
             log.error("Error occured in fetching the payload content for the request", e);
@@ -54,10 +49,5 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
             }
         };
         return inputStream;
-    }
-
-    @Override
-    public BufferedReader getReader() throws IOException {
-        return new BufferedReader(new InputStreamReader(this.getInputStream()));
     }
 }
