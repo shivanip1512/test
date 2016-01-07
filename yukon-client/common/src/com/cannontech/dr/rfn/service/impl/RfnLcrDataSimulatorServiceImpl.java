@@ -36,7 +36,10 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.dr.model.PerformanceVerificationEventMessage;
+import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
@@ -68,10 +71,13 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService exiParsingService;
     @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private PerformanceVerificationDao performanceVerificationDao;
+    
     private RfnLcrDataSimulatorStatus rfnLcrDataSimulatorStatus = new RfnLcrDataSimulatorStatus();
     private RfnLcrDataSimulatorStatus rfnLcrExistingDataSimulatorStatus = new RfnLcrDataSimulatorStatus();
     private static List<Future<?>> futures;
     private final static Map<Integer,Long> perMinuteMsgCount = new ConcurrentHashMap<>();
+    private List<PerformanceVerificationEventMessage> eventMessages = null;
     
 
     public long getPerMinuteMsgCount() {
@@ -111,6 +117,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                 msgSimulatorRunning = false;
                 // increment counter (minute) for Threads created for X number devices per list
                 int minsCounter = 0;
+                loadPerformanceVerificationEventMessages();
                 for (List<RfnDevice> partition : Lists.partition(rfnLcrDeviceList, devicePartitionCount)) {
                     msgSimulatorFt =
                         executor.scheduleAtFixedRate(new MessageSimulator(partition), minsCounter++, 24 * 60,
@@ -309,8 +316,9 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * Loop through LCR meters and send the messages.
      */
     private class MessageSimulator implements Runnable {
+        private static final int BROADCAST_EVENTS_LOOKUP_INTERVAL = 10;
         List<RfnDevice> rfnLcrDeviceList = null;
-
+        
         MessageSimulator(List<RfnDevice> rfnLcrDeviceList) {
             this.rfnLcrDeviceList = rfnLcrDeviceList;
         }
@@ -337,10 +345,16 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
 
             AtomicLong lcr6200NumComplete = rfnLcrExistingDataSimulatorStatus.getNumComplete6200();
             AtomicLong lcr6600NumComplete = rfnLcrExistingDataSimulatorStatus.getNumComplete6600();
-            SimulatorSettings settings = new SimulatorSettings(0, 0, 0, 0, 123456789, 1390000000, 0);
+            SimulatorSettings settings = new SimulatorSettings(0, 0, 0, 0, 0, 0, 0);
             RfnLcrReadSimulatorDeviceParameters deviceParameters = null;
             boolean hasFailed = false;
-            
+
+            int minuteOfHour = new Instant().get(DateTimeFieldType.minuteOfHour());
+            if (minuteOfHour % BROADCAST_EVENTS_LOOKUP_INTERVAL == 0) {
+             // Every 10th minute of an hour the events will be looked up, since broadcast can happen every 15 min
+                loadPerformanceVerificationEventMessages();
+            }
+
             for (RfnDevice device : rfnLcrDeviceList) {
                 RfnIdentifier rfnIdentifier = device.getRfnIdentifier();
                 deviceParameters = new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60);
@@ -358,6 +372,14 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         }
     }
 
+    /**
+     * This method loads Performance Verification Event Messages for the simulator
+     */
+    private void loadPerformanceVerificationEventMessages() {
+        Instant now = new Instant();
+        Range<Instant> last24HourRange = Range.inclusive(now.minus(Duration.standardHours(24)), now);
+        eventMessages = performanceVerificationDao.getEventMessages(last24HourRange);
+    }
     /**
      * This method creates an RFN LCR read archive request and places it into the appropriate messaging queue.
      * 
@@ -521,14 +543,25 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             // Create broadcast verification message ids.
             BroadcastVerificationMessages verificationMessages =
                 objectFactory.createDRReportBroadcastVerificationMessages();
-            Event event = objectFactory.createDRReportBroadcastVerificationMessagesEvent();
-            event.setUnused(0); // This element is not used and should be set to 0 to match firmware message
-                                // format.
-            event.setUniqueIdentifier(simulatorSettings.getMessageId());
-            event.setReceivedTimestamp(simulatorSettings.getMessageIdTimestamp());
-            verificationMessages.getEvent().add(event);
-            drReport.getBroadcastVerificationMessages().add(verificationMessages);
 
+            if (eventMessages != null && !eventMessages.isEmpty()) {
+                for (PerformanceVerificationEventMessage eventMsg : eventMessages) {
+                    Event event = objectFactory.createDRReportBroadcastVerificationMessagesEvent();
+                    event.setUnused(0); //This element is not used & should be set to 0 to match firmware message format.
+                    event.setUniqueIdentifier(eventMsg.getMessageId());
+                    event.setReceivedTimestamp(eventMsg.getTimeMessageSent().getMillis() / 1000); // Time in
+                                                                                                  // seconds
+                    verificationMessages.getEvent().add(event);
+                }
+            } else {
+                Event event = objectFactory.createDRReportBroadcastVerificationMessagesEvent();
+                event.setUnused(0); //This element is not used & should be set to 0 to match firmware message format.
+                event.setUniqueIdentifier(simulatorSettings.getMessageId());
+                event.setReceivedTimestamp(simulatorSettings.getMessageIdTimestamp());
+                verificationMessages.getEvent().add(event);
+            }
+
+            drReport.getBroadcastVerificationMessages().add(verificationMessages);
             marshaller.marshal(drReport, sw);
         } catch (Exception e) {
             throw e;
