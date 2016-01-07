@@ -7,6 +7,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.updater.job.JobUpdaterTypeEnum;
 
@@ -31,6 +32,8 @@ public class ScheduleDescriptionJobUpdaterHandler implements JobUpdaterHandler {
 			// N/A
 		} catch (EmptyResultDataAccessException e) {
 			// N/A
+		} catch (CronException e){
+		    // N/A
 		}
 		
 		return scheduleDescription;

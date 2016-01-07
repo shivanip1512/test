@@ -23,13 +23,10 @@
     <c:forEach items="${activeJobs}" var="jobStatus">
       <tr>
         <td title="${jobStatus.job.id}">
-<%--             <cti:msg2 var="jobNameMsg" key=".${job.beanName}.title"/>
- --%>            <cti:url var="editScheduleDetailsUrl" value="/admin/maintenance/edit" >
+           <cti:url var="editScheduleDetailsUrl" value="/admin/maintenance/edit" >
                 <cti:param name="jobId" value="${jobStatus.job.id}"/>
             </cti:url>
-<%--             <a href="${editScheduleDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${jobNameMsg}"/>"><i class="icon icon-script"></i></a>
- --%>            <a href="${editScheduleDetailsUrl}">${fn:escapeXml(jobStatus.job.jobDefinition.title)}</a>
-
+            <a href="${editScheduleDetailsUrl}">${fn:escapeXml(jobStatus.job.jobDefinition.title)}</a>
         </td>
         <td><cti:formatDate value="${jobStatus.startTime}" type="TIME" /></td>
         <td>

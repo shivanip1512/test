@@ -38,7 +38,6 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.waterLeakReport.model.WaterMeterLeak;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
@@ -238,14 +237,16 @@ public class JobsController {
     }
     
     @RequestMapping("toggleState")
-    public String toggleState(int jobId, String redirectTab, @DefaultSort(dir=Direction.asc, sort="jobName") SortingParameters sorting, 
+    public String toggleState(ModelMap model, YukonUserContext userContext, int jobId, @DefaultSort(dir=Direction.asc, sort="jobName") SortingParameters sorting, 
                               @DefaultItemsPerPage(10) PagingParameters paging) {
         YukonJob job = yukonJobDao.getById(jobId);
         if (job.isDisabled())
             jobManager.enableJob(job);
         else
             jobManager.disableJob(job);
-        return "redirect:" + redirectTab;
+        getRepeatingJobs(model, sorting, paging, userContext);
+        getOneTimeJobs(model, sorting, paging, userContext);
+        return "jobs/all.jsp";
     }
     
     @Deprecated
