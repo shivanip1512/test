@@ -66,7 +66,9 @@ yukon.tools.point = (function () {
         
         /* TODO these enum names should come from the controller */
         var inputsNeeded = controlType !== 'None';
-        
+        if(!inputsNeeded){
+        	$('.js-reset-field').val(0);
+        }
         $('.js-analog-control-input').toggle(inputsNeeded);
     };
 
@@ -79,7 +81,7 @@ yukon.tools.point = (function () {
         /* TODO these enum names should come from the controller */
         var inputsNeeded = controlType !== 'None';
         if(!inputsNeeded){
-        	$('.js-close-time').val(0);
+        	$('.js-reset-field').val(0);
         }
         $('.js-status-control-input').toggle(inputsNeeded);
     };
@@ -89,7 +91,9 @@ yukon.tools.point = (function () {
      */
     var updateLimits1 = function () {
         var enabled = $('.js-limit-one-enabled').is(':checked');
-
+        if(!enabled){
+        	$('.js-reset-field').val(0);
+        }
         $('.js-limit-one-input').toggle(enabled);
     };
 
@@ -107,7 +111,9 @@ yukon.tools.point = (function () {
      */
     var updateStaleData = function () {
         var enabled = $('.js-stale-data-enabled').is(':checked');
-        
+        if(!enabled){
+            $('.js-reset-field-time').val(5);
+        }
         $('.js-stale-data-input').toggle(enabled);
     };
 
