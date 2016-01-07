@@ -134,7 +134,7 @@ yukon.ui.util = (function () {
                 topOption = firstGroupOptions[0];
 
                 // prevent duplicates from getting added to top of dropdown for each run of callback
-                if (topOption.text !== optText && (optText >= topOption.text)) {
+                if (topOption.text !== optText) {
                     firstOptGroup.insertBefore(newOpt,topOption);
                 }
             }
