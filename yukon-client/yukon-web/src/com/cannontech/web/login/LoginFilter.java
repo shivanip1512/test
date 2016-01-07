@@ -77,7 +77,7 @@ public class LoginFilter implements Filter {
                          "/jws/bc.jnlp",
                          "/jws/client_libs.jnlp",
                          "/common/images/*",
-                         "/favicon.ico",
+                         "/resources/favicon.ico",
                 		 "/dev/mockecobee/**");
 
     private final static ImmutableList<String> excludedRedirectedPaths =

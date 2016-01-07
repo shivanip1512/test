@@ -19,7 +19,7 @@
 
 <title><cti:msg2 key=".pageTitle"/></title>
 
-<link rel="shortcut icon" href="<cti:url value="/favicon.ico"/>" type="image/x-icon">
+<link rel="shortcut icon" href="<cti:url value="/resources/favicon.ico"/>" type="image/x-icon">
 
 <cti:includeCss link="NORMALIZE" force="true"/>
 <cti:includeCss link="LAYOUT" force="true"/>

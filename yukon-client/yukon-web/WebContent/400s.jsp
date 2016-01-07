@@ -29,7 +29,7 @@ try {
 <c:if test="${not loggedIn}">
     <link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/errorStyles.css"/>" type="text/css">
 </c:if>
-
+<link rel="shortcut icon" href="<cti:url value="/resources/favicon.ico"/>" type="image/x-icon">
 <c:if test="${loggedIn}">
     <cti:msg var="genericMainMessage" key="yukon.web.error.genericMainMessage"/>
     <c:set var="logoHtml"><cti:logo key="yukon.web.error.logo"/></c:set>

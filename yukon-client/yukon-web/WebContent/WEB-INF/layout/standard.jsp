@@ -20,7 +20,7 @@
 
 <title>${pageDetail.pageTitle}</title>
 
-<link rel="shortcut icon" href="<cti:url value="/favicon.ico"/>" type="image/x-icon">
+<link rel="shortcut icon" href="<cti:url value="/resources/favicon.ico"/>" type="image/x-icon">
 
 <%-- Standard CSS Files --%>
 <c:forEach items="${standardCssFiles}" var="file">
