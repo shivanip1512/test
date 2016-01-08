@@ -549,8 +549,9 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                     Event event = objectFactory.createDRReportBroadcastVerificationMessagesEvent();
                     event.setUnused(0); //This element is not used & should be set to 0 to match firmware message format.
                     event.setUniqueIdentifier(eventMsg.getMessageId());
-                    event.setReceivedTimestamp(eventMsg.getTimeMessageSent().getMillis() / 1000); // Time in
-                                                                                                  // seconds
+                    // Sets received timestamp to the time the message was sent + up to 5 minutes depending on serial number
+                    event.setReceivedTimestamp(eventMsg.getTimeMessageSent().getMillis() / 1000
+                        + Integer.parseInt(deviceParameters.getRfnIdentifier().getSensorSerialNumber()) % 300);
                     verificationMessages.getEvent().add(event);
                 }
             } else {
