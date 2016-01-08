@@ -44,7 +44,7 @@
     <c:if test="${not empty task}">
         
         <cti:url var="newOperationSuccess" value="newOperation">
-            <cti:param name="type" value="SUCCESS"/>
+            <cti:param name="type" value="SUCCESSFUL"/>
             <cti:param name="taskId" value="${task.taskId}"/>
         </cti:url>
         <cti:url var="newOperationUnsupported" value="newOperation">
