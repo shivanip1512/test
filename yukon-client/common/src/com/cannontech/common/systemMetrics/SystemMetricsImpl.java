@@ -184,44 +184,48 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
      */
     @Override
     public void run() {
-        log.debug("SystemMetricsImpl.run()");
-
-        // Bump this counter every cycle, report statistic on when it matches reportFrequency
-        reportFrequencyCounter++;
-
         try {
-            double loadAverage = calculateLoadAverage();
-            pointAccessDao.setPointValue(loadAveragePoint, loadAverage);
-            
-            // Report load as log.info every reportFrequency or if loadAverage > 70%
-            String message = "Process CPU Utilization: " + loadAverage + "%";
-            if (reportFrequencyCounter % reportFrequency == 0 || loadAverage > 70) {
-                log.info(message);
-            } else {
-                log.debug(message);
-            }
-            
-        } catch (IllegalUseOfAttribute e) {
-            log.warn("caught exception in SystemMetrics.run", e);
-        }
+            log.debug("SystemMetricsImpl.run()");
 
-        try {
-            double memory = Runtime.getRuntime().totalMemory() / 1024 / 1024;
-            double maxMemory = Runtime.getRuntime().maxMemory() / 1024 / 1024;
-            pointAccessDao.setPointValue(memoryPoint, memory);
+            // Bump this counter every cycle, report statistic on when it matches reportFrequency
+            reportFrequencyCounter++;
 
-            // Report memory as log.info every reportFrequency or if within 70% of max memory
-            String message = "Process Memory Utilization: " + (long) memory + " MB, Max:"+ (long) maxMemory;
-            if (reportFrequencyCounter % reportFrequency == 0 || memory / maxMemory > .70) {
-                log.info(message);
-            } else {
-                log.debug(message);
+            try {
+                double loadAverage = calculateLoadAverage();
+                pointAccessDao.setPointValue(loadAveragePoint, loadAverage);
+                
+                // Report load as log.info every reportFrequency or if loadAverage > 70%
+                String message = "Process CPU Utilization: " + loadAverage + "%";
+                if (reportFrequencyCounter % reportFrequency == 0 || loadAverage > 70) {
+                    log.info(message);
+                } else {
+                    log.debug(message);
+                }
+                
+            } catch (IllegalUseOfAttribute e) {
+                log.warn("caught exception in SystemMetrics.run", e);
             }
-            
-        } catch (IllegalUseOfAttribute e) {
-            log.warn("caught exception in SystemMetrics.run", e);
+
+            try {
+                double memory = Runtime.getRuntime().totalMemory() / 1024 / 1024;
+                double maxMemory = Runtime.getRuntime().maxMemory() / 1024 / 1024;
+                pointAccessDao.setPointValue(memoryPoint, memory);
+
+                // Report memory as log.info every reportFrequency or if within 70% of max memory
+                String message = "Process Memory Utilization: " + (long) memory + " MB, Max:"+ (long) maxMemory;
+                if (reportFrequencyCounter % reportFrequency == 0 || memory / maxMemory > .70) {
+                    log.info(message);
+                } else {
+                    log.debug(message);
+                }
+                
+            } catch (IllegalUseOfAttribute e) {
+                log.warn("caught exception in SystemMetrics.run", e);
+            }
+        } catch (Exception e) {
+            log.error("caught exception in run()", e);
         }
-}
+    }
 
     /**
      * Total the elapsed CPU time from all threads. This is a bit tricky since some threads have
