@@ -11,9 +11,11 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -237,34 +239,13 @@ public class JobsController {
     }
     
     @RequestMapping("toggleState")
-    public String toggleState(ModelMap model, YukonUserContext userContext, int jobId, @DefaultSort(dir=Direction.asc, sort="jobName") SortingParameters sorting, 
-                              @DefaultItemsPerPage(10) PagingParameters paging) {
+    public void toggleState(HttpServletResponse resp, int jobId) {
         YukonJob job = yukonJobDao.getById(jobId);
         if (job.isDisabled())
             jobManager.enableJob(job);
         else
             jobManager.disableJob(job);
-        getRepeatingJobs(model, sorting, paging, userContext);
-        getOneTimeJobs(model, sorting, paging, userContext);
-        return "jobs/all.jsp";
-    }
-    
-    @Deprecated
-    @RequestMapping("enableJob")
-    public String enableJob(int jobId) throws ServletException {
-        YukonJob job = yukonJobDao.getById(jobId);
-        jobManager.enableJob(job);
-   
-        return "redirect:all";
-    }
-    
-    @Deprecated
-    @RequestMapping("disableJob")
-    public String disableJob( int jobId ) throws ServletException {
-        YukonJob job = yukonJobDao.getById(jobId);
-        jobManager.disableJob(job);
-        
-        return "redirect:all";
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
     @RequestMapping("abortJob")
