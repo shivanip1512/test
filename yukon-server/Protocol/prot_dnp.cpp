@@ -416,26 +416,22 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                         {
                             const AnalogOutput *ao = reinterpret_cast<const AnalogOutput *>(od.object);
 
-                            std::ostringstream o;
-
-                            o << "Analog output request ";
+                            std::string s = "Analog output request ";
 
                             if( ao->getStatus() )
                             {
                                 retVal = ClientErrors::Abnormal;
 
-                                o << "unsuccessful\n";
-
-                                o << "(status = " << ao->getStatus() << ", offset = " << od.index << ", value " << ao->getValue() << ")";
+                                s += "unsuccessful";
                             }
                             else
                             {
-                                o << "successful\n";
-
-                                o << "(offset = " << od.index << ", value " << ao->getValue() << ")";
+                                s += "successful";
                             }
 
-                            _string_results.push_back(o.str());
+                            _string_results.push_back(s);
+
+                            _string_results.push_back(getControlResultString(ao->getStatus()));
 
                             break;
                         }

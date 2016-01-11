@@ -1125,7 +1125,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
         analogOffset = point.getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
     }
 
-    std::string commandString = "putvalue analog " + std::to_string(analogOffset) + " value ";
+    std::string commandString = "putvalue analog " + std::to_string(analogOffset) + " ";
 
     switch( analog.type )
     {

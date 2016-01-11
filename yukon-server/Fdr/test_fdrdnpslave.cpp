@@ -2321,7 +2321,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 1 value 67305985");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 1 67305985");  //  aka 0x04030201
     }
 
     //  Failure from device
@@ -2344,7 +2344,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 1 value 67305985");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 1 67305985");  //  aka 0x04030201
     }
 }
 
@@ -2412,7 +2412,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_analogoutput )
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 17 value 67305985");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 17 67305985");  //  aka 0x04030201
     }
 
     //  Failure from device
@@ -2435,7 +2435,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_analogoutput )
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 17 value 67305985");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 17 67305985");  //  aka 0x04030201
     }
 }
 
