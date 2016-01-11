@@ -21,6 +21,8 @@ public interface RouteDiscoveryService {
      */
     public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> callback, LiteYukonUser user);
 
+    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> callback, LiteYukonUser user, String command);
+
     /**
      * This method takes a list of callbacks and sends out cancel commands for each of them.  
      * It also adds the callback to a cancellation list so it can't recursively call another 

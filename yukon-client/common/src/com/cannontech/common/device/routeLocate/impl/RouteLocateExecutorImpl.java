@@ -37,6 +37,12 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
     
     @Override
     public String execute(final DeviceCollection deviceCollection, final List<Integer> routeIds, boolean autoUpdateRoute, final SimpleCallback<RouteLocateResult> callback, final LiteYukonUser user) {
+        return execute(deviceCollection, routeIds, autoUpdateRoute, callback, user, "ping");
+    }
+    
+    
+    @Override
+    public String execute(final DeviceCollection deviceCollection, final List<Integer> routeIds, boolean autoUpdateRoute, final SimpleCallback<RouteLocateResult> callback, final LiteYukonUser user, final String command) {
 
         final RouteLocateResult routeLocateResult = new RouteLocateResult(deviceGroupMemberEditorDao, deviceGroupCollectionHelper);
         routeLocateResult.setDeviceCollection(deviceCollection);
@@ -106,7 +112,7 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
             };
             
             routeLocateResult.addPendingDeviceRouteLocation(deviceRouteLocation);
-            routeDiscoveryService.routeDiscovery(device, orderedRouteIds, routeFoundCallback, user);
+            routeDiscoveryService.routeDiscovery(device, orderedRouteIds, routeFoundCallback, user, command);
             routeLocateResult.addRouteFoundCallback(routeFoundCallback);
             
         }

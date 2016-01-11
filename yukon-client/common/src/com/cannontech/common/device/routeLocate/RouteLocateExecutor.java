@@ -9,6 +9,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface RouteLocateExecutor {
 
     public String execute(DeviceCollection deviceCollection, List<Integer> routeIds, boolean autoUpdateRoute, SimpleCallback<RouteLocateResult> callback, LiteYukonUser user);
+
+    public String execute(DeviceCollection deviceCollection, List<Integer> routeIds, boolean autoUpdateRoute, SimpleCallback<RouteLocateResult> callback, LiteYukonUser user, String command);
     
     public void cancelExecution(String resultId, LiteYukonUser user);
     

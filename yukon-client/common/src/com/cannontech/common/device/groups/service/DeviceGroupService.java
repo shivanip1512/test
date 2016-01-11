@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -9,6 +10,8 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteCommand;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * This is the primary interface that should be used for determining what devices
@@ -135,4 +138,7 @@ public interface DeviceGroupService {
      * This method will return full path for a SystemGroupEnum. For SystemGroupEnum = METERS, /Meters/ will be returned.
      */
     public String getFullPath(SystemGroupEnum systemGroupEnum);
+    
+    public List<LiteCommand> getDeviceCommands(List<SimpleDevice> devices, LiteYukonUser user);
+
 }

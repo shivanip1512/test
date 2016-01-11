@@ -11,6 +11,7 @@
     <entry key="yukon.web.modules.tools.bulk.routeLocateHome.autoUpdateRouteText">Automatically set route when found?</entry>
     <entry key="yukon.web.modules.tools.bulk.routeLocateHome.locateRoute.label">Locate Route</entry>
     <entry key="yukon.web.modules.tools.bulk.routeLocateHome.noRoutesSelectedError">No routes selected.</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.commandNotAuthorizedError">You are not authorized to execute that command.</entry>
     <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
     <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT">Complete</entry>
     <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.IS_CANCELED_TEXT">Canceled</entry>

@@ -7,11 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
@@ -45,16 +42,12 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
-import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCommand;
-import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
@@ -66,11 +59,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/commander/*")
@@ -79,7 +68,6 @@ public class GroupCommanderController {
 
     private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
 
-    @Autowired private CommandDao commandDao;
     @Autowired private CommanderEventLogService commanderEventLogService;
     @Autowired private ContactDao contactDao;
     @Autowired private AlertService alertService;
@@ -106,56 +94,12 @@ public class GroupCommanderController {
     @RequestMapping("collectionProcessing")
     public void collectionProcessing(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model) {
 
-        List<LiteCommand> commands = getCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
+        List<LiteCommand> commands = deviceGroupService.getDeviceCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
         model.addAttribute("commands", commands);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("email", contactDao.getUserEmail(userContext.getYukonUser()));
         boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
         model.addAttribute("isSmtpConfigured", isSmtpConfigured);
-    }
-    
-    /**
-     * Returns all commands that can be executed by the user for the devices selected.
-     * Authorization checks:
-     * - If command is visible
-     * - If the user is authorized to execute commands
-     * Sort order
-     * - By PaoType db string
-     * - By Display Order of the command
-     * 
-     * If the duplicate command is found the first command will be kept.
-     */
-    private List<LiteCommand> getCommands(List<SimpleDevice> devices, LiteYukonUser user) {
-        Map<String, LiteCommand> authorized = new LinkedHashMap<String, LiteCommand>();
-        ImmutableMap<Integer, LiteCommand> commands =
-            Maps.uniqueIndex(commandDao.getAllCommands(), new Function<LiteCommand, Integer>() {
-                @Override
-                public Integer apply(LiteCommand from) {
-                    return from.getLiteID();
-                }
-            });
-
-        Set<PaoType> paoTypes = new TreeSet<PaoType>(new Comparator<PaoType>() {
-            @Override
-            public int compare(PaoType o1, PaoType o2) {
-                return o1.getDbString().compareTo(o2.getDbString());
-            }
-        });
-        paoTypes.addAll(Collections2.transform(devices, SimpleDevice.TO_PAO_TYPE));
-
-        for (PaoType type : paoTypes) {
-            List<LiteDeviceTypeCommand> all = commandDao.getAllDevTypeCommands(type.getDbString());
-            for (LiteDeviceTypeCommand command : all) {
-                if (command.isVisible()) {
-                    LiteCommand liteCommand = commands.get(command.getCommandId());
-                    if (!authorized.containsKey(liteCommand.getCommand())
-                        && commandAuthorizationService.isAuthorized(user, liteCommand.getCommand())) {
-                        authorized.put(liteCommand.getCommand(), liteCommand);
-                    }
-                }
-            }
-        }
-        return new ArrayList<LiteCommand>(authorized.values());
     }
 
     @RequestMapping("groupProcessing")
@@ -203,7 +147,7 @@ public class GroupCommanderController {
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        List<LiteCommand> commands = getCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
+        List<LiteCommand> commands = deviceGroupService.getDeviceCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
 
         return commands;
     }

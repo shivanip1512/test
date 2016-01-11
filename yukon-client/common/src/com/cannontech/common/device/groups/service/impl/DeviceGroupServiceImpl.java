@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -24,17 +28,29 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
+import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteCommand;
+import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
     
     @Autowired private DeviceGroupProviderDao deviceGroupDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private CommandDao commandDao;
+    @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
 
     private Logger log = YukonLogManager.getLogger(DeviceGroupServiceImpl.class);
     
@@ -220,5 +236,39 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     @Override
     public String getFullPath(SystemGroupEnum systemGroupEnum) {
         return deviceGroupEditorDao.getFullPath(systemGroupEnum);
+    }
+    
+    @Override
+    public List<LiteCommand> getDeviceCommands(List<SimpleDevice> devices, LiteYukonUser user) {
+        Map<String, LiteCommand> authorized = new LinkedHashMap<String, LiteCommand>();
+        ImmutableMap<Integer, LiteCommand> commands =
+            Maps.uniqueIndex(commandDao.getAllCommands(), new Function<LiteCommand, Integer>() {
+                @Override
+                public Integer apply(LiteCommand from) {
+                    return from.getLiteID();
+                }
+            });
+
+        Set<PaoType> paoTypes = new TreeSet<PaoType>(new Comparator<PaoType>() {
+            @Override
+            public int compare(PaoType o1, PaoType o2) {
+                return o1.getDbString().compareTo(o2.getDbString());
+            }
+        });
+        paoTypes.addAll(Collections2.transform(devices, SimpleDevice.TO_PAO_TYPE));
+
+        for (PaoType type : paoTypes) {
+            List<LiteDeviceTypeCommand> all = commandDao.getAllDevTypeCommands(type.getDbString());
+            for (LiteDeviceTypeCommand command : all) {
+                if (command.isVisible()) {
+                    LiteCommand liteCommand = commands.get(command.getCommandId());
+                    if (!authorized.containsKey(liteCommand.getCommand())
+                        && commandAuthorizationService.isAuthorized(user, liteCommand.getCommand())) {
+                        authorized.put(liteCommand.getCommand(), liteCommand);
+                    }
+                }
+            }
+        }
+        return new ArrayList<LiteCommand>(authorized.values());
     }
 }

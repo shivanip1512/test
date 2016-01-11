@@ -19,6 +19,7 @@ import org.springframework.web.servlet.View;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.routeLocate.DeviceRouteLocation;
 import com.cannontech.common.device.routeLocate.RouteLocateExecutor;
@@ -27,15 +28,18 @@ import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
+
 
 @CheckRoleProperty(YukonRoleProperty.LOCATE_ROUTE)
 @Controller
@@ -48,16 +52,26 @@ public class RouteLocateController {
     @Autowired private DeviceUpdateService deviceUpdateService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
     
     private static final Logger log = YukonLogManager.getLogger(RouteLocateController.class);
     
     // HOME
     @RequestMapping("home")
-    public String home(ModelMap model, HttpServletRequest request) throws ServletException {
+    public String home(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
+        
+        List<LiteCommand> commands = deviceGroupService.getDeviceCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
+        model.addAttribute("commands", commands);
+        
+        String commandString = ServletRequestUtils.getStringParameter(request, "commandString", "ping");
+        String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue", "ping");
+        model.addAttribute("commandSelectValue", commandSelectValue);
+        model.addAttribute("commandString", commandString);
         
         // ROUTE OPTIONS
         LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
@@ -86,13 +100,13 @@ public class RouteLocateController {
     
     // EXECUTE
     @RequestMapping("executeRouteLocation")
-    public String executeRouteLocation(ModelMap model, HttpServletRequest request) throws ServletException {
+    public String executeRouteLocation(ModelMap model, HttpServletRequest request, String commandSelectValue, String commandString) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        
+                
         int[] routesSelect = ServletRequestUtils.getIntParameters(request, "routesSelect");
         List<Integer> selectedRouteIds = new ArrayList<Integer>();
         for (int routeId : routesSelect) {
@@ -101,6 +115,10 @@ public class RouteLocateController {
         
         // AUTO UPDATE ROUTE OPTION
         Boolean autoUpdateRoute = ServletRequestUtils.getBooleanParameter(request, "autoUpdateRoute", false);
+        model.addAttribute("autoUpdateRoute", autoUpdateRoute);
+
+        model.addAttribute("commandSelectValue", commandSelectValue);
+        model.addAttribute("commandString", commandString);
         
         // NO ROUTES SELECTED
         if (selectedRouteIds.size() < 1) {
@@ -113,27 +131,31 @@ public class RouteLocateController {
             String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.routeLocateHome.noRoutesSelectedError");
             model.addAttribute("errorMsg", errorMsg);
             
-            model.addAttribute("autoUpdateRoute", autoUpdateRoute);
-            
             return "redirect:/bulk/routeLocate/home";
         }
         
-        
-        // EXECUTOR CALLBACK
-        SimpleCallback<RouteLocateResult> executorCallback = new SimpleCallback<RouteLocateResult>() {
-            @Override
-            public void handle(RouteLocateResult item) throws Exception {
-                // maybe send an alert or something cool
-                log.debug("Inside routeLocateExecutor callback.");
-            }
-        };
-        
-        // RUN EXECUTOR
-        String resultId = routeLocateExecutor.execute(deviceCollection, selectedRouteIds, autoUpdateRoute, executorCallback, userContext.getYukonUser());
-        
-        
-        model.addAttribute("resultId", resultId);
-        return "redirect:/bulk/routeLocate/results";
+        //check if authorized to execute command
+        if (!commandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.routeLocateHome.commandNotAuthorizedError");
+            model.addAttribute("errorMsg", errorMsg);
+            return "redirect:/bulk/routeLocate/home";
+        } else {
+            // EXECUTOR CALLBACK
+            SimpleCallback<RouteLocateResult> executorCallback = new SimpleCallback<RouteLocateResult>() {
+                @Override
+                public void handle(RouteLocateResult item) throws Exception {
+                    // maybe send an alert or something cool
+                    log.debug("Inside routeLocateExecutor callback.");
+                }
+            };
+            
+            // RUN EXECUTOR
+            String resultId = routeLocateExecutor.execute(deviceCollection, selectedRouteIds, autoUpdateRoute, executorCallback, userContext.getYukonUser(), commandString);
+            
+            model.addAttribute("resultId", resultId);
+            return "redirect:/bulk/routeLocate/results";
+        }
     }
     
     // CANCELS A CURRENTLY RUNNING ROUTE LOCATE

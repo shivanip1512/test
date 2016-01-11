@@ -39,6 +39,10 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     private Logger log = YukonLogManager.getLogger(RouteDiscoveryServiceImpl.class);
     
     public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback, LiteYukonUser user) {
+        routeDiscovery(device, routeIds, routeFoundCallback, user, "ping");
+    }
+    
+    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback, LiteYukonUser user, final String command) {
         
         // init state for first route
         RouteDiscoveryState state = new RouteDiscoveryState();
@@ -47,10 +51,10 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         state.setRouteFoundCallback(routeFoundCallback);
         state.setUser(user);
         // run
-        doNextDiscoveryRequest(device, state);
+        doNextDiscoveryRequest(device, state, command);
     }
     
-    private void doNextDiscoveryRequest(final YukonDevice device, final RouteDiscoveryState state) {
+    private void doNextDiscoveryRequest(final YukonDevice device, final RouteDiscoveryState state, final String commandString) {
 
         final String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()) + "' (" + device.getPaoIdentifier() + ")";
         
@@ -73,7 +77,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         
         } else {
 
-            // RUN PING COMMAND
+            // RUN COMMAND
             scheduledExecutor.schedule(new Runnable() {
 
                 @Override
@@ -81,7 +85,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
                     // cmd
                     CommandRequestRouteAndDevice cmdReq = new CommandRequestRouteAndDevice();
-                    cmdReq.setCommandCallback(new CommandCallbackBase("ping"));
+                    cmdReq.setCommandCallback(new CommandCallbackBase(commandString));
                     cmdReq.setDevice(new SimpleDevice(device.getPaoIdentifier()));
                     cmdReq.setRouteId(state.getRouteIds().get(state.getRouteIdx()));
 
@@ -106,8 +110,8 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
                             try {
 
-                                // log that ping failed
-                                log.debug("Ping failed." + routeLogStr + deviceLogStr);
+                                // log that command failed
+                                log.debug("Command " + commandString + " failed." + routeLogStr + deviceLogStr);
 
                                 // error 54 means device does not exist, which likely means porter hasn't
                                 // recieved the dbupdate msg for it yet, will try same route again
@@ -116,28 +120,28 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                                     state.setAttemptCount(currentAttemptCount + 1);
 
                                     // log intent to retry on same reoute
-                                    log.debug("Got error 54 (no device) during ping." + routeLogStr + deviceLogStr +
-                                              ". Will attempt ping on same route again. This was attempt #" + currentAttemptCount + ".");
+                                    log.debug("Got error 54 (no device) during command " + commandString + "." + routeLogStr + deviceLogStr +
+                                              ". Will attempt " + commandString + " on same route again. This was attempt #" + currentAttemptCount + ".");
                                 }
 
-                                // could not ping device on this route, try next route
+                                // could not execute command on device on this route, try next route
                                 else {
 
                                     // log intent to try next route due to excessive error 54
                                     if (errorCode == 54) {
-                                        log.debug("Got error 54 (no device) during ping." + routeLogStr + deviceLogStr +
+                                        log.debug("Got error 54 (no device) during " + commandString + "." + routeLogStr + deviceLogStr +
                                                   ". The device still does not exists after " + currentAttemptCount + " attempts, something might be wrong. Moving on to next route.");
                                     }
 
-                                    // setup state to ping next route
+                                    // setup state to run command on next route
                                     state.setAttemptCount(1);
                                     state.incrementRoute();
 
-                                    log.debug("Will attempt ping on next route." + routeLogStr + deviceLogStr);
+                                    log.debug("Will attempt " + commandString + " on next route." + routeLogStr + deviceLogStr);
                                 }
 
                                 // run next request
-                                doNextDiscoveryRequest(device, state);
+                                doNextDiscoveryRequest(device, state, commandString);
 
                             } catch (Exception e) {
                                 runCallbackWithNull(state, "doNextDiscoveryRequest failed.", deviceLogStr, routeLogStr, e);
@@ -156,7 +160,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                             // route found! run routeFoundCallback
 
                             // log route found
-                            log.debug("Ping successful." + routeLogStr + deviceLogStr +
+                            log.debug("Command " + commandString + " successful." + routeLogStr + deviceLogStr +
                                       ". Running route found callback " + state.getRouteFoundCallback() + ".");
 
                             runCallbackWithFoundRouteId(state, deviceLogStr, routeLogStr, foundRouteId);

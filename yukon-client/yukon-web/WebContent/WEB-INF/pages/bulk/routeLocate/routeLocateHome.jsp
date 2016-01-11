@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <cti:standardPage module="tools" page="bulk.routeLocateHome">
 
@@ -31,6 +32,15 @@
             <%-- LOCATE BUTTON --%>
             <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
             <cti:checkRolesAndProperties value="LOCATE_ROUTE">
+                <%-- SELECT COMMAND --%>
+                <div class="stacked">
+                    <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
+                    <h4>${selectCommandLabel}:</h4>
+                    <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
+                        selectedCommandString="${commandString}"
+                        selectedSelectValue="${commandSelectValue}"/>
+                </div>
+            
                 <div class="page-action-area">
                     <cti:button nameKey="locateRoute" type="submit" classes="primary action" busy="true"/>
                 </div>
