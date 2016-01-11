@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.BadRequestException;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.SiteMapCategory;
@@ -107,7 +108,7 @@ public class HomeController {
 
     @RequestMapping("/toggleFavorite")
     public @ResponseBody Map<String, Boolean> toggleFavorite(String module, String name, String labelArgs, String path,
-            YukonUserContext userContext) {
+            YukonUserContext userContext) throws BadRequestException {
         boolean isFavorite = false;
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
         SiteModule moduleName = SiteModule.getByName(module);
@@ -119,6 +120,9 @@ public class HomeController {
             } catch (DataIntegrityViolationException e) {
                 log.error("Unable to save Favorite data .", e);
             }
+        } else {
+            log.warn("Unexpected error : any request parameter should not be null");
+            throw new BadRequestException();
         }
         return Collections.singletonMap("isFavorite", isFavorite);
     }
@@ -131,7 +135,7 @@ public class HomeController {
 
     @RequestMapping("/addToHistory")
     public @ResponseBody Map<String, Object> addToHistory(String module, String name, String labelArgs, String path,
-            YukonUserContext userContext) {
+            YukonUserContext userContext) throws BadRequestException {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
         SiteModule moduleName = SiteModule.getByName(module);
         if (null != name && null != path && null != moduleName) {
@@ -142,6 +146,9 @@ public class HomeController {
             } catch (DataIntegrityViolationException e) {
                 log.error("Unable to save History data .", e);
             }
+        } else {
+            log.warn("Unexpected error : any request parameter should not be null ");
+            throw new BadRequestException();
         }
         return Collections.emptyMap();
     }
