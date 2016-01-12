@@ -1,5 +1,7 @@
 package com.cannontech.web.amr.waterLeakReport.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -7,12 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -142,8 +143,9 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         
         
         if (log.isDebugEnabled()) {
-            DateTimeFormatter df = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm");
-            log.debug("start=" + df.print(range.getMin()) + "---stop=" + df.print(range.getMax()));
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+            df.setTimeZone(TimeZone.getTimeZone("CST"));            
+            log.debug("start=" + df.format(new Date(range.getMin().getMillis())) + "---stop=" + df.format(new Date(range.getMax().getMillis())));
             log.debug("range=" + range);
             log.debug("hours between=" + Hours.hoursBetween(range.getMin(), range.getMax()).getHours());
         }

@@ -3,11 +3,13 @@ package com.cannontech.web.scheduledFileExport.tasks;
 import java.io.File;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -17,7 +19,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.WaterLeakExportGenerationParameters;
 import com.cannontech.common.util.Range;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.waterLeakReport.model.SortBy;
@@ -29,8 +30,8 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
     
     @Autowired private WaterMeterLeakService waterMeterLeakService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DeviceCollectionService deviceCollectionService;
+    private static final Logger log = YukonLogManager.getLogger(ScheduledWaterLeakFileExportTask.class);
     
     private int collectionId;
     private int hoursPrevious;
@@ -50,8 +51,9 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
     
     @Override
     public void start() {
+        log.debug("ScheduledWaterLeakFileExportTask started");
         YukonUserContext userContext = getJob().getUserContext();
-        
+
         Duration timePrevious = Duration.standardHours(hoursPrevious);
         Instant now = new Instant();
         
@@ -63,7 +65,9 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
         
         DeviceCollection deviceCollection = deviceCollectionService.loadCollection(collectionId);
         List<SimpleDevice> devices = deviceCollection.getDeviceList();
+        log.debug("ScheduledWaterLeakFileExportTask-getLeaks");
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService.getLeaks(devices, range, includeDisabledPaos, threshold, userContext);
+        log.debug("ScheduledWaterLeakFileExportTask-getLeaks done");
         String[] headerRow = getHeaderRow();
         
         //Get the report data
