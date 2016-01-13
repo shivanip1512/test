@@ -42,9 +42,8 @@
   
   <bean class="com.cannontech.stars.energyCompany.dao.impl.EnergyCompanySettingDaoImpl"/>
 
-  <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl">
-    <property name="dynamicDataSource" ref="dynamicDataSource"/>
-  </bean>
+  <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl"/>
+
   <bean id="stateGroupDao" class="com.cannontech.core.dao.impl.StateGroupDaoImpl"/>
   <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl"/>
   <bean id="tagDao" class="com.cannontech.core.dao.impl.TagDaoImpl"/>

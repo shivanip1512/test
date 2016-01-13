@@ -49,7 +49,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
@@ -86,7 +86,7 @@ public class BulkPointDataInjectionController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired @Qualifier("main") Executor executor;
 
@@ -240,7 +240,7 @@ public class BulkPointDataInjectionController {
                                     timestamps);
                             AtomicLong numComplete = injectionStatus.getNumComplete();
                             long numTotal = injectionStatus.getNumTotal();
-                            dynamicDataSource.putValues(pointData);
+                            asyncDynamicDataSource.putValues(pointData);
                             numComplete.addAndGet(pointData.size());
                             log.info("Injected " + pointData.size() + " points. Progress: " + numComplete.get() + "/"
                                 + numTotal);

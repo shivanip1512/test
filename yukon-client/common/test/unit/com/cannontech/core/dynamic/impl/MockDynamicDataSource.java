@@ -20,8 +20,6 @@ import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.message.dispatch.message.LitePointData;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -87,37 +85,6 @@ public class MockDynamicDataSource implements DynamicDataSource {
             }
         }
         return Sets.newHashSet(pointToPvqhMap.values());
-    }
-    
-    /*
-     * Unimplemented methods: 
-     */
-    
-    @Override
-    public void putValue(PointData pointData) throws DynamicDataAccessException {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public void putValues(Iterable<PointData> pointDatas) throws DynamicDataAccessException {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public void putValue(int pointId, double value) throws DynamicDataAccessException {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    @Deprecated
-    public LitePointData getPointData(int pointId) throws DynamicDataAccessException {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    @Deprecated
-    public Set<LitePointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException {
-        throw new MethodNotImplementedException();
     }
 
     @Override

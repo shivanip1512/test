@@ -22,7 +22,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
 import com.cannontech.development.service.BulkPointDataInjectionService;
@@ -32,7 +32,7 @@ import com.google.common.collect.Maps;
 
 public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjectionService {
     private static final Logger log = YukonLogManager.getLogger(BulkPointDataInjectionServiceImpl.class);
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PaoDao paoDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
@@ -82,7 +82,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
                 pointData.setValue(roundedVal);
                 pointData.setTagsPointMustArchive(bulkInjection.isArchive());
                 pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
-                dynamicDataSource.putValue(pointData);
+                asyncDynamicDataSource.putValue(pointData);
                 log.debug("point data sent from bulk injector: " + pointData);
                 bulkInjection.incrementInjectionCount();
             }
@@ -105,7 +105,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
                 LitePoint point = getLitePointsFromSimpleDevicesWithAttribute(device, bulkInjection.getAttribute());
                 List<LitePoint> litePoints = Lists.newArrayList(point);
                 List<PointData> data = getPointData(bulkInjection, litePoints);
-                dynamicDataSource.putValues(data);
+                asyncDynamicDataSource.putValues(data);
                 bulkInjection.setInjectionCount(bulkInjection.getInjectionCount() + data.size());
                 log.debug("[Bulk injector] Points injected " + data.size());
             }

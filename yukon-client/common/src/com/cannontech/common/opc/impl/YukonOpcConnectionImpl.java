@@ -20,7 +20,6 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.netmodule.jpc.driver.opc.OpcGroup;
 import com.netmodule.jpc.driver.opc.OpcItem;
@@ -62,7 +61,6 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 	private OpcGroup statusGroup = null;
     
 	private ScheduledExecutor scheduledExecutor;
-	private DynamicDataSource dynamicDataSource;
 	private AsyncDynamicDataSource dataSource;
 	private Set<PointQuality> goodQualitiesSet;
 	
@@ -84,7 +82,8 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		opcServer = new YukonOpcServer(jopcServer,this.statusItemName);
 	}
 		
-	public boolean connect() {
+	@Override
+    public boolean connect() {
 		if(running) {
 			boolean ret = opcServer.connect(hostIp,serverName);
 			
@@ -121,7 +120,8 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		return connect();
 	}
 	
-	public void run() {
+	@Override
+    public void run() {
 		if (running) {
 			if (reConnecting) {
 				log.info(" Attempting to connect to " + serverName + ".");
@@ -164,7 +164,8 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		return ret;
 	}
 	
-	public void shutdown() {
+	@Override
+    public void shutdown() {
 		running = false;
 		log.info(" Closing Opc Connection to " + serverName + ". ");
 		disconnect();
@@ -185,15 +186,18 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		sendConnectionStatus(false);
 	}
 	
-	public boolean isConnected() {
+	@Override
+    public boolean isConnected() {
 		return connStatus;
 	}
 	
-	public boolean isShutdown() {
+	@Override
+    public boolean isShutdown() {
 		return !running;
 	}
 	
-	public boolean isEmpty() {
+	@Override
+    public boolean isEmpty() {
 		boolean ret = false;
 		
 		if (running) {
@@ -207,10 +211,12 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		return ret;
 	}
 	
+    @Override
     public void removeOpcConnectionListener(OpcConnectionListener listener) {
         connectionStatusListeners.remove(OpcConnectionListener.class, listener);
     }
     
+    @Override
     public void addOpcConnectionListener(OpcConnectionListener listener) {
         connectionStatusListeners.add(OpcConnectionListener.class, listener);
     }
@@ -236,7 +242,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 			if (group == null) { /* Only should make a sink if this is a new group. */
 				group = groupMap.get(item.getGroupName());
 				/*Only need 'sinks' for the receive points*/
-				sinkMap.put(group, new YukonOpcAdviceSinkImpl(group,this,dynamicDataSource));
+                sinkMap.put(group, new YukonOpcAdviceSinkImpl(group, this, dataSource));
 			}
 		}
 		return item;
@@ -429,10 +435,6 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 	@Override
 	public void setServerName(String name) {
 		serverName = name;
-	}
-	
-	public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-		this.dynamicDataSource = dynamicDataSource;
 	}
 	
 	public void setDataSource(AsyncDynamicDataSource dataSource) {

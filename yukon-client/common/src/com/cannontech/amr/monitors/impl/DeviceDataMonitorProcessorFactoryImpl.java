@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorCalculationService;
@@ -27,10 +26,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
@@ -39,14 +35,10 @@ import com.cannontech.database.data.point.PointType;
 
 public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFactoryBase<DeviceDataMonitor> implements DeviceDataMonitorProcessorFactory {
 
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private AttributeService attributeService;
-    @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
     @Autowired private DeviceDataMonitorCacheService deviceDataMonitorCacheService;
     @Autowired private DeviceDataMonitorCalculationService deviceDataMonitorCalculationService;
-    @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private PointDao pointDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;

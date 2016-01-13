@@ -19,7 +19,6 @@ import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.DeviceReadResult;
-import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
@@ -47,7 +46,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -74,14 +73,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupProviderDao deviceGroupDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private MeterDao meterDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthorizationService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
-    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     @Override
     public MoveInResult moveIn(MoveInForm moveInFormObj) {
@@ -393,7 +391,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         pointData.setValue(calculatedValue);
         pointData.setTagsPointMustArchive(true);
         pointData.setMillis(0);
-        dynamicDataSource.putValue(pointData);
+        asyncDynamicDataSource.putValue(pointData);
     }
 
     private void updateMeter(PlcMeter oldMeter, PlcMeter newMeter) {

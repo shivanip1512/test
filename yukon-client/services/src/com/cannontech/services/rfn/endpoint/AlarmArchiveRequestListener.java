@@ -43,7 +43,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
                 rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend);
     
                 // Save analog value(s) to db
-                dynamicDataSource.putValues(messagesToSend);
+                asyncDynamicDataSource.putValues(messagesToSend);
                 processedAlarmArchiveRequest.addAndGet(messagesToSend.size());
     
                 incrementProcessedArchiveRequest();

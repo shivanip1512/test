@@ -7,6 +7,7 @@ import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.dispatch.message.PointData;
 
 /**
  * AsyncDynamicDataSource provides a method to receive dynamic point, signal/alarm,
@@ -18,15 +19,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
  *
  */
 public interface AsyncDynamicDataSource {
-
-    /**
-     * Registers a listener to receive PointData events for the given
-     * points, returns the current value.
-     * @see removePointDataListener
-     * @param l         the listener to add, use AllPointDataListener to receive all values
-     * @param pointId   the pointId the listener will receive events for
-     */
-    public PointValueQualityHolder getAndRegisterForPointData(PointDataListener l, int pointId);
 
     /**
      * Registers a listener to receive PointData events for the given
@@ -116,10 +108,12 @@ public interface AsyncDynamicDataSource {
     public void addDBChangeLiteListener(DBChangeLiteListener l);
 
     /**
-     * Removes a listner previously added with addDBChangeListener
-     * @param l         the listener to remove
+     * Sends point data to dispatch.
      */
-    @Deprecated
-    public void removeDBChangeLiteListener(DBChangeLiteListener l);
+    void putValue(PointData pointData);
 
+    /**
+     * Sends point data to dispatch.
+     */
+    void putValues(Iterable<PointData> pointDatas);
 }

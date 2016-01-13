@@ -40,6 +40,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.RouteBroadcastService;
 import com.cannontech.common.device.service.RouteBroadcastService.CompletionCallback;
+import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -50,12 +51,11 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.common.model.Phase;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -77,7 +77,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupProviderDao deviceGroupProviderDao;
     @Autowired private StateDao stateDao;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
@@ -399,7 +399,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
             pointData.setValue(rawState);
             pointData.setTagsPointMustArchive(true);
             pointData.setMillis(0);
-            dynamicDataSource.putValue(pointData);
+            asyncDynamicDataSource.putValue(pointData);
         } catch (IllegalUseOfAttribute e) {
             log.warn("No Phase point found for device with id: " + device.getDeviceId());
         }

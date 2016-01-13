@@ -43,7 +43,7 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
                 rfnMeterEventService.processEvent(device, eventRequest.getEvent(), messagesToSend);
     
                 // Save analog value(s) to db
-                dynamicDataSource.putValues(messagesToSend);
+                asyncDynamicDataSource.putValues(messagesToSend);
                 processedEventRequest.addAndGet(messagesToSend.size());
     
                 if (log.isDebugEnabled()) {

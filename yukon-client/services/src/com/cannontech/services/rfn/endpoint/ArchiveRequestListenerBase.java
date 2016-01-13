@@ -26,13 +26,13 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 
 public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage> {
     
     private static final Logger log = YukonLogManager.getLogger(ArchiveRequestListenerBase.class);
 
-    @Autowired protected DynamicDataSource dynamicDataSource;
+    @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired protected RfnChannelDataConverter pointDataProducer;
     @Autowired protected RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;

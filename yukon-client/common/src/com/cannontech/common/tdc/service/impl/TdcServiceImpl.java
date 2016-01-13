@@ -41,9 +41,9 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -53,7 +53,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.command.service.CommandService;
-import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.base.Function;
@@ -67,10 +66,10 @@ import com.google.common.collect.Maps;
 public class TdcServiceImpl implements TdcService {
     private final static Logger log = YukonLogManager.getLogger(TdcServiceImpl.class);
 
-    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private CommandService commandService;
     @Autowired private AlarmCatDao alarmCatDao;
@@ -135,10 +134,10 @@ public class TdcServiceImpl implements TdcService {
         
     @Override
     public void sendPointData(int pointId, double value, LiteYukonUser user){
-        LitePointData pd = dynamicDataSource.getPointData(pointId);
+        PointValueQualityHolder pd = dynamicDataSource.getPointValue(pointId);
         PointData data  = new PointData();
         data.setId(pointId);
-        data.setTags(pd.getTags());
+        data.setTags(dynamicDataSource.getTags(pointId));
         data.setTimeStamp(new java.util.Date());
         data.setTime(new java.util.Date());
         data.setType(pd.getType());
@@ -147,7 +146,7 @@ public class TdcServiceImpl implements TdcService {
         data.setStr("Manual change occurred from " + CtiUtilities.getUserName()
                   + " using TDC (Yukon)");
         data.setUserName(user.getUsername());
-        dynamicDataSource.putValue(data);
+        asyncDynamicDataSource.putValue(data);
     }
     
     @Override

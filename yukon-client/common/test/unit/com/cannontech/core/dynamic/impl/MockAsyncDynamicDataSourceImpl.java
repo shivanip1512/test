@@ -13,13 +13,9 @@ import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.dispatch.message.PointData;
 
 public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
-
-    @Override
-    public PointValueQualityHolder getAndRegisterForPointData(PointDataListener l, int pointId) {
-        throw new MethodNotImplementedException();
-    }
 
     @Override
     public Set<? extends PointValueQualityHolder> getAndRegisterForPointData(PointDataListener l,
@@ -92,10 +88,13 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
     }
 
     @Override
-    @Deprecated
-    public void removeDBChangeLiteListener(DBChangeLiteListener l) {
+    public void putValue(PointData pointData) {
         throw new MethodNotImplementedException();
+        
     }
 
-
+    @Override
+    public void putValues(Iterable<PointData> pointDatas) {
+        throw new MethodNotImplementedException();  
+    }
 }

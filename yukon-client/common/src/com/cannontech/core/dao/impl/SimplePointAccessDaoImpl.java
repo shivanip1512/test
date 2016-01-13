@@ -1,10 +1,12 @@
 package com.cannontech.core.dao.impl;
 
 import org.joda.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.exception.PointDataException;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.SimplePointAccessDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -13,7 +15,8 @@ import com.cannontech.database.db.point.stategroup.PointState;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
-    private DynamicDataSource dynamicDataSource;
+    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     @Override
     public double getPointValue(LitePoint point) throws PointDataException {
@@ -88,10 +91,7 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
     
     @Override
     public void writePointData(PointData pointData) {
-    	dynamicDataSource.putValue(pointData);
+        asyncDynamicDataSource.putValue(pointData);
     }
     
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
 }

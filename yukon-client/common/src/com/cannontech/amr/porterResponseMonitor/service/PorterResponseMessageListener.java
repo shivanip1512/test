@@ -31,7 +31,6 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -42,11 +41,10 @@ import com.google.common.cache.CacheBuilder;
 
 public class PorterResponseMessageListener implements MessageListener {
 
-    private PaoDao paoDao;
-    private AttributeService attributeService;
-    private AsyncDynamicDataSource asyncDynamicDataSource;
-    private DynamicDataSource dynamicDataSource;
-    private PorterResponseMonitorDao porterResponseMonitorDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private PorterResponseMonitorDao porterResponseMonitorDao;
     private static final Logger log = YukonLogManager.getLogger(PorterResponseMessageListener.class);
     private Map<Integer, PorterResponseMonitor> monitors = new ConcurrentHashMap<Integer, PorterResponseMonitor>();
 
@@ -212,7 +210,7 @@ public class PorterResponseMessageListener implements MessageListener {
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setValue(rule.getStateInt());
         pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
-        dynamicDataSource.putValue(pointData);
+        asyncDynamicDataSource.putValue(pointData);
 
         LogHelper.debug(log, "Successfully generated PointData [pointId: %s, value: %s, type: %s]",
                         pointData.getId(), pointData.getValue(), pointData.getType());
@@ -265,26 +263,5 @@ public class PorterResponseMessageListener implements MessageListener {
      */
     public void setMonitors(Map<Integer, PorterResponseMonitor> monitors) {
         this.monitors = monitors;
-    }
-
-    @Autowired
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    @Autowired
-    public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
-        this.asyncDynamicDataSource = asyncDynamicDataSource;
-    }
-    @Autowired
-    public void setPorterResponseMonitorDao(PorterResponseMonitorDao porterResponseMonitorDao) {
-        this.porterResponseMonitorDao = porterResponseMonitorDao;
     }
 }

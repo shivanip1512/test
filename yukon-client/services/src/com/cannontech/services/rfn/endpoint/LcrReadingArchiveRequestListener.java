@@ -145,7 +145,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                     // Handle point data
                     List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
                     messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
-                    dynamicDataSource.putValues(messagesToSend);
+                    asyncDynamicDataSource.putValues(messagesToSend);
                     archivedReadings.addAndGet(messagesToSend.size());
                     if (log.isDebugEnabled()) {
                         log.debug(messagesToSend.size() + " PointDatas generated for RfnLcrReadingArchiveRequest");

@@ -9,7 +9,7 @@ import com.cannontech.common.opc.YukonOpcConnection;
 import com.cannontech.common.opc.model.YukonOpcItem;
 import com.cannontech.common.opc.service.OpcService;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.message.dispatch.message.PointData;
 import com.netmodule.jpc.driver.opc.OpcAdviseSink;
@@ -20,15 +20,16 @@ public class YukonOpcAdviceSinkImpl extends OpcAdviseSink {
 	
 	private YukonOpcConnection yukonOpcConnection;
 	private Logger log = YukonLogManager.getLogger(OpcService.class);
-	private DynamicDataSource dispatchConnection;
+	private AsyncDynamicDataSource asyncDynamicDataSource;
 	
-	public YukonOpcAdviceSinkImpl(OpcGroup group, YukonOpcConnection server, DynamicDataSource dispatchConn) {
+	public YukonOpcAdviceSinkImpl(OpcGroup group, YukonOpcConnection server, AsyncDynamicDataSource dispatchConn) {
 		super(group);
 		yukonOpcConnection = server;
-		this.dispatchConnection = dispatchConn;
+		this.asyncDynamicDataSource = dispatchConn;
 	}
 	
-	public void readAsyncCallback(OpcItem opcItem) {
+	@Override
+    public void readAsyncCallback(OpcItem opcItem) {
 		int handle = opcItem.getClientHandle();
 		
 		YukonOpcItem yOpcItem = yukonOpcConnection.getOpcReceiveItem(handle);
@@ -120,7 +121,7 @@ public class YukonOpcAdviceSinkImpl extends OpcAdviseSink {
 
     
 		try{
-		    dispatchConnection.putValue(pointData);
+		    asyncDynamicDataSource.putValue(pointData);
 		}catch( DispatchNotConnectedException e) {
 		    log.info(" Dispatch not connected. Point updates cannot go out.");
 		}

@@ -3,25 +3,23 @@
  */
 package com.cannontech.datagenerator;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Date;
-
-import java.sql.Timestamp;
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang3.Validate;
+import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.message.dispatch.message.PointData;
 
 /**
@@ -30,7 +28,7 @@ import com.cannontech.message.dispatch.message.PointData;
  */
 public class CSV2PointData {
     private static Logger log = YukonLogManager.getLogger(CSV2PointData.class);
-    private DynamicDataSource dataSource;
+    private AsyncDynamicDataSource dataSource;
     private Timer timer;
     private int multiplier;
     private File file;
@@ -39,12 +37,12 @@ public class CSV2PointData {
         
     }
     
-    public CSV2PointData(DynamicDataSource dataSource, Timer timer) {
+    public CSV2PointData(AsyncDynamicDataSource dataSource, Timer timer) {
         this.dataSource = dataSource;
         this.timer = timer;
     }
 
-    public void setDataSource(DynamicDataSource dataSource) {
+    public void setDataSource(AsyncDynamicDataSource dataSource) {
         this.dataSource = dataSource;
     }
     
@@ -112,6 +110,7 @@ public class CSV2PointData {
 
             final Date date = new Date(time);
             timer.schedule(new TimerTask() {
+                @Override
                 public void run() {
                     log.info("sending PointData id number: " + pData.getId());
                     pData.setTime(date);
@@ -122,6 +121,7 @@ public class CSV2PointData {
         }
         
         timer.schedule(new TimerTask() {
+            @Override
             public void run() {
                 System.exit(0);
             }

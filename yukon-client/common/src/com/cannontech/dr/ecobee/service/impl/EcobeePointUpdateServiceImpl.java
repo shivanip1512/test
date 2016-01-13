@@ -15,7 +15,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
@@ -31,7 +31,7 @@ import com.google.common.collect.Iterables;
 public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
 
     @Autowired private AttributeService attributeService;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
 
     @Override
@@ -149,6 +149,6 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
         pointData.setTagsDataTimestampValid(true);
 
         pointValues.add(pointData);
-        dynamicDataSource.putValue(pointData);
+        asyncDynamicDataSource.putValue(pointData);
     }
 }

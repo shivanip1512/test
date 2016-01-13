@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.LitePointData;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -22,65 +20,6 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
 
     @Autowired private DynamicDataCache dynamicDataCache;
     @Autowired private DispatchProxy dispatchProxy;
-    
-    @Override
-    public void putValue(PointData pointData) {
-        dispatchProxy.putPointData(pointData);
-        dynamicDataCache.handleIncoming(pointData);
-    }
-    
-    @Override
-    public void putValues(Iterable<PointData> pointDatas) throws DynamicDataAccessException {
-        dispatchProxy.putPointData(pointDatas);
-        for (PointData pointData : pointDatas) {
-            dynamicDataCache.handleIncoming(pointData);
-        }
-    }
-
-    @Override
-    public void putValue(int pointId, double value) {
-        PointData pointData = new PointData();
-        pointData.setId(pointId);
-        pointData.setValue(value);
-        putValue(pointData);
-    }    
-    
-    @Override
-    public LitePointData getPointData(int pointId) {
-        LitePointData pointData = dynamicDataCache.getPointData(pointId);
-        if (pointData == null) {
-            pointData = dispatchProxy.getPointData(pointId);
-        }
-        return pointData;
-    }
-
-    @Override
-    public Set<LitePointData> getPointData(Set<Integer> pointIds) {
-        
-        Set<Integer> notCachedPointIds = new HashSet<Integer>(pointIds);
-        Set<LitePointData> pointData = new HashSet<LitePointData>((int) (pointIds.size() / 0.75f) + 1);
-        
-        // Get whatever we can out of the cache first
-        for (Integer id : pointIds) {
-            LitePointData pd = dynamicDataCache.getPointData(id);
-            if (pd != null) {
-                pointData.add(pd);
-                notCachedPointIds.remove(id);
-            }
-        }
-        
-        // Request to dispatch for the rest
-        if (notCachedPointIds.size() > 0) {
-            // break the request into partitions of 10000 so we reduce the risk of the request timing out
-            List<List<Integer>> notCachedPointIdsPartitioned = Lists.partition(Lists.newArrayList(notCachedPointIds), 10000);
-            for (List<Integer> notCachedPointIdsPartition: notCachedPointIdsPartitioned) {
-                Set<LitePointData> retrievedPointData = dispatchProxy.getPointData(Sets.newHashSet(notCachedPointIdsPartition));
-                pointData.addAll(retrievedPointData);
-            }
-        }
-        
-        return pointData;
-    }
 
     @Override
     public Set<Signal> getSignals(int pointId) {
@@ -171,13 +110,47 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
     }
     
     @Override
-    public PointValueQualityHolder getPointValue(int pointId) throws DynamicDataAccessException {
+    public PointValueQualityHolder getPointValue(int pointId){
         return getPointData(pointId);
     }
     
     @Override
-    public Set<? extends PointValueQualityHolder> getPointValues(Set<Integer> pointIds) throws DynamicDataAccessException {
+    public Set<? extends PointValueQualityHolder> getPointValues(Set<Integer> pointIds){
         return getPointData(pointIds);
     }
     
+    private LitePointData getPointData(int pointId) {
+        LitePointData pointData = dynamicDataCache.getPointData(pointId);
+        if (pointData == null) {
+            pointData = dispatchProxy.getPointData(pointId);
+        }
+        return pointData;
+    }
+
+    private Set<LitePointData> getPointData(Set<Integer> pointIds) {
+        
+        Set<Integer> notCachedPointIds = new HashSet<Integer>(pointIds);
+        Set<LitePointData> pointData = new HashSet<LitePointData>((int) (pointIds.size() / 0.75f) + 1);
+        
+        // Get whatever we can out of the cache first
+        for (Integer id : pointIds) {
+            LitePointData pd = dynamicDataCache.getPointData(id);
+            if (pd != null) {
+                pointData.add(pd);
+                notCachedPointIds.remove(id);
+            }
+        }
+        
+        // Request to dispatch for the rest
+        if (notCachedPointIds.size() > 0) {
+            // break the request into partitions of 10000 so we reduce the risk of the request timing out
+            List<List<Integer>> notCachedPointIdsPartitioned = Lists.partition(Lists.newArrayList(notCachedPointIds), 10000);
+            for (List<Integer> notCachedPointIdsPartition: notCachedPointIdsPartitioned) {
+                Set<LitePointData> retrievedPointData = dispatchProxy.getPointData(Sets.newHashSet(notCachedPointIdsPartition));
+                pointData.addAll(retrievedPointData);
+            }
+        }
+        
+        return pointData;
+    }
 }

@@ -30,7 +30,6 @@ import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
@@ -49,7 +48,6 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
     private ConfigurationSource config;
     private PointDao pointDao;
     private AsyncDynamicDataSource dataSource;
-    private DynamicDataSource dynamicDataSource;
 
     /* Master.cfg values */
     private final Map<String, String> serverAddressMap;
@@ -136,6 +134,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
     private void setupService() {
 
         globalScheduledExecutor.execute(new Runnable() {
+            @Override
             public void run() {
                 List<FdrTranslation> opcTranslations = fdrTranslationDao.getByInterfaceType(FdrInterfaceType.OPC);
 
@@ -315,7 +314,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
         pointData.setValue(status);
         pointData.setTimeStamp(new Date());
         try {
-            dynamicDataSource.putValue(pointData);
+            dataSource.putValue(pointData);
         } catch (DispatchNotConnectedException e) {
             log.info(" Dispatch not connected. OPC Connection status point cannot be updated.");
         }
@@ -381,6 +380,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
         }
 
         globalScheduledExecutor.execute(new Runnable() {
+            @Override
             public void run() {
                 for (FdrTranslation translation : translationList) {
                     // If its a delete, do not attempt to re-add it. This is for all points being
@@ -405,7 +405,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
 
         /* Configure Connection */
         conn.addOpcConnectionListener(listener);
-        conn.setDynamicDataSource(dynamicDataSource);
+        conn.setDataSource(dataSource);
         conn.setGoodQualitiesSet(goodQualitiesSet);
         conn.setDataSource(dataSource);
         conn.setScheduledExecutor(globalScheduledExecutor);
@@ -476,9 +476,5 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
 
     public void setGlobalScheduledExecutor(ScheduledExecutor globalScheduledExecutor) {
         this.globalScheduledExecutor = globalScheduledExecutor;
-    }
-
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
     }
 }

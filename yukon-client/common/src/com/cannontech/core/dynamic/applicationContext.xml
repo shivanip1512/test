@@ -6,9 +6,7 @@
         Defines dynamic data service related beans - use these to get real time Yukon point data
     </description>
 
-    <bean id="asyncDynamicDataSource" class="com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl">
-        <property name="dispatchProxy" ref="dispatchProxy" />
-    </bean>
+    <bean id="asyncDynamicDataSource" class="com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl"/>
     <bean id="dynamicDataSource" class="com.cannontech.core.dynamic.impl.DynamicDataSourceImpl"/>
     
     <bean id="serverRequest" class="com.cannontech.message.util.ServerRequestImpl" scope="prototype" />

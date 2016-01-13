@@ -1,6 +1,5 @@
 package com.cannontech.core.dynamic.impl;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.BootstrapUtils;
@@ -46,6 +44,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
@@ -55,7 +54,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
     private static final Logger log = YukonLogManager.getLogger(AsyncDynamicDataSourceImpl.class);
 
-    private DispatchProxy dispatchProxy;
+    @Autowired private DispatchProxy dispatchProxy;
     @Autowired private IServerConnection dispatchConnection;
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private DynamicDataSource dynamicDataSource;
@@ -74,18 +73,8 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     // listeners immediately and then ignore the reflection.
 
     private volatile boolean allPointsRegistered = false;
-    private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners;
-    private SetMultimap<Integer, SignalListener> pointIdSignalListeners;
-
-    {
-        log.info("source id: " + applicationSourceIdentifier);
-
-        SetMultimap<Integer, PointDataListener> pointIdPointDataListenersUnsynchronized = LinkedHashMultimap.create();
-        pointIdPointDataListeners = Multimaps.synchronizedSetMultimap(pointIdPointDataListenersUnsynchronized);
-
-        SetMultimap<Integer, SignalListener> pointIdSignalListenersUnsynchronized = LinkedHashMultimap.create();
-        pointIdSignalListeners =Multimaps.synchronizedSetMultimap(pointIdSignalListenersUnsynchronized);
-    }
+    private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners = Multimaps.synchronizedSetMultimap(LinkedHashMultimap.create());
+    private SetMultimap<Integer, SignalListener> pointIdSignalListeners = Multimaps.synchronizedSetMultimap(LinkedHashMultimap.create());
 
     private List<SignalListener> alarmSignalListeners = new CopyOnWriteArrayList<SignalListener>();
     private List<PointDataListener> allPointListeners = new CopyOnWriteArrayList<PointDataListener>();
@@ -95,9 +84,20 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
     @PostConstruct
     public void initialize() {
+        log.info("source id: " + applicationSourceIdentifier);
         this.dispatchConnection.addMessageListener(this);
     }
 
+    @Override
+    public void putValue(PointData pointData) {
+        putValues(Lists.newArrayList(pointData));
+    }
+    
+    @Override
+    public void putValues(Iterable<PointData> pointDatas){
+        dispatchProxy.putPointData(pointDatas);
+    }
+    
     @Override
     public void registerForAllPointData(PointDataListener l) {
         allPointListeners.add(l);
@@ -106,7 +106,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         try{
         	dispatchProxy.registerForPoints();	// send registration command
         } catch (DispatchNotConnectedException e) {
-            CTILogger.info("Registration failed temporarily because Dispatch wasn't connected");
+            log.info("Registration failed temporarily because Dispatch wasn't connected");
         }
     }
 
@@ -123,15 +123,9 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
             try{
                 dispatchProxy.registerForPointIds(unregisteredPointIds);
             } catch (DispatchNotConnectedException e) {
-                CTILogger.info("Registration failed temporarily because Dispatch wasn't connected");
+                log.info("Registration failed temporarily because Dispatch wasn't connected");
             }
         }
-    }
-
-    @Override
-    public PointValueQualityHolder getAndRegisterForPointData(PointDataListener l, int pointId) {
-        registerForPointData(l, Collections.singleton(pointId));
-        return dynamicDataSource.getPointValue(pointId);
     }
 
     @Override
@@ -174,11 +168,6 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     @Override
     public void addDBChangeLiteListener(DBChangeLiteListener l) {
         dbChangeLiteListeners.add(l);
-    }
-
-    @Override
-    public void removeDBChangeLiteListener(DBChangeLiteListener l) {
-        dbChangeLiteListeners.remove(l);
     }
 
     @Override
@@ -368,19 +357,8 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public int getDbChangeListenerCount() {
         return dbChangeListeners.size();
     }
-
+    
     public void setDispatchProxy(DispatchProxy dispatchProxy) {
         this.dispatchProxy = dispatchProxy;
     }
-
-    public Set<PointDataListener> getPointDataListeners(int pointId) {
-        Set<PointDataListener> listeners = pointIdPointDataListeners.get(pointId);
-        return listeners;
-    }
-
-    public Set<SignalListener> getSignalListeners(int pointId) {
-        Set<SignalListener> listeners = pointIdSignalListeners.get(pointId);
-        return listeners;
-    }
-
 }

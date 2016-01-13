@@ -53,7 +53,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
             List<CalculationData> toCalculate = pointDataProducer.convert(meterPlusReadingData, messagesToSend);
 
-            dynamicDataSource.putValues(messagesToSend);
+            asyncDynamicDataSource.putValues(messagesToSend);
             archivedReadings.addAndGet(messagesToSend.size());
 
             sendAcknowledgement(request);
@@ -97,7 +97,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
             calculatedProducer.calculate(toCalculate, messagesToSend);
 
-            dynamicDataSource.putValues(messagesToSend);
+            asyncDynamicDataSource.putValues(messagesToSend);
             log.debug(messagesToSend.size() + " PointDatas calculated for RfnMeterReadingArchiveRequest");
         }
     }

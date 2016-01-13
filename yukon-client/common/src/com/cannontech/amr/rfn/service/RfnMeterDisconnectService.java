@@ -22,7 +22,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -45,7 +45,7 @@ public class RfnMeterDisconnectService {
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private AttributeService attributeService;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     /**
      * Attempts to send a disconnect request for a RFN meter.  Will use a separate thread to make the request.
@@ -155,7 +155,7 @@ public class RfnMeterDisconnectService {
             pointData.setTime(new Date());
             pointData.setType(point.getPointType());
 
-            dynamicDataSource.putValue(pointData);
+            asyncDynamicDataSource.putValue(pointData);
 
             log.debug("PointData generated for RfnMeterDisconnectRequest");
         } catch (IllegalUseOfAttribute e) {

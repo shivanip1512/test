@@ -115,11 +115,7 @@ class DispatchProxy {
         extractSignals(signals, m);
         return signals;
     }
-    
-    void putPointData(PointData pointData) {
-        putPointData(Collections.singleton(pointData));
-    }
-    
+        
     void putPointData(Iterable<PointData> pointDatas) {
         validateDispatchConnection();
         Multi<PointData> multi = new Multi<PointData>();
