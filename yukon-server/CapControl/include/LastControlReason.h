@@ -68,6 +68,12 @@ class LastControlReasonCbc802x : public LastControlReason
 {
 public:
 
+    enum VoltageAlarmReasons
+    {
+        EmergencyVoltage    = 3,
+        OvUvControl         = 5
+    };
+
     std::string getText( const CtiCCTwoWayPoints & points ) override;
 
     long serialize( const CtiCCTwoWayPoints & points ) override;

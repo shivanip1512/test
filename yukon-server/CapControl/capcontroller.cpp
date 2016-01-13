@@ -3501,7 +3501,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 
                             if ( currentCapBank->getPointIdByAttribute( PointAttribute::LastControlReason ) == pointID )
                             {
-                                if ( value == 5 )   // 5 == OVUV Control
+                                if ( value == LastControlReasonCbc802x::EmergencyVoltage ||
+                                     value == LastControlReasonCbc802x::OvUvControl )
                                 {
                                     if ( ! currentCapBank->getOvUvSituationFlag() )
                                     {
