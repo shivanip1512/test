@@ -27,10 +27,7 @@
         <c:forEach items="${activeJobs}" var="jobStatus">
           <tr>
             <td title="${jobStatus.job.id}">
-               <cti:url var="editScheduleDetailsUrl" value="/admin/maintenance/edit" >
-                    <cti:param name="jobId" value="${jobStatus.job.id}"/>
-                </cti:url>
-                <a href="${editScheduleDetailsUrl}">${fn:escapeXml(jobStatus.job.jobDefinition.title)}</a>
+                ${fn:escapeXml(jobStatus.job.jobDefinition.title)}
             </td>
             <td><cti:formatDate value="${jobStatus.startTime}" type="TIME" /></td>
             <td>

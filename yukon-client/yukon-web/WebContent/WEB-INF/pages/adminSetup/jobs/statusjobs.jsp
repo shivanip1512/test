@@ -29,10 +29,7 @@
             </c:if>
             <tr>
                 <td><c:if test="${lastGroupId != jobStatus.job.jobGroupId}">
-                        <cti:url var="editScheduleDetailsUrl" value="/admin/maintenance/edit">
-                            <cti:param name="jobId" value="${jobStatus.job.id}" />
-                        </cti:url>
-                        <a href="${editScheduleDetailsUrl}">${fn:escapeXml(jobStatus.job.jobDefinition.title)}</a>
+                        ${fn:escapeXml(jobStatus.job.jobDefinition.title)}
                     </c:if>
                 </td>
                 <td><cti:formatDate value="${jobStatus.startTime}" type="BOTH" /></td>
