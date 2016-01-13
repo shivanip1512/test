@@ -56,10 +56,7 @@
         <property name="pointLegendFile" value="classpath:com/cannontech/common/pao/definition/dao/pointOffset.xsl" />
     </bean>
     
-    <bean id="attrDynamicDataSource" class="com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource">
-        <property name="dynamicDataSource" ref="dynamicDataSource"/>
-        <property name="attributeService" ref="attributeService"/>
-    </bean>	
+    <bean id="attrDynamicDataSource" class="com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource"/>
     
     <bean id="staticDeviceGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider">

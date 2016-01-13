@@ -14,6 +14,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
@@ -41,18 +42,17 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
-import com.cannontech.capcontrol.RegulatorPointMapping;
 
 public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     private static final Logger logger = YukonLogManager.getLogger(CymeSimulatorServiceImpl.class);
     
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     @Autowired private SimplePointAccessDao simplePointAccessDao;
     @Autowired private CymeWebService cymDISTWebService;
@@ -266,7 +266,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
 	    	
 			LitePoint litePoint = pointDao.getLitePoint(paoPointIdentifier);
 	    	
-	    	PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(litePoint.getPointID());
+	    	PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
 	    	
 	        TrueFalse state = TrueFalse.getForAnalogValue((int)pointValue.getValue());
 	        return (state == TrueFalse.TRUE);
@@ -357,7 +357,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
         
         // get Current Value to change
         try{
-            PointValueQualityHolder tapValue = dynamicDataSource.getPointValue(point.getLiteID());
+            PointValueQualityHolder tapValue = asyncDynamicDataSource.getPointValue(point.getLiteID());
             simplePointAccessDao.setPointValue(point.getLiteID(), tapValue.getValue() + tapChange);
 
             //Determine Bus

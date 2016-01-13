@@ -52,7 +52,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
@@ -82,7 +81,6 @@ public class DeviceDataMonitorCalculationServiceImpl extends ServiceWorker<Devic
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private PointDao pointDao;
     @Autowired private DeviceGroupProviderDao deviceGroupProviderDao;
     private JmsTemplate jmsTemplate;
@@ -334,7 +332,7 @@ public class DeviceDataMonitorCalculationServiceImpl extends ServiceWorker<Devic
         // wait for dispatch to be available before asking it for point data
         waitForDispatch();
 
-        Set<? extends PointValueQualityHolder> matchingPointValues = dynamicDataSource.getPointValues(pointIdToLitePoint.keySet());
+        Set<? extends PointValueQualityHolder> matchingPointValues = asyncDynamicDataSource.getPointValues(pointIdToLitePoint.keySet());
         
         // pull out the point ids
         Map<Integer, PointValueQualityHolder> pointIdToPVQH = Maps.newHashMap();

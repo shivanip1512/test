@@ -6,7 +6,7 @@ import java.util.List;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.msp.beans.v3.MeterRead;
@@ -55,7 +55,7 @@ public abstract class MeterReadBase implements ReadableDevice{
     @Override
     public void populateWithPointData(int deviceID) {
         List<LitePoint> litePoints = (YukonSpringHook.getBean("pointDao", PointDao.class)).getLitePointsByPaObjectId(deviceID);
-        DynamicDataSource dds = YukonSpringHook.getBean("dynamicDataSource", DynamicDataSource.class);
+        AsyncDynamicDataSource dds = YukonSpringHook.getBean("asyncDynamicDataSource", AsyncDynamicDataSource.class);
         
         for (LitePoint litePoint : litePoints) {
             PointValueQualityHolder pointData = dds.getPointValue(litePoint.getPointID());

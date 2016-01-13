@@ -87,7 +87,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
@@ -186,7 +186,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceUpdateService deviceUpdateService;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MeterDao meterDao;
     @Autowired private MeterReadProcessingService meterReadProcessingService;
@@ -634,7 +634,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
             BiMap<LitePoint, PaoIdentifier> pointsToPaos = attributeService.getPoints(meters,  BuiltInAttribute.OUTAGE_STATUS).inverse();
             Set<Integer> pointIds = Sets.newHashSet(Iterables.transform(pointsToPaos.keySet(), LitePoint.ID_FUNCTION));
-            Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValues(pointIds);
+            Set<? extends PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointValues(pointIds);
 
             final ImmutableMap<Integer, LitePoint> pointLookup = Maps.uniqueIndex(pointsToPaos.keySet(), LitePoint.ID_FUNCTION);
             final ImmutableMap<PaoIdentifier, YukonMeter> meterLookup = PaoUtils.indexYukonPaos(meters);

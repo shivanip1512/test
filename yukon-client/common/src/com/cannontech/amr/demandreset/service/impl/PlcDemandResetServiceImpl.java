@@ -26,7 +26,6 @@ import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -38,7 +37,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -55,9 +53,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     private final static String DEMAND_RESET_COMMAND = "putvalue ied reset";
     private final static String LAST_RESET_TIME_COMMAND = "getconfig ied time";
 
-    @Autowired private GroupCommandExecutor groupCommandExecutor;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;

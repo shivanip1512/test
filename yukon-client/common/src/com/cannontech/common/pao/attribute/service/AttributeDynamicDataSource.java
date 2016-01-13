@@ -3,11 +3,13 @@ package com.cannontech.common.pao.attribute.service;
 import java.util.Collection;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.RichPointData;
@@ -16,20 +18,12 @@ import com.google.common.collect.Maps;
 
 public class AttributeDynamicDataSource {
 
-    public DynamicDataSource dynamicDataSource;
-    public AttributeService attributeService;
-    
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
-
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
+    @Autowired public AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired public AttributeService attributeService;
+        
     public PointValueHolder getPointValue(YukonPao pao, Attribute attribute) {
         LitePoint litePoint = attributeService.getPointForAttribute(pao, attribute);
-        return dynamicDataSource.getPointValue(litePoint.getPointID());
+        return asyncDynamicDataSource.getPointValue(litePoint.getPointID());
     }
     
     public Map<PaoIdentifier,PointValueHolder> getPointValues(Collection<? extends YukonPao> paos, Attribute attribute) {
@@ -53,7 +47,7 @@ public class AttributeDynamicDataSource {
      */
     public RichPointData getRichPointData(YukonPao pao, Attribute attribute) {
         LitePoint litePoint = attributeService.getPointForAttribute(pao, attribute);
-        PointValueQualityHolder pointValueHolder = dynamicDataSource.getPointValue(litePoint.getPointID());
+        PointValueQualityHolder pointValueHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
         PaoPointIdentifier paoPointIdentifier = PaoPointIdentifier.createPaoPointIdentifier(litePoint, pao);
         
         RichPointData richPointData = new RichPointData(pointValueHolder, paoPointIdentifier);

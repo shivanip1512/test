@@ -20,7 +20,6 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -39,7 +38,6 @@ public class PointDataInjectionController {
     private static final Logger log = YukonLogManager.getLogger(PointDataInjectionController.class);
     
     @Autowired private PointDao pointDao;
-    @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     private @Autowired DatePropertyEditorFactory datePropertyEditorFactory;
@@ -54,7 +52,7 @@ public class PointDataInjectionController {
         PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(pointId);
         model.addAttribute("paoPointIdentifier", paoPointIdentifier);
         
-        PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
+        PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
         model.addAttribute("pointValue", pointValue);
         
         String pointName = pointDao.getPointName(pointId);

@@ -9,10 +9,7 @@
     package.
   </description>
   <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl"/>
-  <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl">
-  	<property name="pointDao" ref="pointDao"/>
-  	<property name="dynamicDataSource" ref="dynamicDataSource"/>
-  </bean>  
+  <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl"/> 
   <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl"/>
   <bean id="capControlDao" class="com.cannontech.core.dao.impl.CapControlDaoImpl"/>
   <bean class="com.cannontech.core.dao.impl.MACScheduleDaoImpl"/>

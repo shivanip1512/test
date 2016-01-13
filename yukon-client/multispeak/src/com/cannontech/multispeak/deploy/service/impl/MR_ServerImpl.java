@@ -25,7 +25,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -68,7 +68,7 @@ public class MR_ServerImpl implements MR_Server{
 
     @Autowired private AttributeService attributeService;
     @Autowired private DemandResetService demandResetService;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private MspMeterDao mspMeterDao;
     @Autowired private MspObjectDao mspObjectDao;
@@ -244,7 +244,7 @@ public class MR_ServerImpl implements MR_Server{
                 for (BuiltInAttribute attribute : attributesToLoad) {
                     try {
                         LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
-                        PointValueQualityHolder pointValueQualityHolder = dynamicDataSource.getPointValue(litePoint.getPointID());
+                        PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
                         if( pointValueQualityHolder != null && 
                                 pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
                             meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder);
@@ -466,7 +466,7 @@ public class MR_ServerImpl implements MR_Server{
             for (BuiltInAttribute attribute : attributesToLoad) {
                 try {
                     LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
-                    PointValueQualityHolder pointValueQualityHolder = dynamicDataSource.getPointValue(litePoint.getPointID());
+                    PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
                     if( pointValueQualityHolder != null && 
                             pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
                         formattedBlockProcessingService.updateFormattedBlock(block, attribute, pointValueQualityHolder);

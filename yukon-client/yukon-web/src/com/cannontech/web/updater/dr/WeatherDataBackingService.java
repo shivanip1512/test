@@ -15,7 +15,6 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.weather.WeatherDataService;
 import com.cannontech.common.weather.WeatherLocation;
 import com.cannontech.common.weather.WeatherObservation;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -28,7 +27,6 @@ public class WeatherDataBackingService implements UpdateBackingService {
     private String baseKey = "yukon.web.modules.adminSetup.config.weather.weatherInput.";
 
     @Autowired private WeatherDataService weatherDataService;
-    @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private DateFormattingService dateFormattingService;
 

@@ -12,6 +12,8 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -43,11 +45,11 @@ import com.google.common.collect.Sets;
 public class OpcService implements OpcConnectionListener, DBChangeListener {
 
     /* Spring loaded */
-    private FdrTranslationDao fdrTranslationDao;
-    private ScheduledExecutor globalScheduledExecutor;
-    private ConfigurationSource config;
-    private PointDao pointDao;
-    private AsyncDynamicDataSource dataSource;
+    @Autowired private FdrTranslationDao fdrTranslationDao;
+    @Autowired @Qualifier("main") private ScheduledExecutor globalScheduledExecutor;
+    @Autowired private ConfigurationSource config;
+    @Autowired private PointDao pointDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     /* Master.cfg values */
     private final Map<String, String> serverAddressMap;
@@ -116,7 +118,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
                     String[] value = tokens.nextToken().split(":");
                     serverAddressMap.put(value[0], value[1]);
                 }
-                dataSource.addDBChangeListener(this);
+                asyncDynamicDataSource.addDBChangeListener(this);
 
                 setupService();
             } catch (UnknownKeyException e) {
@@ -314,7 +316,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
         pointData.setValue(status);
         pointData.setTimeStamp(new Date());
         try {
-            dataSource.putValue(pointData);
+            asyncDynamicDataSource.putValue(pointData);
         } catch (DispatchNotConnectedException e) {
             log.info(" Dispatch not connected. OPC Connection status point cannot be updated.");
         }
@@ -405,9 +407,8 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
 
         /* Configure Connection */
         conn.addOpcConnectionListener(listener);
-        conn.setDataSource(dataSource);
+        conn.setDataSource(asyncDynamicDataSource);
         conn.setGoodQualitiesSet(goodQualitiesSet);
-        conn.setDataSource(dataSource);
         conn.setScheduledExecutor(globalScheduledExecutor);
 
 
@@ -455,26 +456,5 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
                 opcConnectionMap.remove(entry.getKey());
             }
         }
-    }
-
-    /* Spring stuff */
-    public void setFdrTranslationDao(FdrTranslationDao dao) {
-        this.fdrTranslationDao = dao;
-    }
-
-    public void setConfig(ConfigurationSource config) {
-        this.config = config;
-    }
-
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    public void setDataSource(AsyncDynamicDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public void setGlobalScheduledExecutor(ScheduledExecutor globalScheduledExecutor) {
-        this.globalScheduledExecutor = globalScheduledExecutor;
     }
 }

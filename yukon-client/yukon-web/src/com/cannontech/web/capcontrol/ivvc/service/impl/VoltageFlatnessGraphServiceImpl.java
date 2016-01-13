@@ -38,7 +38,7 @@ import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -69,20 +69,21 @@ import com.google.common.collect.Sets;
 
 public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphService {
     
-    private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
-    private PaoDao paoDao;
-    private DynamicDataSource dynamicDataSource;
-    private StrategyDao strategyDao;
-    private PointDao pointDao;
-    private DateFormattingService dateFormattingService;
-    private ZoneService zoneService;
-    private FilterCacheFactory filterCacheFactory;
-    private PointFormattingService pointFormattingService;
-    private PaoLoadingService paoLoadingService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private StrategyDao strategyDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private ZoneService zoneService;
+    @Autowired private FilterCacheFactory filterCacheFactory;
+    @Autowired private PointFormattingService pointFormattingService;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private ZoneDtoHelper zoneDtoHelper;
+    
     private static final Logger log = YukonLogManager.getLogger(VoltageFlatnessGraphService.class);
-    private ConfigurationSource configurationSource;
-    private ZoneDtoHelper zoneDtoHelper;
     
     private int bucketResolution;
 
@@ -320,7 +321,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 
     private long getLargestPointTime(Set<Integer> allGraphPoints) {
         long largestTime = 0;
-        Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValues(allGraphPoints);
+        Set<? extends PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointValues(allGraphPoints);
 
         for (PointValueQualityHolder point : pointValues) {
             long pointTime = point.getPointDataTimeStamp().getTime();
@@ -570,9 +571,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
             if (regulatorPoint == null) {
                 throw new IllegalUseOfAttribute("Voltage point not found on regulator: " + paoId);
             }
-            pointValue = dynamicDataSource.getPointValue(regulatorPoint.getLiteID());
+            pointValue = asyncDynamicDataSource.getPointValue(regulatorPoint.getLiteID());
         } else {
-            pointValue = dynamicDataSource.getPointValue(pointId);
+            pointValue = asyncDynamicDataSource.getPointValue(pointId);
         }
         String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
         String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), 
@@ -740,70 +741,5 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         Double iterationSize = max / bucketResolution;
         BigDecimal iterationSizeRoundedUp = GraphIntervalRounding.roundUp(iterationSize, 5);
         return iterationSizeRoundedUp;
-    }
-
-    @Autowired
-    public void setExtraPaoPointAssignmentDao(ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
-        this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    @Autowired
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
-
-    @Autowired
-    public void setStrategyDao(StrategyDao strategyDao) {
-        this.strategyDao = strategyDao;
-    }
-
-    @Autowired
-    public void setZoneService(ZoneService zoneService) {
-        this.zoneService = zoneService;
-    }
-
-    @Autowired
-    public void setFilterCacheFactory(FilterCacheFactory filterCacheFactory) {
-        this.filterCacheFactory = filterCacheFactory;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-		this.pointDao = pointDao;
-	}
-    
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-		this.dateFormattingService = dateFormattingService;
-	}
-    
-    @Autowired
-    public void setPointFormattingService(PointFormattingService pointFormattingService) {
-		this.pointFormattingService = pointFormattingService;
-	}
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-		this.paoLoadingService = paoLoadingService;
-	}
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-		this.messageSourceResolver = messageSourceResolver;
-	}
-    
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-    
-    @Autowired
-    public void setZoneDtoHelper(ZoneDtoHelper zoneDtoHelper) {
-        this.zoneDtoHelper = zoneDtoHelper;
     }
 }

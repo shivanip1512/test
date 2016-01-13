@@ -25,7 +25,7 @@ import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
@@ -47,7 +47,7 @@ import com.google.common.collect.ImmutableSet.Builder;
  */
 public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
 
-    @Autowired private DynamicDataSource dds;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;

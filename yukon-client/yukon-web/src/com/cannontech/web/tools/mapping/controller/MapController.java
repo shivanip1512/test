@@ -28,7 +28,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
@@ -49,7 +49,7 @@ import com.google.common.collect.Sets;
 public class MapController {
     
     @Autowired private AttributeService attributeService;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private PaoDao paoDao;
     @Autowired private PaoLoadingService paoLoadingService;
@@ -151,7 +151,7 @@ public class MapController {
         }
         
         // Determine visibility for status points
-        Set<? extends PointValueQualityHolder> statusValues = dynamicDataSource.getPointValues(statusPoints.keySet());
+        Set<? extends PointValueQualityHolder> statusValues = asyncDynamicDataSource.getPointValues(statusPoints.keySet());
         
         for (PointValueQualityHolder pvqh : statusValues) {
             LitePoint lp = statusPoints.get(pvqh.getId());
@@ -165,7 +165,7 @@ public class MapController {
         }
         
         // Determine visibility for NON status points
-        Map<Integer, Set<Signal>> signals = dynamicDataSource.getSignals(nonStatusPoints.keySet());
+        Map<Integer, Set<Signal>> signals = asyncDynamicDataSource.getSignals(nonStatusPoints.keySet());
         
         for (Integer pointId : signals.keySet()) {
             LitePoint lp = nonStatusPoints.get(pointId);

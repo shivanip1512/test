@@ -42,7 +42,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -70,7 +69,6 @@ public class TdcServiceImpl implements TdcService {
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private CommandService commandService;
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private DisplayDao displayDao;
@@ -134,10 +132,10 @@ public class TdcServiceImpl implements TdcService {
         
     @Override
     public void sendPointData(int pointId, double value, LiteYukonUser user){
-        PointValueQualityHolder pd = dynamicDataSource.getPointValue(pointId);
+        PointValueQualityHolder pd = asyncDynamicDataSource.getPointValue(pointId);
         PointData data  = new PointData();
         data.setId(pointId);
-        data.setTags(dynamicDataSource.getTags(pointId));
+        data.setTags(asyncDynamicDataSource.getTags(pointId));
         data.setTimeStamp(new java.util.Date());
         data.setTime(new java.util.Date());
         data.setType(pd.getType());
@@ -184,7 +182,7 @@ public class TdcServiceImpl implements TdcService {
 
     @Override
     public String getPointState(int pointId) {
-        int tags = dynamicDataSource.getTags(pointId);
+        int tags = asyncDynamicDataSource.getTags(pointId);
         return TagUtils.getTagString(tags);
     }
 
@@ -193,7 +191,7 @@ public class TdcServiceImpl implements TdcService {
         List<DisplayData> data = Lists.newArrayList();
         List<LiteAlarmCategory> alarmList = alarmCatDao.getAlarmCategories();
         for (LiteAlarmCategory alarmCat : alarmList) {
-            Set<Signal> signals = dynamicDataSource.getCachedSignalsByCategory(alarmCat.getAlarmCategoryId());
+            Set<Signal> signals = asyncDynamicDataSource.getCachedSignalsByCategory(alarmCat.getAlarmCategoryId());
             data.addAll(getDisplayData(signals, showActive));
         }
         Collections.sort(data, sortByDate);
@@ -202,13 +200,13 @@ public class TdcServiceImpl implements TdcService {
         
     @Override
     public List<DisplayData> getUnacknowledgedAlarms(int pointId) {
-        Set<Signal> signals = dynamicDataSource.getCachedSignals(pointId);
+        Set<Signal> signals = asyncDynamicDataSource.getCachedSignals(pointId);
         return getDisplayData(signals, false);
     }
 
     @Override
     public int getUnackAlarmCountForPoint(int pointId) {
-        Set<Signal> signals = dynamicDataSource.getCachedSignals(pointId);
+        Set<Signal> signals = asyncDynamicDataSource.getCachedSignals(pointId);
         List<Signal> unackAlarms = Lists.newArrayList(Iterables.filter(signals, new Predicate<Signal>() {
             @Override
             public boolean apply(Signal signal) {
@@ -221,7 +219,7 @@ public class TdcServiceImpl implements TdcService {
     
     @Override
     public int getUnackAlarmCountForPoint(int pointId, int condition) {
-        Set<Signal> signals = dynamicDataSource.getCachedSignals(pointId);
+        Set<Signal> signals = asyncDynamicDataSource.getCachedSignals(pointId);
         for(Signal signal: signals){
             if(signal.getCondition() == condition
                     && TagUtils.isAlarmUnacked(signal.getTags())
@@ -234,7 +232,7 @@ public class TdcServiceImpl implements TdcService {
          
     @Override
     public String getUnackOrActiveAlarmColor(int pointId, final int condition) {
-        Set<Signal> signals = dynamicDataSource.getCachedSignals(pointId);
+        Set<Signal> signals = asyncDynamicDataSource.getCachedSignals(pointId);
         for(Signal signal: signals){
             if(signal.getCondition() == condition){
                 return getColorClasses(signal);
@@ -245,7 +243,7 @@ public class TdcServiceImpl implements TdcService {
 
     @Override
     public String getUnackOrActiveAlarmColor(int pointId) {
-        List<Signal> signals = Lists.newArrayList(dynamicDataSource.getCachedSignals(pointId));
+        List<Signal> signals = Lists.newArrayList(asyncDynamicDataSource.getCachedSignals(pointId));
         List<Signal> alarms =
             Lists.newArrayList(Iterables.filter(signals, new Predicate<Signal>() {
                 @Override
@@ -342,7 +340,7 @@ public class TdcServiceImpl implements TdcService {
         int count = 0;
         List<LiteAlarmCategory> alarmList = alarmCatDao.getAlarmCategories();
         for (LiteAlarmCategory alarmCat : alarmList) {
-            Set<Signal> signals = dynamicDataSource.getCachedSignalsByCategory(alarmCat.getAlarmCategoryId());
+            Set<Signal> signals = asyncDynamicDataSource.getCachedSignalsByCategory(alarmCat.getAlarmCategoryId());
             for (Signal signal : signals) {
                 if (TagUtils.isAlarmUnacked(signal.getTags()) && signal.getCondition() != Signal.SIGNAL_COND) {
                     count++;
@@ -438,9 +436,9 @@ public class TdcServiceImpl implements TdcService {
 
     @Override
     public boolean isManualControlEnabled(int pointId){
-        PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
+        PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
         if(pointValue.getPointType() == PointType.Analog || pointValue.getPointType() == PointType.Status){
-            int tags = dynamicDataSource.getTags(pointId);
+            int tags = asyncDynamicDataSource.getTags(pointId);
             return TagUtils.isControllablePoint(tags) && TagUtils.isControlEnabled(tags);
         }
         return false;
@@ -451,7 +449,7 @@ public class TdcServiceImpl implements TdcService {
         if(!hasPointValueColumn){
             return false;
         }
-        int tags = dynamicDataSource.getTags(pointId);
+        int tags = asyncDynamicDataSource.getTags(pointId);
         PointType type = PointType.getForId(pointTypeId);
         boolean inService = !TagUtils.isDeviceOutOfService(tags) && !TagUtils.isPointOutOfService(tags);
         boolean isValidTypeForManualEntry = inService &&
@@ -461,13 +459,13 @@ public class TdcServiceImpl implements TdcService {
                     || type == PointType.CalcAnalog
                     || type == PointType.Status
                     || type == PointType.CalcStatus);
-        PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
+        PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
         return isValidTypeForManualEntry && pointValue.getPointQuality() != PointQuality.Constant;
     }
        
     private List<DisplayData> getCustomDisplayDataByAlarmCategory(Display display) {
         int catId = alarmCatDao.getAlarmCategoryIdFromCache(display.getName());
-        Set<Signal> signals = dynamicDataSource.getCachedSignalsByCategory(catId);
+        Set<Signal> signals = asyncDynamicDataSource.getCachedSignalsByCategory(catId);
         return getDisplayData(signals, true);
     }
        

@@ -11,7 +11,7 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.LMGearDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.ThermostatRampRateValues;
@@ -33,7 +33,7 @@ import com.google.common.collect.ImmutableMap;
 public class FormulaServiceImpl implements FormulaService {
     private final Logger log = YukonLogManager.getLogger(FormulaServiceImpl.class);
     
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private LMGearDao gearDao;
     
     @Override
@@ -88,7 +88,7 @@ public class FormulaServiceImpl implements FormulaService {
         // Any weather data values are retrieved via point lookup, identically to the POINT input type. 
         if (input.getInputType() == InputType.POINT || input.getInputType().isWeatherData()) {
             try {
-                return dynamicDataSource.getPointValue(input.getPointId()).getValue();
+                return asyncDynamicDataSource.getPointValue(input.getPointId()).getValue();
             } catch (DynamicDataAccessException e) {
                 throw new InputValueNotFoundException(formula.getName(), formula.getFormulaId());
             }

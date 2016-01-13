@@ -31,7 +31,7 @@ import com.cannontech.common.weather.WeatherStation;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -45,7 +45,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     @Autowired private StaticPaoInfoDao staticPaoInfoDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private AttributeService attributeService;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private SimplePointAccessDao pointAccessDao;
     @Autowired private NoaaWeatherDataService noaaWeatherDataService;
     private DecimalFormat doubleFormat = new DecimalFormat("#.#####");
@@ -63,8 +63,8 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 
     @Override
     public WeatherObservation getCurrentWeatherObservation(WeatherLocation weatherLocation) {
-        PointValueQualityHolder tempertureValue = dynamicDataSource.getPointValue(weatherLocation.getTempPoint().getLiteID());
-        PointValueQualityHolder humidityValue = dynamicDataSource.getPointValue(weatherLocation.getHumidityPoint().getLiteID());
+        PointValueQualityHolder tempertureValue = asyncDynamicDataSource.getPointValue(weatherLocation.getTempPoint().getLiteID());
+        PointValueQualityHolder humidityValue = asyncDynamicDataSource.getPointValue(weatherLocation.getHumidityPoint().getLiteID());
 
         Double temperature = tempertureValue.getValue();
         Double humidity = humidityValue.getValue();

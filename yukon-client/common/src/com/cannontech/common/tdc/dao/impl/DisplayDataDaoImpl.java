@@ -24,7 +24,7 @@ import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -43,7 +43,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PointDao pointDao;
     
     private final YukonRowMapper<DisplayData> createCustomRowMapper =
@@ -138,7 +138,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
             data.setCog(cog);
             // status points are not supported by the flot tag
             cog.setTrend(data.getPointType() != PointType.Status);
-            int tags = dynamicDataSource.getTags(data.getPointId());
+            int tags = asyncDynamicDataSource.getTags(data.getPointId());
             boolean inService = !TagUtils.isDeviceOutOfService(tags) && !TagUtils.isPointOutOfService(tags);
             boolean isValidTypeForManualEntry = inService &&
                 data.getPointType() == PointType.Analog
@@ -147,7 +147,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
                         || data.getPointType() == PointType.CalcAnalog
                         || data.getPointType() == PointType.Status
                         || data.getPointType() == PointType.CalcStatus;
-            PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(data.getPointId());
+            PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(data.getPointId());
             cog.setManualEntry(display.hasColumn(ColumnType.POINT_VALUE)
                                && isValidTypeForManualEntry
                                && pointValue.getPointQuality() != PointQuality.Constant);

@@ -52,11 +52,10 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.TagDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
@@ -93,10 +92,9 @@ public class TdcDisplayController {
     @Autowired private DisplayDao displayDao;
     @Autowired private TdcService tdcService;
     @Autowired private PointDao pointDao;
-    @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDao paoDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private CommandService commandService;
     @Autowired private TagService tagService;
     @Autowired private TagDao tagDao;
@@ -181,7 +179,7 @@ public class TdcDisplayController {
         backingBean.setPointId(pointId);
         model.addAttribute("backingBean", backingBean);
         model.addAttribute("enableDisable", EnabledStatus.values());
-        int tags = dynamicDataSource.getTags(pointId);
+        int tags = asyncDynamicDataSource.getTags(pointId);
 
         if (TagUtils.isDeviceOutOfService(tags)) {
             backingBean.setDeviceEnabledStatus(EnabledStatus.DISABLED);
@@ -201,7 +199,7 @@ public class TdcDisplayController {
     public @ResponseBody Map<String, String> enableDisableSend(YukonUserContext userContext,
                                  @ModelAttribute("backingBean") DisplayBackingBean backingBean) {
 
-        int tags = dynamicDataSource.getTags(backingBean.getPointId());
+        int tags = asyncDynamicDataSource.getTags(backingBean.getPointId());
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
         int deviceId = liteYukonPAO.getPaoIdentifier().getPaoId();
@@ -325,7 +323,7 @@ public class TdcDisplayController {
         DisplayBackingBean backingBean = new DisplayBackingBean();
         backingBean.setPointId(pointId);
         LitePoint litePoint = pointDao.getLitePoint(pointId);
-        PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
+        PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
         if (litePoint.getPointType() == PointTypes.STATUS_POINT
             || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
             LiteStateGroup group = pointDao.getStateGroup(litePoint.getStateGroupID());
@@ -350,7 +348,7 @@ public class TdcDisplayController {
         double newPointValue;
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
         PointValueQualityHolder pointValue =
-            dynamicDataSource.getPointValue(backingBean.getPointId());
+            asyncDynamicDataSource.getPointValue(backingBean.getPointId());
         if (litePoint.getPointType() == PointTypes.STATUS_POINT
             || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
             newPointValue = backingBean.getStateId();
@@ -388,7 +386,7 @@ public class TdcDisplayController {
         backingBean.setDeviceId(deviceId);
         LitePoint litePoint = pointDao.getLitePoint(pointId);
         if (litePoint.getPointType() == PointTypes.ANALOG_POINT) {
-            PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
+            PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
             backingBean.setValue(pointValue.getValue());
         } else if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
             LiteStateGroup group = pointDao.getStateGroup(litePoint.getStateGroupID());
@@ -479,7 +477,7 @@ public class TdcDisplayController {
     @RequestMapping(value = "data-viewer/tags", method = RequestMethod.POST)
     public String tags(ModelMap model, int deviceId, int pointId) {
         boolean isDeviceControlInhibited =
-            TagUtils.isDeviceControlInhibited(dynamicDataSource.getTags(pointId));
+            TagUtils.isDeviceControlInhibited(asyncDynamicDataSource.getTags(pointId));
         List<LiteTag> allTags = tagDao.getAllTags();
         List<Tag> tags = tagService.getTags(pointId);
         model.addAttribute("allTags", allTags);
@@ -559,7 +557,7 @@ public class TdcDisplayController {
                                  userContext.getYukonUser());
         }
         boolean isDeviceControlInhibited =
-            TagUtils.isDeviceControlInhibited(dynamicDataSource.getTags(backingBean.getPointId()));
+            TagUtils.isDeviceControlInhibited(asyncDynamicDataSource.getTags(backingBean.getPointId()));
         if(isDeviceControlInhibited && !backingBean.isDeviceControlInhibited()){
             commandService.toggleControlEnablement(backingBean.getDeviceId(),
                                                    false,

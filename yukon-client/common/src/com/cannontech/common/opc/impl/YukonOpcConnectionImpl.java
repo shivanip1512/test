@@ -61,7 +61,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 	private OpcGroup statusGroup = null;
     
 	private ScheduledExecutor scheduledExecutor;
-	private AsyncDynamicDataSource dataSource;
+	private AsyncDynamicDataSource asyncDynamicDataSource;
 	private Set<PointQuality> goodQualitiesSet;
 	
     public YukonOpcConnectionImpl(String host, String serverName, String statusItemName, int refreshRate, int dataUpdateRate) {
@@ -181,7 +181,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		groupMap.clear();
 		
 		/*Unregister for point data messages*/
-		dataSource.unRegisterForPointData(this);
+		asyncDynamicDataSource.unRegisterForPointData(this);
 		
 		sendConnectionStatus(false);
 	}
@@ -242,7 +242,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 			if (group == null) { /* Only should make a sink if this is a new group. */
 				group = groupMap.get(item.getGroupName());
 				/*Only need 'sinks' for the receive points*/
-                sinkMap.put(group, new YukonOpcAdviceSinkImpl(group, this, dataSource));
+                sinkMap.put(group, new YukonOpcAdviceSinkImpl(group, this, asyncDynamicDataSource));
 			}
 		}
 		return item;
@@ -277,7 +277,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 			Set<Integer> set = new HashSet<Integer>();
 			set.add(item.getHandle());
 			
-			dataSource.registerForPointData(this, set);
+			asyncDynamicDataSource.registerForPointData(this, set);
 		}
 		return item;	
 	}
@@ -422,7 +422,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		set.add(item.getHandle());
 		
 		/*if this was a send point. this might blow up?*/
-		dataSource.unRegisterForPointData(this, set);
+		asyncDynamicDataSource.unRegisterForPointData(this, set);
 		
 		return true;
 	}
@@ -438,7 +438,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 	}
 	
 	public void setDataSource(AsyncDynamicDataSource dataSource) {
-		this.dataSource = dataSource;
+		this.asyncDynamicDataSource = dataSource;
 	}
 	
 	public void setGoodQualitiesSet (Set<PointQuality> goodQualitiesSet) {

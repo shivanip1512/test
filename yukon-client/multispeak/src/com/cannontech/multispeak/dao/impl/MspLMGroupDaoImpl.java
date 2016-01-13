@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
@@ -31,7 +31,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PointDao pointDao;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 	
 	static String selectClause;
 	static String joinClause;
@@ -114,7 +114,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 		int totalChecked = 0;
 		
 		Set<Integer> pointIds = getAllStatusPoints(mspLMGroupCommunications);
-		Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValues(pointIds);
+		Set<? extends PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointValues(pointIds);
 		// Check status flag of port
 		for (PointValueQualityHolder pointValueQualityHolder : pointValues) {
 			

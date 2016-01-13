@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.core.dao.AlarmDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.Signal;
 
@@ -20,11 +22,11 @@ import com.cannontech.message.dispatch.message.Signal;
  */
 public final class AlarmDaoImpl implements AlarmDao {
     
-    private PointDao pointDao;
-    private DynamicDataSource dynamicDataSource;
+    @Autowired private PointDao pointDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
 	public List<Signal> getSignalsForPoint(int pointId) {
-	    Set<Signal> signals = dynamicDataSource.getSignals(pointId);
+	    Set<Signal> signals = asyncDynamicDataSource.getSignals(pointId);
         ArrayList<Signal> array = new ArrayList<Signal>();
         if( !signals.isEmpty() ) {
             array.addAll(signals);
@@ -32,10 +34,11 @@ public final class AlarmDaoImpl implements AlarmDao {
         return array;
 	}
 	
+    @Override
     public List<Signal> getSignalsForPoints(List<Integer> pointIds) {
 		List<Signal> sigList = new ArrayList<Signal>();
 		Set<Integer> pointIdSet = new HashSet<Integer>(pointIds);
-		Map<Integer, Set<Signal>> signalMap = dynamicDataSource.getSignals(pointIdSet);
+		Map<Integer, Set<Signal>> signalMap = asyncDynamicDataSource.getSignals(pointIdSet);
 		Collection<Set<Signal>> signalMapValues = signalMap.values();
         for(Set<Signal> signalSet : signalMapValues) {
             sigList.addAll(signalSet);
@@ -43,6 +46,7 @@ public final class AlarmDaoImpl implements AlarmDao {
 		return sigList;
 	}
 	
+    @Override
     public List<Signal> getSignalsForPao(int paoId) {
 		List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
 		List<Integer> pointIds = new ArrayList<Integer>();
@@ -53,6 +57,7 @@ public final class AlarmDaoImpl implements AlarmDao {
 		return getSignalsForPoints(pointIds);
 	}
 	
+    @Override
     public List<Signal> getSignalsForPaos(List<Integer> paoIds) {
 		List<Signal> paoSignals = new ArrayList<Signal>();
 		for (Integer paoId : paoIds) {
@@ -61,24 +66,18 @@ public final class AlarmDaoImpl implements AlarmDao {
 		return paoSignals;
 	}
 	
-	public List<Signal> getSignalsForAlarmCategory(int acId) {
-        return new ArrayList<Signal>(dynamicDataSource.getSignalsByCategory(acId));
+	@Override
+    public List<Signal> getSignalsForAlarmCategory(int acId) {
+        return new ArrayList<Signal>(asyncDynamicDataSource.getSignalsByCategory(acId));
 	}
 	
-	public List<Signal> getSignalsForAlarmCategories(List<Integer> acIds) {
+	@Override
+    public List<Signal> getSignalsForAlarmCategories(List<Integer> acIds) {
 		List<Signal> acSignals = new ArrayList<Signal>();
 		for (Integer acId : acIds) {
-			List<Signal> signals = new ArrayList<Signal>(dynamicDataSource.getSignalsByCategory(acId));
+			List<Signal> signals = new ArrayList<Signal>(asyncDynamicDataSource.getSignalsByCategory(acId));
 			acSignals.addAll(signals);
 		}
 		return acSignals;
 	}
-
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
-
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
 }

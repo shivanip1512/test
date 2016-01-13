@@ -1,7 +1,11 @@
 package com.cannontech.core.dynamic.impl;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -20,7 +24,6 @@ import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.SignalListener;
@@ -33,6 +36,7 @@ import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeHelper;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
@@ -57,7 +61,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     @Autowired private DispatchProxy dispatchProxy;
     @Autowired private IServerConnection dispatchConnection;
     @Autowired private IDatabaseCache databaseCache;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private DynamicDataCache dynamicDataCache;
 
     // Note that this is purposefully different than the default com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE
     // that is set in the message class because there is already code that attaches
@@ -131,9 +135,108 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     @Override
     public Set<? extends PointValueQualityHolder> getAndRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
         registerForPointData(l, pointIds);
-        return dynamicDataSource.getPointValues(pointIds);
+        return getPointValues(pointIds);
+    }
+    
+    @Override
+    public Set<? extends PointValueQualityHolder> getPointValues(Set<Integer> pointIds){
+        return getPointData(pointIds);
+    }
+    
+    
+    @Override
+    public PointValueQualityHolder getPointValue(int pointId){
+        return getPointData(pointId);
+    }
+    
+    @Override
+    public Integer getTags(int pointId) {
+        return (int) getPointData(pointId).getTags();
+    }
+    
+    @Override
+    public Set<Integer> getTags(Set<Integer> pointIds) {
+        Set<LitePointData> pointData = getPointData(pointIds);
+        Set<Integer> tags = new HashSet<Integer>((int)(pointIds.size() / 0.75f) + 1);
+        for (LitePointData pd : pointData) {
+            tags.add((int)pd.getTags());
+        }
+        return tags;
+    }
+    
+    @Override
+    public Set<Signal> getSignals(int pointId) {
+        
+        Set<Signal> signals = dynamicDataCache.getSignals(pointId);
+        if (signals == null) {
+            signals = dispatchProxy.getSignals(pointId);
+            dynamicDataCache.handleSignals(signals, pointId);
+        }
+        
+        return new HashSet<Signal>(signals);
+    }
+    
+    @Override
+    public Set<Signal> getCachedSignals(int pointId) {
+        
+        Set<Signal> signals = dynamicDataCache.getSignals(pointId);
+        if (signals != null) {
+           return signals;
+        }
+        return new HashSet<>();
     }
 
+    @Override
+    public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {
+        
+        Set<Integer> notCachedPointIds = new HashSet<Integer>(pointIds);
+        Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size() / 0.75f ) + 1);
+        
+        // Get whatever we can out of the cache first
+        for (Integer id : pointIds) {
+            Set<Signal> s = dynamicDataCache.getSignals(id);
+            if (s != null) {
+                signals.put(id, s);
+                notCachedPointIds.remove(id);
+            }
+        }
+        
+        // Request to dispatch for the rest
+        if (!notCachedPointIds.isEmpty()){
+            Map<Integer, Set<Signal>> retrievedSignals = dispatchProxy.getSignals(notCachedPointIds);
+            signals.putAll(retrievedSignals);
+            for (Integer pointId : notCachedPointIds) {
+                Set<Signal> pointSignals = retrievedSignals.get(pointId);
+                if (pointSignals == null) pointSignals = Collections.emptySet();
+                dynamicDataCache.handleSignals(pointSignals, pointId);
+            }
+        }
+        
+        return signals;
+    }
+    
+    @Override
+    public Set<Signal> getSignalsByCategory(int alarmCategoryId) {
+        Set<Signal> signals = dynamicDataCache.getSignalForCategory(alarmCategoryId);
+        if (signals == null) {
+            signals = new HashSet<Signal>();
+            Set<Signal> sigSet = dispatchProxy.getSignalsByCategory(alarmCategoryId);
+            if (sigSet != null && !sigSet.isEmpty()) {
+                signals.addAll(sigSet);
+            }
+        }
+        return signals;
+    }
+    
+    @Override
+    public Set<Signal> getCachedSignalsByCategory(int alarmCategoryId) {
+        Set<Signal> signals = dynamicDataCache.getSignalForCategory(alarmCategoryId);
+        if (signals != null) {
+            return signals;
+        }
+        return new HashSet<>();
+    }
+    
     @Override
     public void unRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
         log.debug("<> Remove Listener:"+l.getClass()+" point ids="+pointIds);
@@ -361,4 +464,42 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public void setDispatchProxy(DispatchProxy dispatchProxy) {
         this.dispatchProxy = dispatchProxy;
     }
+    
+    private Set<LitePointData> getPointData(Set<Integer> pointIds) {
+
+        Set<Integer> notCachedPointIds = new HashSet<Integer>(pointIds);
+        Set<LitePointData> pointData = new HashSet<LitePointData>((int) (pointIds.size() / 0.75f) + 1);
+
+        // Get whatever we can out of the cache first
+        for (Integer id : pointIds) {
+            LitePointData pd = dynamicDataCache.getPointData(id);
+            if (pd != null) {
+                pointData.add(pd);
+                notCachedPointIds.remove(id);
+            }
+        }
+
+        // Request to dispatch for the rest
+        if (notCachedPointIds.size() > 0) {
+            // break the request into partitions of 10000 so we reduce the risk of the request timing out
+            List<List<Integer>> notCachedPointIdsPartitioned =
+                Lists.partition(Lists.newArrayList(notCachedPointIds), 10000);
+            for (List<Integer> notCachedPointIdsPartition : notCachedPointIdsPartitioned) {
+                Set<LitePointData> retrievedPointData =
+                    dispatchProxy.getPointData(Sets.newHashSet(notCachedPointIdsPartition));
+                pointData.addAll(retrievedPointData);
+            }
+        }
+
+        return pointData;
+    }
+    
+    private LitePointData getPointData(int pointId) {
+        LitePointData pointData = dynamicDataCache.getPointData(pointId);
+        if (pointData == null) {
+            pointData = dispatchProxy.getPointData(pointId);
+        }
+        return pointData;
+    }
+
 }

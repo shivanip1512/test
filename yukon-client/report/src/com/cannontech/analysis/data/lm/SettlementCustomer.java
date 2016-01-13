@@ -18,7 +18,7 @@ import java.util.List;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
@@ -96,7 +96,7 @@ public class SettlementCustomer
 	{
 		Double returnVal = null;
 
-        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+		AsyncDynamicDataSource dds = YukonSpringHook.getBean("asyncDynamicDataSource", AsyncDynamicDataSource.class);
         PointValueHolder pointData = dds.getPointValue(pointID);
 		if (pointData != null)
         {
@@ -192,7 +192,8 @@ public class SettlementCustomer
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString()
+	@Override
+    public String toString()
 	{
 		String retStr = "CustomerID: " + getCustomerID() + "\tCurtailLoad: " + getCurtailableLoad() + "\tDemandLevel: " + getDemandLevel() +
 //			"\r\nEvent     : " + getEventStartDateTime() + " - " + getEventStopDateTime() + 

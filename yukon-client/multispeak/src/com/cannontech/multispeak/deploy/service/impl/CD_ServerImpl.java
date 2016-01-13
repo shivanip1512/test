@@ -17,7 +17,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -42,7 +42,7 @@ public class CD_ServerImpl implements CD_Server {
     private final Logger log = YukonLogManager.getLogger(this.getClass());
 
     @Autowired private AttributeService attributeService;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private MspMeterDao mspMeterDao;
     @Autowired private MspValidationService mspValidationService;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
@@ -144,7 +144,7 @@ public class CD_ServerImpl implements CD_Server {
 
         try {
             LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
-            PointValueQualityHolder pointValueQualityHolder = dynamicDataSource.getPointValue(litePoint.getPointID());
+            PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
 
             // dispatch cache could potentially give us an Uninit value
             if (pointValueQualityHolder == null

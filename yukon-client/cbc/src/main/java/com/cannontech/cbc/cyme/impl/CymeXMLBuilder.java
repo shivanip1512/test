@@ -32,7 +32,7 @@ import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -48,7 +48,7 @@ public class CymeXMLBuilder {
     @Autowired private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     @Autowired private PaoDao paoDao;
     @Autowired private SubstationBusDao substationBusDao;
-    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private ZoneDao zoneDao;
     @Autowired private PointDao pointDao;
     @Autowired private RegulatorEventsDao regulatorEventsDao;
@@ -85,7 +85,7 @@ public class CymeXMLBuilder {
         PaoPointIdentifier loadFactor = new PaoPointIdentifier(busPaoIdentifier, CymeDataListener.CYME_LOAD_FACTOR_IDENTIFIER);
         LitePoint litePoint = pointDao.getLitePoint(loadFactor);
         try{
-            PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(litePoint.getPointID());
+            PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
 
             loadFactorStr = Double.toString(pointValue.getValue());
             if (loadFactorStr == null) {
@@ -202,7 +202,7 @@ public class CymeXMLBuilder {
                 PointValueQualityHolder pointValueQualityHolder = null;
                 try {
                     LitePoint tapPositionPoint = extraPaoPointAssignmentDao.getLitePoint(regulator, RegulatorPointMapping.TAP_POSITION);
-                    pointValueQualityHolder = dynamicDataSource.getPointValue(tapPositionPoint.getLiteID());
+                    pointValueQualityHolder = asyncDynamicDataSource.getPointValue(tapPositionPoint.getLiteID());
 
                     if (pointValueQualityHolder == null) {
                         throw new CymeMissingDataException(
@@ -269,7 +269,7 @@ public class CymeXMLBuilder {
             String bankName = entry.getPaoName();
             PointValueQualityHolder pointValueQualityHolder = null;
             try {
-                pointValueQualityHolder = dynamicDataSource.getPointValue(entry.getPointId());
+                pointValueQualityHolder = asyncDynamicDataSource.getPointValue(entry.getPointId());
                 
                 if (pointValueQualityHolder == null) {
                     throw new CymeMissingDataException("No value returned from Dispatch for Status Point on Bank with name: " + bankName);
@@ -310,7 +310,7 @@ public class CymeXMLBuilder {
                 String regName = entry.getPaoName();
                 PointValueQualityHolder pointValueQualityHolder = null;
                 try {
-                    pointValueQualityHolder = dynamicDataSource.getPointValue(entry.getPointId());
+                    pointValueQualityHolder = asyncDynamicDataSource.getPointValue(entry.getPointId());
                     
                     if (pointValueQualityHolder == null) {
                         throw new CymeMissingDataException("No value returned from Dispatch for Tap Position for Regulator with name: " + regName);
@@ -360,7 +360,7 @@ public class CymeXMLBuilder {
                 String regName = entry.getPaoName();
                 PointValueQualityHolder pointValueQualityHolder = null;
                 try {
-                    pointValueQualityHolder = dynamicDataSource.getPointValue(entry.getPointId());
+                    pointValueQualityHolder = asyncDynamicDataSource.getPointValue(entry.getPointId());
                     
                     if (pointValueQualityHolder == null) {
                         throw new CymeMissingDataException("No value returned from Dispatch for Tap Position for Regulator with name: " + regName);
