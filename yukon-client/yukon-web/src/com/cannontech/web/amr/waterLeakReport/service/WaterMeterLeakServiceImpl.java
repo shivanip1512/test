@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Hours;
@@ -144,7 +143,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         
         if (log.isDebugEnabled()) {
             DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-            df.setTimeZone(TimeZone.getTimeZone("CST"));            
+            df.setTimeZone(userContext.getTimeZone());            
             log.debug("start=" + df.format(new Date(range.getMin().getMillis())) + "---stop=" + df.format(new Date(range.getMax().getMillis())));
             log.debug("range=" + range);
             log.debug("hours between=" + Hours.hoursBetween(range.getMin(), range.getMax()).getHours());
