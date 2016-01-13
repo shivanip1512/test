@@ -9,6 +9,7 @@ WHERE CategoryType = 'meterParameters';
 /* End YUK-14940 */
 
 /* Start YUK-14987 */
+/* @error ignore-begin */
 INSERT INTO StateGroup VALUES(-20, 'Ignored Control', 'Status');
 
 INSERT INTO State VALUES(-20, 0, 'Manual', 0, 6, 0);
@@ -31,6 +32,7 @@ INSERT INTO State VALUES(-20, 17, 'Bad Active Relay', 2, 6, 0);
 INSERT INTO State VALUES(-20, 18, 'NC Lockout', 3, 6, 0);
 INSERT INTO State VALUES(-20, 20, 'Auto Mode', 4, 6, 0);
 INSERT INTO State VALUES(-20, 21, 'Reclose Block', 5, 6, 0);
+/* @error ignore-end */
 /* End YUK-14987 */
 
 /**************************************************************/
