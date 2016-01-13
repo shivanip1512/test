@@ -508,7 +508,7 @@ public final class CtiUtilities {
      * @return boolean
      */
     public final static boolean isTrue(String s) {
-        return (TRUE_STRING.equalsIgnoreCase(s));
+        return TRUE_STRING.equalsIgnoreCase(s) || trueChar.toString().equalsIgnoreCase(s);
     }
 
     /**
@@ -517,7 +517,7 @@ public final class CtiUtilities {
      * @return
      */
     public final static boolean isFalse(String s) {
-        return (s == null || FALSE_STRING.equalsIgnoreCase(s));
+        return (s == null || FALSE_STRING.equalsIgnoreCase(s) || falseChar.toString().equalsIgnoreCase(s));
     }
 
     public static final void showHelp(String helpFileName) {

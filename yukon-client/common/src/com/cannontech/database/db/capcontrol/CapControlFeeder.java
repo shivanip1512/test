@@ -134,7 +134,7 @@ public class CapControlFeeder extends DBPersistent {
     }
 
     public String getMultiMonitorControl() {
-        return multiMonitorControl ? CtiUtilities.TRUE_STRING : CtiUtilities.FALSE_STRING;
+        return multiMonitorControl ? CtiUtilities.trueChar.toString() : CtiUtilities.falseChar.toString();
     }
 
     public void setMultiMonitorControl(String multiMonitorControl) {
@@ -158,7 +158,7 @@ public class CapControlFeeder extends DBPersistent {
     }
 
     public String getUsePhaseData() {
-        return usePhaseData ? CtiUtilities.TRUE_STRING : CtiUtilities.FALSE_STRING;
+        return usePhaseData ? CtiUtilities.trueChar.toString() : CtiUtilities.falseChar.toString();
     }
 
     public void setUsePhaseData(String usePhaseData) {
@@ -166,7 +166,7 @@ public class CapControlFeeder extends DBPersistent {
     }
 
     public String getControlFlag() {
-        return controlFlag ? CtiUtilities.TRUE_STRING : CtiUtilities.FALSE_STRING;
+        return controlFlag ? CtiUtilities.trueChar.toString() : CtiUtilities.falseChar.toString();
     }
 
     public void setControlFlags(String controlFlag) {
