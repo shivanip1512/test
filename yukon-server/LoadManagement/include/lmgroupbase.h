@@ -58,11 +58,11 @@ public:
     virtual LONG getHoursAnnuallyPointId() const;
     virtual LONG getControlStatusPointId() const;
     virtual const std::string& getLastControlString() const;
-    virtual bool readyToControlAt( CtiTime &currentTime ) const;
+    virtual bool readyToControlAt(CtiTime &currentTime) const;
 
     // Give me a ping, Vasili. One ping only, please.
-    virtual void setSingleRefreshSent(bool sent);
-    virtual bool isSingleRefreshSent() const;
+    void setSingleRefreshSent(bool sent);
+    bool isSingleRefreshSent() const;
 
     unsigned getInternalState() const;
 
@@ -193,7 +193,7 @@ private:
     LONG _controlstatuspointid;
     std::string _lastcontrolstring;
 
-    long _singleRefreshSent;
+    bool _singleRefreshSent;
 
 };
 
