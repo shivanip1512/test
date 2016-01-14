@@ -26,6 +26,7 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -33,6 +34,8 @@ import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointInfo;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.season.SeasonSchedule;
@@ -62,6 +65,7 @@ public class BusController {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private PaoScheduleDao paoScheduleDao;
+    @Autowired private PointDao pointDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SeasonScheduleDao seasonScheduleDao;
     @Autowired private StrategyDao strategyDao;
@@ -134,6 +138,15 @@ public class BusController {
             if (strategyId != -1) {
                 model.addAttribute("holidayStrat", strategyDao.getForId(strategyId));
             }
+        }
+
+        if (bus.getId() != null) {
+            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(bus.getId());
+            model.addAttribute("analogPoints", points.get(PointType.Analog));
+            model.addAttribute("pulseAccumulatorPoints", points.get(PointType.PulseAccumulator));
+            model.addAttribute("calcAnalogPoints", points.get(PointType.CalcAnalog));
+            model.addAttribute("statusPoints", points.get(PointType.Status));
+            model.addAttribute("calcStatusPoints", points.get(PointType.CalcStatus));
         }
 
         List<ViewableFeeder> feederList = busService.getFeedersForBus(bus.getId());

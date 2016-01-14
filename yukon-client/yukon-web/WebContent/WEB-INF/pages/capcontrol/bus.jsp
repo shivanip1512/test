@@ -205,7 +205,137 @@
                     </tags:nameValueContainer>
                 </cti:tab>
                 <cti:tab title="Attached Points">
-                    Todo
+                    <div class="scroll-md">
+                        <c:if test="${not empty statusPoints}">
+                            <h4>Status</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${statusPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator">
+                                                <cti:pointStatus pointId="${point.pointId}" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                        <c:if test="${not empty analogPoints}">
+                            <h4>Analog</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${analogPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator"></td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                        <c:if test="${not empty pulseAccumulatorPoints}">
+                            <h4>Accumulator</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${pulseAccumulatorPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator"></td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                        <c:if test="${not empty calcAnalogPoints}">
+                            <h4>Calc Analog</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${calcAnalogPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator"></td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                        <c:if test="${not empty calcStatusPoints}">
+                            <h4>Calc Status</h4>
+                            <table class="compact-results-table row-highlighting">
+                                <thead></thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="point" items="${calcStatusPoints}">
+                                        <tr>
+                                            <td>
+                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                            </td>
+                                            <td class="state-indicator">
+                                                <cti:pointStatus pointId="${point.pointId}" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                            </td>
+                                            <td class="wsnw">
+                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                    </div>
+                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                        <div class="action-area">
+                            <tags:pointCreation paoId="${bus.id}" />
+                        </div>
+                    </cti:checkRolesAndProperties>
                 </cti:tab>
                 <cti:tab title="Dual Bus">
                     <tags:nameValueContainer>
@@ -225,7 +355,6 @@
         </div>
     </div>
     <cti:csrfToken/>
-        <%-- TODO List of Points --%>
 
     <%-- TODO Feeder List --%>
     <tags:sectionContainer title="Feeders" styleClass="clear">
