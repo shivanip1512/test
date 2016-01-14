@@ -30,6 +30,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dao.SimplePointAccessDao;
+import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.device.Device;
 import com.google.common.util.concurrent.AtomicDouble;
@@ -201,11 +202,10 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
                 } else {
                     log.debug(message);
                 }
-                
             } catch (IllegalUseOfAttribute e) {
                 log.warn("caught exception in SystemMetrics.run", e);
             }
-
+            
             try {
                 double memory = Runtime.getRuntime().totalMemory() / 1024 / 1024;
                 double maxMemory = Runtime.getRuntime().maxMemory() / 1024 / 1024;
@@ -222,6 +222,8 @@ public class SystemMetricsImpl extends Observable implements Runnable, SystemMet
             } catch (IllegalUseOfAttribute e) {
                 log.warn("caught exception in SystemMetrics.run", e);
             }
+        } catch (DispatchNotConnectedException e) {
+            log.debug("dispatch is down right now, try again later");
         } catch (Exception e) {
             log.error("caught exception in run()", e);
         }
