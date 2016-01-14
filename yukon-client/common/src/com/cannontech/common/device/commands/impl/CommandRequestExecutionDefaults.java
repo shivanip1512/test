@@ -68,8 +68,8 @@ public final class CommandRequestExecutionDefaults {
         b.put(GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ,  new ExecutionInfo(false, 8, false));
         b.put(GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET, new ExecutionInfo(false, 8, false));
         b.put(GROUP_DEVICE_CONFIG_VERIFY,                         new ExecutionInfo(false, 8, false));
-        b.put(GROUP_DEVICE_CONFIG_SEND,                           new ExecutionInfo(true, 8, false));
-        b.put(GROUP_DEVICE_CONFIG_READ,                           new ExecutionInfo(true, 8, false));
+        b.put(GROUP_DEVICE_CONFIG_SEND,                           new ExecutionInfo(true, 7, false));
+        b.put(GROUP_DEVICE_CONFIG_READ,                           new ExecutionInfo(true, 7, false));
         b.put(PHASE_DETECT_CLEAR,                                 new ExecutionInfo(false, 14, false));
         b.put(PHASE_DETECT_COMMAND,                               new ExecutionInfo(false, 14, false));
         b.put(PHASE_DETECT_READ,                                  new ExecutionInfo(false, 7, false));
