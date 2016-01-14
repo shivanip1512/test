@@ -199,6 +199,7 @@ CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
 
 bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
+    // Protect pointMap while we use it.
     if( sendList )
     {
         CTILOCKGUARD( CtiMutex, guard, _sendMux);
@@ -239,6 +240,7 @@ bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sen
 
 void DnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
+    // Protect pointMap while we use it.
     if( recvList )
     { 
         CTILOCKGUARD( CtiMutex, guard, _receiveMux );
@@ -403,7 +405,9 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
     {
         // This guard must happen before the _sendMux or a deadlock can occur.
         CTILOCKGUARD( CtiMutex, sendGuard, getSendToList().getMutex() );
+        // Protect _sendMap while we use it.
         CTILOCKGUARD( CtiMutex, guard, _sendMux );
+
         for( const auto &kv : _sendMap )
         {
             const DnpId &dnpId = kv.second;
@@ -551,7 +555,9 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 
     //  look for the point with the correct control offset
     {
+        // This guard must happen before the _receiveMux or a deadlock can occur.
         CTILOCKGUARD( CtiMutex, recvGuard, getReceiveFromList().getMutex() );
+        // Protect pointMap while we use it.
         CTILOCKGUARD( CtiMutex, guard, _receiveMux );
 
         for( const auto &kv : _receiveMap )
@@ -1016,8 +1022,9 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 
     analog.status = ControlStatus::NotSupported;
 
-    // This guard must happen before the _sendMux or a deadlock can occur.
+    // This guard must happen before the _receiveMux or a deadlock can occur.
     CTILOCKGUARD( CtiMutex, recvGuard, getReceiveFromList().getMutex() );
+    // Protect _receiveMap while we use it.
     CTILOCKGUARD( CtiMutex, guard, _receiveMux );
 
     //  look for the point with the correct control offset
