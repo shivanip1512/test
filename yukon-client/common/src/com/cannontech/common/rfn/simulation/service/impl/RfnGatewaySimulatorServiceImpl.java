@@ -187,7 +187,12 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
     
     @Override
-    public void sendGatewayDataResponse(GatewayDataResponse response) {
+    public void sendGatewayDataResponse(String serial, boolean isGateway2) {
+
+        GatewayDataResponse response = new GatewayDataResponse();
+        String model = isGateway2 ? RfnDeviceCreationService.GATEWAY_2_MODEL_STRING : RfnDeviceCreationService.GATEWAY_1_MODEL_STRING;
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
+        response.setRfnIdentifier(rfnIdentifier);
         jmsTemplate.convertAndSend(dataAndUpgradeResponseQueue, response);
     }
 

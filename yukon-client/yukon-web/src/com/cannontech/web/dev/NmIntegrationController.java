@@ -283,6 +283,17 @@ public class NmIntegrationController {
         return "redirect:gatewaySimulator";
     }
     
+    @RequestMapping("sendGatewayDataResponse")
+    public String sendGatewayDataResponse(@RequestParam String serial,
+            @RequestParam(defaultValue = "false") boolean isGateway2, FlashScope flash) {
+
+        gatewaySimService.sendGatewayDataResponse(serial, isGateway2);
+        flash.setConfirm(new YukonMessageSourceResolvable(
+            "yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDataResponse" , serial));
+
+        return "redirect:gatewaySimulator";
+    }
+    
     @RequestMapping("enableAll")
     public String enableAllSimulators(FlashScope flash) {
         // Only start the threads that aren't already running. This lets the user specify non-default parameters for

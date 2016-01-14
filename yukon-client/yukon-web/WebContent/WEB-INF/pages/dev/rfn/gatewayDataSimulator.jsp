@@ -384,6 +384,25 @@
                     <cti:button label="Create" type="submit"/>
                 </form>
             </tags:sectionContainer>
+            <tags:sectionContainer title="Send Gateway Response Data">
+                Queue an unsolicited gateway response data message and also create new gateway when data message is received continuously for more than 2 hours 
+                and if that gateway doesn't exist in Yukon.
+
+                <br><br>
+                
+                <form action="sendGatewayDataResponse">
+                    <cti:csrfToken/>
+                    <tags:nameValueContainer tableClass="natural-width">
+                        <tags:nameValue name="Serial Number">
+                            <input name="serial" value="7500001337">
+                        </tags:nameValue>
+                        <tags:nameValue name="GWY-800">
+                            <input name="isGateway2" type="checkbox">
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
+                    <cti:button label="Send" type="submit"/>
+                </form>
+            </tags:sectionContainer>
         </div>
     </div>
 </cti:standardPage>

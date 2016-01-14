@@ -84,7 +84,7 @@ public interface RfnGatewaySimulatorService {
     /**
      * Send an unsolicited gateway data message.
      */
-    void sendGatewayDataResponse(GatewayDataResponse response);
+    void sendGatewayDataResponse(String serial, boolean isGateway2);
     
     /**
      * Send an unsolicited gateway archive message (which will create a new gateway device in Yukon).

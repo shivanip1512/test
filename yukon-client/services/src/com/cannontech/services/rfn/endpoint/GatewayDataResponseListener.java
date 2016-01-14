@@ -7,6 +7,8 @@ import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Hours;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
@@ -37,9 +39,30 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         @Override
         protected RfnDevice processCreation(RfnIdentifyingMessage message, RfnIdentifier identifier) {
             //We got data for a gateway that is not in the database.
-            //Don't do anything - we will expect to get a GatewayArchiveRequest soon
-            log.warn("Received data for a gateway that is not in the database: " + identifier);
-            throw new RuntimeException("Creation not attempted for " + identifier);
+            log.warn("Received data for a gateway that is not in the database. Creating " + identifier);
+            if (instantBasedRfnIdentifiers.containsKey(identifier)) {
+                if (Hours.hoursBetween(instantBasedRfnIdentifiers.get(identifier), Instant.now()).getHours() >= 2) {
+                    instantBasedRfnIdentifiers.remove(identifier);
+                    try {
+                        RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(), identifier);
+                        rfnDeviceCreationService.incrementNewDeviceCreated();
+                        log.debug("Created new gateway: " + device);
+                        gatewayEventLogService.createdGatewayAutomatically(device.getName(), 
+                                                                           device.getRfnIdentifier().getSensorSerialNumber());
+                        return device;
+                    } catch (Exception e) {
+                        log.warn("Creation failed for " + identifier, e);
+                        throw new RuntimeException("Creation failed for " + identifier, e);
+                    }
+
+                } else {
+                    throw new RuntimeException("Creation not attempted for " + identifier);
+                }
+
+            } else {
+                instantBasedRfnIdentifiers.put(identifier, Instant.now());
+                throw new RuntimeException("Creation not attempted for " + identifier);
+            }
         }
         
         @Override

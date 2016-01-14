@@ -1,13 +1,16 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -40,7 +43,8 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected JmsTemplate jmsTemplate;
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
-
+    protected static Map<RfnIdentifier, Instant> instantBasedRfnIdentifiers = new ConcurrentHashMap<RfnIdentifier, Instant> ();
+    
     protected abstract class ConverterBase extends Thread {
         private ArrayBlockingQueue<T> inQueue;
         private volatile boolean shutdown = false;
