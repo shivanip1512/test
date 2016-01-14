@@ -25,8 +25,22 @@
                     <tr>
                         <td>${fn:escapeXml(point.pointName)}</td>
                         <td class="state-indicator">
-                            <c:if test="${point.stateGroupID != 0}">
-                              <cti:pointStatus pointId="${point.pointID}" />
+                            <c:set var="rendered" value="${false}"/>
+                            <c:if test="${format == '{rawValue|lastControlReason}'}">
+                                <c:set var="rendered" value="${true}"/>
+                                <span class="box state-box"
+                                    data-format="background"
+                                    data-color-updater="POINT/${point.pointID}/{rawValue|lastControlReasonColor}"></span>
+                            </c:if>
+                            <c:if test="${format == '{rawValue|ignoredControlReason}'}">
+                                <c:set var="rendered" value="${true}"/>
+                                <span class="box state-box"
+                                    data-format="background"
+                                    data-color-updater="POINT/${point.pointID}/{rawValue|ignoredControlReasonColor}"></span>
+                            </c:if>
+                            <c:if test="${!rendered && point.stateGroupID != 0}">
+                                <c:set var="rendered" value="${true}"/>
+                                <cti:pointStatus pointId="${point.pointID}" />
                             </c:if>
                         </td>
                         <td>
@@ -99,10 +113,12 @@
             </thead>
             <tfoot></tfoot>
             <tbody>
-                <c:forEach var="point" items="${pointMap[cbcPointGroup.CONFIGURABLE_PARAMETERS]}">
+                <c:forEach var="formatForConfigurablePoint" items="${formatForConfigurablePoints}">
+                    <c:set var="point" value="${formatForConfigurablePoint.key}" />
+                    <c:set var="format" value="${formatForConfigurablePoint.value}" />
                     <tr>
                         <td>${fn:escapeXml(point.pointName)}</td>
-                        <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
+                        <td><cti:pointValue pointId="${point.pointID}" format="${format}"/></td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                     </tr>
                 </c:forEach>

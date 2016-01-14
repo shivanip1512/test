@@ -50,13 +50,13 @@ public class CapBankDetailsController {
     @Autowired private AttributeService attributeService;
 
     private static final Map<BuiltInAttribute,String> formatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
-        .put(BuiltInAttribute.FIRMWARE_VERSION, "{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToFirmwareVersion}")
-        .put(BuiltInAttribute.IP_ADDRESS, "{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToOctalIp}")
-        .put(BuiltInAttribute.NEUTRAL_CURRENT_SENSOR, "{rawValue|com.cannontech.cbc.util.CapControlUtils.convertNeutralCurrent}")
-        .put(BuiltInAttribute.SERIAL_NUMBER, "{rawValue|com.cannontech.cbc.util.CapControlUtils.convertLong}")
-        .put(BuiltInAttribute.UDP_PORT, "{rawValue|com.cannontech.cbc.util.CapControlUtils.convertLong}")
-        .put(BuiltInAttribute.LAST_CONTROL_REASON, "{rawValue|com.cannontech.cbc.util.CapControlUtils.convertControlReason}")
-        .put(BuiltInAttribute.IGNORED_CONTROL_REASON, "{rawValue|com.cannontech.cbc.util.CapControlUtils.convertControlReason}")
+        .put(BuiltInAttribute.FIRMWARE_VERSION, "{rawValue|firmwareVersion}")
+        .put(BuiltInAttribute.IP_ADDRESS, "{rawValue|ipAddress}")
+        .put(BuiltInAttribute.NEUTRAL_CURRENT_SENSOR, "{rawValue|neutralCurrent}")
+        .put(BuiltInAttribute.SERIAL_NUMBER, "{rawValue|long}")
+        .put(BuiltInAttribute.UDP_PORT, "{rawValue|long}")
+        .put(BuiltInAttribute.LAST_CONTROL_REASON, "{rawValue|lastControlReason}")
+        .put(BuiltInAttribute.IGNORED_CONTROL_REASON, "{rawValue|ignoredControlReason}")
         .build();
 
     @RequestMapping("capBankLocations")
@@ -129,24 +129,16 @@ public class CapBankDetailsController {
         model.addAttribute("pointMap", pointTimestamps);
 
         PaoType paoType = paoDao.getLiteYukonPAO(cbcId).getPaoType();
-        Map<LitePoint, String> formatForAnalogPoints = new LinkedHashMap<>();
 
-        for (LitePoint point : pointTimestamps.get(CBCPointGroup.ANALOG)) {
-            PointIdentifier pid = PointIdentifier.createPointIdentifier(point);
-            PaoTypePointIdentifier pptId = PaoTypePointIdentifier.of(paoType, pid);
-
-            String pointValueFormat = "SHORT";
-
-            //This set should contain 0 items if there is not a special format, or 1 if there is
-            Set<BuiltInAttribute> attributes = attributeService.findAttributesForPoint(pptId, formatMappings.keySet());
-            for (BuiltInAttribute attribute: attributes) {
-                pointValueFormat = formatMappings.get(attribute);
-            }
-
-            formatForAnalogPoints.put(point, pointValueFormat);
-        }
+        List<LitePoint> analogPoints = pointTimestamps.get(CBCPointGroup.ANALOG);
+        Map<LitePoint, String> formatForAnalogPoints = getFormatMappings(paoType, analogPoints);
 
         model.addAttribute("formatForAnalogPoints", formatForAnalogPoints);
+
+        List<LitePoint> configurableParams = pointTimestamps.get(CBCPointGroup.CONFIGURABLE_PARAMETERS);
+        Map<LitePoint, String> formatForConfigurablePoints = getFormatMappings(paoType, configurableParams);
+
+        model.addAttribute("formatForConfigurablePoints", formatForConfigurablePoints);
 
         Map<String, CBCPointGroup> cbcPointGroup = new HashMap<>();
         for (CBCPointGroup pointGroup : CBCPointGroup.values()) {
@@ -164,6 +156,29 @@ public class CapBankDetailsController {
         cachingPointFormattingService.addLitePointsToCache(pointList);
         
         return "cbcPointTimestamps.jsp";
+    }
+
+    private Map<LitePoint, String> getFormatMappings(PaoType paoType, List<LitePoint> litePoints) {
+
+        Map<LitePoint, String> formatForPoints = new LinkedHashMap<>();
+
+        for (LitePoint point : litePoints) {
+            PointIdentifier pid = PointIdentifier.createPointIdentifier(point);
+            PaoTypePointIdentifier pptId = PaoTypePointIdentifier.of(paoType, pid);
+
+            String pointValueFormat = "SHORT";
+
+            //This set should contain 0 items if there is not a special format, or 1 if there is
+            Set<BuiltInAttribute> attributes = attributeService.findAttributesForPoint(pptId, formatMappings.keySet());
+            for (BuiltInAttribute attribute: attributes) {
+                if (formatMappings.get(attribute) != null) {
+                    pointValueFormat = formatMappings.get(attribute);
+                }
+            }
+
+            formatForPoints.put(point, pointValueFormat);
+        }
+        return formatForPoints;
     }
 
 }

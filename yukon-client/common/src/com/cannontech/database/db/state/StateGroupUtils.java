@@ -34,6 +34,8 @@ public final class StateGroupUtils {
     
     public static final int STATEGROUP_LASTCONTROL_STATE = -17;
 
+    public static final int STATEGROUP_IGNORED_CONTROL = -20;
+
 
     //Default State of point
     public static final int DEFAULT_STATE = 0;

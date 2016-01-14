@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
@@ -36,7 +35,6 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.model.Season;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.PointQualityCheckable;
@@ -44,7 +42,6 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.CapControlConst;
 
 public final class CapControlUtils {
@@ -53,7 +50,6 @@ public final class CapControlUtils {
     private static final StateDao stateDao = YukonSpringHook.getBean("stateDao", StateDao.class);
     private static final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
     private static final SeasonScheduleDao seasonScheduleDao = YukonSpringHook.getBean(SeasonScheduleDao.class);
-    private static final YukonUserContextMessageSourceResolver messageResolver = YukonSpringHook.getBean(YukonUserContextMessageSourceResolver.class);
     private static Map<String, List<String>> kvarPropertiesAsLists = new HashMap<>();
     private final static Logger log = YukonLogManager.getLogger(CapControlUtils.class);
     
@@ -620,79 +616,4 @@ public final class CapControlUtils {
         return fixedText;
     }
 
-    /**
-     * This is used in CapBankDetailsController as a format
-     */
-    public static String convertNeutralCurrent(Double value) {
-        int pvalue = value.intValue();
-        String neutralCurrent = "No";
-
-        if ((pvalue & 0x08) == 0x08){
-            neutralCurrent = "Yes";
-        }
-
-        return neutralCurrent;
-    }
-
-    /**
-     * This is used in CapBankDetailsController as a format
-     */
-    public static String convertToOctalIp(Double value) {
-        long ipvalue = value.longValue();
-
-        StringBuilder sb = new StringBuilder();
-        int temp = (int) ((ipvalue >> 24) & 0xFF);
-        sb.append(Integer.toString(temp, 10) + ".");
-        temp = (int) ((ipvalue >> 16) & 0xFF);
-        sb.append(Integer.toString(temp, 10) + ".");
-        temp = (int) ((ipvalue >> 8) & 0xFF);
-        sb.append(Integer.toString(temp, 10) + ".");
-        temp = (int) (ipvalue & 0xFF);
-        sb.append(Integer.toString(temp, 10));
-
-        return sb.toString();
-    }
-
-    /**
-     * This is used in CapBankDetailsController as a format
-     */
-    public static String convertToFirmwareVersion(Double value) {
-        //  The firmware version is encoded as up to 8 six-bit ASCII characters
-        //  http://nemesis.lonestar.org/reference/telecom/codes/sixbit.html
-        long encodedValue = value.longValue();
-
-        StringBuilder sb = new StringBuilder();
-
-        while( encodedValue != 0 ) {
-            sb.append((char)(' ' + encodedValue % 0x40));
-            encodedValue /= 0x40;
-        }
-
-        return sb.reverse().toString();
-    }
-
-    /**
-     * This is used in CapBankDetailsController as a format
-     */
-    public static String convertLong(Double value) {
-        return Long.toString(value.longValue());
-    }
-
-    /**
-     * This is used in CapBankDetailsController as a format
-     */
-    public static String convertControlReason(Double value) {
-
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
-        int rawState = value.intValue();
-        
-        LiteState state = stateDao.findLiteState(StateGroupUtils.STATEGROUP_LASTCONTROL_STATE, rawState);
-        
-        if (state == null) {
-            log.error("Unrecognized control state" + value);
-            return accessor.getMessage("yukon.web.modules.capcontrol.unknownState", rawState);
-        }
-
-        return state.getStateText();
-    }
 }

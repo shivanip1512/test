@@ -3,25 +3,85 @@ package com.cannontech.common.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 
+import com.cannontech.capcontrol.CapControlCbcFormatConverters;
 import com.cannontech.clientutils.CTILogger;
+import com.google.common.collect.ImmutableMap;
 
 public class SimpleTemplateProcessor {
     private static Pattern templateExtraPattern = Pattern.compile("\\{([^|]+)(\\|(.+))?\\}", Pattern.DOTALL);
     private static Pattern collectionExtraPattern = Pattern.compile("([^|]+)\\|([^|]+)\\|(.+)", Pattern.DOTALL);
+
+    private static Map<String, Function<Double, String>> specialConverters;
+    static {
+        ImmutableMap.Builder<String, Function<Double, String>> builder = ImmutableMap.builder();
+
+        builder.put("neutralCurrent", new Function<Double, String>() {
+            @Override
+            public String apply(Double value) {
+                return CapControlCbcFormatConverters.convertNeutralCurrent(value);
+            }
+        });
+        builder.put("ipAddress", new Function<Double, String>() {
+            @Override
+            public String apply(Double value) {
+                return CapControlCbcFormatConverters.convertToIpAddress(value);
+            }
+        });
+        builder.put("firmwareVersion", new Function<Double, String>() {
+
+            @Override
+            public String apply(Double value) {
+                return CapControlCbcFormatConverters.convertToFirmwareVersion(value);
+            }
+        });
+        builder.put("long", new Function<Double, String>() {
+
+            @Override
+            public String apply(Double value) {
+                return CapControlCbcFormatConverters.convertLong(value);
+            }
+        });
+        builder.put("lastControlReason", new Function<Double, String>() {
+
+            @Override
+            public String apply(Double value) {
+                return CapControlCbcFormatConverters.convertLastControlReason(value);
+            }
+        });
+        builder.put("lastControlReasonColor", new Function<Double, String>() {
+
+            @Override
+            public String apply(Double value) {
+                return CapControlCbcFormatConverters.convertLastControlReasonColor(value);
+            }
+        });
+        builder.put("ignoredControlReason", new Function<Double, String>() {
+            @Override
+            public String apply(Double value) {
+                return CapControlCbcFormatConverters.convertIgnoredControlReason(value);
+            }
+        });
+        builder.put("ignoredControlReasonColor", new Function<Double, String>() {
+            @Override
+            public String apply(Double value) {
+                return CapControlCbcFormatConverters.convertIgnoredControlReasonColor(value);
+            }
+        });
+        specialConverters = builder.build();
+    }
     
     public SimpleTemplateProcessor() {
     }
@@ -84,18 +144,23 @@ public class SimpleTemplateProcessor {
                 Object value = values.get(key);
                 String extra = matcher.group(3);
                 if (StringUtils.isNotBlank(extra)) {
-                    result = formatValue(value, extra);
-                    if (result == null) {
-                        result = "???Unknown data type???";
-                        if (value != null) {
-                            CTILogger.debug("Unknown data type: " + value.getClass());
-                        }
-                        else {
-                            CTILogger.debug("Unknown data type: null value");
+                    if (specialConverters.containsKey(extra)) {
+                        Function<Double, String> converter = specialConverters.get(extra);
+                        result = converter.apply((Double) value);
+                    } else {
+                        result = formatByType(value, extra);
+                        if (result == null) {
+                            result = "???Unknown data type???";
+                            if (value != null) {
+                                CTILogger.debug("Unknown data type: " + value.getClass());
+                            }
+                            else {
+                                CTILogger.debug("Unknown data type: null value");
+                            }
                         }
                     }
                 } else {
-                    result = ObjectUtils.toString(value);
+                    result = value == null ? "" : value.toString();
                 }
             }
         }
@@ -136,29 +201,6 @@ public class SimpleTemplateProcessor {
         return result;
     }
     
-    final protected CharSequence formatValue(Object value, String extra) {
-        try {
-            // see if custom format method exists
-            // split extra on last "."
-            int endIndex = extra.lastIndexOf(".");
-            if (endIndex > 0) {
-                String className = extra.substring(0, endIndex);
-                Class<?> theClassPart = Class.forName(className);
-                String methodName = extra.substring(endIndex+1);
-                Method method = theClassPart.getMethod(methodName, value.getClass());
-                Object formattedOuput = method.invoke(null, value);
-                CharSequence result = formattedOuput.toString();
-
-                return result;
-            }
-        } catch (Exception e) {
-            //Not a valid method name, fall through to type-based formatters
-        }
-        
-        CharSequence result = formatByType(value, extra);
-        return result;
-    }
-
 	protected CharSequence formatByType(Object value, String extra) {
 		CharSequence result;
 		if (value instanceof Boolean) {
