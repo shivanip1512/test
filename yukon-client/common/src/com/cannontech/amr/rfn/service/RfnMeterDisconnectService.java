@@ -154,6 +154,7 @@ public class RfnMeterDisconnectService {
             pointData.setValue(rawState);
             pointData.setTime(new Date());
             pointData.setType(point.getPointType());
+            pointData.setTagsPointMustArchive(true); // temporary solution
 
             asyncDynamicDataSource.putValue(pointData);
 
