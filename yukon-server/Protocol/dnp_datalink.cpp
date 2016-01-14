@@ -202,10 +202,6 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 
         //  add retries
         _io_state = State_IO_Failed;
-        if( status == ClientErrors::ReadTimeout )
-        {
-            CTILOG_ERROR( dout, "DNP Read Timeout.  If this is a frequent error, try increasing 'Additional Timeout' value for this channel");
-        }
         return _errorCondition = status;
     }
 
