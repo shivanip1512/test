@@ -18,9 +18,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 
 public class GpuffMessageMux {
     private Thread worker;
@@ -29,7 +27,7 @@ public class GpuffMessageMux {
     private HashMap<Integer, Integer> resetCountMap = new HashMap<Integer, Integer>();
 
     private YukonDeviceLookup yukonDeviceLookup;
-    private DynamicDataSource dynamicDataSource;
+    private AsyncDynamicDataSource asyncDynamicDataSource;
     private PointDao pointDao;
 
     private int listenPort = 62626;
@@ -137,6 +135,7 @@ public class GpuffMessageMux {
         log.info("GPUFFMessageMux worker thread startup.");
         // System.out.print("GPUFFMessageMux worker thread startup.\n");
         Runnable runner = new Runnable() {
+            @Override
             public void run() {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
@@ -496,12 +495,12 @@ public class GpuffMessageMux {
         return yukonDeviceLookup;
     }
 
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
+    public void setDynamicDataSource(AsyncDynamicDataSource dynamicDataSource) {
+        this.asyncDynamicDataSource = dynamicDataSource;
     }
 
-    public DynamicDataSource getDynamicDataSource() {
-        return dynamicDataSource;
+    public AsyncDynamicDataSource getDynamicDataSource() {
+        return asyncDynamicDataSource;
     }
 
     public void setPointDao(PointDao pointDao) {

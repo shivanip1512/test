@@ -5,25 +5,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.yukon.IServerConnection;
 
 public class PointDataGenerator implements PointValueUpdater {
     private Logger log = YukonLogManager.getLogger(PointDataGenerator.class);
     private PointDao pointDao;
-    private DynamicDataSource dynamicDataSource;
+    private AsyncDynamicDataSource asyncDynamicDataSource;
     private int type;
     private int offset;
     private boolean cachePoints = true;
     private boolean invertStatus = false;
     private Map<Integer, LitePoint> paoIdToPoint = new HashMap<Integer, LitePoint>(); // use only in synchronized in method
     
+    @Override
     public void writePointDataMessage(LiteYukonPAObject lpao, double rawValue, Date time) {
         LitePoint point = getPointForPaoId(lpao);
         if (point == null) {
@@ -43,10 +44,11 @@ public class PointDataGenerator implements PointValueUpdater {
 
             pointData.setTime(time);
             log.info("Updating " + lpao.getPaoName() + " point " + point.getPointID() + ": " + point.getPointName() + " with value=" + value);
-            dynamicDataSource.putValue(pointData);
+            asyncDynamicDataSource.putValue(pointData);
         }
     }
 
+    @Override
     public void writePointDataMessage(LiteYukonPAObject lpao, boolean value, Date time) {
         writePointDataMessage(lpao, (value != invertStatus) ? 1 : 0, time);
     }
@@ -104,12 +106,12 @@ public class PointDataGenerator implements PointValueUpdater {
         this.cachePoints = cachePoints;
     }
 
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
+    public void setDynamicDataSource(AsyncDynamicDataSource dynamicDataSource) {
+        this.asyncDynamicDataSource = dynamicDataSource;
     }
 
-    public DynamicDataSource getDynamicDataSource() {
-        return dynamicDataSource;
+    public AsyncDynamicDataSource getDynamicDataSource() {
+        return asyncDynamicDataSource;
     }
 
 
