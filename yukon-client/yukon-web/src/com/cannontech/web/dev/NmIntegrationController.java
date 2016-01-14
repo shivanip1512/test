@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
-import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
@@ -55,6 +54,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.DataSimulatorParameters;
 import com.cannontech.development.model.RfnTestEvent;
+import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
@@ -518,7 +518,10 @@ public class NmIntegrationController {
     }
     
     @RequestMapping("viewMeterReadArchiveRequest")
-    public String viewMeterReadArchiveRequest() {
+    public String viewMeterReadArchiveRequest(ModelMap model) {
+        
+        model.addAttribute("meterReading", new RfnTestMeterReading());
+        
         return "rfn/viewMeterReadArchive.jsp";
     }
     
@@ -828,15 +831,9 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("sendMeterArchiveRequest")
-    public String send(int serialFrom, int serialTo, String manufacturer, String model, Double value, 
-            RfnMeterReadingType type, boolean random, String uom, boolean quad1, boolean quad2,
-            boolean quad3, boolean quad4, boolean max, boolean min, boolean avg, boolean phaseA, 
-            boolean phaseB, boolean phaseC, boolean touRateA, boolean touRateB, boolean touRateC,
-            boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative) {
+    public String sendMeterReadArchiveRequest(@ModelAttribute RfnTestMeterReading meterReading) {
         
-        rfnEventTestingService.sendMeterArchiveRequests(serialFrom, serialTo, manufacturer, model, value, type, random, 
-                uom, quad1, quad2, quad3, quad4, max, min, avg, phaseA, phaseB, phaseC,
-                touRateA, touRateB, touRateC, touRateD, touRateE, netFlow, coincident, harmonic, cumulative);
+        rfnEventTestingService.sendMeterArchiveRequests(meterReading);
         return "redirect:viewMeterReadArchiveRequest";
     }
     

@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 
@@ -39,11 +43,13 @@ import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
 import com.cannontech.development.model.RfnTestEvent;
+import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -132,21 +138,21 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
     
     @Override
-    public int sendMeterArchiveRequests(int serialFrom, int serialTo, String manufacturer, String model, Double value, RfnMeterReadingType type, boolean random, String uom, 
-                       boolean quad1, boolean quad2, boolean quad3, boolean quad4, boolean max, boolean min, boolean avg,
-                       boolean phaseA, boolean phaseB, boolean phaseC, boolean touRateA, boolean touRateB, boolean touRateC,
-                       boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative) {
+    public int sendMeterArchiveRequests(RfnTestMeterReading reading) {
         
-        type = type == null ? RfnMeterReadingType.INTERVAL : type;
+        RfnMeterReadingType type = reading.getType();
+        if( type == null ) {
+            type = RfnMeterReadingType.INTERVAL;
+        }
         
         int numSent = 0;
-        for (int i = serialFrom; i <= serialTo; i++) {
+        for (int i = reading.getSerialFrom(); i <= reading.getSerialTo(); i++) {
             
             RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
             
             RfnMeterReadingData data = new RfnMeterReadingData();
             data.setTimeStamp(new Instant().getMillis());
-            RfnIdentifier meterIdentifier = new RfnIdentifier(Integer.toString(i), manufacturer, model);
+            RfnIdentifier meterIdentifier = new RfnIdentifier(Integer.toString(i), reading.getManufacturer(), reading.getModel());
             data.setRfnIdentifier(meterIdentifier);
             data.setRecordInterval(300); // pick some default for testing, needs to be greater >= 300
             
@@ -155,46 +161,66 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             channelData.setChannelNumber(0);
             channelData.setStatus(ChannelDataStatus.OK);
             
-            channelData.setUnitOfMeasure(uom);
-            Set<String> modifiers = Sets.newHashSet();
+            channelData.setUnitOfMeasure(reading.getUom());
             
-            if (quad1) modifiers.add("Quadrant 1");
-            if (quad2) modifiers.add("Quadrant 2");
-            if (quad3) modifiers.add("Quadrant 3");
-            if (quad4) modifiers.add("Quadrant 4");
+            Map<String, String> modifierPaths = ImmutableMap.<String, String>builder()
+                    .put("quad1", "Quadrant 1")
+                    .put("quad2", "Quadrant 2")
+                    .put("quad3", "Quadrant 3")
+                    .put("quad4", "Quadrant 4")
+                    //---
+                    .put("max", "Max")
+                    .put("min", "Min")
+                    .put("avg", "Avg")
+                    //---
+                    .put("phaseA", "Phase A")
+                    .put("phaseB", "Phase B")
+                    .put("phaseC", "Phase C")
+                    //---
+                    .put("touRateA", "TOU Rate A")
+                    .put("touRateB", "TOU Rate B")
+                    .put("touRateC", "TOU Rate C")
+                    .put("touRateD", "TOU Rate D")
+                    .put("touRateE", "TOU Rate E")
+                    //---
+                    .put("netFlow",    "Net Flow")
+                    .put("coincident", "Coincident")
+                    .put("harmonic",   "Harmonic")
+                    .put("cumulative", "Cumulative")
+                    .build();
             
-            if (max) modifiers.add("Max");
-            if (min) modifiers.add("Min");
-            if (avg) modifiers.add("Avg");
+            Set<String> modifiers =
+                    reading.getModifiers().entrySet().stream().filter(new Predicate<Map.Entry<String, Boolean>>() {
+                        @Override
+                        public boolean test(Entry<String, Boolean> t) {
+                            return t.getValue();
+                        }
+                    }).map(new Function<Map.Entry<String, Boolean>, String>() {
+                        @Override
+                        public String apply(Entry<String, Boolean> t) {
+                            return t.getKey();
+                        }
+                    }).map(new Function<String, String>() {
+                        @Override
+                        public String apply(String t) {
+                            return modifierPaths.get(t);
+                        }
+                    }).collect(Collectors.toSet());
             
-            if (phaseA) modifiers.add("Phase A");
-            if (phaseB) modifiers.add("Phase B");
-            if (phaseC) modifiers.add("Phase C");
-            
-            if (touRateA) modifiers.add("TOU Rate A");
-            if (touRateB) modifiers.add("TOU Rate B");
-            if (touRateC) modifiers.add("TOU Rate C");
-            if (touRateD) modifiers.add("TOU Rate D");
-            if (touRateE) modifiers.add("TOU Rate E");
-            
-            if (netFlow)    modifiers.add("Net Flow");
-            if (coincident) modifiers.add("Coincident");
-            if (harmonic)   modifiers.add("Harmonic");
-            if (cumulative) modifiers.add("Cumulative");
-            
-            if (random) {
+            if (reading.isRandom()) {
                 channelData.setValue(Math.random() * 1000);
             } else {
-                channelData.setValue(value);
+                channelData.setValue(reading.getValue());
             }
             dataList.add(channelData);
             
             data.setChannelDataList(dataList);
+            data.setTimeStamp(reading.getTimestampAsMillis());
             
             message.setData(data);
             message.setDataPointId(1);
             
-            if (model.contains("water")) {
+            if (reading.getModel().contains("water")) {
                 message.setReadingType(RfnMeterReadingType.INTERVAL);
                 modifiers.add("Kilo");
             } else {
