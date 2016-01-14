@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
@@ -48,26 +49,28 @@ public class RfnMeterEventService {
      * Process our event/alarm by first adding pointdata for our event type (i.e. the corresponding "Event Status"
      * status point), then continue on to our more specific processor
      */
-    public <T extends RfnEvent> void processEvent(RfnDevice device, T event, List<? super PointData> pointDatas) {
+    public void processEvent(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas) {
         log.debug("Event Recieved - event: " + event + " Meter: " + device);
 
-        boolean handledStatusEvent = handleRfnEventStatusEvents(device, event, pointDatas);
+        Instant now = Instant.now();
+        
+        boolean handledStatusEvent = handleRfnEventStatusEvents(device, event, pointDatas, now);
         RfnArchiveRequestProcessor processor = processorsMap.get(event.getType());
         if (processor != null) {
-            processor.process(device, event, pointDatas);
+            processor.process(device, event, pointDatas, now);
         } else if (handledStatusEvent == false){
             String className = event.getClass().getSimpleName();
             log.debug(className + " of type " + event.getType() + " is not currently supported");
         }
     }
     
-    private <T extends RfnEvent> boolean handleRfnEventStatusEvents(RfnDevice meter, T event,
-                                                                 List<? super PointData> pointDatas) {
+    private boolean handleRfnEventStatusEvents(RfnDevice meter, RfnEvent event,
+                                               List<? super PointData> pointDatas, Instant now) {
         try {
             BuiltInAttribute eventAttr = BuiltInAttribute.valueOf(event.getType().name());
             if (eventAttr.isStatusType()) {
                 int rawEventStatusState = getRawClearedStateForEvent(event);
-                processAttributePointData(meter, pointDatas, eventAttr, event.getTimeStamp(), rawEventStatusState);
+                processAttributePointData(meter, pointDatas, eventAttr, new Instant(event.getTimeStamp()), rawEventStatusState, now);
                 return true;
             }
         } catch (IllegalArgumentException e) {
@@ -76,7 +79,7 @@ public class RfnMeterEventService {
         return false;
     }
     
-    public <T extends RfnEvent> int getRawClearedStateForEvent(T event) {
+    public int getRawClearedStateForEvent(RfnEvent event) {
         Map<RfnConditionDataType, Object> eventData = event.getEventData();
         Boolean cleared = false;
         if (eventData != null) {
@@ -95,9 +98,10 @@ public class RfnMeterEventService {
     public void processAttributePointData(RfnDevice rfnDevice,
                                           List<? super PointData> pointDatas,
                                           BuiltInAttribute attr,
-                                          long timestamp,
-                                          double pointValue) {
-        processAttributePointData(rfnDevice, pointDatas, attr, timestamp, pointValue, PointQuality.Normal);
+                                          Instant timestamp,
+                                          double pointValue,
+                                          Instant now) {
+        processAttributePointData(rfnDevice, pointDatas, attr, timestamp, pointValue, PointQuality.Normal, now);
     }
 
     /**
@@ -108,9 +112,10 @@ public class RfnMeterEventService {
     public void processAttributePointData(RfnDevice rfnDevice,
                                           List<? super PointData> pointDatas,
                                           BuiltInAttribute attr,
-                                          long timestamp,
+                                          Instant timestamp,
                                           double pointValue,
-                                          PointQuality quality) {
+                                          PointQuality quality,
+                                          Instant now) {
         // create our attribute point if it doesn't exist yet
         attributeService.createPointForAttribute(rfnDevice, attr);
 
@@ -118,12 +123,16 @@ public class RfnMeterEventService {
 
         PointData pointData = new PointData();
         pointData.setId(litePoint.getPointID());
-        pointData.setTime(new Date(timestamp));
+        pointData.setTime(new Date(timestamp.getMillis()));
         pointData.setPointQuality(quality);
         pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
         pointData.setValue(pointValue);
         pointData.setTagsPointMustArchive(true);
-        pointDatas.add(pointData);
-    }
 
+        if (RfnDataValidator.isTimestampValid(timestamp, now)) {
+            pointDatas.add(pointData);
+        } else {
+            log.trace("Timestamp invalid, discarding pointdata for " + rfnDevice + " " + attr + ": " + pointData);
+        }        
+    }
 }

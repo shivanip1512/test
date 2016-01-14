@@ -2,6 +2,8 @@ package com.cannontech.amr.rfn.service.processor.impl;
 
 import java.util.List;
 
+import org.joda.time.Instant;
+
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
@@ -15,9 +17,13 @@ public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnEventConditio
         implements RfnArchiveRequestProcessor {
     
     @Override
-    public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
-        Long count = (Long) getEventDataWithType(event, RfnConditionDataType.COUNT);
-        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.RFN_BLINK_COUNT, event.getTimeStamp(), count);
+    public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
+        rfnMeterEventService.processAttributePointData(device, 
+                                                       pointDatas, 
+                                                       BuiltInAttribute.RFN_BLINK_COUNT, 
+                                                       instantOf(event), 
+                                                       getLongEventData(event, RfnConditionDataType.COUNT),
+                                                       now);
     }
     
     @Override

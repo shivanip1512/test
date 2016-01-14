@@ -2,6 +2,8 @@ package com.cannontech.amr.rfn.service.processor.impl;
 
 import java.util.List;
 
+import org.joda.time.Instant;
+
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
@@ -14,14 +16,15 @@ public class RfnReverseRotationEventArchiveRequestProcessor extends RfnEventCond
         implements RfnArchiveRequestProcessor {
 
     @Override
-    public <T extends RfnEvent> void process(RfnDevice device, T event,
-                                             List<? super PointData> pointDatas) {
+    public void process(RfnDevice device, RfnEvent event,
+                        List<? super PointData> pointDatas, Instant now) {
         int rawClearedState = rfnMeterEventService.getRawClearedStateForEvent(event);
         rfnMeterEventService.processAttributePointData(device,
                                                        pointDatas,
                                                        BuiltInAttribute.REVERSE_POWER_FLAG,
-                                                       event.getTimeStamp(),
-                                                       rawClearedState);
+                                                       instantOf(event),
+                                                       rawClearedState,
+                                                       now);
     }
 
     @Override

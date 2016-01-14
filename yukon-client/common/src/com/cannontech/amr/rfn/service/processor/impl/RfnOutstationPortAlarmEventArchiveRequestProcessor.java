@@ -3,6 +3,7 @@ package com.cannontech.amr.rfn.service.processor.impl;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
@@ -21,16 +22,20 @@ public class RfnOutstationPortAlarmEventArchiveRequestProcessor extends RfnEvent
     private final static Logger log = YukonLogManager.getLogger(RfnOutstationPortAlarmEventArchiveRequestProcessor.class);
     
     @Override
-    public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
+    public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
+        Instant eventInstant = instantOf(event);
+
         log.info(device 
                  + " port type: " + getEventDataWithType(event, RfnConditionDataType.PORT_TYPE)
-                 + " locked for " + getEventDataWithType(event, RfnConditionDataType.PORT_LOCKED_MINUTES) + "minutes");
+                 + " locked for " + getEventDataWithType(event, RfnConditionDataType.PORT_LOCKED_MINUTES) + "minutes"
+                 + " at " + eventInstant);
         
         rfnMeterEventService.processAttributePointData(device, 
                                                        pointDatas, 
                                                        BuiltInAttribute.OUTSTATION_DNP3_SERCOMM_LOCKED, 
-                                                       event.getTimeStamp(), 
-                                                       EventStatus.ACTIVE.getRawState());
+                                                       eventInstant, 
+                                                       EventStatus.ACTIVE.getRawState(),
+                                                       now);
     }
     
     @Override

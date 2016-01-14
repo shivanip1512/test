@@ -20,7 +20,6 @@ import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
 import com.cannontech.amr.rfn.service.pointmapping.PointValueHandler;
 import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMapper;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -143,9 +142,11 @@ public class RfnChannelDataConverter {
     public PointData convert(RfnDevice rfnDevice, ChannelData channelData, Instant readingInstant) {
         PaoPointValue ppv = convertSingleChannelData(rfnDevice, channelData, readingInstant);
         
-        PointData pointData = setMustArchive(ppv.getPointValueQualityHolder());
+        if (ppv != null) {
+            return setMustArchive(ppv.getPointValueQualityHolder());
+        }
         
-        return pointData;
+        return null;
     }
 
     private PaoPointValue convertSingleChannelData(RfnDevice rfnDevice, ChannelData channelData, Instant readingInstant) {
@@ -206,14 +207,18 @@ public class RfnChannelDataConverter {
         pointData.setValue(value);
         if (channelData instanceof DatedChannelData) {
             DatedChannelData dated = (DatedChannelData)channelData;
-            pointData.setTime(new Instant(dated.getTimeStamp()).toDate());
-        } else {
-            pointData.setTime(readingInstant.toDate());
+            readingInstant = new Instant(dated.getTimeStamp());
         }
+        pointData.setTime(readingInstant.toDate());
         pointData.setType(ppi.getPointIdentifier().getPointType().getPointTypeId());
         
         if (log.isDebugEnabled()) {
             log.debug("PointData converted: " + pointData);
+        }
+        
+        if( !RfnDataValidator.isTimestampValid(readingInstant, Instant.now()) ) {
+            log.trace("Discarding invalid pointdata for device " + rfnDevice + " : " + pointData);
+            return null;
         }
         
         return PaoPointValue.of(ppi, pointData);
@@ -233,7 +238,9 @@ public class RfnChannelDataConverter {
                     PaoTypePointIdentifier ptpi = attributeService.getPaoTypePointIdentifierForAttribute(type, attribute);
                     b.add(ptpi);
                 } catch (IllegalUseOfAttribute e) {
-                    LogHelper.debug(log, "Attribute: [%s] not valid for pao type: [%s]", attribute, type);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Attribute: [" + attribute + "] not valid for pao type: [" + type + "]");
+                    }
                 }
             }
         }

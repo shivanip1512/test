@@ -2,11 +2,7 @@ package com.cannontech.amr.rfn.service.processor.impl;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.LocalDate;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
@@ -14,7 +10,6 @@ import com.cannontech.amr.rfn.message.event.RfnEvent;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
 import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHelper;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.InvalidEventMessageException;
@@ -25,50 +20,41 @@ import com.cannontech.message.dispatch.message.PointData;
 public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
         implements RfnArchiveRequestProcessor {
     
-    static final DateTime y2k = new LocalDate(2000, 1, 1).toDateTimeAtStartOfDay();
-    static final Duration year = Duration.standardDays(365);
-
-    private final static Logger log = YukonLogManager.getLogger(RfnRestoreEventArchiveRequestProcessor.class);
-
     @Override
-    public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
+    public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
         
-        long eventTimestamp = event.getTimeStamp();
+        Instant eventInstant = instantOf(event);
         PointQuality pointQuality = PointQuality.Normal;
         
-        Instant eventTime = new Instant(eventTimestamp);
-        Instant now = Instant.now();
-        
-        if (event.getTimeStamp() == 0) {  //outage was too long, and firmware unable to know what time really is
+        if (eventInstant.getMillis() == 0) {  
+            //outage was too long, and firmware unable to know what time really is
             // adjust the eventTimestamp to "now" and estimated quality
-            eventTimestamp = now.getMillis();
+            eventInstant = now;
             pointQuality = PointQuality.Estimated;
-        }
-        // Bad timestamp - do not process this record
-        else if (eventTime.isAfter(now.plus(year)) || eventTime.isBefore(y2k)) {
-            log.trace(device + " invalid event timestamp " + eventTimestamp + " for event " + event.toString());
-            return;
-        }
-
-        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventTimestamp, 
-                                                       OutageStatus.GOOD.getRawState(), pointQuality);
-        
-        if (event.getTimeStamp() != 0) { // do not process Outage Log when actual eventTimestamp unknown.
+        } else { 
+            // only process Outage Log when actual eventTimestamp known.
             Long durationInSeconds = RfnInvalidValues.OUTAGE_DURATION.getValue();
             PointQuality outageLogPointQuality = PointQuality.Unknown;
             try {
-                Long start = (Long) getEventDataWithType(event, RfnConditionDataType.EVENT_START_TIME);
-                Long end = eventTimestamp;
+                Long start = getLongEventData(event, RfnConditionDataType.EVENT_START_TIME);
+                Long end = eventInstant.getMillis();
                 durationInSeconds = (end - start) / 1000;
                 outageLogPointQuality = PointQuality.Normal;
             } catch (InvalidEventMessageException e) {
                 // Old firmware doesn't include the EVENT_START_TIME meta-data, so just use the invalid value set above for the duration if we get here
             }
-            rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventTimestamp, durationInSeconds, outageLogPointQuality);
+            rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventInstant, durationInSeconds, outageLogPointQuality, now);
         }
         
-        Long count = (Long) getEventDataWithType(event, RfnConditionDataType.COUNT);
-        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.RFN_OUTAGE_RESTORE_COUNT, eventTimestamp, count, pointQuality);
+        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.GOOD.getRawState(), pointQuality, now);
+        
+        rfnMeterEventService.processAttributePointData(device, 
+                                                       pointDatas, 
+                                                       BuiltInAttribute.RFN_OUTAGE_RESTORE_COUNT, 
+                                                       eventInstant, 
+                                                       getLongEventData(event, RfnConditionDataType.COUNT), 
+                                                       pointQuality, 
+                                                       now);
     }
     
     @Override

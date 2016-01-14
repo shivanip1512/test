@@ -19,11 +19,15 @@ public abstract class RfnVoltageEventArchiveRequestProcessor extends RfnEventCon
     @Autowired private RfnChannelDataConverter converter;
 
     @Override
-    public <T extends RfnEvent> void process(RfnDevice device, T event,
-                                             List<? super PointData> pointDatas) {
+    public void process(RfnDevice device, RfnEvent event,
+                        List<? super PointData> pointDatas, Instant now) {
 
-        ChannelData channelData = of(event);
+        ChannelData channelData = channelDataOf(event);
                 
-        pointDatas.add(converter.convert(device, channelData, new Instant(event.getTimeStamp())));
+        PointData p = converter.convert(device, channelData, instantOf(event));
+        
+        if (p != null) {
+            pointDatas.add(p);
+        }
     }
 }

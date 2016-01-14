@@ -1,5 +1,6 @@
 package com.cannontech.amr.rfn.service.processor;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
@@ -21,13 +22,18 @@ public class RfnEventConditionDataProcessorHelper {
         return event.getEventData().get(dataType);
     }
     
-    protected static ChannelData of(RfnEvent event) {
+    public static Long getLongEventData(RfnEvent event, RfnConditionDataType dataType) {
+        return (Long) getEventDataWithType(event, dataType);
+    }
+    
+    protected static ChannelData channelDataOf(RfnEvent event) {
         //  Manually create a ChannelData, since NM doesn't provide one yet (see YUK-14688).
         //    This code should eventually move to RfnMeterEventService::handleRfnEventStatusEvents to allow all events to handle ChannelData. 
         ChannelData channelData = new ChannelData();
         
+        RfnConditionDataType dataType = RfnConditionDataType.UOM; 
         channelData.setUnitOfMeasure(
-                (String) getEventDataWithType(event, RfnConditionDataType.UOM));
+                (String) getEventDataWithType(event, dataType));
         
         channelData.setUnitOfMeasureModifiers(
                 ((RfnUomModifierSet) getEventDataWithType(event, RfnConditionDataType.UOM_MODIFIERS)).getUomModifiers());
@@ -40,6 +46,10 @@ public class RfnEventConditionDataProcessorHelper {
         
         return channelData;
 
+    }
+    
+    protected static Instant instantOf(RfnEvent event) {
+        return new Instant(event.getTimeStamp());
     }
 
 }
