@@ -401,6 +401,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
     std::vector<std::unique_ptr<Protocols::DnpSlave::output_point>> outputPoints;
 
     {
+        // This guard must happen before the _sendMux or a deadlock can occur.
         CTILOCKGUARD( CtiMutex, sendGuard, getSendToList().getMutex() );
         CTILOCKGUARD( CtiMutex, guard, _sendMux );
         for( const auto &kv : _sendMap )
@@ -1015,10 +1016,11 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 
     analog.status = ControlStatus::NotSupported;
 
-    //  look for the point with the correct control offset
+    // This guard must happen before the _sendMux or a deadlock can occur.
     CTILOCKGUARD( CtiMutex, recvGuard, getReceiveFromList().getMutex() );
     CTILOCKGUARD( CtiMutex, guard, _receiveMux );
 
+    //  look for the point with the correct control offset
     for( const auto &kv : _receiveMap )
     {
         const DnpId &dnpId = kv.second;
