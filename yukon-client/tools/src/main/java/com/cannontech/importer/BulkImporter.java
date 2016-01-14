@@ -826,8 +826,8 @@ public void messageReceived(MessageEvent e) {
                             " More:" + returnMsg.getExpectMore()+"]");
             
             if( !porterMessageIDs.contains( new Long(returnMsg.getUserMessageID()))) {
-                log.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
-                log.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
+                log.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
+                log.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
                 return;
             }
             else {
