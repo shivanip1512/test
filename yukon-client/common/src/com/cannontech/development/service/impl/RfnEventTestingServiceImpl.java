@@ -67,6 +67,36 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     private static final String locationResponseQueueName = "yukon.qr.obj.amr.rfn.LocationResponse";
     
     private static final Logger log = YukonLogManager.getLogger(RfnEventTestingServiceImpl.class);
+
+    private static final Map<String, String> modifierPaths;
+    
+    static {
+        modifierPaths = ImmutableMap.<String, String>builder()
+                .put("quad1", "Quadrant 1")
+                .put("quad2", "Quadrant 2")
+                .put("quad3", "Quadrant 3")
+                .put("quad4", "Quadrant 4")
+                //---
+                .put("max", "Max")
+                .put("min", "Min")
+                .put("avg", "Avg")
+                //---
+                .put("phaseA", "Phase A")
+                .put("phaseB", "Phase B")
+                .put("phaseC", "Phase C")
+                //---
+                .put("touRateA", "TOU Rate A")
+                .put("touRateB", "TOU Rate B")
+                .put("touRateC", "TOU Rate C")
+                .put("touRateD", "TOU Rate D")
+                .put("touRateE", "TOU Rate E")
+                //---
+                .put("netFlow",    "Net Flow")
+                .put("coincident", "Coincident")
+                .put("harmonic",   "Harmonic")
+                .put("cumulative", "Cumulative")
+                .build();
+    }
     
     @Override
     public int sendEventsAndAlarms(RfnTestEvent event) {
@@ -141,7 +171,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     public int sendMeterArchiveRequests(RfnTestMeterReading reading) {
         
         RfnMeterReadingType type = reading.getType();
-        if( type == null ) {
+        if (type == null) {
             type = RfnMeterReadingType.INTERVAL;
         }
         
@@ -163,31 +193,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             
             channelData.setUnitOfMeasure(reading.getUom());
             
-            Map<String, String> modifierPaths = ImmutableMap.<String, String>builder()
-                    .put("quad1", "Quadrant 1")
-                    .put("quad2", "Quadrant 2")
-                    .put("quad3", "Quadrant 3")
-                    .put("quad4", "Quadrant 4")
-                    //---
-                    .put("max", "Max")
-                    .put("min", "Min")
-                    .put("avg", "Avg")
-                    //---
-                    .put("phaseA", "Phase A")
-                    .put("phaseB", "Phase B")
-                    .put("phaseC", "Phase C")
-                    //---
-                    .put("touRateA", "TOU Rate A")
-                    .put("touRateB", "TOU Rate B")
-                    .put("touRateC", "TOU Rate C")
-                    .put("touRateD", "TOU Rate D")
-                    .put("touRateE", "TOU Rate E")
-                    //---
-                    .put("netFlow",    "Net Flow")
-                    .put("coincident", "Coincident")
-                    .put("harmonic",   "Harmonic")
-                    .put("cumulative", "Cumulative")
-                    .build();
+            //  TODO JAVA 8
             
             Set<String> modifiers =
                     reading.getModifiers().entrySet().stream().filter(new Predicate<Map.Entry<String, Boolean>>() {
