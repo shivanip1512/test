@@ -199,6 +199,15 @@ CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
 
 bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
+    if( sendList )
+    {
+        CTILOCKGUARD( CtiMutex, guard, _sendMux);
+    }
+    else
+    {
+        CTILOCKGUARD( CtiMutex, guard, _receiveMux );
+    }
+
     DnpDestinationMap &pointMap = sendList ? _sendMap : _receiveMap;
 
     CtiFDRPoint::DestinationList &destinations = translationPoint->getDestinationList();
@@ -222,7 +231,7 @@ bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sen
 
         if( getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL )
         {
-            CTILOG_DEBUG(dout, "Added " << (sendList ? "send" : "receieve") << " mapping "<< pointDestination <<" to " << dnpId);
+            CTILOG_DEBUG(dout, "Added " << (sendList ? "send" : "receive") << " mapping "<< pointDestination <<" to " << dnpId);
         }
     }
     return true;
@@ -230,6 +239,15 @@ bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sen
 
 void DnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
+    if( recvList )
+    { 
+        CTILOCKGUARD( CtiMutex, guard, _receiveMux );
+    }
+    else
+    {
+        CTILOCKGUARD( CtiMutex, guard, _sendMux );
+    }
+
     DnpDestinationMap &pointMap = recvList ? _receiveMap : _sendMap;
 
     for( const auto &dest : translationPoint->getDestinationList() )
@@ -382,53 +400,60 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 
     std::vector<std::unique_ptr<Protocols::DnpSlave::output_point>> outputPoints;
 
-    for( const auto &kv : _sendMap )
     {
-        const DnpId &dnpId = kv.second;
-        if (dnpId.SlaveId  == _dnpSlave.getSrcAddr() &&
-            dnpId.MasterId == _dnpSlave.getDstAddr() )
+        CTILOCKGUARD( CtiMutex, sendGuard, getSendToList().getMutex() );
+        CTILOCKGUARD( CtiMutex, guard, _sendMux );
+        for( const auto &kv : _sendMap )
         {
-            const CtiFDRDestination &fdrdest = kv.first;
-            CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
-            CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-            if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
-                continue;
-
-            std::unique_ptr<Protocols::DnpSlave::output_point> point;
-
-            switch (dnpId.PointType)
+            const DnpId &dnpId = kv.second;
+            if( dnpId.SlaveId == _dnpSlave.getSrcAddr() &&
+                dnpId.MasterId == _dnpSlave.getDstAddr() )
             {
+                const CtiFDRDestination &fdrdest = kv.first;
+                CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
+                if( !findPointIdInList( fdrPoint->getPointID(), getSendToList(), *fdrPoint ) )
+                    continue;
+
+                std::unique_ptr<Protocols::DnpSlave::output_point> point;
+
+                switch( dnpId.PointType )
+                {
                 case StatusPointType:
                 {
+                    CTILOG_DEBUG( dout, logNow() << " sending StatusPoint for " << dnpId.toString() << ", Value=" << fdrPoint->getValue() * dnpId.Multiplier );
                     auto s = std::make_unique<Protocols::DnpSlave::output_digital>();
                     s->status = fdrPoint->getValue();
-                    point = std::move(s);
+                    point = std::move( s );
                     break;
                 }
                 case AnalogPointType:
                 {
+                    CTILOG_DEBUG( dout, logNow() << " sending AnalogPoint for " << dnpId.toString() << ", Value=" << fdrPoint->getValue() * dnpId.Multiplier );
                     auto a = std::make_unique<Protocols::DnpSlave::output_analog>();
                     a->value = fdrPoint->getValue() * dnpId.Multiplier;
-                    point = std::move(a);
+                    point = std::move( a );
                     break;
                 }
                 case PulseAccumulatorPointType:
                 {
+                    CTILOG_DEBUG( dout, logNow() << " sending AccumulatorPoint for " << dnpId.toString() << ", Value=" << fdrPoint->getValue() * dnpId.Multiplier );
                     auto c = std::make_unique<Protocols::DnpSlave::output_counter>();
                     c->value = fdrPoint->getValue() * dnpId.Multiplier;
-                    point = std::move(c);
+                    point = std::move( c );
                     break;
                 }
                 default:
                 {
+                    CTILOG_DEBUG( dout, logNow() << " Unsupported point type " << dnpId.PointType );
                     continue;
                 }
+                }
+
+                point->online = YukonToForeignQuality( fdrPoint->getQuality(), fdrPoint->getLastTimeStamp(), Now );
+                point->offset = dnpId.Offset - 1;  //  convert to DNP's 0-based indexing
+
+                outputPoints.emplace_back( std::move( point ) );
             }
-
-            point->online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp(), Now);
-            point->offset = dnpId.Offset - 1;  //  convert to DNP's 0-based indexing
-
-            outputPoints.emplace_back(std::move(point));
         }
     }
 
@@ -521,46 +546,50 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
     control.action     = action;
     control.isLongIndexed =
         (ob.getIndexLength()    == 2 &&
-         ob.getQuantityLength() == 2);
+        ob.getQuantityLength() == 2 );
 
     //  look for the point with the correct control offset
-    for( const auto &kv : _receiveMap )
     {
-        const DnpId &dnpId = kv.second;
-        if( dnpId.PointType   == StatusPointType
-            && dnpId.SlaveId  == _dnpSlave.getSrcAddr()
-            && dnpId.MasterId == _dnpSlave.getDstAddr()
-            && dnpId.Offset   == (control.offset + 1) )  //  DnpId offsets are 1-based (Yukon is 1-based, DNP is 0-based)
+        CTILOCKGUARD( CtiMutex, recvGuard, getReceiveFromList().getMutex() );
+        CTILOCKGUARD( CtiMutex, guard, _receiveMux );
+
+        for( const auto &kv : _receiveMap )
         {
-            const CtiFDRDestination &fdrdest = kv.first;
-            CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
-
+            const DnpId &dnpId = kv.second;
+            if( dnpId.PointType == StatusPointType
+                && dnpId.SlaveId == _dnpSlave.getSrcAddr()
+                && dnpId.MasterId == _dnpSlave.getDstAddr()
+                && dnpId.Offset == ( control.offset + 1 ) )  //  DnpId offsets are 1-based (Yukon is 1-based, DNP is 0-based)
             {
-                CtiLockGuard<CtiMutex> recvGuard(getReceiveFromList().getMutex());
+                const CtiFDRDestination &fdrdest = kv.first;
+                CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
 
-                if ( ! findPointIdInList(fdrPoint->getPointID(),getReceiveFromList(),*fdrPoint) )
                 {
-                    continue;
-                }
-            }
 
-            if( fdrPoint->isControllable() )
-            {
-                if( isDnpDeviceId(fdrPoint->getPaoID()) )
-                {
-                    control.status = tryPorterControl(control, fdrPoint->getPointID());
-                }
-                else if( tryDispatchControl(control, fdrPoint->getPointID()) )
-                {
-                    control.status = ControlStatus::Success;
-                }
-                else
-                {
-                    control.status = ControlStatus::FormatError;
+                    if( !findPointIdInList( fdrPoint->getPointID(), getReceiveFromList(), *fdrPoint ) )
+                    {
+                        continue;
+                    }
                 }
 
-                //  only send the control to the first point found
-                break;
+                if( fdrPoint->isControllable() )
+                {
+                    if( isDnpDeviceId( fdrPoint->getPaoID() ) )
+                    {
+                        control.status = tryPorterControl( control, fdrPoint->getPointID() );
+                    }
+                    else if( tryDispatchControl( control, fdrPoint->getPointID() ) )
+                    {
+                        control.status = ControlStatus::Success;
+                    }
+                    else
+                    {
+                        control.status = ControlStatus::FormatError;
+                    }
+
+                    //  only send the control to the first point found
+                    break;
+                }
             }
         }
     }
@@ -987,6 +1016,9 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
     analog.status = ControlStatus::NotSupported;
 
     //  look for the point with the correct control offset
+    CTILOCKGUARD( CtiMutex, recvGuard, getReceiveFromList().getMutex() );
+    CTILOCKGUARD( CtiMutex, guard, _receiveMux );
+
     for( const auto &kv : _receiveMap )
     {
         const DnpId &dnpId = kv.second;
@@ -1000,7 +1032,6 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
             CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
 
             {
-                CtiLockGuard<CtiMutex> recvGuard(getReceiveFromList().getMutex());
 
                 if ( ! findPointIdInList(fdrPoint->getPointID(),getReceiveFromList(),*fdrPoint) )
                 {

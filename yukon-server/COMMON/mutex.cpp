@@ -67,6 +67,7 @@ void CtiMutex::release()
         const DWORD error = GetLastError();
         CTILOG_ERROR(dout, "Release mutex failed, last error: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
     }
+    _threadIDs[0] = 0;
 }
 
 

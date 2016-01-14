@@ -9,14 +9,19 @@
 
 #include "dbghelp.h"
 
+#define CTILOCKGUARD(type, guard, resource) \
+    CtiLockGuard<type> guard( resource, #resource, __FILE__, __FUNCSIG__, __LINE__);
+
+#define CTILOCKGUARD2(type, guard, resource, millis) \
+    CtiLockGuard<type> guard( resource, millis, #resource, __FILE__, __FUNCSIG__, __LINE__);
 
 #pragma pack(push, LockGuardPack, 8)
 template<class T>
 class IM_EX_CTIBASE CtiLockGuard
 {
 public:
-    CtiLockGuard(T& resource);
-    CtiLockGuard(T& resource, unsigned long millis);
+    CtiLockGuard( T& resource, char *resourceName = 0, char *file=0, char *func=0, int line=0 );
+    CtiLockGuard( T& resource, unsigned long millis, char *resourceName = 0, char *file = 0, char *func = 0, int line = 0 );
     ~CtiLockGuard();
 
     bool isAcquired() const;
@@ -26,6 +31,10 @@ private:
 
     bool _acquired;
     T& _res;
+    char *_resourceName;
+    char *_file;
+    char *_func;
+    int _line;
 };
 
 template<class T>

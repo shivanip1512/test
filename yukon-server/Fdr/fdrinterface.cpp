@@ -635,7 +635,7 @@ string CtiFDRInterface::getCparmValueAsString(string key)
  */
 ULONG CtiFDRInterface::getDebugLevel()
 {
-    CtiLockGuard<CtiMutex> cparm_guard(iCparmMutex);
+    CTILOCKGUARD(CtiMutex, cparm_guard, iCparmMutex);
     return iDebugLevel;
 }
 
@@ -645,7 +645,7 @@ ULONG CtiFDRInterface::getDebugLevel()
  *
  */
 bool CtiFDRInterface::reloadConfigs() {
-    CtiLockGuard<CtiMutex> cparm_guard(iCparmMutex);
+    CTILOCKGUARD(CtiMutex, cparm_guard, iCparmMutex);
     gConfigParms.RefreshConfigParameters();
     CtiFDRInterface::readConfig();
     return this->readConfig();
@@ -1291,7 +1291,7 @@ bool CtiFDRInterface::updatePointByIdInList(CtiFDRPointList &aList,
     CtiFDRPointSPtr point;
 
     // lock the list
-    CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
+    CTILOCKGUARD(CtiMutex, sendGuard, aList.getMutex());
     CtiFDRManager::readerLock guard(aList.getPointList()->getLock());
 
     // check if the point id exists
@@ -1334,7 +1334,7 @@ bool CtiFDRInterface::findPointIdInList(long aPointId,
     CtiFDRPointSPtr point;
 
     // lock the list
-    CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
+    CTILOCKGUARD(CtiMutex, sendGuard, aList.getMutex());
 
     // check if the point id exists
     CtiFDRManager::spiterator  itr;
@@ -1371,7 +1371,7 @@ bool CtiFDRInterface::findTranslationNameInList(string aTranslationName,
     CtiFDRPointSPtr point;
 
     // lock the list
-    CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
+    CTILOCKGUARD(CtiMutex, sendGuard, aList.getMutex());
     point = aList.getPointList()->find(isTranslationNameEqual, (void *) &aTranslationName);
 
     if (point.get() == NULL)
@@ -1412,8 +1412,8 @@ bool CtiFDRInterface::loadTranslationPoint(long pointId)
     bool inRecv = false;
     bool inSend = false;
 
-    CtiLockGuard<CtiMutex> receiveGuard(iReceiveFromList.getMutex());
-    CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());
+    CTILOCKGUARD(CtiMutex, receiveGuard, iReceiveFromList.getMutex());
+    CTILOCKGUARD(CtiMutex, sendGuard, iSendToList.getMutex());
 
     CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
     CtiFDRManager* sendMgr = iSendToList.getPointList();
@@ -1457,8 +1457,8 @@ void CtiFDRInterface::removeTranslationPoint(long pointId)
 
     printLists(" Before remove of point ", pointId);
     {
-        CtiLockGuard<CtiMutex> receiveGuard(iReceiveFromList.getMutex());
-        CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());
+        CTILOCKGUARD(CtiMutex, receiveGuard, iReceiveFromList.getMutex());
+        CTILOCKGUARD(CtiMutex, sendGuard, iSendToList.getMutex());
 
         CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
         CtiFDRManager* sendMgr = iSendToList.getPointList();
@@ -1491,8 +1491,8 @@ void CtiFDRInterface::printLists(string title, int pid)
 {
     if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiMutex> receiveGuard(iReceiveFromList.getMutex());
-        CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());
+        CTILOCKGUARD(CtiMutex, receiveGuard, iReceiveFromList.getMutex());
+        CTILOCKGUARD(CtiMutex, sendGuard, iSendToList.getMutex());
 
         CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
         CtiFDRManager* sendMgr = iSendToList.getPointList();

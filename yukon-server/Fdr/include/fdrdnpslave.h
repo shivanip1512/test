@@ -107,6 +107,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
         typedef std::map<CtiFDRDestination, DnpId> DnpDestinationMap;
         DnpDestinationMap _sendMap, _receiveMap;
+        CtiMutex          _sendMux, _receiveMux;
 
         Protocols::DnpSlaveProtocol  _dnpSlave;
 
