@@ -551,7 +551,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
     control.action     = action;
     control.isLongIndexed =
         (ob.getIndexLength()    == 2 &&
-        ob.getQuantityLength() == 2 );
+         ob.getQuantityLength() == 2 );
 
     //  look for the point with the correct control offset
     {
