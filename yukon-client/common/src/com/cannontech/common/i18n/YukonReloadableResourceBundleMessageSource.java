@@ -22,19 +22,16 @@ public class YukonReloadableResourceBundleMessageSource extends ReloadableResour
         boolean devMode = false;
         try {
             log.error("configurationSoure=" + configurationSource);
-            System.out.println("configurationSoure=" + configurationSource);
             devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
             log.error("success");
-            System.out.println("success");
         } catch (UndeclaredThrowableException e) {
-            log.error("UndeclaredThrowableException", e.getUndeclaredThrowable());
-            System.out.println(e.getUndeclaredThrowable().getMessage());
+            log.error("<UndeclaredThrowableException>", e.getUndeclaredThrowable());
+            throw e;
         } catch (Exception e) {
-            log.error("UndeclaredThrowableException", e);
-            System.out.println(e.getMessage());
+            log.error("<UndeclaredThrowableException>", e);
+            throw e;
         }
         log.error("devMode=" + devMode);
-        System.out.println("devMode=" + devMode);
         if (devMode) {
             setCacheSeconds(10); // using a value of 10 instead of 1 dramatically increases performance, but you'll have
                                  // to wait up to 10 sec to see xml/property changes.
