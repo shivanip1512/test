@@ -139,53 +139,27 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
     
     @Override
-    public Set<? extends PointValueQualityHolder> getPointValues(Set<Integer> pointIds) {
-        Set<Integer> notCachedPointIds = new HashSet<Integer>(pointIds);
-        Set<LitePointData> pointData = new HashSet<LitePointData>((int) (pointIds.size() / 0.75f) + 1);
-
-        // Get whatever we can out of the cache first
-        for (Integer id : pointIds) {
-            LitePointData pd = dynamicDataCache.getPointData(id);
-            if (pd != null) {
-                pointData.add(pd);
-                notCachedPointIds.remove(id);
-            }
-        }
-
-        // Request to dispatch for the rest
-        if (notCachedPointIds.size() > 0) {
-            // break the request into partitions of 10000 so we reduce the risk of the request timing out
-            List<List<Integer>> notCachedPointIdsPartitioned =
-                Lists.partition(Lists.newArrayList(notCachedPointIds), 10000);
-            for (List<Integer> notCachedPointIdsPartition : notCachedPointIdsPartitioned) {
-                Set<LitePointData> retrievedPointData =
-                    dispatchProxy.getPointData(Sets.newHashSet(notCachedPointIdsPartition));
-                pointData.addAll(retrievedPointData);
-            }
-        }
-        return pointData;
+    public Set<? extends PointValueQualityHolder> getPointValues(Set<Integer> pointIds){
+        return getPointData(pointIds);
     }
-
+    
+    
     @Override
-    public PointValueQualityHolder getPointValue(int pointId) {
-        LitePointData pointData = dynamicDataCache.getPointData(pointId);
-        if (pointData == null) {
-            pointData = dispatchProxy.getPointData(pointId);
-        }
-        return pointData;
+    public PointValueQualityHolder getPointValue(int pointId){
+        return getPointData(pointId);
     }
-
+    
     @Override
     public Integer getTags(int pointId) {
-        LitePointData data = (LitePointData) getPointValue(pointId);
-        return (int) data.getTags();
+        return (int) getPointData(pointId).getTags();
     }
-
+    
     @Override
     public Set<Integer> getTags(Set<Integer> pointIds) {
-        Set<Integer> tags = new HashSet<Integer>((int) (pointIds.size() / 0.75f) + 1);
-        for (Integer pointId : pointIds) {
-            tags.add(getTags(pointId));
+        Set<LitePointData> pointData = getPointData(pointIds);
+        Set<Integer> tags = new HashSet<Integer>((int)(pointIds.size() / 0.75f) + 1);
+        for (LitePointData pd : pointData) {
+            tags.add((int)pd.getTags());
         }
         return tags;
     }
@@ -490,4 +464,42 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public void setDispatchProxy(DispatchProxy dispatchProxy) {
         this.dispatchProxy = dispatchProxy;
     }
+    
+    private Set<LitePointData> getPointData(Set<Integer> pointIds) {
+
+        Set<Integer> notCachedPointIds = new HashSet<Integer>(pointIds);
+        Set<LitePointData> pointData = new HashSet<LitePointData>((int) (pointIds.size() / 0.75f) + 1);
+
+        // Get whatever we can out of the cache first
+        for (Integer id : pointIds) {
+            LitePointData pd = dynamicDataCache.getPointData(id);
+            if (pd != null) {
+                pointData.add(pd);
+                notCachedPointIds.remove(id);
+            }
+        }
+
+        // Request to dispatch for the rest
+        if (notCachedPointIds.size() > 0) {
+            // break the request into partitions of 10000 so we reduce the risk of the request timing out
+            List<List<Integer>> notCachedPointIdsPartitioned =
+                Lists.partition(Lists.newArrayList(notCachedPointIds), 10000);
+            for (List<Integer> notCachedPointIdsPartition : notCachedPointIdsPartitioned) {
+                Set<LitePointData> retrievedPointData =
+                    dispatchProxy.getPointData(Sets.newHashSet(notCachedPointIdsPartition));
+                pointData.addAll(retrievedPointData);
+            }
+        }
+
+        return pointData;
+    }
+    
+    private LitePointData getPointData(int pointId) {
+        LitePointData pointData = dynamicDataCache.getPointData(pointId);
+        if (pointData == null) {
+            pointData = dispatchProxy.getPointData(pointId);
+        }
+        return pointData;
+    }
+
 }
