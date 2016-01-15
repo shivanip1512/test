@@ -64,6 +64,8 @@
     <entry key="yukon.web.modules.tools.map.noStatesForAttribute">No devices support the selected attribute.</entry>
     <entry key="yukon.web.modules.tools.map.device">Device</entry>
     <entry key="yukon.web.modules.tools.map.type">Type</entry>
+    <entry key="yukon.web.modules.tools.map.route">Route</entry>
+    <entry key="yukon.web.modules.tools.map.serialOrAddress">Address/Serial</entry>
     <entry key="yukon.web.modules.tools.map.status.loading">Loading devices...</entry>
     <entry key="yukon.web.modules.tools.map.status.retrieving">Retrieving device Status...</entry>
     <entry key="yukon.web.modules.tools.map.status.filtering">Applying filter...</entry>

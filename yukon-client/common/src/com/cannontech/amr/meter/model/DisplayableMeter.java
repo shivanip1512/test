@@ -33,5 +33,8 @@ public class DisplayableMeter implements DisplayablePao {
 		this.meter = meter;
 		this.meterDisplayFieldEnum = meterDisplayFieldEnum;
 	}
-
+	
+	public YukonMeter getMeter() {
+        return meter;
+    }
 }

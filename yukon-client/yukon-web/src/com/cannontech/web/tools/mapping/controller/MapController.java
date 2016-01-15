@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.amr.meter.model.DisplayableMeter;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -98,7 +100,15 @@ public class MapController {
         
         YukonPao pao = paoDao.getYukonPao(id);
         DisplayablePao displayable = paoLoadingService.getDisplayablePao(pao);
-        
+        if (displayable instanceof DisplayableMeter) {
+            if (StringUtils.isNotBlank(((DisplayableMeter) displayable).getMeter().getRoute())) {
+                model.addAttribute("showRoute", true);
+            }
+            if (StringUtils.isNotBlank(((DisplayableMeter) displayable).getMeter().getSerialOrAddress())) {
+                model.addAttribute("showAddressOrSerial", true);
+            }
+        }
+
         model.addAttribute("pao", displayable);
         
         List<Attribute> supported = new ArrayList<>();
