@@ -1802,6 +1802,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // Added meter to Inventory
                 addToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
                 if (!meter.isDisabled()) {// enabled
+                    meter.setDisabled(true);    //update local object reference
                     deviceDao.disableDevice(meter);
                     multispeakEventLogService.disableDevice(meter.getMeterNumber(), meter, METER_REMOVE_STRING, mspVendor.getCompanyName());
                 }
