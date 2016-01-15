@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +113,8 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         final AtomicBoolean isRunning6600 = rfnLcrExistingDataSimulatorStatus.getIsRunning6600();
         isRunning6600.set(true);
 
+        Collections.shuffle(rfnLcrDeviceList);  //  make sure they aren't sent in DB order
+        
         try {
             if (msgSimulatorRunning || msgSimulatorFt.isDone()) {
                 msgSimulatorRunning = false;
