@@ -179,19 +179,30 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
         CapControlSubstationBus innerBus = new CapControlSubstationBus();
         innerBus.setAltSubPAOId(completeBus.getAltSubId());
         innerBus.setControlFlagBoolean(completeBus.getControlFlag());
-        innerBus.setCurrentVarLoadPointID(completeBus.getCurrentVarLoadPointId());
-        innerBus.setCurrentVoltLoadPointID(completeBus.getCurrentVoltLoadPointId());
-        innerBus.setCurrentWattLoadPointID(completeBus.getCurrentWattLoadPointId());
-        innerBus.setDisableBusPointId(completeBus.getDisableBusPointId());
+
+        int varPoint = completeBus.getCurrentVarLoadPointId();
+        innerBus.setCurrentVarLoadPointID(varPoint != 0 ? varPoint : null);
+        int voltPoint = completeBus.getCurrentVoltLoadPointId();
+        innerBus.setCurrentVoltLoadPointID(voltPoint != 0 ? voltPoint : null);
+        int wattPoint = completeBus.getCurrentWattLoadPointId();
+        innerBus.setCurrentWattLoadPointID(wattPoint != 0 ? wattPoint : null);
+        int phaseB = completeBus.getPhaseB();
+        innerBus.setPhaseB(phaseB != 0 ? phaseB : null);
+        int phaseC = completeBus.getPhaseC();
+        innerBus.setPhaseC(phaseC != 0 ? phaseC : null);
+
+        int disableBus = completeBus.getDisableBusPointId();
+        innerBus.setDisableBusPointId(disableBus != 0 ? disableBus : null);
+        int voltReduction = completeBus.getVoltReductionPointId();
+        innerBus.setVoltReductionPointId(voltReduction != 0 ? voltReduction : null);
+        int switchPoint = completeBus.getSwitchPointId();
+        innerBus.setSwitchPointID(switchPoint != 0 ? switchPoint : null);
+
         innerBus.setDualBusEnabledBoolean(completeBus.getDualBusEnabled());
         innerBus.setMapLocationID(completeBus.getMapLocationId());
         innerBus.setMultiMonitorControlBoolean(completeBus.getMultiMonitorControl());
-        innerBus.setPhaseB(completeBus.getPhaseB());
-        innerBus.setPhaseC(completeBus.getPhaseC());
         innerBus.setSubstationBusID(completeBus.getPaObjectId());
-        innerBus.setSwitchPointID(completeBus.getSwitchPointId());
         innerBus.setUsePhaseDataBoolean(completeBus.getUsePhaseData());
-        innerBus.setVoltReductionPointId(completeBus.getVoltReductionPointId());
 
         bus.setCapControlSubstationBus(innerBus);
 
@@ -205,22 +216,33 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
 
         completeBus.setAltSubId(innerBus.getAltSubPAOId());
         completeBus.setControlFlag(innerBus.getControlFlagBoolean());
-        completeBus.setCurrentVarLoadPointId(innerBus.getCurrentVarLoadPointID());
-        completeBus.setCurrentVoltLoadPointId(innerBus.getVoltReductionPointId());
-        completeBus.setCurrentWattLoadPointId(innerBus.getCurrentWattLoadPointID());
+
+        Integer varPoint = innerBus.getCurrentVarLoadPointID();
+        completeBus.setCurrentVarLoadPointId(varPoint != null ? varPoint : 0);
+        Integer voltPoint = innerBus.getVoltReductionPointId();
+        completeBus.setCurrentVoltLoadPointId(voltPoint != null ? voltPoint : 0);
+        Integer wattPoint = innerBus.getCurrentWattLoadPointID();
+        completeBus.setCurrentWattLoadPointId(wattPoint != null ? wattPoint : 0);
+        Integer phaseB = innerBus.getPhaseB();
+        completeBus.setPhaseB(phaseB != null ? phaseB : 0);
+        Integer phaseC = innerBus.getPhaseC();
+        completeBus.setPhaseC(phaseC != null ? phaseC : 0);
+
+        Integer disableBus = innerBus.getDisableBusPointId();
+        completeBus.setDisableBusPointId(disableBus != null ? disableBus : 0);
+        Integer voltReduction = innerBus.getVoltReductionPointId();
+        completeBus.setVoltReductionPointId(voltReduction != null ? voltReduction : 0);
+        Integer switchPoint = innerBus.getSwitchPointID();
+        completeBus.setSwitchPointId(switchPoint != null ? switchPoint : 0);
+
         completeBus.setDescription(getGeoAreaName());
-        completeBus.setDisableBusPointId(innerBus.getDisableBusPointId());
         completeBus.setDisabled(isDisabled());
         completeBus.setDualBusEnabled(innerBus.isDualBusEnabledBoolean());
         completeBus.setMapLocationId(innerBus.getMapLocationID());
         completeBus.setMultiMonitorControl(innerBus.isMultiMonitorControlBoolean());
         completeBus.setPaoName(getName());
-        completeBus.setPhaseB(innerBus.getPhaseB());
-        completeBus.setPhaseC(innerBus.getPhaseC());
         completeBus.setStatistics(getPAOStatistics());
-        completeBus.setSwitchPointId(innerBus.getSwitchPointID());
         completeBus.setUsePhaseData(innerBus.getUsePhaseDataBoolean());
-        completeBus.setVoltReductionPointId(innerBus.getVoltReductionPointId());
 
         if (getPAObjectID() != null) {
             PaoIdentifier paoIdentifier = PaoIdentifier.of(getId(), getPaoType());

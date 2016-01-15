@@ -142,11 +142,7 @@ public class BusController {
 
         if (bus.getId() != null) {
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(bus.getId());
-            model.addAttribute("analogPoints", points.get(PointType.Analog));
-            model.addAttribute("pulseAccumulatorPoints", points.get(PointType.PulseAccumulator));
-            model.addAttribute("calcAnalogPoints", points.get(PointType.CalcAnalog));
-            model.addAttribute("statusPoints", points.get(PointType.Status));
-            model.addAttribute("calcStatusPoints", points.get(PointType.CalcStatus));
+            model.addAttribute("points", points);
         }
 
         List<ViewableFeeder> feederList = busService.getFeedersForBus(bus.getId());

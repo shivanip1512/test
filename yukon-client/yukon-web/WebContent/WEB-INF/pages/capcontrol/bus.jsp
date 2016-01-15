@@ -21,7 +21,7 @@
 
 <cti:url var="action" value="/capcontrol/buses"/>
 <form:form commandName="bus" action="${action}" method="POST">
-    <div class="column-14-10">
+    <div class="column-12-12">
         <div class="column one">
             <cti:tabs>
                 <cti:tab title="Info">
@@ -77,7 +77,7 @@
                                     <td>
                                         <c:choose>
                                             <c:when test="${empty strat}">
-                                                <i:inline key="yukon.common.none.choice"/>
+                                                <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                             </c:when>
                                             <c:otherwise>
                                                 <cti:url var="url" value="/capcontrol/strategies/${strat.id}"/>
@@ -163,14 +163,39 @@
                     <tags:nameValueContainer>
                         <tags:nameValue name="Volt Reduction Control Point">
                             <%-- Point Picker --%>
-                            <tags:input path="capControlSubstationBus.voltReductionPointId"/>
+                            <form:hidden id="volt-reduction-bus-point-input" path="capControlSubstationBus.voltReductionPointId"/>
+                            <tags:pickerDialog
+                                id="voltReductionPointPicker"
+                                type="pointPicker"
+                                linkType="selection"
+                                selectionProperty="paoPoint"
+                                destinationFieldId="volt-reduction-bus-point-input"
+                                viewOnlyMode="${mode == 'VIEW'}"
+                                allowEmptySelection="${true}"/>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:if test="${empty bus.capControlSubstationBus.voltReductionPointId}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                </c:if>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue>
                         <tags:nameValue name="Substation Bus Disable Point">
                             <%-- Point Picker --%>
-                            <tags:input path="capControlSubstationBus.disableBusPointId"/>
+                            <form:hidden id="disable-bus-point-input" path="capControlSubstationBus.disableBusPointId"/>
+                            <tags:pickerDialog
+                                id="disableBusPointPicker"
+                                type="pointPicker"
+                                linkType="selection"
+                                selectionProperty="paoPoint"
+                                destinationFieldId="disable-bus-point-input"
+                                viewOnlyMode="${mode == 'VIEW'}"
+                                allowEmptySelection="${true}"/>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:if test="${empty bus.capControlSubstationBus.disableBusPointId}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                </c:if>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue>
-                
-                
+
                         <tags:nameValue name="Use Per Phase Var Data">
                             <tags:switchButton path="capControlSubstationBus.usePhaseDataBoolean"/>
                         </tags:nameValue>
@@ -178,158 +203,126 @@
                         <tags:nameValue name="Use Totalized Values">
                             <tags:switchButton path="capControlSubstationBus.controlFlagBoolean"/>
                         </tags:nameValue>
-                
+
                         <%-- Var point when not per phase --%>
                         <%-- Phase A when not per phase --%>
                         <tags:nameValue name="Var Point / Phase A">
                             <tags:input path="capControlSubstationBus.currentVarLoadPointID"/>
+                            <form:hidden id="var-point-input" path="capControlSubstationBus.currentVarLoadPointID"/>
+                            <tags:pickerDialog
+                                id="varPointPicker"
+                                type="pointPicker"
+                                linkType="selection"
+                                selectionProperty="paoPoint"
+                                destinationFieldId="var-point-input"
+                                viewOnlyMode="${mode == 'VIEW'}"
+                                allowEmptySelection="${true}"/>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:if test="${empty bus.capControlSubstationBus.currentVarLoadPointID}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                </c:if>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue>
                         <%-- Only when per phase --%>
                         <tags:nameValue name="Phase B">
-                            <tags:input path="capControlSubstationBus.phaseB"/>
+                            <form:hidden id="phase-b-point-input" path="capControlSubstationBus.phaseB"/>
+                            <tags:pickerDialog
+                                id="phaseBPointPicker"
+                                type="pointPicker"
+                                linkType="selection"
+                                selectionProperty="paoPoint"
+                                destinationFieldId="phase-b-point-input"
+                                viewOnlyMode="${mode == 'VIEW'}"
+                                allowEmptySelection="${true}"/>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:if test="${empty bus.capControlSubstationBus.phaseB}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                </c:if>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue>
                         <%-- Only when per phase --%>
                         <tags:nameValue name="Phase C">
-                            <tags:input path="capControlSubstationBus.phaseC"/>
+                            <form:hidden id="phase-c-point-input" path="capControlSubstationBus.phaseC"/>
+                            <tags:pickerDialog
+                                id="phaseCPointPicker"
+                                type="pointPicker"
+                                linkType="selection"
+                                selectionProperty="paoPoint"
+                                destinationFieldId="phase-c-point-input"
+                                viewOnlyMode="${mode == 'VIEW'}"
+                                allowEmptySelection="${true}"/>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:if test="${empty bus.capControlSubstationBus.phaseC}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                </c:if>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue>
-                
+
                         <tags:nameValue name="Watt Point">
-                            <%-- Point Picker --%>
-                            <tags:input path="capControlSubstationBus.currentWattLoadPointID"/>
+                            <form:hidden id="watt-point-input" path="capControlSubstationBus.currentWattLoadPointID"/>
+                            <tags:pickerDialog
+                                id="wattPointPicker"
+                                type="pointPicker"
+                                linkType="selection"
+                                selectionProperty="paoPoint"
+                                destinationFieldId="watt-point-input"
+                                viewOnlyMode="${mode == 'VIEW'}"
+                                allowEmptySelection="${true}"/>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:if test="${empty bus.capControlSubstationBus.currentWattLoadPointID}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                </c:if>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue>
-                
+
                         <tags:nameValue name="Volt Point">
-                            <%-- Point Picker --%>
-                            <tags:input path="capControlSubstationBus.currentVoltLoadPointID"/>
+                            <form:hidden id="volt-point-input" path="capControlSubstationBus.currentVoltLoadPointID"/>
+                            <tags:pickerDialog
+                                id="voltPointPicker"
+                                type="pointPicker"
+                                linkType="selection"
+                                selectionProperty="paoPoint"
+                                destinationFieldId="volt-point-input"
+                                viewOnlyMode="${mode == 'VIEW'}"
+                                allowEmptySelection="${true}"/>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:if test="${empty bus.capControlSubstationBus.currentVoltLoadPointID}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                </c:if>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue>
                     </tags:nameValueContainer>
                 </cti:tab>
                 <cti:tab title="Attached Points">
                     <div class="scroll-md">
-                        <c:if test="${not empty statusPoints}">
-                            <h4>Status</h4>
-                            <table class="compact-results-table row-highlighting">
-                                <thead></thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                                    <c:forEach var="point" items="${statusPoints}">
-                                        <tr>
-                                            <td>
-                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
-                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
-                                            </td>
-                                            <td class="state-indicator">
-                                                <cti:pointStatus pointId="${point.pointId}" />
-                                            </td>
-                                            <td class="wsnw">
-                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
-                                            </td>
-                                            <td class="wsnw">
-                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                        </c:if>
-                        <c:if test="${not empty analogPoints}">
-                            <h4>Analog</h4>
-                            <table class="compact-results-table row-highlighting">
-                                <thead></thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                                    <c:forEach var="point" items="${analogPoints}">
-                                        <tr>
-                                            <td>
-                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
-                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
-                                            </td>
-                                            <td class="state-indicator"></td>
-                                            <td class="wsnw">
-                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
-                                            </td>
-                                            <td class="wsnw">
-                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                        </c:if>
-                        <c:if test="${not empty pulseAccumulatorPoints}">
-                            <h4>Accumulator</h4>
-                            <table class="compact-results-table row-highlighting">
-                                <thead></thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                                    <c:forEach var="point" items="${pulseAccumulatorPoints}">
-                                        <tr>
-                                            <td>
-                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
-                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
-                                            </td>
-                                            <td class="state-indicator"></td>
-                                            <td class="wsnw">
-                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
-                                            </td>
-                                            <td class="wsnw">
-                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                        </c:if>
-                        <c:if test="${not empty calcAnalogPoints}">
-                            <h4>Calc Analog</h4>
-                            <table class="compact-results-table row-highlighting">
-                                <thead></thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                                    <c:forEach var="point" items="${calcAnalogPoints}">
-                                        <tr>
-                                            <td>
-                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
-                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
-                                            </td>
-                                            <td class="state-indicator"></td>
-                                            <td class="wsnw">
-                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
-                                            </td>
-                                            <td class="wsnw">
-                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                        </c:if>
-                        <c:if test="${not empty calcStatusPoints}">
-                            <h4>Calc Status</h4>
-                            <table class="compact-results-table row-highlighting">
-                                <thead></thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                                    <c:forEach var="point" items="${calcStatusPoints}">
-                                        <tr>
-                                            <td>
-                                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
-                                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
-                                            </td>
-                                            <td class="state-indicator">
-                                                <cti:pointStatus pointId="${point.pointId}" />
-                                            </td>
-                                            <td class="wsnw">
-                                                <cti:pointValue pointId="${point.pointId}" format="SHORT" />
-                                            </td>
-                                            <td class="wsnw">
-                                                <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                        </c:if>
+                        <c:forEach var="pointMap" items="${points}">
+                            <c:if test="${not empty pointMap.value}">
+                                <h4><i:inline key="yukon.common.point.pointType.${pointMap.key}"/></h4>
+                                <table class="compact-results-table row-highlighting">
+                                    <thead></thead>
+                                    <tfoot></tfoot>
+                                    <tbody>
+                                        <c:forEach var="point" items="${pointMap.value}">
+                                            <tr>
+                                                <td>
+                                                    <cti:url var="pointUrl" value="/tools/points/${point.pointId}" /> 
+                                                    <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                                                </td>
+                                                <td class="state-indicator">
+                                                    <cti:pointStatus pointId="${point.pointId}" statusPointOnly="${true}"/>
+                                                </td>
+                                                <td class="wsnw">
+                                                    <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                                               </td>
+                                               <td class="wsnw">
+                                                    <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                                               </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </c:if>
+                        </c:forEach>
                     </div>
                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                         <div class="action-area">
@@ -347,7 +340,20 @@
                             <tags:input path="capControlSubstationBus.altSubPAOId"/>
                         </tags:nameValue>
                         <tags:nameValue name="Switch Point">
-                            <tags:input path="capControlSubstationBus.switchPointID"/>
+                            <form:hidden id="switch-point-input" path="capControlSubstationBus.switchPointID"/>
+                            <tags:pickerDialog
+                                id="switchPointPicker"
+                                type="pointPicker"
+                                linkType="selection"
+                                selectionProperty="paoPoint"
+                                destinationFieldId="switch-point-input"
+                                viewOnlyMode="${mode == 'VIEW'}"
+                                allowEmptySelection="${true}"/>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:if test="${empty bus.capControlSubstationBus.switchPointID}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                </c:if>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue>
                     </tags:nameValueContainer>
                 </cti:tab>

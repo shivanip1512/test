@@ -442,7 +442,11 @@ yukon.protoPicker = function (okText,
                 this.selectionLabel.innerHTML = this.noneSelectedText;
                 $(this.selectionLabel).addClass('noSelectionPickerLabel');
             } else {
-                labelMsg = $('<div>').text(hit[this.selectionProperty].toString()).html();
+                var linkText = hit[this.selectionProperty];
+                if (this.selectionProperty === 'paoPoint') {
+                    linkText = hit['deviceName'] + ': ' + hit['pointName'];
+                }
+                labelMsg = $('<div>').text(linkText).html();
                 if (this.selectedItems.length > 1) {
                     labelMsg +=  ' ' + this.selectedAndMsg + ' ' +
                         (this.selectedItems.length - 1) + ' ' +

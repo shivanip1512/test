@@ -111,7 +111,7 @@
                     <cti:button id="picker-${id}-btn" 
                                 data-picker-id="${id}"
                                 nameKey="${pageScope.nameKey}" 
-                                classes="noSelectionPickerLabel ${pageScope.buttonStyleClass}" 
+                                classes="picker-button noSelectionPickerLabel ${pageScope.buttonStyleClass}" 
                                 renderMode="labeledImage" 
                                 icon="${icon}"
                                 onclick="${id}.show.call(${id})"/>
