@@ -200,15 +200,7 @@ CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
 bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     // Protect pointMap while we use it.
-    if( sendList )
-    {
-        CTILOCKGUARD( CtiMutex, guard, _sendMux);
-    }
-    else
-    {
-        CTILOCKGUARD( CtiMutex, guard, _receiveMux );
-    }
-
+    CTILOCKGUARD( CtiMutex, guard, sendList ? _sendMux : _receiveMux );
     DnpDestinationMap &pointMap = sendList ? _sendMap : _receiveMap;
 
     CtiFDRPoint::DestinationList &destinations = translationPoint->getDestinationList();
@@ -241,15 +233,7 @@ bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sen
 void DnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
     // Protect pointMap while we use it.
-    if( recvList )
-    { 
-        CTILOCKGUARD( CtiMutex, guard, _receiveMux );
-    }
-    else
-    {
-        CTILOCKGUARD( CtiMutex, guard, _sendMux );
-    }
-
+    CTILOCKGUARD( CtiMutex, guard, recvList ? _receiveMux : _sendMux );
     DnpDestinationMap &pointMap = recvList ? _receiveMap : _sendMap;
 
     for( const auto &dest : translationPoint->getDestinationList() )
