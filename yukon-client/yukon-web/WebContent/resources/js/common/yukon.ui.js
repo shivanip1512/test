@@ -48,6 +48,8 @@ yukon.ui = (function () {
     /** Object to glass out the page, used by #block and #unblock */
     var pageGlass = {
         
+        requested: false, 
+        
         show: function (args) {
             
             var defaults = $.extend({ color:'#000', alpha: 0.25 }, args || {}),
@@ -101,9 +103,9 @@ yukon.ui = (function () {
     };
 
     /** Initialize any chosen selects */
-    var initChosen = function () {
+    var initChosen = function (container) {
 
-        $('.js-init-chosen').each(function () {
+        $(container).find('.js-init-chosen').each(function () {
             $(this).chosen({ 'width' : $(this).getHiddenDimensions().innerWidth + 11 + 'px' });
         }).removeClass('js-init-chosen');
 
@@ -520,9 +522,6 @@ yukon.ui = (function () {
         if (pageActions.length) {
             pageActions.remove();
             menu.html(pageActions.html());
-            if (menu.find('.icon').length === menu.find('.icon-blank').length) {
-                menu.addClass('no-icons');
-            }
         }
 
         /** Init page buttons */
@@ -540,6 +539,9 @@ yukon.ui = (function () {
         });
 
         if (menu.children().length) {
+            if (menu.find('.icon').length === menu.find('.icon-blank').length) {
+                menu.addClass('no-icons');
+            }
             pageActionsButton.show();
         }
     };
@@ -820,7 +822,7 @@ yukon.ui = (function () {
                     popup.empty();
                     content = $('<div>');
                 }
-                mod.blockPage();
+                mod.blockPage(500);
 
                 content.load(url, function () {
                     
@@ -870,7 +872,7 @@ yukon.ui = (function () {
                 .find(':input').not(':button')
                 .prop('disabled', true);
 
-            initChosen();
+            initChosen(container);
 
             /** Initialize any tabbed containers */
             container.find('.js-init-tabs').each(function (idx, elem) {
@@ -1013,22 +1015,30 @@ yukon.ui = (function () {
         },
         
         /** Block out the closest valid container to the target element, or the page */
-        block: function (target) {
-            var blockElement = $(target).closest('.js-block-this')[0];
-           if (blockElement) {
-               elementGlass.show(blockElement);
-               if (yg.dev_mode) {
-                   debug.log("block");
-               }
-           } else {
-               mod.blockPage();
-           }
+        block: function (target, timeout) {
+            timeout = timeout || 0;
+
+            var blockElement = $(target).closest('.js-block-this').eq(0);
+            if (blockElement.length) {
+                blockElement.data('yukonUiBlock', true);
+                setTimeout(function () {
+                    if (blockElement.data('yukonUiBlock')) {
+                        elementGlass.show(blockElement);
+                    }
+                    if (yg.dev_mode) {
+                        debug.log("block");
+                    }
+                }, timeout);
+            } else {
+                mod.blockPage(timeout);
+            }
         },
         
         /** Unblock the closest valid container to the target element, or the page */
         unblock: function (target) {
-            var blockElement = $(target).closest('.js-block-this')[0];
-            if (blockElement) {
+            var blockElement = $(target).closest('.js-block-this').eq(0);
+            if (blockElement.length) {
+                blockElement.data('yukonUiBlock', false);
                 elementGlass.hide(blockElement);
                 if (yg.dev_mode) {
                     debug.log("unblock");
@@ -1039,15 +1049,22 @@ yukon.ui = (function () {
         },
         
         /** Block out the whole page */
-        blockPage: function (args) {
-            pageGlass.show();
-            if (yg.dev_mode) {
-                debug.log("blockPage");
-            }
+        blockPage: function (timeout) {
+            timeout = timeout || 0;
+            pageGlass.waitingToBlock = true;
+            setTimeout(function () {
+                if (pageGlass.waitingToBlock) {
+                    pageGlass.show();
+                    if (yg.dev_mode) {
+                        debug.log("blockPage");
+                    }
+                }
+            }, timeout);
         },
         
         /** Unblock the whole page */
         unblockPage: function () {
+            pageGlass.waitingToBlock = false;
             pageGlass.hide();
             if (yg.dev_mode) {
                 debug.log("unblockPage");
