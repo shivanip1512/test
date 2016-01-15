@@ -152,7 +152,11 @@ void CtiConnection::outThreadFunc()
 
                     try
                     {
-                        CTILOG_DEBUG(dout, "Outbound message " << *_outMessage);
+                        if( isDebugLudicrous() )
+                        {
+                            CTILOG_TRACE(dout, "Outbound message " << *_outMessage);
+                        }
+
                         sendMessage( *_outMessage );
 
                         _outMessage.reset();
@@ -552,7 +556,7 @@ CtiMessage* CtiConnection::ReadConnQue( UINT Timeout )
         long elapsedSendStart = CtiTime::now().seconds() - _sendStart.seconds();
         if(elapsedSendStart > 30 )    // > 30 seconds
         {
-            CTILOG_LOG( 
+            CTILOG_LOG(
                 (elapsedSendStart > 5 * 60              //  has it been more than 5 minutes?
                     ? Cti::Logging::Logger::Error       //  if so, error
                     : Cti::Logging::Logger::Warn),      //  otherwise, just warn
