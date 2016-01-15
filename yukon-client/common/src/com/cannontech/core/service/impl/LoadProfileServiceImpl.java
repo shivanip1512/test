@@ -683,10 +683,12 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         return pendingRequests;
     }
 
+    @Override
     public void startVoltageProfilingForDevice(int deviceId) {
         enableProfilingForDevice(deviceId, true);
     }
 
+    @Override
     public void stopVoltageProfilingForDevice(int deviceId) {
         enableProfilingForDevice(deviceId, false);
     }
@@ -715,10 +717,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         rfnVoltageProfile.setDeviceID(deviceId);
         rfnVoltageProfile.setProfilingStatus(voltageDetails.enabledUntil == null ? ProfilingStatus.DISABLED
                 : ProfilingStatus.ENABLED);
-        rfnVoltageProfile.setStopDate(voltageDetails.enabledUntil == null ? null
-                : voltageDetails.enabledUntil);
-        rfnVoltageProfile.setVoltageProfilingRate(voltageDetails.profileInterval == null ? 0
-                : voltageDetails.profileInterval.getStandardMinutes());
+        rfnVoltageProfile.setStopDate(voltageDetails.enabledUntil);
+        rfnVoltageProfile.setVoltageProfilingRate(voltageDetails.profileInterval);
         dynamicRfnVoltageProfileCache .put(deviceId, rfnVoltageProfile);
     }
 

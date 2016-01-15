@@ -1,15 +1,16 @@
 package com.cannontech.amr.toggleProfiling.model;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 
 
 public class RfnVoltageProfile {
 
-    private Integer deviceID = null;
+    private Integer deviceID;
     private ProfilingStatus profilingStatus = ProfilingStatus.UNKNOWN;
-    private Instant stopDate = null;
-    private long voltageProfilingRate = 0;
+    private Instant stopDate;
+    private Duration voltageProfilingRate;
 
     public enum ProfilingStatus {
         ENABLED,
@@ -32,11 +33,11 @@ public class RfnVoltageProfile {
         this.stopDate = stopDate;
     }
     
-    public long getVoltageProfilingRate() {
+    public Duration getVoltageProfilingRate() {
         return voltageProfilingRate;
     }
 
-    public void setVoltageProfilingRate(long voltageProfilingRate) {
+    public void setVoltageProfilingRate(Duration voltageProfilingRate) {
         this.voltageProfilingRate = voltageProfilingRate;
     }
 

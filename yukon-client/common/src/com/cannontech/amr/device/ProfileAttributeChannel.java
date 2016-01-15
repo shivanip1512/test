@@ -2,6 +2,8 @@ package com.cannontech.amr.device;
 
 import java.util.Set;
 
+import org.joda.time.Duration;
+
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.db.device.DeviceLoadProfile;
@@ -13,25 +15,25 @@ import com.google.common.collect.Sets;
 public enum ProfileAttributeChannel {
     LOAD_PROFILE(BuiltInAttribute.LOAD_PROFILE) {
         @Override
-        public int getRate(DeviceLoadProfile deviceLoadProfile) {
+        protected int getRateSeconds(DeviceLoadProfile deviceLoadProfile) {
             return deviceLoadProfile.getLoadProfileDemandRate();
         }
     },
     PROFILE_CHANNEL_2(BuiltInAttribute.PROFILE_CHANNEL_2) {
         @Override
-        public int getRate(DeviceLoadProfile deviceLoadProfile) {
+        protected int getRateSeconds(DeviceLoadProfile deviceLoadProfile) {
             return deviceLoadProfile.getLoadProfileDemandRate();
         }
     },
     PROFILE_CHANNEL_3(BuiltInAttribute.PROFILE_CHANNEL_3) {
         @Override
-        public int getRate(DeviceLoadProfile deviceLoadProfile) {
+        protected int getRateSeconds(DeviceLoadProfile deviceLoadProfile) {
             return deviceLoadProfile.getLoadProfileDemandRate();
         }
     },
     VOLTAGE_PROFILE(BuiltInAttribute.VOLTAGE_PROFILE) {
         @Override
-        public int getRate(DeviceLoadProfile deviceLoadProfile) {
+        protected int getRateSeconds(DeviceLoadProfile deviceLoadProfile) {
             return deviceLoadProfile.getVoltageDmdRate();
         }
     };
@@ -68,7 +70,15 @@ public enum ProfileAttributeChannel {
         return ordinal() + 1;
     }
 
-    public abstract int getRate(DeviceLoadProfile deviceLoadProfile);
+    protected abstract int getRateSeconds(DeviceLoadProfile deviceLoadProfile);
+    
+    public Duration getRate(DeviceLoadProfile deviceLoadProfile) {
+        int seconds = getRateSeconds(deviceLoadProfile);
+        if (seconds == 0) {
+            return null;
+        }
+        return Duration.standardSeconds(seconds);
+    }
 
     /**
      * Looks up the ProfileAttributeChannelEnum based on its channel.

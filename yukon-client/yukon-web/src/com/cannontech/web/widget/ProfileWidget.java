@@ -119,16 +119,12 @@ public class ProfileWidget extends WidgetControllerBase {
      * email clients.
      */
 
-    private String calcIntervalStr(long secs, YukonUserContext userContext) {
-        String intervalString = null;
-        if (secs == 0) {
+    private String calcIntervalStr(Duration duration, YukonUserContext userContext) {
+        if (duration == null || duration.getMillis() == 0) {
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            intervalString = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.unknown");
-        } else {    
-            Duration duration = Duration.standardSeconds(secs);
-            intervalString = durationFormattingService.formatDuration(duration, DurationFormat.DHMS_REDUCED, userContext);
-        }
-        return intervalString;
+            return messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.unknown");
+        } 
+        return durationFormattingService.formatDuration(duration, DurationFormat.DHMS_REDUCED, userContext);
     }
 
     private List<Map<String, Object>> getAvailableChannelInfo(int deviceId,
