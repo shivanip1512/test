@@ -14,6 +14,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
+import com.cannontech.common.exception.MissedGatewayCreationException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -39,7 +40,6 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         @Override
         protected RfnDevice processCreation(RfnIdentifyingMessage message, RfnIdentifier identifier) {
             //We got data for a gateway that is not in the database.
-            log.warn("Received data for a gateway that is not in the database. Creating " + identifier);
             if (instantBasedRfnIdentifiers.containsKey(identifier)) {
                 if (Hours.hoursBetween(instantBasedRfnIdentifiers.get(identifier), Instant.now()).getHours() >= 2) {
                     instantBasedRfnIdentifiers.remove(identifier);
@@ -56,12 +56,16 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                     }
 
                 } else {
-                    throw new RuntimeException("Creation not attempted for " + identifier);
+                    throw new MissedGatewayCreationException("Adding gateway (" + identifier
+                        + ") to the map for future creation(after 2 hour) only if the data message "
+                        + "is received continuously");
                 }
 
             } else {
                 instantBasedRfnIdentifiers.put(identifier, Instant.now());
-                throw new RuntimeException("Creation not attempted for " + identifier);
+                throw new MissedGatewayCreationException("Adding gateway (" + identifier
+                    + ") to the map for future creation(after 2 hour) only if the data message "
+                    + "is received continuously");
             }
         }
         

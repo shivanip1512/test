@@ -21,6 +21,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
+import com.cannontech.common.exception.MissedGatewayCreationException;
 import com.cannontech.common.rfn.Acknowledgeable;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -114,6 +115,12 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                 try {
                     rfnDevice = processCreation(request, rfnIdentifier);
                 } catch (RuntimeException e) {
+
+                    if (e instanceof MissedGatewayCreationException) {
+                        log.info(e.getMessage());
+                        return;
+                    }
+
                     boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
                     boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
                     if (isDev || isAcknowledgeable) {
