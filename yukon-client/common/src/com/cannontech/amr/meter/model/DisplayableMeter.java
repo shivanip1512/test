@@ -6,11 +6,11 @@ import com.cannontech.common.pao.PaoIdentifier;
 
 public class DisplayableMeter implements DisplayablePao {
 
-	private YukonMeter meter;
-	private MeterDisplayFieldEnum meterDisplayFieldEnum;
+    private YukonMeter meter;
+    private MeterDisplayFieldEnum meterDisplayFieldEnum;
 
-	@Override
-	public String getName() {
+    @Override
+    public String getName() {
         String formattedName = meterDisplayFieldEnum.getField(meter);
         if (formattedName == null) {
             String defaultName = "n/a";
@@ -20,21 +20,20 @@ public class DisplayableMeter implements DisplayablePao {
             return defaultName;
         }
         return formattedName;
-	}
+    }
 
-	@Override
-	public PaoIdentifier getPaoIdentifier() {
-		return meter.getPaoIdentifier();
-	}
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return meter.getPaoIdentifier();
+    }
 
-	public DisplayableMeter(YukonMeter meter,
-			MeterDisplayFieldEnum meterDisplayFieldEnum) {
-		super();
-		this.meter = meter;
-		this.meterDisplayFieldEnum = meterDisplayFieldEnum;
-	}
-	
-	public YukonMeter getMeter() {
+    public DisplayableMeter(YukonMeter meter, MeterDisplayFieldEnum meterDisplayFieldEnum) {
+        super();
+        this.meter = meter;
+        this.meterDisplayFieldEnum = meterDisplayFieldEnum;
+    }
+
+    public YukonMeter getMeter() {
         return meter;
     }
 }
