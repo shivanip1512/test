@@ -136,6 +136,9 @@ public class RouteLocateController {
         
         //check if authorized to execute command
         if (!commandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
+            for (String param : deviceCollection.getCollectionParameters().keySet()) {
+                model.addAttribute(param, deviceCollection.getCollectionParameters().get(param));
+            }
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.routeLocateHome.commandNotAuthorizedError");
             model.addAttribute("errorMsg", errorMsg);
