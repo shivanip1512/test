@@ -206,9 +206,6 @@ void CtiFDRService::OnStop( )
     ThreadMonitor.join();
 
     CloseHandle(iShutdown);
-
-    SetStatus( SERVICE_STOPPED );
-
 }
 
 
@@ -318,6 +315,8 @@ void CtiFDRService::Run( )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "FDR Run() Service failed")
     }
+
+    SetStatus( SERVICE_STOPPED );
 
 }
 

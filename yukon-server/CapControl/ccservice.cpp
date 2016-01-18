@@ -84,8 +84,6 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
 
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
     ThreadMonitor.join();
-
-    SetStatus(SERVICE_STOPPED);
 }
 
 void CtiCCService::Init()

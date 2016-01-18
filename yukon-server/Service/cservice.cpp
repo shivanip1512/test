@@ -87,26 +87,12 @@ void CService::ServiceMainMember(DWORD argc, LPTSTR* argv, LPHANDLER_FUNCTION pf
 {
    DWORD dwErr = 0;
 
-#ifndef _DEBUG
-   __try
-   {
-#endif
-
       PreInit();
       SetupHandlerInside(pf);
       ParseArgs(argc, argv);
       LaunchWatcherThread(pfnWTP);
       Init();
       Run();
-
-#ifndef _DEBUG
-   }
-   __except(dwErr = GetExceptionCode(), EXCEPTION_EXECUTE_HANDLER)
-   {
-      if(m_hServiceStatus)
-         SetStatus(SERVICE_STOPPED, 0, 0, 0, dwErr, 0);
-   }
-#endif
 
    DeInit();
 }
