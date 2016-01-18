@@ -1,9 +1,11 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
@@ -14,7 +16,6 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
-import com.cannontech.common.exception.MissedGatewayCreationException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -25,7 +26,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
     private static final Logger log = YukonLogManager.getLogger(GatewayDataResponseListener.class);
     
     @Autowired private GatewayEventLogService gatewayEventLogService;
-    
+    @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private JmsTemplate outgoingJmsTemplate;
     private final String outgoingTopicName = "yukon.qr.obj.common.rfn.GatewayDataTopic";
     
@@ -40,9 +41,9 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         @Override
         protected RfnDevice processCreation(RfnIdentifyingMessage message, RfnIdentifier identifier) {
             //We got data for a gateway that is not in the database.
-            if (instantBasedRfnIdentifiers.containsKey(identifier)) {
-                if (Hours.hoursBetween(instantBasedRfnIdentifiers.get(identifier), Instant.now()).getHours() >= 2) {
-                    instantBasedRfnIdentifiers.remove(identifier);
+            if (missingGatewayFirstDataTimes.containsKey(identifier)) {
+                if (Hours.hoursBetween(missingGatewayFirstDataTimes.get(identifier), Instant.now()).getHours() >= 2) {
+                    missingGatewayFirstDataTimes.remove(identifier);
                     try {
                         RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(), identifier);
                         rfnDeviceCreationService.incrementNewDeviceCreated();
@@ -56,16 +57,18 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                     }
 
                 } else {
-                    throw new MissedGatewayCreationException("Adding gateway (" + identifier
+                    log.info("Adding gateway (" + identifier
                         + ") to the map for future creation(after 2 hour) only if the data message "
                         + "is received continuously");
+                    throw new RuntimeException();
                 }
 
             } else {
-                instantBasedRfnIdentifiers.put(identifier, Instant.now());
-                throw new MissedGatewayCreationException("Adding gateway (" + identifier
+                missingGatewayFirstDataTimes.put(identifier, Instant.now());
+                log.info("Adding gateway (" + identifier
                     + ") to the map for future creation(after 2 hour) only if the data message "
                     + "is received continuously");
+                throw new RuntimeException();
             }
         }
         

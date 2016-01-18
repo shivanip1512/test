@@ -143,6 +143,7 @@
         <property name="loadProfile" value="DELIVERED_KVAR_LOAD_PROFILE"></property>
         <qualifier value="DeliveredKvarh "/>
     </bean>
+    <bean id= "missingGatewayFirstDataTimes" class="java.util.concurrent.ConcurrentHashMap"/>
        
     <bean class="com.cannontech.services.calculated.CalculatedPointDataProducer"/>
 

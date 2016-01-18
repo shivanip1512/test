@@ -1,11 +1,14 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -23,7 +26,8 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
     private static final Logger log = YukonLogManager.getLogger(GatewayArchiveRequestListener.class);
     
     @Autowired private GatewayEventLogService gatewayEventLogService;
-    
+
+    @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private List<Worker> workers;
     
     private class Worker extends ConverterBase {
@@ -33,8 +37,8 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
         
         @Override
         protected RfnDevice processCreation(GatewayArchiveRequest request, RfnIdentifier identifier) {
-            if (instantBasedRfnIdentifiers.containsKey(identifier)) {
-                instantBasedRfnIdentifiers.remove(identifier);
+            if (missingGatewayFirstDataTimes.containsKey(identifier)) {
+                missingGatewayFirstDataTimes.remove(identifier);
             }
             try {
                 // Create the device in Yukon and send a DB change message

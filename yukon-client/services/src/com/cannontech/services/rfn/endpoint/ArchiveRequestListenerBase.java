@@ -1,16 +1,13 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -21,7 +18,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
-import com.cannontech.common.exception.MissedGatewayCreationException;
 import com.cannontech.common.rfn.Acknowledgeable;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -44,7 +40,6 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected JmsTemplate jmsTemplate;
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
-    protected static Map<RfnIdentifier, Instant> instantBasedRfnIdentifiers = new ConcurrentHashMap<RfnIdentifier, Instant> ();
     
     protected abstract class ConverterBase extends Thread {
         private ArrayBlockingQueue<T> inQueue;
@@ -115,12 +110,6 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                 try {
                     rfnDevice = processCreation(request, rfnIdentifier);
                 } catch (RuntimeException e) {
-
-                    if (e instanceof MissedGatewayCreationException) {
-                        log.info(e.getMessage());
-                        return;
-                    }
-
                     boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
                     boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
                     if (isDev || isAcknowledgeable) {
