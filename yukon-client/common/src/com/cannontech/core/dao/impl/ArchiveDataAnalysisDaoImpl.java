@@ -51,6 +51,7 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
@@ -65,6 +66,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private @Qualifier("longRunning") Executor executor;
+    @Autowired private DatabaseVendorResolver dbVendorResolver;
 
     private class ArchiveDataRowMapper implements YukonRowMapper<ArchiveData> {
         private Period intervalPeriod;
@@ -357,15 +359,27 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         // Since every slot has the same set of devices, we can use 'TOP 1' to limit this query to one slot
         // which speeds this query up a lot for large archives
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceId AS PAObjectID, Type");
-        sql.append("FROM ArchiveDataAnalysisSlotValue SlotValue");
-        sql.append("JOIN (");
-        sql.append("    SELECT TOP 1 SlotId");
-        sql.append("    FROM ArchiveDataAnalysisSlot"); 
-        sql.append("    WHERE AnalysisId").eq(analysisId);
-        sql.append(") AS Slot");
-        sql.append("ON Slot.SlotId = SlotValue.SlotId");
-        sql.append("JOIN YukonPAObject ypo ON ypo.paobjectId = slotValue.deviceId");
+        if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {
+            sql.append("SELECT DeviceId AS PAObjectID, Type");
+            sql.append("FROM ArchiveDataAnalysisSlotValue SlotValue");
+            sql.append("JOIN (");
+            sql.append("    SELECT TOP 1 SlotId");
+            sql.append("    FROM ArchiveDataAnalysisSlot");
+            sql.append("    WHERE AnalysisId").eq(analysisId);
+            sql.append(") AS Slot");
+            sql.append("ON Slot.SlotId = SlotValue.SlotId");
+            sql.append("JOIN YukonPAObject ypo ON ypo.paobjectId = slotValue.deviceId");
+        } else if (dbVendorResolver.getDatabaseVendor().isOracle()) {
+            sql.append("SELECT DeviceId AS PAObjectID, Type");
+            sql.append("FROM ArchiveDataAnalysisSlotValue slotValue");
+            sql.append("JOIN (");
+            sql.append("    SELECT SlotId");
+            sql.append("    FROM ArchiveDataAnalysisSlot");
+            sql.append("    WHERE AnalysisId").eq(analysisId);
+            sql.append("    AND ROWNUM <= 1 ) slot");
+            sql.append("ON slot.SlotId = slotValue.SlotId");
+            sql.append("JOIN YukonPAObject ypo ON ypo.PaobjectId = slotValue.DeviceId");
+        }
 
         List<PaoIdentifier> deviceIds = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
         return deviceIds;

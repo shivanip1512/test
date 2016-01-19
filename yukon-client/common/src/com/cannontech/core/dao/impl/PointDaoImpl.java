@@ -824,10 +824,9 @@ public class PointDaoImpl implements PointDao {
         sqla.append("SELECT TOP " + limitToRowCount + " YPO.paObjectid, P.pointId");
         sqla.append("FROM YukonPAObject YPO");
         sqla.append("JOIN Point P ON YPO.paObjectId = P.paObjectId");
-        sqla.append(orderByClause);
 
         SqlBuilder sqlb = builder.buildOther();
-        sqlb.append("select TOP " + limitToRowCount + " * from (");
+        sqlb.append("SELECT * FROM (");
         sqlb.append("SELECT YPO.paObjectid, P.pointId, ROW_NUMBER() over (");
         sqlb.append(orderByClause);
         sqlb.append(") rn");
@@ -852,6 +851,7 @@ public class PointDaoImpl implements PointDao {
         sqlb.append(") numberedRows");
         sqlb.append("WHERE numberedRows.rn").lte(limitToRowCount);
         sqlb.append("ORDER BY numberedRows.rn");
+        sqla.append(orderByClause);
 
         return builder;
     }

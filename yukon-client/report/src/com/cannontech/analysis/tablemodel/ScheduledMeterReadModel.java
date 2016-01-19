@@ -367,6 +367,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
         sql.append("FROM DEVICEREADLOG DRL, DEVICEREADREQUESTLOG DRRL, DEVICEREADJOBLOG DRJL, ");
         sql.append("YUKONPAOBJECT PAO, DEVICECARRIERSETTINGS DCS, DEVICEMETERGROUP DMG, ");
         sql.append("YUKONPAOBJECT ROUTE, DEVICEROUTES DR, YUKONPAOBJECT SCHEDULE ");
+        sql.append(" WHERE");
         appendCommonWhereClauses(sql);
         sql.append(")a where rn <=" + SCHEDULED_METER_READ_RECORDS_LIMIT);
         return sql;
