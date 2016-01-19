@@ -84,6 +84,11 @@
             <property-name>rolePropertyDao</property-name>
             <value>#{rolePropertyDao}</value>
         </managed-property>
+        
+        <managed-property>
+            <property-name>databaseCache</property-name>
+            <value>#{databaseCache}</value>
+        </managed-property>
 
         <managed-property>
             <property-name>transactionTemplate</property-name>

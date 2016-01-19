@@ -167,6 +167,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     private PointDao pointDao;
     private PaoDao paoDao;
     private RolePropertyDao rolePropertyDao;
+    private IDatabaseCache dbCache;
     private CBCSelectionLists selectionLists;
     private TransactionTemplate transactionTemplate;
     
@@ -966,7 +967,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         String url = "/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemId;
         if (type == CapControlTypes.CAP_CONTROL_AREA) {
             url = "/capcontrol/areas/" + itemId;
-        } else if (type == CapControlTypes.CAP_CONTROL_AREA) {
+        } else if (type == CapControlTypes.CAP_CONTROL_SPECIAL_AREA) {
             url = "/capcontrol/areas/" + itemId;
         }
 
@@ -1587,7 +1588,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
      }
     
     private void setPointNameInMap(Map<Integer,String> map, int pointId) {
-        map.put(pointId, pointDao.getPointName(pointId));
+        String name;
+        try {
+            name = pointDao.getPointName(pointId);
+        } catch (NotFoundException e) {
+            name = "(invalid)";
+        }
+        map.put(pointId, name);
     }
 
     @Override
@@ -1632,7 +1639,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
      }
 
     private void setPaoNameInMap(Map<Integer,String> map, int pointId) {
-        map.put(pointId, paoDao.getYukonPAOName(pointDao.getLitePoint(pointId).getPaobjectID()));
+        String name;
+        try {
+            LitePoint point = pointDao.getLitePoint(pointId);
+            int paoId = point.getPaobjectID();
+            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(paoId);
+            if (pao == null) {
+                throw new NotFoundException("No pao found with id " + paoId);
+            }
+            name = pao.getPaoName();
+        } catch (NotFoundException e) {
+            name = "(invalid)";
+        }
+        map.put(pointId, name);
     }
      
     private int getControlPoint(UnitOfMeasure uom) {
@@ -1678,7 +1697,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
             //go to the next page
             int itemId = Integer.valueOf((String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
                 .get("paoID"));
-            IDatabaseCache dbCache = YukonSpringHook.getBean(IDatabaseCache.class);
             LiteYukonPAObject pao = dbCache.getAllPaosMap().get(itemId);
 
             String location;
@@ -1853,6 +1871,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
+    }
+
+    public void setDbCache(IDatabaseCache dbCache) {
+        this.dbCache = dbCache;
     }
     
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
