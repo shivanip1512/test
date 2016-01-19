@@ -248,7 +248,7 @@ yukon.dataUpdater = (function () {
             }).fail(function (xhr, textStatus, errorThrown) {
                 // Since we're asking for json data, if we get a 200 status, but its not json this will 
                 // result in a parse error and call fail(), not done()
-                if (xhr.status === 409) {
+                if (xhr.status === 409 || xhr.status === 403) {
                     _warnStaleData();
                 }
                 
