@@ -59,6 +59,41 @@ public:
 };
 
 
+class test_IgnoredControlReasonCbc802x : public IgnoredControlReasonCbc802x
+{
+public:
+
+    std::string lookupStateName( const long reason, const long stateGroup ) const override
+    {
+        static const std::map<long, std::string>    _lookup 
+        {
+            {  0, "Godzilla"                },
+            {  1, "Ghidorah"                },
+            {  2, "Mechagodzilla"           },
+            {  3, "Biollante"               },
+            {  4, "Mothra"                  },
+            {  5, "Destoroyah"              },
+            {  6, "Anguirus"                },
+            {  7, "Orga"                    },
+            {  8, "Hedorah"                 },
+            {  9, "Rodan"                   },
+            { 10, "Megaguirus"              },
+            { 11, "Battra"                  },
+            { 12, "Megalon"                 },
+            { 13, "Baragon"                 },
+            { 14, "Ebirah"                  }
+        };
+
+        if ( auto result = Cti::mapFind( _lookup, reason ) )
+        {
+            return *result;
+        }
+
+        return "Unknown State. Value = " + std::to_string( reason );
+    }
+};
+
+
 
 BOOST_AUTO_TEST_SUITE( test_TwoWayCBCPoints )
 
@@ -88,6 +123,8 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
     BOOST_CHECK_EQUAL_RANGES( registrationPoints, expected );
 
     BOOST_CHECK_EQUAL( "Uninitialized", points->getLastControlText() );
+
+    BOOST_CHECK_EQUAL( "Uninitialized", points->getIgnoredControlText() );
 }
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
@@ -313,27 +350,149 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
                     points->getPointIdByAttribute( PointAttribute::LastControlAnalog ),         1, now ) );
     BOOST_CHECK_EQUAL( "Unknown State. Value = 192", points->getLastControlText() );
 
+/// ----------- ignored control reason testing
+
+    BOOST_CHECK_EQUAL(  726, points->getPointIdByAttribute( PointAttribute::IgnoredIndicator ) );
+    BOOST_CHECK_EQUAL(  698, points->getPointIdByAttribute( PointAttribute::IgnoredReason ) );
+
+    // Initialize all IgnoredControl... attributes to 0
+    BOOST_CHECK( points->setTwoWayStatusPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredIndicator ),          0, now ) );
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             0, now ) );
+
+    BOOST_CHECK_EQUAL(  0.0, points->getPointValueByAttribute( PointAttribute::IgnoredIndicator ) );
+    BOOST_CHECK_EQUAL(  0.0, points->getPointValueByAttribute( PointAttribute::IgnoredReason ) );
+
+    BOOST_CHECK_EQUAL( "Local", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             1, now ) );
+
+    BOOST_CHECK_EQUAL( "FaultCurrent", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             2, now ) );
+
+    BOOST_CHECK_EQUAL( "EmVolt", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             3, now ) );
+
+    BOOST_CHECK_EQUAL( "Time", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             4, now ) );
+
+    BOOST_CHECK_EQUAL( "Voltage", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             5, now ) );
+
+    BOOST_CHECK_EQUAL( "Digital1", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             6, now ) );
+
+    BOOST_CHECK_EQUAL( "Analog1", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             7, now ) );
+
+    BOOST_CHECK_EQUAL( "Digital2", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             8, now ) );
+
+    BOOST_CHECK_EQUAL( "Analog2", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),             9, now ) );
+
+    BOOST_CHECK_EQUAL( "Digital3", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),            10, now ) );
+
+    BOOST_CHECK_EQUAL( "Analog3", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),            11, now ) );
+
+    BOOST_CHECK_EQUAL( "Digital4", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),            12, now ) );
+
+    BOOST_CHECK_EQUAL( "Temp", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),            13, now ) );
+
+    BOOST_CHECK_EQUAL( "Remote", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),            14, now ) );
+
+    BOOST_CHECK_EQUAL( "NtrlLockOut", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),            15, now ) );
+
+    BOOST_CHECK_EQUAL( "BrownOut", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),            16, now ) );
+
+    BOOST_CHECK_EQUAL( "BadActRelay", points->getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::IgnoredReason ),            17, now ) );
+
+    BOOST_CHECK_EQUAL( "unknown", points->getIgnoredControlText() );
 }
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 {
     struct test_CtiCCTwoWayPointsCbc802x: public CtiCCTwoWayPointsCbc802x
     {
-        test_CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason )
-            :   CtiCCTwoWayPointsCbc802x( paoid, paotype, std::move( reason ) )
+        test_CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype,
+                                       std::unique_ptr<LastControlReason>    lastControlReason,
+                                       std::unique_ptr<IgnoredControlReason> ignoredControlReason )
+            :   CtiCCTwoWayPointsCbc802x( paoid, paotype,
+                                          std::move( lastControlReason ),
+                                          std::move( ignoredControlReason ) )
         {
             // empty...
         }
-
-        using CtiCCTwoWayPoints::setLastControlReasonDecoder;
     }
-    points( 545, "CBC 8020", std::make_unique<test_LastControlReasonCbc802x>() );
+    points( 545, "CBC 8020",
+            std::make_unique<test_LastControlReasonCbc802x>(),
+            std::make_unique<test_IgnoredControlReasonCbc802x>() );
 
     PointInitializer    databaseInput[] =
     {
         // These type/offsets are defined in the 2-way point code for CBC 802X devices
         { AnalogPointType,                  2,      335 },
         { AnalogPointType,                 12,      340 },
+        { AnalogPointType,                114,      352 },
         { AnalogPointType,              10001,      331 },
         { AnalogPointType,              10002,      359 },
         { AnalogPointType,              10318,      313 },
@@ -355,7 +514,6 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         { AnalogPointType,                  7,      320 },
         { AnalogPointType,                  8,      351 },
         { AnalogPointType,                 21,      361 },
-        { AnalogPointType,                114,      352 },
         { AnalogPointType,               9999,      325 },
         { AnalogPointType,              10005,      324 },
         { AnalogPointType,              10006,      329 },
@@ -398,7 +556,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         expected
         {
             340, 331, 359, 313, 323, 338, 362, 330, 350,
-            318, 334, 311, 354, 321, 336, 335
+            318, 334, 311, 352, 354, 321, 336, 335
         };
 
     points.addAllCBCPointsToRegMsg( registrationPoints );
@@ -549,6 +707,111 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
                     points.getPointIdByAttribute( PointAttribute::LastControlReason ),    22, now ) );
 
     BOOST_CHECK_EQUAL( "Unknown State. Value = 22", points.getLastControlText() );
+
+/// ----------- ignored control reason testing
+
+    // doesn't have this
+    BOOST_CHECK_EQUAL(    0, points.getPointIdByAttribute( PointAttribute::IgnoredIndicator ) );
+
+    BOOST_CHECK_EQUAL(  352, points.getPointIdByAttribute( PointAttribute::IgnoredReason ) );
+
+    // Initialize all IgnoredControl... attributes to 0
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         0, now ) );
+
+    BOOST_CHECK_EQUAL(  0.0, points.getPointValueByAttribute( PointAttribute::IgnoredReason ) );
+
+    BOOST_CHECK_EQUAL( "Godzilla", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         1, now ) );
+
+    BOOST_CHECK_EQUAL( "Ghidorah", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         2, now ) );
+
+    BOOST_CHECK_EQUAL( "Mechagodzilla", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         3, now ) );
+
+    BOOST_CHECK_EQUAL( "Biollante", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         4, now ) );
+
+    BOOST_CHECK_EQUAL( "Mothra", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         5, now ) );
+
+    BOOST_CHECK_EQUAL( "Destoroyah", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         6, now ) );
+
+    BOOST_CHECK_EQUAL( "Anguirus", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         7, now ) );
+
+    BOOST_CHECK_EQUAL( "Orga", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         8, now ) );
+
+    BOOST_CHECK_EQUAL( "Hedorah", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),         9, now ) );
+
+    BOOST_CHECK_EQUAL( "Rodan", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),        10, now ) );
+
+    BOOST_CHECK_EQUAL( "Megaguirus", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),        11, now ) );
+
+    BOOST_CHECK_EQUAL( "Battra", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),        12, now ) );
+
+    BOOST_CHECK_EQUAL( "Megalon", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),        13, now ) );
+
+    BOOST_CHECK_EQUAL( "Baragon", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),        14, now ) );
+
+    BOOST_CHECK_EQUAL( "Ebirah", points.getIgnoredControlText() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),        15, now ) );
+
+    BOOST_CHECK_EQUAL( "Unknown State. Value = 15", points.getIgnoredControlText() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

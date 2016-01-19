@@ -5,6 +5,7 @@
 #include "PointValueHolder.h"
 #include "LitePoint.h"
 #include "LastControlReason.h"
+#include "IgnoredControlReason.h"
 
 namespace Cti {
     class RowReader;
@@ -17,11 +18,15 @@ namespace Database {
 class CtiCCTwoWayPoints
 {
 public:
-    CtiCCTwoWayPoints( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason );
+
+    CtiCCTwoWayPoints( const long paoid, const std::string & paotype,
+                       std::unique_ptr<LastControlReason>    lastControlReason,
+                       std::unique_ptr<IgnoredControlReason> ignoredControlReason );
 
     long getPAOId() const;
 
     std::string getLastControlText();
+    std::string getIgnoredControlText();
 
     void setPAOId(long paoId);
 
@@ -49,9 +54,8 @@ protected:
                             _analogOffsetAttribute,
                             _accumulatorOffsetAttribute;
 
-    void setLastControlReasonDecoder( std::unique_ptr<LastControlReason> && reason );
-
-    std::unique_ptr<LastControlReason>  _lastControlReason;
+    std::unique_ptr<LastControlReason>      _lastControlReason;
+    std::unique_ptr<IgnoredControlReason>   _ignoredControlReason;
 
 private:
 
@@ -95,7 +99,9 @@ class CtiCCTwoWayPointsCbcDnp : public CtiCCTwoWayPoints
 {
 public:
 
-    CtiCCTwoWayPointsCbcDnp( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason );
+    CtiCCTwoWayPointsCbcDnp( const long paoid, const std::string & paotype,
+                             std::unique_ptr<LastControlReason>    lastControlReason,
+                             std::unique_ptr<IgnoredControlReason> ignoredControlReason );
 };
 
 
@@ -106,7 +112,9 @@ class CtiCCTwoWayPointsCbc702x : public CtiCCTwoWayPoints
 {
 public:
 
-    CtiCCTwoWayPointsCbc702x( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason );
+    CtiCCTwoWayPointsCbc702x( const long paoid, const std::string & paotype,
+                              std::unique_ptr<LastControlReason>    lastControlReason,
+                              std::unique_ptr<IgnoredControlReason> ignoredControlReason );
 };
 
 
@@ -117,7 +125,9 @@ class CtiCCTwoWayPointsCbc802x : public CtiCCTwoWayPoints
 {
 public:
 
-    CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason );
+    CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype,
+                              std::unique_ptr<LastControlReason>    lastControlReason,
+                              std::unique_ptr<IgnoredControlReason> ignoredControlReason );
 };
 
 

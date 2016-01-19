@@ -3496,7 +3496,6 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 currentCapBank->setIgnoredReason(value);
                                 currentSubstationBus->setBusUpdatedFlag(true);
-                                currentCapBank->setIgnoreReasonTimeUpdated(timestamp);
                             }
 
                             if ( currentCapBank->getPointIdByAttribute( PointAttribute::LastControlReason ) == pointID )
@@ -3809,10 +3808,10 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
     }
     text1 += afterVarsString;
     currentCapBank->setAfterVarsString(afterVarsString);
-    currentCapBank->setPercentChangeString(" Rejection by " +currentCapBank->getIgnoreReasonText());
+    currentCapBank->setPercentChangeString(" Rejection by " +twoWayPts.getIgnoredControlText());
 
     text1 += " command-";
-    text1 += currentCapBank->getIgnoreReasonText();
+    text1 += twoWayPts.getIgnoredControlText();
     if (twoWayPts.getPointValueByAttribute(PointAttribute::IgnoredReason) == 4) //voltage
     {
         if ( ((currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||

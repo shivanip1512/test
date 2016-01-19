@@ -124,7 +124,6 @@ public:
     const std::string& getBeforeVarsString() const;
     const std::string& getAfterVarsString() const;
     const std::string& getPercentChangeString() const;
-    const CtiTime& getIgnoreReasonTimeUpdated() const;
     const CtiTime& getIgnoreIndicatorTimeUpdated() const;
     const CtiTime& getUnsolicitedChangeTimeUpdated() const;
     bool getUnsolicitedPendingFlag() const;
@@ -201,8 +200,6 @@ public:
     CtiCCCapBank& setBeforeVarsString(const std::string& before);
     CtiCCCapBank& setAfterVarsString(const std::string& after);
     CtiCCCapBank& setPercentChangeString(const std::string& percent);
-    CtiCCCapBank& setIgnoreReasonCounter(INT counter);
-    CtiCCCapBank& setIgnoreReasonTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setIgnoreIndicatorTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setUnsolicitedChangeTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setUnsolicitedPendingFlag(bool flag);
@@ -215,7 +212,6 @@ public:
     bool updateVerificationState(void);
 
     std::string getControlStatusQualityString();
-    std::string getIgnoreReasonText() const;
     CtiCCCapBank& initVerificationControlStatus();
     CtiCCCapBank& addAllCapBankPointsToMsg(std::set<long>& pointAddMsg);
     std::string getControlStatusText() const;
@@ -373,7 +369,6 @@ private:
     std::string _sPercentChange;
     long _controlStatusQuality;
 
-    CtiTime _ignoreReasonTimeUpdated;
     CtiTime _ignoreIndicatorTimeUpdated;
     CtiTime _unsolicitedChangeTimeUpdated;
 

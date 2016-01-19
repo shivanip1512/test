@@ -21,12 +21,15 @@ using Cti::CapControl::MissingPointAttribute;
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCTwoWayPoints::CtiCCTwoWayPoints( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason )
+CtiCCTwoWayPoints::CtiCCTwoWayPoints( const long paoid, const std::string & paotype,
+                                      std::unique_ptr<LastControlReason>    lastControlReason,
+                                      std::unique_ptr<IgnoredControlReason> ignoredControlReason )
     :   _paoid( paoid ),
         _paotype( paotype ),
         _insertDynamicDataFlag( true ),
         _dirty( true ),
-        _lastControlReason( std::move( reason ) )
+        _lastControlReason( std::move( lastControlReason ) ),
+        _ignoredControlReason( std::move( ignoredControlReason ) )
 {
     _attributes = AttributePoint
     {
@@ -99,6 +102,8 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
     }
 
     int lastControlReason = _lastControlReason->serialize( *this );
+    int ignoredControlReason = _ignoredControlReason->serializeReason( *this );
+    bool ignoredControlIndicator = _ignoredControlReason->serializeIndicator( *this );
 
     int condition = 0;
     condition |= 0x01 * !!getPointValueByAttribute(PointAttribute::UvCondition);
@@ -159,7 +164,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
             << (string)(getPointValueByAttribute(PointAttribute::TempAlarm)?"Y":"N")
             << (string)(getPointValueByAttribute(PointAttribute::DSTActive)?"Y":"N")
             << (string)(getPointValueByAttribute(PointAttribute::NeutralLockout)?"Y":"N")
-            << (string)(getPointValueByAttribute(PointAttribute::IgnoredIndicator)?"Y":"N")
+            << (string)(ignoredControlIndicator?"Y":"N")
             << getPointValueByAttribute(PointAttribute::CbcVoltage)
             << getPointValueByAttribute(PointAttribute::HighVoltage)
             << getPointValueByAttribute(PointAttribute::LowVoltage)
@@ -167,7 +172,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
             << getPointValueByAttribute(PointAttribute::AnalogInput1)
             << getPointValueByAttribute(PointAttribute::Temperature)
             << getPointValueByAttribute(PointAttribute::RSSI)
-            << getPointValueByAttribute(PointAttribute::IgnoredReason)
+            << ignoredControlReason
             << getPointValueByAttribute(PointAttribute::TotalOpCount)
             << getPointValueByAttribute(PointAttribute::UvCount)
             << getPointValueByAttribute(PointAttribute::OvCount)
@@ -212,7 +217,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                  << (string)(getPointValueByAttribute(PointAttribute::TempAlarm)?"Y":"N")
                  << (string)(getPointValueByAttribute(PointAttribute::DSTActive)?"Y":"N")
                  << (string)(getPointValueByAttribute(PointAttribute::NeutralLockout)?"Y":"N")
-                 << (string)(getPointValueByAttribute(PointAttribute::IgnoredIndicator)?"Y":"N")
+                 << (string)(ignoredControlIndicator?"Y":"N")
                  << getPointValueByAttribute(PointAttribute::CbcVoltage)
                  << getPointValueByAttribute(PointAttribute::HighVoltage)
                  << getPointValueByAttribute(PointAttribute::LowVoltage)
@@ -220,7 +225,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                  << getPointValueByAttribute(PointAttribute::AnalogInput1)
                  << getPointValueByAttribute(PointAttribute::Temperature)
                  << getPointValueByAttribute(PointAttribute::RSSI)
-                 << getPointValueByAttribute(PointAttribute::IgnoredReason)
+                 << ignoredControlReason
                  << getPointValueByAttribute(PointAttribute::TotalOpCount)
                  << getPointValueByAttribute(PointAttribute::UvCount)
                  << getPointValueByAttribute(PointAttribute::OvCount)
@@ -377,9 +382,9 @@ std::string CtiCCTwoWayPoints::getLastControlText()
     return _lastControlReason->getText( *this );
 }
 
-void CtiCCTwoWayPoints::setLastControlReasonDecoder( std::unique_ptr<LastControlReason> && reason )
+std::string CtiCCTwoWayPoints::getIgnoredControlText()
 {
-    _lastControlReason = std::move( reason );
+    return _ignoredControlReason->getText( *this );
 }
 
 struct ColumnMapping
@@ -407,7 +412,6 @@ static const TwoWayColumns[] =
     { ColumnMapping::Boolean, "tempalarm",              PointAttribute::TempAlarm              },
     { ColumnMapping::Boolean, "dstactive",              PointAttribute::DSTActive              },
     { ColumnMapping::Boolean, "neutrallockout",         PointAttribute::NeutralLockout         },
-    { ColumnMapping::Boolean, "ignoredindicator",       PointAttribute::IgnoredIndicator       },
     { ColumnMapping::Double,  "voltage",                PointAttribute::CbcVoltage             },
     { ColumnMapping::Double,  "highvoltage",            PointAttribute::HighVoltage            },
     { ColumnMapping::Double,  "lowvoltage",             PointAttribute::LowVoltage             },
@@ -415,7 +419,6 @@ static const TwoWayColumns[] =
     { ColumnMapping::Long,    "analoginputone",         PointAttribute::AnalogInput1           },
     { ColumnMapping::Double,  "temp",                   PointAttribute::Temperature            },
     { ColumnMapping::Long,    "rssi",                   PointAttribute::RSSI                   },
-    { ColumnMapping::Long,    "ignoredreason",          PointAttribute::IgnoredReason          },
     { ColumnMapping::Long,    "totalopcount",           PointAttribute::TotalOpCount           },
     { ColumnMapping::Long,    "uvopcount",              PointAttribute::UvCount                },
     { ColumnMapping::Long,    "ovopcount",              PointAttribute::OvCount                },
@@ -463,6 +466,14 @@ void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, LONG cbcState, CtiTi
     rdr["lastcontrol"] >> lastControlReason;
     _lastControlReason->deserialize( *this, lastControlReason, timestamp );
 
+    std::string ignoredControlIndicator;
+    rdr["ignoredindicator"] >> ignoredControlIndicator;
+    _ignoredControlReason->deserializeIndicator( *this, ciStringEqual(ignoredControlIndicator, "Y"), timestamp );
+
+    int ignoredControlReason;
+    rdr["ignoredreason"] >> ignoredControlReason;
+    _ignoredControlReason->deserializeReason( *this, ignoredControlReason, timestamp );
+
     int condition;
     rdr["condition"] >> condition;
     _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvCondition), !!(condition & 0x01), timestamp);
@@ -476,8 +487,10 @@ void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, LONG cbcState, CtiTi
 // ------------------------------
 
 
-CtiCCTwoWayPointsCbcDnp::CtiCCTwoWayPointsCbcDnp( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason )
-    :   CtiCCTwoWayPoints( paoid, paotype, std::move( reason ) )
+CtiCCTwoWayPointsCbcDnp::CtiCCTwoWayPointsCbcDnp( const long paoid, const std::string & paotype,
+                                                  std::unique_ptr<LastControlReason>    lastControlReason,
+                                                  std::unique_ptr<IgnoredControlReason> ignoredControlReason )
+    :   CtiCCTwoWayPoints( paoid, paotype, std::move( lastControlReason ), std::move( ignoredControlReason ) )
 {
     _statusOffsetAttribute = OffsetAttributeMappings
     {
@@ -489,8 +502,10 @@ CtiCCTwoWayPointsCbcDnp::CtiCCTwoWayPointsCbcDnp( const long paoid, const std::s
 // ------------------------------
 
 
-CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason )
-    :   CtiCCTwoWayPoints( paoid, paotype, std::move( reason ) )
+CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( const long paoid, const std::string & paotype,
+                                                    std::unique_ptr<LastControlReason>    lastControlReason,
+                                                    std::unique_ptr<IgnoredControlReason> ignoredControlReason )
+    :   CtiCCTwoWayPoints( paoid, paotype, std::move( lastControlReason ), std::move( ignoredControlReason ) )
 {
     _analogOffsetAttribute = OffsetAttributeMappings
     {
@@ -554,13 +569,16 @@ CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( const long paoid, const std:
 // ------------------------------
 
 
-CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype, std::unique_ptr<LastControlReason> reason )
-    :   CtiCCTwoWayPoints( paoid, paotype, std::move( reason ) )
+CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype,
+                                                    std::unique_ptr<LastControlReason>    lastControlReason,
+                                                    std::unique_ptr<IgnoredControlReason> ignoredControlReason )
+    :   CtiCCTwoWayPoints( paoid, paotype, std::move( lastControlReason ), std::move( ignoredControlReason ) )
 {
     _analogOffsetAttribute = OffsetAttributeMappings
     {
         {     2, PointAttribute::LastControlReason              },
         {    12, PointAttribute::CbcVoltage                     },
+        {   114, PointAttribute::IgnoredReason                  },
         { 10001, PointAttribute::OvThreshold                    },
         { 10002, PointAttribute::UvThreshold                    },
         { 10318, PointAttribute::VoltageControl                 }
@@ -594,21 +612,29 @@ CtiCCTwoWayPoints * CtiCCTwoWayPointsFactory::Create( const long paoID, const st
 {
     if ( stringContainsIgnoreCase( paoType, "CBC 702" ) )
     {
-        return new CtiCCTwoWayPointsCbc702x( paoID, paoType, std::make_unique<LastControlReasonCbc702x>() );
+        return new CtiCCTwoWayPointsCbc702x( paoID, paoType,
+                                             std::make_unique<LastControlReasonCbc702x>(),
+                                             std::make_unique<IgnoredControlReasonCbc702x>() );
     }
     if ( stringContainsIgnoreCase( paoType, "CBC 802" ) )
     {
-        return new CtiCCTwoWayPointsCbc802x( paoID, paoType, std::make_unique<LastControlReasonCbc802x>() );
+        return new CtiCCTwoWayPointsCbc802x( paoID, paoType,
+                                             std::make_unique<LastControlReasonCbc802x>(),
+                                             std::make_unique<IgnoredControlReasonCbc802x>() );
     }
     if ( stringContainsIgnoreCase( paoType, "CBC DNP" ) )
     {
-        return new CtiCCTwoWayPointsCbcDnp( paoID, paoType, std::make_unique<LastControlReasonCbcDnp>() );
+        return new CtiCCTwoWayPointsCbcDnp( paoID, paoType,
+                                            std::make_unique<LastControlReasonCbcDnp>(),
+                                            std::make_unique<IgnoredControlReasonCbcDnp>() );
     }
 
     // Apparently 1-way devices need one of these guys even though they don't use it for anything,
     // returning a NULL here gives null pointer exceptions in 1-way code. Original behavior gave a set
     //  of CBC8000 points to 1-way devices, so maintain that behavior.
     // return 0;
-    return new CtiCCTwoWayPointsCbc802x( paoID, paoType, std::make_unique<LastControlReasonCbc802x>() );
+    return new CtiCCTwoWayPointsCbc802x( paoID, paoType,
+                                         std::make_unique<LastControlReasonCbc802x>(),
+                                         std::make_unique<IgnoredControlReasonCbc802x>() );
 }
 

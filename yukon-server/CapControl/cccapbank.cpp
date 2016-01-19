@@ -187,11 +187,6 @@ long CtiCCCapBank::getIgnoredReason() const
     return _ignoreReason;
 }
 
-const CtiTime& CtiCCCapBank::getIgnoreReasonTimeUpdated() const
-{
-    return _ignoreReasonTimeUpdated;
-}
-
 const CtiTime& CtiCCCapBank::getIgnoreIndicatorTimeUpdated() const
 {
     return _ignoreIndicatorTimeUpdated;
@@ -1274,35 +1269,6 @@ string CtiCCCapBank::getControlStatusQualityString()
 
 }
 
-string CtiCCCapBank::getIgnoreReasonText() const
-{
-    string retVal = "";
-
-    switch (_ignoreReason)
-    {
-        case 0:  retVal = "Local"; break;
-        case 1:  retVal = "FaultCurrent"; break;
-        case 2:  retVal = "EmVolt"; break;
-        case 3:  retVal = "Time"; break;
-        case 4:  retVal = "Voltage"; break;
-        case 5:  retVal = "Digital1"; break;
-        case 6:  retVal = "Analog1"; break;
-        case 7:  retVal = "Digital2"; break;
-        case 8:  retVal = "Analog2"; break;
-        case 9:  retVal = "Digital3"; break;
-        case 10: retVal = "Analog3"; break;
-        case 11: retVal = "Digital4"; break;
-        case 12: retVal = "Temp"; break;
-        case 13: retVal = "Remote"; break;
-        case 14: retVal = "NtrlLockOut"; break;
-        case 15: retVal = "BrownOut"; break;
-        case 16: retVal = "BadActRelay"; break;
-        default: retVal = "unknown"; break;
-    }
-
-    return retVal;
-}
-
 /*
     The input 'value' to this function is REQUIRED to be in host byte order
 */
@@ -1368,11 +1334,6 @@ CtiCCCapBank& CtiCCCapBank::setIgnoreFlag(bool flag)
 CtiCCCapBank& CtiCCCapBank::setIgnoredReason(long value)
 {
     _dirty |= setVariableIfDifferent(_ignoreReason, value);
-    return *this;
-}
-CtiCCCapBank& CtiCCCapBank::setIgnoreReasonTimeUpdated(const CtiTime& timestamp)
-{
-    _ignoreReasonTimeUpdated = timestamp;
     return *this;
 }
 CtiCCCapBank& CtiCCCapBank::setIgnoreIndicatorTimeUpdated(const CtiTime& timestamp)
@@ -1844,7 +1805,6 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         _porterRetFailFlag = rightObj._porterRetFailFlag;
         _unsolicitedPendingFlag = rightObj._unsolicitedPendingFlag;
 
-        _ignoreReasonTimeUpdated = rightObj._ignoreReasonTimeUpdated;
         _ignoreIndicatorTimeUpdated = rightObj._ignoreIndicatorTimeUpdated;
         _unsolicitedChangeTimeUpdated = rightObj._unsolicitedChangeTimeUpdated;
 
@@ -1957,7 +1917,6 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
     setPercentChangeString("none");
     setPartialPhaseInfo("(none)");
 
-    setIgnoreReasonTimeUpdated(gInvalidCtiTime);
     setIgnoreIndicatorTimeUpdated(gInvalidCtiTime);
     setUnsolicitedChangeTimeUpdated(gInvalidCtiTime);
 
