@@ -341,7 +341,7 @@ bool CtiCCTwoWayPoints::isTimestampNew(long pointID, CtiTime timestamp)
     return ! (_pointValues.getPointTime(pointID, prevTime) && timestamp <= prevTime);
 }
 
-bool CtiCCTwoWayPoints::setTwoWayPointValue(long pointID, long value, CtiPointType_t type, CtiTime timestamp)
+bool CtiCCTwoWayPoints::setTwoWayPointValue(long pointID, double value, CtiPointType_t type, CtiTime timestamp)
 {
     boost::optional<CtiPointType_t> lookupType = Cti::mapFind( _pointidPointtypeMap, pointID );
     if ( lookupType && *lookupType == type && isTimestampNew( pointID, timestamp ) )

@@ -68,7 +68,7 @@ private:
     PointAttribute getAttribute(int pointtype, int offset);
 
     bool isTimestampNew(long pointID, CtiTime timestamp);
-    bool setTwoWayPointValue(long pointID, long value, CtiPointType_t type, CtiTime timestamp);
+    bool setTwoWayPointValue(long pointID, double value, CtiPointType_t type, CtiTime timestamp);
 
     long _paoid;
     std::string _paotype;
