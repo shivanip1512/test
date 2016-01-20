@@ -3812,29 +3812,21 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
 
     text1 += " command-";
     text1 += twoWayPts.getIgnoredControlText();
-    if (twoWayPts.getPointValueByAttribute(PointAttribute::IgnoredReason) == 4) //voltage
-    {
-        if ( ((currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
-              currentCapBank->getControlStatus() == CtiCCCapBank::Close) && //if bank was set directly to close, through sendAll command
-             (twoWayPts.getPointValueByAttribute(PointAttribute::CbcVoltage) + twoWayPts.getPointValueByAttribute(PointAttribute::DeltaVoltage)) > twoWayPts.getPointValueByAttribute(PointAttribute::OvThreshold)) ||
-             ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-              currentCapBank->getControlStatus() == CtiCCCapBank::Open) && //if bank was set directly to open, through sendAll command
-             (twoWayPts.getPointValueByAttribute(PointAttribute::CbcVoltage) - twoWayPts.getPointValueByAttribute(PointAttribute::DeltaVoltage)) < twoWayPts.getPointValueByAttribute(PointAttribute::UvThreshold)) )
-        {
-            currentCapBank->setPercentChangeString(" Rejection by Delta Voltage ");
-            text1 += " delta";
-        }
 
-        else if ( ( (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
-              currentCapBank->getControlStatus() == CtiCCCapBank::Close) && //if bank was set directly to open, through sendAll command
-              twoWayPts.getPointValueByAttribute(PointAttribute::CbcVoltage) >= twoWayPts.getPointValueByAttribute(PointAttribute::OvThreshold))  ||
-             ( (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-              currentCapBank->getControlStatus() == CtiCCCapBank::Open) && //if bank was set directly to open, through sendAll command
-              twoWayPts.getPointValueByAttribute(PointAttribute::CbcVoltage) <= twoWayPts.getPointValueByAttribute(PointAttribute::UvThreshold) ) ||
-             twoWayPts.getPointValueByAttribute(PointAttribute::OvCondition) || twoWayPts.getPointValueByAttribute(PointAttribute::UvCondition) )
+    if ( twoWayPts.controlRejectedByVoltageLimits() )
+    {
+        const long controlStatus = currentCapBank->getControlStatus();
+
+        if ( controlStatus == CtiCCCapBank::Open ||
+             controlStatus == CtiCCCapBank::OpenPending ||
+             controlStatus == CtiCCCapBank::Close ||
+             controlStatus == CtiCCCapBank::ClosePending )
         {
-            currentCapBank->setPercentChangeString(" Rejection by OVUV ");
-            text1 += " ovuv";
+            if ( twoWayPts.checkDeltaVoltageRejection() )
+            {
+                currentCapBank->setPercentChangeString(" Rejection by Delta Voltage ");
+                text1 += " delta";
+            }
         }
     }
 

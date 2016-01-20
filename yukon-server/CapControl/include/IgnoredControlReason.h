@@ -13,6 +13,9 @@ public:
 
     virtual std::string getText( const CtiCCTwoWayPoints & points ) = 0;
 
+    virtual bool controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points ) = 0;
+    virtual bool checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points ) = 0;
+
     virtual bool serializeIndicator( const CtiCCTwoWayPoints & points ) = 0;
     virtual long serializeReason( const CtiCCTwoWayPoints & points ) = 0;
 
@@ -30,6 +33,9 @@ public:
 
     std::string getText( const CtiCCTwoWayPoints & points ) override;
 
+    bool controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points ) override;
+    bool checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points ) override;
+
     bool serializeIndicator( const CtiCCTwoWayPoints & points ) override;
     long serializeReason( const CtiCCTwoWayPoints & points ) override;
 
@@ -46,6 +52,9 @@ class IgnoredControlReasonCbc702x : public IgnoredControlReason
 public:
 
     std::string getText( const CtiCCTwoWayPoints & points ) override;
+
+    bool controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points ) override;
+    bool checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points ) override;
 
     bool serializeIndicator( const CtiCCTwoWayPoints & points ) override;
     long serializeReason( const CtiCCTwoWayPoints & points ) override;
@@ -93,6 +102,9 @@ public:
 
     std::string getText( const CtiCCTwoWayPoints & points ) override;
 
+    bool controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points ) override;
+    bool checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points ) override;
+
     bool serializeIndicator( const CtiCCTwoWayPoints & points ) override;
     long serializeReason( const CtiCCTwoWayPoints & points ) override;
 
@@ -102,6 +114,32 @@ public:
 protected:
 
     virtual std::string lookupStateName( const long reason, const long stateGroup ) const;
+
+    enum Reasons
+    {
+        Manual,
+        ScadaOverride,
+        FaultCurrent,
+        EmergencyVoltage,
+        TimeOnOff,
+        OvUvControl,
+        VAR,
+        Va,
+        Vb,
+        Vc,
+        Ia,
+        Ib,
+        Ic,
+        Temp,
+        Remote,
+        Time,
+        Unused_16,
+        BadActiveRelay,
+        NCLockout,
+        Unused_19,
+        AutoMode,
+        RecloseBlock
+    };
 
     enum DefaultValues
     {

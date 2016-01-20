@@ -27,6 +27,8 @@ public:
 
     std::string getLastControlText();
     std::string getIgnoredControlText();
+    bool controlRejectedByVoltageLimits();
+    bool checkDeltaVoltageRejection();
 
     void setPAOId(long paoId);
 

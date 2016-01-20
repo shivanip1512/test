@@ -387,6 +387,16 @@ std::string CtiCCTwoWayPoints::getIgnoredControlText()
     return _ignoredControlReason->getText( *this );
 }
 
+bool CtiCCTwoWayPoints::controlRejectedByVoltageLimits()
+{
+    return _ignoredControlReason->controlRejectedByVoltageLimits( *this );
+}
+
+bool CtiCCTwoWayPoints::checkDeltaVoltageRejection()
+{
+    return _ignoredControlReason->checkDeltaVoltageRejection( *this );
+}
+
 struct ColumnMapping
 {
     enum

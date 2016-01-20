@@ -13,6 +13,16 @@ std::string IgnoredControlReasonCbcDnp::getText( const CtiCCTwoWayPoints & point
     return "Uninitialized";
 }
 
+bool IgnoredControlReasonCbcDnp::controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points )
+{
+    return false;
+}
+
+bool IgnoredControlReasonCbcDnp::checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points )
+{
+    return false;
+}
+
 bool IgnoredControlReasonCbcDnp::serializeIndicator( const CtiCCTwoWayPoints & points )
 {
     return false;
@@ -70,6 +80,24 @@ std::string IgnoredControlReasonCbc702x::getText( const CtiCCTwoWayPoints & poin
     return "unknown";
 }
 
+bool IgnoredControlReasonCbc702x::controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points )
+{
+    return serializeReason( points ) == Voltage;
+}
+
+bool IgnoredControlReasonCbc702x::checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points )
+{
+    const double
+        cbcVoltage  = points.getPointValueByAttribute( PointAttribute::CbcVoltage ),
+        ovThreshold = points.getPointValueByAttribute( PointAttribute::OvThreshold ),
+        uvThreshold = points.getPointValueByAttribute( PointAttribute::UvThreshold );
+
+    /*
+        If the actual voltage is within the OvUv limits it must have been rejected due to delta voltage
+    */
+    return ( ( uvThreshold < cbcVoltage ) && ( cbcVoltage < ovThreshold ) );
+}
+
 bool IgnoredControlReasonCbc702x::serializeIndicator( const CtiCCTwoWayPoints & points )
 {
     if ( points.getPointIdByAttribute( PointAttribute::IgnoredIndicator ) > 0 )
@@ -125,6 +153,24 @@ std::string IgnoredControlReasonCbc802x::getText( const CtiCCTwoWayPoints & poin
     }
 
     return lookupStateName( rawStateValue, stateGroupID );
+}
+
+bool IgnoredControlReasonCbc802x::controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points )
+{
+    return serializeReason( points ) == OvUvControl;
+}
+
+bool IgnoredControlReasonCbc802x::checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points )
+{
+    const double
+        cbcVoltage  = points.getPointValueByAttribute( PointAttribute::CbcVoltage ),
+        ovThreshold = points.getPointValueByAttribute( PointAttribute::OvThreshold ),
+        uvThreshold = points.getPointValueByAttribute( PointAttribute::UvThreshold );
+
+    /*
+        If the actual voltage is within the OvUv limits it must have been rejected due to delta voltage
+    */
+    return ( ( uvThreshold < cbcVoltage ) && ( cbcVoltage < ovThreshold ) );
 }
 
 bool IgnoredControlReasonCbc802x::serializeIndicator( const CtiCCTwoWayPoints & points )
