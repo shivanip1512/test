@@ -242,6 +242,25 @@ yukon.tools.commander = (function () {
         return result;
     },
     
+    _handleRequests = function(requests) {
+        var req, resp, i = 0, j = 0;
+        
+        for (i in requests) {
+            req = requests[i];
+            for (j in req.responses) {
+                resp = req.responses[j];
+                if (_pending[req.id].indexOf(resp.id) === -1) {
+                    _pending[req.id].push(resp.id);
+                    _logResponse(req, resp);
+                } else {
+                    // We have already dealt with this response
+                    continue;
+                }
+            }
+            if (req.complete) delete _pending[req.id];
+        }
+    },
+    
     /**
      * Checks for pending requests awaiting reponses every 200ms as a 
      * recursive timeout.  If pending requests are detected, a request
@@ -262,23 +281,7 @@ yukon.tools.commander = (function () {
                 data: JSON.stringify(data),
                 dataType: 'json'
             }).done(function (requests, status, xhr) {
-                
-                var req, resp, i = 0, j = 0;
-                
-                for (i in requests) {
-                    req = requests[i];
-                    for (j in req.responses) {
-                        resp = req.responses[j];
-                        if (_pending[req.id].indexOf(resp.id) === -1) {
-                            _pending[req.id].push(resp.id);
-                            _logResponse(req, resp);
-                        } else {
-                            // We have already delt with this response
-                            continue;
-                        }
-                    }
-                    if (req.complete) delete _pending[req.id];
-                }
+                _handleRequests(requests);
             }).always(function () {
                 setTimeout(_update, 200);
             });
@@ -651,6 +654,23 @@ yukon.tools.commander = (function () {
             /** User clicked the select all button in the console. */
             $('#select-console-btn').click(function (ev) {
                 $('#commander-results').selectText();
+            });
+            
+            /** User clicked the refresh button in the console. */
+            $('#refresh-console-btn').click(function (ev) {
+                var data = {
+                        requestIds : Object.keys(_pending)
+                    };
+
+                $.ajax({
+                    url: 'commander/requests',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    dataType: 'json'
+                }).done(function (requests, status, xhr) {
+                    _handleRequests(requests);
+                });            
             });
             
             /** User clicked the change route button, get the popup. */

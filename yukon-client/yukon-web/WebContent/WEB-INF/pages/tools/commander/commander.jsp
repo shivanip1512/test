@@ -148,6 +148,7 @@
         <cti:button id="scroll-lock-btn" icon="icon-lock" renderMode="buttonImage" classes="M0"/>
         <cti:button id="clear-console-btn" nameKey="clear" classes="right"/>
         <cti:button id="select-console-btn" nameKey="selectAll" classes="left"/>
+        <cti:button id="refresh-console-btn" nameKey="refresh" classes="left"/>
     </div>
     <div id="commander-results" class="content scroll-lg">
         <c:forEach var="req" items="${requests}">
