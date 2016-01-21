@@ -1,11 +1,14 @@
 package com.cannontech.web.scheduledFileExport.tasks;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
+import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,8 +38,11 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
     
     private int collectionId;
     private int hoursPrevious;
+    private int daysOffset;
     private double threshold;
     private boolean includeDisabledPaos;
+    
+    DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
     
     private String[] getHeaderRow() {
         YukonUserContext userContext = getJob().getUserContext();
@@ -53,20 +59,26 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
     public void start() {
         log.debug("ScheduledWaterLeakFileExportTask started");
         YukonUserContext userContext = getJob().getUserContext();
-
-        Duration timePrevious = Duration.standardHours(hoursPrevious);
-        Instant now = new Instant();
         
-        //minutes/seconds are being trimmed because Water leak algorithm is dependent on whole hourly intervals.
-        DateTime min = now.minus(timePrevious).toDateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
-        DateTime max = now.toDateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
-        
+        DateTime now = new DateTime();
+        DateTime max = new DateTime(now).minusDays(daysOffset).withTimeAtStartOfDay();
+        DateTime min = new DateTime(max).minusHours(hoursPrevious);
         Range<Instant> range = Range.inclusive(new Instant(min), new Instant(max));
+        
+        if (log.isDebugEnabled()) {
+            log.debug("Started at "+df.format(new Date(now.getMillis())));
+            log.debug("hoursPrevious="+hoursPrevious);
+            log.debug("daysOffset="+daysOffset);
+            df.setTimeZone(userContext.getTimeZone());
+            log.debug("range " + df.format(new Date(min.getMillis())) + " - " + df.format(new Date(max.getMillis())));
+            log.debug("hours between=" + Hours.hoursBetween(range.getMin(), range.getMax()).getHours());
+        }
         
         DeviceCollection deviceCollection = deviceCollectionService.loadCollection(collectionId);
         List<SimpleDevice> devices = deviceCollection.getDeviceList();
         log.debug("ScheduledWaterLeakFileExportTask-getLeaks");
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService.getLeaks(devices, range, includeDisabledPaos, threshold, userContext);
+        log.debug("Leaks found="+waterLeaks.size());
         log.debug("ScheduledWaterLeakFileExportTask-getLeaks done");
         String[] headerRow = getHeaderRow();
         
@@ -102,6 +114,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
         hoursPrevious = waterLeakParameters.getHoursPrevious();
         threshold = waterLeakParameters.getThreshold();
         includeDisabledPaos = waterLeakParameters.isIncludeDisabledPaos();
+        daysOffset =  waterLeakParameters.getDaysOffset();
         
         DeviceCollection collection = waterLeakParameters.getDeviceCollection();
         collectionId = deviceCollectionService.saveCollection(collection);
@@ -137,6 +150,14 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
     
     public int getDeviceCollectionId() {
         return collectionId;
+    }
+
+    public int getDaysOffset() {
+        return daysOffset;
+    }
+
+    public void setDaysOffset(int daysOffset) {
+        this.daysOffset = daysOffset;
     }
     
 }

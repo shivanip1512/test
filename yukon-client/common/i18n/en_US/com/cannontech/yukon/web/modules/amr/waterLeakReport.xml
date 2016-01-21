@@ -28,8 +28,10 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason2">The size of the leak (Leak Rate) is the smallest interval usage value over the selected reporting period converted to gallons/hr.</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason3">If any of the interval data during the period is not yet collected for a meter, that meter will not be flagged for leaks regardless of what any partial data shows. This is to prevent false alarms.</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason4">To ensure meters have a full set of data for the reporting period, it's recommended that the report stop time is at least as far back from the current time as the RFN reporting interval (the water node reporting interval is 24 hours by default, so the report defaults to 25+ hours ago for the stop time).</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.leakScheduledReport"> <![CDATA[ For any scheduled water leak report, then End Date shall be the midnight (<=) timestamp for the beginning of the run day. <br><br> Example: Run time: 1/26/2016 @ 7am <br> Days Offset = 0 - End Date <= 1/26/2016 00:00:00 <br> Days Offset = 1 - End Date <= 1/25/2016 00:00:00]]></entry> 
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakScheduleDialog.title">Schedule Report {0}</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.schedule.hoursPrevious">Hours Previous</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.schedule.daysOffset">Days Offset</entry>
     
     <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.DEVICE_NAME">Device Name</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.METER_NUMBER">Meter Number</entry>

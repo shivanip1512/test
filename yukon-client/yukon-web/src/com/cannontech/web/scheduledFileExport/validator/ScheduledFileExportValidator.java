@@ -37,9 +37,11 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
                 }
                 break;
             case "WaterLeakReportController":
+                YukonValidationUtils.checkIsPositiveInt(errors, "daysOffset", target.getDaysOffset());
                 YukonValidationUtils.checkIsPositiveInt(errors, "hoursPrevious", target.getHoursPrevious());
                 YukonValidationUtils.checkIsPositiveDouble(errors, "threshold", target.getThreshold());
                 YukonValidationUtils.checkRange(errors, "hoursPrevious", target.getHoursPrevious(), 1, Integer.MAX_VALUE, true);
+                YukonValidationUtils.checkRange(errors, "daysOffset", target.getHoursPrevious(), 1, Integer.MAX_VALUE, true);
                 break;
         }
         

@@ -144,8 +144,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         if (log.isDebugEnabled()) {
             DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
             df.setTimeZone(userContext.getTimeZone());            
-            log.debug("start=" + df.format(new Date(range.getMin().getMillis())) + "---stop=" + df.format(new Date(range.getMax().getMillis())));
-            log.debug("range=" + range);
+            log.debug("range " + df.format(new Date(range.getMin().getMillis())) + " - " + df.format(new Date(range.getMax().getMillis())));
             log.debug("hours between=" + Hours.hoursBetween(range.getMin(), range.getMax()).getHours());
         }
         

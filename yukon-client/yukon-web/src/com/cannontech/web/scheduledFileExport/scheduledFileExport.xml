@@ -400,6 +400,13 @@
                             </property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="daysOffset"/>
+                            <property name="displayName" value="Days Offset"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="hoursPrevious"/>
                         	<property name="displayName" value="Hours Previous"/>
                         	<property name="type">

@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
  * ExportFileGenerationParameters.
  */
 public class ScheduledFileExportData {
+    private Integer daysOffset;
     private Integer daysPrevious;
     private Integer hoursPrevious;
     private Double threshold;
@@ -181,5 +182,13 @@ public class ScheduledFileExportData {
 
     public void setSendEmail(boolean sendEmail) {
         this.sendEmail = sendEmail;
+    }
+
+    public Integer getDaysOffset() {
+        return daysOffset;
+    }
+
+    public void setDaysOffset(Integer daysOffset) {
+        this.daysOffset = daysOffset;
     }
 }

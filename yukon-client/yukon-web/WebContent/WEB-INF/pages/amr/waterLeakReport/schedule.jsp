@@ -29,6 +29,7 @@
                 <i:inline key=".filter.includeDisabledDevices"/>
             </label>
         </tags:nameValue2>
+        <tags:inputNameValue nameKey=".schedule.daysOffset" path="daysOffset" size="3"/>
         <tags:inputNameValue nameKey=".schedule.hoursPrevious" path="hoursPrevious" size="3"/>
         <tags:inputNameValue nameKey=".filter.threshold" path="threshold" size="3"/>
         <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" exportData="${fileExportData}" />

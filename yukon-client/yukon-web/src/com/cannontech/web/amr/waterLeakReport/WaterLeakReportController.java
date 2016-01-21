@@ -64,7 +64,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -127,7 +126,6 @@ public class WaterLeakReportController {
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private PaoDao paoDao;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private WaterMeterLeakService leaksService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private MultispeakCustomerInfoService mspCustomerInfoService;
@@ -244,7 +242,8 @@ public class WaterLeakReportController {
     
     /** Get schedule popup */
     @RequestMapping(value="schedule", method = RequestMethod.GET)
-    public String schedule(YukonUserContext userContext, ModelMap model, Integer jobId) {
+    public String schedule(@ModelAttribute("filter") WaterLeakReportFilter filter, HttpServletRequest request,
+            YukonUserContext userContext, ModelMap model, Integer jobId) throws ServletRequestBindingException, DeviceCollectionCreationException {
         CronExpressionTagState cronTagState = new CronExpressionTagState();
         ScheduledFileExportData exportData = new ScheduledFileExportData();
         
@@ -258,6 +257,7 @@ public class WaterLeakReportController {
             model.addAttribute("deviceCollection", deviceCollection);
             
             cronTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
+            exportData.setDaysOffset(task.getDaysOffset());
             exportData.setHoursPrevious(task.getHoursPrevious());
             exportData.setThreshold(task.getThreshold());
             exportData.setScheduleName(task.getName());
@@ -275,6 +275,10 @@ public class WaterLeakReportController {
                 exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
             }
         } else {
+            setupDeviceCollectionFromRequest(filter, request);
+            exportData.setThreshold(filter.getThreshold());
+            exportData.setDaysOffset(0);
+            exportData.setHoursPrevious(25);
             exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
         }
         
@@ -335,8 +339,8 @@ public class WaterLeakReportController {
             return "waterLeakReport/schedule.jsp";
         }
         
-        WaterLeakExportGenerationParameters parameters = new WaterLeakExportGenerationParameters(
-                collection, exportData.getHoursPrevious(), exportData.getThreshold(), includeDisabledPaos);
+        WaterLeakExportGenerationParameters parameters = new WaterLeakExportGenerationParameters(collection,
+            exportData.getDaysOffset(), exportData.getHoursPrevious(), exportData.getThreshold(), includeDisabledPaos);
         exportData.setParameters(parameters);
         
         if (jobId == null) {

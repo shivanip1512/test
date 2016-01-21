@@ -20,6 +20,7 @@
         <p><i:inline key=".leakDetectionAlgorithmReason2"/></p>
         <p><i:inline key=".leakDetectionAlgorithmReason3"/></p>
         <p><i:inline key=".leakDetectionAlgorithmReason4"/></p>
+        <p><i:inline key=".leakScheduledReport"/></p>
     </div>
     
     <%-- Schedule Report Popup --%>

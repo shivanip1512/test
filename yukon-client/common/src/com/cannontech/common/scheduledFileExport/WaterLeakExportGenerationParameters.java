@@ -4,11 +4,13 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 
 public class WaterLeakExportGenerationParameters implements ExportFileGenerationParameters {
 	private final DeviceCollection deviceCollection;
+	private final int daysOffset;
     private final int hoursPrevious;
     private final double threshold;
     private final boolean includeDisabledPaos;
 	
-    public WaterLeakExportGenerationParameters(DeviceCollection deviceCollection, int hoursPrevious, double threshold, boolean includeDisabledPaos) {
+    public WaterLeakExportGenerationParameters(DeviceCollection deviceCollection, int daysOffset, int hoursPrevious, double threshold, boolean includeDisabledPaos) {
+        this.daysOffset = daysOffset;
     	this.deviceCollection = deviceCollection;
     	this.hoursPrevious = hoursPrevious;
     	this.threshold = threshold;
@@ -39,9 +41,14 @@ public class WaterLeakExportGenerationParameters implements ExportFileGeneration
 	@Override
 	public String toString() {
 		return "[HoursPrevious: " + hoursPrevious 
+		        + ", Days Offset: " + daysOffset 
 				+ ", Threshold: " + threshold 
 				+ ", IncludeDisabledPaos: " + includeDisabledPaos 
 				+ ", DeviceCollection: " + deviceCollection.getDescription()
 				+ "]";
 	}
+
+    public int getDaysOffset() {
+        return daysOffset;
+    }
 }
