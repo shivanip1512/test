@@ -20,10 +20,10 @@
         <fmt:formatNumber type="percent" maxFractionDigits="2" value="${test.percentSuccess}" />
     </span>
     <span class="label label-success">${test.numSuccesses}</span>
-    </div>
-    <div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.missedTooltip"/>">
+</div>
+<div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.missedTooltip"/>">
     <span class="label label-warning">${test.numFailures}</span>
-    </div>
-    <div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.unreportedTooltip"/>">
+</div>
+<div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.unreportedTooltip"/>">
     <span class="label label-default">${test.numUnknowns}</span>
-    </div>
+</div>
