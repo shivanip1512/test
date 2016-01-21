@@ -553,7 +553,9 @@
 <entry key="yukon.web.modules.dr.home.rfPerformance.last24Hr">Last 24 Hours</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.last7Days">Last 7 Days</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.last30Days">Last 30 Days</entry>
-<entry key="yukon.web.modules.dr.home.rfPerformance.statsTooltip">success / failed / unknown</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.successTooltip">Confirmed Success</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.missedTooltip">Confirmed Missed</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.unreportedTooltip">Unreported</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.title">Broadcast Performance Configuration</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.ok">Save</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.dailyTestCommand">Daily Test Command</entry>
@@ -578,9 +580,9 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.rf.details.numTests">Tests Found</entry>
 <entry key="yukon.web.modules.dr.rf.details.eventTime">Event Time</entry>
 <entry key="yukon.web.modules.dr.rf.details.results">Results</entry>
-<entry key="yukon.web.modules.dr.rf.details.showUnknown">Show Unknown</entry>
+<entry key="yukon.web.modules.dr.rf.details.showUnreported">Show Unreported</entry>
 <entry key="yukon.web.modules.dr.rf.details.showSuccess">Show Success</entry>
-<entry key="yukon.web.modules.dr.rf.details.showFailed">Show Failed</entry>
+<entry key="yukon.web.modules.dr.rf.details.showMissed">Show Missed</entry>
 <entry key="yukon.web.modules.dr.rf.details.device">Device</entry>
 <entry key="yukon.web.modules.dr.rf.details.accountNo">Account No.</entry>
 <entry key="yukon.web.modules.dr.rf.details.unknownType">Current Status</entry>
@@ -593,6 +595,19 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.rf.details.failed.popup.title">Failed Devices ({0})</entry>
 <entry key="yukon.web.modules.dr.rf.details.unknown.popup.title">Unknown Devices ({0})</entry>
 <entry key="yukon.web.modules.dr.rf.details.success.popup.title">Successful Devices ({0})</entry>
+<entry key="yukon.web.modules.dr.rf.details.rfPerformanceResult">RF Broadcast Performance Result</entry>
+<entry key="yukon.web.modules.dr.rf.details.helpText"><![CDATA[Success / Green : 
+<br>
+The devices in this category have confirmed receiving the unique Broadcast Peak Performance message for the selected day
+<br><br>
+Failed / Orange :
+<br>
+The devices in this category have reported all other data accumulated during the expected Broadcast Peak Performance time interval and have not confirmed receiving the selected day's unique message.
+<br><br>
+Unknown / Gray :
+<br>
+The devices in this category have not reported data accumulated during the expected Broadcast Peak Performance time interval for the selected day.
+]]></entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>

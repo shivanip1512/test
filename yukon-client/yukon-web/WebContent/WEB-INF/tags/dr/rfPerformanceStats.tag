@@ -15,11 +15,15 @@
     <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="${failedWidth}%"
          aria-valuemin="0" aria-valuemax="100" style="width: ${failedWidth}%"></div>
 </div>
-<div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.statsTooltip"/>">
+<div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.successTooltip"/>">
     <span style="margin-right: 10px;width:48px;display: inline-block;">
         <fmt:formatNumber type="percent" maxFractionDigits="2" value="${test.percentSuccess}" />
     </span>
     <span class="label label-success">${test.numSuccesses}</span>
-    <span class="label label-danger">${test.numFailures}</span>
+    </div>
+    <div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.missedTooltip"/>">
+    <span class="label label-warning">${test.numFailures}</span>
+    </div>
+    <div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.unreportedTooltip"/>">
     <span class="label label-default">${test.numUnknowns}</span>
-</div>
+    </div>

@@ -37,7 +37,12 @@
         <thead>
             <tr>
                 <th><i:inline key=".eventTime"/></th>
-                <th><i:inline key=".results"/></th>
+                <th><i:inline key=".results"/>
+                <div id="rf-event-info" class="dn" data-title="<cti:msg2 key=".rf.details.rfPerformanceResult"/>" data-width="500">
+                   <i:inline key=".rf.details.helpText"/>
+                </div>
+                <cti:icon icon="icon-information" classes="fn cp" data-popup="#rf-event-info" data-popup-toggle=""/>
+                </th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -50,10 +55,10 @@
                         <c:if test="${hasStats}">
                             <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
                                 <c:if test="${test.numUnknowns > 0}">
-                                    <cm:dropdownOption key=".showUnknown" classes="js-unknown" data-test="${test.messageId}"/>
+                                    <cm:dropdownOption key=".showUnreported" classes="js-unknown" data-test="${test.messageId}"/>
                                 </c:if>
                                 <c:if test="${test.numFailures > 0}">
-                                    <cm:dropdownOption key=".showFailed" classes="js-failed" data-test="${test.messageId}"/>
+                                    <cm:dropdownOption key=".showMissed" classes="js-failed" data-test="${test.messageId}"/>
                                 </c:if>
                                 <c:if test="${test.numSuccesses > 0}">
                                     <cm:dropdownOption key=".showSuccess" classes="js-success" data-test="${test.messageId}"/>
