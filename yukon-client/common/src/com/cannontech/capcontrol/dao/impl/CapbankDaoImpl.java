@@ -215,6 +215,16 @@ public class CapbankDaoImpl implements CapbankDao {
         boolean result = (rowsAffected == 1);
         return result;
     }
+    
+    @Override
+    public void unassignCapbanksForFeeder(int feederId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("DELETE FROM CCFeederBankList");
+        sql.append("WHERE FeederID").eq(feederId);
+
+        yukonJdbcTemplate.update(sql);
+    }
 
     @Override
     public PaoIdentifier findCapBankByCbc(int cbcId) {

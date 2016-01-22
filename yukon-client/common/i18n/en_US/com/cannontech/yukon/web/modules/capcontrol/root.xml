@@ -395,10 +395,30 @@
     <entry key="yukon.web.modules.capcontrol.bus.orphan.CREATE.pageTitle">Create Bus</entry>
     <entry key="yukon.web.modules.capcontrol.bus.orphan.CREATE.pageHeading">Create Bus</entry>
     <entry key="yukon.web.modules.capcontrol.bus.orphan.CREATE.crumbTitle">Create</entry>
+    
+    <entry key="yukon.web.modules.capcontrol.feeder.VIEW.pageTitle">Feeder: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.EDIT.pageTitle">Feeder: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.orphan.VIEW.pageTitle">Feeder: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.orphan.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.orphan.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.orphan.EDIT.pageTitle">Feeder: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.orphan.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.orphan.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.orphan.CREATE.pageTitle">Create Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.orphan.CREATE.pageHeading">Create Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.orphan.CREATE.crumbTitle">Create</entry>
 
     <entry key="yukon.web.modules.capcontrol.bus.feeders.updated">Feeders successfully updated. Please allow a few seconds for changes to be reflected.</entry>
     <entry key="yukon.web.modules.capcontrol.bus.edit.feeders">Add/Remove Feeders</entry>
-
+    
+    <entry key="yukon.web.modules.capcontrol.edit.capbanks">Add/Remove CapBanks</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.capbanks.updated">CapBanks successfully updated. Please allow a few seconds for changes to be reflected.</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.delete.success">Feeder was deleted successfully.</entry>
+    
     <!-- cbcChart.jsp -->
     <entry key="yukon.web.modules.capcontrol.tabularData">Tabular Data:</entry>
 

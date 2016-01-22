@@ -76,6 +76,12 @@ public interface CapbankDao {
     public boolean unassignCapbank(YukonPao capbank);
     
     /**
+     * Removes all capbank assignments in the database for a given feeder id.
+     * @param feederId the feederId to unassign capbanks for
+     */
+    public void unassignCapbanksForFeeder(int feederId);
+    
+    /**
      * Looks up the subbus that the bank is attached to.
      * 
      * @param bankId the paoId of the Cap Bank
@@ -83,4 +89,5 @@ public interface CapbankDao {
      * @throws NotFoundException if orphaned
      */
     public PaoIdentifier getParentBus(int bankId);
+
 }

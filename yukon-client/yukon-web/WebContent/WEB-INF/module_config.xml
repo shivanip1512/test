@@ -653,6 +653,15 @@
                       <page name="bus.EDIT" type="BASIC" hideFavorite="true">
                         <labelArgument>${busName}</labelArgument>
                       </page>
+                      <page name="feeder.VIEW" type="BASIC">
+                    <link>/capcontrol/feeders/${feederId}</link>
+                    <labelArgument>${feederName}</labelArgument>
+                    <pages>
+                      <page name="feeder.EDIT" type="BASIC" hideFavorite="true">
+                        <labelArgument>${feederName}</labelArgument>
+                      </page>
+                    </pages>
+                  </page>
                     </pages>
                   </page>
                   <page name="capbankLocations" type="DETAIL_CHILD">
@@ -727,6 +736,16 @@
             <pages>
               <page name="orphan.bus.EDIT" type="BASIC" hideFavorite="true">
                 <labelArgument>${busName}</labelArgument>
+              </page>
+            </pages>
+          </page>
+          <page name="feeder.orphan.CREATE" type="BASIC" />
+          <page name="feeder.orphan.VIEW" type="BASIC">
+            <link>/capcontrol/feeders/${feederId}</link>
+            <labelArgument>${feederName}</labelArgument>
+            <pages>
+              <page name="orphan.feeder.EDIT" type="BASIC" hideFavorite="true">
+                <labelArgument>${feederName}</labelArgument>
               </page>
             </pages>
           </page>

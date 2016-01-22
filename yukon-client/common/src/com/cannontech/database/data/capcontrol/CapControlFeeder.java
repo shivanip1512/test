@@ -24,8 +24,26 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
     public static final String DISABLE_OPSTATE = "feederDisabled";
     public static final String ENABLE_OVUVSTATE = "feederOVUVEnabled";
     public static final String DISABLE_OVUVSTATE = "feederOVUVDisabled";
-    private com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder;
+    private com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder =
+        new com.cannontech.database.db.capcontrol.CapControlFeeder();
     private List<CCFeederBankList> ccBankListVector;
+
+    public Integer getId() {
+        return capControlFeeder.getFeederID();
+    }
+
+    public void setId(Integer id) {
+        setPAObjectID(id);
+        capControlFeeder.setFeederID(id);
+    }
+
+    public void setName(String name) {
+        setPAOName(name);
+    }
+
+    public String getName() {
+        return getPAOName();
+    }
 
     public CapControlFeeder() {
         super(PaoType.CAP_CONTROL_FEEDER);

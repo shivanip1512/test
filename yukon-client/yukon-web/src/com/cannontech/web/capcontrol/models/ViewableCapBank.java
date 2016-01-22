@@ -34,9 +34,21 @@ public class ViewableCapBank implements Comparable<ViewableCapBank>{
     public final String getCcName() {
         return ccName;
     }
+    
+    public void setCcId(int ccId) {
+        this.ccId = ccId;
+    }
+
+    public void setCcName(String ccName) {
+        this.ccName = ccName;
+    }
 
     public final int getParentId() {
         return parentId;
+    }
+    
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
     }
 
     public final int getCbcId() {
