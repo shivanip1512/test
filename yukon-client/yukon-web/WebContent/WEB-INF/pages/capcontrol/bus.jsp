@@ -111,6 +111,7 @@
                         </div>
                     </c:if>
                 </cti:tab>
+                <%-- TODO Make this tab fully functional --%>
                 <cti:tab title="Schedules">
                     <table class="section-table">
                         <thead>
@@ -126,7 +127,7 @@
                             <c:set var="idx" value="${status.index}" />
                             <tr>
                                 <td>
-                                    <%-- TODO Select --%>
+                                    <%-- TODO Select Schedule--%>
                                     <tags:input path="schedules[${idx}].scheduleID"/>
                                 </td>
                                 <td>
@@ -155,6 +156,7 @@
                         </tbody>
                         </table>
                 </cti:tab>
+                <%-- TOOD Maybe an add schedule button? --%>
             </cti:tabs>
         </div>
         <div class="column two nogutter">
@@ -162,7 +164,6 @@
                 <cti:tab title="Control Points">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Volt Reduction Control Point">
-                            <%-- Point Picker --%>
                             <form:hidden id="volt-reduction-bus-point-input" path="capControlSubstationBus.voltReductionPointId"/>
                             <tags:pickerDialog
                                 id="voltReductionPointPicker"
@@ -197,17 +198,17 @@
                         </tags:nameValue>
 
                         <tags:nameValue name="Use Per Phase Var Data">
-                            <tags:switchButton path="capControlSubstationBus.usePhaseDataBoolean"/>
+                            <tags:switchButton path="capControlSubstationBus.usePhaseDataBoolean" 
+                                toggleGroup="perPhase" toggleAction="hide"/>
                         </tags:nameValue>
-                        <%-- Only when per phase --%>
-                        <tags:nameValue name="Use Totalized Values">
+                        <tags:nameValue name="Use Totalized Values" data-toggle-group="perPhase">
                             <tags:switchButton path="capControlSubstationBus.controlFlagBoolean"/>
                         </tags:nameValue>
 
                         <%-- Var point when not per phase --%>
                         <%-- Phase A when not per phase --%>
+                        <%-- TODO Maybe invent a way to change this text? --%>
                         <tags:nameValue name="Var Point / Phase A">
-                            <tags:input path="capControlSubstationBus.currentVarLoadPointID"/>
                             <form:hidden id="var-point-input" path="capControlSubstationBus.currentVarLoadPointID"/>
                             <tags:pickerDialog
                                 id="varPointPicker"
@@ -223,8 +224,7 @@
                                 </c:if>
                             </cti:displayForPageEditModes>
                         </tags:nameValue>
-                        <%-- Only when per phase --%>
-                        <tags:nameValue name="Phase B">
+                        <tags:nameValue name="Phase B" data-toggle-group="perPhase">
                             <form:hidden id="phase-b-point-input" path="capControlSubstationBus.phaseB"/>
                             <tags:pickerDialog
                                 id="phaseBPointPicker"
@@ -240,8 +240,7 @@
                                 </c:if>
                             </cti:displayForPageEditModes>
                         </tags:nameValue>
-                        <%-- Only when per phase --%>
-                        <tags:nameValue name="Phase C">
+                        <tags:nameValue name="Phase C" data-toggle-group="perPhase">
                             <form:hidden id="phase-c-point-input" path="capControlSubstationBus.phaseC"/>
                             <tags:pickerDialog
                                 id="phaseCPointPicker"
@@ -336,7 +335,7 @@
                             <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean"/>
                         </tags:nameValue>
                         <tags:nameValue name="Alternate Bus">
-                            <%-- Bus picker --%>
+                            <%-- TODO Bus picker --%>
                             <tags:input path="capControlSubstationBus.altSubPAOId"/>
                         </tags:nameValue>
                         <tags:nameValue name="Switch Point">
@@ -362,7 +361,6 @@
     </div>
     <cti:csrfToken/>
 
-    <%-- TODO Feeder List --%>
     <tags:sectionContainer title="Feeders" styleClass="clear">
         <c:if test="${empty feederList}">
             <span class="empty-list">No Assigned Feeders</span>
