@@ -406,8 +406,6 @@ void CtiCapController::incomingMessageProcessor()
                 delete msg;
             }
 
-            boost::this_thread::sleep( boost::posix_time::milliseconds( 100 ) );
-
             threadKeeper.monitorCheck();
         }
     }
