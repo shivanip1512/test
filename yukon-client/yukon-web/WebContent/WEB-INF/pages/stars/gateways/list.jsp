@@ -89,7 +89,8 @@
 <div id="gateway-cert-details-popup" class="dn"></div>
 <div id="gateway-firmware-details-popup" class="dn"></div>
 
-<div class="stacked-lg">
+<div class="y-resizable stacked-lg">
+<div>
 <table id="gateways-table" class="compact-results-table has-actions has-alerts">
     <thead>
         <tr>
@@ -186,12 +187,13 @@
         </c:forEach>
     </tbody>
 </table>
+</div>
+</div>
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
     <div class="action-area">
         <cti:button icon="icon-plus-green" nameKey="create.gateway" data-popup="#gateway-create-popup"/>
     </div>
 </cti:checkRolesAndProperties>
-</div>
 
 <h3><i:inline key=".cert.updates"/></h3>
 <c:set var="clazz" value="${empty certUpdates ? 'dn' : ''}"/>

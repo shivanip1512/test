@@ -887,7 +887,22 @@ yukon.ui = (function () {
                     });
                 }
             });
-                
+            
+            container.find('.y-resizable').each(function (index, elem) {
+                var item = $(elem),
+                    naturalHeight = item.height();
+
+                item.css({
+                    'height': '200px',
+                });
+
+                item.resizable({
+                    'handles': 's',
+                    'minHeight': 50,
+                    'maxHeight': naturalHeight
+                });
+            });
+
             /** Add placeholder functionality if needed. */
             if (!Modernizr.input.placeholder) {
                 container.find('input, textarea').placeholder();
@@ -1020,7 +1035,7 @@ yukon.ui = (function () {
 
             var blockElement = $(target).closest('.js-block-this').eq(0);
             if (blockElement.length) {
-                blockElement.data('yukonUiBlock', true);
+                blockElement.data('yukonUiBlock', true); 
                 setTimeout(function () {
                     if (blockElement.data('yukonUiBlock')) {
                         elementGlass.show(blockElement);
@@ -1038,7 +1053,7 @@ yukon.ui = (function () {
         unblock: function (target) {
             var blockElement = $(target).closest('.js-block-this').eq(0);
             if (blockElement.length) {
-                blockElement.data('yukonUiBlock', false);
+                blockElement.data('yukonUiBlock', false); 
                 elementGlass.hide(blockElement);
                 if (yg.dev_mode) {
                     debug.log("unblock");

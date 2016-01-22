@@ -830,6 +830,34 @@ ul.selectable li.selected {
 }
 .flyover, .tooltip {background-color: white; padding: 2px; border: 2px solid #666;box-shadow: 9px;}
 
+.y-resizable {
+    margin-bottom: 30px;
+
+    >:first-child {
+        overflow: auto;
+        position: relative;
+        height: 100%;
+    }
+    .ui-resizable-handle {
+        border: 1px solid #ccc;
+        position: absolute;
+        bottom: -20px;
+        height:  20px;
+        background: #f3f3f3;
+    }
+    .ui-resizable-handle:before {
+        content: '';
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right:0;
+        width: 16px;
+        height: 16px;
+        background-image: url(..//Icons/icons.png);
+        background-position: -176px -48px;
+    }
+}
+
 .i18n-inline {outline: red dotted thin;}
 .i18n-inline .i18n-inline-debug {display: none;}
 .i18n-inline:hover .i18n-inline-debug {display: inline;position: absolute;background: white;border: thin #eee solid;padding: 4px;}

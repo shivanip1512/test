@@ -31,66 +31,27 @@
     </div>
 </tags:sectionContainer>
 
-<script>
-$(function () {
-    $('.y-resizable').each(function (index, elem) {
-        var item = $(elem),
-            naturalHeight = item.height();
-
-        item.css({
-            'height': '200px',
-        });
-
-        item.resizable({
-            'handles': 's',
-            'minHeight': 50,
-            'maxHeight': naturalHeight
-        });
-    });
-});
-</script>
-<style>
-    .y-resizable .ui-resizable-handle {
-        border: 1px solid #ccc;
-        position: absolute;
-        bottom: -20px;
-        height:  20px;
-        background: #f3f3f3;
-    }
-    .y-resizable .y-resizable-content {
-        overflow: auto;
-        position: relative;
-        height: 100%;
-    }
-    .y-resizable {
-        margin-bottom: 20px;
-    }
-
-    .y-resizable .ui-resizable-handle:before {
-        content: '';
-        position: absolute;
-        margin: auto;
-        left: 0;
-        right:0;
-        width: 16px;
-        height: 16px;
-        background-image: url(../../WebConfig/yukon/Icons/icons.png);
-        background-position: -176px -48px;
-    }
-
-    .full-height {height:100%;}
-</style>
 <tags:sectionContainer title="Sizable Scrolling container">
     <div class="y-resizable">
-        <div class="y-resizable-content">
-            Work in progress
-            <ul>
-                <c:forEach var="i" begin="1" end="30" step="1">
-                    <li> ${i}. Item</li>
-                </c:forEach>
-            </ul>
-        </div>
+        <ul>
+            <c:forEach var="i" begin="1" end="30" step="1">
+                <li> ${i}. Item</li>
+            </c:forEach>
+        </ul>
     </div>
+    <div class="stacked">
+        A scrolling container that allows resizing.<br>
+        <span class="label label-default">Note:</span> Tables must be contianed inside an addition div for correct behavior.<br>
+    </div>
+
+    <pre class="code prettyprint">
+&lt;div class=&quot;y-resizable&quot;&gt;
+    &lt;ul&gt;
+        &lt;c:forEach var=&quot;i&quot; begin=&quot;1&quot; end=&quot;30&quot; step=&quot;1&quot;&gt;
+            &lt;li&gt; &#36;{i}. Item&lt;/li&gt;
+        &lt;/c:forEach&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;</pre>
 </tags:sectionContainer>
 
 
