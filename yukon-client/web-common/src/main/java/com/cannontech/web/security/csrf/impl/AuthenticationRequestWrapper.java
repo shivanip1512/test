@@ -32,7 +32,7 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
         super(request);
         // read the original payload into the payload variable
         String body = null;
-        try (Scanner scanner = new Scanner(request.getInputStream(), "UTF-8").useDelimiter("\\A")) {
+        try (Scanner scanner = new Scanner(request.getInputStream(), "ISO-8859-1").useDelimiter("\\A")) {
             body = scanner.hasNext() ? scanner.next() : "";
         } catch (IOException e) {
             log.error("Error occured in fetching the payload content for the request", e);
@@ -42,7 +42,7 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(payload.getBytes());
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(payload.getBytes("ISO-8859-1"));
         ServletInputStream inputStream = new ServletInputStream() {
             public int read() throws IOException {
                 return byteArrayInputStream.read();
