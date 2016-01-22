@@ -90,13 +90,18 @@ public class LoginServiceImpl implements LoginService {
     
     @Override
     public final void createSession(HttpServletRequest request, LiteYukonUser user) {
+        String csrfToken = null;
         HttpSession session = request.getSession(false);
-        String csrfToken = (String) session.getAttribute(CsrfTokenService.SESSION_CSRF_TOKEN);
+        if (session != null && session.getAttribute(CsrfTokenService.SESSION_CSRF_TOKEN) != null) {
+            csrfToken = (String) session.getAttribute(CsrfTokenService.SESSION_CSRF_TOKEN);
+        }
         if (session != null) {
             session.invalidate();
         }
         session = request.getSession(true);
-        session.setAttribute(CsrfTokenService.SESSION_CSRF_TOKEN, csrfToken);
+        if (csrfToken != null) {
+            session.setAttribute(CsrfTokenService.SESSION_CSRF_TOKEN, csrfToken);
+        }
         initSession(user, session, request);
         systemEventLogService.loginWeb(user, request.getRemoteAddr());
     }

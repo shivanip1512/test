@@ -39,7 +39,7 @@ public class YukonLoginController extends MultiActionController {
      */
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView();
-        if (request.getSession().getAttribute(LoginController.YUKON_USER) != null) {
+        if (request.getSession() != null && request.getSession().getAttribute(LoginController.YUKON_USER) != null) {
             return new ModelAndView("redirect: /dashboard");
         }
 
