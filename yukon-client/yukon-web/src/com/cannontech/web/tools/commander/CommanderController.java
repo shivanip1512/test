@@ -12,7 +12,7 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
@@ -88,6 +89,8 @@ public class CommanderController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
+    
+    private static final Logger log = YukonLogManager.getLogger(CommanderController.class);
     
     private static final TypeReference<List<RecentTarget>> recentTargetsType = new TypeReference<List<RecentTarget>>() {};
     private static final String keyBase = "yukon.web.modules.tools.commander";
@@ -210,7 +213,7 @@ public class CommanderController {
         LiteYukonPAObject oldRoute = routes.get(pao.getRouteID());
         LiteYukonPAObject newRoute = routes.get(routeId);
         
-        Log.debug("User: " + user.getUsername() + " attemting to change route on " + pao.getPaoName() + " from " 
+        log.debug("User: " + user.getUsername() + " attemting to change route on " + pao.getPaoName() + " from " 
                 + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
         
         try {
@@ -224,7 +227,7 @@ public class CommanderController {
             
             deviceUpdateService.changeRoute(SimpleDevice.of(pao.getPaoIdentifier()), routeId);
             
-            Log.debug("User: " + user.getUsername() + " changed route on " + pao.getPaoName() + " from " 
+            log.debug("User: " + user.getUsername() + " changed route on " + pao.getPaoName() + " from " 
                 + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
             
             eventLogger.changeRoute(user, pao.getPaoName(), oldRoute.getPaoName(), newRoute.getPaoName(), 

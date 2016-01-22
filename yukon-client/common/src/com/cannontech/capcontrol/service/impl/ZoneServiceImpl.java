@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +23,7 @@ import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.util.TimeRange;
@@ -37,6 +38,8 @@ public class ZoneServiceImpl implements ZoneService {
     @Autowired private ZoneDao zoneDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
+    
+    private static final Logger log = YukonLogManager.getLogger(ZoneServiceImpl.class);
     
     @Override
     @Transactional
@@ -107,7 +110,7 @@ public class ZoneServiceImpl implements ZoneService {
         for (PointToZoneMapping mapping : pointToZoneMappings) {
             VoltageLimitedDeviceInfo deviceInfo = findDeviceInfoWithPointId(deviceInfos, mapping.getPointId());
             if (deviceInfo == null) {
-                Log.error("couldn't find device in VoltageLimitedDeviceInfo list");
+               log.error("couldn't find device in VoltageLimitedDeviceInfo list");
             } else {
                 mapping.setPhase(deviceInfo.getPhase());
             }

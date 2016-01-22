@@ -1,8 +1,9 @@
 package com.cannontech.common.pao;
 
 import org.apache.commons.lang3.Validate;
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.google.common.collect.ImmutableMap;
@@ -20,7 +21,8 @@ public enum PaoCategory implements DatabaseRepresentationSource {
 
     private final int categoryId;
     private final String dbString;
-
+    private static final Logger log = YukonLogManager.getLogger(PaoCategory.class);
+    
     private final static ImmutableMap<String, PaoCategory> lookupByDbString;
     private final static ImmutableMap<Integer, PaoCategory> lookupById;
 
@@ -36,7 +38,7 @@ public enum PaoCategory implements DatabaseRepresentationSource {
             lookupById = integerBuilder.build();
 
         } catch (IllegalArgumentException e) {
-            Log.warn("Caught exception while building lookup maps.  Look for duplicate name or db string in PaoCategory.");
+            log.warn("Caught exception while building lookup maps.  Look for duplicate name or db string in PaoCategory.");
             throw e;
         }
     }

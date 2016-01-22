@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcUtils;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.events.dao.EventLogDao;
@@ -42,6 +43,8 @@ public class EventLogDaoImpl implements EventLogDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
 
+    private static final Logger log = YukonLogManager.getLogger(EventLogDaoImpl.class);
+    
     private final int countOfTotalArguments;
     private List<ArgumentColumn> argumentColumns;
     private int countOfNonVariableColumns = 3; // 3 <-- id + type + datetime
@@ -315,7 +318,7 @@ public class EventLogDaoImpl implements EventLogDao {
 
         SearchResults<EventLog> results = new SearchResults<EventLog>();
         if (StringUtils.isEmpty(searchString)) {
-            Log.info("findEventsByStringAndPaginate(..): Attempted query with blank searchString.  Returning no results.");
+            log.info("findEventsByStringAndPaginate(..): Attempted query with blank searchString.  Returning no results.");
             return results;
         }
 
