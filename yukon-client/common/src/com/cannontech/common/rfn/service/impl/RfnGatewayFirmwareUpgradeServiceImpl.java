@@ -78,7 +78,7 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
             RfnGatewayFirmwareUpdateRequest request = new RfnGatewayFirmwareUpdateRequest();
             request.setGateway(gateway.getRfnIdentifier());
             request.setUpdateId(updateId);
-            request.setReleaseVersion(serverInfo.getReleaseVersion());
+            request.setReleaseVersion(serverInfo.getAvailableVersion());
             
             log.debug("Sending firmware update request: " + request);
             firmwareUpdateRequestTemplate.convertAndSend(firmwareUpdateRequestQueue, request);
