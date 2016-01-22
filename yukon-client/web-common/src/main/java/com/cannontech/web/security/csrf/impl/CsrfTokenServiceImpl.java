@@ -39,9 +39,8 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         return request.getParameter(REQUEST_CSRF_TOKEN);
     }
 
-    @Override
-    public void validateToken(HttpServletRequest request) {
-        if (!request.getMethod().equalsIgnoreCase("POST")) {
+    public void validateToken(HttpServletRequest request) throws SecurityException {
+        if (request.getMethod().equalsIgnoreCase("GET")) {
             return;
         }
         String payload = null;

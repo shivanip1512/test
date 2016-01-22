@@ -18,7 +18,7 @@ public interface CsrfTokenService {
      * Checks the request and verifies it contains a valid CSRF token
      * Note: ignores any ajax or GET requests
      * 
-     * Throws a SecurityException if the valid token is not found.
+     * Throws a SecurityException if the token is not valid or not present.
      */
-    void validateToken(HttpServletRequest request);
+    void validateToken(HttpServletRequest request) throws SecurityException;;
 }
