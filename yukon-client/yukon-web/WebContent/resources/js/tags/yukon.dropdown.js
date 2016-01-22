@@ -130,10 +130,12 @@ $(function() {
     });
     
     /** Show menu in tables on right click */
-    $(document).on('contextmenu', '.has-actions tr', function(event) {
-        event.preventDefault();
-        $(this).find('.dropdown-trigger').trigger('click');
-    });
+    if (!yg.dev_mode) {
+        $(document).on('contextmenu', '.has-actions tr', function(event) {
+            event.preventDefault();
+            $(this).find('.dropdown-trigger').trigger('click');
+        });
+    }
     
     /** Handle option selections for criteria buttons */
     $(document).on('click', '.criteria-menu .criteria-option', function(e) {
