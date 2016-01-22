@@ -1873,8 +1873,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         this.rolePropertyDao = rolePropertyDao;
     }
 
-    public void setDbCache(IDatabaseCache dbCache) {
-        this.dbCache = dbCache;
+    public void setDatabaseCache(IDatabaseCache databaseCache) {
+        this.dbCache = databaseCache;
     }
     
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
