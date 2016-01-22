@@ -1,21 +1,32 @@
 package com.cannontech.core.dao.impl;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -24,6 +35,8 @@ public final class CommandDaoImpl implements CommandDao {
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthService;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    
+    private static final Logger log = YukonLogManager.getLogger(CommandDaoImpl.class);
     
     public static final YukonRowMapper<LiteDeviceTypeCommand> DEVICE_TYPE_COMMAND_MAPPER = new YukonRowMapper<LiteDeviceTypeCommand>() {
         @Override
@@ -177,5 +190,88 @@ public final class CommandDaoImpl implements CommandDao {
         
         return command;
     }
+ 
+    @Override    
+    public String buildTOUScheduleCommand(int scheduleId) {
+        
+        String command = "putconfig tou ";
+        List<LiteTOUSchedule> schedules = cache.getAllTOUSchedules();
+        
+        LiteTOUSchedule liteSchedule = null;
+        for (LiteTOUSchedule schedule : schedules) {
+            if (schedule.getScheduleID() == scheduleId) {
+                liteSchedule = schedule;
+            } 
+        }
+        
+        if (liteSchedule != null) {
+            
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT d.TOUDayID, d.TOUDayName, dm.TOUDayOffset, switchrate, switchoffset");
+            sql.append("FROM TOUDay d JOIN TOUDayMapping dm ON dm.toudayid = d.toudayid");
+            sql.append("JOIN toudayrateswitches trs ON trs.toudayid = dm.toudayid");
+            sql.append("WHERE dm.touscheduleid").eq(liteSchedule.getScheduleID()); 
+            sql.append("ORDER BY toudayoffset, switchoffset");
+
+            int [] days = new int[] {-1, -1, -1, -1}; // At most 4 day mappings are allowed.
+            int [] dayOffsets = new int[8];
+            
+            List<String> strings = jdbcTemplate.query(sql, new YukonRowMapper<String>() {
+                boolean exists = false;
+                int currentIndex = 0;
+                int numDaysFound = 0;
+                int currentDayOffset = -1;
+
+                @Override
+                public String mapRow(YukonResultSet rset) throws SQLException {
+                    String scheduleStr = "";
+                    int dayId = rset.getInt("TOUDayID");
+                    int dayOffset = rset.getInt("TOUDayOffset");
+                    String switchRate = rset.getString("SwitchRate");
+                    int switchOffset = rset.getInt("SwitchOffset");
+               
+                    if (currentDayOffset != dayOffset) {
+                        exists = false;
+                        for (int i = 0; i < numDaysFound && i < days.length; i++) {
+                            if (days[i] == dayId) {
+                                currentIndex = i;
+                                exists = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!exists) {
+                            currentIndex = numDaysFound;
+                            days[numDaysFound++] = dayId;
+                            scheduleStr += " schedule " + (currentIndex+1);
+                        }
+                        dayOffsets[dayOffset-1] = currentIndex+1;
+                    }
+                    if (!exists) {
+                        scheduleStr += " " + switchRate + "/" + convertSecondsToTimeString(switchOffset);
+                    }
+                    currentDayOffset = dayOffset;
+                    return scheduleStr;
+                }
+            });    
+
+            String scheduleStr = StringUtils.join(strings, "");
+            for (int offset : dayOffsets) {
+                command += offset;
+            }
+                
+            command += " " + scheduleStr + " default " + liteSchedule.getDefaultRate();
+        }
+        return command;
+    }
     
+    private static String convertSecondsToTimeString(int seconds) {
+        
+        DecimalFormat format = new DecimalFormat("00");
+        int hour = seconds / 3600;
+        int temp = seconds % 3600;
+        int min = temp / 60;
+        
+        return hour + ":" + format.format(min);
+    }
 }

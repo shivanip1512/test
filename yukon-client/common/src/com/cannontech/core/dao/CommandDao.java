@@ -33,5 +33,10 @@ public interface CommandDao {
     
     /** Retrieves all commands from the database. */
     List<LiteCommand> getAllCommands();
-    
+ 
+    /**
+     * Generate a putconfig tou command string for scheduleId.
+     * A valid command will look something like: putconfig tou 11122222 schedule 1 B/0:00 A/6:00 C/14:00 schedule 2 A/0:00 default A 
+     */
+    String buildTOUScheduleCommand(int scheduleId);
 }

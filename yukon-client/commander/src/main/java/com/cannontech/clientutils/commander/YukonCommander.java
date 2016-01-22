@@ -119,6 +119,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 
     private YC yc;
     
+    private CommandDao commandDao = YukonSpringHook.getBean(CommandDao.class);
     private PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
     private PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean(PaoDefinitionDao.class);
     private DeviceGroupTreeFactory dgtf = YukonSpringHook.getBean(DeviceGroupTreeFactory.class);
@@ -439,7 +440,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 
             if (lShedule != null && lShedule instanceof LiteTOUSchedule) {
                 try {
-                    setCommand(getYC().buildTOUScheduleCommand(((LiteTOUSchedule) lShedule).getScheduleID()));
+                    setCommand(commandDao.buildTOUScheduleCommand(((LiteTOUSchedule) lShedule).getScheduleID()));
                     if (isValidSetup()) {
                         getYC().executeCommand();
                     }
