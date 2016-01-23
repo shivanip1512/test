@@ -3354,17 +3354,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                     else if (currentCapBank->isControlDeviceTwoWay() )
                     {
                         CtiCCTwoWayPoints & twoWayPts = currentCapBank->getTwoWayPoints();
-                        //NEED to check this value for a toggle, before setting status points.
-                        if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredIndicator) == pointID)
-                        {
 
-                            if (twoWayPts.getPointValueByAttribute(PointAttribute::IgnoredIndicator)!= value &&
-                                timestamp >= currentCapBank->getIgnoreIndicatorTimeUpdated() )
-                            {
-                                currentCapBank->setIgnoreIndicatorTimeUpdated(timestamp);
-                                store->insertRejectedCapBankList(currentCapBank);
-                            }
-                        }
                         if (twoWayPts.setTwoWayStatusPointValue(pointID, value, timestamp))
                         {
                             if (currentCapBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) == pointID )
@@ -3490,10 +3480,14 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 currentCapBank->setUDPPort(twoWayPts.getPointValueByAttribute(PointAttribute::UDPPortNumber));
                             }
-                            else if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredReason) == pointID)
+                            else if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredReason) == pointID &&
+                                     timestamp >= currentCapBank->getIgnoreIndicatorTimeUpdated() )
                             {
+                                currentCapBank->setIgnoreIndicatorTimeUpdated(timestamp);
                                 currentCapBank->setIgnoredReason(value);
                                 currentSubstationBus->setBusUpdatedFlag(true);
+
+                                store->insertRejectedCapBankList(currentCapBank);
                             }
 
                             if ( currentCapBank->getPointIdByAttribute( PointAttribute::LastControlReason ) == pointID )
