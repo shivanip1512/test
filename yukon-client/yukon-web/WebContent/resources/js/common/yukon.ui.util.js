@@ -480,12 +480,21 @@ yukon.tag.scheduledFileExportInputs = (function () {
             $("#exportFileName").prop("disabled", false);
         }
     },
+    
+    _setDefaults = function() {
+        if ($("#includeDisabledPaos").is(":checked")) {
+            $('[name=includeDisabledPaos]').prop('checked', true);
+        }
+        var thresholdValue = $('#thresholdFilter').val();
+        $('[name=threshold]').val(thresholdValue);
+    },
 
     _intializeAllFields = function () {
         _toggleTimestampPatternField();
         _toggleFileExtensionField();
         _toggleExportPathField();
         _sameAsNameClicked();
+        _setDefaults();
     },
 
     mod = {

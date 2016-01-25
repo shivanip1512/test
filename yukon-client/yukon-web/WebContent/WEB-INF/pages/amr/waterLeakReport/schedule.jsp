@@ -25,7 +25,7 @@
         </tags:nameValue2>
         <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
             <label>
-                <input type="checkbox" name="includeDisabledPaos" ${includeDisabledPaos ? "checked" : ""}>
+                <input type="checkbox" name="includeDisabledPaos">
                 <i:inline key=".filter.includeDisabledDevices"/>
             </label>
         </tags:nameValue2>

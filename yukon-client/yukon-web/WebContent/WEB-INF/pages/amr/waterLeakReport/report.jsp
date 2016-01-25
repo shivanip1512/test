@@ -56,7 +56,7 @@
 
                 <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true">
                     <label>
-                        <form:checkbox path="includeDisabledPaos"/>
+                        <form:checkbox path="includeDisabledPaos" id="includeDisabledPaos"/>
                         <i:inline key=".filter.includeDisabledDevices"/>
                     </label>
                 </tags:nameValue2>
@@ -69,7 +69,7 @@
                 </tags:nameValue2>
 
                 <tags:nameValue2 nameKey=".filter.threshold">
-                    <tags:input path="threshold" size="8"/>
+                    <tags:input id="thresholdFilter" path="threshold" size="8"/>
                     <div id="threshold-help-popup" class="dn" data-title="<cti:msg2 key=".filter.threshold"/>">
                         <i:inline key=".filter.threshold.helpText"/>
                     </div>
