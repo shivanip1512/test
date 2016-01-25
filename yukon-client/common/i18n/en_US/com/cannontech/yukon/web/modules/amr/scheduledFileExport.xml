@@ -27,7 +27,7 @@
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.overrideFileExtension">Override Default Filename Extension</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.exportFileExtension">File Extension</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.sameAsScheduleName">Same as Schedule Name</entry>
-    <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.exportTimestampInfo"><![CDATA[A valid timestamp pattern appended directly to the filename, so it cannot include any of the following characters: / \ : * ? &quot; &lt; &gt; |]]></entry>
+    <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.exportTimestampInfo"><![CDATA[A valid timestamp pattern appended directly to the filename. A filename cannot contain any of the following characters: / \ : * ? &quot; &lt; &gt; |]]></entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.exportFileExtensionInfo">Choose a specific file extension to use. These option values may be changed in Global Settings...</entry>
     
     <!-- ScheduledFileExportJobs tag -->
