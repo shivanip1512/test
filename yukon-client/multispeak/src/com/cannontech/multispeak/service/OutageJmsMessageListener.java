@@ -138,9 +138,11 @@ public class OutageJmsMessageListener implements MessageListener {
                 List<ErrorObject> errObjects = null;
                 if (odEventNotificationResponse != null) {
                     ArrayOfErrorObject arrOfErrorObject = odEventNotificationResponse.getODEventNotificationResult();
-                    List<ErrorObject> errorObjects = arrOfErrorObject.getErrorObject();
-                    if (errorObjects != null) {
-                        errObjects = errorObjects;
+                    if (null != arrOfErrorObject) {
+                        List<ErrorObject> errorObjects = arrOfErrorObject.getErrorObject();
+                        if (errorObjects != null) {
+                            errObjects = errorObjects;
+                        }
                     }
                 }
                     if (CollectionUtils.isNotEmpty(errObjects)) {

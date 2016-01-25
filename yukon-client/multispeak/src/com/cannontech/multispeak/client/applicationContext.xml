@@ -38,8 +38,11 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="taskExecutor" ref="globalTaskExecutor"/>
         <property name="messageListener" ref="outageJmsMessageListener"/>
+        <property name="errorHandler" ref="yukonJmsErrorHandler"/>
     </bean>
-    
+
+  <bean id="yukonJmsErrorHandler" class="com.cannontech.multispeak.util.YukonJmsErrorHandler"/>
+
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl"/>
      
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
