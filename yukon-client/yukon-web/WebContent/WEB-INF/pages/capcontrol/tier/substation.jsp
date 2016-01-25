@@ -72,7 +72,7 @@ $(function() {
     <cm:dropdownOption  key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
 
     <c:if test="${hasSubstationControl}">
-        <cm:dropdownOption linkId="substationState_${substationId}" key="yukon.common.actions" icon="icon-cog" href="javascript:void(0);" />
+        <cm:dropdownOption linkId="substationState_${substationId}" key=".substation.actions" icon="icon-cog" href="javascript:void(0);" />
     </c:if>
 </div>
 

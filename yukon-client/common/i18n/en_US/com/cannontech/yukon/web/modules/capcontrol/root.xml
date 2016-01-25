@@ -81,6 +81,7 @@
     <entry key="yukon.web.modules.capcontrol.closedKvars">Closed</entry>
     <entry key="yukon.web.modules.capcontrol.trippedKvars">Tripped</entry>
     <entry key="yukon.web.modules.capcontrol.pfactorEstimated">PFactor / Est.</entry>
+    <entry key="yukon.web.modules.capcontrol.pfactorEstimatedOps">PFactor / Est. Ops</entry>
     <entry key="yukon.web.modules.capcontrol.likeDay">Operating in like-day history control.</entry>
     <entry key="yukon.web.modules.capcontrol.voltReduction">Volt Reduction</entry>
     <entry key="yukon.web.modules.capcontrol.maxDailyOps">Max daily operations.</entry>
@@ -287,7 +288,8 @@
     <entry key="yukon.web.modules.capcontrol.area.info.updated">Area info updated successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.deleted.success">Area {0} Deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.subs.updated">Substations updated successfully.</entry>
-    <entry key="yukon.web.modules.capcontrol.area.strat.updated">Strategy assignment updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.area.strat.updated">Strategy assignment updated successfully.</entry>   
+    <entry key="yukon.web.modules.capcontrol.area.actions">Area Actions</entry>
     
     <!-- substation.jsp -->
     <entry key="yukon.web.modules.capcontrol.substation.pageName">Substation</entry>
@@ -368,6 +370,7 @@
     <entry key="yukon.web.modules.capcontrol.substation.capBank.info">Bank Info</entry>
     <entry key="yukon.web.modules.capcontrol.substation.cbc.info">CBC Info</entry>
     <entry key="yukon.web.modules.capcontrol.substation.bankMove">Move Bank</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.actions">Substation Actions</entry>
     
     <entry key="yukon.web.modules.capcontrol.substation.questionableQuality.hoverText">Questionable Quality</entry>
     

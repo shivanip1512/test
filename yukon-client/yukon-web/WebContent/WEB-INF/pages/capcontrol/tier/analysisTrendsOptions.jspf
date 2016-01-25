@@ -23,6 +23,12 @@ function showTrends(title, url) {
 
 <div id="trend-popup" class="dn dialog-no-buttons"></div>
 
+<c:if test="${!empty viewableArea}">
+    <c:set var="subBusList" value="${viewableArea.subBusList}"/>
+    <c:set var="feederList" value="${viewableArea.feederList}"/>
+    <c:set var="capBankList" value="${viewableArea.capBankList}"/>
+</c:if>
+
 <tags:sectionContainer2 nameKey="busContainer">
     <div>
         <input type="checkbox" id="analysisBusSelectAll" onclick="yukon.da.common.checkAll(this, 'table.analysisBuses input[type=checkbox]');">

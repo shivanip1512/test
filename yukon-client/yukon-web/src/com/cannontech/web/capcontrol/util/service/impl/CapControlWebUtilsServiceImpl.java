@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol.util.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.NotFoundException;
@@ -119,6 +121,19 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
                 subStations = cache.getSubstationsByArea(area.getCcId());
             }
 
+            List<SubBus> subBusList = cache.getSubBusesByArea(area.getCcId());
+            Collections.sort(subBusList, CapControlUtils.SUB_DISPLAY_COMPARATOR);
+            List<ViewableSubBus> viewableSubBusList = createViewableSubBus(subBusList);
+            viewableArea.setSubBusList(viewableSubBusList);
+            
+            List<Feeder> feederList = cache.getFeedersByArea(area.getCcId());
+            List<ViewableFeeder> viewableFeederList = createViewableFeeder(feederList);
+            viewableArea.setFeederList(viewableFeederList);
+
+            List<CapBankDevice> capBankList = cache.getCapBanksByArea(area.getCcId());
+            List<ViewableCapBank> viewableCapBankList = createViewableCapBank(capBankList);
+            viewableArea.setCapBankList(viewableCapBankList);
+            
             viewableArea.setAreaInfo(area);
             viewableArea.setStationCount(subStations.size());
             viewableList.add(viewableArea);

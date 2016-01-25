@@ -88,6 +88,10 @@ public class TierController {
     private final void setUpAreas(ModelMap model, LiteYukonUser user) {
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
+        
+        boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
+        boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
+        model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
 
         boolean hasAreaControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
         model.addAttribute("hasAreaControl", hasAreaControl);

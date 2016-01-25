@@ -6,10 +6,26 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="capcontrol" page="area">
 <cti:includeScript link="/resources/js/pages/yukon.da.area.js"/>
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
+
+<c:if test="${hasAreaControl}">
+    <script type="text/javascript">
+        addCommandMenuBehavior('a[id^="areaState_"]');
+    </script>
+</c:if>
+
+<div class="js-page-additional-actions dn">
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <li class="divider" />
+    </cti:checkRolesAndProperties>
+    <c:if test="${hasAreaControl}">
+        <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
+    </c:if>
+</div>
 
 <%-- EDIT INFO POPUP --%>
 <div class="dn js-edit-info-popup"
