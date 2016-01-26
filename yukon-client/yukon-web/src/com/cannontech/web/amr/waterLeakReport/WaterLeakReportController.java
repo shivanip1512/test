@@ -255,7 +255,9 @@ public class WaterLeakReportController {
             
             DeviceCollection deviceCollection = deviceCollectionService.loadCollection(task.getDeviceCollectionId());
             model.addAttribute("deviceCollection", deviceCollection);
-            
+            model.addAttribute("includeDisabledPaos", task.isIncludeDisabledPaos());
+            model.addAttribute("threshold", task.getThreshold());
+
             cronTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
             exportData.setDaysOffset(task.getDaysOffset());
             exportData.setHoursPrevious(task.getHoursPrevious());

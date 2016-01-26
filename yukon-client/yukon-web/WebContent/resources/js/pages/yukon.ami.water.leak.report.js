@@ -11,6 +11,7 @@ yukon.ami.waterLeakReport = (function () {
     var 
     
     _initialized = false,
+    _editMode = false,
     
     mod = {};
 
@@ -54,10 +55,15 @@ yukon.ami.waterLeakReport = (function () {
             /** Open schedule popup a schedule */
             $(document).on('yukon.ami.water.leak.report.schedule.load', function (ev) {
                 yukon.tag.scheduledFileExportInputs.initializeFields();
+                if(!_editMode){
+                    yukon.tag.scheduledFileExportInputs.setDefaultValues();
+                }
+                _editMode = false;
             });
             
             /** Edit a schedule */
             $(document).on('click', '.js-edit-job', function (ev) {
+                _editMode = true;
                 var jobId = $(this).data('jobId');
                 yukon.ui.dialog('#schedule-report-popup', 'schedule?jobId=' + jobId);
             });

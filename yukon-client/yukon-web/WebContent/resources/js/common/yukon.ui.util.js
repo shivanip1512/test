@@ -494,12 +494,15 @@ yukon.tag.scheduledFileExportInputs = (function () {
         _toggleFileExtensionField();
         _toggleExportPathField();
         _sameAsNameClicked();
-        _setDefaults();
     },
 
     mod = {
         initializeFields: function () {
             _intializeAllFields();
+        },
+        
+        setDefaultValues: function () {
+            _setDefaults();
         },
         
         init: function () {
