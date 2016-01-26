@@ -2773,7 +2773,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                             refreshGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             //Set this group to refresh again
-                            currentLMGroup->setNextRefreshTime(CtiTime(CtiTime().seconds(), refreshRate);
+                            currentLMGroup->setNextRefreshTime(CtiTime(), refreshRate);
                             if( currentGearObject->getPercentReduction() > 0.0 )
                             {
                                 expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
@@ -2883,7 +2883,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             //Set this group to refresh again
-                            currentLMGroup->setNextRefreshTime(CtiTime(CtiTime().seconds(), refreshRate);
+                            currentLMGroup->setNextRefreshTime(CtiTime(), refreshRate);
                             if( currentGearObject->getPercentReduction() > 0.0 )
                             {
                                 expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
