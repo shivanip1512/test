@@ -264,6 +264,7 @@
 
 <cti:url var="deleteUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>
 <form id="delete-gw-form" action="${deleteUrl}" method="post" class="dn">
+    <cti:csrfToken/>
     <input type="hidden" name="_method" value="delete">
 </form>
 
