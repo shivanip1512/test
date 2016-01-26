@@ -335,6 +335,9 @@
     <ClCompile Include="..\precompiled.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IgnoredControlReason.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CapControlDispatchConnection.h">
@@ -641,6 +644,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\capcontrol_test_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\IgnoredControlReason.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

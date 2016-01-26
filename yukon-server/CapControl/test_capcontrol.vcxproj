@@ -425,6 +425,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="ExecVerification.cpp">
     </ClCompile>
+    <ClCompile Include="IgnoredControlReason.cpp" />
     <ClCompile Include="IncrementingKeepAlivePolicy.cpp">
     </ClCompile>
     <ClCompile Include="IVVCAlgorithm.cpp">
@@ -617,6 +618,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\ExecVerification.h" />
     <ClInclude Include="include\GangOperatedVoltageRegulator.h" />
     <ClInclude Include="include\id_capcontrol.h" />
+    <ClInclude Include="include\IgnoredControlReason.h" />
     <ClInclude Include="include\IncrementingKeepAlivePolicy.h" />
     <ClInclude Include="include\IVVCAlgorithm.h" />
     <ClInclude Include="include\IVVCState.h" />
