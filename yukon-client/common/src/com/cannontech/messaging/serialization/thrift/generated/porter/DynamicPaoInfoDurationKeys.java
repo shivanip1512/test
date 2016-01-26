@@ -12,7 +12,8 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 public enum DynamicPaoInfoDurationKeys implements org.apache.thrift.TEnum {
-  RFN_VOLTAGE_PROFILE_INTERVAL(0);
+  RFN_VOLTAGE_PROFILE_INTERVAL(0),
+  MCT_IED_LOAD_PROFILE_INTERVAL(1);
 
   private final int value;
 
@@ -35,6 +36,8 @@ public enum DynamicPaoInfoDurationKeys implements org.apache.thrift.TEnum {
     switch (value) {
       case 0:
         return RFN_VOLTAGE_PROFILE_INTERVAL;
+      case 1:
+        return MCT_IED_LOAD_PROFILE_INTERVAL;
       default:
         return null;
     }

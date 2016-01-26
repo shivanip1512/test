@@ -16,7 +16,8 @@ import com.google.common.collect.ImmutableMap;
 public class DynamicPaoInfoRequestSerializer extends SimpleThriftSerializer implements ThriftByteSerializer<DynamicPaoInfoRequest> {
 
     private static final ImmutableMap<DynamicPaoInfoDurationKeyEnum, DynamicPaoInfoDurationKeys> durationKeyMapping = ImmutableMap.of(
-        DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL, DynamicPaoInfoDurationKeys.RFN_VOLTAGE_PROFILE_INTERVAL);
+        DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL, DynamicPaoInfoDurationKeys.RFN_VOLTAGE_PROFILE_INTERVAL,
+        DynamicPaoInfoDurationKeyEnum.MCT_IED_LOAD_PROFILE_INTERVAL, DynamicPaoInfoDurationKeys.MCT_IED_LOAD_PROFILE_INTERVAL);
     
     private static final ImmutableMap<DynamicPaoInfoTimestampKeyEnum, DynamicPaoInfoTimestampKeys> timestampKeyMapping = ImmutableMap.of(
         DynamicPaoInfoTimestampKeyEnum.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL, DynamicPaoInfoTimestampKeys.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL);

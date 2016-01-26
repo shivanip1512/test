@@ -28,4 +28,11 @@ public interface PorterDynamicPaoInfoService {
      * if Porter does not have the DynamicPaoInfo for a given value.
      */
     VoltageProfileDetails getVoltageProfileDetails(int paoId);
+
+    /**
+     * Retrieves the MCT-430's IED load profile rate.
+     * @param paoId
+     * @return the load profile rate, or null if none. 
+     */
+    Duration getMctIedLoadProfileInterval(int paoId);
 }

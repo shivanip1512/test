@@ -10,7 +10,8 @@ namespace Porter {
 
 enum class DynamicPaoInfoDurationKeys
 {
-    RfnVoltageProfileInterval  //  data streaming interval
+    RfnVoltageProfileInterval,  //  data streaming interval
+    MctIedLoadProfileInterval
 };
 
 enum class DynamicPaoInfoTimestampKeys

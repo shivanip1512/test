@@ -2,7 +2,8 @@ namespace cpp Cti.Messaging.Serialization.Thrift.Porter
 namespace java com.cannontech.messaging.serialization.thrift.generated.porter
 
 enum DynamicPaoInfoDurationKeys {
-    RFN_VOLTAGE_PROFILE_INTERVAL
+    RFN_VOLTAGE_PROFILE_INTERVAL,
+    MCT_IED_LOAD_PROFILE_INTERVAL
 }
 
 enum DynamicPaoInfoTimestampKeys {

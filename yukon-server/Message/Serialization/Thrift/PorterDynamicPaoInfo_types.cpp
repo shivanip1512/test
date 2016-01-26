@@ -11,12 +11,14 @@
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift { namespace Porter {
 
 int _kDynamicPaoInfoDurationKeysValues[] = {
-  DynamicPaoInfoDurationKeys::RFN_VOLTAGE_PROFILE_INTERVAL
+  DynamicPaoInfoDurationKeys::RFN_VOLTAGE_PROFILE_INTERVAL,
+  DynamicPaoInfoDurationKeys::MCT_IED_LOAD_PROFILE_INTERVAL
 };
 const char* _kDynamicPaoInfoDurationKeysNames[] = {
-  "RFN_VOLTAGE_PROFILE_INTERVAL"
+  "RFN_VOLTAGE_PROFILE_INTERVAL",
+  "MCT_IED_LOAD_PROFILE_INTERVAL"
 };
-const std::map<int, const char*> _DynamicPaoInfoDurationKeys_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(1, _kDynamicPaoInfoDurationKeysValues, _kDynamicPaoInfoDurationKeysNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _DynamicPaoInfoDurationKeys_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kDynamicPaoInfoDurationKeysValues, _kDynamicPaoInfoDurationKeysNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kDynamicPaoInfoTimestampKeysValues[] = {
   DynamicPaoInfoTimestampKeys::RFN_VOLTAGE_PROFILE_ENABLED_UNTIL

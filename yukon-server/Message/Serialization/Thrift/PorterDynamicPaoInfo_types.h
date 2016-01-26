@@ -18,7 +18,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 
 struct DynamicPaoInfoDurationKeys {
   enum type {
-    RFN_VOLTAGE_PROFILE_INTERVAL = 0
+    RFN_VOLTAGE_PROFILE_INTERVAL = 0,
+    MCT_IED_LOAD_PROFILE_INTERVAL = 1
   };
 };
 

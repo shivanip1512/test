@@ -988,7 +988,8 @@ void registerServices()
                 rsp.deviceId = req->deviceId;
 
                 static const std::map<DynamicPaoInfoDurationKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> durationKeyLookup{
-                    { DynamicPaoInfoDurationKeys::RfnVoltageProfileInterval, CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval } };
+                    { DynamicPaoInfoDurationKeys::RfnVoltageProfileInterval, CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval },
+                    { DynamicPaoInfoDurationKeys::MctIedLoadProfileInterval, CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval }};
 
                 for( const auto key : req->durationKeys )
                 {
@@ -1001,6 +1002,9 @@ void registerServices()
                             //  switch per key, since some may be stored as minutes, some as seconds, etc
                             switch( *mappedKey )
                             {
+                            case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
+                                rsp.durationValues.emplace(key, std::chrono::seconds(longValue));
+                                break;
                             case CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval:
                                 rsp.durationValues.emplace(key, std::chrono::minutes(longValue));
                                 break;

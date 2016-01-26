@@ -24,7 +24,8 @@ using YukonDurationKeys = Messaging::Porter::DynamicPaoInfoDurationKeys;
 using DurationKeyMapping = boost::bimap<ThriftDurationKeys, YukonDurationKeys>;
 
 static const DurationKeyMapping durationKeyLookup = boost::assign::list_of<DurationKeyMapping::relation>
-    (ThriftDurationKeys::RFN_VOLTAGE_PROFILE_INTERVAL, YukonDurationKeys::RfnVoltageProfileInterval);
+    (ThriftDurationKeys::RFN_VOLTAGE_PROFILE_INTERVAL, YukonDurationKeys::RfnVoltageProfileInterval)
+    (ThriftDurationKeys::MCT_IED_LOAD_PROFILE_INTERVAL, YukonDurationKeys::MctIedLoadProfileInterval);
 
 boost::optional<const YukonDurationKeys> mapping(ThriftDurationKeys k)
 {

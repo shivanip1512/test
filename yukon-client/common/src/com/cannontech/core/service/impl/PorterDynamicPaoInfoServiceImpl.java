@@ -32,6 +32,8 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
     private static final DynamicPaoInfoRequestSerializer serializer = new DynamicPaoInfoRequestSerializer();
     private static final DynamicPaoInfoResponseSerializer deserializer = new DynamicPaoInfoResponseSerializer();
     
+    private static final int DEFAULT_TIMEOUT_MINUTES = 1;
+    
     ThriftRequestReplyTemplate<DynamicPaoInfoRequest, DynamicPaoInfoResponse> thriftMessenger;
     
     @Autowired
@@ -50,6 +52,15 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
         });
     }
 
+    private DynamicPaoInfoResponse requestInfoFromPorter(DynamicPaoInfoRequest requestMsg)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        CompletableFuture<DynamicPaoInfoResponse> f = new CompletableFuture<DynamicPaoInfoResponse>();
+        
+        thriftMessenger.send(requestMsg, f);
+
+        return f.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+    }
+
     @Override
     public VoltageProfileDetails getVoltageProfileDetails(int paoId) {
         DynamicPaoInfoRequest requestMsg = new DynamicPaoInfoRequest();
@@ -58,29 +69,44 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
         requestMsg.setDurationKeys(Sets.immutableEnumSet(DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL));
         requestMsg.setTimestampKeys(Sets.immutableEnumSet(DynamicPaoInfoTimestampKeyEnum.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL));
         
-        CompletableFuture<DynamicPaoInfoResponse> f = new CompletableFuture<DynamicPaoInfoResponse>();
-        
-        thriftMessenger.send(requestMsg, f);
-        
         VoltageProfileDetails details = null;
         
         try {
-            DynamicPaoInfoResponse response = f.get(1, TimeUnit.MINUTES);
+            DynamicPaoInfoResponse response = requestInfoFromPorter(requestMsg);
             
             details = new VoltageProfileDetails();
-            if (response != null) {
-                Instant enabledUntil = response.getTimestampValues()
-                                               .get(DynamicPaoInfoTimestampKeyEnum.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL);
-                Duration profileInterval = response.getDurationValues()
-                                                   .get(DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL);
-                details.enabledUntil = enabledUntil;
-                details.profileInterval = profileInterval;
-            }
-        }
-        catch( InterruptedException | ExecutionException | TimeoutException ex ) {
+
+            Instant enabledUntil = response.getTimestampValues()
+                                           .get(DynamicPaoInfoTimestampKeyEnum.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL);
+            Duration profileInterval = response.getDurationValues()
+                                               .get(DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL);
+            details.enabledUntil = enabledUntil;
+            details.profileInterval = profileInterval;
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
             log.error(ex);
         }
         
         return details;
+    }
+
+    @Override
+    public Duration getMctIedLoadProfileInterval(int paoId) {
+        DynamicPaoInfoRequest requestMsg = new DynamicPaoInfoRequest();
+        
+        requestMsg.setDeviceID(paoId);
+        requestMsg.setDurationKeys(Sets.immutableEnumSet(DynamicPaoInfoDurationKeyEnum.MCT_IED_LOAD_PROFILE_INTERVAL));
+        
+        Duration interval = null;
+        
+        try {
+            DynamicPaoInfoResponse response = requestInfoFromPorter(requestMsg);
+
+            interval = response.getDurationValues()
+                               .get(DynamicPaoInfoDurationKeyEnum.MCT_IED_LOAD_PROFILE_INTERVAL);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            log.error(ex);
+        }
+        
+        return interval;
     }
 }
