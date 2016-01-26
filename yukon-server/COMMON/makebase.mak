@@ -365,11 +365,12 @@ globalsettings.obj:	precompiled.h GlobalSettings.h dlldefs.h \
 		dllbase.h guard.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h \
 		database_reader.h row_reader.h std_helper.h mutex.h
-guard.obj:	precompiled.h guard.h utility.h ctitime.h dlldefs.h \
-		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
-		constants.h numstr.h module_util.h version.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h critical_section.h
+guard.obj:	precompiled.h readers_writer_lock.h dlldefs.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
+		numstr.h module_util.h version.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dllbase.h
 id_ctibase.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
 		numstr.h module_util.h version.h id_ctibase.h

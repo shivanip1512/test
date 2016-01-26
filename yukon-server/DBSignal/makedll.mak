@@ -105,21 +105,22 @@ dbsigsend.obj:	precompiled.h dllbase.h os2_2w32.h dlldefs.h types.h \
 		cticalls.h yukon.h ctidbgmem.h critical_section.h \
 		tbl_signal.h ctitime.h row_reader.h database_connection.h \
 		dbaccess.h guard.h utility.h queues.h constants.h numstr.h \
-		logger.h streamBuffer.h loggable.h string_util.h \
-		exception_helper.h boostutil.h dbmemobject.h
+		module_util.h version.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h dbmemobject.h
 tbl_rawpthistory.obj:	precompiled.h tbl_rawpthistory.h ctitime.h \
 		dlldefs.h row_writer.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
-		constants.h numstr.h critical_section.h
+		constants.h numstr.h module_util.h version.h \
+		critical_section.h
 tbl_signal.obj:	precompiled.h tbl_signal.h ctitime.h dlldefs.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		os2_2w32.h types.h cticalls.h yukon.h ctidbgmem.h \
 		critical_section.h guard.h utility.h queues.h constants.h \
-		numstr.h logger.h streamBuffer.h loggable.h string_util.h \
-		exception_helper.h boostutil.h dbmemobject.h \
-		database_writer.h row_writer.h database_reader.h \
-		database_util.h
+		numstr.h module_util.h version.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
+		dbmemobject.h database_writer.h row_writer.h \
+		database_reader.h database_util.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

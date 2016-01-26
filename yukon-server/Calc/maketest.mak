@@ -124,8 +124,9 @@ $(BIN)\test*.exe
 test_calc.obj:	calc.h ctiqueues.h calccomponent.h ctitime.h dlldefs.h \
 		ctidate.h pointstore.h rtdb.h utility.h queues.h cticalls.h \
 		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		dllbase.h critical_section.h pointdefs.h regression.h \
-		tbl_pt_limit.h dbmemobject.h dbaccess.h resolvers.h \
-		pointtypes.h db_entry_defines.h row_reader.h loggable.h
+		module_util.h version.h dllbase.h critical_section.h \
+		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
+		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
+		row_reader.h loggable.h
 #ENDUPDATE#
 

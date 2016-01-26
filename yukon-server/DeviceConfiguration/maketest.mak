@@ -109,7 +109,8 @@ config_device.obj:	precompiled.h config_device.h yukon.h types.h \
 		ctidbgmem.h dllbase.h os2_2w32.h dlldefs.h cticalls.h \
 		critical_section.h DeviceConfigDescription.h devicetypes.h \
 		pointtypes.h PointAttribute.h std_helper.h utility.h \
-		ctitime.h queues.h constants.h numstr.h
+		ctitime.h queues.h constants.h numstr.h module_util.h \
+		version.h streamBuffer.h loggable.h
 config_strings.obj:	precompiled.h config_data_mct.h yukon.h types.h \
 		ctidbgmem.h dllbase.h os2_2w32.h dlldefs.h cticalls.h \
 		critical_section.h config_data_dnp.h config_data_rfn.h \
@@ -119,20 +120,21 @@ da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
 		dllbase.h os2_2w32.h dlldefs.h cticalls.h critical_section.h \
 		config_data_mct.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
-		ctitime.h queues.h constants.h numstr.h
+		ctitime.h queues.h constants.h numstr.h module_util.h \
+		version.h
 id_dcdll.obj:	precompiled.h id_dcdll.h module_util.h dlldefs.h \
-		ctitime.h
+		ctitime.h version.h
 mgr_config.obj:	precompiled.h mgr_config.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h yukon.h ctidbgmem.h \
 		critical_section.h config_device.h devicetypes.h \
 		readers_writer_lock.h guard.h utility.h ctitime.h queues.h \
-		constants.h numstr.h logger.h streamBuffer.h loggable.h \
-		string_util.h exception_helper.h boostutil.h dbaccess.h \
-		database_connection.h database_reader.h row_reader.h \
-		DeviceConfigDescription.h pointtypes.h PointAttribute.h \
-		debug_timer.h std_helper.h
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h dbaccess.h database_connection.h \
+		database_reader.h row_reader.h DeviceConfigDescription.h \
+		pointtypes.h PointAttribute.h debug_timer.h std_helper.h
 test_device_config.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
-		constants.h numstr.h config_device.h dllbase.h \
-		critical_section.h
+		constants.h numstr.h module_util.h version.h config_device.h \
+		dllbase.h critical_section.h
 #ENDUPDATE#
