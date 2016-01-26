@@ -779,7 +779,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             }
 
                             //Set this group to refresh  (even if it violated constraints)
-                            currentLMGroup->setNextControlTime(refreshRate > 0 ? currentTime+refreshRate : gEndOfCtiTime);
+                            currentLMGroup->setNextRefreshTime(currentTime, refreshRate);
                         }
                     } while( groups_taken < numberOfGroupsToTake );
 
@@ -1389,7 +1389,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
                                 }
                             }
                             //Set this group to refresh again (or not...)
-                            currentLMGroup->setNextControlTime(refreshRate > 0 ? currentTime+refreshRate : gEndOfCtiTime);
+                            currentLMGroup->setNextRefreshTime(currentTime, refreshRate);
                         }
                     }
                 }
@@ -2773,7 +2773,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                             refreshGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             //Set this group to refresh again
-                            currentLMGroup->setNextControlTime(refreshRate > 0 ? CtiTime(CtiTime().seconds()+refreshRate) : gEndOfCtiTime);
+                            currentLMGroup->setNextRefreshTime(CtiTime(CtiTime().seconds(), refreshRate);
                             if( currentGearObject->getPercentReduction() > 0.0 )
                             {
                                 expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
@@ -2883,7 +2883,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             //Set this group to refresh again
-                            currentLMGroup->setNextControlTime(refreshRate > 0 ? CtiTime(CtiTime().seconds()+refreshRate) : gEndOfCtiTime);
+                            currentLMGroup->setNextRefreshTime(CtiTime(CtiTime().seconds(), refreshRate);
                             if( currentGearObject->getPercentReduction() > 0.0 )
                             {
                                 expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
@@ -3757,7 +3757,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                     }
                     // Even if this group violated constraints we want to give it another
                     // chance later so set this group to refresh again
-                    lm_group->setNextControlTime(refresh_rate > 0 ? currentTime+refresh_rate : gEndOfCtiTime);
+                    lm_group->setNextRefreshTime(currentTime, refresh_rate);
 
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {

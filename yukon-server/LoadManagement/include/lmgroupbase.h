@@ -80,6 +80,7 @@ public:
     virtual CtiLMGroupBase& setCurrentHoursAnnually(LONG annually);
     virtual CtiLMGroupBase& setLastControlSent(const CtiTime& controlsent);
     virtual CtiLMGroupBase& setControlCompleteTime(const CtiTime& complete);
+    virtual void            setNextRefreshTime( const CtiTime currentTime, long refreshRate );
     virtual CtiLMGroupBase& setNextControlTime(const CtiTime& controltime);
     virtual CtiLMGroupBase& setLastStopTimeSent(const CtiTime& lastStopTimeSent);  //Currently only maintained by LMGroupDigiSep
     virtual CtiLMGroupBase& setDynamicTimestamp(const CtiTime& timestamp);

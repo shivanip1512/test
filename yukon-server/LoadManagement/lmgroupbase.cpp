@@ -705,6 +705,16 @@ CtiLMGroupBase& CtiLMGroupBase::setControlCompleteTime(const CtiTime& complete)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setNextRefreshTime
+
+    Sets the time when the current group will be controlled next due to refresh.
+    If the refreshRate is 0, the group will receive no futher refreshes.
+---------------------------------------------------------------------------*/
+void CtiLMGroupBase::setNextRefreshTime( const CtiTime currentTime, long refreshRate )
+{
+    setNextControlTime( refreshRate > 0 ? currentTime + refreshRate : gEndOfCtiTime );
+}
 
 /*---------------------------------------------------------------------------
     setNextControlTime
