@@ -34,6 +34,17 @@ INSERT INTO State VALUES(-20, 21, 'Reclose Block', 1, 6, 0);
 /* @error ignore-end */
 /* End YUK-14987 */
 
+/* Start YUK-15030 */
+INSERT INTO JobProperty
+    SELECT (SELECT ISNULL(MAX(JobPropertyId), 0) FROM JobProperty) + ROW_NUMBER() OVER (ORDER BY JobId), T.* 
+    FROM (
+        SELECT JobId, 'daysOffset' as Name, 0 as Value
+        FROM Job j
+        WHERE BeanName = 'scheduledWaterLeakFileExportJobDefinition' and Disabled != 'D'
+          AND NOT EXISTS (SELECT 1 FROM JobProperty WHERE JobId = j.JobId AND Name = 'daysOffset')
+    ) T;
+/* End YUK-15030 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
