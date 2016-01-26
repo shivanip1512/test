@@ -38,8 +38,7 @@ _daily_ops(0),
 _lastStopTimeSent(gInvalidCtiTime),
 _groupcontrolstate(InactiveState),
 _insertDynamicDataFlag(TRUE),
-_internalState(0),
-_singleRefreshSent( false)
+_internalState(0)
 {
 }
 
@@ -51,8 +50,7 @@ _daily_ops(0),
 _lastStopTimeSent(gInvalidCtiTime),
 _groupcontrolstate(InactiveState),
 _insertDynamicDataFlag(TRUE),
-_internalState( 0 ),
-_singleRefreshSent( false )
+_internalState( 0 )
 {
     restore(rdr);
 }
@@ -442,22 +440,6 @@ const string& CtiLMGroupBase::getLastControlString() const
 bool CtiLMGroupBase::readyToControlAt(CtiTime &currentTime) const
 {
     return ( (_next_control_time != gInvalidCtiTime) &&  (currentTime >= _next_control_time) );
-}
-
-/*---------------------------------------------------------------------------
-    Indicate if we've sent a refresh message
----------------------------------------------------------------------------*/
-void CtiLMGroupBase::setSingleRefreshSent( bool sent )
-{
-    _singleRefreshSent=sent;
-}
-
-/*---------------------------------------------------------------------------
-    Have we sent a refresh message
----------------------------------------------------------------------------*/
-bool CtiLMGroupBase::isSingleRefreshSent() const
-{
-    return _singleRefreshSent;
 }
 
 /*---------------------------------------------------------------------------
@@ -1038,7 +1020,6 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _internalState = right._internalState;
         _daily_ops = right._daily_ops;
         _lastStopTimeSent = right._lastStopTimeSent;
-        _singleRefreshSent = right._singleRefreshSent;
     }
 
     return *this;
@@ -1204,7 +1185,6 @@ void CtiLMGroupBase::restore(Cti::RowReader &rdr)
 
         _insertDynamicDataFlag = TRUE;
         setDirty(true);
-        setSingleRefreshSent( false );
     }
 
     setHoursDailyPointId(0);

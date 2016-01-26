@@ -779,7 +779,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             }
 
                             //Set this group to refresh  (even if it violated constraints)
-                            currentLMGroup->setNextControlTime(currentTime+refreshRate);
+                            currentLMGroup->setNextControlTime(refreshRate > 0 ? currentTime+refreshRate : gEndOfCtiTime);
                         }
                     } while( groups_taken < numberOfGroupsToTake );
 
@@ -1388,8 +1388,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
                                     }
                                 }
                             }
-                            //Set this group to refresh again
-                            currentLMGroup->setNextControlTime(currentTime+refreshRate);
+                            //Set this group to refresh again (or not...)
+                            currentLMGroup->setNextControlTime(refreshRate > 0 ? currentTime+refreshRate : gEndOfCtiTime);
                         }
                     }
                 }
@@ -2773,7 +2773,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                             refreshGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             //Set this group to refresh again
-                            currentLMGroup->setNextControlTime(CtiTime(CtiTime().seconds()+refreshRate));
+                            currentLMGroup->setNextControlTime(refreshRate > 0 ? CtiTime(CtiTime().seconds()+refreshRate) : gEndOfCtiTime);
                             if( currentGearObject->getPercentReduction() > 0.0 )
                             {
                                 expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
@@ -2883,7 +2883,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             //Set this group to refresh again
-                            currentLMGroup->setNextControlTime(CtiTime(CtiTime().seconds()+refreshRate));
+                            currentLMGroup->setNextControlTime(refreshRate > 0 ? CtiTime(CtiTime().seconds()+refreshRate) : gEndOfCtiTime);
                             if( currentGearObject->getPercentReduction() > 0.0 )
                             {
                                 expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
@@ -3728,27 +3728,22 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                             shed_time = oldShedTime;
                         }
 
-                        // send only one message if our refresh rate is 0
-                        if( refresh_rate != 0 || !lm_group->isSingleRefreshSent() )
-                        {
-                            CtiRequestMsg* requestMsg = lm_group->createTimeRefreshRequestMsg( refresh_rate, shed_time, defaultLMRefreshPriority );
-                            lm_group->setSingleRefreshSent(true);
+                        CtiRequestMsg* requestMsg = lm_group->createTimeRefreshRequestMsg( refresh_rate, shed_time, defaultLMRefreshPriority );
 
-                            // If this group is inactive then we must be starting control...?
-                            // This is important so that max control duration type constraints work -
-                            // If this group is ramping in, lets start control,
-                            // otherwise it is just a regular refresh
-                            if( lm_group->getGroupControlState() == CtiLMGroupBase::InactiveState ||
-                                lm_group->getIsRampingIn() )
-                            {
-                                startGroupControl( lm_group, requestMsg, multiPilMsg );
-                            }
-                            else
-                            {
-                                refreshGroupControl( lm_group, requestMsg, multiPilMsg );
-                            }
-                            returnBoolean = TRUE;
+                        // If this group is inactive then we must be starting control...?
+                        // This is important so that max control duration type constraints work -
+                        // If this group is ramping in, lets start control,
+                        // otherwise it is just a regular refresh
+                        if( lm_group->getGroupControlState() == CtiLMGroupBase::InactiveState ||
+                            lm_group->getIsRampingIn() )
+                        {
+                            startGroupControl( lm_group, requestMsg, multiPilMsg );
                         }
+                        else
+                        {
+                            refreshGroupControl( lm_group, requestMsg, multiPilMsg );
+                        }
+                        returnBoolean = TRUE;
                     }
                     else
                     {
@@ -3762,7 +3757,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                     }
                     // Even if this group violated constraints we want to give it another
                     // chance later so set this group to refresh again
-                    lm_group->setNextControlTime(currentTime+refresh_rate);
+                    lm_group->setNextControlTime(refresh_rate > 0 ? currentTime+refresh_rate : gEndOfCtiTime);
 
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
@@ -5698,7 +5693,6 @@ void CtiLMProgramDirect::ResetGroups()
     {
         CtiLMGroupPtr lm_group  = *i;
         lm_group->setNextControlTime(reset_time);
-        lm_group->setSingleRefreshSent( false );
         lm_group->resetGroupControlState();
         lm_group->resetInternalState();
     }
@@ -5763,7 +5757,6 @@ void CtiLMProgramDirect::RampInGroups(CtiTime currentTime, CtiLMProgramDirectGea
 
                 lm_group->setIsRampingIn(true);
                 lm_group->setNextControlTime(ctrl_time);
-                lm_group->setSingleRefreshSent( false );
 
                 // Mark the last group ramped in in the first set of
                 // ramped in groups as this programs last group controlled
@@ -5846,7 +5839,6 @@ double  CtiLMProgramDirect::StartMasterCycle(CtiTime currentTime, CtiLMProgramDi
                 if( lm_group.get() != NULL )
                 {
                     lm_group->setNextControlTime(ctrl_time);
-                    lm_group->setSingleRefreshSent( false );
                 }
                 else
                 {

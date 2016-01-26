@@ -60,10 +60,6 @@ public:
     virtual const std::string& getLastControlString() const;
     virtual bool readyToControlAt(CtiTime &currentTime) const;
 
-    // Give me a ping, Vasili. One ping only, please.
-    void setSingleRefreshSent(bool sent);
-    bool isSingleRefreshSent() const;
-
     unsigned getInternalState() const;
 
     virtual CtiLMGroupBase& setPAOId(LONG id);
@@ -192,9 +188,6 @@ private:
     //don't stream
     LONG _controlstatuspointid;
     std::string _lastcontrolstring;
-
-    bool _singleRefreshSent;
-
 };
 
 typedef boost::shared_ptr<CtiLMGroupBase> CtiLMGroupPtr;
