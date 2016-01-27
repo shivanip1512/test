@@ -313,8 +313,20 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         data.setAdmin(settings.getAdmin());
         data.setSuperAdmin(settings.getSuperAdmin());
-        data.setUpdateServerUrl(settings.getUpdateServerUrl());
-        data.setUpdateServerLogin(settings.getUpdateServerLogin());
+        
+        if (settings.isUseDefault()) {
+            String updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+            Authentication updateServerAuth = new Authentication();
+            updateServerAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
+            updateServerAuth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
+            
+            data.setUpdateServerUrl(updateServerUrl);
+            data.setUpdateServerLogin(updateServerAuth);
+        } else {
+            data.setUpdateServerUrl(settings.getUpdateServerUrl());
+            data.setUpdateServerLogin(settings.getUpdateServerLogin());
+        }
+        
         request.setData(data);
         
         return request;

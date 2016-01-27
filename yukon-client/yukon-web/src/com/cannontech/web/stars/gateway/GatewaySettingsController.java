@@ -108,7 +108,7 @@ public class GatewaySettingsController {
             @ModelAttribute("settings") GatewaySettings settings,
             BindingResult result) {
         
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        settings.setUseDefault(true);
         
         validator.validate(settings, result);
         
@@ -118,6 +118,7 @@ public class GatewaySettingsController {
             return "gateways/settings.jsp";
         }
         
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         try {
             RfnDevice gateway = rfnGatewayService.createGateway(settings, userContext.getYukonUser());
             log.info("Gateway Created: " + gateway);
@@ -196,6 +197,8 @@ public class GatewaySettingsController {
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.EDIT);
+            boolean updateServerCompatability = nmConfigurationService.isFirmwareUpdateSupported();
+            model.addAttribute("updateServerCompatability", updateServerCompatability);
             return "gateways/settings.jsp";
         }
         
