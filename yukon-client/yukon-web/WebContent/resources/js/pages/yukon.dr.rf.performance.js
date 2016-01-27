@@ -28,9 +28,9 @@ yukon.dr.rf.performance = (function () {
                 if ($(this).hasClass('js-success')) {
                     url += '/success/';
                 } else if ($(this).hasClass('js-failed')){
-                    url += '/failed/';
+                    url += '/missed/';
                 } else {
-                    url += '/unknown/';
+                    url += '/unreported/';
                     hasChart = true;
                 }
                 url += $(this).data('test');

@@ -581,8 +581,8 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.rf.details.eventTime">Event Time</entry>
 <entry key="yukon.web.modules.dr.rf.details.results">Results</entry>
 <entry key="yukon.web.modules.dr.rf.details.showUnreported">Show Unreported</entry>
-<entry key="yukon.web.modules.dr.rf.details.showSuccess">Show Success</entry>
-<entry key="yukon.web.modules.dr.rf.details.showMissed">Show Missed</entry>
+<entry key="yukon.web.modules.dr.rf.details.showSuccess">Show Confirmed Success</entry>
+<entry key="yukon.web.modules.dr.rf.details.showMissed">Show Confirmed Missed</entry>
 <entry key="yukon.web.modules.dr.rf.details.device">Device</entry>
 <entry key="yukon.web.modules.dr.rf.details.accountNo">Account No.</entry>
 <entry key="yukon.web.modules.dr.rf.details.unknownType">Current Status</entry>
@@ -592,19 +592,19 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.rf.details.action.unknown.description">RF Performance (Unknown)</entry>
 <entry key="yukon.web.modules.dr.rf.details.action.failed.description">RF Performance (Failed)</entry>
 <entry key="yukon.web.modules.dr.rf.details.action.success.description">RF Performance (Successful)</entry>
-<entry key="yukon.web.modules.dr.rf.details.failed.popup.title">Failed Devices ({0})</entry>
-<entry key="yukon.web.modules.dr.rf.details.unknown.popup.title">Unknown Devices ({0})</entry>
-<entry key="yukon.web.modules.dr.rf.details.success.popup.title">Successful Devices ({0})</entry>
+<entry key="yukon.web.modules.dr.rf.details.missed.popup.title">Confirmed Missed Devices ({0})</entry>
+<entry key="yukon.web.modules.dr.rf.details.unreported.popup.title">Unreported Devices ({0})</entry>
+<entry key="yukon.web.modules.dr.rf.details.success.popup.title">Confirmed Success Devices ({0})</entry>
 <entry key="yukon.web.modules.dr.rf.details.rfPerformanceResult">RF Broadcast Performance Result</entry>
-<entry key="yukon.web.modules.dr.rf.details.helpText"><![CDATA[Success / Green : 
+<entry key="yukon.web.modules.dr.rf.details.helpText"><![CDATA[Confirmed Success / Green : 
 <br>
 The devices in this category have confirmed receiving the unique Broadcast Peak Performance message for the selected day
 <br><br>
-Failed / Orange :
+Confirmed Missed / Orange :
 <br>
 The devices in this category have reported all other data accumulated during the expected Broadcast Peak Performance time interval and have not confirmed receiving the selected day's unique message.
 <br><br>
-Unknown / Gray :
+Unreported / Gray :
 <br>
 The devices in this category have not reported data accumulated during the expected Broadcast Peak Performance time interval for the selected day.
 ]]></entry>
