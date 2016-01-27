@@ -103,6 +103,63 @@ bool CtiDeviceBase::executeBackgroundRequest(const std::string &commandString, c
     return beginExecuteRequestFromTemplate(&req, parse, unused, unused, outList, &OutMessageTemplate) == ClientErrors::None;
 }
 
+bool CtiDeviceBase::executeAuxiliaryRequest(const std::string &commandString, const CtiRequestMsg &originalRequest, OutMessageList &outList, CtiMessageList &retList)
+{
+    CtiMessageList unused;
+    OutMessageList tmpOutList;
+
+    CtiRequestMsg req(originalRequest);
+
+    //  ConnectionHandle isn't copied by the copy constructor
+    req.setConnectionHandle(originalRequest.getConnectionHandle());
+    req.setCommandString(commandString);
+
+    CtiCommandParser parse(req.CommandString());
+
+    if( beginExecuteRequest(&req, parse, unused, retList, tmpOutList) != ClientErrors::None )
+    {
+        return false;
+    }
+
+    if( tmpOutList.size() != 1 )
+    {
+        Cti::FormattedList l;
+
+        l.add("Message count") << tmpOutList.size();
+        l.add("Command string") << commandString;
+
+        CTILOG_WARN(dout, "Auxiliary request failed" << l);
+
+        return false;
+    }
+
+    //  Ideally, this would set a flag in PIL_ECHO that could be checked by resumeAfterAuxiliaryRequest(), but I'm hesitant to add things to PIL_ECHO.
+
+    //  Overwrite the command string so the request can be resumed by resumeAfterAuxiliaryRequest
+    strcpy_s(tmpOutList.front()->Request.CommandStr, originalRequest.CommandString().c_str());
+
+    outList.push_back(tmpOutList.front());
+
+    return true;
+}
+
+void CtiDeviceBase::resumeAfterAuxiliaryRequest(const INMESS &InMessage, OutMessageList &outList, CtiMessageList &retList, CtiMessageList &vgList)
+{
+    CtiRequestMsg newReq(getID(),
+        InMessage.Return.CommandStr,
+        InMessage.Return.UserID,
+        InMessage.Return.GrpMsgID,
+        getRouteID(),
+        selectInitialMacroRouteOffset(getRouteID()),  //  this bypasses PIL, so we need to calculate this
+        0,
+        0,
+        InMessage.Priority);
+
+    newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+
+    beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+}
+
 YukonError_t CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
                                                             CtiCommandParser &parse,
                                                             CtiMessageList &vgList,

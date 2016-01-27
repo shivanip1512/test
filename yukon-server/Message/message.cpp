@@ -115,6 +115,7 @@ CtiMessage& CtiMessage::operator=(const CtiMessage& aRef)
       _usr              = aRef.getUser();
       _token            = aRef.getToken();
       _src              = aRef.getSource();
+      //  Note that ConnectionHandle is NOT copied
    }
 
    return *this;

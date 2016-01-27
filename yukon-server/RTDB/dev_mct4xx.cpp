@@ -560,16 +560,19 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                             ClientErrors::NoMethod,
                             OutMessage->Request));
             }
-            else if( ! hasChannelConfig(request_channel) )
+            else if( needsChannelConfig(request_channel) )
             {
-                if( found = requestChannelConfig(request_channel, *OutMessage, outList) )
+                appendMsgTo(retList, makeReturnMsg(
+                    "Command requires channel configuration, but it has not been stored.  Attempting to retrieve it automatically.",
+                    ClientErrors::NeedsChannelConfig,
+                    OutMessage->Request,
+                    ExpectMore::True));
+
+                if( requestChannelConfig(request_channel, *pReq, outList, retList) )
                 {
                     OutMessPtrDeleter d(OutMessage);
 
-                    return appendMsgTo(retList, makeReturnMsg(
-                                "Command requires channel configuration, but it has not been stored.  Attempting to retrieve it automatically, please retry command.",
-                                ClientErrors::NeedsChannelConfig,
-                                OutMessage->Request));
+                    return ExecutionComplete;
                 }
             }
             else
@@ -834,10 +837,21 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                                                 OutMessage->Request));
                                 }
 
+                                const auto blocks = (_llpRequest.end - _llpRequest.begin) / block_len;
+
+                                //  This is parsed by the web server to determine how many messages to expect from us
+                                appendMsgTo(retList, makeReturnMsg(
+                                            "Reading " + std::to_string(blocks) + " blocks",
+                                            ClientErrors::None,
+                                            OutMessage->Request,
+                                            ExpectMore::True));
+
                                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time,         _llpInterest.time);
                                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel,      _llpInterest.channel + 1);
                                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin, _llpRequest.begin);
                                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd,   _llpRequest.end);
+
+                                return ClientErrors::None;
                             }
                         }
                     }

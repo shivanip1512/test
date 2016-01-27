@@ -90,9 +90,9 @@ public:
     virtual LONG getLoadProfileInterval(unsigned channel) override
         {  return test_loadProfileInterval;  }
 
-    bool test_hasChannelConfig = true;
-    virtual bool hasChannelConfig(const unsigned channel) const override
-        {  return test_hasChannelConfig;  }
+    bool test_needsChannelConfig = false;
+    virtual bool needsChannelConfig(const unsigned channel) const override
+        {  return test_needsChannelConfig;  }
 
     bool test_isSupported_Mct410Feature_HourlyKwh() const
             {  return isSupported(Feature_HourlyKwh);  }
@@ -3154,7 +3154,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         test_Mct410IconDevice mct410;
 
-        mct410.test_hasChannelConfig = false;
+        mct410.test_needsChannelConfig = true;
 
         CtiCommandParser parse("getvalue lp channel 1 3/17/2011");
 

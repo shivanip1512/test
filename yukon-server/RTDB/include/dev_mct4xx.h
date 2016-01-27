@@ -251,8 +251,8 @@ protected:
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, long interval_len, const unsigned char *buf, unsigned len) = 0;
 
-    virtual bool hasChannelConfig    (const unsigned channel) const                                                {  return true;  }
-    virtual bool requestChannelConfig(const unsigned channel, const OUTMESS &OutMessage, OutMessageList &outList)  {  return false;  }
+    virtual bool needsChannelConfig  (const unsigned channel) const  {  return false;  }
+    virtual bool requestChannelConfig(const unsigned channel, const CtiRequestMsg &originalRequest, OutMessageList &outList, CtiMessageList &vgList)  {  return false;  }
 
     virtual ConfigPartsList getPartsList() = 0;
 

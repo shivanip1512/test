@@ -160,8 +160,8 @@ class IM_EX_DEVDB Mct470Device : public Mct4xxDevice
     long       getLoadProfileInterval( unsigned channel );
     point_info getLoadProfileData    ( unsigned channel, long interval_len, const unsigned char *buf, unsigned len );
 
-    virtual bool hasChannelConfig    (const unsigned channel) const;
-    virtual bool requestChannelConfig(const unsigned channel, const OUTMESS &OutMessage, OutMessageList &outList);
+    bool needsChannelConfig  (const unsigned channel) const override;
+    bool requestChannelConfig(const unsigned channel, const CtiRequestMsg &originalRequest, OutMessageList &outList, CtiMessageList &retList) override;
 
     virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
 

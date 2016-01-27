@@ -15,7 +15,7 @@
 
 #include <string>
 
-#include <boost/assign/list_of.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/make_shared.hpp>
 
 using namespace Cti::Protocols;
@@ -26,7 +26,6 @@ using std::list;
 using std::pair;
 using std::vector;
 using std::make_pair;
-using boost::assign::list_of;
 
 namespace Cti {
 namespace Devices {
@@ -765,27 +764,27 @@ bool Mct470Device::isIedChannel(unsigned channel) const
 }
 
 
-bool Mct470Device::hasChannelConfig(const unsigned channel) const
+bool Mct470Device::needsChannelConfig(const unsigned channel) const
 {
     if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
     {
         if( isIedChannel(channel) )
         {
-            return hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval);
+            return ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval);
         }
         else
         {
-            return true;
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
 
-bool Mct470Device::requestChannelConfig(const unsigned channel, const OUTMESS &OutMessage, OutMessageList &outList)
+bool Mct470Device::requestChannelConfig(const unsigned channel, const CtiRequestMsg &originalRequest, OutMessageList &outList, CtiMessageList &retList)
 {
-    return executeBackgroundRequest("getconfig channels", OutMessage, outList);
+    return executeAuxiliaryRequest("getconfig channels", originalRequest, outList, retList);
 }
 
 
@@ -1443,35 +1442,35 @@ Mct470Device::DecodeMapping Mct470Device::initDecodeLookup()
 {
     namespace EP = EmetconProtocol;
 
-    return boost::assign::map_list_of
-        (EP::GetConfig_ChannelSetup,     &Self::decodeGetConfigChannelSetup)
-        (EP::GetConfig_IEDDNP,           &Self::decodeGetConfigIED)
-        (EP::GetConfig_IEDDNPAddress,    &Self::decodeGetConfigIedDnpAddress)
-        (EP::GetConfig_IEDScan,          &Self::decodeGetConfigIED)
-        (EP::GetConfig_IEDTime,          &Self::decodeGetConfigIED)
-        (EP::GetConfig_Intervals,        &Self::decodeGetConfigIntervals)
-        (EP::GetConfig_Model,            &Self::decodeGetConfigModel)
-        (EP::GetConfig_Multiplier,       &Self::decodeGetConfigMultiplier)
+    return {
+        { EP::GetConfig_ChannelSetup,     &Self::decodeGetConfigChannelSetup },
+        { EP::GetConfig_IEDDNP,           &Self::decodeGetConfigIED },
+        { EP::GetConfig_IEDDNPAddress,    &Self::decodeGetConfigIedDnpAddress },
+        { EP::GetConfig_IEDScan,          &Self::decodeGetConfigIED },
+        { EP::GetConfig_IEDTime,          &Self::decodeGetConfigIED },
+        { EP::GetConfig_Intervals,        &Self::decodeGetConfigIntervals },
+        { EP::GetConfig_Model,            &Self::decodeGetConfigModel },
+        { EP::GetConfig_Multiplier,       &Self::decodeGetConfigMultiplier },
         // ---
-        (EP::GetStatus_IEDDNP,           &Self::decodeGetStatusDNP)
-        (EP::GetStatus_Internal,         &Self::decodeGetStatusInternal)
-        (EP::GetStatus_LoadProfile,      &Self::decodeGetStatusLoadProfile)
+        { EP::GetStatus_IEDDNP,           &Self::decodeGetStatusDNP },
+        { EP::GetStatus_Internal,         &Self::decodeGetStatusInternal },
+        { EP::GetStatus_LoadProfile,      &Self::decodeGetStatusLoadProfile },
         // ---
-        (EP::GetValue_Demand,            &Self::decodeGetValueDemand)
-        (EP::GetValue_FrozenKWH,         &Self::decodeGetValueKWH)
-        (EP::GetValue_FrozenPeakDemand,  &Self::decodeGetValueMinMaxDemand)
-        (EP::GetValue_IED,               &Self::decodeGetValueIED)
-        (EP::GetValue_IEDDemand,         &Self::decodeGetValueIED)
-        (EP::GetValue_KWH,               &Self::decodeGetValueKWH)
-        (EP::GetValue_LoadProfile,       &Self::decodeGetValueLoadProfile)
-        (EP::GetValue_PeakDemand,        &Self::decodeGetValueMinMaxDemand)
-        (EP::GetValue_PhaseCurrent,      &Self::decodeGetValuePhaseCurrent)
+        { EP::GetValue_Demand,            &Self::decodeGetValueDemand },
+        { EP::GetValue_FrozenKWH,         &Self::decodeGetValueKWH },
+        { EP::GetValue_FrozenPeakDemand,  &Self::decodeGetValueMinMaxDemand },
+        { EP::GetValue_IED,               &Self::decodeGetValueIED },
+        { EP::GetValue_IEDDemand,         &Self::decodeGetValueIED },
+        { EP::GetValue_KWH,               &Self::decodeGetValueKWH },
+        { EP::GetValue_LoadProfile,       &Self::decodeGetValueLoadProfile },
+        { EP::GetValue_PeakDemand,        &Self::decodeGetValueMinMaxDemand },
+        { EP::GetValue_PhaseCurrent,      &Self::decodeGetValuePhaseCurrent },
         // ---
-        (EP::PutConfig_PrecannedTable,   &Self::decodePutConfig)
+        { EP::PutConfig_PrecannedTable,   &Self::decodePutConfig },
         // ---
-        (EP::Scan_Accum,                 &Self::decodeGetValueKWH)
-        (EP::Scan_Integrity,             &Self::decodeGetValueDemand)
-        (EP::Scan_LoadProfile,           &Self::decodeScanLoadProfile);
+        { EP::Scan_Accum,                 &Self::decodeGetValueKWH },
+        { EP::Scan_Integrity,             &Self::decodeGetValueDemand },
+        { EP::Scan_LoadProfile,           &Self::decodeScanLoadProfile }};
 }
 
 
@@ -2482,14 +2481,14 @@ YukonError_t Mct470Device::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
 
 boost::optional<Mct470Device::IED_Types> Mct470Device::tryFindIedTypeInCommandString(const string &commandString)
 {
-    static const std::map<string, IED_Types> IedResetNames = boost::assign::map_list_of
-        (" alpha",    IED_Type_Alpha_PP)
-        (" s4",       IED_Type_LG_S4)
-        (" a3",       IED_Type_Alpha_A3)
-        (" sentinel", IED_Type_Sentinel)
-        (" kv2c",     IED_Type_GE_kV2c)
-        (" kv2",      IED_Type_GE_kV2)
-        (" kv",       IED_Type_GE_kV);
+    static const std::map<string, IED_Types> IedResetNames = {
+        { " alpha",    IED_Type_Alpha_PP },
+        { " s4",       IED_Type_LG_S4 },
+        { " a3",       IED_Type_Alpha_A3 },
+        { " sentinel", IED_Type_Sentinel },
+        { " kv2c",     IED_Type_GE_kV2c },
+        { " kv2",      IED_Type_GE_kV2 },
+        { " kv",       IED_Type_GE_kV }};
 
     for each( const std::pair<string, IED_Types> iedTypeName in IedResetNames )
     {
@@ -2532,46 +2531,46 @@ boost::optional<Mct470Device::IED_Types> Mct470Device::tryDetermineIedTypeFromDe
     //  we must be an MCT-430 - try to match it up by devicetype
     typedef std::map<int, IED_Types> DeviceTypeToIedType;
 
-    static const DeviceTypeToIedType IedDeviceTypes = boost::assign::map_list_of
-        (TYPEMCT430A,   IED_Type_Alpha_PP)
-        (TYPEMCT430S4,  IED_Type_LG_S4)
-        (TYPEMCT430A3,  IED_Type_Alpha_A3)
-        (TYPEMCT430SL,  IED_Type_Sentinel);
+    static const DeviceTypeToIedType IedDeviceTypes = {
+        { TYPEMCT430A,   IED_Type_Alpha_PP },
+        { TYPEMCT430S4,  IED_Type_LG_S4 },
+        { TYPEMCT430A3,  IED_Type_Alpha_A3 },
+        { TYPEMCT430SL,  IED_Type_Sentinel }};
 
     return mapFind(IedDeviceTypes, deviceType);
 }
 
 
 const Mct470Device::IedTypesToCommands
-    Mct470Device::ResetCommandsByIedType = boost::assign::map_list_of
-        (IED_Type_Alpha_PP, IedResetCommand
-            (FuncWrite_IEDCommand, list_of
+    Mct470Device::ResetCommandsByIedType = {
+        { IED_Type_Alpha_PP, IedResetCommand
+            { FuncWrite_IEDCommand,
                 //  SPID, meter type, meter num, function Alpha reset
-                (0xff)(IED_Type_Alpha_PP)(0)(1)))
-        (IED_Type_LG_S4, IedResetCommand
-            (FuncWrite_IEDCommand, list_of
+                { 0xff, IED_Type_Alpha_PP, 0, 1 }}},
+        { IED_Type_LG_S4, IedResetCommand
+            { FuncWrite_IEDCommand,
                 //  SPID, meter type, meter num, function S4 reset
-                (0xff)(IED_Type_LG_S4)   (0)(0x2b)))
-        (IED_Type_Alpha_A3, IedResetCommand
-            (FuncWrite_IEDCommandWithData, list_of
+                { 0xff, IED_Type_LG_S4,    0, 0x2b}}},
+        { IED_Type_Alpha_A3, IedResetCommand
+            { FuncWrite_IEDCommandWithData,
                 //  SPID, meter type, meter num, command, data length, demand reset bit set
-                (0xff)(IED_Type_Alpha_A3)(0)(9)(1)(1)))
-        (IED_Type_GE_kV2c, IedResetCommand
-            (FuncWrite_IEDCommandWithData, list_of
+                { 0xff, IED_Type_Alpha_A3, 0, 9, 1, 1 }}},
+        { IED_Type_GE_kV2c, IedResetCommand
+            { FuncWrite_IEDCommandWithData,
                 //  SPID, meter type, meter num, command, data length, demand reset bit set
-                (0xff)(IED_Type_GE_kV2c) (0)(9)(1)(1)))
-        (IED_Type_GE_kV2, IedResetCommand
-            (FuncWrite_IEDCommandWithData, list_of
+                { 0xff, IED_Type_GE_kV2c, 0, 9, 1, 1 }}},
+        { IED_Type_GE_kV2, IedResetCommand
+            { FuncWrite_IEDCommandWithData,
                 //  SPID, meter type, meter num, command, data length, demand reset bit set
-                (0xff)(IED_Type_GE_kV2)  (0)(9)(1)(1)))
-        (IED_Type_GE_kV, IedResetCommand
-            (FuncWrite_IEDCommandWithData, list_of
+                { 0xff, IED_Type_GE_kV2,  0, 9, 1, 1 }}},
+        { IED_Type_GE_kV, IedResetCommand
+            { FuncWrite_IEDCommandWithData,
                 //  SPID, meter type, meter num, command, data length, demand reset bit set
-                (0xff)(IED_Type_GE_kV)   (0)(9)(1)(1)))
-        (IED_Type_Sentinel, IedResetCommand
-            (FuncWrite_IEDCommandWithData, list_of
+                { 0xff, IED_Type_GE_kV,   0, 9, 1, 1 }}},
+        { IED_Type_Sentinel, IedResetCommand
+            { FuncWrite_IEDCommandWithData,
                 //  SPID, meter type, meter num, command, data length, demand reset bit set
-                (0xff)(IED_Type_Sentinel)(0)(9)(1)(1)));
+                { 0xff, IED_Type_Sentinel, 0, 9, 1, 1}}}};
 
 
 YukonError_t Mct470Device::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
@@ -5227,50 +5226,49 @@ string Mct470Device::describeChannel(unsigned char channel_config) const
 
 YukonError_t Mct470Device::decodeGetConfigChannelSetup(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    YukonError_t status = ClientErrors::None;
+    const auto &response = InMessage.Buffer.DSt.Message;
 
-    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
+    string result_string;
 
-    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    string result_string, dynamic_info;
-
-    result_string += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[4]) + " minutes\n";
-    result_string += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[5]) + " minutes\n";
-    result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(DSt->Message[6]) + " minutes\n";
+    result_string += getName() + " / Load Profile Interval 1: " + CtiNumStr(response[4]) + " minutes\n";
+    result_string += getName() + " / Load Profile Interval 2: " + CtiNumStr(response[5]) + " minutes\n";
+    result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(response[6]) + " minutes\n";
 
     for( int i = 0; i < ChannelCount; i++ )
     {
         result_string += getName() + " / LP Channel " + CtiNumStr(i+1) + " config: ";
 
-        result_string += describeChannel(DSt->Message[i]) + "\n";
+        result_string += describeChannel(response[i]) + "\n";
     }
 
-    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
+    auto ReturnMsg = std::make_unique<CtiReturnMsg>(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
-    ReturnMsg->setResultString(result_string.c_str());
+    ReturnMsg->setResultString(result_string);
 
-    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList);
 
-    return status;
+    //  If this was originally a load profile command, resume the original command now that we have the channel info
+    if( boost::algorithm::istarts_with(InMessage.Return.CommandStr, "getvalue lp ") )
+    {
+        resumeAfterAuxiliaryRequest(InMessage, outList, retList, vgList);
+    }
+
+    return ClientErrors::None;
 }
 
 
 YukonError_t Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    YukonError_t status = ClientErrors::None;
-
-    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
+    const auto& response = InMessage.Buffer.DSt.Message;
 
     string sspec;
     string options;
     int ssp, rev;
-    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
+    ssp = response[0];
+    ssp |= response[4] << 8;
 
-    ssp  = InMessage.Buffer.DSt.Message[0];
-    ssp |= InMessage.Buffer.DSt.Message[4] << 8;
-
-    rev  = (unsigned)InMessage.Buffer.DSt.Message[1];
+    rev = (unsigned)response[1];
 
     //  convert 10 to 1.0, 24 to 2.4
     sspec  = "Software Specification " + CtiNumStr(ssp) + "  Rom Revision " + CtiNumStr(((double)rev) / 10.0, 1);
@@ -5286,7 +5284,7 @@ YukonError_t Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const C
         sspec += "\n";
     }
 
-    options += "Connected Meter: " + resolveIEDName(DSt->Message[3] >> 4) + "\n";
+    options += "Connected Meter: " + resolveIEDName(response[3] >> 4) + "\n";
 
     if( InMessage.Buffer.DSt.Message[3] & 0x04 )
     {
@@ -5294,16 +5292,16 @@ YukonError_t Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const C
     }
 
     options += "DST ";
-    options += (InMessage.Buffer.DSt.Message[3] & 0x01)?"enabled\n":"disabled\n";
+    options += (response[3] & 0x01) ? "enabled\n" : "disabled\n";
 
-    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
+    auto ReturnMsg = std::make_unique<CtiReturnMsg>(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( sspec + options );
 
     decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
-    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList);
 
-    return status;
+    return ClientErrors::None;
 }
 
 YukonError_t Mct470Device::decodeGetConfigMultiplier(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)

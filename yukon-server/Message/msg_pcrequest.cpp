@@ -163,7 +163,8 @@ CtiRequestMsg& CtiRequestMsg::operator=(const CtiRequestMsg& aRef)
 
  if(this != &aRef)
  {
-    Inherited::operator=(aRef);
+     //  Note that Inherited::ConnectionHandle is NOT copied
+     Inherited::operator=(aRef);
 
     _device_id          = aRef.DeviceId();
     _command_string     = aRef.CommandString();

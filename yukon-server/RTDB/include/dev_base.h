@@ -163,6 +163,8 @@ public:
     virtual YukonError_t ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     bool executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList);
+    bool executeAuxiliaryRequest(const std::string &commandString, const CtiRequestMsg &originalRequest, OutMessageList &outList, CtiMessageList &retList);
+    void resumeAfterAuxiliaryRequest(const INMESS &InMessage, OutMessageList &outList, CtiMessageList &retList, CtiMessageList &vgList);
 
     virtual YukonError_t invokeDeviceHandler(Cti::Devices::DeviceHandler &handler);
 
