@@ -146,6 +146,7 @@ public class PointController {
         model.addAttribute("isScalarType", base instanceof ScalarPoint);
         model.addAttribute("isStatusType", base instanceof StatusPoint);
         model.addAttribute("isCalcType", base instanceof CalcStatusPoint || base instanceof CalculatedPoint);
+        model.addAttribute("isCalcStatusPoint", base instanceof CalcStatusPoint);
         model.addAttribute("isStatusPoint", base instanceof StatusPoint && !(base instanceof CalcStatusPoint));
         model.addAttribute("isAnalogPoint", base instanceof AnalogPoint);
         model.addAttribute("isAccumulatorPoint", base instanceof AccumulatorPoint);

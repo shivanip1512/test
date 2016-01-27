@@ -99,7 +99,7 @@
 
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
 
-                        <c:if test="${isStatusPoint}">
+                        <c:if test="${isStatusPoint || isCalcStatusPoint}">
                         <tags:nameValue2 nameKey=".archive">
 
                             <div class="button-group">
