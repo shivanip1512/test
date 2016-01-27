@@ -27,7 +27,6 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoAdapter;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ScheduledExecutorMock;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
@@ -135,50 +134,6 @@ public class LongLoadProfileServiceImplTest {
         porterConnection = new PorterConnection();
         serviceDebug.setPorterConnection(porterConnection);
         serviceDebug.initialize();
-
-        ReflectionTestUtils.setField(serviceDebug, "dbPersistentDao", new DBPersistentDao(){
-            @Override
-            public void performDBChange(DBPersistent item, int transactionType) {
-                // for test case
-            }
-
-            @Override
-            public DBPersistent retrieveDBPersistent(LiteBase liteObject) {
-                    return new MCTBase(PaoType.MCT410IL){
-                        @Override
-                        public DeviceLoadProfile getDeviceLoadProfile() {
-                           
-                            DeviceLoadProfile dlp = new DeviceLoadProfile();
-                            
-                            dlp.setLoadProfileCollection("YYYY");
-                            dlp.setLoadProfileDemandRate(900);
-                            dlp.setVoltageDmdRate(900);
-                            return dlp;
-                        }
-                    
-                    };
-            }
-
-            @Override
-			public void performDBChangeWithNoMsg(List<DBPersistent> items, TransactionType transactionType) {
-                // for test case
-			}
-
-            @Override
-            public void performDBChangeWithNoMsg(DBPersistent dbPersistent, TransactionType transactionType) {
-                // for test case
-            }
-            
-            @Override
-            public void performDBChange(DBPersistent item, TransactionType transactionType) throws PersistenceException {
-                // for test case
-            }
-
-            @Override
-            public DBPersistent retrieveDBPersistent(DBPersistent dbPersistent) {
-                return null;
-            }            
-        });
 
         ReflectionTestUtils.setField(serviceDebug, "dateFormattingService", new DateFormattingServiceImpl());
         ReflectionTestUtils.setField(serviceDebug, "systemDateFormattingService", new SystemDateFormattingServiceImpl() {

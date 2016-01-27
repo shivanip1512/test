@@ -137,7 +137,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         long requestId = random.nextInt();
         req.setUserMessageID(requestId);
         
-        expectedReturnCount.put(requestId, 100L);  //  placeholder, will be replaced by Porter's return value
+        //  expectedReturnCount is populated by Porter's return value
         receivedReturnsCount.put(requestId, 0L);
         
         // setup profile request info
@@ -392,10 +392,14 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             boolean finished = returnMsg.getExpectMore() == 0;
             if (!finished) {
             
-                Matcher m = blockCount.matcher(returnMsg.getResultString());
-                
-                if (m.find()) {
-                    expectedReturnCount.put(requestId, Long.parseLong(m.group(1)));
+                if (!expectedReturnCount.containsKey(requestId)) {
+                    if (returnMsg.getResultString() != null) {
+                        Matcher m = blockCount.matcher(returnMsg.getResultString());
+                        
+                        if (m.find()) {
+                            expectedReturnCount.put(requestId, Long.parseLong(m.group(1)));
+                        }
+                    }
                 }
                 
             } else {
