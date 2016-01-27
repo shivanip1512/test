@@ -2,7 +2,6 @@ package com.cannontech.core.service.impl;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +11,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
@@ -32,7 +33,6 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.service.ActivityLoggerService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LoadProfileService;
@@ -42,11 +42,8 @@ import com.cannontech.core.service.PorterQueueDataService;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.activity.ActivityLogActions;
-import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -57,9 +54,9 @@ import com.cannontech.yukon.BasicServerConnection;
 public class LoadProfileServiceImpl implements LoadProfileService {
     private final static Logger log = YukonLogManager.getLogger(LoadProfileServiceImpl.class);
     private final static Random random = new Random();
+    private final static Pattern blockCount = Pattern.compile("Reading (\\d+) blocks");
 
     @Autowired private PorterQueueDataService queueDataService;
-    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private SystemDateFormattingService systemDateFormattingService;
     @Autowired private ActivityLoggerService activityLoggerService;
@@ -140,32 +137,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         long requestId = random.nextInt();
         req.setUserMessageID(requestId);
         
-        // get interval
-        YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
-        DeviceLoadProfile deviceLoadProfile = ((MCTBase)yukonPaobject).getDeviceLoadProfile();
-        int loadProfileDemandRate = deviceLoadProfile.getLoadProfileDemandRate();
-        int voltageDemandRate = deviceLoadProfile.getVoltageDmdRate();
-        
-        int minutesPerInterval = 1;
-        if(channel == 1){
-            minutesPerInterval = loadProfileDemandRate / 60;
-        }
-        else if (channel == 4){
-            minutesPerInterval = voltageDemandRate / 60;
-        }
-        
-        Calendar startCal = dateFormattingService.getCalendar(userContext);
-        startCal.setTime(start);
-        
-        Calendar stopCal = dateFormattingService.getCalendar(userContext);
-        stopCal.setTime(stop);
-        
-        long minutesBetween = (stopCal.getTimeInMillis() - startCal.getTimeInMillis()) / 60000;
-
-        long expectedIntervals = minutesBetween / minutesPerInterval;
-        long expectedPorterReturns = expectedIntervals / 6; //porter gets 6 per request by definition
-        
-        expectedReturnCount.put(requestId, expectedPorterReturns);
+        expectedReturnCount.put(requestId, 100L);  //  placeholder, will be replaced by Porter's return value
         receivedReturnsCount.put(requestId, 0L);
         
         // setup profile request info
@@ -418,7 +390,15 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             
             // check for expect more
             boolean finished = returnMsg.getExpectMore() == 0;
-            if (finished) {
+            if (!finished) {
+            
+                Matcher m = blockCount.matcher(returnMsg.getResultString());
+                
+                if (m.find()) {
+                    expectedReturnCount.put(requestId, Long.parseLong(m.group(1)));
+                }
+                
+            } else {
                 
                 int deviceId = returnMsg.getDeviceID();
                 
