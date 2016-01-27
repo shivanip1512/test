@@ -151,7 +151,8 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
             public void process(String[] line) throws ProcessingException { 
                 //parse data array into import object
                 FdrImportDataRow dataRow = new FdrImportDataRow();
-                for(int i = 0; i < line.length; i++) {
+                int columnsToProcess = Math.min(headers.size(), line.length);
+                for(int i = 0; i < columnsToProcess; i++) {
                     if(columnsToIgnore.contains(i)) continue; //ignored column, skip to next
                     String header = headers.get(i);
                     String columnValue = line[i];
