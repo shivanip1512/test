@@ -47,7 +47,6 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         } else {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "updateServerUrl", baseKey + "updateserver.url.required");
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "updateServerLogin.username", baseKey + "updateserver.username.required");
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "updateServerLogin.password", baseKey + "updateserver.password.required");
         }
     }
     
