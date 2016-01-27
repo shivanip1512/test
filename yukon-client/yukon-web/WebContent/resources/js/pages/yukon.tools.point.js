@@ -90,8 +90,9 @@ yukon.tools.point = (function () {
      * Shows and hides status control fields based on control type selected
      */
     var updateLimits1 = function () {
+        var visible = $('.js-limit-one-enabled').is(':visible');
         var enabled = $('.js-limit-one-enabled').is(':checked');
-        if(!enabled){
+        if(visible && !enabled){
         	$('.js-reset-field').val(0);
         }
         $('.js-limit-one-input').toggle(enabled);
