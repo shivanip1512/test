@@ -142,6 +142,18 @@
                     </tags:nameValueContainer2>
                 </c:if>
                 
+                <c:if test="${isCalcAnalogPoint}">
+
+                    <tags:nameValueContainer2 tableClass="${nameValueClass}">
+
+                        <tags:nameValue2 nameKey=".quality">
+                            <tags:switchButton path="pointBase.calcBase.calculateQualityBoolean" offClasses="M0"
+                                offNameKey=".off.label" onNameKey=".on.label" />
+                        </tags:nameValue2>
+
+                    </tags:nameValueContainer2>
+                </c:if>
+                
                 <c:if test="${isSystemPoint}">
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
 

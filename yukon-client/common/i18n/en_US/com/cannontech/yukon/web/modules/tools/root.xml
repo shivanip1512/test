@@ -204,6 +204,7 @@
     <entry key="yukon.web.modules.tools.point.stateGroup">State Group</entry>
     <entry key="yukon.web.modules.tools.point.initialState">Initial State</entry>
     <entry key="yukon.web.modules.tools.point.update">Update</entry>
+    <entry key="yukon.web.modules.tools.point.quality">Force Quality</entry>
     <entry key="yukon.web.modules.tools.point.offset">Point Offset</entry>
     <entry key="yukon.web.modules.tools.point.physicalOffset">Physical point Offset</entry>
     <entry key="yukon.web.modules.tools.point.deadband">Deadband</entry>

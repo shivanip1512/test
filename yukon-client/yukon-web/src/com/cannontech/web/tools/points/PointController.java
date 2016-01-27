@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.common.bulk.model.AnalogPointUpdateType;
 import com.cannontech.common.bulk.model.StatusPointUpdateType;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
@@ -164,7 +165,9 @@ public class PointController {
         model.addAttribute("stateGroups", stateDao.getAllStateGroups());
         model.addAttribute("initialStates", statesForGroup(pointModel.getPointBase().getPoint().getStateGroupID()));
         model.addAttribute("statusArchiveTypes", ImmutableList.of(PointArchiveType.NONE, PointArchiveType.ON_CHANGE));
-        model.addAttribute("pointUpdateTypes", StatusPointUpdateType.values());
+        boolean calcAnalog = base instanceof CalculatedPoint && !(base instanceof CalcStatusPoint);
+        model.addAttribute("isCalcAnalogPoint", calcAnalog);
+        model.addAttribute("pointUpdateTypes", calcAnalog ? AnalogPointUpdateType.values() : StatusPointUpdateType.values());
         model.addAttribute("analogControlTypes", AnalogControlType.values());
         model.addAttribute("staleDataUpdateStyles", StaleData.UpdateStyle.values());
         model.addAttribute("alarmNotificationTypes", AlarmNotificationTypes.values());

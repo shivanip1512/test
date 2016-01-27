@@ -59,6 +59,18 @@ public class CalcBase extends DBPersistent {
     public char getCalculateQuality() {
         return calculateQuality;
     }
+    
+    public boolean getCalculateQualityBoolean() {
+        if (calculateQuality == 'Y') {
+            return true;
+        }
+        return false;
+    }
+    
+    
+    public boolean isCalculateQualityBoolean() {
+        return getCalculateQualityBoolean();
+    }
 
     public void retrieve() throws SQLException {
         String selectColumns[] = { "UPDATETYPE", "PERIODICRATE", "QUALITYFLAG" };
@@ -92,10 +104,20 @@ public class CalcBase extends DBPersistent {
     public void setCalculateQuality(char newValue) {
         this.calculateQuality = newValue;
     }
-
+    
     public void setCalculateQuality(String newValue) {
         this.calculateQuality = newValue.charAt(0);
     }
+
+    public void setCalculateQualityBoolean(boolean bool) {
+        if (bool) {
+            this.calculateQuality = 'Y';
+        } else {
+            this.calculateQuality = 'N';
+        }
+    }
+
+
 
     public void update() throws SQLException {
         String setColumns[] = { "UPDATETYPE", "PERIODICRATE", "QUALITYFLAG" };
