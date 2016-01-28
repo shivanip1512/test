@@ -60,16 +60,11 @@ public class CalcBase extends DBPersistent {
         return calculateQuality;
     }
     
-    public boolean getCalculateQualityBoolean() {
+    public boolean isCalculateQualityBoolean() {
         if (calculateQuality == 'Y') {
             return true;
         }
         return false;
-    }
-    
-    
-    public boolean isCalculateQualityBoolean() {
-        return getCalculateQualityBoolean();
     }
 
     public void retrieve() throws SQLException {
