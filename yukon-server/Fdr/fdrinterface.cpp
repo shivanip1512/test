@@ -605,7 +605,7 @@ bool CtiFDRInterface::reloadTranslationLists()
 
 void CtiFDRInterface::setCurrentClientLinkStates()
 {
-    CTILOG_ERROR(dout, "Default setCurrentClientLinkStates called");
+    CTILOG_WARN(dout, "Default setCurrentClientLinkStates called");
 }
 /************************************************************************
 * Function Name: CtiFDRInterface::getCparmValueAsString(string key)
