@@ -30,8 +30,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
         String deviceName = rfnIdentifier.getCombinedIdentifier();
         
         YukonDevice newDevice = deviceCreationService.createRfnDeviceByDeviceType(PaoType.RFN_1200, deviceName, 
-                rfnIdentifier.getSensorModel(), rfnIdentifier.getSensorManufacturer(), 
-                rfnIdentifier.getSensorSerialNumber(), true);
+            rfnIdentifier, true);
         RfnDevice device = new RfnDevice(deviceName, newDevice.getPaoIdentifier(), rfnIdentifier);
         
         rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getRfnIdentifier(), "N/A", device.getPaoIdentifier());

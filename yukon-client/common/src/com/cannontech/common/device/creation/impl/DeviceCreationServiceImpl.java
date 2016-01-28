@@ -21,6 +21,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -137,7 +138,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
     @Override
     @Transactional
-    public SimpleDevice createRfnDeviceByDeviceType(PaoType type, String name, String model, String manufacturer, String serialNumber, boolean createPoints) throws DeviceCreationException {
+    public SimpleDevice createRfnDeviceByDeviceType(PaoType type, String name, RfnIdentifier rfId, boolean createPoints) throws DeviceCreationException {
         
         // verify that the device type is RFN device type
         if (type.getPaoClass() != PaoClass.RFMESH) {
@@ -153,14 +154,14 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ ,\" ' |");
         }
         
-        if ((!YukonValidationUtils.isRfnSerialNumberValid(serialNumber))) {
+        if ((!YukonValidationUtils.isRfnSerialNumberValid(rfId.getSensorSerialNumber()))) {
             throw new DeviceCreationException("Device serial number must be numeric and serial number length must be less than 30");
         }
         
         newDevice.setPAOName(name);
-        newDevice.getRfnAddress().setSerialNumber(serialNumber);
-        newDevice.getRfnAddress().setManufacturer(manufacturer);
-        newDevice.getRfnAddress().setModel(model);
+        newDevice.getRfnAddress().setSerialNumber(rfId.getSensorSerialNumber());
+        newDevice.getRfnAddress().setManufacturer(rfId.getSensorManufacturer());
+        newDevice.getRfnAddress().setModel(rfId.getSensorModel());
 
         SimpleDevice yukonDevice = createNewDeviceByType(newDevice, createPoints, type);
         return yukonDevice;

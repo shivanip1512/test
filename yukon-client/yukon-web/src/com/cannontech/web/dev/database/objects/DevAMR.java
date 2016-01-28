@@ -1,9 +1,13 @@
 package com.cannontech.web.dev.database.objects;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.common.pao.PaoType;
-import com.google.common.collect.Lists;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Multimap;
 
 public class DevAMR extends DevObject {
     private boolean createCartObjects = true;
@@ -12,42 +16,17 @@ public class DevAMR extends DevObject {
     private Integer numAdditionalMeters = 0;
     private Integer addressRangeMin = 1000000;
     private Integer addressRangeMax = 999999999;
-    private List<DevPaoType> meterTypes =
-        Lists.newArrayList(new DevPaoType(PaoType.MCT410CL),
-                          new DevPaoType(PaoType.MCT410FL),
-                          new DevPaoType(PaoType.MCT410IL),
-                          new DevPaoType(PaoType.MCT420CD),
-                          new DevPaoType(PaoType.MCT420CL),
-                          new DevPaoType(PaoType.MCT420FD),
-                          new DevPaoType(PaoType.MCT420FL),
-                          new DevPaoType(PaoType.MCT430A),
-                          new DevPaoType(PaoType.MCT430A3),
-                          new DevPaoType(PaoType.MCT430S4),
-                          new DevPaoType(PaoType.MCT430SL),
-                          new DevPaoType(PaoType.MCT440_2131B),
-                          new DevPaoType(PaoType.MCT440_2132B),
-                          new DevPaoType(PaoType.MCT440_2133B),
-                          new DevPaoType(PaoType.MCT470),
-                          new DevPaoType(PaoType.RFN420CD),
-                          new DevPaoType(PaoType.RFN420CL),
-                          new DevPaoType(PaoType.RFN420FD),
-                          new DevPaoType(PaoType.RFN420FL),
-                          new DevPaoType(PaoType.RFN420FRD),
-                          new DevPaoType(PaoType.RFN420FRX),
-                          new DevPaoType(PaoType.RFN420FX),
-                          new DevPaoType(PaoType.RFN430A3D),
-                          new DevPaoType(PaoType.RFN430A3K),
-                          new DevPaoType(PaoType.RFN430A3R),
-                          new DevPaoType(PaoType.RFN430A3T),
-                          new DevPaoType(PaoType.RFN430SL0),
-                          new DevPaoType(PaoType.RFN430SL1),
-                          new DevPaoType(PaoType.RFN430SL2),
-                          new DevPaoType(PaoType.RFN430SL3),
-                          new DevPaoType(PaoType.RFN430SL4),
-                          new DevPaoType(PaoType.RFN440_2131TD),
-                          new DevPaoType(PaoType.RFN440_2132TD),
-                          new DevPaoType(PaoType.RFN440_2133TD),
-                          new DevPaoType(PaoType.RFWMETER));
+    private List<DevPaoType> meterTypes = new ArrayList<>();
+
+    {
+        PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
+        Multimap<String, PaoDefinition> creatableDevices = paoDefinitionService.getCreatablePaoDisplayGroupMap();
+        for (PaoDefinition definition : creatableDevices.values()) {
+            if (definition.getType().isRfMeter() || definition.getType().isMct()) {
+                meterTypes.add(new DevPaoType(definition.getType()));
+            }
+        }
+    }
     
     public boolean isCreateRfnTemplates() {
         return createRfnTemplates;
@@ -106,7 +85,7 @@ public class DevAMR extends DevObject {
             total += DevMeter.values().length;
         }
         if (createRfnTemplates) {
-            total += DevRfnTemplateMeter.values().length;
+            total += RfnManufacturerModel.values().length;
         }
         return total;
     }

@@ -10,6 +10,8 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
@@ -34,7 +36,6 @@ import com.cannontech.web.dev.database.objects.DevCCU;
 import com.cannontech.web.dev.database.objects.DevCommChannel;
 import com.cannontech.web.dev.database.objects.DevMeter;
 import com.cannontech.web.dev.database.objects.DevPaoType;
-import com.cannontech.web.dev.database.objects.DevRfnTemplateMeter;
 import com.cannontech.web.dev.database.service.DevAMRCreationService;
 import com.google.common.collect.Lists;
 
@@ -203,7 +204,9 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
                     String meterName = meterType.getPaoType().getPaoTypeName() + " " + address;
                     YukonPao meter;
                     if (meterType.getPaoType().isRfn()) {
-                        meter = createRfnMeter(devAMR, meterType.getPaoType(), meterName, null, null, null, true);
+                        RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(meterType.getPaoType()).get(0);
+                        RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address), templateSettings.getManufacturer(), templateSettings.getModel());
+                        meter = createRfnMeter(devAMR, meterType.getPaoType(), meterName, rfId, true);
                     } else {
                         meter = createPlcMeter(devAMR, meterType.getPaoType(), meterName, address, devAMR.getRouteId(), true);
                     }
@@ -238,11 +241,12 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         if (!devAMR.isCreateRfnTemplates()) {
             return Lists.newArrayList();
         }
-        
+
         List<YukonPao> createdMeters = Lists.newArrayList();
         log.info("Creating Rfn Template Meters ...");
-        for (DevRfnTemplateMeter meter : DevRfnTemplateMeter.values()) {
-            YukonPao rfnMeter = createRfnMeter(devAMR, meter.getPaoType(), meter.getName(), null, null, null, true);
+        for (RfnManufacturerModel rfnManufacturerModel : RfnManufacturerModel.values()) {
+            String templateName = "*RfnTemplate_" + rfnManufacturerModel.getManufacturer() + "_" + rfnManufacturerModel.getModel();
+            YukonPao rfnMeter = createRfnMeter(devAMR, rfnManufacturerModel.getType(), templateName, RfnIdentifier.BLANK, true);
             if (rfnMeter != null) {
                 createdMeters.add(rfnMeter);
             }
@@ -288,17 +292,17 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         return yukonDevice;
     }
     
-    private YukonPao createRfnMeter(DevAMR devAMR, PaoType type, String name, String model, String manufacturer, String serialNumber, boolean createPoints) {
+    private YukonPao createRfnMeter(DevAMR devAMR, PaoType type, String name, RfnIdentifier rfId, boolean createPoints) {
         if (!canCreateMeter(devAMR, name, null)) {
             return null;
         }
-        
-        YukonDevice yukonDevice = deviceCreationService.createRfnDeviceByDeviceType(type, name, model, manufacturer, serialNumber, createPoints);
+
+        YukonDevice yukonDevice = deviceCreationService.createRfnDeviceByDeviceType(type, name, rfId, createPoints);
         devAMR.incrementSuccessCount();
         log.debug("Rfn Meter with name " + name + " created.");
         return yukonDevice;
     }
-    
+
     private int getDefaultRouteId() {
         Integer routeId = paoDao.getRouteIdForRouteName(DevCCU.SIM_711.getName());
         if (routeId == null) {

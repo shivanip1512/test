@@ -3,6 +3,7 @@ package com.cannontech.common.device.creation;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 
 public interface DeviceCreationService {
@@ -58,5 +59,5 @@ public interface DeviceCreationService {
      * @return 
      * @throws DeviceCreationException
      */
-    public SimpleDevice createRfnDeviceByDeviceType(PaoType type, String name, String model, String manufacturer, String serialNumber, boolean createPoints) throws DeviceCreationException;
+    public SimpleDevice createRfnDeviceByDeviceType(PaoType type, String name, RfnIdentifier rfId, boolean createPoints) throws DeviceCreationException;
 }

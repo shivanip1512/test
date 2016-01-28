@@ -10,6 +10,7 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.google.common.collect.ImmutableSet;
 
 public class RfnDeviceTypeBulkImportMethod extends BulkImportMethodBase {
@@ -55,14 +56,9 @@ public class RfnDeviceTypeBulkImportMethod extends BulkImportMethodBase {
             String rfnSerialNumberStringValue = fields.get(BulkFieldColumnHeader.RFN_SERIAL_NUMBER);
             String rfnModelStringValue = fields.get(BulkFieldColumnHeader.RFN_MODEL);
             String rfnManufacturerStringValue = fields.get(BulkFieldColumnHeader.RFN_MANUFACTURER);
+            RfnIdentifier rfId = new RfnIdentifier(rfnSerialNumberStringValue, rfnManufacturerStringValue, rfnModelStringValue);
 
-            SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(
-                                                                  paoType,
-                                                                  name,
-                                                                  rfnModelStringValue,
-                                                                  rfnManufacturerStringValue,
-                                                                  rfnSerialNumberStringValue,
-                                                                  true);
+            SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(paoType, name, rfId, true);
             return device;
 
         } catch (IllegalArgumentException e) {

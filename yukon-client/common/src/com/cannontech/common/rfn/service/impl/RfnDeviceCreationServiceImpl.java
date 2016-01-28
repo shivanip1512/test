@@ -192,11 +192,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             gatewayType = PaoType.RFN_GATEWAY;
         }
         
-        SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(gatewayType, name, 
-                                                                                rfnIdentifier.getSensorModel(), 
-                                                                                rfnIdentifier.getSensorManufacturer(), 
-                                                                                rfnIdentifier.getSensorSerialNumber(), 
-                                                                                true);
+        SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(gatewayType, name, rfnIdentifier, true);
         return new RfnDevice(name, device.getPaoIdentifier(), rfnIdentifier);
     }
     
