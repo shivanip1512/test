@@ -45,7 +45,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         }
         String payload = null;
         String requestToken = null;
-        try (Scanner scanner = new Scanner(request.getInputStream(), "UTF-8").useDelimiter("\\A")) {
+        try (Scanner scanner = new Scanner(request.getInputStream(), "ISO-8859-1").useDelimiter("\\A")) {
             payload = scanner.hasNext() ? scanner.next() : "";
         } catch (IOException e) {
             log.error("Error occured in fetching the payload content for the request", e);
