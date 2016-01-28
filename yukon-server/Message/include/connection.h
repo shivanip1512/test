@@ -95,7 +95,7 @@ protected:
         };
     };
 
-    CtiTime _sendStart;
+    std::atomic<time_t> _sendStart { 0 };
 
     void sendMessage( const CtiMessage& message );
     void receiveAllMessages();

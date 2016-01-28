@@ -273,12 +273,12 @@ void CtiLoadManager::controlLoop()
                 {
                     auto data = std::make_unique<CtiPointDataMsg>( cpuPointID, Cti::getCPULoad(),
                         NormalQuality, AnalogPointType, "" );
-                    data->setSource( LOAD_MANAGER_APPLICATION_NAME );
+                    data->setSource( LOAD_MANAGEMENT_APPLICATION_NAME );
                     getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
 
                     data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
                         NormalQuality, AnalogPointType, "" );
-                    data->setSource( LOAD_MANAGER_APPLICATION_NAME );
+                    data->setSource( LOAD_MANAGEMENT_APPLICATION_NAME );
                     getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
 
                     Cti::reportSystemMetrics( CompileInfo );

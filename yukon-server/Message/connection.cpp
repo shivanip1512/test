@@ -32,8 +32,7 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     _title(title),
     _outthread( WorkerThread::Function([this]{ outThreadFunc(); })
             .name( boost::replace_all_copy( title, " ", "" ) + "_outThread" ) // use the title and remove all white spaces to set the thread name
-            .priority( THREAD_PRIORITY_HIGHEST )),
-            _sendStart(CtiTime::not_a_time)
+            .priority( THREAD_PRIORITY_HIGHEST ))
 {
     // create message listener and register function and caller
     _messageListener.reset(
@@ -235,10 +234,10 @@ void CtiConnection::sendMessage( const CtiMessage& msg )
     bytes_msg->writeBytes( obytes );
     bytes_msg->setCMSType( msgType );
 
-    _sendStart = CtiTime();             // Mark when the send started
+    _sendStart.exchange(time(nullptr));  // Mark when the send started
     // send the message
     _producer->send( bytes_msg.get() );
-    _sendStart = CtiTime::not_a_time;   // Mark send as complete
+    _sendStart.exchange(0);   // Mark send as complete
 }
 
 /**
@@ -551,16 +550,16 @@ CtiMessage* CtiConnection::ReadConnQue( UINT Timeout )
     CtiMessage *Msg = 0;
 
     // Verify that the last send has completed, or we issue a warning.
-    if(_sendStart != CtiTime::not_a_time)
+    if( const auto sendStart = _sendStart.load() )
     {
-        long elapsedSendStart = CtiTime::now().seconds() - _sendStart.seconds();
-        if(elapsedSendStart > 30 )    // > 30 seconds
+        const auto sendElapsed = time(nullptr) - sendStart;
+        if( sendElapsed > 30 )    // > 30 seconds
         {
             CTILOG_LOG(
-                (elapsedSendStart > 5 * 60              //  has it been more than 5 minutes?
+                (sendElapsed > 5 * 60              //  has it been more than 5 minutes?
                     ? Cti::Logging::Logger::Error       //  if so, error
                     : Cti::Logging::Logger::Warn),      //  otherwise, just warn
-                dout, who() << " - send queue thread has send outstanding since " << _sendStart.asString() );
+                dout, who() << " - send queue thread has send outstanding since " << CtiTime(sendStart) );
         }
     }
 

@@ -19,7 +19,7 @@
 
 #include <boost/thread.hpp>
 
-#define LOAD_MANAGER_APPLICATION_NAME "Load Manager"
+#define LOAD_MANAGEMENT_APPLICATION_NAME "Load Management"
 
 class CtiLMControlArea;
 class CtiLMExecutor;
