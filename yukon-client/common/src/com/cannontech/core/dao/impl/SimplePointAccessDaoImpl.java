@@ -29,56 +29,36 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
     
     @Override
     public void setPointValue(LitePoint point, double value) {
-        setPointValue(point.getPointID(), new Instant(), value, point.getPointTypeEnum());
+        setPointValue(point, new Instant(), value, point.getPointTypeEnum());
     }
 
     @Override
-    public void setPointValue(int pointId, double value) {
-        setPointValue(pointId, new Instant(), value, PointType.Analog);
-    }
-    
-    @Override
     public void setPointValue(LitePoint point, PointState pointState) {
-        setPointValue(point.getPointID(), new Instant(), pointState.getRawState(), point.getPointTypeEnum());
-    }
-    
-    @Override
-    public void setPointValue(int pointId, PointState pointState) {
-        setPointValue(pointId, new Instant(), pointState.getRawState(), PointType.Status);
+        setPointValue(point, new Instant(), pointState.getRawState(), point.getPointTypeEnum());
     }
     
     @Override
     public void setPointValue(LitePoint point, Instant time, double value) {
-        setPointValue(point.getPointID(), time, value, point.getPointTypeEnum());
+        setPointValue(point, time, value, point.getPointTypeEnum());
     }
 
     @Override
-    public void setPointValue(int pointId, Instant time, double value) {
-        setPointValue(pointId, time, value, PointType.Analog);
-    }
-    
-    @Override
     public void setPointValue(LitePoint point,  Instant time, PointState pointState) {
-        setPointValue(point.getPointID(), time, pointState.getRawState(), point.getPointTypeEnum());
-    }
-    
-    @Override
-    public void setPointValue(int pointId, Instant time, PointState pointState) {
-        setPointValue(pointId,time,pointState.getRawState(),PointType.Status);
+        setPointValue(point, time, pointState.getRawState(), point.getPointTypeEnum());
     }
     
     @Override
     public void setPointValue(LitePoint point, double value, PointQuality quality) {
-        setPointValue(point.getPointID(), new Instant(), value, point.getPointTypeEnum(), quality);
+        setPointValue(point, new Instant(), value, point.getPointTypeEnum(), quality);
     }
     
-    private void setPointValue(int pointId, Instant time, double value, PointType type) {
-        setPointValue(pointId, time, value, type, PointQuality.Normal);
+    private void setPointValue(LitePoint point, Instant time, double value, PointType type) {
+        setPointValue(point, time, value, type, PointQuality.Normal);
     }
 
-    private void setPointValue(int pointId, Instant time, double value, PointType type, PointQuality quality) {
+    private void setPointValue(LitePoint point, Instant time, double value, PointType type, PointQuality quality) {
         PointData pointData = new PointData();
-        pointData.setId(pointId);
+        pointData.setId(point.getPointID());
         pointData.setValue(value);
         pointData.setType(type.getPointTypeId());
         pointData.setPointQuality(quality);

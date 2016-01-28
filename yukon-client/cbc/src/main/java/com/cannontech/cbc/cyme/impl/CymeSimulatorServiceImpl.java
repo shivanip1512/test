@@ -132,7 +132,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     				PaoPointIdentifier paoPointIdentifier = 
     				        new PaoPointIdentifier(busIdentifier, CymeDataListener.CYME_LOAD_FACTOR_IDENTIFIER);
     				LitePoint loadPoint = pointDao.getLitePoint(paoPointIdentifier);
-    				simplePointAccessDao.setPointValue(loadPoint.getLiteID(), nextLoadFactor.getLoad());
+    				simplePointAccessDao.setPointValue(loadPoint, nextLoadFactor.getLoad());
     				
     				//Are we done? Change the status point
     				//TODO Future: This will also need to pay attention to the time.
@@ -161,7 +161,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     		PaoPointIdentifier paoPointIdentifier = 
     		        new PaoPointIdentifier(busIdentifier, CymeDataListener.CYME_START_SIMULATION_IDENTIFIER);
     		LitePoint simulationPoint = pointDao.getLitePoint(paoPointIdentifier);
-    		simplePointAccessDao.setPointValue(simulationPoint.getLiteID(), TrueFalse.FALSE);
+    		simplePointAccessDao.setPointValue(simulationPoint, TrueFalse.FALSE);
     	}
     }
 
@@ -358,7 +358,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
         // get Current Value to change
         try{
             PointValueQualityHolder tapValue = asyncDynamicDataSource.getPointValue(point.getLiteID());
-            simplePointAccessDao.setPointValue(point.getLiteID(), tapValue.getValue() + tapChange);
+            simplePointAccessDao.setPointValue(point, tapValue.getValue() + tapChange);
 
             //Determine Bus
             Zone zone = zoneDao.getZoneByRegulatorId(regulatorId);

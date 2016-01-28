@@ -27,6 +27,7 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 
@@ -35,6 +36,7 @@ public class CymeSimulationHelper {
     @Autowired private PaoDao paoDao;
     @Autowired private ZoneDao zoneDao;
     @Autowired private SimplePointAccessDao simplePointAccessDao;
+    @Autowired private PointDao pointDao;
     @Autowired private SubstationBusDao substationBusDao;
     @Autowired private FeederDao feederDao;
     @Autowired private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
@@ -103,7 +105,7 @@ public class CymeSimulationHelper {
             try {
                 log.debug("regulatorName="+regulatorName+" paoType="+paoType);
                 LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(regulator, RegulatorPointMapping.VOLTAGE_Y);
-                simplePointAccessDao.setPointValue(litePoint.getLiteID(), timestamp, value);
+                simplePointAccessDao.setPointValue(litePoint, timestamp, value);
                 // for the purpose of CYMDIST integration it is necessary to support set point and bandwidth on a single
                 // phase regulator and NOT on the gang operated regulator.
                 if (phase != Phase.ALL) {
@@ -177,16 +179,31 @@ public class CymeSimulationHelper {
             Phase phase = entry.getValue();
             int pointId = entry.getKey();
 
+            LitePoint point = pointDao.getLitePoint(pointId);
+            
             if (phase == Phase.A) {
-                simplePointAccessDao.setPointValue(pointId, simulationTime, cymeObject.getPhaseA().getVoltage());
+                simplePointAccessDao.setPointValue(point, simulationTime, cymeObject.getPhaseA().getVoltage());
             } else if (phase == Phase.B) {
-                simplePointAccessDao.setPointValue(pointId, simulationTime, cymeObject.getPhaseB().getVoltage());
+                simplePointAccessDao.setPointValue(point, simulationTime, cymeObject.getPhaseB().getVoltage());
             } else if (phase == Phase.C) {
-                simplePointAccessDao.setPointValue(pointId, simulationTime, cymeObject.getPhaseC().getVoltage());
+                simplePointAccessDao.setPointValue(point, simulationTime, cymeObject.getPhaseC().getVoltage());
             }
         }
     }
     
+    private LitePoint getPoint(int pointId) {
+        if (pointId == 0) {
+            return null;
+        }
+        try {
+            return pointDao.getLitePoint(pointId);
+        }
+        catch (NotFoundException ex) {
+            log.warn(ex);
+            return null;
+        }
+    }
+
     private void processBusAndFeeder(SerializableDictionaryData cymeObject, PaoType paoType, Instant simulationTime) {
         YukonPao pao = null;
         try {
@@ -208,12 +225,12 @@ public class CymeSimulationHelper {
             objectType = "Feeder";
         }
         
-        int varTotalId = pointIds.getVarTotalId();
-        int varAId = pointIds.getVarAId();
-        int varBId = pointIds.getVarBId();
-        int varCId = pointIds.getVarCId();
-        int voltId = pointIds.getVoltId();
-        int wattId = pointIds.getWattId();
+        LitePoint varTotal = getPoint(pointIds.getVarTotalId());
+        LitePoint varA = getPoint(pointIds.getVarAId());
+        LitePoint varB = getPoint(pointIds.getVarBId());
+        LitePoint varC = getPoint(pointIds.getVarCId());
+        LitePoint volt = getPoint(pointIds.getVoltId());
+        LitePoint watt = getPoint(pointIds.getWattId());
         
         PhaseInformation phaseA = cymeObject.getPhaseA();
         PhaseInformation phaseB = cymeObject.getPhaseB();
@@ -223,35 +240,35 @@ public class CymeSimulationHelper {
         float wattValue = phaseA.getkW() + phaseB.getkW()+phaseC.getkW();
     
         if (pointIds.isTotalizekVar()) {
-            if (varTotalId == 0) {
+            if (varTotal == null) {
                 log.warn("CYME CONFIG: Missing Total kVar point on " + objectType + " " + cymeObject.getEqNo() );
             } else {
                 float varTotalValue = phaseA.getkVar() + phaseB.getkVar() + phaseC.getkVar();
-                simplePointAccessDao.setPointValue(varTotalId, simulationTime, varTotalValue);
+                simplePointAccessDao.setPointValue(varTotal, simulationTime, varTotalValue);
             }
         } else {
-            if (varAId == 0 || varBId == 0 || varCId == 0) {
+            if (varA == null || varB == null || varC == null) {
                 log.warn("CYME CONFIG: Missing phase kVar point(s) on " + objectType + " "+ cymeObject.getEqNo() );
             } else {
                 float varAValue = phaseA.getkVar();
                 float varBValue = phaseB.getkVar();
                 float varCValue = phaseC.getkVar();
                 
-                simplePointAccessDao.setPointValue(varAId, simulationTime, varAValue);
-                simplePointAccessDao.setPointValue(varBId, simulationTime, varBValue);
-                simplePointAccessDao.setPointValue(varCId, simulationTime, varCValue);
+                simplePointAccessDao.setPointValue(varA, simulationTime, varAValue);
+                simplePointAccessDao.setPointValue(varB, simulationTime, varBValue);
+                simplePointAccessDao.setPointValue(varC, simulationTime, varCValue);
             }
         }
         
-        if (voltId == 0) {
+        if (volt == null) {
             log.warn("CYME CONFIG: Missing Volt point on " + objectType + " " + cymeObject.getEqNo() );
         } else {
-            simplePointAccessDao.setPointValue(voltId, simulationTime, voltValue);
+            simplePointAccessDao.setPointValue(volt, simulationTime, voltValue);
         }
-        if (wattId == 0) {
+        if (watt == null) {
             log.warn("CYME CONFIG: Missing Watt point on " + objectType + " "+ cymeObject.getEqNo() );
         } else {
-            simplePointAccessDao.setPointValue(wattId, simulationTime, wattValue);
+            simplePointAccessDao.setPointValue(watt, simulationTime, wattValue);
         }
     }
     

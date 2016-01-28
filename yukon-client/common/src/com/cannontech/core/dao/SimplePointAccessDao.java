@@ -13,13 +13,9 @@ public interface SimplePointAccessDao {
     double getPointValue(LitePoint point) throws PointDataException;
     
     void setPointValue(LitePoint point, double value);
-    void setPointValue(int pointId, double value);
     void setPointValue(LitePoint point, PointState pointState);
-    void setPointValue(int pointId, PointState pointState);
     void setPointValue(LitePoint point, Instant time, double value);
-    void setPointValue(int pointId, Instant time, double value);
     void setPointValue(LitePoint point, Instant time, PointState pointState);
-    void setPointValue(int pointId, Instant time, PointState pointState);
     void setPointValue(LitePoint point, double value, PointQuality quality);
     
     void writePointData(PointData pointData);
