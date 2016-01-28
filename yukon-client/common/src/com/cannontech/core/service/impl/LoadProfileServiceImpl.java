@@ -54,7 +54,7 @@ import com.cannontech.yukon.BasicServerConnection;
 public class LoadProfileServiceImpl implements LoadProfileService {
     private final static Logger log = YukonLogManager.getLogger(LoadProfileServiceImpl.class);
     private final static Random random = new Random();
-    private final static Pattern blockCount = Pattern.compile("Reading (\\d+) blocks");
+    private final static Pattern blockCount = Pattern.compile("Reading (\\d+) blocks?");
 
     @Autowired private PorterQueueDataService queueDataService;
     @Autowired private DateFormattingService dateFormattingService;
@@ -381,7 +381,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             //TODO restore 
             recentlyReceivedRequestIds.add(requestId);
             
-            
+            // only count the messages with point data included
             if (returnMsg.getMessages().size() != 0) {
                 if (receivedReturnsCount.get(requestId) != null) {
                     receivedReturnsCount.put(requestId, receivedReturnsCount.get(requestId) + 1);
