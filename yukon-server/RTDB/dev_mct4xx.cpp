@@ -137,7 +137,6 @@ Mct4xxDevice::Mct4xxDevice()
     _llpRequest.end        = 0;
     _llpRequest.channel    = 0;
     _llpRequest.retry      = 0;
-    _llpRequest.failed     = false;
 
     _llpPeakInterest.channel  = 0;
     _llpPeakInterest.range    = 0;
@@ -642,6 +641,12 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                         }
                         else
                         {
+                            if( ! existing_id )
+                            {
+                                //  reset the retry count, this is the initial request
+                                _llpRequest.retry = 0;
+                            }
+
                             CtiTime time_start, time_end;
 
                             OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfile;
@@ -747,13 +752,6 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                             }
                             else
                             {
-                                if( ! existing_id )
-                                {
-                                    //  reset the failure indicator, this is the initial request
-                                    _llpRequest.failed = false;
-                                    _llpRequest.retry  = 0;
-                                }
-
                                 //  align to the beginning of an interval
                                 _llpRequest.begin = time_start.seconds() - (time_start.seconds() % interval_len);
 
@@ -824,7 +822,6 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                                     _llpRequest.begin   = 0;
                                     _llpRequest.end     = 0;
                                     _llpRequest.channel = 0;
-                                    _llpRequest.failed = true;
 
                                     //  reset, we're not executing any more
                                     _llpRequest.request_id.compare_exchange_strong(candidate_id, 0);
@@ -841,10 +838,10 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                                 //  This is parsed by the web server to determine how many messages to expect from us
                                 appendMsgTo(retList, makeReturnMsg(
-                                            "Reading " + std::to_string(blocks) + " blocks",
-                                            ClientErrors::None,
-                                            OutMessage->Request,
-                                            ExpectMore::True));
+                                        "Reading " + std::to_string(blocks) + (blocks == 1 ? " block" : " blocks"),
+                                        ClientErrors::None,
+                                        OutMessage->Request,
+                                        ExpectMore::True));
 
                                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time,         _llpInterest.time);
                                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel,      _llpInterest.channel + 1);
@@ -3356,10 +3353,7 @@ YukonError_t Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime Ti
                 long existing_id = InMessage.Return.OptionsField;
 
                 //  reset, we're not executing any more
-                if( _llpRequest.request_id.compare_exchange_strong(existing_id, 0) )
-                {
-                    _llpRequest.failed = true;
-                }
+                _llpRequest.request_id.compare_exchange_strong(existing_id, 0);
             }
 
             return ClientErrors::None;

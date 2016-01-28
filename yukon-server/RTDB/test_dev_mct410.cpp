@@ -3162,10 +3162,20 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( outList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
 
         auto retList_itr = retList.cbegin();
 
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 278 );  //  NeedsChannelConfig
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Command requires channel configuration, but it has not been stored.  Attempting to retrieve it automatically." );
+            BOOST_CHECK( ret->ExpectMore() );
+        }
         {
             auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
@@ -3371,10 +3381,23 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
+        auto retList_itr = retList.cbegin();
+
+        {
+            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+            BOOST_CHECK_EQUAL( ret->Status(), 0 );
+            BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 48 blocks" );
+            BOOST_CHECK( ret->ExpectMore() );
+        }
+
+        BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
 
         {
             const OUTMESS *om = outList.front();
@@ -3498,10 +3521,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
+        {
+            auto retList_itr = retList.cbegin();
+
+            retList_itr++;  //  ignore the first entry, it's the request message from above
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 1 block" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+        }
 
         {
             INMESS im;
@@ -3764,10 +3804,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         //  Read first block
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
+        {
+            auto retList_itr = retList.cbegin();
+
+            retList_itr++;  //  ignore the first entry, it's the request message from above
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 4 blocks" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+        }
 
         {
             INMESS im;
@@ -3801,24 +3858,36 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        auto retList_itr = retList.cbegin();
-
         {
-            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+            auto retList_itr = retList.cbegin();
 
-            BOOST_REQUIRE(ret);
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 0 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "" );
-            BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
-            BOOST_CHECK( ret->ExpectMore() );
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 3 blocks" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "" );
+                BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
         }
 
         auto vg_itr = vgList.cbegin();
@@ -3953,24 +4022,36 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        retList_itr = retList.cbegin();
-
         {
-            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+            auto retList_itr = retList.cbegin();
 
-            BOOST_REQUIRE(ret);
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 0 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "" );
-            BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
-            BOOST_CHECK( ret->ExpectMore() );
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 2 blocks" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "" );
+                BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
         }
 
         vg_itr = vgList.cbegin();
@@ -4105,24 +4186,36 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_REQUIRE_EQUAL( vgList.size(), 2 );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        retList_itr = retList.cbegin();
-
         {
-            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+            auto retList_itr = retList.cbegin();
 
-            BOOST_REQUIRE(ret);
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 0 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "" );
-            BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
-            BOOST_CHECK( ret->ExpectMore() );
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 1 block" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "" );
+                BOOST_REQUIRE_EQUAL( ret->getCount(), 6 );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
         }
 
         vg_itr = vgList.cbegin();
@@ -4482,10 +4575,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 2 );
+        BOOST_CHECK_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
+        {
+            auto retList_itr = retList.cbegin();
+
+            retList_itr++;  //  ignore the first entry, it's the request message from above
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 1 block" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+        }
 
         {
             INMESS im;
@@ -4514,23 +4624,35 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        auto retList_itr = retList.cbegin();
-
         {
-            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+            auto retList_itr = retList.cbegin();
 
-            BOOST_REQUIRE(ret);
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 0 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
-            BOOST_CHECK( ret->ExpectMore() );
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 1 block" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
         }
 
         {
@@ -4790,10 +4912,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK_EQUAL( retList.size(), 2 );
+        BOOST_CHECK_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        BOOST_CHECK( isSentOnRouteMsg(retList.back()) );
+        {
+            auto retList_itr = retList.cbegin();
+
+            retList_itr++;  //  ignore the first message, it's the read from above
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 1 block" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+        }
 
         {
             INMESS im;
@@ -4822,23 +4961,35 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        auto retList_itr = retList.cbegin();
-
         {
-            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+            auto retList_itr = retList.cbegin();
 
-            BOOST_REQUIRE(ret);
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 0 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
-            BOOST_CHECK( ret->ExpectMore() );
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL(ret->DeviceId(), 123456);
+                BOOST_CHECK_EQUAL(ret->Status(), 0);
+                BOOST_CHECK_EQUAL(ret->ResultString(), "Test MCT-410iL / Reading 1 block");
+                BOOST_CHECK(ret->ExpectMore());
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
         }
 
         {
@@ -4868,23 +5019,35 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        retList_itr = retList.cbegin();
-
         {
-            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+            auto retList_itr = retList.cbegin();
 
-            BOOST_REQUIRE(ret);
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 0 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
-            BOOST_CHECK( ret->ExpectMore() );
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 1 block" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
         }
 
         {
@@ -4914,23 +5077,35 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
-        retList_itr = retList.cbegin();
-
         {
-            BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        }
-        {
-            auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+            auto retList_itr = retList.cbegin();
 
-            BOOST_REQUIRE(ret);
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
-            BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
-            BOOST_CHECK_EQUAL( ret->Status(), 0 );
-            BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
-            BOOST_CHECK( ret->ExpectMore() );
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Reading 1 block" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+
+            {
+                auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+                BOOST_CHECK_EQUAL( ret->Status(), 0 );
+                BOOST_CHECK_EQUAL( ret->ResultString(), "Load profile retry submitted" );
+                BOOST_CHECK( ret->ExpectMore() );
+            }
         }
 
         {
