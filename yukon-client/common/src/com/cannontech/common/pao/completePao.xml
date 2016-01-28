@@ -30,6 +30,7 @@
                 <value>com.cannontech.common.pao.model.CompleteZbGateway</value>
                 <value>com.cannontech.common.pao.model.Ccu721</value>
                 <value>com.cannontech.common.pao.model.CompleteZbEndpoint</value>
+                <value>com.cannontech.common.pao.model.CompleteWeatherLocation</value>
             </set>
         </constructor-arg>
         <constructor-arg name="paoPartClasses">

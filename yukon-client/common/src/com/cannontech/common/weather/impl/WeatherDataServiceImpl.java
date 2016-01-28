@@ -18,7 +18,7 @@ import com.cannontech.common.pao.PaoInfo;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.model.CompleteYukonPao;
+import com.cannontech.common.pao.model.CompleteWeatherLocation;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.weather.GeographicCoordinate;
@@ -115,7 +115,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     @Transactional
     public WeatherLocation createWeatherLocation(String name, String stationId, GeographicCoordinate geoCoordinate) {
 
-        CompleteYukonPao weatherPao = new CompleteYukonPao();
+        CompleteWeatherLocation weatherPao = new CompleteWeatherLocation();
         weatherPao.setPaoName(name);
 
         paoPersistenceService.createPaoWithDefaultPoints(weatherPao, PaoType.WEATHER_LOCATION);
