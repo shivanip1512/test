@@ -383,7 +383,9 @@
     </div>
 
     <cti:url var="url" value="/capcontrol/cbc/${cbc.id}"/>
-    <form:form id="delete-cbc" method="DELETE" action="${url}"></form:form>
+    <form:form id="delete-cbc" method="DELETE" action="${url}">
+        <cti:csrfToken/>
+    </form:form>
 
     <cti:toJson id="two-way-types" object="${twoWayTypes}"/>
     <cti:toJson id="tcp-comm-ports" object="${tcpCommPorts}"/>

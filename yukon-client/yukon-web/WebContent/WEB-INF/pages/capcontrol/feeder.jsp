@@ -253,7 +253,9 @@
 </form:form>
 
     <cti:url var="url" value="/capcontrol/feeders/${feeder.id}"/>
-    <form:form id="delete-feeder" method="DELETE" action="${url}"></form:form>
+    <form:form id="delete-feeder" method="DELETE" action="${url}">
+        <cti:csrfToken/>
+    </form:form>
 
 <%-- EDIT CAP BANKS POPUP --%>
 <div class="dn js-edit-capbanks-popup"

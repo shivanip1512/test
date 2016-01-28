@@ -196,7 +196,9 @@
 </form:form>
 
 <cti:url var="url" value="/capcontrol/regulators/${regulator.id}"/>
-<form:form id="delete-regulator" method="DELETE" action="${url}"></form:form>
+<form:form id="delete-regulator" method="DELETE" action="${url}">
+    <cti:csrfToken/>
+</form:form>
 
 <table class="dn js-templates">
     <tr data-event-id="?" class="js-event-template">

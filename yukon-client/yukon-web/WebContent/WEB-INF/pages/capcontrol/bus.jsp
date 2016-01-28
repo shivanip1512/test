@@ -21,6 +21,7 @@
 
 <cti:url var="action" value="/capcontrol/buses"/>
 <form:form commandName="bus" action="${action}" method="POST">
+    <cti:csrfToken/>
     <div class="column-12-12">
         <div class="column one">
             <cti:tabs>
@@ -366,7 +367,9 @@
 </form:form>
 
 <cti:url var="url" value="/capcontrol/buses/${bus.id}"/>
-<form:form id="delete-bus" method="DELETE" action="${url}"></form:form>
+<form:form id="delete-bus" method="DELETE" action="${url}">
+    <cti:csrfToken/>
+</form:form>
 
 <%-- EDIT SUBSTATIONS POPUP --%>
 <div class="dn js-edit-feeders-popup"

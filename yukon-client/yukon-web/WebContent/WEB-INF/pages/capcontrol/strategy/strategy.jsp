@@ -318,7 +318,9 @@
     </form:form>
     
     <cti:url var="url" value="/capcontrol/strategies/${strategy.id}"/>
-    <form:form id="delete-strategy" method="DELETE" action="${url}"></form:form>
+    <form:form id="delete-strategy" method="DELETE" action="${url}">
+        <cti:csrfToken/>
+    </form:form>
     
     <cti:toJson id="method-to-algorithms" object="${methodToAlgorithms}"/>
     <cti:toJson id="algorithm-to-settings" object="${algorithmToSettings}"/>

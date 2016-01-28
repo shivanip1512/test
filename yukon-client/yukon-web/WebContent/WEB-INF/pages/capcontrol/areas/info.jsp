@@ -47,6 +47,8 @@
     
 </form:form>
 <cti:url var="url" value="/capcontrol/areas/${area.id}"/>
-<form:form method="DELETE" id="delete-area-form" action="${url}" ></form:form>
+<form:form method="DELETE" id="delete-area-form" action="${url}" >
+    <cti:csrfToken/>
+</form:form>
 
 </cti:msgScope>

@@ -106,5 +106,7 @@
         </cti:displayForPageEditModes>
     </form:form>
     <cti:msg2 var="deleteMessage"  key=".deleteSuccess" />
-    <form:form method="DELETE" data-delete-message="${deleteMessage}"></form:form>
+    <form:form method="DELETE" data-delete-message="${deleteMessage}">
+        <cti:csrfToken/>
+    </form:form>
 </cti:msgScope>

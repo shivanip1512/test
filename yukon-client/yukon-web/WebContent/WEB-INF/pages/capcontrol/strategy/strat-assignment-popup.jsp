@@ -10,7 +10,7 @@
 
 <cti:url var="url" value="/capcontrol/strategy-assignment/${assignment.paoId}"/>
 <form:form commandName="assignment" method="post" action="${url}">
-
+<cti:csrfToken/>
 <form:hidden path="paoId"/>
 
 <%-- SEASON SCHEDULE --%>
