@@ -19,7 +19,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.dao.PaoPersistenceTypeHelper;
 import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
-import com.cannontech.common.pao.model.CompleteYukonPao;
+import com.cannontech.common.pao.model.CompleteWeatherLocation;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -65,7 +65,7 @@ public class PaoPersistenceDaoImplTest {
 
     @Test
     public void testCreateAndRetreive_WEATHER_LOCATION() throws SQLException {
-        CompleteYukonPao pao = new CompleteYukonPao();
+        CompleteWeatherLocation pao = new CompleteWeatherLocation();
         pao.setPaoName("awesomely cool PAO");
         pao.setDescription("I'm a little description, short and stout.");
         pao.setStatistics("some stats");
@@ -79,7 +79,7 @@ public class PaoPersistenceDaoImplTest {
         paoPersistenceDao.createPao(pao, PaoType.WEATHER_LOCATION);
         assertEquals("did not update paoIdentifier properly", expectedPaoIdentifier, pao.getPaoIdentifier());
 
-        CompleteYukonPao fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteYukonPao.class);
+        CompleteWeatherLocation fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteWeatherLocation.class);
         assertFalse(fromDb == pao);
         assertEquals("retreived PAO differs from saved one", pao, fromDb);
     }
@@ -210,7 +210,7 @@ public class PaoPersistenceDaoImplTest {
 
     @Test
     public void testDeletePao_WEATHER_LOCATION() {
-        CompleteYukonPao pao = new CompleteYukonPao();
+        CompleteWeatherLocation pao = new CompleteWeatherLocation();
         pao.setPaoName("weatherLocationPaoId_delete");
         pao.setDescription("I'm a little description, short and stout.");
         pao.setStatistics("some stats");
