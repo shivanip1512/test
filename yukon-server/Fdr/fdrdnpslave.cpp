@@ -728,13 +728,6 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
         return ControlStatus::NotSupported;
     }
 
-    //  Confirm control offset matches
-    if( (control.offset + 1) != point.getControlOffset() )
-    {
-        CTILOG_WARN(dout, logNow() <<" control offset mismatch" << logPoints(control, point));
-        return ControlStatus::NotSupported;
-    }
-
     std::string commandString;
 
     switch( point.getControlType() )
@@ -1120,13 +1113,6 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
     if( point.getControlOffset() > 0 )
     {
         //  if the point has a control offset, that overrides the analog output point offset...  I think this is correct
-        if( (analog.offset + 1) != point.getControlOffset() )
-        {
-            CTILOG_WARN(dout, logNow() << " analog control offset does not match request offset" << describeAnalogOutputRequest(analog, point));
-
-            return ControlStatus::FormatError;
-        }
-
         analogOffset = point.getControlOffset();
     }
     else
@@ -1135,13 +1121,6 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
         if( point.getPointOffset() <= AnalogOutputStatus::AnalogOutputOffset )
         {
             CTILOG_WARN(dout, logNow() << " analog has no control offset and is not an analog output" << describeAnalogOutputRequest(analog, point));
-
-            return ControlStatus::FormatError;
-        }
-
-        if( (analog.offset + 1) != (point.getPointOffset() % AnalogOutputStatus::AnalogOutputOffset) )
-        {
-            CTILOG_WARN(dout, logNow() << " analog output offset does not match request offset" << describeAnalogOutputRequest(analog, point));
 
             return ControlStatus::FormatError;
         }
