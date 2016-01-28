@@ -63,7 +63,7 @@ public class LM_ServerImpl implements LM_Server
         LiteYukonUser liteYukonUser = init();
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
-        multispeakEventLogService.methodInvoked("SCADAAnalogChangedNotification", vendor.getCompanyName());
+        // multispeakEventLogService.methodInvoked("SCADAAnalogChangedNotification", vendor.getCompanyName()); - stop logging this, it's occurring every minute or more
         
         List<ErrorObject> errorObjects = Lists.newArrayList();
         for (ScadaAnalog scadaAnalog : scadaAnalogs) {
