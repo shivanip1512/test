@@ -61,7 +61,10 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
                     String stringify = JsonUtils.toJson(mapValue);
                     requestToken = JsonUtils.fromJson(stringify, JsonUtils.STRING_TYPE);
                 } catch (IOException e) {
-                    log.error("Error occured in fetching the CSRF token from the request", e);
+                    requestToken = getTokenFromRequest(request);
+                    if (requestToken == null) {
+                        log.error("Error occured in fetching the CSRF token from the request", e);
+                    }
                 }
             }
         } else {
