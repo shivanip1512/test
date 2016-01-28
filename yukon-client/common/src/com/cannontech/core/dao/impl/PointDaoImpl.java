@@ -820,7 +820,7 @@ public class PointDaoImpl implements PointDao {
         String orderByClause = "ORDER BY YPO.paObjectid ASC, P.pointId ASC";
 
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
+        SqlBuilder sqla = builder.buildFor(DatabaseVendor.getMsDatabases());
         sqla.append("SELECT TOP " + limitToRowCount + " YPO.paObjectid, P.pointId");
         sqla.append("FROM YukonPAObject YPO");
         sqla.append("JOIN Point P ON YPO.paObjectId = P.paObjectId");

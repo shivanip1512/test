@@ -278,7 +278,7 @@ public class PointServiceImpl implements PointService {
     @Override
     public int getCountDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute, int limitToRowCount) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
+        SqlBuilder sqla = builder.buildFor(DatabaseVendor.getMsDatabases());
         sqla.append("SELECT COUNT(*)");
         SqlFragmentSource lookupSql = pointDao.getAttributeLookupSqlLimit(attribute, limitToRowCount);
         sqla.append("FROM (").appendFragment(lookupSql).append(") PaoPointLookup");
@@ -290,10 +290,14 @@ public class PointServiceImpl implements PointService {
 
         SqlBuilder sqlb = builder.buildOther();
         sqlb.append("SELECT COUNT(*)");
+        sqlb.append("FROM (");
+        sqlb.append("SELECT * ");
         sqlb.append("FROM (").appendFragment(lookupSql).append(") PaoPointLookup");
         sqlb.append("JOIN Point PT ON PT.pointId = PaoPointLookup.pointId");
         sqlb.append("WHERE");
         sqlb.appendFragment(groupSqlWhereClause);
+        sqlb.append(")");
+        
         return yukonJdbcTemplate.queryForInt(builder);
     }
 
