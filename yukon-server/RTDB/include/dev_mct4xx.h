@@ -207,7 +207,6 @@ protected:
         std::atomic<long> request_id = 0;
 
         unsigned retry;
-        bool failed;
 
     } _llpRequest;
 
