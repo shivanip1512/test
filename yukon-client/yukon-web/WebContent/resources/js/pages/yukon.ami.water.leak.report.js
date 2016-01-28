@@ -52,6 +52,11 @@ yukon.ami.waterLeakReport = (function () {
                 window.location.href = url;
             });
             
+            $('#schedule-report-btn').click(function (ev) {
+                var serializedForm = $('#filter-form').serialize();
+                yukon.ui.dialog('#schedule-report-popup', 'schedule?' + serializedForm);
+            });
+            
             /** Open schedule popup a schedule */
             $(document).on('yukon.ami.water.leak.report.schedule.load', function (ev) {
                 yukon.tag.scheduledFileExportInputs.initializeFields();

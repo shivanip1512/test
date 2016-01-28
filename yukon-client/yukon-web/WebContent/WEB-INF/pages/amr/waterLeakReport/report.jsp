@@ -88,7 +88,7 @@
                     <cti:param name="threshold" value="${filter.threshold}"/>
                 </cti:url>
                 <cti:button id="update-report-btn" nameKey="search" classes="primary action" busy="true" type="submit"/>
-                <cti:button id="schedule-report-btn" nameKey="schedule" icon="icon-calendar-view-day" data-popup="#schedule-report-popup"/>
+                <cti:button id="schedule-report-btn" nameKey="schedule" icon="icon-calendar-view-day"/>
                 <cti:button nameKey="download" icon="icon-page-white-excel" href="${downloadUrl}"/>
                 <cti:button id="intervals-btn" nameKey="intervals" classes="dn"/>
             </div>

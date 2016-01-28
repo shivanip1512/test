@@ -278,6 +278,7 @@ public class WaterLeakReportController {
             }
         } else {
             setupDeviceCollectionFromRequest(filter, request);
+            model.addAttribute("deviceCollection", filter.getDeviceCollection());
             exportData.setThreshold(filter.getThreshold());
             exportData.setDaysOffset(0);
             exportData.setHoursPrevious(25);
