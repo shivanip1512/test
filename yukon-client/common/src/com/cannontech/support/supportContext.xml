@@ -71,9 +71,21 @@
     
     <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
         <property name="zipDirectory" value="Other"/>
+        <property name="fileOrDirName" value="/Server/Config/rfnPointMapping.xml"/>
+        <property name="name" value="rfnPointMappingXmlSource"/>
+    </bean>
+    
+    <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
+        <property name="zipDirectory" value="Other"/>
         <property name="fileOrDirName" value="/Server/Config/paoDefinition.xml"/>
         <property name="name" value="paoDefinitionXmlSource"/>
-    </bean>  
+    </bean> 
+    
+        <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
+        <property name="zipDirectory" value="Other"/>
+        <property name="fileOrDirName" value="/Server/Config/paoDefinition.xml"/>
+        <property name="name" value="paoDefinitionXmlSource"/>
+    </bean>   
     
     <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileWriter"> 
         <property name="zipDirectory" value="Logs/Server"/>
@@ -91,7 +103,7 @@
     <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileWriter"> 
         <property name="zipDirectory" value="Logs/Client/Log"/>
         <property name="dirName" value="/Client/Log/"/>
-        <property name="optional" value="true"/>
+        <property name="optional" value="false"/>
         <property name="name" value="clientLogFilesSource"/>
     </bean> 
 
