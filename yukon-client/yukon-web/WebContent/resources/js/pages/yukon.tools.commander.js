@@ -242,11 +242,12 @@ yukon.tools.commander = (function () {
         return result;
     },
     
-    _handleRequests = function(requests) {
+    _handleRequests = function(requests, logRequest) {
         var req, resp, i = 0, j = 0;
         
         for (i in requests) {
             req = requests[i];
+            if(logRequest) _logRequest(req);
             for (j in req.responses) {
                 resp = req.responses[j];
                 if (_pending[req.id].indexOf(resp.id) === -1) {
@@ -281,7 +282,7 @@ yukon.tools.commander = (function () {
                 data: JSON.stringify(data),
                 dataType: 'json'
             }).done(function (requests, status, xhr) {
-                _handleRequests(requests);
+                _handleRequests(requests, false);
             }).always(function () {
                 setTimeout(_update, 200);
             });
@@ -658,18 +659,14 @@ yukon.tools.commander = (function () {
             
             /** User clicked the refresh button in the console. */
             $('#refresh-console-btn').click(function (ev) {
-                var data = {
-                        requestIds : Object.keys(_pending)
-                    };
-
                 $.ajax({
-                    url: 'commander/requests',
+                    url: 'commander/refresh',
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify(data),
                     dataType: 'json'
                 }).done(function (requests, status, xhr) {
-                    _handleRequests(requests);
+                    $('#commander-results').empty().append('<div>');
+                    _handleRequests(requests, true);
                 });            
             });
             

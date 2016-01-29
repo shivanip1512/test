@@ -262,6 +262,12 @@ public class CommanderController {
         return desired;
     }
     
+    /** Refresh the console. */
+    @RequestMapping(value = "/commander/refresh", method = RequestMethod.POST, produces = json, consumes = json)
+    public @ResponseBody List<CommandRequest> requests(LiteYukonUser user) {
+        return new ArrayList<>(commanderService.getRequests(user).values());
+    }
+    
     /** Execute a command */
     @RequestMapping("/commander/execute")
     public @ResponseBody Map<String, Object> execute(HttpServletResponse resp,
