@@ -239,7 +239,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     
     @Override
     public void unRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
-        log.debug("<> Remove Listener:"+l.getClass()+" point ids="+pointIds);
+        log.debug("[Remove Listener]:"+l.getClass()+" point ids="+pointIds);
         for (Integer id : pointIds) {
             pointIdPointDataListeners.remove(id, l);
         }
@@ -247,8 +247,8 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
     @Override
     public void unRegisterForPointData(PointDataListener l) {
-        log.debug("<> [Remove Listener]:"+l.getClass());
-        log.debug("<> [Remaining Listeners]:"+pointIdPointDataListeners.values());
+        log.debug("[Remove Listener]:"+l.getClass());
+        log.debug("[Remaining Listeners]:"+pointIdPointDataListeners.values());
         pointIdPointDataListeners.values().removeAll(ImmutableSet.of(l));
     }
 
