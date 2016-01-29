@@ -152,12 +152,11 @@ public class CbcServiceImpl implements CbcService {
 
         if (dbPersistent instanceof TwoWayDevice) {
             setDnpFields(dbPersistent, cbc);
+            assignDNPConfig(cbc);
         }
         if (dbPersistent instanceof DeviceBase) {
             setDeviceFields(dbPersistent, cbc);
         }
-
-        assignDNPConfig(cbc);
 
         dbPersistentDao.performDBChange(dbPersistent, TransactionType.UPDATE);
 
