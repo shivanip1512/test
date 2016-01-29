@@ -10,7 +10,7 @@ public class YukonJmsErrorHandler implements ErrorHandler {
 
     @Override
     public void handleError(Throwable t) {
-        log.error("Message Listerner encountered an error: " + t.getMessage());
+        log.error("Message Listener encountered an error: " + t.getMessage());
         t.printStackTrace();
     }
 
