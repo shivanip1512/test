@@ -50,10 +50,9 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         } catch (IOException e) {
             log.error("Error occured in fetching the payload content for the request", e);
         }
+        requestToken = getTokenFromRequest(request);
         if (ServletUtil.isAjaxRequest(request)) {
-            if (Strings.isNullOrEmpty(payload)) {
-                requestToken = getTokenFromRequest(request);
-            } else {
+            if (requestToken == null && !Strings.isNullOrEmpty(payload)) {
                 try {
                     Map<String, Object> data = JsonUtils.fromJson(payload, new TypeReference<Map<String, Object>>() {
                     });
@@ -61,14 +60,9 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
                     String stringify = JsonUtils.toJson(mapValue);
                     requestToken = JsonUtils.fromJson(stringify, JsonUtils.STRING_TYPE);
                 } catch (IOException e) {
-                    requestToken = getTokenFromRequest(request);
-                    if (requestToken == null) {
-                        log.error("Error occured in fetching the CSRF token from the request", e);
-                    }
+                    log.error("Error occured in fetching the CSRF token from the request", e);
                 }
             }
-        } else {
-            requestToken = getTokenFromRequest(request);
         }
         String actualToken = getTokenForSession(request.getSession());
         if (!actualToken.equals(requestToken)) {
