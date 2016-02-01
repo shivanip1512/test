@@ -79,7 +79,7 @@
         <property name="zipDirectory" value="Other"/>
         <property name="fileOrDirName" value="/Server/Config/paoDefinition.xml"/>
         <property name="name" value="paoDefinitionXmlSource"/>
-    </bean> 
+    </bean>
         
     <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileWriter"> 
         <property name="zipDirectory" value="Logs/Server"/>
