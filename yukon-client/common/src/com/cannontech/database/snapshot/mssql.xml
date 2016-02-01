@@ -6795,18 +6795,18 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_EVNTBSE_ACTNTRY</i__foreignKeyName>
+            <i__foreignKeyName>FK_EVNTBSE_SYSCATNTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>ActionID</i__columnName>
+            <i__columnName>SystemCategoryID</i__columnName>
             <i__foreignColumnName>EntryID</i__foreignColumnName>
             <i__foreignTableName>YukonListEntry</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_EVNTBSE_SYSCATNTRY</i__foreignKeyName>
+            <i__foreignKeyName>FK_EVNTBSE_ACTNTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>SystemCategoryID</i__columnName>
+            <i__columnName>ActionID</i__columnName>
             <i__foreignColumnName>EntryID</i__foreignColumnName>
             <i__foreignTableName>YukonListEntry</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -10611,7 +10611,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_PAObj_CCFeed</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCFeeder_YukonPAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>FeederID</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
@@ -10629,7 +10629,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_YUKONPAO2</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSpecArea_YukonPAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>AreaID</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
@@ -10701,7 +10701,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_REFERENCE_YUKONPAO</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCArea_YukonPAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>AreaID</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
@@ -10854,7 +10854,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_REF_YUKONPA2</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSubstation_YukonPAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SubstationID</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
@@ -30889,7 +30889,34 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CapContrSubBus_Point_Switch</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSubBus_Point_DisableBus</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>DisableBusPointId</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CCSubBus_Point_PhaseB</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>phaseb</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CCSubBus_Point_PhaseC</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>phasec</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CCSubBus_Point_Switch</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SwitchPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30898,7 +30925,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CapContrSubBus_Point_VarPt</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSubBus_Point_VarLoad</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentVarLoadPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30907,7 +30934,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CapContrSubBus_Point_VoltPt</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSubBus_Point_VoltLoad</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentVoltLoadPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30916,7 +30943,16 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CapContrSubBus_Point_WattPt</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSubBus_Point_VoltReduct</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>VoltReductionPointId</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CCSubBus_Point_WattLoad</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentWattLoadPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30943,7 +30979,25 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_VARPTID</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCFeeder_Point_PhaseB</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>phaseb</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CCFeeder_Point_PhaseC</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>phasec</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CCFeeder_Point_VarLoad</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentVarLoadPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30952,7 +31006,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_VOLTPTID</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCFeeder_Point_VoltLoad</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentVoltLoadPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30961,7 +31015,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_WATTPTID</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCFeeder_Point_WattLoad</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentWattLoadPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30973,6 +31027,15 @@
             <i__foreignKeyName>GrphDSeris_ptID</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CCSpecArea_Point_VoltReduc</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>VoltReductionPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -31072,6 +31135,15 @@
             <i__foreignKeyName>Ref_ptunit_point</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CCArea_Point_VoltReduction</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>VoltReductionPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -31183,6 +31255,15 @@
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>0</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CCSub_Point_VoltReduct</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>VoltReductionPointId</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -40457,18 +40538,18 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_MacroRoute_Route_SingleRtId</i__foreignKeyName>
+            <i__foreignKeyName>FK_MacroRoute_Route_RouteId</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>SINGLEROUTEID</i__columnName>
+            <i__columnName>ROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
             <i__foreignTableName>Route</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_MacroRoute_Route_RouteId</i__foreignKeyName>
+            <i__foreignKeyName>FK_MacroRoute_Route_SingleRtId</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>ROUTEID</i__columnName>
+            <i__columnName>SINGLEROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
             <i__foreignTableName>Route</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
