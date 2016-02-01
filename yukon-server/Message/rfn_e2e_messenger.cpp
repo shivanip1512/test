@@ -362,7 +362,7 @@ void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callb
     E2eDataRequestMsg msg;
 
     msg.applicationServiceId = static_cast<unsigned char>(asid);
-    msg.highPriority  = true;
+    msg.highPriority  = req.priority > 7;
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
     msg.payload       = req.payload;
