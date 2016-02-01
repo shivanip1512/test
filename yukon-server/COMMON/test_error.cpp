@@ -214,7 +214,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Insufficient SSPEC/Firmware Revision")
     //  270
     ("Verify SSPEC/Firmware Revision")
-    ("Unknown Error Code (271)")
+    ("Invalid future data rejected")
     ("Device Not Supported")
     ("Port not initialized")
     ("Command already in progress")
