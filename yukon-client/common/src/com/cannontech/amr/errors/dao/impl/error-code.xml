@@ -903,12 +903,11 @@
         </troubleshooting>
     </error>
     <error code="271">
-        <category>Transmitter</category>
-        <porter>Transmitter is busy</porter>
-        <description>The transmitter is busy with another request.</description>
+        <category>Data Validation</category>
+        <porter>Invalid future data rejected</porter>
+        <description>Data was rejected because its timestamp was more than a year in the future.</description>
         <troubleshooting>
-            The transmitter is busy with another request, possibly from another system. Attempt the
-            command again.
+            Verify the time settings in the remote device.
         </troubleshooting>
     </error>
     <error code="273">

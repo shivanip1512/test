@@ -134,6 +134,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::InvalidSSPEC,                ei{ ERRTYPESYSTEM,   "Insufficient SSPEC/Firmware Revision"        } },
         { ClientErrors::VerifySSPEC,                 ei{ ERRTYPESYSTEM,   "Verify SSPEC/Firmware Revision"              } },
         { ClientErrors::UnsupportedDevice,           ei{ ERRTYPESYSTEM,   "Device Not Supported"                        } },
+        { ClientErrors::InvalidFutureData,           ei{ ERRTYPESYSTEM,   "Invalid future data rejected"                } },
         { ClientErrors::PortNotInitialized,          ei{ ERRTYPECOMM,     "Port not initialized"                        } },
         { ClientErrors::CommandAlreadyInProgress,    ei{ ERRTYPESYSTEM,   "Command already in progress"                 } },
         { ClientErrors::DeviceNotConnected,          ei{ ERRTYPESYSTEM,   "No connection to device"                     } },

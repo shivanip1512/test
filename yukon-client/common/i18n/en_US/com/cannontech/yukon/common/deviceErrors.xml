@@ -695,10 +695,9 @@
 	<entry key="yukon.web.error.code.270.description">Verification of device SSPEC revision is required.</entry>
 	<entry key="yukon.web.error.code.270.troubleshooting"><![CDATA[Execute 'getconfig model' to verify the device SSPEC revision.]]></entry>
 
-	<entry key="yukon.web.error.code.271.porter">Transmitter is busy</entry>
-	<entry key="yukon.web.error.code.271.description">The transmitter is busy with another request.</entry>
-	<entry key="yukon.web.error.code.271.troubleshooting"><![CDATA[The transmitter is busy with another request, possibly from another system. Attempt the
-            command again.]]></entry>
+	<entry key="yukon.web.error.code.271.porter">Invalid future data rejected</entry>
+	<entry key="yukon.web.error.code.271.description">Data was rejected because its timestamp was more than a year in the future.</entry>
+	<entry key="yukon.web.error.code.271.troubleshooting"><![CDATA[Verify the time settings in the remote device.]]></entry>
 
 	<entry key="yukon.web.error.code.273.porter">Port is not initialized</entry>
 	<entry key="yukon.web.error.code.273.description">The request has been received, but may be delayed
