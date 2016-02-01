@@ -45,6 +45,60 @@ INSERT INTO JobProperty
     ) T;
 /* End YUK-15030 */
 
+/* Start YUK-15019 */
+ALTER TABLE CapControlArea RENAME CONSTRAINT FK_CAPCONTR_REFERENCE_YUKONPAO TO FK_CCArea_YukonPAO;
+
+ALTER TABLE CapControlSpecialArea RENAME CONSTRAINT FK_CAPCONTR_YUKONPAO2 TO FK_CCSpecArea_YukonPAO;
+
+ALTER TABLE CapControlSubstation RENAME CONSTRAINT FK_CAPCONTR_REF_YUKONPA2 TO FK_CCSubstation_YukonPAO;
+
+ALTER TABLE CapControlSubstationBus RENAME CONSTRAINT FK_CapContrSubBus_Point_Switch TO FK_CCSubBus_Point_Switch;
+ALTER TABLE CapControlSubstationBus RENAME CONSTRAINT FK_CapContrSubBus_Point_VarPt TO FK_CCSubBus_Point_VarLoad;
+ALTER TABLE CapControlSubstationBus RENAME CONSTRAINT FK_CapContrSubBus_Point_VoltPt TO FK_CCSubBus_Point_VoltLoad;
+ALTER TABLE CapControlSubstationBus RENAME CONSTRAINT FK_CapContrSubBus_Point_WattPt TO FK_CCSubBus_Point_WattLoad;
+
+ALTER TABLE CapControlFeeder RENAME CONSTRAINT FK_CAPCONTR_VARPTID TO FK_CCFeeder_Point_VarLoad;
+ALTER TABLE CapControlFeeder RENAME CONSTRAINT FK_CAPCONTR_VOLTPTID TO FK_CCFeeder_Point_VoltLoad;
+ALTER TABLE CapControlFeeder RENAME CONSTRAINT FK_CAPCONTR_WATTPTID TO FK_CCFeeder_Point_WattLoad;
+ALTER TABLE CapControlFeeder RENAME CONSTRAINT FK_PAObj_CCFeed TO FK_CCFeeder_YukonPAO;
+
+ALTER TABLE CapControlArea
+   ADD CONSTRAINT FK_CCArea_Point_VoltReduction FOREIGN KEY (VoltReductionPointID)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSpecialArea
+   ADD CONSTRAINT FK_CCSpecArea_Point_VoltReduc FOREIGN KEY (VoltReductionPointID)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstation
+   ADD CONSTRAINT FK_CCSub_Point_VoltReduct FOREIGN KEY (VoltReductionPointId)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstationBus
+   ADD CONSTRAINT FK_CCSubBus_Point_DisableBus FOREIGN KEY (DisableBusPointId)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstationBus
+   ADD CONSTRAINT FK_CCSubBus_Point_PhaseB FOREIGN KEY (PhaseB)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstationBus
+   ADD CONSTRAINT FK_CCSubBus_Point_PhaseC FOREIGN KEY (PhaseC)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstationBus
+   ADD CONSTRAINT FK_CCSubBus_Point_VoltReduct FOREIGN KEY (VoltReductionPointId)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlFeeder
+   ADD CONSTRAINT FK_CCFeeder_Point_PhaseB FOREIGN KEY (PhaseB)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlFeeder
+   ADD CONSTRAINT FK_CCFeeder_Point_PhaseC FOREIGN KEY (PhaseC)
+      REFERENCES Point (PointId);
+/* End YUK-15019 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

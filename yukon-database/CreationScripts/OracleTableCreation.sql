@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/15/2016 11:42:29 AM                        */
+/* Created on:     2/1/2016 10:46:21 AM                         */
 /*==============================================================*/
 
 
@@ -10613,7 +10613,11 @@ alter table CAPBANKADDITIONAL
       references CAPBANK (DEVICEID);
 
 alter table CAPCONTROLAREA
-   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (AreaID)
+   add constraint FK_CCArea_Point_VoltReduction foreign key (VoltReductionPointID)
+      references POINT (POINTID);
+
+alter table CAPCONTROLAREA
+   add constraint FK_CCArea_YukonPAO foreign key (AreaID)
       references YukonPAObject (PAObjectID);
 
 alter table CAPCONTROLCOMMENT
@@ -10627,28 +10631,52 @@ alter table CAPCONTROLCOMMENT
       on delete set null;
 
 alter table CAPCONTROLSPECIALAREA
-   add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
+   add constraint FK_CCSpecArea_Point_VoltReduc foreign key (VoltReductionPointID)
+      references POINT (POINTID);
+
+alter table CAPCONTROLSPECIALAREA
+   add constraint FK_CCSpecArea_YukonPAO foreign key (AreaID)
       references YukonPAObject (PAObjectID);
 
 alter table CAPCONTROLSUBSTATION
-   add constraint FK_CAPCONTR_REF_YUKONPA2 foreign key (SubstationID)
+   add constraint FK_CCSub_Point_VoltReduct foreign key (VoltReductionPointId)
+      references POINT (POINTID);
+
+alter table CAPCONTROLSUBSTATION
+   add constraint FK_CCSubstation_YukonPAO foreign key (SubstationID)
       references YukonPAObject (PAObjectID)
       on delete cascade;
 
 alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CapContrSubBus_Point_Switch foreign key (SwitchPointID)
+   add constraint FK_CCSubBus_Point_DisableBus foreign key (DisableBusPointId)
       references POINT (POINTID);
 
 alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CapContrSubBus_Point_VarPt foreign key (CurrentVarLoadPointID)
+   add constraint FK_CCSubBus_Point_PhaseB foreign key (phaseb)
       references POINT (POINTID);
 
 alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CapContrSubBus_Point_VoltPt foreign key (CurrentVoltLoadPointID)
+   add constraint FK_CCSubBus_Point_PhaseC foreign key (phasec)
       references POINT (POINTID);
 
 alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CapContrSubBus_Point_WattPt foreign key (CurrentWattLoadPointID)
+   add constraint FK_CCSubBus_Point_Switch foreign key (SwitchPointID)
+      references POINT (POINTID);
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint FK_CCSubBus_Point_VarLoad foreign key (CurrentVarLoadPointID)
+      references POINT (POINTID);
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint FK_CCSubBus_Point_VoltLoad foreign key (CurrentVoltLoadPointID)
+      references POINT (POINTID);
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint FK_CCSubBus_Point_VoltReduct foreign key (VoltReductionPointId)
+      references POINT (POINTID);
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint FK_CCSubBus_Point_WattLoad foreign key (CurrentWattLoadPointID)
       references POINT (POINTID);
 
 alter table CAPCONTROLSUBSTATIONBUS
@@ -10907,19 +10935,27 @@ alter table CapBankToZoneMapping
       on delete cascade;
 
 alter table CapControlFeeder
-   add constraint FK_CAPCONTR_VARPTID foreign key (CurrentVarLoadPointID)
+   add constraint FK_CCFeeder_Point_PhaseB foreign key (phaseb)
       references POINT (POINTID);
 
 alter table CapControlFeeder
-   add constraint FK_CAPCONTR_VOLTPTID foreign key (CurrentVoltLoadPointID)
+   add constraint FK_CCFeeder_Point_PhaseC foreign key (phasec)
       references POINT (POINTID);
 
 alter table CapControlFeeder
-   add constraint FK_CAPCONTR_WATTPTID foreign key (CurrentWattLoadPointID)
+   add constraint FK_CCFeeder_Point_VarLoad foreign key (CurrentVarLoadPointID)
       references POINT (POINTID);
 
 alter table CapControlFeeder
-   add constraint FK_PAObj_CCFeed foreign key (FeederID)
+   add constraint FK_CCFeeder_Point_VoltLoad foreign key (CurrentVoltLoadPointID)
+      references POINT (POINTID);
+
+alter table CapControlFeeder
+   add constraint FK_CCFeeder_Point_WattLoad foreign key (CurrentWattLoadPointID)
+      references POINT (POINTID);
+
+alter table CapControlFeeder
+   add constraint FK_CCFeeder_YukonPAO foreign key (FeederID)
       references YukonPAObject (PAObjectID);
 
 alter table CarrierRoute

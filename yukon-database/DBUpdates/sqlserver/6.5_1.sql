@@ -45,6 +45,70 @@ INSERT INTO JobProperty
     ) T;
 /* End YUK-15030 */
 
+/* Start YUK-15019 */
+sp_rename 'FK_CAPCONTR_REFERENCE_YUKONPAO', 'FK_CCArea_YukonPAO', 'OBJECT';
+GO
+sp_rename 'FK_CAPCONTR_YUKONPAO2', 'FK_CCSpecArea_YukonPAO', 'OBJECT';
+GO
+sp_rename 'FK_CAPCONTR_REF_YUKONPA2', 'FK_CCSubstation_YukonPAO', 'OBJECT';
+GO
+
+sp_rename 'FK_CapContrSubBus_Point_Switch', 'FK_CCSubBus_Point_Switch', 'OBJECT';
+GO
+sp_rename 'FK_CapContrSubBus_Point_VarPt', 'FK_CCSubBus_Point_VarLoad', 'OBJECT';
+GO
+sp_rename 'FK_CapContrSubBus_Point_VoltPt', 'FK_CCSubBus_Point_VoltLoad', 'OBJECT';
+GO
+sp_rename 'FK_CapContrSubBus_Point_WattPt', 'FK_CCSubBus_Point_WattLoad', 'OBJECT';
+GO
+
+sp_rename 'FK_CAPCONTR_VARPTID', 'FK_CCFeeder_Point_VarLoad', 'OBJECT';
+GO
+sp_rename 'FK_CAPCONTR_VOLTPTID', 'FK_CCFeeder_Point_VoltLoad', 'OBJECT';
+GO
+sp_rename 'FK_CAPCONTR_WATTPTID', 'FK_CCFeeder_Point_WattLoad', 'OBJECT';
+GO
+sp_rename 'FK_PAObj_CCFeed', 'FK_CCFeeder_YukonPAO', 'OBJECT';
+GO
+
+ALTER TABLE CapControlArea
+   ADD CONSTRAINT FK_CCArea_Point_VoltReduction FOREIGN KEY (VoltReductionPointID)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSpecialArea
+   ADD CONSTRAINT FK_CCSpecArea_Point_VoltReduc FOREIGN KEY (VoltReductionPointID)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstation
+   ADD CONSTRAINT FK_CCSub_Point_VoltReduct FOREIGN KEY (VoltReductionPointId)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstationBus
+   ADD CONSTRAINT FK_CCSubBus_Point_DisableBus FOREIGN KEY (DisableBusPointId)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstationBus
+   ADD CONSTRAINT FK_CCSubBus_Point_PhaseB FOREIGN KEY (PhaseB)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstationBus
+   ADD CONSTRAINT FK_CCSubBus_Point_PhaseC FOREIGN KEY (PhaseC)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlSubstationBus
+   ADD CONSTRAINT FK_CCSubBus_Point_VoltReduct FOREIGN KEY (VoltReductionPointId)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlFeeder
+   ADD CONSTRAINT FK_CCFeeder_Point_PhaseB FOREIGN KEY (PhaseB)
+      REFERENCES Point (PointId);
+
+ALTER TABLE CapControlFeeder
+   ADD CONSTRAINT FK_CCFeeder_Point_PhaseC FOREIGN KEY (PhaseC)
+      REFERENCES Point (PointId);
+GO
+/* End YUK-15019 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
