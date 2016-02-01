@@ -99,6 +99,14 @@ ALTER TABLE CapControlFeeder
       REFERENCES Point (PointId);
 /* End YUK-15019 */
 
+/* Start YUK-15052 */
+INSERT INTO Device
+SELECT PaobjectId, 'N', 'N'
+FROM YukonPAObject
+WHERE Type = 'WEATHER LOCATION'
+  AND PAObjectID NOT IN (SELECT DeviceID FROM Device);
+/* End YUK-15052 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
