@@ -2891,7 +2891,7 @@ YukonError_t CtiVanGogh::checkMultiDataStateQuality(CtiMultiMsg  *pMulti, CtiMul
         {
             if( const auto status = checkDataStateQuality(*itr, aWrap) )
             {
-                CTILOG_WARN(dout, "Pointdata filtered " << static_cast<unsigned>(status) << " " << GetErrorString(status) << *itr);
+                CTILOG_WARN(dout, "Pointdata filtered " << static_cast<unsigned>(status) << " " << GetErrorString(status) << **itr);
 
                 itr = bag.erase(itr);
             }
