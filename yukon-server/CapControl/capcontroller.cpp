@@ -3481,7 +3481,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 currentCapBank->setUDPPort(twoWayPts.getPointValueByAttribute(PointAttribute::UDPPortNumber));
                             }
                             else if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredReason) == pointID &&
-                                     timestamp >= currentCapBank->getIgnoreIndicatorTimeUpdated() )
+                                     timestamp > currentCapBank->getIgnoreIndicatorTimeUpdated() )
                             {
                                 currentCapBank->setIgnoreIndicatorTimeUpdated(timestamp);
                                 currentCapBank->setIgnoredReason(value);
@@ -3817,7 +3817,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
             if ( twoWayPts.checkDeltaVoltageRejection() )
             {
                 currentCapBank->setPercentChangeString(" Rejection by Delta Voltage ");
-                text1 += " delta";
+                text1 += " Delta Voltage";
             }
         }
     }
@@ -3880,6 +3880,34 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
                                                "Command Refused, Feeder opCount adjustment",
                                                userName ) );
         }
+    }
+
+    if ( currentSubstationBus->getDailyOperationsAnalogPointId() > 0 &&
+         currentSubstationBus->getCurrentDailyOperations() > 0 )
+    {
+        currentSubstationBus->setCurrentDailyOperations( currentSubstationBus->getCurrentDailyOperations() - 1 );
+
+        getDispatchConnection()->WriteConnQue(
+            new CtiPointDataMsg( currentSubstationBus->getDailyOperationsAnalogPointId(),
+                                 currentSubstationBus->getCurrentDailyOperations(),
+                                 NormalQuality,
+                                 AnalogPointType,
+                                 "Command Refused, Forced ccServer Update",
+                                 TAG_POINT_FORCE_UPDATE), CALLSITE);
+
+        ccEvents.push_back(
+            EventLogEntry( 0,
+                           currentSubstationBus->getDailyOperationsAnalogPointId(),
+                           spAreaId,
+                           areaId,
+                           stationId,
+                           currentSubstationBus->getPaoId(),
+                           currentFeeder->getPaoId(),
+                           capControlSetOperationCount,
+                           currentSubstationBus->getEventSequence(),
+                           currentSubstationBus->getCurrentDailyOperations(),
+                           "Command Refused, SubBus opCount adjustment",
+                           userName ) );
     }
 
     enqueueEventLogEntries(ccEvents);
