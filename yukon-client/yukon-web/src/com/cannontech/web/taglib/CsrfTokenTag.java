@@ -27,7 +27,7 @@ public class CsrfTokenTag extends YukonTagSupport {
 
         JspWriter out = getJspContext().getOut();
         if (var == null) {
-            out.print("<input type=\"hidden\" name=\""+CsrfTokenService.REQUEST_CSRF_TOKEN+"\" value=\""+token+"\">");
+            out.print("<input type=\"hidden\" id=\"ajax-csrf-token\" name=\""+CsrfTokenService.REQUEST_CSRF_TOKEN+"\" value=\""+token+"\">");
         } else {
             getJspContext().setAttribute(var, token);
         }

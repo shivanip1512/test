@@ -10,6 +10,7 @@
     <div class="column one">
         <cti:url var="url" value="/login/authenticated/change-password"/>
         <form:form id="change-password-form" action="${url}" method="post" commandName="login">
+            <cti:csrfToken />
             <form:hidden path="userId" cssClass="js-user-id"/>
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".oldPassword">
