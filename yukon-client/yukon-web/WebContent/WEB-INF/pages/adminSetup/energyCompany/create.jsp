@@ -30,30 +30,8 @@
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
                 
-                <tags:sectionContainer2 nameKey="groups">
-                    
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".primaryOperatorGroup" rowClass="pickerRow">
-                            <tags:pickerDialog type="userGroupPicker" id="primaryOperatorUserGroupPicker" selectionProperty="userGroupName"
-                                destinationFieldId="primaryOperatorUserGroupId" linkType="selection" immediateSelectMode="true"/>
-                            <tags:hidden path="primaryOperatorUserGroupId" id="primaryOperatorUserGroupId"/>
-                        </tags:nameValue2>
-                        
-                        <tags:nameValue2 nameKey=".additionalOperatorGroups" rowClass="pickerRow">
-                            <tags:pickerDialog type="userGroupPicker" id="additionalOperatorUserGroupPicker" selectionProperty="userGroupName"
-                                destinationFieldId="operatorUserGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
-                        </tags:nameValue2>
-
-                        <tags:nameValue2 nameKey=".residentialGroups" rowClass="pickerRow">
-                            <tags:pickerDialog type="userGroupPicker" id="residentialUserGroupPicker" selectionProperty="userGroupName"
-                                destinationFieldId="residentialUserGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
-                        </tags:nameValue2>
-                        
-                    </tags:nameValueContainer2>
-                    
-                </tags:sectionContainer2>
-                
             </div>
+            
             <div class="column two nogutter">
                 
                 <tags:sectionContainer2 nameKey="defaultOperatorUser">
@@ -70,6 +48,32 @@
                 </tags:sectionContainer2>
                 
             </div>
+        </div>
+        
+        <div>
+                        
+            <tags:sectionContainer2 nameKey="groups">
+                
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".primaryOperatorGroup" rowClass="pickerRow">
+                        <tags:pickerDialog type="userGroupPicker" id="primaryOperatorUserGroupPicker" selectionProperty="userGroupName"
+                            destinationFieldId="primaryOperatorUserGroupId" linkType="selection" immediateSelectMode="true"/>
+                        <tags:hidden path="primaryOperatorUserGroupId" id="primaryOperatorUserGroupId"/>
+                    </tags:nameValue2>
+                    
+                    <tags:nameValue2 nameKey=".additionalOperatorGroups" rowClass="pickerRow">
+                        <tags:pickerDialog type="userGroupPicker" id="additionalOperatorUserGroupPicker" selectionProperty="userGroupName"
+                            destinationFieldId="operatorUserGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
+                    </tags:nameValue2>
+
+                    <tags:nameValue2 nameKey=".residentialGroups" rowClass="pickerRow">
+                        <tags:pickerDialog type="userGroupPicker" id="residentialUserGroupPicker" selectionProperty="userGroupName"
+                            destinationFieldId="residentialUserGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
+                    </tags:nameValue2>
+                    
+                </tags:nameValueContainer2>
+                
+            </tags:sectionContainer2>
         </div>
         
         <div class="page-action-area">
