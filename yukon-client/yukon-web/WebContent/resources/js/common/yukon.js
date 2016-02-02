@@ -706,16 +706,23 @@ $(function () {
                     type = 'urlEncode';
                     data = settings.data;
                     var joiner = '';
-                    if(data.indexOf('?') === -1){
-                        if(data.indexOf('=') === -1){
-                            joiner = '?';
+                    if(data!= ""){
+                    	if(data.indexOf('?') === -1){
+                            if(data.indexOf('=') === -1){
+                                joiner = '?';
+                            }else{
+                                joiner = '&';
+                            }
                         }else{
                             joiner = '&';
                         }
+                        data = data + joiner + $.param(csrfData);
                     }else{
-                        joiner = '&';
+                        var mapData = {"com.cannontech.yukon.request.csrf.token" : csrfVal};
+                        data = JSON.stringify(mapData);
                     }
-                    data = data + joiner + $.param(csrfData);
+                    
+                    
                 }
             }
            
