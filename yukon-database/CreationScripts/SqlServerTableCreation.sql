@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/1/2016 10:48:18 AM                         */
+/* Created on:     2/1/2016 5:32:04 PM                          */
 /*==============================================================*/
 
 
@@ -8409,9 +8409,9 @@ INSERT INTO State VALUES(-20, 10, 'Ia', 2, 6, 0);
 INSERT INTO State VALUES(-20, 11, 'Ib', 3, 6, 0);
 INSERT INTO State VALUES(-20, 12, 'Ic', 4, 6, 0);
 INSERT INTO State VALUES(-20, 13, 'Temp', 5, 6, 0);
-INSERT INTO State VALUES(-20, 15, 'Time', 7, 6, 0);
 INSERT INTO State VALUES(-20, 17, 'Bad Active Relay', 8, 6, 0);
 INSERT INTO State VALUES(-20, 18, 'NC Lockout', 9, 6, 0);
+INSERT INTO State VALUES(-20, 19, 'Control Accepted', 7, 6, 0);
 INSERT INTO State VALUES(-20, 20, 'Auto Mode', 10, 6, 0);
 INSERT INTO State VALUES(-20, 21, 'Reclose Block', 1, 6, 0);
 INSERT INTO State VALUES(-19, 0, 'Success', 0, 6, 0);
@@ -8438,6 +8438,7 @@ INSERT INTO State VALUES(-17, 12, 'Ic', 5, 6, 0);
 INSERT INTO State VALUES(-17, 13, 'Temp', 7, 6, 0);
 INSERT INTO State VALUES(-17, 14, 'Remote', 8, 6, 0);
 INSERT INTO State VALUES(-17, 15, 'Time', 1, 6, 0);
+INSERT INTO State VALUES(-17, 16, 'N/A', 2, 6, 0);
 INSERT INTO State VALUES(-16, 0, 'Cleared', 0, 6, 0);
 INSERT INTO State VALUES(-16, 1, 'Active', 1, 6, 0);
 INSERT INTO State VALUES(-15, 0, 'No Signal', 0, 6, 0); 

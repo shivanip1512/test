@@ -26,12 +26,21 @@ INSERT INTO State VALUES(-20, 10, 'Ia', 2, 6, 0);
 INSERT INTO State VALUES(-20, 11, 'Ib', 3, 6, 0);
 INSERT INTO State VALUES(-20, 12, 'Ic', 4, 6, 0);
 INSERT INTO State VALUES(-20, 13, 'Temp', 5, 6, 0);
-INSERT INTO State VALUES(-20, 15, 'Time', 7, 6, 0);
 INSERT INTO State VALUES(-20, 17, 'Bad Active Relay', 8, 6, 0);
 INSERT INTO State VALUES(-20, 18, 'NC Lockout', 9, 6, 0);
+INSERT INTO State VALUES(-20, 19, 'Control Accepted', 7, 6, 0);
 INSERT INTO State VALUES(-20, 20, 'Auto Mode', 10, 6, 0);
 INSERT INTO State VALUES(-20, 21, 'Reclose Block', 1, 6, 0);
+
+INSERT INTO State VALUES(-17, 16, 'N/A', 2, 6, 0);
 /* @error ignore-end */
+
+UPDATE Point 
+SET StateGroupId = -20
+WHERE PAObjectID IN (SELECT PAObjectID FROM YukonPAObject WHERE TYPE LIKE 'CBC 8%')
+  AND PointOffset = 114
+  AND PointType = 'Analog'
+  AND StateGroupId = 0;
 /* End YUK-14987 */
 
 /* Start YUK-15030 */
