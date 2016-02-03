@@ -319,7 +319,11 @@ public class CapBankDevice extends StreamableCapObject {
     }
 
     public static String getIgnoreReason(int idx) {
-        return IGNORE_REASON[idx];
+        if (idx >= 0 && idx < IGNORE_REASON.length) {
+            return IGNORE_REASON[idx];
+        }
+        // let's at least protect against an out of bounds value.
+        return "UNDEFINED";
     }
 
     public double getTripOrder() {

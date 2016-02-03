@@ -11555,6 +11555,7 @@
                 <multiplier value="1.0" />
                 <unitofmeasure value="Undefined" />
                 <decimalplaces value="0" />
+                <analogstategroup value="Ignored Control"/>
             </point>
             <point type="Analog" offset="9999">
                 <init>true</init>

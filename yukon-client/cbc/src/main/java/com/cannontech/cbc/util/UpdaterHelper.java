@@ -18,7 +18,10 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -26,10 +29,12 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -147,6 +152,8 @@ public class UpdaterHelper {
         new Color(240, 145, 0) 
     };
     
+    @Autowired private AttributeService attributeService;
+    @Autowired private StateDao stateDao;
     private DateFormattingService dateFormattingService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private PaoLoadingService paoLoadingService;
@@ -159,15 +166,7 @@ public class UpdaterHelper {
         if (capBank == null) return "";
         
         Integer controlDeviceId = capBank.getControlDeviceID();
-        String controllerName = null;
-        
-        if (controlDeviceId != 0) {
-            PaoIdentifier pao = new PaoIdentifier(controlDeviceId, PaoType.getForDbString(capBank.getCcType()));
-            controllerName = paoLoadingService.getDisplayablePao(pao).getName();
-        } else {
-            controllerName = accessor.getMessage("yukon.common.dashes");
-        }
-        
+
         switch (dataType) {
         
         case CB_NAME_COLUMN: {
@@ -190,6 +189,22 @@ public class UpdaterHelper {
             String currentState = capBankState.getStateText();
             boolean showIgnoreReason = capBank.isIgnoreFlag();
             
+            String ignoreReasonStr = null;
+            // Load the ignoreReason value. Use the IGNORED_CONTROL_REASON attribute, if exists AND not the system state. Else, use CapBankDevice.IGNORE_REASON enum.
+            if (controlDeviceId != 0) {
+                PaoIdentifier pao = new PaoIdentifier(controlDeviceId, PaoType.getForDbString(capBank.getControlDeviceType()));
+                LitePoint ignoredControlReasonPoint = attributeService.findPointForAttribute(pao, BuiltInAttribute.IGNORED_CONTROL_REASON);
+                if (ignoredControlReasonPoint != null && ignoredControlReasonPoint.getStateGroupID() != StateGroupUtils.SYSTEM_STATEGROUPID) {
+                    LiteState liteState = stateDao.findLiteState(ignoredControlReasonPoint.getStateGroupID(), capBank.getIgnoreReason());
+                    if (liteState != null) {
+                        ignoreReasonStr = liteState.getStateText();
+                    }
+                }
+            }
+            if (ignoreReasonStr == null) { // if we haven't loaded anything yet, try this default
+                ignoreReasonStr = CapBankDevice.getIgnoreReason(capBank.getIgnoreReason());
+            }
+
             if (isCapBankDisabled) {
                 String disStateString = accessor.getMessage(keyPrefix + "disabled") + " : " + (isFixedState ? fixedLabel : currentState);
                 disStateString += capBank.getControlStatusQualityString();
@@ -197,7 +212,7 @@ public class UpdaterHelper {
                     disStateString += accessor.getMessage(keyPrefix + "ovuvDisabled");
                 }
                 
-                disStateString += (showIgnoreReason ? " " + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
+                disStateString += (showIgnoreReason ? " " + ignoreReasonStr : "");
                 return disStateString;
             } 
             
@@ -214,7 +229,7 @@ public class UpdaterHelper {
             if (capBank.getOvUVDisabled()) {
                 enStateString += accessor.getMessage(keyPrefix + "ovuvDisabled");
             }
-            enStateString += (showIgnoreReason ? " " + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
+            enStateString += (showIgnoreReason ? " " + ignoreReasonStr : "");
             return enStateString;
         }
         
@@ -269,6 +284,15 @@ public class UpdaterHelper {
         }
 
         case CB_CONTROLLER:{
+            String controllerName = null;
+            
+            if (controlDeviceId != 0) {
+                PaoIdentifier pao = new PaoIdentifier(controlDeviceId, PaoType.getForDbString(capBank.getControlDeviceType()));
+                controllerName = paoLoadingService.getDisplayablePao(pao).getName();
+            } else {
+                controllerName = accessor.getMessage("yukon.common.dashes");
+            }
+            
             return controllerName;
         }
 
