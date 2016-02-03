@@ -24,6 +24,8 @@ yukon.da.cbc = (function () {
 
         $('.js-two-way').toggleClass('dn', !isTwoWay);
         $('.js-one-way').toggleClass('dn', isTwoWay);
+        
+        updateCommPortFields();
     };
 
     /**

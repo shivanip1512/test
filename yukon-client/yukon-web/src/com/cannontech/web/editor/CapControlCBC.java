@@ -196,9 +196,21 @@ public class CapControlCBC implements YukonPao {
     public boolean isEditingIntegrity() {
         return isTwoWay() && (this.deviceScanRateMap.containsKey(DeviceScanRate.TYPE_INTEGRITY));
     }
+    
+    public void setEditingIntegrity(boolean editingIntegrity) {
+        if(!editingIntegrity){
+            this.deviceScanRateMap.remove(DeviceScanRate.TYPE_INTEGRITY);
+        }
+    }
 
     public boolean isEditingException() {
         return isTwoWay() && (this.deviceScanRateMap.containsKey(DeviceScanRate.TYPE_EXCEPTION));
+    }
+    
+    public void setEditingException(boolean editingException) {
+        if(!editingException){
+            this.deviceScanRateMap.remove(DeviceScanRate.TYPE_EXCEPTION);
+        }
     }
 
     public static enum ScanGroup implements DisplayableEnum {

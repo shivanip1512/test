@@ -67,7 +67,7 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".slaveAddr" rowClass="${twoWayClass}">
                             <tags:input path="deviceAddress.slaveAddress" />
-                        </tags:nameValue2>
+                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".commChannel" rowClass="${twoWayClass}">
                             <tags:selectWithItems
@@ -92,18 +92,18 @@
                         <tags:nameValueGap2/>
                         <tags:nameValueGap2/>
                         <tags:nameValue2 nameKey=".integrityScanRate" rowClass="${twoWayClass}">
-                            <tags:switchButton path="editingIntegrity" />
+                            <tags:switchButton path="editingIntegrity" toggleGroup="integrity" toggleAction="hide"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".interval" rowClass="${twoWayClass}">
+                        <tags:nameValue2 nameKey=".interval" data-toggle-group="integrity">
                             <tags:intervalStepper path="deviceScanRateMap['Integrity'].intervalRate"
                                 intervals="${timeIntervals}"
                                 id="scan1" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".altInterval" rowClass="${twoWayClass}">
+                        <tags:nameValue2 nameKey=".altInterval" data-toggle-group="integrity">
                             <tags:intervalStepper path="deviceScanRateMap['Integrity'].alternateRate"
                                 intervals="${timeIntervals}" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".scanGroup" rowClass="${twoWayClass}">
+                        <tags:nameValue2 nameKey=".scanGroup" data-toggle-group="integrity">
                             <div class="button-group">
                                 <c:forEach var="scanGroup"
                                     items="${scanGroups}">
@@ -120,17 +120,17 @@
                         <tags:nameValueGap2/>
                         <tags:nameValueGap2/>
                         <tags:nameValue2 nameKey=".exceptionScanRate" rowClass="${twoWayClass}">
-                            <tags:switchButton path="editingIntegrity" />
+                            <tags:switchButton path="editingException" toggleGroup="exception" toggleAction="hide"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".interval"  rowClass="${twoWayClass}">
+                        <tags:nameValue2 nameKey=".interval" data-toggle-group="exception">
                             <tags:intervalStepper path="deviceScanRateMap['Exception'].intervalRate"
                                 intervals="${timeIntervals}" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".altInterval" rowClass="${twoWayClass}">
+                        <tags:nameValue2 nameKey=".altInterval" data-toggle-group="exception">
                             <tags:intervalStepper path="deviceScanRateMap['Exception'].alternateRate"
                                 intervals="${timeIntervals}" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".scanGroup" rowClass="${twoWayClass}">
+                        <tags:nameValue2 nameKey=".scanGroup" data-toggle-group="exception">
                             <div class="button-group">
                                 <c:forEach var="scanGroup" items="${scanGroups}">
                                     <tags:radio path="deviceScanRateMap['Exception'].scanGroup"

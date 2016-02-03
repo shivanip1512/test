@@ -1,5 +1,7 @@
 package com.cannontech.web.capcontrol.service.impl;
 
+import java.util.HashMap;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -73,6 +75,7 @@ public class CbcServiceImpl implements CbcService {
         cbc.setName(deviceBase.getPAOName());
         cbc.setId(deviceBase.getPAObjectID());
         cbc.setPaoType(deviceBase.getPaoType());
+        cbc.setDisableFlag(pao.getDisableFlag() == "Y" ? true : false);
         PaoIdentifier capbank = capbankDao.findCapBankByCbc(id);
 
         if (capbank != null) {
@@ -233,6 +236,7 @@ public class CbcServiceImpl implements CbcService {
         dnpBase.getDeviceAddress().setPostCommWait(cbc.getDeviceAddress().getPostCommWait());
         dnpBase.getDeviceDirectCommSettings().setPortID(cbc.getDeviceDirectCommSettings().getPortID());
 
+        dnpBase.setDeviceScanRateMap(new HashMap<String, DeviceScanRate>());
         if (cbc.getDeviceScanRateMap().containsKey("Exception")) {
             if (dnpBase.getDeviceScanRateMap().get("Exception") == null)
                 dnpBase.getDeviceScanRateMap().put("Exception", new DeviceScanRate(id, "Exception"));
@@ -252,6 +256,14 @@ public class CbcServiceImpl implements CbcService {
                 (cbc.getDeviceScanRateMap().get("Integrity").getScanGroup()));
             dnpBase.getDeviceScanRateMap().get("Integrity").setIntervalRate(
                 (cbc.getDeviceScanRateMap().get("Integrity").getIntervalRate()));
+        }
+        
+        PaoType paoType = cbc.getPaoType();
+        int portId = dnpBase.getDeviceDirectCommSettings().getPortID();
+
+        if (paoType.isTcpPortEligible() && DeviceTypesFuncs.isTcpPort(portId)) {
+            dnpBase.setIpAddress(cbc.getIpAddress());
+            dnpBase.setPort(cbc.getPort());
         }
     }
 
