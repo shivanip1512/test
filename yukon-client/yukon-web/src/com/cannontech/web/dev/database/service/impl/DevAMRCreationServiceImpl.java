@@ -1,6 +1,7 @@
 package com.cannontech.web.dev.database.service.impl;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,8 @@ import com.google.common.collect.Lists;
 public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements DevAMRCreationService {
     
     private static final ReentrantLock _lock = new ReentrantLock();
+    private static final int delayTimeInSeconds = 3;
+    private static final int createMetersBeforeDelay = 100;
 
     @Override
     public boolean isRunning() {
@@ -196,10 +199,19 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         createdMeters.addAll(createCartMeters(devAMR));
         createdMeters.addAll(createRfnTemplateMeters(devAMR));
         int addressCount = 0;
+        int delayCount = createMetersBeforeDelay;
         int address = devAMR.getAddressRangeMin();
         for (DevPaoType meterType: devAMR.getMeterTypes()) {
             if (meterType.isCreate()) {
                 for (int i = 0; i < devAMR.getNumAdditionalMeters(); i++) {
+                    if (addressCount == delayCount) {
+                        try {
+                            log.debug("----Delaying " + delayTimeInSeconds + " seconds.");
+                            TimeUnit.SECONDS.sleep(delayTimeInSeconds);
+                            delayCount += createMetersBeforeDelay;
+                            log.debug("----Delaying done. Next delay after " + delayCount + " devices created.");
+                        } catch (InterruptedException e) {}
+                    }
                     address = devAMR.getAddressRangeMin() + addressCount;
                     String meterName = meterType.getPaoType().getPaoTypeName() + " " + address;
                     YukonPao meter;
@@ -217,6 +229,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
                 }
             }
         }
+        log.info("Done Creating Meters ...");
         return createdMeters;
     }
     
