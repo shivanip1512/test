@@ -10,10 +10,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -37,7 +41,9 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
 
     @Autowired private AsyncDynamicDataSource asyncDataSource;
     @Autowired private PointFormattingService pointFormattingService;
+    @Autowired private ConfigurationSource configSource;
 
+    private boolean alwaysRegisterForPoints;
     private final static int maxCacheSize = 5000;
     private final static Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
     private Cache<Integer, DatedPointValue> cache =
@@ -78,6 +84,40 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
     }
         
     private List<DatedPointValue> getLatestValues(Set<Integer> pointIds, long afterDate, boolean canWait) {
+        //YUK-14972
+        if(alwaysRegisterForPoints){
+            return getLatestValuesAndAlwaysRegisterForPoints(pointIds, afterDate, canWait); 
+        }else{
+            return getLatestValuesAndRegisterForPointsOnlyOnce(pointIds, afterDate, canWait);
+        }
+    }
+    
+    /**
+     * Registers for points every time the methods is called.
+     */
+    private List<DatedPointValue> getLatestValuesAndAlwaysRegisterForPoints(Set<Integer> pointIds, long afterDate,
+            boolean canWait) {
+        asyncDataSource.registerForPointData(this, pointIds);
+        List<DatedPointValue> values = new ArrayList<>();
+        for (Integer pointId : pointIds) {
+            DatedPointValue value = cache.getIfPresent(pointId);
+            if (value == null && canWait) {
+                PointValueQualityHolder pointValue = asyncDataSource.getPointValue(pointId);
+                value = new DatedPointValue(pointValue);
+                cache.put(pointId, value);
+            }
+            if (value != null && value.receivedTime >= afterDate) {
+                values.add(value);
+            }
+        }
+        return values;
+    }
+    
+    /**
+     * Registers for points only when we are trying to get values for the first time.
+     */
+    private List<DatedPointValue> getLatestValuesAndRegisterForPointsOnlyOnce(Set<Integer> pointIds, long afterDate,
+            boolean canWait) {
         Set<Integer> pointsToRegister = new HashSet<>();
         List<DatedPointValue> values = new ArrayList<>();
         for (Integer pointId : pointIds) {
@@ -91,7 +131,7 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
             }
         }
         if (!pointsToRegister.isEmpty()) {
-            log.debug("Registering points"+ pointsToRegister);
+            log.debug("Registering points" + pointsToRegister);
             Set<? extends PointValueQualityHolder> points =
                 asyncDataSource.getAndRegisterForPointData(this, pointsToRegister);
             for (PointValueQualityHolder point : points) {
@@ -179,5 +219,10 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
         DatedPointValue value = new DatedPointValue(pointData);
         log.debug("Added Point data to cache for point id=" + pointData.getId());
         cache.put(pointData.getId(), value);
+    }
+    
+    @PostConstruct
+    private void init(){
+        alwaysRegisterForPoints = configSource.getBoolean(MasterConfigBoolean.POINT_UPDATE_REGISTRATION, true);
     }
 }
