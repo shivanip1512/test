@@ -15,6 +15,7 @@ public:
 
     virtual bool controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points ) = 0;
     virtual bool checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points ) = 0;
+    virtual bool checkControlAccepted( const CtiCCTwoWayPoints & points ) = 0;
 
     virtual bool serializeIndicator( const CtiCCTwoWayPoints & points ) = 0;
     virtual long serializeReason( const CtiCCTwoWayPoints & points ) = 0;
@@ -35,6 +36,7 @@ public:
 
     bool controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points ) override;
     bool checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points ) override;
+    bool checkControlAccepted( const CtiCCTwoWayPoints & points ) override;
 
     bool serializeIndicator( const CtiCCTwoWayPoints & points ) override;
     long serializeReason( const CtiCCTwoWayPoints & points ) override;
@@ -55,6 +57,7 @@ public:
 
     bool controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points ) override;
     bool checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points ) override;
+    bool checkControlAccepted( const CtiCCTwoWayPoints & points ) override;
 
     bool serializeIndicator( const CtiCCTwoWayPoints & points ) override;
     long serializeReason( const CtiCCTwoWayPoints & points ) override;
@@ -104,6 +107,7 @@ public:
 
     bool controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points ) override;
     bool checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points ) override;
+    bool checkControlAccepted( const CtiCCTwoWayPoints & points ) override;
 
     bool serializeIndicator( const CtiCCTwoWayPoints & points ) override;
     long serializeReason( const CtiCCTwoWayPoints & points ) override;
@@ -131,12 +135,12 @@ protected:
         Ib,
         Ic,
         Temp,
-        Remote,
-        Time,
+        Unused_14,
+        Unused_15,
         Unused_16,
         BadActiveRelay,
         NCLockout,
-        Unused_19,
+        ControlAccepted,
         AutoMode,
         RecloseBlock
     };

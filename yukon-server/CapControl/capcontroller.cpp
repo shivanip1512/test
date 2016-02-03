@@ -3487,7 +3487,10 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 currentCapBank->setIgnoredReason(value);
                                 currentSubstationBus->setBusUpdatedFlag(true);
 
-                                store->insertRejectedCapBankList(currentCapBank);
+                                if ( ! twoWayPts.isControlAccepted() )  // stuff it on the list unless it is a CBC-8000 'Control Accepted' (19) response
+                                {
+                                    store->insertRejectedCapBankList(currentCapBank);
+                                }
                             }
 
                             if ( currentCapBank->getPointIdByAttribute( PointAttribute::LastControlReason ) == pointID )

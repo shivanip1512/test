@@ -29,6 +29,7 @@ public:
     std::string getIgnoredControlText();
     bool controlRejectedByVoltageLimits();
     bool checkDeltaVoltageRejection();
+    bool isControlAccepted();
 
     void setPAOId(long paoId);
 

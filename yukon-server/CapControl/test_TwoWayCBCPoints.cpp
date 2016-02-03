@@ -81,7 +81,8 @@ public:
             { 11, "Battra"                  },
             { 12, "Megalon"                 },
             { 13, "Baragon"                 },
-            { 14, "Ebirah"                  }
+            { 14, "Ebirah"                  },
+            { 19, "Control Accepted"        }       // sigh...
         };
 
         if ( auto result = Cti::mapFind( _lookup, reason ) )
@@ -127,6 +128,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
     BOOST_CHECK_EQUAL( "Uninitialized", points->getIgnoredControlText() );
 
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 }
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
@@ -368,6 +370,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Local", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -375,6 +378,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "FaultCurrent", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -382,6 +386,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "EmVolt", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -389,6 +394,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Time", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -396,6 +402,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Voltage", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( true, points->controlRejectedByVoltageLimits() );    // <--- yeah, this guy...
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     {   // Check delta voltage related math
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -451,6 +458,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Digital1", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -458,6 +466,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Analog1", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -465,6 +474,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Digital2", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -472,6 +482,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Analog2", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -479,6 +490,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Digital3", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -486,6 +498,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Analog3", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -493,6 +506,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Digital4", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -500,6 +514,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Temp", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -507,6 +522,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "Remote", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -514,6 +530,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "NtrlLockOut", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -521,6 +538,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "BrownOut", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -528,6 +546,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "BadActRelay", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
@@ -535,6 +554,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     BOOST_CHECK_EQUAL( "unknown", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
 }
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
@@ -791,6 +811,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Godzilla", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -798,6 +819,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Ghidorah", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -805,6 +827,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Mechagodzilla", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -812,6 +835,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Biollante", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -819,6 +843,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Mothra", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -826,6 +851,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Destoroyah", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( true, points.controlRejectedByVoltageLimits() );    // <--- yeah, this guy...
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     {   // Check delta voltage related math
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -881,6 +907,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Anguirus", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -888,6 +915,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Orga", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -895,6 +923,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Hedorah", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -902,6 +931,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Rodan", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -909,6 +939,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Megaguirus", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -916,6 +947,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Battra", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -923,6 +955,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Megalon", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -930,6 +963,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Baragon", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -937,6 +971,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Ebirah", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
@@ -944,6 +979,15 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Unknown State. Value = 15", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( false, points.isControlAccepted() );
+
+    now += 1;
+    BOOST_CHECK( points.setTwoWayAnalogPointValue(
+                    points.getPointIdByAttribute( PointAttribute::IgnoredReason ),        19, now ) );
+
+    BOOST_CHECK_EQUAL( "Control Accepted", points.getIgnoredControlText() );
+    BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
+    BOOST_CHECK_EQUAL( true,  points.isControlAccepted() );      // <-- the special case
 }
 
 BOOST_AUTO_TEST_SUITE_END()

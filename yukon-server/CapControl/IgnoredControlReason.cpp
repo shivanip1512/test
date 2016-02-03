@@ -23,6 +23,11 @@ bool IgnoredControlReasonCbcDnp::checkDeltaVoltageRejection( const CtiCCTwoWayPo
     return false;
 }
 
+bool IgnoredControlReasonCbcDnp::checkControlAccepted( const CtiCCTwoWayPoints & points )
+{
+    return false;
+}
+
 bool IgnoredControlReasonCbcDnp::serializeIndicator( const CtiCCTwoWayPoints & points )
 {
     return false;
@@ -98,6 +103,11 @@ bool IgnoredControlReasonCbc702x::checkDeltaVoltageRejection( const CtiCCTwoWayP
     return ( ( uvThreshold < cbcVoltage ) && ( cbcVoltage < ovThreshold ) );
 }
 
+bool IgnoredControlReasonCbc702x::checkControlAccepted( const CtiCCTwoWayPoints & points )
+{
+    return false;
+}
+
 bool IgnoredControlReasonCbc702x::serializeIndicator( const CtiCCTwoWayPoints & points )
 {
     if ( points.getPointIdByAttribute( PointAttribute::IgnoredIndicator ) > 0 )
@@ -171,6 +181,11 @@ bool IgnoredControlReasonCbc802x::checkDeltaVoltageRejection( const CtiCCTwoWayP
         If the actual voltage is within the OvUv limits it must have been rejected due to delta voltage
     */
     return ( ( uvThreshold < cbcVoltage ) && ( cbcVoltage < ovThreshold ) );
+}
+
+bool IgnoredControlReasonCbc802x::checkControlAccepted( const CtiCCTwoWayPoints & points )
+{
+    return serializeReason( points ) == ControlAccepted;
 }
 
 bool IgnoredControlReasonCbc802x::serializeIndicator( const CtiCCTwoWayPoints & points )

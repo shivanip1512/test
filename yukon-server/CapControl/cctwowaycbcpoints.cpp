@@ -397,6 +397,11 @@ bool CtiCCTwoWayPoints::checkDeltaVoltageRejection()
     return _ignoredControlReason->checkDeltaVoltageRejection( *this );
 }
 
+bool CtiCCTwoWayPoints::isControlAccepted()
+{
+    return _ignoredControlReason->checkControlAccepted( *this );
+}
+
 struct ColumnMapping
 {
     enum
