@@ -106,7 +106,7 @@ struct Test_PilServer : Cti::Pil::PilServer
 
     boost::ptr_vector<CtiMessage> vgList, retList;
 
-    virtual void sendResults(CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_, const int priority, void *connectionHandle)
+    void sendResults(CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_, const int priority, Cti::ConnectionHandle connectionHandle) override
     {
         for each( CtiMessage *msg in vgList_ )
         {
