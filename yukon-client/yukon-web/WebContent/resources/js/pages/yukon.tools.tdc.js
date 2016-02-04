@@ -287,7 +287,7 @@ yukon.tools.tdc = (function () {
             });
             
             $(document).on('click', '.js-tdc-ack-alarms-for-point', function (ev) {
-                $.post(yukon.url('/tools/data-viewer/acknowledge-alarms-for-point'), { pointid: $(this).data('pointId') })
+                $.post(yukon.url('/tools/data-viewer/acknowledge-alarms-for-point'), { pointId: $(this).data('pointId') })
                 .done(function (data) {  
                     yukon.ui.alertSuccess(data.success);
                     $('#tdc-popup').dialog('close');
