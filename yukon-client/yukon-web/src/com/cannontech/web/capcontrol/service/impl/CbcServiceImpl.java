@@ -238,24 +238,20 @@ public class CbcServiceImpl implements CbcService {
 
         dnpBase.setDeviceScanRateMap(new HashMap<String, DeviceScanRate>());
         if (cbc.getDeviceScanRateMap().containsKey("Exception")) {
-            if (dnpBase.getDeviceScanRateMap().get("Exception") == null)
-                dnpBase.getDeviceScanRateMap().put("Exception", new DeviceScanRate(id, "Exception"));
-            dnpBase.getDeviceScanRateMap().get("Exception").setAlternateRate(
-                cbc.getDeviceScanRateMap().get("Exception").getAlternateRate());
-            dnpBase.getDeviceScanRateMap().get("Exception").setScanGroup(
-                (cbc.getDeviceScanRateMap().get("Exception").getScanGroup()));
-            dnpBase.getDeviceScanRateMap().get("Exception").setIntervalRate(
-                (cbc.getDeviceScanRateMap().get("Exception").getIntervalRate()));
+            DeviceScanRate scanRate = new DeviceScanRate(id, "Exception");
+            DeviceScanRate newScanRate = cbc.getDeviceScanRateMap().get("Exception");
+            scanRate.setAlternateRate(newScanRate.getAlternateRate());
+            scanRate.setScanGroup(newScanRate.getScanGroup());
+            scanRate.setIntervalRate(newScanRate.getIntervalRate());
+            dnpBase.getDeviceScanRateMap().put("Exception", scanRate);
         }
         if (cbc.getDeviceScanRateMap().containsKey("Integrity")) {
-            if (dnpBase.getDeviceScanRateMap().get("Integrity") == null)
-                dnpBase.getDeviceScanRateMap().put("Integrity", new DeviceScanRate(id, "Integrity"));
-            dnpBase.getDeviceScanRateMap().get("Integrity").setAlternateRate(
-                cbc.getDeviceScanRateMap().get("Integrity").getAlternateRate());
-            dnpBase.getDeviceScanRateMap().get("Integrity").setScanGroup(
-                (cbc.getDeviceScanRateMap().get("Integrity").getScanGroup()));
-            dnpBase.getDeviceScanRateMap().get("Integrity").setIntervalRate(
-                (cbc.getDeviceScanRateMap().get("Integrity").getIntervalRate()));
+            DeviceScanRate scanRate = new DeviceScanRate(id, "Integrity");
+            DeviceScanRate newScanRate = cbc.getDeviceScanRateMap().get("Integrity");
+            scanRate.setAlternateRate(newScanRate.getAlternateRate());
+            scanRate.setScanGroup(newScanRate.getScanGroup());
+            scanRate.setIntervalRate(newScanRate.getIntervalRate());
+            dnpBase.getDeviceScanRateMap().put("Integrity", scanRate);
         }
         
         PaoType paoType = cbc.getPaoType();
