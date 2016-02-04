@@ -59,6 +59,17 @@ public class ExportField implements Displayable {
     }
 
     public ReadingPattern getReadingPattern() {
+        boolean patternFound = false;
+        if(isValue()){
+            for (ReadingPattern type : ReadingPattern.class.getEnumConstants()) {
+                if (type.getPattern().equals(pattern)) {
+                    readingPattern = type;
+                    patternFound = true;
+                    break;
+                }
+            }
+            if(!patternFound) readingPattern = ReadingPattern.valueOf("CUSTOM");
+        }
         return readingPattern;
     }
 
@@ -67,6 +78,17 @@ public class ExportField implements Displayable {
     }
 
     public TimestampPattern getTimestampPattern() {
+        boolean patternFound = false;
+        if(isTimestamp()){
+            for (TimestampPattern type : TimestampPattern.class.getEnumConstants()) {
+                if (type.getPattern().equals(pattern)) {
+                    timestampPattern = type;
+                    patternFound = true;
+                    break;
+                }
+            }
+            if(!patternFound) timestampPattern = TimestampPattern.valueOf("CUSTOM");
+        }
         return timestampPattern;
     }
 
