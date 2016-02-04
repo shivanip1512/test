@@ -114,6 +114,7 @@
         <ant dir="${multispeak}" target="${dotarget}" />
         <ant dir="${report}" target="${dotarget}" />
         <ant dir="${notification}" target="${dotarget}" />
+    	<ant dir="${simulators}" target="${dotarget}"/>
         <ant dir="${services}" target="${dotarget}" />
         <ant dir="${api-web}" target="${dotarget}" />
         <ant dir="${yukon-web}" target="${dotarget}" />

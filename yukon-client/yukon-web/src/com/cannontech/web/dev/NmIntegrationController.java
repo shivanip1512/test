@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.ConnectionFactory;
@@ -62,6 +63,10 @@ import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
+import com.cannontech.simulators.message.request.ModifyGatewaySimulatorRequest;
+import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
+import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.model.DataSimulatorStatus;
@@ -90,6 +95,7 @@ public class NmIntegrationController {
     private final DataSimulatorStatus existingDataSimulatorStatus = new DataSimulatorStatus();
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
@@ -245,28 +251,33 @@ public class NmIntegrationController {
     }
     
     @RequestMapping("gatewaySimulator")
-    public String gatewaySimulator(ModelMap model) {
-        // Enums for selects
+    public String gatewaySimulator(ModelMap model, FlashScope flash) {
+     // Enums for selects
         model.addAttribute("ackTypes", RfnGatewayUpgradeRequestAckType.values());
         model.addAttribute("acceptedUpdateStatusTypes", SimulatedCertificateReplySettings.acceptedUpdateStatusTypes);
         model.addAttribute("firmwareVersionReplyTypes", RfnUpdateServerAvailableVersionResult.values());
         model.addAttribute("firmwareUpdateResultTypes", GatewayFirmwareUpdateRequestResult.values());
         model.addAttribute("gatewayUpdateResultTypes", GatewayUpdateResult.values());
         
-        // Thread statuses
-        model.addAttribute("autoDataReplyActive", gatewaySimService.isAutoDataReplyActive());
-        model.addAttribute("autoUpdateReplyActive", gatewaySimService.isAutoUpdateReplyActive());
-        model.addAttribute("autoCertificateReplyActive", gatewaySimService.isAutoCertificateUpgradeReplyActive());
-        model.addAttribute("autoFirmwareReplyActive", gatewaySimService.isAutoFirmwareReplyActive());
-        model.addAttribute("autoFirmwareVersionReplyActive", gatewaySimService.isAutoFirmwareVersionReplyActive());
-        model.addAttribute("numberOfSimulatorsRunning", gatewaySimService.getNumberOfSimulatorsRunning());
-        
-        // Current settings
-        model.addAttribute("certificateSettings", gatewaySimService.getCertificateSettings());
-        model.addAttribute("firmwareSettings", gatewaySimService.getFirmwareSettings());
-        model.addAttribute("firmwareVersionSettings", gatewaySimService.getFirmwareVersionSettings());
-        model.addAttribute("dataSettings", gatewaySimService.getGatewayDataSettings());
-        model.addAttribute("updateSettings", gatewaySimService.getGatewayUpdateSettings());
+        try {
+            GatewaySimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
+            // Simulator statuses
+            model.addAttribute("autoDataReplyActive", response.isDataReplyActive());
+            model.addAttribute("autoUpdateReplyActive", response.isUpdateReplyActive());
+            model.addAttribute("autoCertificateReplyActive", response.isCertificateReplyActive());
+            model.addAttribute("autoFirmwareReplyActive", response.isFirmwareReplyActive());
+            model.addAttribute("autoFirmwareVersionReplyActive", response.isFirmwareVersionReplyActive());
+            model.addAttribute("numberOfSimulatorsRunning", response.getNumberOfSimulatorsRunning());
+            // Current settings
+            model.addAttribute("certificateSettings", response.getCertificateSettings());
+            model.addAttribute("firmwareSettings", response.getFirmwareSettings());
+            model.addAttribute("firmwareVersionSettings", response.getFirmwareVersionSettings());
+            model.addAttribute("dataSettings", response.getDataSettings());
+            model.addAttribute("updateSettings", response.getUpdateSettings());
+        } catch (ExecutionException e) {
+            log.error("Error communicating with Yukon Simulators Service.", e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+        }
         
         return "rfn/gatewayDataSimulator.jsp";
     }
@@ -299,83 +310,65 @@ public class NmIntegrationController {
         // Only start the threads that aren't already running. This lets the user specify non-default parameters for
         // some threads, then just bulk-start the rest.
         
-        // Data reply
-        boolean autoDataReplyActive = false;
-        if (!gatewaySimService.isAutoDataReplyActive()) {
-            SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
-            dataSettings.setReturnGwy800Model(false);
-            autoDataReplyActive = gatewaySimService.startAutoDataReply(dataSettings);
-        }
-        
-        // Update reply
-        boolean autoUpdateReplyActive = false;
-        if (!gatewaySimService.isAutoUpdateReplyActive()) {
-            SimulatedUpdateReplySettings updateSettings = new SimulatedUpdateReplySettings();
-            updateSettings.setCreateResult(GatewayUpdateResult.SUCCESSFUL);
-            updateSettings.setEditResult(GatewayUpdateResult.SUCCESSFUL);
-            updateSettings.setDeleteResult(GatewayUpdateResult.SUCCESSFUL);
-            autoUpdateReplyActive = gatewaySimService.startAutoUpdateReply(updateSettings);
-        }
-        
-        // Certificate upgrade reply
-        boolean autoCertUpdateReplyActive = false;
-        if (!gatewaySimService.isAutoCertificateUpgradeReplyActive()) {
-            SimulatedCertificateReplySettings certSettings = new SimulatedCertificateReplySettings();
-            certSettings.setAckType(RfnGatewayUpgradeRequestAckType.ACCEPTED_FULLY);
-            certSettings.setDeviceUpdateStatus(GatewayCertificateUpdateStatus.REQUEST_ACCEPTED);
-            autoCertUpdateReplyActive = gatewaySimService.startAutoCertificateReply(certSettings);
-        }
-        
-        // Firmware version reply
-        boolean firmwareReplyActive = false;
-        if (!gatewaySimService.isAutoFirmwareReplyActive()) {
-            SimulatedFirmwareReplySettings settings = new SimulatedFirmwareReplySettings();
-            settings.setResultType(GatewayFirmwareUpdateRequestResult.ACCEPTED);
-            firmwareReplyActive = gatewaySimService.startAutoFirmwareReply(settings);
-        }
-        
-        // Firmware upgrade reply
-        boolean firmwareVersionReplyActive = false;
-        if (!gatewaySimService.isAutoFirmwareVersionReplyActive()) {
-            SimulatedFirmwareVersionReplySettings settings = new SimulatedFirmwareVersionReplySettings();
-            settings.setVersion("1.2.3");
-            settings.setResult(RfnUpdateServerAvailableVersionResult.SUCCESS);
-            firmwareVersionReplyActive = gatewaySimService.startAutoFirmwareVersionReply(settings);
-        }
-        
-        if (autoDataReplyActive && autoCertUpdateReplyActive && autoUpdateReplyActive && firmwareReplyActive && firmwareVersionReplyActive) {
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
-        } else {
+        try {
+            GatewaySimulatorStatusResponse status = simulatorsCommunicationService.sendRequest(new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
+            ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
             
+            // Data Reply
+            if (!status.isDataReplyActive()) {
+                SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
+                dataSettings.setReturnGwy800Model(false);
+                request.setDataSettings(dataSettings);
+            }
+            
+            // Update reply
+            if (!status.isUpdateReplyActive()) {
+                SimulatedUpdateReplySettings updateSettings = new SimulatedUpdateReplySettings();
+                updateSettings.setCreateResult(GatewayUpdateResult.SUCCESSFUL);
+                updateSettings.setEditResult(GatewayUpdateResult.SUCCESSFUL);
+                updateSettings.setDeleteResult(GatewayUpdateResult.SUCCESSFUL);
+                request.setUpdateSettings(updateSettings);
+            }
+            
+            // Certificate upgrade reply
+            if (!status.isCertificateReplyActive()) {
+                SimulatedCertificateReplySettings certSettings = new SimulatedCertificateReplySettings();
+                certSettings.setAckType(RfnGatewayUpgradeRequestAckType.ACCEPTED_FULLY);
+                certSettings.setDeviceUpdateStatus(GatewayCertificateUpdateStatus.REQUEST_ACCEPTED);
+                request.setCertificateSettings(certSettings);
+            }
+            
+            // Firmware upgrade reply
+            if (!status.isFirmwareReplyActive()) {
+                SimulatedFirmwareReplySettings firmwareSettings = new SimulatedFirmwareReplySettings();
+                firmwareSettings.setResultType(GatewayFirmwareUpdateRequestResult.ACCEPTED);
+                request.setFirmwareSettings(firmwareSettings);
+            }
+            
+            // Firmware version reply
+            if (!status.isFirmwareVersionReplyActive()) {
+                SimulatedFirmwareVersionReplySettings settings = new SimulatedFirmwareVersionReplySettings();
+                settings.setVersion("1.2.3");
+                settings.setResult(RfnUpdateServerAvailableVersionResult.SUCCESS);
+                request.setFirmwareVersionSettings(settings);
+            }
+            
+            sendStartStopRequest(request, flash, true);
+            
+        } catch (ExecutionException e) {
+            log.error("Error communicating with Yukon Simulators Service.", e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
         return "redirect:gatewaySimulator";
     }
     
     @RequestMapping("disableAll") 
     public String disableAllSimulators(FlashScope flash) {
-        if (gatewaySimService.isAutoDataReplyActive()) {
-            gatewaySimService.stopAutoDataReply();
-        }
-        if (gatewaySimService.isAutoUpdateReplyActive()) {
-            gatewaySimService.stopAutoUpdateReply();
-        }
-        if (gatewaySimService.isAutoCertificateUpgradeReplyActive()) {
-            gatewaySimService.stopAutoCertificateReply();
-        }
-        if (gatewaySimService.isAutoFirmwareVersionReplyActive()) {
-            gatewaySimService.stopAutoFirmwareVersionReply();
-        }
-        if (gatewaySimService.isAutoFirmwareReplyActive()) {
-            gatewaySimService.stopAutoFirmwareReply();
-        }
-        
-        while(gatewaySimService.isAutoDataReplyActive() ||
-                gatewaySimService.isAutoUpdateReplyActive() ||
-                gatewaySimService.isAutoCertificateUpgradeReplyActive() ||
-                gatewaySimService.isAutoFirmwareReplyActive() ||
-                gatewaySimService.isAutoFirmwareVersionReplyActive()) {
-            // wait for all sims to stop
-        }
+
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setAllStop();
+            
+        sendStartStopRequest(request, flash, false);
         
         return "redirect:gatewaySimulator";
     }
@@ -385,23 +378,21 @@ public class NmIntegrationController {
         
         SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
         dataSettings.setReturnGwy800Model(alwaysGateway2);
-        boolean autoDataReplyActive = gatewaySimService.startAutoDataReply(dataSettings);
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setDataSettings(dataSettings);
         
-        if (autoDataReplyActive) {
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
-        } else {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed"));
-        }
+        sendStartStopRequest(request, flash, true);
         
         return "redirect:gatewaySimulator";
     }
     
     @RequestMapping("disableGatewayDataReply")
-    public String disableGatewayDataReply() {
-        gatewaySimService.stopAutoDataReply();
-        while (gatewaySimService.isAutoDataReplyActive()) {
-            //wait for sim to stop
-        }
+    public String disableGatewayDataReply(FlashScope flash) {
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setStopDataReply(true);
+        
+        sendStartStopRequest(request, flash, false);
+        
         return "redirect:gatewaySimulator";
     }
     
@@ -415,23 +406,22 @@ public class NmIntegrationController {
         updateSettings.setCreateResult(createResult);
         updateSettings.setEditResult(editResult);
         updateSettings.setDeleteResult(deleteResult);
-        boolean autoUpdateReplyActive = gatewaySimService.startAutoUpdateReply(updateSettings);
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setUpdateSettings(updateSettings);
         
-        if (autoUpdateReplyActive) {
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
-        } else {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed"));
-        }
+        sendStartStopRequest(request, flash, true);
         
         return "redirect:gatewaySimulator";
     }
     
     @RequestMapping("disableGatewayUpdateReply")
-    public String disableGatewayUpdateReply() {
-        gatewaySimService.stopAutoUpdateReply();
-        while (gatewaySimService.isAutoUpdateReplyActive()) {
-            //wait for sim to stop
-        }
+    public String disableGatewayUpdateReply(FlashScope flash) {
+        
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setStopUpdateReply(true);
+        
+        sendStartStopRequest(request, flash, false);
+        
         return "redirect:gatewaySimulator";
     }
     
@@ -443,23 +433,21 @@ public class NmIntegrationController {
         SimulatedCertificateReplySettings certSettings = new SimulatedCertificateReplySettings();
         certSettings.setAckType(ackType);
         certSettings.setDeviceUpdateStatus(updateStatus);
-        boolean autoUpdateReplyActive = gatewaySimService.startAutoCertificateReply(certSettings);
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setCertificateSettings(certSettings);
         
-        if (autoUpdateReplyActive) {
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
-        } else {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed"));
-        }
+        sendStartStopRequest(request, flash, true);
         
         return "redirect:gatewaySimulator";
     }
     
     @RequestMapping("disableGatewayCertificateReply")
-    public String disableGatewayCertificateReply() {
-        gatewaySimService.stopAutoCertificateReply();
-        while (gatewaySimService.isAutoCertificateUpgradeReplyActive()) {
-            //wait for sim to stop
-        }
+    public String disableGatewayCertificateReply(FlashScope flash) {
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setStopCertificateReply(true);
+        
+        sendStartStopRequest(request, flash, false);
+        
         return "redirect:gatewaySimulator";
     }
     
@@ -469,23 +457,21 @@ public class NmIntegrationController {
         
         SimulatedFirmwareReplySettings settings = new SimulatedFirmwareReplySettings();
         settings.setResultType(updateResult);
-        boolean firmwareReplyActive = gatewaySimService.startAutoFirmwareReply(settings);
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setFirmwareSettings(settings);
         
-        if (firmwareReplyActive) {
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
-        } else {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed"));
-        }
+        sendStartStopRequest(request, flash, true);
         
         return "redirect:gatewaySimulator";
     }
     
     @RequestMapping("disableGatewayFirmwareReply")
-    public String disableGatewayFirmwareReply() {
-        gatewaySimService.stopAutoFirmwareReply();
-        while (gatewaySimService.isAutoFirmwareReplyActive()) {
-            //wait for sim to stop
-        }
+    public String disableGatewayFirmwareReply(FlashScope flash) {
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setStopFirmwareReply(true);
+        
+        sendStartStopRequest(request, flash, false);
+        
         return "redirect:gatewaySimulator";
     }
     
@@ -497,24 +483,46 @@ public class NmIntegrationController {
         SimulatedFirmwareVersionReplySettings settings = new SimulatedFirmwareVersionReplySettings();
         settings.setVersion(version);
         settings.setResult(replyType);
-        boolean firmwareVersionReplyActive = gatewaySimService.startAutoFirmwareVersionReply(settings);
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setFirmwareVersionSettings(settings);
         
-        if (firmwareVersionReplyActive) {
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess"));
-        } else {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed"));
-        }
+        sendStartStopRequest(request, flash, true);
         
         return "redirect:gatewaySimulator";
     }
     
     @RequestMapping("disableFirmwareVersionReply")
-    public String disableFirmwareVersionReply() {
-        gatewaySimService.stopAutoFirmwareVersionReply();
-        while (gatewaySimService.isAutoFirmwareVersionReplyActive()) {
-            //wait for sim to stop
-        }
+    public String disableFirmwareVersionReply(FlashScope flash) {
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+        request.setStopFirmwareVersionReply(true);
+        
+        sendStartStopRequest(request, flash, false);
+        
         return "redirect:gatewaySimulator";
+    }
+    
+    /**
+     * Sends a request to modify a gateway simulator.
+     * @param request The request to start or stop simulators.
+     * @param isStartRequest Is this a request to start a simulator (true) or stop a simulator (false)? This determines
+     * which i18n keys are used for flash scope success and failure messages.
+     */
+    private void sendStartStopRequest(ModifyGatewaySimulatorRequest request, FlashScope flash, boolean isStartRequest) {
+        String successKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess" :
+                                             "yukon.web.modules.dev.rfnTest.gatewaySimulator.simStopSuccess";
+        String failureKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed" :
+                                             "yukon.web.modules.dev.rfnTest.gatewaySimulator.simStopFailed";
+        try {
+            SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                flash.setConfirm(new YukonMessageSourceResolvable(successKey));
+            } else {
+                flash.setError(new YukonMessageSourceResolvable(failureKey));
+            }
+        } catch (ExecutionException e) {
+            log.error("Error communicating with Yukon Simulators Service.", e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+        }
     }
     
     @RequestMapping("viewMeterReadArchiveRequest")

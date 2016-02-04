@@ -158,6 +158,7 @@
             <fileset file="${basedir}/yukon-client/monitor/src/main/resources/AlarmMonitor.ico" />
             <fileset file="${basedir}/yukon-client/monitor/systray4j.dll" />
             <fileset dir="${basedir}/yukon-client/notification/conf" />
+            <fileset dir="${basedir}/yukon-client/simulators/conf"/>
             <fileset dir="${basedir}/yukon-client/tools/src/main/resources" includes="*.bat" />
             <fileset file="${basedir}/yukon-client/trending/resource/GraphIcon.ico"/>
             <fileset file="${basedir}/yukon-client/tdc/resource/tdcIcon.ico"/>

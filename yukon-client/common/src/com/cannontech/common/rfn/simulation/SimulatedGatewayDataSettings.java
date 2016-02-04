@@ -1,6 +1,9 @@
 package com.cannontech.common.rfn.simulation;
 
-public class SimulatedGatewayDataSettings {
+import java.io.Serializable;
+
+public class SimulatedGatewayDataSettings implements Serializable {
+    private static final long serialVersionUID = 1L;
     private boolean returnGwy800Model;
 
     public boolean isReturnGwy800Model() {

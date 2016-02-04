@@ -651,27 +651,4 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     public SimulatedFirmwareVersionReplySettings getFirmwareVersionSettings() {
         return firmwareVersionSettings;
     }
-    
-    @Override
-    public int getNumberOfSimulatorsRunning() {
-        int simulatorsRunning = 0;
-        
-        if (isAutoDataReplyActive()) {
-            simulatorsRunning++;
-        }
-        if (isAutoUpdateReplyActive()) {
-            simulatorsRunning++;
-        }
-        if (isAutoCertificateUpgradeReplyActive()) {
-            simulatorsRunning++;
-        }
-        if (isAutoFirmwareReplyActive()) {
-            simulatorsRunning++;
-        }
-        if (isAutoFirmwareVersionReplyActive()) {
-            simulatorsRunning++;
-        }
-        
-        return simulatorsRunning;
-    }
 }

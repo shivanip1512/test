@@ -236,6 +236,9 @@
     <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDataResponse">Gateway {0} Response Data message sent.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartFailed">Failed to start simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.simStartSuccess">Simulator started</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.simStopFailed">Failed to stop simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.simStopSuccess">Simulator stopped</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.simulatorCommunicationError">Error communicating with Yukon Simulators Service.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.CLEARED">Cleared</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.COUNT">Count</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.DIRECTION">Direction</entry>

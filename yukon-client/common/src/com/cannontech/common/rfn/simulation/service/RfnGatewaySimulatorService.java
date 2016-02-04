@@ -1,6 +1,5 @@
 package com.cannontech.common.rfn.simulation.service;
 
-import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySettings;
@@ -145,10 +144,5 @@ public interface RfnGatewaySimulatorService {
      * @return the settings if the thread is running, otherwise null.
      */
     public SimulatedFirmwareVersionReplySettings getFirmwareVersionSettings();
-    
-    /**
-     * Get the number of simulator threads currently running.
-     */
-    public int getNumberOfSimulatorsRunning();
     
 }

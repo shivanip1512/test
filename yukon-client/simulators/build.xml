@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<project name="simulators" default="all">
+
+    <property file="../build/build.properties"/>
+    
+    <target name="all" depends="clean, build" description="Performs a clean build."/>
+    	
+    <target name="clean" description="Deletes any previous build artifacts.">
+        <delete dir="build"/>
+    </target>
+    
+    <target name="build" description="Build the project.">
+        <mkdir dir="build"/>
+        
+        <javac srcdir="src"
+               destdir="build"
+               target="${yukon.javac.target}"
+               source="${yukon.javac.source}"
+               bootclasspath="${yukon.javac.bootclasspath}"
+               debug="${yukon.javac.debug}">
+            <classpath>
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+        
+        <jar jarfile="${yukon.lib}/simulators.jar"
+             basedir="build/"
+             manifest="resources/manifest.mf">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+                <attribute name="Permissions" value="all-permissions"/>
+            </manifest>
+            <fileset dir="resources">
+                <exclude name="manifest.mf"/>
+            </fileset>
+        </jar>
+    </target>
+    
+    <!-- This target must be present even though there are no tests, because it is called automatically by the main build script. -->
+    <target name="runUnitTests" description="Run all unit tests, stop on failure" />
+
+</project>

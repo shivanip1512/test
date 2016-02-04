@@ -20,6 +20,7 @@ public class YukonSpringHook {
     public static String COMMON_BEAN_FACTORY_KEY = "com.cannontech.context.common";
     public static String NOTIFICATION_BEAN_FACTORY_KEY = "com.cannontech.context.notif";
     public static String SERVICES_BEAN_FACTORY_KEY = "com.cannontech.context.services";
+    public static String SIMULATORS_BEAN_FACTORY_KEY = "com.cannontech.context.simulators";
     private static String factoryKey;
     
     private static ApplicationContext applicationContext = null;
