@@ -64,13 +64,13 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
    CtiCriticalSection _pilToPorterMux;
 
-   static void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle);
+   static void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, const ConnectionHandle connectionHandle);
 
    void validateConnections();
 
 protected:
 
-   virtual void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, void *connectionHandle);
+   virtual void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, const ConnectionHandle connectionHandle);
 
    virtual std::vector<long> getDeviceGroupMembers( std::string groupname ) const;
 

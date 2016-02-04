@@ -9,7 +9,6 @@ public class Command extends Message {
     public static final int NO_OP = 0;        //Same as LOOP_CLIENT
     public static final int SHUTDOWN = 10;  //Shuts down Van Gogh! careful
 //    public static final int CLIENT_APP_SHUTDOWN = 20;  //We are going away
-    public static final int NEW_CLIENT = 30;    //Client App has been connected by Connection Handler
     public static final int LOOP_CLIENT = 40;  //Send a mesage back to client
     public static final int TRACE_ROUTE = 50; //Prints a blurb out in each place it is encountered.
     public static final int ARE_YOU_THERE = 60;

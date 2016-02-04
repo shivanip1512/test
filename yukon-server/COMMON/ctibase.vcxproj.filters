@@ -249,6 +249,9 @@
     <ClCompile Include="GlobalSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="connectionHandle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AttributeService.h">
@@ -606,6 +609,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GlobalSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\connectionHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

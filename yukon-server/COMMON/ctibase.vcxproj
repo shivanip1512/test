@@ -376,6 +376,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="cmdparse.cpp">
     </ClCompile>
+    <ClCompile Include="connectionHandle.cpp" />
     <ClCompile Include="counter.cpp">
     </ClCompile>
     <ClCompile Include="cparms.cpp">
@@ -533,6 +534,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\cmdparse.h" />
     <ClInclude Include="include\collectable.h" />
     <ClInclude Include="include\COLOR.H" />
+    <ClInclude Include="include\connectionHandle.h" />
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\counter.h" />
     <ClInclude Include="include\CParms.h" />

@@ -208,7 +208,7 @@ string& TrimAlarmTagText(string& text)
     return text;
 }
 
-void ApplyBlankDeletedConnection(CtiMessage *Msg, void *Conn);
+void ApplyBlankDeletedConnection(CtiMessage *Msg, void *ConnId);
 
 /*
  *  This function can be used to pull out connectinos which have become bachy over time.
@@ -344,14 +344,14 @@ void CtiVanGogh::VGMainThread()
                     MsgPtr = (CtiMessage*)pSvrReq->getPayload();
                     MsgPtr->setConnectionHandle(pSvrReq->getConnectionHandle());
 
-                    CtiServer::ptr_type sptrCM = mConnectionTable.find((long)pSvrReq->getConnectionHandle());
+                    CtiServer::ptr_type sptrCM = findConnectionManager(pSvrReq->getConnectionHandle());
                     if(sptrCM)
                     {
                         sptrCM->setRequestId(pSvrReq->getID());  // Stow this, you'll need it for a response.
                     }
                     else
                     {
-                        CTILOG_ERROR(dout, "Received message for unknown handle " << (long)pSvrReq->getConnectionHandle());
+                        CTILOG_ERROR(dout, "Received message for unknown handle " << pSvrReq->getConnectionHandle());
                     }
                 }
 
@@ -555,7 +555,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
 void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrationMsg &aReg)
 {
-    CTILOG_ENTRY(dout, "pCM=" << reinterpret_cast<size_t>(pCM.get()) << ", aReg.getFlags()=" << aReg.getFlags());
+    CTILOG_ENTRY(dout, "pCM->getConnectionId()=" << pCM->getConnectionId() << ", aReg.getFlags()=" << aReg.getFlags());
 
     CtiVanGoghConnectionManager *CM = (CtiVanGoghConnectionManager*)pCM.get();
 
@@ -634,12 +634,12 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
 
         validateConnections();        // Make sure nobody has disappeared on us since the last registration
 
-        CTILOG_DEBUG(dout, "Pre Point Mgr Insert " << reinterpret_cast<size_t>(pCM.get()) << ", use_count=" << pCM.use_count());
-        PointMgr.InsertConnectionManager(pCM, aReg, 
-            ((gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION) ? 
-            CtiPointClientManager::DebugPrint::True : 
+        CTILOG_DEBUG(dout, "Pre Point Mgr Insert pCM->getConnectionId()=" << pCM->getConnectionId() << ", use_count=" << pCM.use_count());
+        PointMgr.InsertConnectionManager(pCM, aReg,
+            ((gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION) ?
+            CtiPointClientManager::DebugPrint::True :
             CtiPointClientManager::DebugPrint::False));
-        CTILOG_DEBUG(dout, "Post Point Mgr Insert " << reinterpret_cast<size_t>(pCM.get()) << ", use_count=" << pCM.use_count());
+        CTILOG_DEBUG(dout, "Post Point Mgr Insert pCM->getConnectionId()=" << pCM->getConnectionId() << ", use_count=" << pCM.use_count());
 
 
         if(!(aReg.getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS)))
@@ -1074,11 +1074,11 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     }
                 }
 
-                if( CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle()) )
+                if( CtiServer::ptr_type sptrCM = findConnectionManager(Cmd->getConnectionHandle()) )
                 {
                     if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
                     {
-                        CTILOG_DEBUG(dout, "<<<< OUTGOING to " << sptrCM->getClientName() << " (request ID:" << sptrCM->getRequestId() << ", handle:" << (long)Cmd->getConnectionHandle() << ")"<<
+                        CTILOG_DEBUG(dout, "<<<< OUTGOING to " << sptrCM->getClientName() << " (request ID:" << sptrCM->getRequestId() << ", handle:" << Cmd->getConnectionHandle() << ")"<<
                                 *pMulti);
                     }
 
@@ -1087,7 +1087,7 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 else
                 {
                     CTILOG_ERROR(dout, "Could not find connection for connection handle "
-                        << (long)Cmd->getConnectionHandle() 
+                        << Cmd->getConnectionHandle()
                         << " for message " << Cmd->toString());
                 }
             }
@@ -1119,7 +1119,7 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     }
                 }
 
-                CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle());
+                CtiServer::ptr_type sptrCM = findConnectionManager(Cmd->getConnectionHandle());
 
                 if(sptrCM && pMulti)
                 {
@@ -1156,7 +1156,7 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
 void CtiVanGogh::clientShutdown(CtiServer::ptr_type &CM)
 {
-    CTILOG_ENTRY(dout, reinterpret_cast<size_t>(CM.get()));
+    CTILOG_ENTRY(dout, CM->getConnectionId());
 
     CtiServerExclusion guard(_server_exclusion);
 
@@ -1168,19 +1168,19 @@ void CtiVanGogh::clientShutdown(CtiServer::ptr_type &CM)
             CTILOG_DEBUG(dout, "Marking mainQueue entries to _not_ respond to this connection as a client");
         }
 
-        MainQueue_.apply(ApplyBlankDeletedConnection, (void*)CM.get());
+        MainQueue_.apply(ApplyBlankDeletedConnection, reinterpret_cast<void*>(CM->getConnectionId()));
 
         if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
         {
             CTILOG_DEBUG(dout, "Removing point registrations for this connection");
         }
 
-        CTILOG_INFO(dout, "Pre Point Mgr Remove " << reinterpret_cast<size_t>(CM.get()) << ", use_count=" << CM.use_count());
-        PointMgr.RemoveConnectionManager(CM, 
+        CTILOG_INFO(dout, "Pre Point Mgr Remove pCM->getConnectionId()=" << CM->getConnectionId() << ", use_count=" << CM.use_count());
+        PointMgr.RemoveConnectionManager(CM,
             ((gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION) ?
             CtiPointClientManager::DebugPrint::True :
             CtiPointClientManager::DebugPrint::False));
-        CTILOG_INFO(dout, "Post Point Mgr Remove " << reinterpret_cast<size_t>(CM.get()) << ", use_count=" << CM.use_count());
+        CTILOG_INFO(dout, "Post Point Mgr Remove pCM->getConnectionId()=" << CM->getConnectionId() << ", use_count=" << CM.use_count());
 
         if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
         {
@@ -1712,7 +1712,7 @@ void CtiVanGogh::processMessageData( CtiMessage *pMsg )
             {
                 messageDump(pMsg);
                 const CtiPointRegistrationMsg &aReg = *((CtiPointRegistrationMsg*)(pMsg));
-                CtiServer::ptr_type sptrCM = mConnectionTable.find((long)pMsg->getConnectionHandle());
+                CtiServer::ptr_type sptrCM = findConnectionManager(pMsg->getConnectionHandle());
                 if( sptrCM )
                 {
                     registration(sptrCM, aReg);
@@ -1723,7 +1723,7 @@ void CtiVanGogh::processMessageData( CtiMessage *pMsg )
             {
                 messageDump(pMsg);
                 const CtiRegistrationMsg &aReg = *((CtiRegistrationMsg*)(pMsg));
-                CtiServer::ptr_type pCM = mConnectionTable.find((long)pMsg->getConnectionHandle());
+                CtiServer::ptr_type pCM = findConnectionManager(pMsg->getConnectionHandle());
 
                 if(pCM)
                 {
@@ -1738,7 +1738,7 @@ void CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 }
                 else
                 {
-                    CTILOG_ERROR(dout, "Could not register connection, connection handle "<< pMsg->getConnectionHandle() <<" not found in mConnectionTable")
+                    CTILOG_ERROR(dout, "Could not register connection, connection handle "<< pMsg->getConnectionHandle() <<" not found")
                 }
 
                 break;
@@ -2909,7 +2909,7 @@ YukonError_t CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWr
 {
     if(pSig->getText().empty() && pSig->getAdditionalInfo().empty())
     {
-        CtiServer::ptr_type pCM = mConnectionTable.find((long)pSig->getConnectionHandle());
+        CtiServer::ptr_type pCM = findConnectionManager(pSig->getConnectionHandle());
 
         const string clientname = pCM
                 ? pCM->getClientName()
@@ -2973,9 +2973,9 @@ YukonError_t CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg &pData, CtiM
         itemlist.add("Message point type")      << pData.getType();
 
         itemlist <<"Point \""<< pPoint->getName() <<"\" is attached to "<< resolveDeviceName( *pPoint );
-        if(pData.getConnectionHandle() != NULL)
+        if(pData.getConnectionHandle())
         {
-            CtiServer::ptr_type pCM = mConnectionTable.find((long)pData.getConnectionHandle());
+            CtiServer::ptr_type pCM = findConnectionManager(pData.getConnectionHandle());
 
             if(pCM)
             {
@@ -3595,7 +3595,7 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
             if(pDeadClients != NULL) (*pDeadClients)++;
 
             CTILOG_WARN(dout, "Client did not respond to AreYouThere message. Client "
-                << Mgr->getClientName() <<" on "<< Mgr->getPeer() << " handle " << (unsigned long)Mgr.get());
+                << Mgr->getClientName() <<" on "<< Mgr->getPeer() << " connection id " << Mgr->getConnectionId());
 
             clientShutdown(Mgr);
         }
@@ -4576,13 +4576,13 @@ void CtiVanGogh::VGAppMonitorThread()
  * that some number of them have a pointer to the to-be-deleted connection.
  * That connection in the mainqueue must be nullified.
  *----------------------------------------------------------------------------*/
-void ApplyBlankDeletedConnection(CtiMessage *Msg, void *Conn)
+void ApplyBlankDeletedConnection(CtiMessage *Msg, void *ConnId)
 {
-    if( Msg->getConnectionHandle() == Conn )
+    if( Msg->getConnectionHandle().getConnectionId() == reinterpret_cast<long>(ConnId) )
     {
         CTILOG_WARN(dout, "Msg on MainQueue found which refers to a connection which no longer exists. Removing reference, msg will be processed "<< *Msg);
 
-        Msg->setConnectionHandle(NULL);
+        Msg->setConnectionHandle(Cti::ConnectionHandle::none);
     }
 }
 

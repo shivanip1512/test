@@ -29,6 +29,12 @@ using Cti::StreamConnectionException;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
 
+namespace Cti {
+namespace Pil {
+extern DLLIMPORT CtiFIFOQueue< CtiMessage > ClientReturnQueue;
+}
+}
+
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
 INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev);
@@ -346,7 +352,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
         }
         else if( ! Port->isViable())
         {
-            if( CtiConnection *conn = static_cast<CtiConnection *>(OutMessage->Request.Connection) )
+            if( OutMessage->Request.Connection )
             {
                 //  Provide an interim error so they know the comms channel is stalled.
                 const YukonError_t error = ClientErrors::PortNotInitialized;
@@ -355,12 +361,14 @@ INT ValidatePort(OUTMESS *&OutMessage)
 
                 const long error_id = OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID;
 
-                CtiReturnMsg *info = new CtiReturnMsg(error_id, OutMessage->Request, error_string, error);
+                auto info = std::make_unique<CtiReturnMsg>(error_id, OutMessage->Request, error_string, error);
+
+                info->setConnectionHandle(OutMessage->Request.Connection);
 
                 //  This isn't the last you'll hear from this request.
                 info->setExpectMore(true);
 
-                conn->WriteConnQue(info, CALLSITE);
+                Cti::Pil::ClientReturnQueue.putQueue(info.release());
             }
         }
     }
@@ -681,20 +689,12 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
         }
         else
         {
-            while( !retList.empty() )
+            //  No connection was set on the temporary pReq above, so there is no connection to send these back to.
+            //    These BuildIt/GenerateCompleteRequest messages are from Scanner anyway, so there is no client. 
+            if( ! retList.empty() )
             {
-                CtiReturnMsg *pRet = (CtiReturnMsg *)retList.front();retList.pop_front();
-                CtiConnection *Conn = NULL;
-
-                if((Conn = ((CtiConnection*)pRet->getConnectionHandle())) != NULL)
-                {
-                    pRet->setExpectMore(true);
-                    Conn->WriteConnQue(pRet, CALLSITE);
-                }
-                else
-                {
-                    delete pRet;
-                }
+                delete_container(retList);
+                retList.clear();
             }
 
             if( ! vgList.empty() )

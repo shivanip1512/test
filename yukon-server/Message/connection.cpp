@@ -19,6 +19,8 @@ using namespace Cti::Messaging::ActiveMQ;
 using Cti::WorkerThread;
 using Cti::Timing::Chrono;
 
+static std::atomic_long connectionId { 0 };
+
 /**
  * class constructor
  * @param title connection title set by connection child classes (type and id)
@@ -30,6 +32,7 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     _termDuration( Chrono::seconds(termSeconds) ),
     _flag(0),
     _title(title),
+    _connectionId(++connectionId),
     _outthread( WorkerThread::Function([this]{ outThreadFunc(); })
             .name( boost::replace_all_copy( title, " ", "" ) + "_outThread" ) // use the title and remove all white spaces to set the thread name
             .priority( THREAD_PRIORITY_HIGHEST ))
@@ -46,6 +49,11 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
 
 CtiConnection::~CtiConnection()
 {
+}
+
+long CtiConnection::getConnectionId() const
+{
+    return _connectionId;
 }
 
 /**
@@ -304,8 +312,7 @@ void CtiConnection::onMessage( const cms::Message* message )
         return;
     }
 
-    // Pee on this message to mark some teritory...
-    omsg->setConnectionHandle( (void*)this );
+    omsg->setConnectionHandle( Cti::ConnectionHandle{ _connectionId } );
 
     // write incoming message to _inQueue
     if( !_inQueue )
@@ -566,10 +573,6 @@ CtiMessage* CtiConnection::ReadConnQue( UINT Timeout )
     if( _inQueue )
     {
         Msg = _inQueue->getQueue( Timeout );
-        if( Msg != NULL )
-        {
-            Msg->setConnectionHandle( (void*)this );
-        }
     }
     else if( Timeout )
     {

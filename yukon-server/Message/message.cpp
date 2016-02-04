@@ -1,23 +1,7 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   message
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.13.10.1 $
-* DATE         :  $Date: 2008/11/10 20:47:13 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "message.h"
-#include "collectable.h"
-#include "dllbase.h"
 #include "logger.h"
-#include "numstr.h"
 
 using std::string;
 using std::endl;
@@ -82,7 +66,6 @@ CtiMessage& CtiMessage::setToken(const int& tok)
 }
 
 CtiMessage::CtiMessage(int Pri) :
-   ConnectionHandle(NULL),
    MessagePriority(Pri & 0x0000000f),
    _soe(0),
    _usr(DEFAULT_SYSTEM_USER),
@@ -92,18 +75,12 @@ CtiMessage::CtiMessage(int Pri) :
 {}
 
 CtiMessage::CtiMessage(const CtiMessage& aRef) :
-   ConnectionHandle(NULL),
    MessagePriority(aRef.getMessagePriority()),
    _soe(0),
    _usr(DEFAULT_SYSTEM_USER),
    _token(-1),
    _src("")
 {}
-
-CtiMessage::~CtiMessage()
-{
-    ConnectionHandle = 0;       // deleted elsewhere...  zeroing to make lint happy
-}
 
 CtiMessage& CtiMessage::operator=(const CtiMessage& aRef)
 {
@@ -115,7 +92,7 @@ CtiMessage& CtiMessage::operator=(const CtiMessage& aRef)
       _usr              = aRef.getUser();
       _token            = aRef.getToken();
       _src              = aRef.getSource();
-      //  Note that ConnectionHandle is NOT copied
+      //  Note that _connectionHandle is NOT copied
    }
 
    return *this;
@@ -138,15 +115,14 @@ bool CtiMessage::operator>(const CtiMessage& aRef) const
     return MessagePriority > aRef.getMessagePriority();
 }
 
-CtiMessage& CtiMessage::setConnectionHandle(void *p)
+void CtiMessage::setConnectionHandle(const Cti::ConnectionHandle newHandle)
 {
-   ConnectionHandle = p;
-   return *this;
+   _connectionHandle = newHandle;
 }
 
-void* CtiMessage::getConnectionHandle() const
+Cti::ConnectionHandle CtiMessage::getConnectionHandle() const
 {
-   return ConnectionHandle;
+   return _connectionHandle;
 }
 
 void CtiMessage::setMessagePriority(INT n)   { MessagePriority = n & 0x0000000f; }

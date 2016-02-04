@@ -55,5 +55,5 @@ public:
    virtual void  shutdown();
    void          terminate();
 
-   ptr_type findConnectionManager( long cid );
+   ptr_type findConnectionManager(const Cti::ConnectionHandle handle);
 };

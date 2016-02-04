@@ -5,6 +5,7 @@
 #include "collectable.h"
 #include "loggable.h"
 #include "dlldefs.h"
+#include "connectionHandle.h"
 
 #include <string>
 
@@ -33,12 +34,7 @@ protected:
     int          _token;
     std::string  _src;
 
-   /*
-    *  Allows a message to mark its return path.. This is a bread crumb.
-    *   This pointer is never worried about by this class, it is just a carrier
-    *   location as the message goes through the machinery on the server....
-    */
-   void  *ConnectionHandle;
+    Cti::ConnectionHandle _connectionHandle;
 
    static std::string formatMessageName(const std::string &name);
 
@@ -48,14 +44,14 @@ public:
 
    CtiMessage(const CtiMessage& aRef);
 
-   virtual ~CtiMessage();
+   virtual ~CtiMessage() = default;
 
    CtiMessage& CtiMessage::operator=(const CtiMessage& aRef);
    bool operator==(const CtiMessage &aRef) const;
    bool virtual operator<(const CtiMessage& aRef) const;
    bool virtual operator>(const CtiMessage& aRef) const;
-   virtual CtiMessage& setConnectionHandle(void *p);
-   virtual void* getConnectionHandle() const;
+   virtual void setConnectionHandle(const Cti::ConnectionHandle handle);
+   Cti::ConnectionHandle getConnectionHandle() const;
    void setMessagePriority(INT n);
    INT  getMessagePriority() const;
    INT  getSOE() const;

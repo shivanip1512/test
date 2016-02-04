@@ -1,8 +1,6 @@
 #pragma once
 
-#include <time.h>
-#include <set>
-
+#include "connectionHandle.h"
 #include "streamConnection.h"
 #include "mutex.h"
 #include "guard.h"
@@ -12,6 +10,8 @@
 #include "macro_offset.h"
 #include "constants.h"
 
+#include <time.h>
+#include <set>
 
 namespace Cti {
 class StreamSocketConnection;
@@ -211,7 +211,7 @@ struct PIL_ECHO               // Data echo'ed through porter fro the PIL.
 {
    char     BuildIt;          // 022801 CGP If !FALSE porter will analyze the CommandStr and make his own assumptions.
 
-   void     *Connection;
+   Cti::ConnectionHandle Connection;
    CHAR     CommandStr[COMMAND_STR_SIZE + 1];   // First COMMAND_STR_SIZE characters of the request string.
    INT      RouteID;          // The ID of the route which is currently being addressed
    char     Attempt;          // On request, the number of attempts to make for this route specification. On reply, the number of attempts remaining.

@@ -52,7 +52,6 @@ public:
         NoOp = 0,                        // Does a LoopClient command
         Shutdown = 10,                   // Bye bye to VanGogh
         ClientAppShutdown = 20,          // Client App has gone away
-        NewClient = 30,                  // Client App has been connected by Connection Handler
         LoopClient = 40,                 // Sends message back to the client
         TraceRoute = 50,                 // Prints a blurb out in each place it is encountered.
         AreYouThere = 60,                // Used to find out if a client is still there. Receipt causes a response.

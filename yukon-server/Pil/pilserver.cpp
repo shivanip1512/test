@@ -71,6 +71,8 @@ using Cti::Timing::Chrono;
 namespace Cti {
 namespace Pil {
 
+DLLEXPORT CtiFIFOQueue<CtiMessage> ClientReturnQueue;
+
 void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
 
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
@@ -101,12 +103,12 @@ PilServer::PilServer(CtiDeviceManager *DM, CtiPointManager *PM, CtiRouteManager 
     _currentUserMessageId(0),
     _listenerConnection( Cti::Messaging::ActiveMQ::Queue::porter ),
     _rfnRequestId(0),
-    _resultThread        (WorkerThread::Function([&]{ resultThread();         }).name("_resultThread")),
-    _nexusThread         (WorkerThread::Function([&]{ nexusThread();          }).name("_nexusThread")),
-    _nexusWriteThread    (WorkerThread::Function([&]{ nexusWriteThread();     }).name("_nexusWriteThread")),
-    _vgConnThread        (WorkerThread::Function([&]{ vgConnThread();         }).name("_vgConnThread")),
-    _schedulerThread     (WorkerThread::Function([&]{ schedulerThread();      }).name("_schedulerThread")),
-    _periodicActionThread(WorkerThread::Function([&]{ periodicActionThread(); }).name("_periodicActionThread"))
+    _resultThread        (WorkerThread::Function([this]{ resultThread();         }).name("_resultThread")),
+    _nexusThread         (WorkerThread::Function([this]{ nexusThread();          }).name("_nexusThread")),
+    _nexusWriteThread    (WorkerThread::Function([this]{ nexusWriteThread();     }).name("_nexusWriteThread")),
+    _vgConnThread        (WorkerThread::Function([this]{ vgConnThread();         }).name("_vgConnThread")),
+    _schedulerThread     (WorkerThread::Function([this]{ schedulerThread();      }).name("_schedulerThread")),
+    _periodicActionThread(WorkerThread::Function([this]{ periodicActionThread(); }).name("_periodicActionThread"))
 {
     serverClosingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if( serverClosingEvent == (HANDLE)NULL )
@@ -212,7 +214,7 @@ void PilServer::mainThread()
                         CTILOG_INFO(dout, "PIL processing an inbound request message which is over 15 minutes old - Message will be discarded" <<
                                 *MsgPtr);
 
-                        if( CtiConnection *requestingClient = static_cast<CtiConnection *>(MsgPtr->getConnectionHandle()) )
+                        if( auto requestingClient = findConnectionManager(MsgPtr->getConnectionHandle()) )
                         {
                             const CtiRequestMsg *req = static_cast<const CtiRequestMsg *>(MsgPtr);
 
@@ -392,15 +394,9 @@ void PilServer::connectionThread()
             {
                 // create new pil connection manager
                 CtiServer::ptr_type sptrConMan(new CtiConnectionManager(_listenerConnection, &MainQueue_));
-                sptrConMan->setClientName("DEFAULT"); //FIXME: give me a better name
 
                 // add the new client connection
                 clientConnect(sptrConMan);
-
-                // need to inform the MainThread of the "New Guy" so that he may control its destiny from now on.
-                auto_ptr<CtiCommandMsg> cmdMsg(new CtiCommandMsg(CtiCommandMsg::NewClient, 15));
-                cmdMsg->setConnectionHandle(sptrConMan.get());
-                MainQueue_.putQueue(cmdMsg.release());
 
                 // start the connection
                 sptrConMan->start();
@@ -435,7 +431,7 @@ void PilServer::validateConnections()
     }
 }
 
-void PilServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle)
+void PilServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, const ConnectionHandle connectionHandle)
 {
     using namespace Cti::Messaging;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
@@ -461,13 +457,15 @@ void PilServer::resultThread()
 {
     CTILOG_INFO(dout, "PIL resultThread - Started");
 
+    bool clientReturnsWaiting = false;
+
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
         try
         {
             const unsigned int inQueueBlockSize = 255;
-            const unsigned int inQueueMaxWait   = 500;  //  500 ms
+            const unsigned int inQueueMaxWait   = clientReturnsWaiting ? 50 : 500;  //  milliseconds
 
             unsigned long start = GetTickCount(), elapsed;
 
@@ -516,6 +514,19 @@ void PilServer::resultThread()
 
                 handleRfnDeviceResult(*rfnResult);
             }
+
+            const size_t clientReturnBlockSize = 20;
+            for( size_t i = 0; i < clientReturnBlockSize && ClientReturnQueue.size(); ++i )
+            {
+                if( std::unique_ptr<CtiMessage> Msg{ ClientReturnQueue.getQueue(0) } )
+                {
+                    if( auto conn = findConnectionManager(Msg->getConnectionHandle()) )
+                    {
+                        conn->WriteConnQue(Msg.release(), CALLSITE);
+                    }
+                }
+            }
+            clientReturnsWaiting = ClientReturnQueue.size();
         }
         catch( const WorkerThread::Interrupted & )
         {
@@ -733,9 +744,9 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
         retMsg->setResultString(retMsg->ResultString() + pointDataDescription.str());
 
-        dev.decrementGroupMessageCount(result.request.userMessageId, reinterpret_cast<long>(result.request.connectionHandle));
+        dev.decrementGroupMessageCount(result.request.userMessageId, result.request.connectionHandle);
 
-        if( dev.getGroupMessageCount(result.request.userMessageId, reinterpret_cast<long>(result.request.connectionHandle)) )
+        if( dev.getGroupMessageCount(result.request.userMessageId, result.request.connectionHandle) )
         {
             retMsg->setExpectMore(true);
         }
@@ -808,7 +819,7 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
 }
 
 
-void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, void *connectionHandle)
+void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, const ConnectionHandle connectionHandle)
 {
     try
     {
@@ -823,7 +834,7 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
             {
                 _schedulerQueue.putQueue(pRet);
             }
-            else if( CtiConnection  *Conn = static_cast<CtiConnection *>(connectionHandle) )
+            else if( auto Conn = findConnectionManager(connectionHandle) )
             {
                 if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
                 {
@@ -1198,7 +1209,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                 CTILOG_ERROR(dout, "Device unknown, unselected, or DB corrupt"<<
                         logItems);
 
-                if( CtiServer::ptr_type ptr = findConnectionManager((long)pExecReq->getConnectionHandle()) )
+                if( CtiServer::ptr_type ptr = findConnectionManager(pExecReq->getConnectionHandle()) )
                 {
                     CtiConnectionManager *CM = (CtiConnectionManager *)ptr.get();
                     CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pExecReq->DeviceId(),
@@ -1236,7 +1247,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         //  Note that this sends all responses to the initial request message's connection -
         //    even if any other return messages were generated by another ExecuteRequest invoked
         //    from the original and have their ConnectionHandle set to 0!
-        CtiServer::ptr_type ptr = findConnectionManager((long)pReq->getConnectionHandle());
+        CtiServer::ptr_type ptr = findConnectionManager(pReq->getConnectionHandle());
 
         if(ptr)
         {

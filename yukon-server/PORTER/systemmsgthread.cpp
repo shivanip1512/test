@@ -18,6 +18,11 @@
 using namespace std;
 
 namespace Cti {
+
+namespace Pil {
+extern DLLIMPORT CtiFIFOQueue< CtiMessage > ClientReturnQueue;
+}
+
 namespace Porter {
 
 SystemMsgThread::SystemMsgThread(CtiFIFOQueue< CtiMessage > &inputQueue,
@@ -118,17 +123,16 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
         {
             unsigned int entries = port->getWorkCount();
 
-            if( CtiConnection *Conn = ((CtiConnection*)msg->getConnectionHandle()) )
+            auto response = std::make_unique<CtiQueueDataMsg>(port->getPortID(), entries, port->getPortTiming(), 0, 0, msg->UserMessageId());
+
+            response->setConnectionHandle(msg->getConnectionHandle());
+
+            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
             {
-                CtiQueueDataMsg *response = CTIDBG_new CtiQueueDataMsg(port->getPortID(), entries, port->getPortTiming(), 0, 0, msg->UserMessageId());
-
-                if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
-                {
-                    CTILOG_DEBUG(dout, *response);
-                }
-
-                Conn->WriteConnQue(response, CALLSITE);
+                CTILOG_DEBUG(dout, *response);
             }
+
+            Pil::ClientReturnQueue.putQueue(response.release());
         }
         else
         {
@@ -141,35 +145,34 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
 {
     if( ULONG requestID = msg->GroupMessageId() )
     {
-        if( CtiConnection *Conn = (CtiConnection*)msg->getConnectionHandle() )
+        unsigned int entries = msg->OptionsField(); // set by Pil.
+
+        for each( CtiPortSPtr port in _portManager.getPorts() )
         {
-            unsigned int entries = msg->OptionsField(); // set by Pil.
+            entries += port->getWorkCount(requestID);
 
-            for each( CtiPortSPtr port in _portManager.getPorts() )
+            for each( const long deviceId in port->getQueuedWorkDevices() )
             {
-                entries += port->getWorkCount(requestID);
-
-                for each( const long deviceId in port->getQueuedWorkDevices() )
+                if( CtiDeviceSPtr tempDev = _devManager.getDeviceByID(deviceId) )
                 {
-                    if( CtiDeviceSPtr tempDev = _devManager.getDeviceByID(deviceId) )
+                    if( Cti::DeviceQueueInterface* queueInterface = tempDev->getDeviceQueueHandler() )
                     {
-                        if( Cti::DeviceQueueInterface* queueInterface = tempDev->getDeviceQueueHandler() )
-                        {
-                            entries += queueInterface->getRequestCount(requestID);
-                        }
+                        entries += queueInterface->getRequestCount(requestID);
                     }
                 }
             }
-
-            CtiQueueDataMsg *response = new CtiQueueDataMsg(0, 0, 0, requestID, entries, msg->UserMessageId());
-
-            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
-            {
-                CTILOG_DEBUG(dout, *response);
-            }
-
-            Conn->WriteConnQue(response, CALLSITE);
         }
+
+        auto response = std::make_unique<CtiQueueDataMsg>(0, 0, 0, requestID, entries, msg->UserMessageId());
+
+        response->setConnectionHandle(msg->getConnectionHandle());
+
+        if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+        {
+            CTILOG_DEBUG(dout, *response);
+        }
+
+        Pil::ClientReturnQueue.putQueue(response.release());
     }
     else
     {
@@ -222,17 +225,16 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
         }
     }
 
-    if( CtiConnection *Conn = ((CtiConnection*)msg->getConnectionHandle()) )
+    auto response = std::make_unique<CtiRequestCancelMsg>(requestID, entries, msg->UserMessageId());
+
+    response->setConnectionHandle(msg->getConnectionHandle());
+
+    if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
     {
-        CtiRequestCancelMsg *response = new CtiRequestCancelMsg(requestID, entries, msg->UserMessageId());
-
-        if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
-        {
-            CTILOG_DEBUG(dout, *response);
-        }
-
-        Conn->WriteConnQue(response, CALLSITE);
+        CTILOG_DEBUG(dout, *response);
     }
+
+    Pil::ClientReturnQueue.putQueue(response.release());
 }
 
 } //Namespace Cti::Porter

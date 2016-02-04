@@ -55,6 +55,7 @@ protected:
     std::string _name;
     std::string _peerName;
     const std::string _title;
+    const long _connectionId;
 
     const Cti::Timing::Chrono _termDuration;
 
@@ -143,6 +144,8 @@ public:
 
     virtual bool operator== ( const CtiConnection& aRef ) const;
 
+    long getConnectionId() const;
+
     CtiMessage*  ReadConnQue  ( UINT Timeout = UINT_MAX );
     YukonError_t WriteConnQue( CtiMessage* msg, ::Cti::CallSite cs, unsigned timeoutMillis = 0 );
 
@@ -162,5 +165,3 @@ public:
     const std::string& getName () const;
     void               setName ( const std::string &name );
 };
-
-typedef CtiConnection* CtiConnectionPtr;
