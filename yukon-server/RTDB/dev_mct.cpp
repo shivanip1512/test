@@ -2930,7 +2930,7 @@ YukonError_t MctDevice::decodeControlDisconnect(const INMESS &InMessage, const C
                 InMessage.Return.OptionsField,
                 InMessage.Priority));
 
-    newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+    newReq->setConnectionHandle(InMessage.Return.Connection);
 
     if( const unsigned delay = getDisconnectReadDelay() )
     {
@@ -3283,9 +3283,9 @@ YukonError_t MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime T
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( resultString );
 
-    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
 
-    if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection)!=0 )
+    if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection)!=0 )
     {
         ReturnMsg->setExpectMore(true);
     }

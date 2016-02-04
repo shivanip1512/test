@@ -629,7 +629,7 @@ YukonError_t Repeater900Device::decodePutConfigRole(const INMESS &InMessage, con
                                                       InMessage.Priority);
 
             newReq->setMessageTime(CtiTime::now().seconds() + 5);
-            newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+            newReq->setConnectionHandle(InMessage.Return.Connection);
             retList.push_back(newReq);
             expectMore = true;
 

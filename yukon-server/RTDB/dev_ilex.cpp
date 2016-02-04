@@ -138,7 +138,6 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
     INT AIPointOffset;
 
     CtiPointDataMsg *pData = NULL;
-    CtiConnection   *Conn = ((CtiConnection*)InMessage.Return.Connection);
     OUTMESS         *OutMessage = NULL;
 
 

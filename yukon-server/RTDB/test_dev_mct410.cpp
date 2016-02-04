@@ -571,7 +571,7 @@ BOOST_AUTO_TEST_SUITE_END()
 
 struct mctExecute_helper : executeRequest_helper
 {
-    void *testConnHandle = reinterpret_cast<void *>(999);
+    const Cti::ConnectionHandle testConnHandle{ 999 };
     CtiRequestMsg request;
     OUTMESS *om;
 
@@ -593,7 +593,7 @@ struct mctExecute_helper : executeRequest_helper
 
 struct mctExecute_noConfig_helper : executeRequest_helper
 {
-    void *testConnHandle = reinterpret_cast<void *>(999);
+    const Cti::ConnectionHandle testConnHandle{ 999 };
     CtiRequestMsg request;
     OUTMESS *om;
 
@@ -3267,11 +3267,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_background)
     {
         test_Mct410IconDevice mct410;
+        const Cti::ConnectionHandle connHandle{ 999 };
 
         CtiCommandParser parse("getvalue lp channel 1 3/17/2011 background");
         request.setDeviceId(123456);
         request.setCommandString(parse.getCommandStr());
-        request.setConnectionHandle(reinterpret_cast<void *>(999));
+        request.setConnectionHandle(connHandle);
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
@@ -3289,7 +3290,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress" );
-            BOOST_CHECK_EQUAL( ret->getConnectionHandle(), reinterpret_cast<void *>(999) );
+            BOOST_CHECK( ret->getConnectionHandle() == connHandle );
             BOOST_CHECK( ret->ExpectMore() );  //  Bug!  Shouldn't have expectMore set
         }
         {
@@ -3309,7 +3310,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
             BOOST_CHECK_EQUAL( ret->Status(), 0 );
             BOOST_CHECK_EQUAL( ret->ResultString(), "Test MCT-410iL / Sending load profile period of interest" );
-            BOOST_CHECK_EQUAL( ret->getConnectionHandle(), reinterpret_cast<void *>(0) );
+            BOOST_CHECK( ret->getConnectionHandle() == Cti::ConnectionHandle::none );
             BOOST_CHECK( ret->ExpectMore() );
         }
     }

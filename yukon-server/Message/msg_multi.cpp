@@ -54,21 +54,14 @@ CtiMessage* CtiMultiMsg::replicateMessage() const
    return( (CtiMessage*)ret );
 }
 
-CtiMessage& CtiMultiMsg::setConnectionHandle(void *p)
+void CtiMultiMsg::setConnectionHandle(const Cti::ConnectionHandle handle)
 {
-   ConnectionHandle = p;
+    Inherited::setConnectionHandle(handle);
 
-   for(int i = 0; i < _bag.size(); i++)
-   {
-      ((CtiMessage*)_bag[i])->setConnectionHandle(p);
-   }
-
-   return *this;
-}
-
-void* CtiMultiMsg::getConnectionHandle() const
-{
-   return ConnectionHandle;
+    for( auto msg : _bag )
+    {
+        msg->setConnectionHandle(handle);
+    }
 }
 
 CtiMultiMsg::CtiMultiMsg(CtiMultiMsg_vec& pointData, int Pri) :

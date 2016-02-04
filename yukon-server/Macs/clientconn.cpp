@@ -68,7 +68,7 @@ void CtiMCConnection::write(CtiMessage* msg)
 /*---------------------------------------------------------------------------
      Returns true if the server connection pointer matches
 ---------------------------------------------------------------------------*/
-bool CtiMCConnection::hasConnection(const void* connectionPtr) const
+bool CtiMCConnection::hasConnection(const Cti::ConnectionHandle connectionHandle) const
 {
-    return (&_connection == connectionPtr);
+    return _connection.getConnectionId() == connectionHandle.getConnectionId();
 }

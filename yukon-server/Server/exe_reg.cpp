@@ -9,26 +9,32 @@
 
 YukonError_t CtiRegistrationExecutor::ServerExecute(CtiServer *Svr)
 {
-    YukonError_t nRet = ClientErrors::None;
-
-    CtiRegistrationMsg   *Msg = (CtiRegistrationMsg*)getMessage();
-
-    CtiServer::ptr_type sptr = Svr->findConnectionManager((long)getConnectionHandle());
-
-    if(sptr)
+    if( auto Msg = getMessage() )
     {
-        sptr->setClientName(Msg->getAppName());
-        sptr->setClientAppId(Msg->getAppId());
-        sptr->setClientUnique(Msg->getAppIsUnique());
+        if( auto Msg = dynamic_cast<CtiRegistrationMsg*>(getMessage()) )
+        {
+            if( auto sptr = Svr->findConnectionManager(Msg->getConnectionHandle()) )
+            {
+                sptr->setClientName(Msg->getAppName());
+                sptr->setClientAppId(Msg->getAppId());
+                sptr->setClientUnique(Msg->getAppIsUnique());
 
-        nRet = Svr->clientRegistration(sptr);
-    }
-    else
-    {
-        CTILOG_WARN(dout, "sptr is null");
+                return Svr->clientRegistration(sptr);
+            }
+
+            CTILOG_WARN(dout, "could not find server for registration message" << *Msg);
+
+            return ClientErrors::Abnormal;
+        }
+
+        CTILOG_ERROR(dout, "Message was not a CtiRegistrationMsg");
+
+        return ClientErrors::Abnormal;
     }
 
-    return nRet;
+    CTILOG_ERROR(dout, "getMessage() was null");
+
+    return ClientErrors::Memory;
 }
 CtiRegistrationExecutor::CtiRegistrationExecutor(CtiMessage *p) :
    CtiExecutor(p)

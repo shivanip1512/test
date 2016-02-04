@@ -294,9 +294,9 @@ public:
     static CtiScanRate_t desolveScanRateType( const std::string &cmd );
     bool removeWindowType( int window_type = -1 );              // Default Argument removes ALL windows.
 
-    int getGroupMessageCount(long userID, long comID);
-    void incrementGroupMessageCount(long userID, long comID, int entries = 1);
-    void decrementGroupMessageCount(long userID, long comID, int entries = 1);
+    int getGroupMessageCount(long userID, Cti::ConnectionHandle client);
+    void incrementGroupMessageCount(long userID, Cti::ConnectionHandle client, int entries = 1);
+    void decrementGroupMessageCount(long userID, Cti::ConnectionHandle client, int entries = 1);
 
 };
 

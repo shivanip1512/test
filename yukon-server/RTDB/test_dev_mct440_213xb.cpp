@@ -4262,14 +4262,14 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
         Cti::Test::test_DeviceConfig &test_cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
         test_Mct440_213xB_route test_dev;
 
-        CtiClientConnection connHandle("fake_host");
+        Cti::ConnectionHandle connHandle{ 9999 };
 
         {
             ////// empty configuration (no valid configuration) //////
 
             CtiCommandParser parse("putconfig install all");
 
-            pRequest->setConnectionHandle((void*)&connHandle);
+            pRequest->setConnectionHandle(connHandle);
 
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
@@ -4334,7 +4334,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
-            pRequest->setConnectionHandle((void*)&connHandle);
+            pRequest->setConnectionHandle(connHandle);
 
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
@@ -4362,7 +4362,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
-            pRequest->setConnectionHandle((void*)&connHandle);
+            pRequest->setConnectionHandle(connHandle);
 
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
@@ -4390,7 +4390,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
-            pRequest->setConnectionHandle((void*)&connHandle);
+            pRequest->setConnectionHandle(connHandle);
 
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
@@ -4418,7 +4418,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
-            pRequest->setConnectionHandle((void*)&connHandle);
+            pRequest->setConnectionHandle(connHandle);
 
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
@@ -4449,7 +4449,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
-            pRequest->setConnectionHandle((void*)&connHandle);
+            pRequest->setConnectionHandle(connHandle);
 
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
@@ -4478,7 +4478,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
-            pRequest->setConnectionHandle((void*)&connHandle);
+            pRequest->setConnectionHandle(connHandle);
 
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 

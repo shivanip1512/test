@@ -155,7 +155,7 @@ void CtiDeviceBase::resumeAfterAuxiliaryRequest(const INMESS &InMessage, OutMess
         0,
         InMessage.Priority);
 
-    newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+    newReq.setConnectionHandle(InMessage.Return.Connection);
 
     beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 }

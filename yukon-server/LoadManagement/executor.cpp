@@ -460,7 +460,7 @@ void CtiLMCommandExecutor::SendAllControlAreas()
 
     CtiLMControlAreaMsg* msg = CTIDBG_new CtiLMControlAreaMsg(*store->getControlAreas(CtiTime()),CtiLMControlAreaMsg::AllControlAreasSent);
 
-    if( _command->getConnectionHandle() != NULL )
+    if( _command->getConnectionHandle() )
     {
         msg->setConnectionHandle(_command->getConnectionHandle());
         std::auto_ptr<CtiMessage> tmp_msg(msg);
@@ -1390,7 +1390,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             CTILOG_DEBUG(dout, *response);
         }
         //Send the response to one or all of the clients
-        if( _controlMsg->getConnectionHandle() != NULL )
+        if( _controlMsg->getConnectionHandle() )
         {
             response->setConnectionHandle(_controlMsg->getConnectionHandle());
             std::auto_ptr<CtiMessage> tmp_msg(response);

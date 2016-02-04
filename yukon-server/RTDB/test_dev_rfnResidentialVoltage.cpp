@@ -865,7 +865,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
 
     Cti::Devices::Commands::RfnCommandSPtr command = rfnRequests.front();
 
-    BOOST_CHECK_EQUAL( 2, dut.getGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle())) );
+    BOOST_CHECK_EQUAL( 2, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle()) );
 
     {
         // execute
@@ -892,10 +892,10 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
         dut.extractCommandResult(*command);
 
         //  replicating PIL's decrement
-        dut.decrementGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle()));
+        dut.decrementGroupMessageCount(request->UserMessageId(), request->getConnectionHandle());
     }
 
-    BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle()) ) );
+    BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle() ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disconnect_meter )

@@ -808,7 +808,7 @@ YukonError_t CtiDeviceSingle::ProcessResult( const INMESS   &InMessage,
             else
             {
                 // if blastfail is not set, we need to decrement the message we are retrying here.
-                decrementGroupMessageCount( InMessage.Return.UserID, (long) InMessage.Return.Connection );
+                decrementGroupMessageCount( InMessage.Return.UserID, InMessage.Return.Connection );
             }
 
             if( OutTemplate != NULL )
@@ -856,8 +856,8 @@ YukonError_t CtiDeviceSingle::ProcessResult( const INMESS   &InMessage,
                 Ret->setResultString( msg );
             }
 
-            decrementGroupMessageCount( InMessage.Return.UserID, (long) InMessage.Return.Connection );
-            if( getGroupMessageCount( InMessage.Return.UserID, (long) InMessage.Return.Connection ) > 0 )
+            decrementGroupMessageCount( InMessage.Return.UserID, InMessage.Return.Connection );
+            if( getGroupMessageCount( InMessage.Return.UserID, InMessage.Return.Connection ) > 0 )
             {
                 Ret->setExpectMore( true );
             }
@@ -1854,12 +1854,11 @@ bool CtiDeviceSingle::removeWindowType( int window_type )
     return found;
 }
 
-int CtiDeviceSingle::getGroupMessageCount( long userID, long comID )
+int CtiDeviceSingle::getGroupMessageCount( long userID, Cti::ConnectionHandle client )
 {
-
     int retVal = 0;
     channelWithID temp;
-    temp.channel = comID;
+    temp.channel = client.getConnectionId();
     temp.identifier = userID;
     MessageCount_t::iterator itr = _messageCount.find( temp );
 
@@ -1870,10 +1869,10 @@ int CtiDeviceSingle::getGroupMessageCount( long userID, long comID )
     return retVal;
 }
 
-void CtiDeviceSingle::incrementGroupMessageCount( long userID, long comID, int entries /*=1*/ )
+void CtiDeviceSingle::incrementGroupMessageCount( long userID, Cti::ConnectionHandle client, int entries /*=1*/ )
 {
     channelWithID temp;
-    temp.channel = comID;
+    temp.channel = client.getConnectionId();
     temp.identifier = userID;
     temp.creationTime = temp.creationTime.now();
 
@@ -1904,11 +1903,11 @@ void CtiDeviceSingle::incrementGroupMessageCount( long userID, long comID, int e
     }
 }
 
-void CtiDeviceSingle::decrementGroupMessageCount( long userID, long comID, int entries /*=1*/ )
+void CtiDeviceSingle::decrementGroupMessageCount( long userID, Cti::ConnectionHandle client, int entries /*=1*/ )
 {
     int msgCount;
     channelWithID temp;
-    temp.channel = comID;
+    temp.channel = client.getConnectionId();
     temp.identifier = userID;
     MessageCount_t::iterator itr = _messageCount.find( temp );
 

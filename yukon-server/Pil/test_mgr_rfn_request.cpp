@@ -81,7 +81,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
         request.priority        = 11;
         request.userMessageId   = 0;
         request.groupMessageId  = 0;
-        request.connectionHandle = nullptr;
 
         requests.push_back(request);
     }
@@ -220,7 +219,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
         request.priority        = 11;
         request.userMessageId   = 0;
         request.groupMessageId  = 0;
-        request.connectionHandle = nullptr;
 
         requests.push_back(request);
     }

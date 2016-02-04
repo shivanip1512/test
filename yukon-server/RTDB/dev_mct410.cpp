@@ -928,7 +928,7 @@ YukonError_t Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime Ti
                                          0,
                                          InMessage.Priority);
 
-                    newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+                    newReq.setConnectionHandle(InMessage.Return.Connection);
                     newReq.setUserMessageId(InMessage.Return.UserID);
 
                     CtiReturnMsg *ret = CTIDBG_new CtiReturnMsg(getID(),
@@ -1338,7 +1338,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 interest_om->Sequence = EmetconProtocol::GetConfig_Model;
 
                 //  make this return message disappear so it doesn't confuse the client
-                interest_om->Request.Connection = 0;
+                interest_om->Request.Connection.reset();
 
                 outList.push_back(interest_om);
             }
@@ -1461,7 +1461,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                     interest_om->Sequence = EmetconProtocol::GetConfig_Model;
 
                     //  make this return message disappear so it doesn't confuse the client
-                    interest_om->Request.Connection = 0;
+                    interest_om->Request.Connection.reset();
 
                     outList.push_back(interest_om);
                 }
@@ -1878,7 +1878,7 @@ void Mct410Device::readSspec(const OUTMESS &OutMessage, OutMessageList &outList)
         //    Because this OM's response is discarded, it will not affect
         //    the message count/expect more behavior to the client.
         //  Otherwise, it would need to be added to the group message count.
-        sspec_om->Request.Connection = 0;
+        sspec_om->Request.Connection.reset();
 
         strncpy(sspec_om->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
 
@@ -2323,7 +2323,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
                         getOperation(EmetconProtocol::GetConfig_DailyReadInterest, alias_check_om->Buffer.BSt);
 
-                        alias_check_om->Request.Connection = 0;
+                        alias_check_om->Request.Connection.reset();
 
                         outList.push_back(alias_check_om.release());
                     }
@@ -2472,7 +2472,7 @@ YukonError_t Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
                 interest_om->Sequence = EmetconProtocol::GetConfig_Model;
 
                 //  make this return message disappear so it doesn't confuse the client
-                interest_om->Request.Connection = 0;
+                interest_om->Request.Connection.reset();
 
                 outList.push_back(interest_om);
             }
@@ -3485,7 +3485,7 @@ YukonError_t Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, cons
                                              0,
                                              InMessage.Priority);
 
-                        newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+                        newReq.setConnectionHandle(InMessage.Return.Connection);
 
                         //  same UserMessageID, no need to reset the in_progress flag
                         beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);

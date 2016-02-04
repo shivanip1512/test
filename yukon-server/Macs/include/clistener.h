@@ -12,7 +12,7 @@ public:
     ~CtiMCClientListener();
 
     // Send a message to all attached clients
-    void BroadcastMessage(CtiMessage* msg, void *Connection = NULL);
+    void BroadcastMessage(CtiMessage* msg, const Cti::ConnectionHandle connectionHandle = Cti::ConnectionHandle::none);
 
     // check all out connections to see if they
     // are still good

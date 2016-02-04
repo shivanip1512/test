@@ -210,7 +210,7 @@ YukonError_t Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, con
 
         insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, pi.description);
 
-        decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+        decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
         retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
     else
@@ -420,7 +420,7 @@ YukonError_t Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessag
         _dynamicComms.updateRelayRuntime( relay, *latestRuntimeTimestamp );
     }
 
-    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
     retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
@@ -546,7 +546,7 @@ YukonError_t Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, 
 
         insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, identifier + " Relay " + CtiNumStr(relay));
 
-        decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+        decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
         retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
     else
@@ -1342,13 +1342,13 @@ YukonError_t Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandPar
             OutMessage->Buffer.BSt.Function = DataRead_SoftspecPos;
             strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
             outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+            incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
 
             // Queue the read of function DataRead_SubstationDataPos
             OutMessage->Buffer.BSt.Function = DataRead_SubstationDataPos;
             strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
             outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+            incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
 
             // Let the remander of the method queue the read of relay addresses function DataRead_AddressInfoPos
             OutMessage->Buffer.BSt.Function = DataRead_AddressInfoPos;
@@ -1373,7 +1373,7 @@ YukonError_t Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandPar
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
         if(multiple_messages)
         {
-            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+            incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
         }
 
         nRet = ClientErrors::None;
@@ -1554,7 +1554,7 @@ YukonError_t Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiC
                     strncpy(OutMessage->Request.CommandStr, parse.getCommandStr().c_str(), COMMAND_STR_SIZE);
 
                     outList.push_back(new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
 
                     // go to next function to get next set of data bytes
                     OutMessage->Buffer.BSt.Function += 4;

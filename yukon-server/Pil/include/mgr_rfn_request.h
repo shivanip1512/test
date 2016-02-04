@@ -21,7 +21,7 @@ struct RfnDeviceRequest
     unsigned priority;
     long userMessageId;
     long groupMessageId;
-    void *connectionHandle;
+    ConnectionHandle connectionHandle;
 
     bool operator>(const RfnDeviceRequest &rhs) const
     {

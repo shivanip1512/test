@@ -484,7 +484,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
 
                 newReq->setMessagePriority(MAXPRIORITY);
 
-                newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+                newReq->setConnectionHandle(InMessage.Return.Connection);
 
                 CtiCommandParser parse(newReq->CommandString());
 
@@ -516,7 +516,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
 
                             newReq->setMessagePriority(MAXPRIORITY);
 
-                            newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+                            newReq->setConnectionHandle(InMessage.Return.Connection);
 
                             CtiCommandParser parse(newReq->CommandString());
 
@@ -544,7 +544,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
 
                             newReq->setMessagePriority(MAXPRIORITY);
 
-                            newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+                            newReq->setConnectionHandle(InMessage.Return.Connection);
 
                             CtiCommandParser parse(newReq->CommandString());
 
@@ -581,7 +581,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
 
                     newReq->setMessagePriority(MAXPRIORITY);
 
-                    newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+                    newReq->setConnectionHandle(InMessage.Return.Connection);
 
                     CtiCommandParser parse(newReq->CommandString());
 
@@ -605,7 +605,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
 
                         newReq->setMessagePriority(MAXPRIORITY);
 
-                        newReq->setConnectionHandle(0);  //  discard the return, we don't want to interrupt the scan
+                        newReq->setConnectionHandle(ConnectionHandle::none);  //  discard the return, we don't want to interrupt the scan
 
                         beginExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
@@ -624,7 +624,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
 
                     newReq->setMessagePriority(MAXPRIORITY);
 
-                    newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+                    newReq->setConnectionHandle(InMessage.Return.Connection);
 
                     beginExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
@@ -650,7 +650,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
 
                 newReq->setMessagePriority(MAXPRIORITY);
 
-                newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+                newReq->setConnectionHandle(InMessage.Return.Connection);
 
                 beginExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 

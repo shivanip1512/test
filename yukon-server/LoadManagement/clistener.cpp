@@ -126,9 +126,9 @@ void CtiLMClientListener::sendMessageToClient(std::auto_ptr<CtiMessage> msg)
 
     try
     {
-        for each( CtiLMConnectionPtr conn in _connections )
+        for( auto& conn : _connections )
         {
-            if( conn.get() == msg->getConnectionHandle() && conn->isViable() )
+            if( conn && conn->getConnectionId() == msg->getConnectionHandle().getConnectionId() && conn->isViable() )
             {
                 conn->WriteConnQue(msg.release(), CALLSITE);
                 return;

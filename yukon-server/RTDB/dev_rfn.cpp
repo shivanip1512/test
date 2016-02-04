@@ -123,7 +123,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
         returnMsgs.push_back(commandsSent);
 
-        incrementGroupMessageCount(pReq->UserMessageId(), reinterpret_cast<long>(pReq->getConnectionHandle()), rfnRequests.size());
+        incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), rfnRequests.size());
     }
 
     for( ReturnMsgList::iterator itr = returnMsgs.begin(); itr != returnMsgs.end(); )

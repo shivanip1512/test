@@ -330,7 +330,7 @@ void DlcBaseDevice::handleRequest(const Commands::DlcCommand::emetcon_request_t 
                          0,
                          im.Priority);
 
-    newReq.setConnectionHandle((void *)im.Return.Connection);
+    newReq.setConnectionHandle(im.Return.Connection);
 
     executeOnDLCRoute(&newReq,
                       CtiCommandParser(newReq.CommandString()),
@@ -421,7 +421,7 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
         {
             _activeCommands.erase(command_itr);
 
-            decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+            decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
         }
     }
     catch( DlcCommand::CommandException &e )
@@ -696,7 +696,7 @@ YukonError_t DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
         }
     }
 
-    const bool outMessagesGenerated = getGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+    const bool outMessagesGenerated = getGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
 
     auto returnMsgs = retList | boost::adaptors::filtered([](const CtiMessage *m){ return m->isA() == MSG_PCRETURN; }) | boost::adaptors::reversed;
 

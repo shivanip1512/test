@@ -9,8 +9,8 @@
 namespace Cti {
 namespace Messaging {
 
-PorterResponseMessage::PorterResponseMessage(const CtiReturnMsg &msg, void *connectionHandle) :
-    _connectionId(reinterpret_cast<long>(connectionHandle)),
+PorterResponseMessage::PorterResponseMessage(const CtiReturnMsg &msg, const ConnectionHandle connectionHandle) :
+    _connectionId(connectionHandle.getConnectionId()),
     _deviceId(msg.DeviceId()),
     _final( ! msg.ExpectMore()),
     _status(msg.Status()),

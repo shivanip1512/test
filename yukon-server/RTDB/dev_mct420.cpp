@@ -709,9 +709,9 @@ YukonError_t Mct420Device::decodePutConfig( const INMESS &InMessage, const CtiTi
         ReturnMsg->setUserMessageId( InMessage.Return.UserID );
         ReturnMsg->setResultString ( resultString );
 
-        decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+        decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
 
-        if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection)!=0 )
+        if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection)!=0 )
         {
             ReturnMsg->setExpectMore(true);
         }

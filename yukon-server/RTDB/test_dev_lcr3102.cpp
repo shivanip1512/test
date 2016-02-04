@@ -547,7 +547,8 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
     {
         OUTMESS *OutMessage = new OUTMESS;
         test_Lcr3102Device test_device;
-        const long userMessageId = 42, connectionHandle = 0;
+        const long userMessageId = 42;
+        const Cti::ConnectionHandle connectionHandle;
         const std::string command = "getvalue runtime load 1 previous 36 update noqueue";
         CtiCommandParser parse(command);
 
@@ -603,7 +604,8 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
     {
         OUTMESS *OutMessage = new OUTMESS;
         test_Lcr3102Device test_device;
-        const long userMessageId = 42, connectionHandle = 0;
+        const long userMessageId = 42;
+        const Cti::ConnectionHandle connectionHandle;
         const std::string command = "getvalue runtime load 1 previous 12 update noqueue";
         CtiCommandParser parse(command);
 
@@ -637,7 +639,8 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
     {
         OUTMESS *OutMessage = new OUTMESS;
         test_Lcr3102Device test_device;
-        const long userMessageId = 42, connectionHandle = 0;
+        const long userMessageId = 42;
+        const Cti::ConnectionHandle connectionHandle;
         const std::string command = "getvalue runtime load 1 previous 24 update noqueue";
         CtiCommandParser parse(command);
 
@@ -682,7 +685,8 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
     {
         OUTMESS *OutMessage = new OUTMESS;
         test_Lcr3102Device test_device;
-        const long userMessageId = 42, connectionHandle = 0;
+        const long userMessageId = 42;
+        const Cti::ConnectionHandle connectionHandle;
         const std::string command = "getvalue runtime load 1 previous 32 update noqueue";
         CtiCommandParser parse(command);
 
@@ -719,7 +723,8 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
     {
         OUTMESS *OutMessage = new OUTMESS;
         test_Lcr3102Device test_device;
-        const long userMessageId = 42, connectionHandle = 0;
+        const long userMessageId = 42;
+        const Cti::ConnectionHandle connectionHandle;
         const std::string command = "getvalue runtime load 1 previous 36 update noqueue";
         CtiCommandParser parse(command);
 
@@ -756,7 +761,8 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
     {
         OUTMESS *OutMessage = new OUTMESS;
         test_Lcr3102Device test_device;
-        const long userMessageId = 42, connectionHandle = 0;
+        const long userMessageId = 42;
+        const Cti::ConnectionHandle connectionHandle;
         const std::string command = "getvalue runtime load 1 previous 17 update noqueue";
         CtiCommandParser parse(command);
 

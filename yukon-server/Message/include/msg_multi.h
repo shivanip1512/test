@@ -36,9 +36,7 @@ public:
    CtiMultiMsg_vec& getData();
    CtiMultiMsg& setData(const CtiMultiMsg_vec& point_data);
 
-
-   virtual CtiMessage& setConnectionHandle(void *p);
-   virtual void* getConnectionHandle() const;
+   void setConnectionHandle(const Cti::ConnectionHandle handle) override;
 
    virtual std::string toString() const override;
 

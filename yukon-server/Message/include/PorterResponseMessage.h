@@ -1,8 +1,9 @@
 #pragma once
 
-#include <StreamableMessage.h>
-
 #include "dlldefs.h"
+#include "connectionHandle.h"
+
+#include <StreamableMessage.h>
 
 class CtiReturnMsg;
 
@@ -19,7 +20,7 @@ class IM_EX_MSG PorterResponseMessage : public StreamableMessage
 
 public:
 
-    PorterResponseMessage(const CtiReturnMsg &msg, void *connectionHandle);
+    PorterResponseMessage(const CtiReturnMsg &msg, const ConnectionHandle connectionHandle);
 
     void streamInto(cms::StreamMessage &message) const;
 };

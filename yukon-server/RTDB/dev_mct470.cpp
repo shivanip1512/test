@@ -674,7 +674,7 @@ void Mct470Device::sendBackground(const OUTMESS &TemplateOutMessage, OutMessageL
 
     //  Set the connection to NULL so it doesn't make it back to the requesting client,
     //    but leave the GroupMsgID alone so it can still be canceled by MACS or the web
-    OutMessage->Request.Connection = NULL;
+    OutMessage->Request.Connection.reset();
 
     outList.push_back(OutMessage.release());
 }
@@ -1913,7 +1913,7 @@ YukonError_t Mct470Device::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser
 
         OutMessage->Request.RouteID   = getRouteID();
         ::strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+        incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
 
         nRet = ClientErrors::None;
     }
@@ -1953,7 +1953,7 @@ YukonError_t Mct470Device::executeScan(CtiRequestMsg *pReq, CtiCommandParser &pa
                         strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
                         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                        incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
                     }
                 }
 
@@ -1974,7 +1974,7 @@ YukonError_t Mct470Device::executeScan(CtiRequestMsg *pReq, CtiCommandParser &pa
                         strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
                         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                        incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
 
                         found = true;
                     }
@@ -2024,7 +2024,7 @@ YukonError_t Mct470Device::executeScan(CtiRequestMsg *pReq, CtiCommandParser &pa
                     strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
                     outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
 
                     found = true;
                 }
@@ -2113,7 +2113,7 @@ YukonError_t Mct470Device::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParse
 
             function = EmetconProtocol::GetConfig_IEDTime;
             found = getOperation(function, OutMessage->Buffer.BSt);
-            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+            incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
         }
         else if( parse.isKeyValid("scan"))
         {
@@ -2146,7 +2146,7 @@ YukonError_t Mct470Device::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParse
 
                 function = EmetconProtocol::GetConfig_IEDDNP;
                 found = getOperation(function, OutMessage->Buffer.BSt);
-                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
             }
         }
     }
@@ -3794,9 +3794,9 @@ YukonError_t Mct470Device::decodeGetValueDemand(const INMESS &InMessage, const C
     insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
                           ReturnMsg, pi, "Blink Counter");
 
-    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
 
-    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection ));
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection ));
 
     return status;
 }
@@ -4511,9 +4511,9 @@ YukonError_t Mct470Device::decodeGetValueIED(const INMESS &InMessage, const CtiT
     }
 
     ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
-    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
 
-    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection) );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection) );
 
     return status;
 }
@@ -4844,9 +4844,9 @@ YukonError_t Mct470Device::decodeGetConfigIED(const INMESS &InMessage, const Cti
 
     ReturnMsg->setResultString(resultString);
 
-    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
 
-    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection) );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection) );
 
     return status;
 }
@@ -5298,7 +5298,7 @@ YukonError_t Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const C
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( sspec + options );
 
-    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
     retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList);
 
     return ClientErrors::None;

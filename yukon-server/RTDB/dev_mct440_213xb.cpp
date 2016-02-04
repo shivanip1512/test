@@ -552,7 +552,7 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
             sspec_om->MessageFlags |= MessageFlag_ExpectMore;
 
             // make this return message disappear so it doesn't confuse the client
-            sspec_om->Request.Connection = 0;
+            sspec_om->Request.Connection.reset();
 
             outList.push_back(sspec_om.release());
         }
@@ -767,7 +767,7 @@ YukonError_t Mct440_213xBDevice::executeGetStatus(CtiRequestMsg    *pReq,
             outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
         }
 
-        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
+        incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), outList.size());
 
         delete OutMessage;  //  we didn't use it, we made our own
         OutMessage = 0;
@@ -1215,8 +1215,8 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    &InMess
     ReturnMsg->setUserMessageId( InMessage.Return.UserID );
     ReturnMsg->setResultString( resultString );
 
-    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
-    if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection ))
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
+    if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection ))
     {
         ReturnMsg->setExpectMore(true);
     }
@@ -1610,7 +1610,7 @@ YukonError_t Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
-                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
+                incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), outList.size());
 
                 delete OutMessage;  //  we didn't use it, we made our own
                 OutMessage = 0;
@@ -1627,7 +1627,7 @@ YukonError_t Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
-                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
+                incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), outList.size());
 
                 delete OutMessage;  //  we didn't use it, we made our own
                 OutMessage = 0;
@@ -2643,8 +2643,8 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
-    if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection ))
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
+    if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection ))
     {
         ReturnMsg->setExpectMore(true);
     }
@@ -3754,7 +3754,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   &InMessag
                                                                      InMessage.Return.OptionsField,
                                                                      InMessage.Priority));
 
-        newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+        newReq->setConnectionHandle(InMessage.Return.Connection);
 
         retList.push_back(newReq.release()); // re-add request to do a putconfig
     }
@@ -4327,8 +4327,8 @@ YukonError_t Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
         }
 
         // note that at the moment only putconfig install will ever have a group message count.
-        decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
-        if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection ))
+        decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
+        if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection ))
         {
             ReturnMsg->setExpectMore(true);
         }
@@ -4358,7 +4358,7 @@ YukonError_t Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
                                                                          InMessage.Return.OptionsField,
                                                                          InMessage.Priority));
 
-            newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+            newReq->setConnectionHandle(InMessage.Return.Connection);
 
             // the master can overwrite the default delay
             const unsigned long delay = gConfigParms.getValueAsULong("PORTER_MCT440_INSTALL_READ_DELAY", DEFAULT_INSTALL_READ_DELAY);

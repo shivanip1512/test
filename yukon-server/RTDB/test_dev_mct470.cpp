@@ -1686,7 +1686,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("electronicMeter", "5");
 
         CtiCommandParser parse("putconfig install all");
-        request.setConnectionHandle((void *)1);  //  so the OMs report that they were sent
+        request.setConnectionHandle(Cti::ConnectionHandle{ 1 });  //  so the OMs report that they were sent
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
@@ -2244,7 +2244,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("enableDst", "true");
 
         CtiCommandParser parse("putconfig install all");
-        request.setConnectionHandle((void *)1);  //  so the OMs report that they were sent
+        request.setConnectionHandle(Cti::ConnectionHandle{ 1 });  //  so the OMs report that they were sent
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 

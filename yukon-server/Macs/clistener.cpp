@@ -53,40 +53,23 @@ void CtiMCClientListener::interrupt(int id)
     }
 }
 
-namespace {
-
-struct CheckHasConnection
-{
-    void* const _connPtr;
-
-    CheckHasConnection(void* connPtr) : _connPtr(connPtr)
-    {}
-
-    bool operator()(const CtiMCConnection& conn) const
-    {
-        return conn.hasConnection(_connPtr);
-    }
-};
-
-} // namespace anonymous
-
 /*----------------------------------------------------------------------------
   BroadcastMessage
 
   Will replicate and send a CtiMessage to all connected clients.
   takes ownership and delete the message given to it.
 ----------------------------------------------------------------------------*/
-void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, void *ConnectionPtr )
+void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, Cti::ConnectionHandle connectionHandle )
 {
     std::auto_ptr<CtiMessage> toSend(msg); // take ownership
 
     try
     {
-        if( ConnectionPtr ) // send message to a single connection
+        if( connectionHandle ) // send message to a single connection
         {
             CtiLockGuard<CtiMutex> guard(_connmutex);
 
-            boost::optional<CtiMCConnection&> conn = Cti::findIfRef(_connections, CheckHasConnection(ConnectionPtr));
+            auto conn = Cti::findIfRef(_connections, [=](const CtiMCConnection &conn){ return conn.hasConnection(connectionHandle); });
 
             if( conn && conn->isValid() )
             {

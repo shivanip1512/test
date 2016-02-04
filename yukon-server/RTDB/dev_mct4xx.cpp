@@ -770,11 +770,11 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                                             ClientErrors::None,
                                             OutMessage->Request));
 
-                                    pReq->setConnectionHandle(0);
+                                    pReq->setConnectionHandle(ConnectionHandle::none);
 
                                     OutMessage->Priority = 8;
                                     //  make sure the OM doesn't report back to Commander
-                                    OutMessage->Request.Connection = 0;
+                                    OutMessage->Request.Connection.reset();
                                 }
 
                                 if( (_llpRequest.channel == _llpInterest.channel) &&  //  correct channel
@@ -1156,7 +1156,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
             sRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
         }
 
-        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
+        incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), outList.size());
 
         if(OutMessage!=NULL)
         {
@@ -1945,8 +1945,8 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
             ReturnMsg->setResultString( resultString );
 
             //note that at the moment only putconfig install will ever have a group message count.
-            decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
-            if (InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection)!=0)
+            decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
+            if (InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection)!=0)
             {
                 ReturnMsg->setExpectMore(true);
             }
@@ -2029,7 +2029,7 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
                                                           requestId,
                                                           InMessage.Priority);
 
-                newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+                newReq->setConnectionHandle(InMessage.Return.Connection);
 
                 //  set it to execute in the future
                 newReq->setMessageTime(CtiTime::now().seconds() + delay);
@@ -2077,7 +2077,7 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
                                                                   InMessage.Return.OptionsField,
                                                                   InMessage.Priority);
 
-                        newReq->setConnectionHandle((void *)InMessage.Return.Connection);
+                        newReq->setConnectionHandle(InMessage.Return.Connection);
                         newReq->setCommandString(newReq->CommandString() + " read");
 
                         if( getType() == TYPEMCT470 || isMct430(getType()) )
@@ -2632,8 +2632,8 @@ YukonError_t Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, co
                                  InMessage.Return.OptionsField,  //  communicate our request ID back to executeGetValueLoadProfile()
                                  InMessage.Priority);
 
-            //  this may be NULL if it's a background request, but assign it anyway
-            newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+            //  this may be empty if it's a background request, but assign it anyway
+            newReq.setConnectionHandle(InMessage.Return.Connection);
 
             beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
         }
@@ -2679,7 +2679,7 @@ YukonError_t Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, co
                                  InMessage.Return.OptionsField,  //  communicate our request ID back to executeGetValueLoadProfile()
                                  InMessage.Priority);
 
-            newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+            newReq.setConnectionHandle(InMessage.Return.Connection);
 
             beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
         }
@@ -3334,8 +3334,8 @@ YukonError_t Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime Ti
                                      InMessage.Return.OptionsField,  //  communicate our request ID back to executeGetValueLoadProfile()
                                      InMessage.Priority);
 
-                //  this may be NULL if it's a background request, but assign it anyway
-                newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+                //  this may be empty if it's a background request, but assign it anyway
+                newReq.setConnectionHandle(InMessage.Return.Connection);
 
                 beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 

@@ -16,9 +16,6 @@ class IM_EX_CTISVR CtiExecutor
 public:
    CtiExecutor(CtiMessage *msg);
 
-   CtiConnectionManager* getConnectionHandle();
-   const CtiConnectionManager* getConnectionHandle() const;
-
    CtiMessage*  getMessage();
 
    virtual YukonError_t ServerExecute(CtiServer *Svr) = 0;

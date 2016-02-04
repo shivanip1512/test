@@ -151,16 +151,18 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
 
     BOOST_REQUIRE(devSingle);
 
-    devSingle->incrementGroupMessageCount(11235, 55441, 2);
+    const Cti::ConnectionHandle handle{ 55441 };
 
-    BOOST_CHECK_EQUAL(2, devSingle->getGroupMessageCount(11235, 55441));
+    devSingle->incrementGroupMessageCount(11235, handle, 2);
+
+    BOOST_CHECK_EQUAL(2, devSingle->getGroupMessageCount(11235, handle));
 
     Cti::Pil::RfnDeviceRequest req;
     req.deviceId = 123;
     req.command.reset(
             new Cti::Devices::Commands::RfnImmediateDemandFreezeCommand);
     req.userMessageId    = 11235;
-    req.connectionHandle = reinterpret_cast<void *>(55441);
+    req.connectionHandle = handle;
 
     Cti::Devices::Commands::RfnCommandResult cmdResult;
     cmdResult.description = "This was a triumph. I'm making a note here: HUGE SUCCESS.";
@@ -178,7 +180,7 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
         BOOST_CHECK(retMsg.ExpectMore());
     }
 
-    BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, 55441));
+    BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, handle));
 }
 
 

@@ -23,5 +23,5 @@ public:
     
     void write(CtiMessage* msg);
 
-    bool hasConnection(const void* connectionPtr) const;
+    bool hasConnection(const Cti::ConnectionHandle connectionHandle) const;
 };
