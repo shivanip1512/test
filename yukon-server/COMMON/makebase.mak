@@ -31,6 +31,7 @@ $(PRECOMPILED_OBJ) \
 AttributeService.obj \
 BeatThePeakAlertLevel.obj \
 cmdparse.obj \
+connectionHandle.obj \
 counter.obj \
 cparms.obj \
 critical_section.obj \
