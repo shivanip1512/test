@@ -610,7 +610,11 @@
     </c:if>
 
     <cti:url var="deleteUrl" value="/tools/points/${pointModel.id}" />
-    <form:form id="delete-point" action="${deleteUrl}" method="DELETE"></form:form>
+    <form:form id="delete-point" action="${deleteUrl}" method="DELETE">
+        <cti:csrfToken var="csrfToken"/>
+        <input type="hidden" id="ajax-csrf-token" name="com.cannontech.yukon.request.csrf.token" value="${csrfToken}">
+        
+    </form:form>
 
     <cti:includeScript link="/resources/js/pages/yukon.tools.point.js"/>
 

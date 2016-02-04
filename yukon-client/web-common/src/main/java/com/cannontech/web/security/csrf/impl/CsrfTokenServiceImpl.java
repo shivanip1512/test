@@ -40,7 +40,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
     }
 
     public void validateToken(HttpServletRequest request) throws SecurityException {
-        if (request.getMethod().equalsIgnoreCase("GET")) {
+        if (!request.getMethod().equalsIgnoreCase("POST")) {
             return;
         }
         String payload = null;
