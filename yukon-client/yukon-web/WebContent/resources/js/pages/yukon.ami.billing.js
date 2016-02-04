@@ -323,8 +323,12 @@ yukon.ami.billing = (function() {
             doc.on('click', '#btnCancelSetup', mod.reset_setup_tab);
             doc.on('submit', '#billingFormatForm', mod.do_save_format);
             doc.on('click', '#btnDeleteFormat', mod.do_delete_format);
-            doc.on('click', '.js-edit-job, .js-delete-job', mod.do_schedules_job_list_button);
-
+            doc.on('click', '.js-edit-job', mod.do_edit_schedule_job_list_button);
+            /** Delete a schedule */
+            $(document).on('yukon.job.delete', function (ev) {
+                var jobId = $(ev.target).data('jobId');
+                _delete_schedule_job({jobId: jobId});
+            });
             _initialized = true;
         },
 
@@ -532,22 +536,16 @@ yukon.ami.billing = (function() {
             _do_refresh_schedules_jobs_list();
         },
 
-        /** Performs delete / edit actions on the exported schedule list item.
+        /** Performs edit action on the exported schedule list item.
          * @param {Object} event - jquery event object.
          */
-        do_schedules_job_list_button : function(event) {
+        do_edit_schedule_job_list_button : function(event) {
             var btn = $(this),
-                isEdit = btn.is('.js-edit-job'),
                 jobId = btn.data('jobId');
-            if (isEdit) {
                 _STOP_EVENT(event);
                 _show_edit_schedule_job({jobId: jobId});
                 return false;
-            } else {
-                _STOP_EVENT(event);
-                _delete_schedule_job({jobId: jobId});
-                return false;
-            }
+             
         },
 
         /** Enables/Disables the buttons on billing setup page.
