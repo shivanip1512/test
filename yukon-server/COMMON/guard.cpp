@@ -18,6 +18,7 @@ CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, char *file, char
         Cti::StreamBufferSink logStream_;
         logStream_ << "Acquiring lock for " << _resourceName << " @ " << std::hex << &_res;
         logStream_ << " owned by " << std::hex << _res.lastAcquiredByTID();
+        // We call formatAndForceLog directly so that we can insert the caller's context
         dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
     }
 
@@ -58,6 +59,7 @@ CtiLockGuard<T>::CtiLockGuard( T& resource, unsigned long millis, char *resource
         Cti::StreamBufferSink logStream_;
         logStream_ << "Acquiring lock for " << _resourceName << " @ " << std::hex << &_res;
         logStream_ << " owned by " << _res.lastAcquiredByTID();
+        // We call formatAndForceLog directly so that we can insert the caller's context
         dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
     }
 
@@ -83,6 +85,7 @@ CtiLockGuard<T>::~CtiLockGuard()
     {
         Cti::StreamBufferSink logStream_;
         logStream_ << "Released lock for " << _resourceName << " @ " << std::hex << &_res;
+        // We call formatAndForceLog directly so that we can insert the caller's context
         dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
     }
 }
@@ -129,6 +132,7 @@ CtiLockGuard<CtiCriticalSection>::CtiLockGuard( CtiCriticalSection& resource, ch
         Cti::StreamBufferSink logStream_;
         logStream_ << "Acquiring lock for " << _resourceName << " @ " << std::hex << &_res;
         logStream_ << " owned by " << std::hex << _res.lastAcquiredByTID();
+        // We call formatAndForceLog directly so that we can insert the caller's context
         dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
     }
 

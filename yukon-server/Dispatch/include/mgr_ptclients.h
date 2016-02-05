@@ -45,7 +45,6 @@ private:
    //Properties should be reserved for things that are not frequently used and need to be always loaded
    PointPropertyMap         _properties;
    PointConnectionMap       _pointConnectionMap;
-   CtiMutex                 _pointConnectionMapMux;
 
    typedef std::pair<PointPropertyMap::const_iterator, PointPropertyMap::const_iterator> PointPropertyRange;
 

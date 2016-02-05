@@ -524,7 +524,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
 
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
-    for(int i = 0; i < ptcnt; i++)
+    for( int i = 0; i < ptcnt; i++ )
     {
         /*
          *  OK, now I walk the list of points looking at each one's ID to find who to add this guy to
@@ -536,11 +536,11 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
             {
                 if(!((const CtiVanGoghConnectionManager *)CM.get())->isRegForChangeType(temp->getType())) // Make sure we didn't already register for ALL points of this type.
                 {
+                    // Prevent _pointConnectionMap from wiggling while we operate.
+                    coll_type::writer_lock_guard_t guard( getLock() );
+
                     if(aReg.getFlags() & REG_REMOVE_POINTS)
                     {
-                        // Prevent _pointConnectionMap from wiggling while we operate.
-                        CTILOCKGUARD( CtiMutex, guard, _pointConnectionMapMux );
-
                         PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
                         if(iter != _pointConnectionMap.end())
                         {
@@ -560,9 +560,6 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
                     }
                     else
                     {
-                        // Prevent _pointConnectionMap from wiggling while we operate.
-                        CTILOCKGUARD( CtiMutex, guard, _pointConnectionMapMux );
-
                         PointConnectionMap::iterator iter = _pointConnectionMap.find( temp->getPointID() );
                         if(iter == _pointConnectionMap.end())
                         {
@@ -617,9 +614,6 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type &CM, Debu
             for(WeakPointMap::iterator pointIter = conIter->second.begin(); pointIter != conIter->second.end(); pointIter++)
             {
                 pointID = pointIter->first;
-
-                // Prevent _pointConnectionMap from wiggling while we operate.
-                CTILOCKGUARD( CtiMutex, guard, _pointConnectionMapMux );
 
                 PointConnectionMap::iterator iter = _pointConnectionMap.find( pointID );
                 if(iter != _pointConnectionMap.end())
@@ -865,11 +859,7 @@ void CtiPointClientManager::DeleteList(void)
 
     _conMgrPointMap.clear();
     CTILOG_DEBUG(dout, "Clearing _conMgrPointMap");
-
-    // Prevent _pointConnectionMap from wiggling while we operate.
-    CTILOCKGUARD( CtiMutex, pointConnectionMapGuard, _pointConnectionMapMux );
     _pointConnectionMap.clear();
-
     _reasonabilityLimits.clear();
     _limits.clear();
     _alarming.clear();
@@ -1222,8 +1212,7 @@ void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
 {
     CTILOG_ENTRY(dout, "pointID=" << pointID << ", isExpiration=" << isExpiration);
 
-    // Prevent _pointConnectionMap from wiggling while we operate.
-    CTILOCKGUARD( CtiMutex, guard, _pointConnectionMapMux );
+    coll_type::writer_lock_guard_t guard( getLock() );
 
     auto pointConIter = _pointConnectionMap.find( pointID );
     if(pointConIter != _pointConnectionMap.end())
@@ -1469,9 +1458,6 @@ bool CtiPointClientManager::pointHasConnection(LONG pointID, const CtiServer::pt
 {
     bool retVal = false;
     coll_type::reader_lock_guard_t guard(getLock());
-
-    // Prevent _pointConnectionMap from wiggling while we operate.
-    CTILOCKGUARD( CtiMutex, pointConnectionMapGuard, _pointConnectionMapMux );
 
     PointConnectionMap::iterator iter = _pointConnectionMap.find(pointID);
     if(iter != _pointConnectionMap.end())
