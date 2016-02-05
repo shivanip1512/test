@@ -98,7 +98,7 @@ void DispatchMsgHandlerThread()
                         if( dbchg->getCategory() == "DEVICE_GROUP_MEMBER" )
                         {
                             //  Porter ignores DEVICE_GROUP_MEMBER dbchanges
-                            dbchg.reset();
+                            continue;
                         }
 
                         break;
@@ -206,7 +206,7 @@ void DispatchMsgHandlerThread()
                         NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( LastThreadMonitorTime, CtiThreadMonitor::StandardMonitorTime / 2 );
 
                         VanGoghConnection.WriteConnQue(
-                            CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, 
+                            CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality,
                             StatusPointType, ThreadMonitor.getString().c_str()), CALLSITE);
                     }
                 }
@@ -226,7 +226,7 @@ void DispatchMsgHandlerThread()
 
                 Cti::reportSystemMetrics( CompileInfo );
 
-                nextCPULoadReportTime = TimeNow + 60;    // Wait another 60 seconds 
+                nextCPULoadReportTime = TimeNow + 60;    // Wait another 60 seconds
             }
 
         }
