@@ -118,9 +118,31 @@ CtiLockGuard<CtiCriticalSection>::CtiLockGuard( CtiCriticalSection& resource, ch
     //    after which it should raise EXCEPTION_POSSIBLE_DEADLOCK (0xC0000194).
     //
     //  See https://msdn.microsoft.com/en-us/library/windows/desktop/ms682608.aspx
+    static bool hasDumped = false;
+    _file = file;
+    _func = func;
+    _line = line;
+    _resourceName = resourceName;
+
+    if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+    {
+        Cti::StreamBufferSink logStream_;
+        logStream_ << "Acquiring lock for " << _resourceName << " @ " << std::hex << &_res;
+        logStream_ << " owned by " << std::hex << _res.lastAcquiredByTID();
+        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+    }
+
     _res.acquire();
 
     _acquired = true;
+
+    if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+    {
+        Cti::StreamBufferSink logStream_;
+        logStream_ << "Acquired lock for " << _resourceName << " @ " << std::hex << &_res;
+        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+    }
+
 }
 
 //  Do not implement the timed constructor for CtiCriticalSection, since it does not implement a timed acquire
@@ -129,5 +151,12 @@ template<>
 CtiLockGuard<CtiCriticalSection>::~CtiLockGuard()
 {
     _res.release();
+
+    if( _file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+    {
+        Cti::StreamBufferSink logStream_;
+        logStream_ << "Released lock for " << _resourceName << " @ " << std::hex << &_res;
+        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+    }
 }
 

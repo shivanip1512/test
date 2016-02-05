@@ -538,6 +538,9 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
                 {
                     if(aReg.getFlags() & REG_REMOVE_POINTS)
                     {
+                        // Prevent _pointConnectionMap from wiggling while we operate.
+                        CTILOCKGUARD( CtiMutex, guard, _pointConnectionMapMux );
+
                         PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
                         if(iter != _pointConnectionMap.end())
                         {
@@ -557,7 +560,10 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
                     }
                     else
                     {
-                        PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
+                        // Prevent _pointConnectionMap from wiggling while we operate.
+                        CTILOCKGUARD( CtiMutex, guard, _pointConnectionMapMux );
+
+                        PointConnectionMap::iterator iter = _pointConnectionMap.find( temp->getPointID() );
                         if(iter == _pointConnectionMap.end())
                         {
                             pair<PointConnectionMap::iterator, bool> insertResult = _pointConnectionMap.insert(PointConnectionMap::value_type(temp->getPointID(), CtiPointConnection()));
@@ -568,7 +574,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
                         }
                         if(iter != _pointConnectionMap.end())
                         {
-                            iter->second.AddConnectionManager(CM);
+                            iter->second.AddConnectionManager( CM );
                         }
 
                         if( conIter != _conMgrPointMap.end() )
@@ -612,7 +618,10 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type &CM, Debu
             {
                 pointID = pointIter->first;
 
-                PointConnectionMap::iterator iter = _pointConnectionMap.find(pointID);
+                // Prevent _pointConnectionMap from wiggling while we operate.
+                CTILOCKGUARD( CtiMutex, guard, _pointConnectionMapMux );
+
+                PointConnectionMap::iterator iter = _pointConnectionMap.find( pointID );
                 if(iter != _pointConnectionMap.end())
                 {
                     if(debugprint == DebugPrint::True)
@@ -856,7 +865,11 @@ void CtiPointClientManager::DeleteList(void)
 
     _conMgrPointMap.clear();
     CTILOG_DEBUG(dout, "Clearing _conMgrPointMap");
+
+    // Prevent _pointConnectionMap from wiggling while we operate.
+    CTILOCKGUARD( CtiMutex, pointConnectionMapGuard, _pointConnectionMapMux );
     _pointConnectionMap.clear();
+
     _reasonabilityLimits.clear();
     _limits.clear();
     _alarming.clear();
@@ -1209,15 +1222,19 @@ void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
 {
     CTILOG_ENTRY(dout, "pointID=" << pointID << ", isExpiration=" << isExpiration);
 
-    auto pointConIter = _pointConnectionMap.find(pointID);
+    // Prevent _pointConnectionMap from wiggling while we operate.
+    CTILOCKGUARD( CtiMutex, guard, _pointConnectionMapMux );
+
+    auto pointConIter = _pointConnectionMap.find( pointID );
     if(pointConIter != _pointConnectionMap.end())
     {
         CtiPointConnection::CollectionType collection = pointConIter->second.getManagerList();
-        for(auto cm : pointConIter->second.getManagerList())
+        for( auto cm : collection )
         {
             CTILOG_INFO(dout, "Pre removePoint " << reinterpret_cast<size_t>(cm.get()) << ", use_count=" << cm.use_count());
             RemoveConnectionManager(cm);
-            CTILOG_INFO(dout, "Post removePoint " << reinterpret_cast<size_t>(cm.get()) << ", use_count=" << cm.use_count());
+            // Warning: RemoveConnectionManager could modify _pointConnectionMap so as of this point, it's invalid
+            CTILOG_INFO( dout, "Post removePoint " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
         }
     }
 
@@ -1452,6 +1469,9 @@ bool CtiPointClientManager::pointHasConnection(LONG pointID, const CtiServer::pt
 {
     bool retVal = false;
     coll_type::reader_lock_guard_t guard(getLock());
+
+    // Prevent _pointConnectionMap from wiggling while we operate.
+    CTILOCKGUARD( CtiMutex, pointConnectionMapGuard, _pointConnectionMapMux );
 
     PointConnectionMap::iterator iter = _pointConnectionMap.find(pointID);
     if(iter != _pointConnectionMap.end())
