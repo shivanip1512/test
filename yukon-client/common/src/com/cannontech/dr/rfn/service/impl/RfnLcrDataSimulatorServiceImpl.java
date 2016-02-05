@@ -79,8 +79,16 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     private static List<Future<?>> futures;
     private final static Map<Integer,Long> perMinuteMsgCount = new ConcurrentHashMap<>();
     private List<PerformanceVerificationEventMessage> eventMessages = null;
+    private static final JAXBContext jaxbContext = initJaxbContext();
     
-
+    static JAXBContext initJaxbContext() {
+        try {
+            return JAXBContext.newInstance("com.cannontech.dr.rfn.model.jaxb");
+        } catch (JAXBException e) {
+            throw new Error(e);
+        }
+    }
+    
     public long getPerMinuteMsgCount() {
         int minuteOfHour = new Instant().get(DateTimeFieldType.minuteOfHour());
 
@@ -103,7 +111,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     private ScheduledFuture<?> simulatorFuture = null;
     private ScheduledFuture<?> msgSimulatorFt = null;
     private boolean msgSimulatorRunning = true;
-    private final Integer devicePartitionCount = 1000;
+    private final int minutesPerDay = 24 * 60;
     
     @Override
     public synchronized void sendLcrDeviceMessages(List<RfnDevice> rfnLcrDeviceList) {
@@ -121,10 +129,11 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                 // increment counter (minute) for Threads created for X number devices per list
                 int minsCounter = 0;
                 loadPerformanceVerificationEventMessages();
-                for (List<RfnDevice> partition : Lists.partition(rfnLcrDeviceList, devicePartitionCount)) {
+                int partitionSize = (int) Math.ceil((double)rfnLcrDeviceList.size() / minutesPerDay);
+                for (List<RfnDevice> partition : Lists.partition(rfnLcrDeviceList, partitionSize)) {
                     msgSimulatorFt =
-                        executor.scheduleAtFixedRate(new MessageSimulator(partition), minsCounter++, 24 * 60,
-                            TimeUnit.MINUTES);
+                        executor.scheduleAtFixedRate(new MessageSimulator(partition), minsCounter++, 
+                                                     minutesPerDay, TimeUnit.MINUTES);
                     futures.add(msgSimulatorFt);
                 }
             } else {
@@ -496,7 +505,6 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             RfnLcrReadSimulatorDeviceParameters deviceParameters) throws JAXBException {
         StringWriter sw = new StringWriter();
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance("com.cannontech.dr.rfn.model.jaxb");
             Marshaller marshaller = jaxbContext.createMarshaller();
             ObjectFactory objectFactory = new ObjectFactory();
 
