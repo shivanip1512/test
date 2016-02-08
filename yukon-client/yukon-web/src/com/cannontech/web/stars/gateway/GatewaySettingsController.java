@@ -137,6 +137,7 @@ public class GatewaySettingsController {
             
         } catch (NmCommunicationException e) {
             
+            log.info("Failed to create gateway. Settings: " + settings, e);
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
             String errorMsg = accessor.getMessage(baseKey + "error.comm");

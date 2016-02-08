@@ -82,7 +82,7 @@ public class GatewayDetailController {
         try {
             boolean success = rfnGatewayService.deleteGateway(pao.getPaoIdentifier());
             if (success) {
-                log.debug("Gateway " + pao.getPaoName() + " deleted.");
+                log.info("Gateway " + pao.getPaoName() + " deleted.");
                 gatewayEventLogService.deletedGateway(user, pao.getPaoName(), 
                                                       gateway.getRfnIdentifier().getSensorSerialNumber());
                 

@@ -78,7 +78,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                 try {
                     T request = inQueue.take();
                     processRequest(request);
-                    log.debug("Proccessed Archive Request for " + request.getRfnIdentifier() + " on " + getName()
+                    log.debug("Processed Archive Request for " + request.getRfnIdentifier() + " on " + getName()
                               + ", queue size is: " + inQueue.size());
                 } catch (InterruptedException e) {
                     log.warn("received shutdown signal, queue size: " + inQueue.size());
