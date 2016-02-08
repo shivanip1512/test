@@ -1,11 +1,7 @@
 package com.cannontech.web.updater.dr;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-
-import javax.annotation.PostConstruct;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,6 +19,8 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingServiceBase;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmReportedAddress> {
 
@@ -32,11 +30,17 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
     @Autowired private SepReportedAddressDao sepReportedAddressDao;
     @Autowired @Qualifier("main") private Executor executor;
 
-    private Map<Integer, DatedObject<LmReportedAddress>> currentAddresses = new ConcurrentHashMap<>();
+    private final Cache<Integer, DatedObject<LmReportedAddress>> currentAddresses =
+        CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     @Override
     public DatedObject<LmReportedAddress> getDatedObject(int deviceId) {
-        DatedObject<LmReportedAddress> datedAddress = currentAddresses.get(deviceId);
+        //If not present hit the DB for fetching it
+        DatedObject<LmReportedAddress> datedAddress = currentAddresses.getIfPresent(deviceId);
+        if (null == datedAddress) {
+            datedAddress = new DatedObject<LmReportedAddress>(expressComReportedAddressDao.getCurrentAddress(deviceId));
+            currentAddresses.put(deviceId, datedAddress);
+        }
         return datedAddress;
     }
 
@@ -141,30 +145,6 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
 
     public enum SepAddressField {
         TIMESTAMP, DEVICE_CLASS, UTILITY_ENROLLMENT_GROUP, RANDOM_START_TIME_MINUTES, RANDOM_STOP_TIME_MINUTES,
-    }
-
-    @PostConstruct
-    public void loadAddresses() {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Set<ExpressComReportedAddress> allCurrentXcomAddresses
-                    = expressComReportedAddressDao.getAllCurrentAddresses();
-                for (ExpressComReportedAddress address : allCurrentXcomAddresses) {
-                    DatedObject<LmReportedAddress> current = currentAddresses.get(address.getDeviceId());
-                    if (current == null || current.getObject().getTimestamp().isBefore(address.getTimestamp())) {
-                        currentAddresses.put(address.getDeviceId(), new DatedObject<LmReportedAddress>(address));
-                    }
-                }
-                Set<SepReportedAddress> allCurrentSepAddresses = sepReportedAddressDao.getAllCurrentAddresses();
-                for (SepReportedAddress address : allCurrentSepAddresses) {
-                    DatedObject<LmReportedAddress> current = currentAddresses.get(address.getDeviceId());
-                    if (current == null || current.getObject().getTimestamp().isBefore(address.getTimestamp())) {
-                        currentAddresses.put(address.getDeviceId(), new DatedObject<LmReportedAddress>(address));
-                    }
-                }
-            }
-        });
     }
 
     /**
