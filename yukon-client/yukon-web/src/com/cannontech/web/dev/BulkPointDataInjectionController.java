@@ -4,6 +4,7 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
 import com.cannontech.development.model.BulkPointInjectionParameters;
+import com.cannontech.development.model.RphSimulatorParameters;
 import com.cannontech.development.service.BulkPointDataInjectionService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -62,6 +64,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.dev.model.PointInjectionStatus;
+import com.cannontech.web.dev.model.RphSimulatorPointStatus;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.type.PeriodType;
@@ -93,7 +96,7 @@ public class BulkPointDataInjectionController {
     private BulkFakePointInjectionDto bulkInjection;
     private final static String baseKey = "yukon.web.modules.support.bulkPointInjection";
     private final PointInjectionStatus injectionStatus = new PointInjectionStatus();
-
+    private final RphSimulatorPointStatus rphSimulatorPointStatus = new RphSimulatorPointStatus();
     private Validator bulkValidator = new SimpleValidator<BulkFakePointInjectionDto>(BulkFakePointInjectionDto.class) {
         @Override
         public void doValidation(BulkFakePointInjectionDto bulkInjection, Errors errors) {
@@ -152,7 +155,14 @@ public class BulkPointDataInjectionController {
         model.addAttribute("injectionStatus", injectionStatus(userContext));
         return "bulkPointInjection/home.jsp";
     }
-
+    
+    @RequestMapping("rphSimulator")
+    public String rphSimulator(ModelMap model, YukonUserContext userContext) {
+        model.addAttribute("stop", Instant.now());
+        model.addAttribute("start", Instant.now().minus(Duration.standardDays(30)));
+        return "bulkPointInjection/rphSimulator.jsp";
+    }
+    
     @RequestMapping("injection-status")
     @ResponseBody
     public Map<String, Object> injectionStatus(YukonUserContext userContext) {
@@ -261,6 +271,69 @@ public class BulkPointDataInjectionController {
         executor.execute(pointInjectionThread);
     }
 
+    
+    @RequestMapping("start")
+    @ResponseBody
+    public void start(final RphSimulatorParameters rphSimulatorParameters) {
+        log.info("Start inserting points at : " + new Date());
+        final AtomicBoolean isRunning = rphSimulatorPointStatus.getIsRunning();
+        if (!isRunning.compareAndSet(false, true)) {
+            return;
+        }
+        final AtomicBoolean isCompleted = rphSimulatorPointStatus.getIsCompleted();
+        isCompleted.set(false);
+        rphSimulatorPointStatus.setErrorMessage(null);
+        Thread pointInjectionThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    String deviceGroupName = rphSimulatorParameters.getDeviceGroupName();
+                    double valueHigh = rphSimulatorParameters.getValueHigh();
+                    double valueLow = rphSimulatorParameters.getValueLow();
+
+                    Duration standardDuration = rphSimulatorParameters.getPeriod().toStandardDuration();
+                    Instant stop = rphSimulatorParameters.getStop();
+                    Instant start = rphSimulatorParameters.getStart();
+
+                    bulkPointDataInjectionSerivce.insertPointData(deviceGroupName, rphSimulatorParameters.getType(), valueLow, valueHigh,
+                        start, stop, standardDuration);
+                    isCompleted.set(true);
+                } catch (Exception e) {
+                    log.error("Point Injection has encountered an unexpected error.", e);
+                    rphSimulatorPointStatus.setErrorMessage(e.getMessage());
+                } finally {
+                    log.info("Point Injection worker has finished at " + new Date());
+                    isRunning.set(false);
+                }
+
+            }
+
+        };
+        pointInjectionThread.setName("HighSpeedBulkPointInjectionTaskRunner");
+        pointInjectionThread.setDaemon(true);
+        executor.execute(pointInjectionThread);
+    }
+
+    @RequestMapping("rph-simulator-injection-status")
+    @ResponseBody
+    public Map<String, Object> rphSimulatorInjectionStatus(YukonUserContext userContext) {
+        Map<String, Object> rphInjectionStatusJson = Maps.newHashMapWithExpectedSize(10);
+        rphInjectionStatusJson.put("isCompleted", rphSimulatorPointStatus.getIsCompleted());
+        if (rphSimulatorPointStatus.getIsRunning().get()) {
+            rphInjectionStatusJson.put("status", "running");
+        } else {
+            rphInjectionStatusJson.put("status", "neverRan");
+        }
+
+        String errorMessage = rphSimulatorPointStatus.getErrorMessage();
+        if (!StringUtils.isBlank(errorMessage)) {
+            rphInjectionStatusJson.put("hasError", true);
+            rphInjectionStatusJson.put("errorMessage", "Error Occured: " + errorMessage);
+        }
+
+        return rphInjectionStatusJson;
+    }
+    
     static class TimeRangeSplitter {
         private final Instant start;
         private final Instant stop;

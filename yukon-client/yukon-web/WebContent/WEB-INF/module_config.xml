@@ -1566,6 +1566,7 @@
           <page name="webServices.account" type="BASIC"/>
           <page name="pointInjection" type="BASIC"/>
           <page name="bulkPointInjection" type="BASIC"/>
+          <page name="highSpeedBulkPointInjection" type="BASIC"/>
           <page name="setupDatabase" type="BASIC"/>
           <page name="miscellaneousMethod" type="BASIC"/>
           <page name="rfnTest" type="BASIC">

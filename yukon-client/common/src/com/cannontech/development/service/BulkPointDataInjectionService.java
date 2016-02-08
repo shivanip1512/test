@@ -2,6 +2,7 @@ package com.cannontech.development.service;
 
 import java.util.List;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.common.device.model.SimpleDevice;
@@ -16,4 +17,10 @@ public interface BulkPointDataInjectionService {
 
     List<PointData> createPointData(Attribute attribute, double valueHigh, double valueLow, SimpleDevice device,
             List<Instant> timestamps);
+
+    /**
+     * Insert point data for existing devices.
+     */
+    void insertPointData(String deviceGroupName, String type, double valueLow, double valueHigh,
+            Instant start, Instant stop, Duration standardDuration);
 }

@@ -24,6 +24,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.development.dao.RPHSimulatorDao;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
 import com.cannontech.development.service.BulkPointDataInjectionService;
 import com.cannontech.message.dispatch.message.PointData;
@@ -36,6 +37,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     @Autowired private PaoDao paoDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
+    @Autowired RPHSimulatorDao rphSimulatorDao;
 
     @Override
     public void excecuteInjection(BulkFakePointInjectionDto bulkInjection) {
@@ -222,5 +224,16 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
 
     private double getRandomWithinRange(double min, double max) {
         return (min + (int) (Math.random() * ((max - min) + 1)));
+    }
+
+    @Override
+    public void insertPointData(String deviceGroupName, String type, double valueLow, double valueHigh, Instant start,
+            Instant stop, Duration standardDuration) {
+        DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(deviceGroupName);
+        List<Integer> devicesIdList =
+            new ArrayList<Integer>(deviceGroupService.getDeviceIds(Collections.singletonList(deviceGroup)));
+        for (List<Integer> devicesId : Lists.partition(devicesIdList, 1000)) {
+            rphSimulatorDao.insertPointData(devicesId, type, valueLow, valueHigh, start, stop, standardDuration);
+        }
     }
 }

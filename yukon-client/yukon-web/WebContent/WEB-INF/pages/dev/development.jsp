@@ -29,6 +29,7 @@
                     <li><a href="<cti:url value="/dev/db-change"/>">DbChange Messages</a></li>
                     <li><a href="<cti:url value="/dev/create-import-files"/>">Create Import Files</a></li>
                     <li><a href="<cti:url value="/dev/uber-log"/>">Uber Log</a></li>
+                    <li><a href="<cti:url value="/dev/bulkPointInjection/rphSimulator"/>">High Speed Bulk Point Injection</a></li>
                 </ul>
             </tags:sectionContainer>
         </div>
