@@ -2,7 +2,13 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-/* No Updates */
+/* Start YUK-15052 */
+INSERT INTO Device
+SELECT PaobjectId, 'N', 'N'
+FROM YukonPAObject
+WHERE Type = 'WEATHER LOCATION'
+  AND PAObjectID NOT IN (SELECT DeviceID FROM Device);
+/* End YUK-15052 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
