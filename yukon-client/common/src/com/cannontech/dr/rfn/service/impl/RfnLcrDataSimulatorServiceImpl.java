@@ -188,14 +188,16 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     public synchronized void stopMessageSimulator() {
         log.debug("RFN LCR message simulator shutting down...");
         Iterator<Future<?>> futureIter = futures.iterator();
-        while (futureIter.hasNext()) {
-            futureIter.next().cancel(true);
-        }
-        msgSimulatorRunning = true;
-        RfnLcrDataSimulatorStatus.reInitializeStatus(rfnLcrExistingDataSimulatorStatus);
-        if (!rfnLcrDataSimulatorStatus.getIsRunning6200().get()) {
-            // Flush the counter if both simulators are off
-            perMinuteMsgCount.clear();
+        if(null!=futures){
+            while (futureIter.hasNext()) {
+                futureIter.next().cancel(true);
+            }
+            msgSimulatorRunning = true;
+            RfnLcrDataSimulatorStatus.reInitializeStatus(rfnLcrExistingDataSimulatorStatus);
+            if (!rfnLcrDataSimulatorStatus.getIsRunning6200().get()) {
+                // Flush the counter if both simulators are off
+                perMinuteMsgCount.clear();
+            }
         }
     }
 
