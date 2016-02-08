@@ -396,7 +396,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_inva
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::InvalidConfigData );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), 
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(),
                 "Invalid data for config key \"alarmRepeatInterval\" : invalid value -60 is out of range, expected [0 - 4294967295]." );
         }
     }
@@ -545,11 +545,11 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
 
     const std::vector< std::vector<bool> > returnExpectMoreExp
     {
-        { true, true, true, true, true, true, true, true, true, true, true, false }, 
+        { true, true, true, true, true, true, true, true, true, true, true, false },
                                                              // no config data -> 12 error messages, NOTE: last expectMore expected to be false
-        { true, true, true, true, true, true, true, true, true, true, true },        
+        { true, true, true, true, true, true, true, true, true, true, true },
                                                              // add demand freeze day config     -> 11 error messages
-        { true, true, true, true, true, true, true, true, true },              
+        { true, true, true, true, true, true, true, true, true },
                                                              // add OVUV config                  -> 9 error messages
         { true, true, true, true, true, true, true },        // add TOU config                   -> 7 error messages
         { true, true, true, true, true },                    // add temperature alarming config  -> 5 error messages
@@ -1043,9 +1043,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
 
     const std::vector< std::vector<bool> > returnExpectMoreExp
     {
-        { true, true, true, true, true, true, true, true, true, true, true, true, true, false }, 
+        { true, true, true, true, true, true, true, true, true, true, true, true, true, false },
                                                                    // no config data                  -> 14 error messages, NOTE: last expectMore expected to be false
-        { true, true, true, true, true, true, true, true, true, true, true, true, true },        
+        { true, true, true, true, true, true, true, true, true, true, true, true, true },
                                                                    // add remote disconnect config    -> 13 error messages
         { true, true, true, true, true, true, true, true, true, true, true },
                                                                    // add demand freeze day config    -> 11 error messages
@@ -1304,7 +1304,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
             {
                 Bytes response
                 {
-                    0x69, 0x03, 0x00, 0x00
+                    0x69, 0x06, 0x00, 0x00
                 };
 
                 Commands::RfnCommandResult rcv = command->decodeCommand( execute_time, response );

@@ -47,11 +47,6 @@ RfnCommand::Bytes RfnCommand::getCommandHeader()
     return header;
 }
 
-unsigned char RfnCommand::getExpectedResponseCode() const
-{
-    return getOperation();
-}
-
 double RfnCommand::adjustByScalingFactor(double value, double scalingFactor) const
 {
     //  Temporary workaround for YUK-12814.

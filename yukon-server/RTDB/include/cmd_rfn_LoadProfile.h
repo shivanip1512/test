@@ -69,8 +69,6 @@ protected:
 
     static LongTlvList longTlvs;
 
-    virtual unsigned char getExpectedResponseCode() const override;
-
 public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,

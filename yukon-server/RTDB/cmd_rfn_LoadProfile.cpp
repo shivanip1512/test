@@ -70,24 +70,6 @@ RfnLoadProfileCommand::TlvList RfnLoadProfileCommand::getTlvs()
 }
 
 
-unsigned char RfnLoadProfileCommand::getExpectedResponseCode() const
-{
-    switch ( _operation )
-    {
-        case Operation_EnablePermanentLoadProfileRecording:
-        {
-            return Operation_EnableTemporaryLoadProfileRecording;
-        }
-
-        default:
-        {
-            break;
-        }
-    }
-    return _operation;
-}
-
-
 RfnCommandResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
                                                               const RfnResponsePayload & response )
 {
@@ -103,7 +85,7 @@ RfnCommandResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
     validate( Condition( response[0] == CommandCode_Response, ClientErrors::InvalidData )
             << "Invalid Response Command Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
 
-    validate( Condition( response[1] == getExpectedResponseCode(), ClientErrors::InvalidData )
+    validate( Condition( response[1] == getOperation(), ClientErrors::InvalidData )
             << "Invalid Operation Code (" << CtiNumStr(response[1]).xhex(2) << ")" );
 
     boost::optional<std::string> status = mapFind( loadProfileStatusResolver, response[2] );
