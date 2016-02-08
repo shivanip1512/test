@@ -3,8 +3,11 @@ package com.cannontech.mbean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +84,10 @@ import com.cannontech.yukon.server.cache.YukonGroupLoader;
 import com.cannontech.yukon.server.cache.YukonGroupRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 
 public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache {
     
@@ -106,6 +112,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private final String databaseAlias = CtiUtilities.getDatabaseAlias();
     
     private Map<Integer, LiteYukonPAObject> allLitePaos;
+    private SetMultimap<PaoType, Integer> allPaoTypes = Multimaps.synchronizedSetMultimap(HashMultimap.create());
     private Map<Integer, SimpleMeter> allMeters;
     
     private List<LitePoint> allSystemPoints;
@@ -985,6 +992,22 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return retLBase;
     }
     
+    @Override
+    public synchronized Set<PaoType> getAllPaoTypes() {
+        return getPaoTypesMap().keys().elementSet();
+    }
+    
+    private synchronized SetMultimap<PaoType, Integer> getPaoTypesMap(){
+        if (allPaoTypes.isEmpty()) {
+            Map<Integer, LiteYukonPAObject> allPaosMap = getAllPaosMap();
+            for (LiteYukonPAObject pao : allPaosMap.values()) {
+                allPaoTypes.put(pao.getPaoType(), pao.getLiteID());
+            }
+        }
+        
+        return allPaoTypes;
+    }
+    
     private synchronized void handleMeterNumberChange(DbChangeType type, int id) {
         
         if (id == 0) { // A force reload of all devicemetergroups was sent.
@@ -1632,12 +1655,29 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 LiteYukonPAObject pao = paoDao.getLiteYukonPAO(id);
                 getAllPaosMap().put(pao.getLiteID(), pao);
                 lBase = pao;
+                getPaoTypesMap().put(pao.getPaoType(), pao.getLiteID());
             }
         } else if (type == DbChangeType.UPDATE) {
             LiteYukonPAObject pao = paoDao.getLiteYukonPAO(id);
             getAllPaosMap().put(pao.getLiteID(), pao);
             lBase = pao;
+            if(!getPaoTypesMap().containsEntry(pao.getPaoType(), pao.getLiteID())){
+                //The paoType was updated to different paoType
+                //Remove the original paoType and id combination
+                Iterator<Entry<PaoType, Integer>> it= getPaoTypesMap().entries().iterator();
+                while(it.hasNext()){
+                    Entry<PaoType, Integer> entry = it.next();
+                    if(entry.getValue() == pao.getLiteID()){
+                        it.remove();
+                    }
+                }
+                getPaoTypesMap().put(pao.getPaoType(), pao.getLiteID());
+            }
         } else if (type == DbChangeType.DELETE) {
+            LiteYukonPAObject pao =  getAllPaosMap().get(id);
+            if(pao != null){
+                getPaoTypesMap().remove(pao.getPaoType(), pao.getLiteID());
+            }
             lBase = getAllPaosMap().remove(id);
         } else {
             releaseAllYukonPAObjects();
@@ -1658,7 +1698,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized void releaseAllCache() {
         
-        allLitePaos = null;
+        releaseAllYukonPAObjects();
         allSystemPoints = null;
         allStateGroups = null;
         allNotificationGroups = null;
@@ -1794,6 +1834,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized void releaseAllYukonPAObjects() {
         allLitePaos = null;
+        allPaoTypes.clear();
     }
 
     @Override

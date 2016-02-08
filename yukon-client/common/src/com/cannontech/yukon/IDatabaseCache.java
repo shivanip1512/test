@@ -2,8 +2,10 @@ package com.cannontech.yukon;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.amr.meter.model.SimpleMeter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteBaseline;
@@ -97,6 +99,8 @@ public interface IDatabaseCache {
      * @return Map of paoID to LiteYukonPAObject>
      */
     Map<Integer, LiteYukonPAObject> getAllPaosMap();
+    
+    Set<PaoType> getAllPaoTypes();
 
     /**
      * @return Map of contactNotifID to LiteContactNotification
@@ -198,5 +202,4 @@ public interface IDatabaseCache {
     List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
 
     Map<Integer, LiteYukonImage> getImages();
-
 }

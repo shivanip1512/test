@@ -2,8 +2,10 @@ package com.cannontech.web.mock;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.amr.meter.model.SimpleMeter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
@@ -389,6 +391,11 @@ public class StubServerDatabaseCache implements IDatabaseCache {
 
     @Override
     public Map<Integer, LiteYukonImage> getImages() {
+        throw new MethodNotImplementedException("Method not implemented yet.");
+    }
+
+    @Override
+    public Set<PaoType> getAllPaoTypes() {
         throw new MethodNotImplementedException("Method not implemented yet.");
     }
 
