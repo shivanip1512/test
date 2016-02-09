@@ -6,7 +6,7 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="timeZone"/>
             <xs:enumeration value="lcdConfiguration"/>
-            <xs:enumeration value="centron410Display"/>
+            <xs:enumeration value="centron410DisplayItems"/>
             <xs:enumeration value="centron420DisplayItems"/>
             <xs:enumeration value="focusAlDisplay"/>
             <xs:enumeration value="mct440Configuration"/>

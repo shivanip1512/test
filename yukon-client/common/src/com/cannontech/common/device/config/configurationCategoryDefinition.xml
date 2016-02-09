@@ -43,9 +43,7 @@
         <enum field="displayItem26" type="Centron420DisplayItem" default="0"/>
     </category>                                 
     
-    <category type="centron410Display">
-        <integer field="lcdCycleTime" minValue="0" maxValue="15" default="8"/>
-        <integer field="displayDigits" minValue="4" maxValue="6" default="5"/>
+    <category type="centron410DisplayItems">
         <enum field="displayItem1" type="Centron410DisplayItem" default="0"/>
         <enum field="displayItem2" type="Centron410DisplayItem" default="0"/>
         <enum field="displayItem3" type="Centron410DisplayItem" default="0"/>

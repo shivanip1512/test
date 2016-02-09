@@ -492,7 +492,7 @@ public class DeviceConfigurationCategoryController {
         String templateCategoryType = categoryTemplate.getCategoryType();
 
         boolean isDisplayItemsCategory =
-                templateCategoryType.equals(CategoryType.CENTRON_410_DISPLAY.value()) ||
+                templateCategoryType.equals(CategoryType.CENTRON_410_DISPLAY_ITEMS.value()) ||
                 templateCategoryType.equals(CategoryType.CENTRON_420_DISPLAY_ITEMS.value()) ||
                 templateCategoryType.equals(CategoryType.FOCUS_AL_DISPLAY.value());
 

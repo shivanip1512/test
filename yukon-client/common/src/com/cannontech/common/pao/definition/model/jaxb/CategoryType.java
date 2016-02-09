@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     &lt;enumeration value="timeZone"/>
  *     &lt;enumeration value="lcdConfiguration"/>
- *     &lt;enumeration value="centron410Display"/>
+ *     &lt;enumeration value="centron410DisplayItems"/>
  *     &lt;enumeration value="centron420DisplayItems"/>
  *     &lt;enumeration value="focusAlDisplay"/>
  *     &lt;enumeration value="mct440Configuration"/>
@@ -56,8 +56,8 @@ public enum CategoryType {
     TIME_ZONE("timeZone"),
     @XmlEnumValue("lcdConfiguration")
     LCD_CONFIGURATION("lcdConfiguration"),
-    @XmlEnumValue("centron410Display")
-    CENTRON_410_DISPLAY("centron410Display"),
+    @XmlEnumValue("centron410DisplayItems")
+    CENTRON_410_DISPLAY_ITEMS("centron410DisplayItems"),
     @XmlEnumValue("centron420DisplayItems")
     CENTRON_420_DISPLAY_ITEMS("centron420DisplayItems"),
     @XmlEnumValue("focusAlDisplay")
