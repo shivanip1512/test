@@ -1202,6 +1202,21 @@ void CtiPointClientManager::expire(long pid)
 
 void CtiPointClientManager::erase(long pid)
 {
+    coll_type::writer_lock_guard_t guard( getLock() );
+
+    auto pointConIter = _pointConnectionMap.find( pid );
+    if( pointConIter != _pointConnectionMap.end() )
+    {
+        CtiPointConnection::CollectionType collection = pointConIter->second.getManagerList();
+        for( auto cm : collection )
+        {
+            CTILOG_INFO( dout, "Pre removePoint " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
+            RemoveConnectionManager( cm );
+            // Warning: RemoveConnectionManager could modify _pointConnectionMap so as of this point, pointConIter is invalid.
+            CTILOG_INFO( dout, "Post removePoint " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
+        }
+    }
+
     removePoint(pid, false);
     Inherited::erase(pid);
 }
@@ -1210,24 +1225,8 @@ void CtiPointClientManager::erase(long pid)
 //If this is an expiration, the dynamic data is not erased.
 void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
 {
-    CTILOG_ENTRY(dout, "pointID=" << pointID << ", isExpiration=" << isExpiration);
-
     coll_type::writer_lock_guard_t guard( getLock() );
-
-    auto pointConIter = _pointConnectionMap.find( pointID );
-    if(pointConIter != _pointConnectionMap.end())
-    {
-        CtiPointConnection::CollectionType collection = pointConIter->second.getManagerList();
-        for( auto cm : collection )
-        {
-            CTILOG_INFO(dout, "Pre removePoint " << reinterpret_cast<size_t>(cm.get()) << ", use_count=" << cm.use_count());
-            RemoveConnectionManager(cm);
-            // Warning: RemoveConnectionManager could modify _pointConnectionMap so as of this point, pointConIter is invalid.
-            CTILOG_INFO( dout, "Post removePoint " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
-        }
-    }
-
-    for(ConnectionMgrPointMap::iterator iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++)
+    for( ConnectionMgrPointMap::iterator iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++ )
     {
         CTILOG_DEBUG(dout, "Removing point " << pointID << " from _conMgrPointMap @ 0x" << hex << &iter->second);
         iter->second.erase(pointID);
