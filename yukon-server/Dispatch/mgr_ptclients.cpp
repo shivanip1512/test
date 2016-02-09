@@ -1207,8 +1207,13 @@ void CtiPointClientManager::erase(long pid)
     auto pointConIter = _pointConnectionMap.find( pid );
     if( pointConIter != _pointConnectionMap.end() )
     {
-        CtiPointConnection::CollectionType collection = pointConIter->second.getManagerList();
-        for( auto cm : collection )
+        /* 
+         * We get the connection manager collection out of pointConIter here because 
+         *   pointConIter may get invalidated in RemoveConnectionManager().  
+         *   connectionManagers is safe to iterate on, pointConIter is not. 
+         */
+        CtiPointConnection::CollectionType connectionManagers = pointConIter->second.getManagerList();
+        for( auto cm : connectionManagers )
         {
             CTILOG_INFO( dout, "Pre removePoint " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
             RemoveConnectionManager( cm );
