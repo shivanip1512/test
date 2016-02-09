@@ -116,7 +116,7 @@
     <entry key="yukon.web.modules.tools.configs.category.timeZone.timeZoneOffset.description">Signed offset from UTC.</entry>
     
     <entry key="yukon.web.modules.tools.configs.category.centron410DisplayItems.title">Centron C1SX Display Items</entry>
-    <entry key="yukon.web.modules.tools.configs.category.centron410DisplayItems.definition">Items displayed on the front panel LCD of Centron C1SX RFN device (RFN-410cL).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.centron410DisplayItems.definition">Items displayed on the front panel LCD of the Centron C1SX RFN device (RFN-410cL).</entry>
     <entry key="yukon.web.modules.tools.configs.category.centron410DisplayItems.displayItem1">Display Item 1</entry>
     <entry key="yukon.web.modules.tools.configs.category.centron410DisplayItems.displayItem2">Display Item 2</entry>
     <entry key="yukon.web.modules.tools.configs.category.centron410DisplayItems.displayItem3">Display Item 3</entry>
