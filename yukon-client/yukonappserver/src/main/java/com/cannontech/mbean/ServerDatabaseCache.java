@@ -3,12 +3,13 @@ package com.cannontech.mbean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -84,10 +85,8 @@ import com.cannontech.yukon.server.cache.YukonGroupLoader;
 import com.cannontech.yukon.server.cache.YukonGroupRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
 
 public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache {
     
@@ -112,7 +111,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private final String databaseAlias = CtiUtilities.getDatabaseAlias();
     
     private Map<Integer, LiteYukonPAObject> allLitePaos;
-    private SetMultimap<PaoType, Integer> allPaoTypes = Multimaps.synchronizedSetMultimap(HashMultimap.create());
+    private Set<PaoType> allPaoTypes = Collections.synchronizedSet(new HashSet<PaoType>());
     private Map<Integer, SimpleMeter> allMeters;
     
     private List<LitePoint> allSystemPoints;
@@ -994,17 +993,18 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     @Override
     public synchronized Set<PaoType> getAllPaoTypes() {
-        return getPaoTypesMap().keys().elementSet();
+        return ImmutableSet.copyOf(getPaoTypesSet());
     }
     
-    private synchronized SetMultimap<PaoType, Integer> getPaoTypesMap(){
+    private synchronized Set<PaoType> getPaoTypesSet() {
         if (allPaoTypes.isEmpty()) {
-            Map<Integer, LiteYukonPAObject> allPaosMap = getAllPaosMap();
-            for (LiteYukonPAObject pao : allPaosMap.values()) {
-                allPaoTypes.put(pao.getPaoType(), pao.getLiteID());
-            }
+            allPaoTypes = getAllPaosMap().values().stream().map(new Function<LiteYukonPAObject, PaoType>() {
+                @Override
+                public PaoType apply(LiteYukonPAObject pao) {
+                    return pao.getPaoType();
+                }
+            }).collect(Collectors.toSet());
         }
-        
         return allPaoTypes;
     }
     
@@ -1640,7 +1640,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
         return lBase;
     }
-
+    
     private synchronized LiteBase handleYukonPAOChange(DbChangeType type, int id) {
         
         LiteBase lBase = null;
@@ -1655,30 +1655,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 LiteYukonPAObject pao = paoDao.getLiteYukonPAO(id);
                 getAllPaosMap().put(pao.getLiteID(), pao);
                 lBase = pao;
-                getPaoTypesMap().put(pao.getPaoType(), pao.getLiteID());
+                getPaoTypesSet().add(pao.getPaoType());
             }
         } else if (type == DbChangeType.UPDATE) {
             LiteYukonPAObject pao = paoDao.getLiteYukonPAO(id);
             getAllPaosMap().put(pao.getLiteID(), pao);
             lBase = pao;
-            if(!getPaoTypesMap().containsEntry(pao.getPaoType(), pao.getLiteID())){
-                //The paoType was updated to different paoType
-                //Remove the original paoType and id combination
-                Iterator<Entry<PaoType, Integer>> it= getPaoTypesMap().entries().iterator();
-                while(it.hasNext()){
-                    Entry<PaoType, Integer> entry = it.next();
-                    if(entry.getValue() == pao.getLiteID()){
-                        it.remove();
-                    }
-                }
-                getPaoTypesMap().put(pao.getPaoType(), pao.getLiteID());
-            }
+            getPaoTypesSet().add(pao.getPaoType());
         } else if (type == DbChangeType.DELETE) {
-            LiteYukonPAObject pao =  getAllPaosMap().get(id);
-            if(pao != null){
-                getPaoTypesMap().remove(pao.getPaoType(), pao.getLiteID());
-            }
             lBase = getAllPaosMap().remove(id);
+            allPaoTypes.clear();
         } else {
             releaseAllYukonPAObjects();
         }
