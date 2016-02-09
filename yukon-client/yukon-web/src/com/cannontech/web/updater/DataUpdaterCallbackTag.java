@@ -8,9 +8,13 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.util.JavaScriptUtils;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.taglib.YukonTagSupport;
+import com.cannontech.web.updater.capcontrol.exception.CacheManagementException;
 
 @Configurable("dataUpdaterCallbackTagPrototype")
 public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAttributes {
@@ -18,6 +22,7 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
     private boolean initialize = false;
     private DataUpdaterService dataUpdaterService;
     private Map<String,Object> identifierAttributes = new HashMap<String,Object>();
+    private static final Logger log = YukonLogManager.getLogger(DataUpdaterCallbackTag.class);
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -44,8 +49,13 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
             Map<String,String> identifierValues = new HashMap<String, String>();
             for(String identifierName : identifierAttributes.keySet()) {
                 String fullIdentifier = (String) identifierAttributes.get(identifierName);
-                UpdateValue identifierValue = dataUpdaterService.getFirstValue(fullIdentifier, getUserContext());
-                if (!identifierValue.isUnavailable()) {
+                UpdateValue identifierValue = null;
+                try {
+                    identifierValue = dataUpdaterService.getFirstValue(fullIdentifier, getUserContext());
+                } catch (CacheManagementException cme) {
+                    log.debug("Unablle to get the identifierValue");
+                }
+                if (identifierValue != null && !identifierValue.isUnavailable()) {
                     identifierValues.put(identifierName, identifierValue.getValue());
                 }
             }

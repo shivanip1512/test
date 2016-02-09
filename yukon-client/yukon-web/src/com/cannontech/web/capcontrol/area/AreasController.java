@@ -37,6 +37,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.HolidayScheduleDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
@@ -154,17 +155,29 @@ public class AreasController {
         
         model.addAttribute("areaName", area.getName());
         model.addAttribute("subStations", subs);
-        
-        List<SubBus> busses = cache.getSubBusesByArea(areaId);
+
+        List<SubBus> busses = null;
+        try {
+            busses = cache.getSubBusesByArea(areaId);
+        } catch (NotFoundException ne) {
+            busses = Collections.emptyList();
+        }
         Collections.sort(busses, CapControlUtils.SUB_DISPLAY_COMPARATOR);
         model.addAttribute("subBusList", webUtils.createViewableSubBus(busses));
-        
-        List<Feeder> feeders = cache.getFeedersByArea(areaId);
+        List<Feeder> feeders = null;
+        try {
+            feeders = cache.getFeedersByArea(areaId);
+        } catch (NotFoundException ne) {
+            feeders = Collections.emptyList();
+        }
         model.addAttribute("feederList", webUtils.createViewableFeeder(feeders));
-
-        List<CapBankDevice> banks = cache.getCapBanksByArea(areaId);
+        List<CapBankDevice> banks = null;
+        try {
+            banks = cache.getCapBanksByArea(areaId);
+        } catch (NotFoundException ne) {
+            banks = Collections.emptyList();
+        }
         model.addAttribute("capBankList", webUtils.createViewableCapBank(banks));
-        
         boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
         boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
         model.addAttribute("showAnalysis", !hideReports && !hideGraphs);

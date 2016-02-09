@@ -14,6 +14,7 @@ import com.cannontech.web.taglib.YukonTagSupport;
 import com.cannontech.web.updater.DataType;
 import com.cannontech.web.updater.DataUpdaterService;
 import com.cannontech.web.updater.UpdateValue;
+import com.cannontech.web.updater.capcontrol.exception.CacheManagementException;
 
 @Configurable("capControlValueTagPrototype")
 public class CapControlValueTag extends YukonTagSupport {
@@ -49,8 +50,13 @@ public class CapControlValueTag extends YukonTagSupport {
         }
         out.print(">");
         if (initialize) {
-            UpdateValue value = updaterService.getFirstValue(id, getUserContext());
-            out.print(StringEscapeUtils.escapeHtml4(value.getValue()));
+            UpdateValue value = null;
+            try {
+                value = updaterService.getFirstValue(id, getUserContext());
+                out.print(StringEscapeUtils.escapeHtml4(value.getValue()));
+            } catch (CacheManagementException cme) {
+               out.print(getMessageSource().getMessage("yukon.common.point.pointFormatting.unavailablePlaceholder"));
+            }
         } else if (!defaultBlank){
             out.print(getMessageSource().getMessage("yukon.common.point.pointFormatting.unavailablePlaceholder"));
         }
