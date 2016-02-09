@@ -1222,7 +1222,7 @@ void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
         {
             CTILOG_INFO(dout, "Pre removePoint " << reinterpret_cast<size_t>(cm.get()) << ", use_count=" << cm.use_count());
             RemoveConnectionManager(cm);
-            // Warning: RemoveConnectionManager could modify _pointConnectionMap so as of this point, it's invalid
+            // Warning: RemoveConnectionManager could modify _pointConnectionMap so as of this point, pointConIter is invalid.
             CTILOG_INFO( dout, "Post removePoint " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
         }
     }
