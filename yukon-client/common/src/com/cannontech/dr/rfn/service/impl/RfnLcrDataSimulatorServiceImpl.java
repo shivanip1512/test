@@ -187,7 +187,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     @PreDestroy
     public synchronized void stopMessageSimulator() {
         log.debug("RFN LCR message simulator shutting down...");
-        if (null != futures) {
+        if (futures != null) {
             Iterator<Future<?>> futureIter = futures.iterator();
             while (futureIter.hasNext()) {
                 futureIter.next().cancel(true);

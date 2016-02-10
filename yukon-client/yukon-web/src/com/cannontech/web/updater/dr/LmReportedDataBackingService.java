@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.DatedObject;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
@@ -37,10 +38,13 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
     public DatedObject<LmReportedAddress> getDatedObject(int deviceId) {
         //If not present hit the DB for fetching it
         DatedObject<LmReportedAddress> datedAddress = currentAddresses.getIfPresent(deviceId);
-        if (null == datedAddress) {
-            datedAddress = new DatedObject<LmReportedAddress>(expressComReportedAddressDao.getCurrentAddress(deviceId));
-            currentAddresses.put(deviceId, datedAddress);
-        }
+        try {
+            if (datedAddress == null) {
+                datedAddress =
+                    new DatedObject<LmReportedAddress>(expressComReportedAddressDao.getCurrentAddress(deviceId));
+                currentAddresses.put(deviceId, datedAddress);
+            }
+        } catch (NotFoundException e) {/* Ignore */}
         return datedAddress;
     }
 
