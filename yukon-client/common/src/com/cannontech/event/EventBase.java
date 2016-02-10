@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
+
 /**
  * Base implementation of an Event. Sub classes should implement {@link #notifyHandler(Object, Object, EventHandler)
  * notifyHandler} to complete the event notifying functionality. Event specialization goes in pair with the
@@ -37,6 +41,9 @@ import java.util.Set;
  */
 public abstract class EventBase<S, A, T extends EventHandler> implements Event<T> {
 
+    // create a logger for instances of this class and its subclasses
+    protected Logger logger = YukonLogManager.getLogger(this.getClass());
+
     private Set<T> handlers;
 
     protected EventBase() {
@@ -60,7 +67,9 @@ public abstract class EventBase<S, A, T extends EventHandler> implements Event<T
             try {
                 notifyHandler(eventSource, eventArg, handler);
             }
-            catch (Exception e) {}
+            catch (Exception e) {
+                logger.error(e);
+            }
         }
     }
 
