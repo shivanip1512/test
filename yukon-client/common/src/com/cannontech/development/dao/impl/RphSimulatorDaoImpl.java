@@ -16,17 +16,17 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
-import com.cannontech.development.dao.RPHSimulatorDao;
+import com.cannontech.development.dao.RphSimulatorDao;
 import com.google.common.collect.Sets;
 
-public class RPHSimulatorDaoImpl implements RPHSimulatorDao {
+public class RphSimulatorDaoImpl implements RphSimulatorDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DatabaseVendorResolver dbVendorResolver;
     private static final Set<String> statusPoints = Sets.newHashSet("Status", "StatusOutput", "CalcStatus");
 
     @Transactional
     @Override
-    public void insertPointData(List<Integer> devicesId, String type, double valueLow, double valueHigh, Instant start,
+    public void insertPointData(List<Integer> devicesId, RphSimulatorPointType type, double valueLow, double valueHigh, Instant start,
             Instant stop, Duration standardDuration) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {
@@ -52,58 +52,18 @@ public class RPHSimulatorDaoImpl implements RPHSimulatorDao {
             sql.append("DECLARE @RPHNext numeric(18,0) = (SELECT MAX(changeid) FROM RawPointHistory)");
             sql.append("DECLARE @rphTSCount integer = (SELECT MAX(rownum) FROM RphTimeStamps)");
             sql.append("DECLARE point_cursor CURSOR FOR");
-            if (type.equals("Analog Points")) {
-                sql.append("SELECT p.PointId ");
-                sql.append("FROM Point p ");
-                sql.append("  LEFT JOIN PointUnit pu ON p.PointId = pu.PointId" );
-                sql.append("  LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId" );
-                sql.append("WHERE p.PointType").notIn(statusPoints);
-                sql.append(  "AND p.PaobjectId").in(devicesId);
-                sql.append(  "AND um.UOMName !=  'kWH'");
-            } else if (type.equals("Status Points")) {
-                sql.append("SELECT PointId ");
-                sql.append("FROM Point ");
-                sql.append("WHERE PointType").in(statusPoints);
-                sql.append("  AND PaobjectId").in(devicesId);
-            } else {
-                sql.append("SELECT p.PointId ");
-                sql.append("FROM Point p" );
-                sql.append("  LEFT JOIN PointUnit pu ON p.PointId = pu.PointId" );
-                sql.append("  LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId" );
-                sql.append("WHERE p.PointType").notIn(statusPoints);
-                sql.append(  "AND p.PaobjectId").in(devicesId);
-                sql.append("AND um.UOMName = 'kWH'");
-            }
-
+            
+            type.appendSelectSql(sql, devicesId);
+            
             sql.append("OPEN point_cursor");
             sql.append("FETCH NEXT FROM point_cursor");
             sql.append("INTO @PointId ");
             sql.append("BEGIN TRANSACTION");
             sql.append("WHILE @@FETCH_STATUS = 0");
             sql.append("BEGIN");
-            if (type.equals("Analog Points")) {
-
-                sql.append("INSERT INTO RawPointHistory ");
-                sql.append("    SELECT @RPHNext + rownum + @SetInsertLoop*@rphTSCount, @PointId, times ," + PointQuality.Normal.getQuality()
-                    + ", ");
-                sql.append(    "((SELECT (DATEDIFF(S, '2016-01-01', times) +@PointId) / 900) % (@ValueHigh-@Valuelow)), 0 ");
-                sql.append("FROM RphTimeStamps");
-
-            } else if (type.equals("Status Points")) {
-
-                sql.append("INSERT INTO RawPointHistory ");
-                sql.append("    SELECT @RPHNext + rownum + @SetInsertLoop*@rphTSCount, @PointId, times , " + PointQuality.Normal.getQuality() +
-                    ", ");
-                sql.append("    ((SELECT (DATEDIFF(S, '2016-01-01', times) +@PointId) / 900) % 1) , 0 " );
-                sql.append("FROM RphTimeStamps");
-            } else {
-                sql.append("INSERT INTO RawPointHistory ");
-                sql.append("    SELECT @RPHNext + rownum + @SetInsertLoop*@rphTSCount, @PointId, times ," +PointQuality.Normal.getQuality()
-                        + ", ");
-                sql.append(    "((SELECT DATEDIFF(S, '2016-01-01', times) + @PointId)/ 900), 0 ");
-                sql.append("FROM RphTimeStamps");
-
-            }
+            
+            type.appendInsertSql(sql);
+            
             sql.append("SET @SetInsertLoop = @SetInsertLoop + 1");
             sql.append("FETCH NEXT FROM point_cursor");
             sql.append("INTO @PointId");
@@ -155,28 +115,7 @@ public class RPHSimulatorDaoImpl implements RPHSimulatorDao {
             oracleSql.append("    v_RphTSCount NUMBER;");
             oracleSql.append("CURSOR point_cursor IS ");
 
-            if (type.equals("Analog Points")) {
-                oracleSql.append("SELECT p.PointId ");
-                oracleSql.append("FROM Point p");
-                oracleSql.append("  LEFT JOIN PointUnit pu ON p.PointId = pu.PointId");
-                oracleSql.append("  LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId ");
-                oracleSql.append("WHERE p.PointType").notIn(statusPoints);
-                oracleSql.append("  AND p.PaobjectId").in(devicesId);
-                oracleSql.append("  AND um.UOMName != 'kWH';");
-            } else if (type.equals("Status Points")) {
-                oracleSql.append("SELECT PointId ");
-                oracleSql.append("FROM Point ");
-                oracleSql.append("WHERE PointType").in(statusPoints);
-                oracleSql.append("  AND PaobjectId").in(devicesId).append(";");
-            } else {
-                oracleSql.append("SELECT p.PointId ");
-                oracleSql.append("FROM Point p");
-                oracleSql.append("  LEFT JOIN PointUnit pu ON p.PointId = pu.PointId");
-                oracleSql.append("  LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId ");
-                oracleSql.append("WHERE p.PointType").notIn(statusPoints);
-                oracleSql.append("  AND p.PaobjectId").in(devicesId);
-                oracleSql.append("  AND um.UOMName = 'kWH';");
-            }
+            type.appendSelectOracleSql(oracleSql, devicesId);
 
             oracleSql.append("BEGIN");
             oracleSql.append("WHILE v_VarEndDate >= v_VarStartDate");
@@ -199,26 +138,7 @@ public class RPHSimulatorDaoImpl implements RPHSimulatorDao {
             oracleSql.append("WHILE(point_cursor%found)");
             oracleSql.append("LOOP");
             oracleSql.append("BEGIN");
-            if (type.equals("Analog Points")) {
-                oracleSql.append("INSERT INTO RawPointHistory");
-                oracleSql.append("    ( SELECT (v_RPHNext + incrementer + (v_RphTSCount * v_SetInsertLoop)) , v_PointId , times,"
-                    + PointQuality.Normal.getQuality() + " , ");
-                oracleSql.append(    "(SELECT DBMS_RANDOM.VALUE(v_Valuelow, v_ValueHigh) FROM DUAL) , 0");
-                oracleSql.append("FROM RphTimeStamps);");
-            } else if (type.equals("Status Points")) {
-                oracleSql.append("INSERT INTO RawPointHistory");
-                oracleSql.append("    (SELECT (v_RPHNext + incrementer + (v_RphTSCount * v_SetInsertLoop)) , v_PointId , times,"
-                    + PointQuality.Normal.getQuality() + " , ");
-                oracleSql.append(    "(SELECT ROUND(DBMS_RANDOM.VALUE) FROM DUAL) , 0");
-                oracleSql.append("FROM RphTimeStamps);");
-            } else {
-                oracleSql.append("INSERT INTO RawPointHistory");
-                oracleSql.append("    (SELECT (v_RPHNext + incrementer + (v_RphTSCount * v_SetInsertLoop)) , v_PointId ,times,"
-                    + PointQuality.Normal.getQuality() + " , ");
-                oracleSql.append(    "((SELECT (SYSDATE - TO_DATE('01-01-1970 00:00:00', 'DD-MM-YYYY HH24:MI:SS')) * 24 * "
-                    + "60 * 60 FROM DUAL) + v_PointId)/900 , 0");
-                oracleSql.append("FROM RphTimeStamps);");
-            }
+            type.appendInsertOralceSql(oracleSql);
             oracleSql.append("    v_SetInsertLoop := v_SetInsertLoop + 1 ;");
             oracleSql.append("FETCH point_cursor INTO v_PointId;");
             oracleSql.append("END;");
@@ -251,4 +171,130 @@ public class RPHSimulatorDaoImpl implements RPHSimulatorDao {
             }
         }
     }
+    
+    public enum RphSimulatorPointType {
+
+        ANALOG {
+            @Override
+            public void appendSelectSql(SqlStatementBuilder sql, List<Integer> devicesId) {
+                sql.append("SELECT p.PointId ");
+                sql.append("FROM Point p ");
+                sql.append("  LEFT JOIN PointUnit pu ON p.PointId = pu.PointId");
+                sql.append("  LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId");
+                sql.append("WHERE p.PointType").notIn(statusPoints);
+                sql.append("  AND p.PaobjectId").in(devicesId);
+                sql.append("  AND um.UOMName !=  'kWH'");
+            }
+            @Override
+            public void appendInsertSql(SqlStatementBuilder sql) {
+                sql.append("INSERT INTO RawPointHistory ");
+                sql.append("    SELECT @RPHNext + rownum + @SetInsertLoop*@rphTSCount, @PointId, times ,"
+                    + PointQuality.Normal.getQuality() + ", ");
+                sql.append("    ((SELECT (DATEDIFF(S, '2016-01-01', times) +@PointId) / 900) % (@ValueHigh-@Valuelow)), 0 ");
+                sql.append("FROM RphTimeStamps");
+            }
+
+            @Override
+            public void appendSelectOracleSql(SqlStatementBuilder sql, List<Integer> devicesId) {
+                sql.append("SELECT p.PointId ");
+                sql.append("FROM Point p");
+                sql.append("  LEFT JOIN PointUnit pu ON p.PointId = pu.PointId");
+                sql.append("  LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId ");
+                sql.append("WHERE p.PointType").notIn(statusPoints);
+                sql.append("  AND p.PaobjectId").in(devicesId);
+                sql.append("  AND um.UOMName != 'kWH';");
+            }
+
+            @Override
+            public void appendInsertOralceSql(SqlStatementBuilder sql) {
+                sql.append("INSERT INTO RawPointHistory");
+                sql.append("    ( SELECT (v_RPHNext + incrementer + (v_RphTSCount * v_SetInsertLoop)) , v_PointId , times,"
+                    + PointQuality.Normal.getQuality() + " , ");
+                sql.append(    "(SELECT DBMS_RANDOM.VALUE(v_Valuelow, v_ValueHigh) FROM DUAL) , 0");
+                sql.append("FROM RphTimeStamps);");
+            }
+            
+            
+        },
+        STATUS {
+            @Override
+            public void appendSelectSql(SqlStatementBuilder sql, List<Integer> devicesId) {
+                sql.append("SELECT PointId ");
+                sql.append("FROM Point ");
+                sql.append("WHERE PointType").in(statusPoints);
+                sql.append("  AND PaobjectId").in(devicesId);
+            }
+            @Override
+            public void appendInsertSql(SqlStatementBuilder sql) {
+                sql.append("INSERT INTO RawPointHistory ");
+                sql.append("    SELECT @RPHNext + rownum + @SetInsertLoop*@rphTSCount, @PointId, times , "
+                    + PointQuality.Normal.getQuality() + ", ");
+                sql.append("    ((SELECT (DATEDIFF(S, '2016-01-01', times) +@PointId) / 900) % 1) , 0 ");
+                sql.append("FROM RphTimeStamps");
+            }
+
+            @Override
+            public void appendSelectOracleSql(SqlStatementBuilder sql, List<Integer> devicesId) {
+                sql.append("SELECT PointId ");
+                sql.append("FROM Point ");
+                sql.append("WHERE PointType").in(statusPoints);
+                sql.append("  AND PaobjectId").in(devicesId).append(";");
+            }
+
+            @Override
+            public void appendInsertOralceSql(SqlStatementBuilder sql) {
+                sql.append("INSERT INTO RawPointHistory");
+                sql.append("    (SELECT (v_RPHNext + incrementer + (v_RphTSCount * v_SetInsertLoop)) , v_PointId , times,"
+                    + PointQuality.Normal.getQuality() + " , ");
+                sql.append(    "(SELECT ROUND(DBMS_RANDOM.VALUE) FROM DUAL) , 0");
+                sql.append("FROM RphTimeStamps);");
+            }
+        },
+        KWH {
+            @Override
+            public void appendSelectSql(SqlStatementBuilder sql, List<Integer> devicesId) {
+                sql.append("SELECT p.PointId ");
+                sql.append("FROM Point p");
+                sql.append("  LEFT JOIN PointUnit pu ON p.PointId = pu.PointId");
+                sql.append("  LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId");
+                sql.append("WHERE p.PointType").notIn(statusPoints);
+                sql.append("  AND p.PaobjectId").in(devicesId);
+                sql.append("  AND um.UOMName = 'kWH'");
+            }
+            @Override
+            public void appendInsertSql(SqlStatementBuilder sql) {
+                sql.append("INSERT INTO RawPointHistory ");
+                sql.append("    SELECT @RPHNext + rownum + @SetInsertLoop*@rphTSCount, @PointId, times ,"
+                    + PointQuality.Normal.getQuality() + ", ");
+                sql.append("    ((SELECT DATEDIFF(S, '2016-01-01', times) + @PointId)/ 900), 0 ");
+                sql.append("FROM RphTimeStamps");
+            }
+
+            @Override
+            public void appendSelectOracleSql(SqlStatementBuilder sql, List<Integer> devicesId) {
+                sql.append("SELECT p.PointId ");
+                sql.append("FROM Point p");
+                sql.append("  LEFT JOIN PointUnit pu ON p.PointId = pu.PointId");
+                sql.append("  LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId ");
+                sql.append("WHERE p.PointType").notIn(statusPoints);
+                sql.append("  AND p.PaobjectId").in(devicesId);
+                sql.append("  AND um.UOMName = 'kWH';");
+            }
+
+            @Override
+            public void appendInsertOralceSql(SqlStatementBuilder sql) {
+                sql.append("INSERT INTO RawPointHistory");
+                sql.append("    (SELECT (v_RPHNext + incrementer + (v_RphTSCount * v_SetInsertLoop)) , v_PointId ,times,"
+                    + PointQuality.Normal.getQuality() + " , ");
+                sql.append(    "((SELECT (SYSDATE - TO_DATE('01-01-1970 00:00:00', 'DD-MM-YYYY HH24:MI:SS')) * 24 * "
+                    + "60 * 60 FROM DUAL) + v_PointId)/900 , 0");
+                sql.append("FROM RphTimeStamps);");
+            }
+        };
+        public abstract void appendSelectSql(SqlStatementBuilder sql, List<Integer> devicesId);
+        public abstract void appendSelectOracleSql(SqlStatementBuilder sql, List<Integer> devicesId);
+        public abstract void appendInsertSql(SqlStatementBuilder sql);
+        public abstract void appendInsertOralceSql(SqlStatementBuilder sql);
+    }
+
 }

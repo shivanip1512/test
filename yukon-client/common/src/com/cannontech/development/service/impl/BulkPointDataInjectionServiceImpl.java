@@ -24,7 +24,8 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.development.dao.RPHSimulatorDao;
+import com.cannontech.development.dao.RphSimulatorDao;
+import com.cannontech.development.dao.impl.RphSimulatorDaoImpl.RphSimulatorPointType;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
 import com.cannontech.development.service.BulkPointDataInjectionService;
 import com.cannontech.message.dispatch.message.PointData;
@@ -37,7 +38,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     @Autowired private PaoDao paoDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
-    @Autowired RPHSimulatorDao rphSimulatorDao;
+    @Autowired RphSimulatorDao rphSimulatorDao;
 
     @Override
     public void excecuteInjection(BulkFakePointInjectionDto bulkInjection) {
@@ -227,13 +228,8 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     }
 
     @Override
-    public void insertPointData(String deviceGroupName, String type, double valueLow, double valueHigh, Instant start,
-            Instant stop, Duration standardDuration) {
-        DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(deviceGroupName);
-        List<Integer> devicesIdList =
-            new ArrayList<Integer>(deviceGroupService.getDeviceIds(Collections.singletonList(deviceGroup)));
-        for (List<Integer> devicesId : Lists.partition(devicesIdList, 1000)) {
-            rphSimulatorDao.insertPointData(devicesId, type, valueLow, valueHigh, start, stop, standardDuration);
-        }
+    public void insertPointData(List<Integer> devicesId, RphSimulatorPointType type, double valueLow, double valueHigh,
+            Instant start, Instant stop, Duration standardDuration) {
+        rphSimulatorDao.insertPointData(devicesId, type, valueLow, valueHigh, start, stop, standardDuration);
     }
 }

@@ -397,7 +397,7 @@
     <bean class="com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl"/>
 
     <bean id="bulkPointDataInjectionService" class="com.cannontech.development.service.impl.BulkPointDataInjectionServiceImpl"/>
-    <bean class="com.cannontech.development.dao.impl.RPHSimulatorDaoImpl"/>
+    <bean class="com.cannontech.development.dao.impl.RphSimulatorDaoImpl"/>
     
     <bean class="com.cannontech.development.service.impl.RfnEventTestingServiceImpl"/>
     

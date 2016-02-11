@@ -5,13 +5,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RphSimulatorPointStatus {
     private final AtomicBoolean isRunning;
     private final AtomicBoolean isCompleted;
-
+    private final AtomicBoolean isCanceled;
     private volatile String errorMessage;
 
 
     public RphSimulatorPointStatus() {
         this.isRunning = new AtomicBoolean();
         this.isCompleted = new AtomicBoolean();
+        this.isCanceled = new AtomicBoolean();
     }
 
     public AtomicBoolean getIsRunning() {
@@ -28,5 +29,9 @@ public class RphSimulatorPointStatus {
 
     public AtomicBoolean getIsCompleted() {
         return isCompleted;
+    }
+
+    public AtomicBoolean getIsCanceled() {
+        return isCanceled;
     }
 }

@@ -4,6 +4,7 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +54,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.development.dao.impl.RphSimulatorDaoImpl.RphSimulatorPointType;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
 import com.cannontech.development.model.BulkPointInjectionParameters;
 import com.cannontech.development.model.RphSimulatorParameters;
@@ -70,6 +72,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.type.PeriodType;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -83,7 +86,7 @@ public class BulkPointDataInjectionController {
 
     @Autowired private AttributeService attributeService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private BulkPointDataInjectionService bulkPointDataInjectionSerivce;
+    @Autowired private BulkPointDataInjectionService bulkPointDataInjectionService;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private DeviceGroupProviderDao deviceGroupProviderDao;
     @Autowired private DeviceGroupService deviceGroupService;
@@ -246,7 +249,7 @@ public class BulkPointDataInjectionController {
                                 return;
                             }
                             List<PointData> pointData =
-                                bulkPointDataInjectionSerivce.createPointData(attribute, valueHigh, valueLow, device,
+                                    bulkPointDataInjectionService.createPointData(attribute, valueHigh, valueLow, device,
                                     timestamps);
                             AtomicLong numComplete = injectionStatus.getNumComplete();
                             long numTotal = injectionStatus.getNumTotal();
@@ -271,6 +274,13 @@ public class BulkPointDataInjectionController {
         executor.execute(pointInjectionThread);
     }
 
+    @RequestMapping("stopRphSimulator")
+    @ResponseBody
+    public String stopRphSimulator() {
+        rphSimulatorPointStatus.getIsCanceled().set(true);
+        return "success";
+    }
+    
     
     @RequestMapping("start")
     @ResponseBody
@@ -280,6 +290,9 @@ public class BulkPointDataInjectionController {
         if (!isRunning.compareAndSet(false, true)) {
             return;
         }
+        final AtomicBoolean isCanceled = rphSimulatorPointStatus.getIsCanceled();
+        isCanceled.set(false);
+        
         final AtomicBoolean isCompleted = rphSimulatorPointStatus.getIsCompleted();
         isCompleted.set(false);
         rphSimulatorPointStatus.setErrorMessage(null);
@@ -294,9 +307,21 @@ public class BulkPointDataInjectionController {
                     Duration standardDuration = rphSimulatorParameters.getPeriod().toStandardDuration();
                     Instant stop = rphSimulatorParameters.getStop();
                     Instant start = rphSimulatorParameters.getStart();
-
-                    bulkPointDataInjectionSerivce.insertPointData(deviceGroupName, rphSimulatorParameters.getType(), valueLow, valueHigh,
-                        start, stop, standardDuration);
+                    DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(deviceGroupName);
+                    List<Integer> devicesIdList =
+                        new ArrayList<Integer>(deviceGroupService.getDeviceIds(Collections.singletonList(deviceGroup)));
+                    for (List<Integer> devicesId : Lists.partition(devicesIdList, 1000)) {
+                        
+                        if (isCanceled.get()) {
+                            log.info("High Speed Point Injection worker is quiting because the task was canceled.");
+                            isRunning.set(false);
+                            isCompleted.set(true);
+                            return;
+                        }
+                        
+                        bulkPointDataInjectionService.insertPointData(devicesId, rphSimulatorParameters.getType(),
+                            valueLow, valueHigh, start, stop, standardDuration);
+                    }
                     isCompleted.set(true);
                 } catch (Exception e) {
                     log.error("Point Injection has encountered an unexpected error.", e);
@@ -319,6 +344,7 @@ public class BulkPointDataInjectionController {
     public Map<String, Object> rphSimulatorInjectionStatus(YukonUserContext userContext) {
         Map<String, Object> rphInjectionStatusJson = Maps.newHashMapWithExpectedSize(10);
         rphInjectionStatusJson.put("isCompleted", rphSimulatorPointStatus.getIsCompleted());
+        rphInjectionStatusJson.put("isCanceled", rphSimulatorPointStatus.getIsCanceled().get());
         if (rphSimulatorPointStatus.getIsRunning().get()) {
             rphInjectionStatusJson.put("status", "running");
         } else {
@@ -386,7 +412,7 @@ public class BulkPointDataInjectionController {
             return "bulkPointInjection/main.jsp";
         }
 
-        bulkPointDataInjectionSerivce.excecuteInjectionByDevice(bulkInjection);
+        bulkPointDataInjectionService.excecuteInjectionByDevice(bulkInjection);
 
         this.bulkInjection = bulkInjection;
         flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Injection of "
@@ -420,5 +446,16 @@ public class BulkPointDataInjectionController {
         PropertyEditor instantEditor =
             datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM, userContext, BlankMode.ERROR);
         webDataBinder.registerCustomEditor(Instant.class, instantEditor);
+        
+        webDataBinder.registerCustomEditor(RphSimulatorPointType.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String rphSimulatorPointType) throws IllegalArgumentException {
+                if (rphSimulatorPointType.isEmpty()) {
+                    setValue(null);
+                    return;
+                }
+                setValue(RphSimulatorPointType.valueOf(rphSimulatorPointType.toUpperCase()));
+            }
+        });
     }
 }

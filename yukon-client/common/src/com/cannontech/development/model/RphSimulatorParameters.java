@@ -3,6 +3,8 @@ package com.cannontech.development.model;
 import org.joda.time.Instant;
 import org.joda.time.Period;
 
+import com.cannontech.development.dao.impl.RphSimulatorDaoImpl.RphSimulatorPointType;
+
 public class RphSimulatorParameters {
 
     private String deviceGroupName;
@@ -11,7 +13,7 @@ public class RphSimulatorParameters {
     private Period period;
     private double valueLow;
     private double valueHigh;
-    private String type;
+    private RphSimulatorPointType type;
 
     public String getDeviceGroupName() {
         return deviceGroupName;
@@ -61,11 +63,11 @@ public class RphSimulatorParameters {
         this.valueHigh = valueHigh;
     }
 
-    public String getType() {
+    public RphSimulatorPointType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(RphSimulatorPointType type) {
         this.type = type;
     }
 }

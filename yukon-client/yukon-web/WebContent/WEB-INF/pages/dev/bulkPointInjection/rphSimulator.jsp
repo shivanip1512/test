@@ -31,33 +31,52 @@
             $('#highSpeedBulkPointInjection :input').prop('disabled', !enabled);
         },
         
+        _stopButtonClick = function() {
+            $.post(yukon.url('stopRphSimulator'));
+            _checkStatus(true);
+        },
+        
         _checkStatus = function(extraCheck) {
             if (typeof extraCheck != 'undefined') {
-                var btn = $('.js-primary-action');
+                var startBtn = $('.js-primary-action-start');
+                var stopBtn = $('.js-primary-action-stop');
                 setTimeout(function() {
                     $.ajax({
                         url: yukon.url('rph-simulator-injection-status'),
                         type: 'get'
                     }).done(function(data) {
                         if (data.hasError) {
-                            yukon.ui.unbusy(btn);
+                            yukon.ui.unbusy(startBtn);
                             $('#errorMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
                         } else {
                             $('#errorMessage').hide();
                         }
                         if (data.status != 'neverRan') {
                             if (data.status == 'running') {
-                                yukon.ui.busy(btn);
+                                $('#completion-task-status').hide();
+                                $('#cancel-task-status').hide();
+                                yukon.ui.busy(startBtn);
+                                
                                 _checkStatus(true);
                             } 
                         }
-                    
+                        
+                        if (data.isCanceled == true) {
+                            yukon.ui.busy(stopBtn);
+                        }
+                        
                         if (data.isCompleted == true) {
-                            $('#completion-task-status').show();
-                            yukon.ui.unbusy(btn);
+                           
+                            yukon.ui.unbusy(startBtn);
+                            if (data.isCanceled == true ) {
+                                $('#cancel-task-status').show();
+                                yukon.ui.unbusy(stopBtn);
+                            } else {
+                                $('#completion-task-status').show();
+                            }
                             clearTimeout(_checkStatusTime);
                         }
-                    
+                        
                     }).fail(function(data) {
                         var errorMsg = 'Failed trying to receive the point injection status. Trying again in five seconds.';
                         $('#highSpeedBulkPointInjection').addMessage({message:errorMsg, messageClass:'error'}).show();
@@ -71,6 +90,7 @@
             init : function() {
                 if (_initialized) return;
                 $('#start-button').click(_startButtonClick);
+                $(document).on('click', '#stop-button', _stopButtonClick);
                 _checkStatus();
                 _initialized = true;
             },
@@ -92,7 +112,10 @@
        <div id="errorMessage"></div>
        <div id="completion-task-status" class="user-message success" hidden="true"> 
            <em>Points insertion completed</em>
-       </div> 
+       </div>
+       <div id="cancel-task-status" class="user-message success" hidden="true"> 
+           <em>Points insertion cancelled by user</em>
+       </div>
         <div class="column one">
             <form id='highSpeedBulkPointInjection'>
                 <tags:nameValueContainer2>
@@ -103,9 +126,9 @@
                     </tags:nameValue2>
                     <tags:nameValue2 argument="Type" label="modules.dev.setupDatabase.setupDevDatabase.generic">
                     <select name="type" disabled="disabled">
-                        <option value="Analog Points">Analog Points</option>
-                        <option value="Status Points">Status Points</option>
-                         <option value="KWH">KWH</option>
+                        <option value="ANALOG">ANALOG</option>
+                        <option value="STATUS">STATUS</option>
+                        <option value="KWH">KWH</option>
                     </select>
                     </tags:nameValue2>
                     <tags:nameValue2 argument="Start" label="modules.dev.setupDatabase.setupDevDatabase.generic">
@@ -125,7 +148,8 @@
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="page-action-area">
-                    <cti:button id="start-button" label="Start" classes="js-primary-action" disabled="true"/>
+                    <cti:button id="start-button" label="Start" classes="js-primary-action-start" disabled="true"/>
+                    <cti:button id="stop-button" label="Stop" classes="js-primary-action-stop" disabled="true" />
                 </div>
             </form>
         </div>
