@@ -155,12 +155,6 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
         super.update();
 
         getCapControlFeeder().update();
-
-        CCFeederBankList.deleteCapBanksFromFeederList(getCapControlPAOID(), null, getDbConnection());
-
-        for( int i = 0; i < getChildList().size(); i++ ) {
-            getChildList().get(i).add();
-        }
         
         ZoneService zoneService = YukonSpringHook.getBean("zoneService", ZoneService.class);
         zoneService.handleFeederUpdate(getCapControlPAOID());

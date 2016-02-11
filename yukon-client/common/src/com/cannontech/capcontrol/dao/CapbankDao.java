@@ -90,4 +90,6 @@ public interface CapbankDao {
      */
     public PaoIdentifier getParentBus(int bankId);
 
+    boolean assignAndOrderCapbank(YukonPao feeder, YukonPao capbank, float controlOrder, float closeOrder, float tripOrder);
+
 }

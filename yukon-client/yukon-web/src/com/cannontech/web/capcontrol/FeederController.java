@@ -1,6 +1,8 @@
 package com.cannontech.web.capcontrol;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +47,7 @@ import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.web.PageEditMode;
-import com.cannontech.web.capcontrol.models.Assignment;
+import com.cannontech.web.capcontrol.models.CapBankAssignment;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.service.FeederService;
 import com.cannontech.web.capcontrol.service.StrategyService;
@@ -170,9 +172,6 @@ public class FeederController {
                 model.addAttribute("orphan", true);
             }
         }
-        
-
-        
 
         return "feeder.jsp";
     }
@@ -235,20 +234,56 @@ public class FeederController {
 
     @RequestMapping("feeders/{feederId}/capbanks/edit")
     public String editCapBanks(ModelMap model, @PathVariable int feederId) {
-
-        List<Assignment> assigned = feederService.getAssignedCapBanksForFeeder(feederId);
+        List<CapBankAssignment> assigned = feederService.getAssignedCapBanksForFeeder(feederId);
         model.addAttribute("assigned", assigned);
+        List<CapBankAssignment> tripOrders = feederService.getAssignedCapBanksForFeeder(feederId);
+        Collections.sort(tripOrders, BANK_TRIP_ORDER_COMPARATOR);
+        model.addAttribute("tripOrders", tripOrders);
+        List<CapBankAssignment> closeOrders = feederService.getAssignedCapBanksForFeeder(feederId);
+        Collections.sort(closeOrders, BANK_CLOSE_ORDER_COMPARATOR);
+        model.addAttribute("closeOrders", closeOrders);
 
-        List<Assignment> unassigned = feederService.getUnassignedCapBanks();
+        List<CapBankAssignment> unassigned = feederService.getUnassignedCapBanks();
         model.addAttribute("unassigned", unassigned);
 
-        return "assignment-popup.jsp";
+        return "assignment-popup-feeder.jsp";
     }
+    
+
+    public static final Comparator<CapBankAssignment> BANK_TRIP_ORDER_COMPARATOR = new Comparator<CapBankAssignment>() {
+        @Override
+        public int compare(CapBankAssignment o1, CapBankAssignment o2) {
+            Float order1 = o1.getTripOrder();
+            Float order2 = o2.getTripOrder();
+            int result = order1.compareTo(order2);
+            if (result == 0) {
+                result = new Integer(o1.getId()).compareTo(new Integer(o2.getId()));
+            }
+
+            return result;
+        }
+    };
+    
+    public static final Comparator<CapBankAssignment> BANK_CLOSE_ORDER_COMPARATOR = new Comparator<CapBankAssignment>() {
+        @Override
+        public int compare(CapBankAssignment o1, CapBankAssignment o2) {
+            Float order1 = o1.getCloseOrder();
+            Float order2 = o2.getCloseOrder();
+            int result = order1.compareTo(order2);
+            if (result == 0) {
+                result = new Integer(o1.getId()).compareTo(new Integer(o2.getId()));
+            }
+
+            return result;
+        }
+    };
 
     @RequestMapping(value="feeders/{feederId}/capbanks", method=RequestMethod.POST)
     public void saveCapBanks(HttpServletResponse resp, @PathVariable int feederId, FlashScope flash,
-            @RequestParam(value="children[]", required=false, defaultValue="") Integer[] capBankIds) {
-        feederService.assignCapBanks(feederId, Arrays.asList(capBankIds));
+            @RequestParam(value="children[]", required=false, defaultValue="") Integer[] capBankIds,
+            @RequestParam(value="tripOrder[]", required=false, defaultValue="") Integer[] tripOrder,
+            @RequestParam(value="closeOrder[]", required=false, defaultValue="") Integer[] closeOrder) {
+        feederService.assignCapBanks(feederId, Arrays.asList(capBankIds), Arrays.asList(closeOrder), Arrays.asList(tripOrder));
         flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".capbanks.updated"));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }

@@ -204,6 +204,31 @@ public class CapbankDaoImpl implements CapbankDao {
     }
     
     @Override
+    public boolean assignAndOrderCapbank(YukonPao feeder, YukonPao capbank, float controlOrder, float closeOrder, float tripOrder) {
+        int feederId = feeder.getPaoIdentifier().getPaoId();
+        int capbankId = capbank.getPaoIdentifier().getPaoId();
+        
+        // remove any existing assignment
+        unassignCapbank(capbank);
+
+        SqlStatementBuilder assignSql = new SqlStatementBuilder();
+        assignSql.append("INSERT INTO CCFeederBankList (FeederID, DeviceID, ControlOrder, CloseOrder, TripOrder) ");
+        assignSql.append("VALUES( " + feederId + ", " + capbankId + ", " + controlOrder + ", " + closeOrder + ", " + tripOrder + ")");
+    
+        // Insert new assignment
+        int rowsAffected = yukonJdbcTemplate.update(assignSql);
+
+        boolean result = (rowsAffected == 1);
+
+        if (result) {
+            dbChangeManager.processPaoDbChange(capbank, DbChangeType.UPDATE);
+            dbChangeManager.processPaoDbChange(feeder, DbChangeType.UPDATE);
+        }
+
+        return result;
+    }
+    
+    @Override
     public boolean unassignCapbank(YukonPao capbank) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 

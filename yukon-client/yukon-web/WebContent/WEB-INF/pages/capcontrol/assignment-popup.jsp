@@ -4,16 +4,54 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<script>
+$(function() {
+    
+    assign = function(event, ui, remove) {
+        var selectedItem = ui.item;
+        selectedItem
+        .find('.js-remove, .js-add').toggleClass('js-remove js-add')
+        .find('.icon').toggleClass('icon-plus-green icon-cross');
+        
+        // Show/hide movers.
+        selectedItem.find('.select-box-item-movers').toggle(!remove);      
+        sort(event, ui);
+    },
+    
+     sort = function(event, ui) {
+         ui.item
+         .closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+     },
+    
+   $('#unassigned').sortable({
+       connectWith: "#assigned",
+       remove: function(event, ui) {
+           assign(event, ui, false);
+       }
+   });
+   
+   $('#assigned').sortable({
+       connectWith: "#unassigned",
+       stop: function(event, ui) {
+           sort(event, ui);
+       },
+       remove: function(event, ui) {
+           assign(event, ui, true);
+       }
+   }).disableSelection();
+
+});
+</script>
 <cti:msgScope paths="modules.capcontrol">
 
 <div class="column-12-12 clearfix select-box">
-    <div class="column one select-box-available">
+    <div id="unassigned" class="column one select-box-available" style="min-height:150px;">
         <h3><i:inline key="yukon.common.available"/></h3>
         <c:forEach var="item" items="${unassigned}">
-            <div class="select-box-item clearfix"
+            <div class="select-box-item clearfix cm"
                 data-id="${item.id}">${fn:escapeXml(item.name)}
                 <cti:button icon="icon-plus-green" renderMode="buttonImage" classes="select-box-item-add js-add"/>
-                <div class="select-box-item-movers" style="display: none;">
+                <div class="select-box-item-movers" style="display:none;">
                     <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"
                             classes="left select-box-item-up js-move-up"/>
                     <cti:button icon="icon-bullet-go-down" renderMode="buttonImage"
@@ -22,10 +60,10 @@
             </div>
         </c:forEach>
     </div>
-    <div class="column two nogutter select-box-selected js-with-movables" data-item-selector=".select-box-item">
+    <div id="assigned" class="column two nogutter select-box-selected js-with-movables" data-item-selector=".select-box-item" style="min-height:150px;">
         <h3><i:inline key="yukon.common.assigned"/></h3>
         <c:forEach var="item" items="${assigned}" varStatus="status">
-            <div class="select-box-item"
+            <div class="select-box-item cm"
                 data-id="${item.id}">${fn:escapeXml(item.name)}
                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
                 <div class="select-box-item-movers">

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.web.capcontrol.models.Assignment;
+import com.cannontech.web.capcontrol.models.CapBankAssignment;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 
 public interface FeederService {
@@ -32,21 +33,18 @@ public interface FeederService {
     List<ViewableCapBank> getCapBanksForFeeder(int busId);
 
     /**
-     * @param feederId
-     * @return All cap banks, as {@link Assignment}s, attached to the feeder with given feederId.
-     */
-    List<Assignment> getAssignedCapBanksFor(int feederId);
-
-    /**
      * @return All cap banks not attached to any feeder 
      */
-    List<Assignment> getUnassignedCapBanks();
+    List<CapBankAssignment> getUnassignedCapBanks();
 
     /**
      * Assigns exactly the list of cap bank ids to the feeder, removing any other existing assignments.
      * The assignments are done in order given with increasing consecutive displayOrders.
      */
-    void assignCapBanks(int feederId, List<Integer> capBankIds);
-
-    List<Assignment> getAssignedCapBanksForFeeder(int feederId);
+    void assignCapBanks(int feederId, List<Integer> capBankIds, List<Integer> closeOrder, List<Integer> tripOrder);
+    /**
+     * @param feederId
+     * @return All cap banks, as {@link Assignment}s, attached to the feeder with given feederId.
+     */
+    List<CapBankAssignment> getAssignedCapBanksForFeeder(int feederId);
 }

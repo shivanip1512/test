@@ -1,0 +1,37 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<c:forEach var="pointMap" items="${points}">
+    <c:if test="${not empty pointMap.value}">
+        <h4><i:inline key="yukon.common.point.pointType.${pointMap.key}"/></h4>
+        <table class="compact-results-table row-highlighting">
+            <thead></thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="point" items="${pointMap.value}">
+                    <tr>
+                        <td>
+                            <cti:url var="pointUrl" value="/tools/points/${point.pointId}" /> 
+                            <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
+                        </td>
+                        <td class="state-indicator">
+                            <cti:pointStatus pointId="${point.pointId}" statusPointOnly="${true}"/>
+                        </td>
+                        <td class="wsnw">
+                            <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                       </td>
+                       <td class="wsnw">
+                            <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
+                       </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </c:if>
+</c:forEach>

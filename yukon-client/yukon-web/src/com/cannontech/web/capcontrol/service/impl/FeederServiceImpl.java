@@ -1,34 +1,31 @@
 package com.cannontech.web.capcontrol.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.CompleteCapControlFeeder;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
-import com.cannontech.database.db.pao.PAOScheduleAssign;
-import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.web.capcontrol.models.Assignment;
+import com.cannontech.web.capcontrol.models.CapBankAssignment;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.service.FeederService;
 import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
@@ -44,7 +41,6 @@ public class FeederServiceImpl implements FeederService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private DBPersistentDao dbPersistentDao;
-    @Autowired private PaoScheduleDao paoScheduleDao;
 
     @Override
     public CapControlFeeder get(int id) {
@@ -63,7 +59,7 @@ public class FeederServiceImpl implements FeederService {
             dbPersistentDao.performDBChange(feeder, TransactionType.INSERT);
         } else {
             assertFeederExists(feeder.getId());
-            dbPersistentDao.performDBChange(feeder.getCapControlFeeder(),  TransactionType.UPDATE);
+            dbPersistentDao.performDBChange(feeder,  TransactionType.UPDATE);
         }
 
         return feeder.getId();
@@ -116,18 +112,19 @@ public class FeederServiceImpl implements FeederService {
     }
     
     @Override
-    public List<Assignment> getAssignedCapBanksForFeeder(int feederId) {
-        List<Assignment> assigned = new ArrayList<Assignment>();
+    public List<CapBankAssignment> getAssignedCapBanksForFeeder(int feederId) {
+        List<CapBankAssignment> assigned = new ArrayList<CapBankAssignment>();
         CapControlFeeder feeder = get(feederId);
         List<CCFeederBankList> bankList = feeder.getChildList();
+        Collections.sort(bankList, CapControlUtils.BANK_DISPLAY_ORDER_COMPARATOR);
         assigned = bankList.stream()
-                .map(new Function<CCFeederBankList, Assignment>(){
+                .map(new Function<CCFeederBankList, CapBankAssignment>(){
 
                     @Override
-                    public Assignment apply(CCFeederBankList capBankItem) {
+                    public CapBankAssignment apply(CCFeederBankList capBankItem) {
 
                         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(capBankItem.getDeviceID());
-                        return Assignment.of(capBankItem.getDeviceID(), pao.getPaoName());
+                        return CapBankAssignment.of(capBankItem.getDeviceID(), pao.getPaoName(), capBankItem.getControlOrder(), capBankItem.getTripOrder(), capBankItem.getCloseOrder());
                     }
                 })
             .collect(Collectors.toList());
@@ -136,31 +133,35 @@ public class FeederServiceImpl implements FeederService {
     }
 
     @Override
-    public List<Assignment> getUnassignedCapBanks() {
+    public List<CapBankAssignment> getUnassignedCapBanks() {
 
         List<LiteYukonPAObject> unassignedCapBanks = capBankDao.getUnassignedCapBanks();
 
-        List<Assignment> unassigned = unassignedCapBanks.stream()
-            .map(new Function<LiteYukonPAObject, Assignment>(){
+        List<CapBankAssignment> unassigned = unassignedCapBanks.stream()
+            .map(new Function<LiteYukonPAObject, CapBankAssignment>(){
 
                 @Override
-                public Assignment apply(LiteYukonPAObject feeder) {
+                public CapBankAssignment apply(LiteYukonPAObject feeder) {
 
-                    return Assignment.of(feeder.getPaoIdentifier().getPaoId(), feeder.getPaoName());
+                    return CapBankAssignment.of(feeder.getPaoIdentifier().getPaoId(), feeder.getPaoName());
                 }})
             .collect(Collectors.toList());
         return unassigned;
     }
 
     @Override
-    public void assignCapBanks(int feederId, List<Integer> capBankIds) {
+    public void assignCapBanks(int feederId, List<Integer> capBankIds, List<Integer> closeOrders, List<Integer> tripOrders) {
         
         //first delete all assigned capbanks for the feeder
         capBankDao.unassignCapbanksForFeeder(feederId);
         LiteYukonPAObject feeder = dbCache.getAllPaosMap().get(feederId);
         for(Integer capBankId : capBankIds){
             LiteYukonPAObject capBank = dbCache.getAllPaosMap().get(capBankId);
-            capBankDao.assignCapbank(feeder,  capBank);
+            //find orders
+            int controlOrder = capBankIds.indexOf(capBankId) + 1;
+            int closeOrder = closeOrders.indexOf(capBankId) + 1;
+            int tripOrder = tripOrders.indexOf(capBankId) + 1;
+            capBankDao.assignAndOrderCapbank(feeder, capBank, controlOrder, closeOrder, tripOrder);
         }
 
         dbChangeManager.processPaoDbChange(
@@ -177,8 +178,4 @@ public class FeederServiceImpl implements FeederService {
         }
     }
 
-    @Override
-    public List<Assignment> getAssignedCapBanksFor(int feederId) {
-        return null;
-    }
 }
