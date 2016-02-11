@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-#define _WINDLL
-
 #include "ctitime.h"
 #include "ctidate.h"
 

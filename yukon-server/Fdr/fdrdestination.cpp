@@ -10,7 +10,7 @@
 
 using std::string;
 
-CtiFDRDestination::CtiFDRDestination(CtiFDRPoint* parentPoint, const string &translation, const string &destination)
+CtiFDRDestination::CtiFDRDestination( CtiFDRPointSPtr &parentPoint, const string &translation, const string &destination )
 :   iTranslation(translation),
     iDestination(destination),
     iParentPoint(parentPoint)
@@ -98,12 +98,12 @@ CtiFDRDestination& CtiFDRDestination::setDestination (string aDestination)
   return *this;
 }
 
-CtiFDRPoint*  CtiFDRDestination::getParentPoint(void) const
+CtiFDRPointSPtr CtiFDRDestination::getParentPoint( void ) const
 {
     return iParentPoint;
 }
 
-CtiFDRDestination& CtiFDRDestination::setParentPoint (CtiFDRPoint* aParentPoint)
+CtiFDRDestination& CtiFDRDestination::setParentPoint( CtiFDRPointSPtr & aParentPoint )
 {
   iParentPoint = aParentPoint;
   return *this;

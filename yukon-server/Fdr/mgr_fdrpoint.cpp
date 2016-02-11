@@ -298,7 +298,7 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
                 fdrPtr->setControllable (true);
             }
 
-            CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
+            CtiFDRDestination tmpDestination (fdrPtr, translation, destination);
             fdrPtr->getDestinationList().push_back(tmpDestination);
             fdrPtrMap.insert( std::pair<long,CtiFDRPointSPtr >(pointID, fdrPtr));
         }
@@ -308,7 +308,7 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
             * add the current destination to the list
             ***********************
             */
-            CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
+            CtiFDRDestination tmpDestination (fdrPtr, translation, destination);
             fdrPtr->getDestinationList().push_back(tmpDestination);
         }
     }
