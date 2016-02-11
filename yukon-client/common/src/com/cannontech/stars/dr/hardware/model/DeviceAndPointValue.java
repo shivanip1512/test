@@ -5,29 +5,30 @@ import com.cannontech.stars.model.LiteLmHardware;
 
 public class DeviceAndPointValue {
     
-    private LiteLmHardware device;
+    private LiteLmHardware lmHardware;
+
     private SimplePointValue pointValue;
     
-    private DeviceAndPointValue(LiteLmHardware device, SimplePointValue pointValue) {
-        this.device = device;
+    private DeviceAndPointValue(LiteLmHardware lmHardware, SimplePointValue pointValue) {
+        this.lmHardware = lmHardware;
         this.pointValue = pointValue;
     }
     
-    public LiteLmHardware getDevice() {
-        return device;
+    public LiteLmHardware getLmHardware() {
+        return lmHardware;
     }
     
     public SimplePointValue getPointValue() {
         return pointValue;
     }
     
-    public static DeviceAndPointValue of(LiteLmHardware device, SimplePointValue pointValue) {
-        return new DeviceAndPointValue(device, pointValue);
+    public static DeviceAndPointValue of(LiteLmHardware lmHardware, SimplePointValue pointValue) {
+        return new DeviceAndPointValue(lmHardware, pointValue);
     }
     
     @Override
     public String toString() {
-        return "DeviceAndPointValue [device=" + device + ", pointValue=" + pointValue + "]";
+        return "DeviceAndPointValue [lmHardware=" + lmHardware + ", pointValue=" + pointValue + "]";
     }
     
 }

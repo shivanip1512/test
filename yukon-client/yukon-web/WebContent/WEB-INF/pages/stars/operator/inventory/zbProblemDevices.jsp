@@ -27,33 +27,33 @@
                 <c:forEach var="device" items="${devices}">
                     <tr>
                         <cti:url value="/stars/operator/hardware/view" var="hardwareUrl">
-                            <cti:param name="inventoryId" value="${device.first.identifier.inventoryId}"/>
-                            <cti:param name="accountId" value="${device.first.accountId}"/>
-                            <cti:param name="energyCompanyId" value="${device.first.energyCompanyId}"/>
+                            <cti:param name="inventoryId" value="${device.lmHardware.identifier.inventoryId}"/>
+                            <cti:param name="accountId" value="${device.lmHardware.accountId}"/>
+                            <cti:param name="energyCompanyId" value="${device.lmHardware.energyCompanyId}"/>
                         </cti:url>
                         <cti:url value="/stars/operator/inventory/view" var="invDetailUrl">
-                            <cti:param name="inventoryId" value="${device.first.identifier.inventoryId}"/>
+                            <cti:param name="inventoryId" value="${device.lmHardware.identifier.inventoryId}"/>
                         </cti:url>
                         <cti:url value="/stars/operator/account/view" var="accountUrl">
-                            <cti:param name="accountId" value="${device.first.accountId}"/>
+                            <cti:param name="accountId" value="${device.lmHardware.accountId}"/>
                         </cti:url>
                         
-                        <c:if test="${device.first.accountId == 0}">
-                            <td><a href="${invDetailUrl}">${fn:escapeXml(device.first.serialNumber)}</a></td>
+                        <c:if test="${device.lmHardware.accountId == 0}">
+                            <td><a href="${invDetailUrl}">${fn:escapeXml(device.lmHardware.serialNumber)}</a></td>
                             <td><i:inline key=".noAccountNumber"/></td>
                         </c:if>
-                        <c:if test="${device.first.accountId != 0}">
-                            <td><a href="${hardwareUrl}">${fn:escapeXml(device.first.serialNumber)}</a></td>
-                            <td><a href="${accountUrl}">${fn:escapeXml(accountIdsToAccountNumbers[device.first.accountId])}</a></td>
+                        <c:if test="${device.lmHardware.accountId != 0}">
+                            <td><a href="${hardwareUrl}">${fn:escapeXml(device.lmHardware.serialNumber)}</a></td>
+                            <td><a href="${accountUrl}">${fn:escapeXml(accountIdsToAccountNumbers[device.lmHardware.accountId])}</a></td>
                         </c:if>
-                        <td><i:inline key="${device.first.identifier.hardwareType}"/></td>
-                        <td>${fn:escapeXml(device.first.label)}</td>
-                        <td class="fwb" style="color:${stateColorMap[device.second.value]};"><cti:pointValueFormatter value="${device.second}" format="VALUE"/></td>
-                        <c:if test="${empty device.second.pointDataTimeStamp}">
+                        <td><i:inline key="${device.lmHardware.identifier.hardwareType}"/></td>
+                        <td>${fn:escapeXml(device.lmHardware.label)}</td>
+                        <td class="fwb" style="color:${stateColorMap[device.pointValue.value]};"><cti:pointValueFormatter value="${device.pointValue}" format="VALUE"/></td>
+                        <c:if test="${empty device.pointValue.pointDataTimeStamp}">
                             <td><i:inline key=".uninitialized"/></td>
                         </c:if>
-                        <c:if test="${not empty device.second.pointDataTimeStamp}">
-                            <td><cti:pointValueFormatter value="${device.second}" format="DATE"/></td>
+                        <c:if test="${not empty device.pointValue.pointDataTimeStamp}">
+                            <td><cti:pointValueFormatter value="${device.pointValue}" format="DATE"/></td>
                         </c:if>
                     </tr>
                 </c:forEach>

@@ -49,7 +49,7 @@ public class ZbProblemDevicesController {
         model.addAttribute("devices", devices);
         List<Integer> inventoryIds = Lists.newArrayList();
         for (DeviceAndPointValue device : devices) {
-            inventoryIds.add(device.getDevice().getInventoryIdentifier().getInventoryId());
+            inventoryIds.add(device.getLmHardware().getInventoryIdentifier().getInventoryId());
         }
         Map<Integer, Integer> inventoryIdsToAccountIds = 
                 customerAccountDao.getAccountIdsByInventoryIds(inventoryIds);
@@ -89,9 +89,9 @@ public class ZbProblemDevicesController {
         List<DeviceAndPointValue> devices = inventoryDao.getZigbeeProblemDevices(inWarehouseMsg);
         for(DeviceAndPointValue device : devices) {
             String[] dataRow = new String[5];
-            dataRow[0] = device.getDevice().getSerialNumber();
-            dataRow[1] = accessor.getMessage(device.getDevice().getIdentifier().getHardwareType());
-            dataRow[2] = device.getDevice().getLabel();
+            dataRow[0] = device.getLmHardware().getSerialNumber();
+            dataRow[1] = accessor.getMessage(device.getLmHardware().getIdentifier().getHardwareType());
+            dataRow[2] = device.getLmHardware().getLabel();
             
             PointValueHolder pointValue = device.getPointValue();
             String value = pointFormattingService.getValueString(pointValue, PointFormattingService.Format.VALUE, context);
