@@ -33,6 +33,7 @@
                     <td>
                         <cti:url var="deleteUrl" value="/dr/cc/program/${program.id}/event/${event.id}"/>
                         <form:form action="${deleteUrl}" method="DELETE">
+                            <cti:csrfToken/>
                             <cti:button type="submit" icon="icon-cross" renderMode="image" nameKey="eventDelete"/>
                         </form:form>
                     </td>

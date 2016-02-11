@@ -694,8 +694,8 @@ $(function () {
     csrfData[csrfName] = csrfVal;
 
     $(document).ajaxSend(function (ev, req, settings) {
-        if (settings.type === 'POST' || settings.type === 'post' ||
-            settings.method === 'POST' || settings.method === 'post') {
+        if (!(settings.type === 'GET' || settings.type === 'get' ||
+            settings.method === 'GET' || settings.method === 'get')) {
             var data = {};
             var type = 'object';
             if (typeof settings.data === 'string') {

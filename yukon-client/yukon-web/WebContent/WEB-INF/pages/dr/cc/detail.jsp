@@ -75,6 +75,7 @@
                     <c:if test="${showDeleteButton}">
                         <cti:url var="deleteUrl" value="/dr/cc/program/${program.id}/event/${event.id}"/>
                         <form:form action="${deleteUrl}" method="DELETE">
+                        	<cti:csrfToken/>
                             <cti:button type="submit" nameKey="delete" />
                         </form:form>
                     </c:if>
