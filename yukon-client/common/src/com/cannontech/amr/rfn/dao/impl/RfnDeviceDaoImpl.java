@@ -165,7 +165,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     @Override
     @Transactional
-    public void updateGatewayType(RfnDevice device) {
+    public RfnDevice updateGatewayType(RfnDevice device) {
         if (device.getPaoIdentifier().getPaoType() != PaoType.RFN_GATEWAY) {
             throw new IllegalArgumentException("updateGatewayType only accepts RFN_GATEWAY");
         }
@@ -188,6 +188,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         
         // Update the rfn address
         updateDevice(updatedDevice);
+        return updatedDevice;
     }
     
     @Override

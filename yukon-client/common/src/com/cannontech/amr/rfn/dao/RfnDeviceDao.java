@@ -79,7 +79,8 @@ public interface RfnDeviceDao {
     
     /**
      * Updates the YukonPaObject.Type of the gateway to GWY-800.
+     * @return The updated gateway.
      */
-    void updateGatewayType(RfnDevice device);
+    RfnDevice updateGatewayType(RfnDevice device);
 
 }

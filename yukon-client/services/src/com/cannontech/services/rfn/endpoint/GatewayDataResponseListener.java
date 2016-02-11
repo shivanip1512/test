@@ -1,5 +1,7 @@
 package com.cannontech.services.rfn.endpoint;
 
+import static com.cannontech.common.rfn.service.RfnDeviceCreationService.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -26,6 +29,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
     private static final Logger log = YukonLogManager.getLogger(GatewayDataResponseListener.class);
     
     @Autowired private GatewayEventLogService gatewayEventLogService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private JmsTemplate outgoingJmsTemplate;
     private final String outgoingTopicName = "yukon.qr.obj.common.rfn.GatewayDataTopic";
@@ -41,8 +45,26 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         @Override
         protected RfnDevice processCreation(RfnIdentifyingMessage message, RfnIdentifier identifier) {
             //We got data for a gateway that is not in the database.
+            
+            //Look for a device that is identical, except for the model
+            //This may be a gateway 2.0 that got put into the system as a gateway 1. Update the type & model.
+            if (identifier.getSensorModel().equals(GATEWAY_2_MODEL_STRING)) {
+                RfnIdentifier model1Identifier = new RfnIdentifier(identifier.getSensorSerialNumber(),
+                                                                   identifier.getSensorManufacturer(),
+                                                                   GATEWAY_1_MODEL_STRING);
+                
+                if (rfnDeviceDao.deviceExists(model1Identifier)) {
+                    //Found a match. Update the gateway model to 2.0
+                    RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(model1Identifier);
+                    return rfnDeviceDao.updateGatewayType(device);
+                }
+            }
+            
+            // Check to see if we've been receiving data messages for >= 2 hours. If so, we must have missed the
+            // creation message. Create the device.
             if (missingGatewayFirstDataTimes.containsKey(identifier)) {
                 if (Hours.hoursBetween(missingGatewayFirstDataTimes.get(identifier), Instant.now()).getHours() >= 2) {
+                    log.info("Received gateway data for unknown gateway for more than 2 hours. Creating for " + identifier);
                     missingGatewayFirstDataTimes.remove(identifier);
                     try {
                         RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(), identifier);
@@ -52,23 +74,23 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                                                                            device.getRfnIdentifier().getSensorSerialNumber());
                         return device;
                     } catch (Exception e) {
-                        log.warn("Creation failed for " + identifier, e);
-                        throw new RuntimeException("Creation failed for " + identifier, e);
+                        log.warn("Waiting to create gateway for " + identifier, e);
+                        throw new RuntimeException("Waiting to create gateway for " + identifier, e);
                     }
-
                 } else {
-                    log.info("Adding gateway (" + identifier
-                        + ") to the map for future creation(after 2 hour) only if the data message "
-                        + "is received continuously");
-                    throw new RuntimeException();
+                    log.info("Received data for unknown gateway (" + identifier
+                             + "). Gateway will be automatically created if data messages are received over at least"
+                             + " 2 hours and no creation message is received for this gateway.");
+                    throw new RuntimeException("Waiting to create gateway for " + identifier);
                 }
-
             } else {
+                // Received first data message for a gateway that doesn't exist in Yukon. Track it so we can create the
+                // gateway if we don't receive a creation request in the next 2 hours.
                 missingGatewayFirstDataTimes.put(identifier, Instant.now());
-                log.info("Adding gateway (" + identifier
-                    + ") to the map for future creation(after 2 hour) only if the data message "
-                    + "is received continuously");
-                throw new RuntimeException();
+                log.info("Received data for unknown gateway (" + identifier
+                         + "). Gateway will be automatically created if data messages are received over at least"
+                         + " 2 hours and no creation message is received for this gateway.");
+                throw new RuntimeException("Waiting to create gateway for " + identifier);
             }
         }
         

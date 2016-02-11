@@ -72,7 +72,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public void updateGatewayType(RfnDevice device) {
+    public RfnDevice updateGatewayType(RfnDevice device) {
         throw new MethodNotImplementedException();
     }
 

@@ -188,11 +188,11 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     
     @Override
     public void sendGatewayDataResponse(String serial, boolean isGateway2) {
-
-        GatewayDataResponse response = new GatewayDataResponse();
+        
         String model = isGateway2 ? RfnDeviceCreationService.GATEWAY_2_MODEL_STRING : RfnDeviceCreationService.GATEWAY_1_MODEL_STRING;
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
-        response.setRfnIdentifier(rfnIdentifier);
+        
+        GatewayDataResponse response = setUpDataResponse(rfnIdentifier, null);
         jmsTemplate.convertAndSend(dataAndUpgradeResponseQueue, response);
     }
 
@@ -523,7 +523,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         GatewayUpdateResponse response = new GatewayUpdateResponse();
         if (request instanceof GatewayCreateRequest) {
             GatewayCreateRequest createRequest = (GatewayCreateRequest) request;
-            RfnIdentifier rfnId = new RfnIdentifier(generateGatewaySerial(), "CPS", "RFGateway2");
+            RfnIdentifier rfnId = new RfnIdentifier(generateGatewaySerial(), "CPS", RfnDeviceCreationService.GATEWAY_1_MODEL_STRING);
             // Cache the data so that it can be used to respond to data requests
             if (settings.getCreateResult() == GatewayUpdateResult.SUCCESSFUL) {
                 cacheGatewayData(rfnId, createRequest.getData());
