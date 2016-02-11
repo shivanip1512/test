@@ -237,34 +237,7 @@
                 </cti:tab>
                 <cti:tab title="Attached Points">
                     <div class="scroll-md">
-                        <c:forEach var="pointMap" items="${points}">
-                            <c:if test="${not empty pointMap.value}">
-                                <h4><i:inline key="yukon.common.point.pointType.${pointMap.key}"/></h4>
-                                <table class="compact-results-table row-highlighting">
-                                    <thead></thead>
-                                    <tfoot></tfoot>
-                                    <tbody>
-                                        <c:forEach var="point" items="${pointMap.value}">
-                                            <tr>
-                                                <td>
-                                                    <cti:url var="pointUrl" value="/tools/points/${point.pointId}" /> 
-                                                    <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
-                                                </td>
-                                                <td class="state-indicator">
-                                                    <cti:pointStatus pointId="${point.pointId}" statusPointOnly="${true}"/>
-                                                </td>
-                                                <td class="wsnw">
-                                                    <cti:pointValue pointId="${point.pointId}" format="SHORT" />
-                                               </td>
-                                               <td class="wsnw">
-                                                    <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
-                                               </td>
-                                            </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                </table>
-                            </c:if>
-                        </c:forEach>
+                        <%@ include file="pointsTable.jsp" %>
                     </div>
                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                         <div class="action-area">

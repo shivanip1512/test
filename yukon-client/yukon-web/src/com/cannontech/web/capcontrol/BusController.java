@@ -30,7 +30,6 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -64,7 +63,6 @@ public class BusController {
     @Autowired private HolidayScheduleDao hoidayScheduleDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
-    @Autowired private PaoScheduleDao paoScheduleDao;
     @Autowired private PointDao pointDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SeasonScheduleDao seasonScheduleDao;
@@ -113,62 +111,67 @@ public class BusController {
         if (modelBus instanceof CapControlSubBus) {
             bus = (CapControlSubBus) modelBus;
         }
+        
+        if(bus.getId() != null){
+            Integer parentId = busDao.getParent(bus.getId());
+            if (parentId != null) {
+                LiteYukonPAObject parent = dbCache.getAllPaosMap().get(parentId);
+                model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
+                model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
+            }
 
-        Integer parentId = busDao.getParent(bus.getId());
-        if (parentId != null) {
-            LiteYukonPAObject parent = dbCache.getAllPaosMap().get(parentId);
-            model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
-            model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
+            SeasonSchedule scheduleSchedule = seasonScheduleDao.getScheduleForPao(bus.getId());
+            model.addAttribute("seasonSchedule", scheduleSchedule);
+
+            Map<Season, LiteCapControlStrategy> seasonToStrat = strategyService.getSeasonStrategyAssignments(bus.getId());
+            model.addAttribute("seasons", seasonToStrat);
+
+            // HOLIDAY SCHEDULING
+            HolidaySchedule holidaySchedule = hoidayScheduleDao.getScheduleForPao(bus.getId());
+            model.addAttribute("holidaySchedule", holidaySchedule);
+            
+
+            if (holidaySchedule.getHolidayScheduleId() != -1) {
+                int strategyId = hoidayScheduleDao.getStrategyForPao(bus.getId());
+                if (strategyId != -1) {
+                    model.addAttribute("holidayStrat", strategyDao.getForId(strategyId));
+                }
+            }
+            
+            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(bus.getId());
+            model.addAttribute("points", points);
+
+            List<ViewableFeeder> feederList = busService.getFeedersForBus(bus.getId());
+            model.addAttribute("feederList", feederList);
+
+            model.addAttribute("busId", bus.getId());
+            model.addAttribute("busName", bus.getName());
+            
+            
+            try {
+                ccCache.getSubBus(bus.getId());
+                model.addAttribute("orphan", false);
+
+                SubStation substation = ccCache.getParentSubstation(bus.getId());
+                model.addAttribute("substationId", substation.getCcId());
+                model.addAttribute("substationName", substation.getCcName());
+
+                int areaId = ccCache.getParentAreaId(bus.getId());
+                Area area = ccCache.getArea(areaId);
+
+                model.addAttribute("areaId", area.getCcId());
+                model.addAttribute("areaName", area.getCcName());
+
+            } catch (NotFoundException e) {
+                model.addAttribute("orphan", true);
+            }
+
         }
+
 
         model.addAttribute("bus", bus);
 
-        SeasonSchedule scheduleSchedule = seasonScheduleDao.getScheduleForPao(bus.getId());
-        model.addAttribute("seasonSchedule", scheduleSchedule);
-
-        Map<Season, LiteCapControlStrategy> seasonToStrat = strategyService.getSeasonStrategyAssignments(bus.getId());
-        model.addAttribute("seasons", seasonToStrat);
-
-        // HOLIDAY SCHEDULING
-        HolidaySchedule holidaySchedule = hoidayScheduleDao.getScheduleForPao(bus.getId());
-        model.addAttribute("holidaySchedule", holidaySchedule);
-
-        if (holidaySchedule.getHolidayScheduleId() != -1) {
-            int strategyId = hoidayScheduleDao.getStrategyForPao(bus.getId());
-            if (strategyId != -1) {
-                model.addAttribute("holidayStrat", strategyDao.getForId(strategyId));
-            }
-        }
-
-        if (bus.getId() != null) {
-            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(bus.getId());
-            model.addAttribute("points", points);
-        }
-
-        List<ViewableFeeder> feederList = busService.getFeedersForBus(bus.getId());
-        model.addAttribute("feederList", feederList);
-
-        model.addAttribute("busId", bus.getId());
-        model.addAttribute("busName", bus.getName());
-
         model.addAttribute("canEdit", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user));
-        try {
-            ccCache.getSubBus(bus.getId());
-            model.addAttribute("orphan", false);
-
-            SubStation substation = ccCache.getParentSubstation(bus.getId());
-            model.addAttribute("substationId", substation.getCcId());
-            model.addAttribute("substationName", substation.getCcName());
-
-            int areaId = ccCache.getParentAreaId(bus.getId());
-            Area area = ccCache.getArea(areaId);
-
-            model.addAttribute("areaId", area.getCcId());
-            model.addAttribute("areaName", area.getCcName());
-
-        } catch (NotFoundException e) {
-            model.addAttribute("orphan", true);
-        }
 
         return "bus.jsp";
     }
