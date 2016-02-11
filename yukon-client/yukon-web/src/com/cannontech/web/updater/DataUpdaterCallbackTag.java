@@ -53,7 +53,7 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
                 try {
                     identifierValue = dataUpdaterService.getFirstValue(fullIdentifier, getUserContext());
                 } catch (CacheManagementException cme) {
-                    log.debug("Unablle to get the identifierValue");
+                    log.debug("Unable to get the identifierValue");
                 }
                 if (identifierValue != null && !identifierValue.isUnavailable()) {
                     identifierValues.put(identifierName, identifierValue.getValue());
