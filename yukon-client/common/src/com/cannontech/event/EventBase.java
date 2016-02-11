@@ -68,7 +68,7 @@ public abstract class EventBase<S, A, T extends EventHandler> implements Event<T
                 notifyHandler(eventSource, eventArg, handler);
             }
             catch (Exception e) {
-                logger.error(e);
+                logger.error("Event handler threw exception; source=" + eventSource + ", arg=" + eventArg + ", handler=" + handler, e);
             }
         }
     }
