@@ -76,7 +76,7 @@ CtiCalculateThread::~CtiCalculateThread( void )
     }
 };
 
-void CtiCalculateThread::pointChange( long changedID, double newValue, const CtiTime &newTime, unsigned newQuality, unsigned newTags )
+void CtiCalculateThread::pointChange( long changedID, double newValue, const CtiTime newTime, unsigned newQuality, unsigned newTags )
 {
     try
     {
@@ -84,14 +84,18 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
 
         if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
         {
-            CTILOG_DEBUG(dout, "Point Data ID: "<< changedID <<" Val: "<< newValue <<" Time: "<< newTime <<" Quality: "<< newQuality);
+            CTILOG_DEBUG(dout, "Point Data ID: "<< changedID 
+                                << " Val: "     << newValue 
+                                << " Time: "    << newTime 
+                                << " Quality: " << newQuality 
+                                << " Tags: " << std::hex << newTags);
         }
 
         if( CtiPointStoreElement* pointPtr = CtiPointStore::find(changedID) )
         {
-            if( newTime.seconds() > pointPtr->getPointTime().seconds() ||       // Point Change is newer than last point data
-                ( pointPtr->getNumUpdates() > 0 &&                              // Point has been updated AND
-                  ( newQuality != pointPtr->getPointQuality() ||                // quality, tags, or value have changed.
+            if( newTime > pointPtr->getPointTime() ||               // Point Change is newer than last point data
+                ( pointPtr->getNumUpdates() > 0 &&                  // Point has been updated AND
+                  ( newQuality != pointPtr->getPointQuality() ||    // quality, tags, or value have changed.
                     newValue != pointPtr->getPointValue() ||
                     newTags != pointPtr->getPointTags() ) ) )
             {

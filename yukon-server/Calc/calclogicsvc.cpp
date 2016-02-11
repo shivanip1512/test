@@ -759,7 +759,11 @@ void CtiCalcLogicService::handlePointDataMsg( const CtiPointDataMsg &ptDataMsg, 
 {
     _lastDispatchMessageTime = CtiTime::now();
 
-    thread.pointChange( ptDataMsg.getId(), ptDataMsg.getValue(), ptDataMsg.getTime(), ptDataMsg.getQuality(), ptDataMsg.getTags() );
+    //  Ignore all OLD_TIMESTAMP point data
+    if( ! (ptDataMsg.getTags() & TAG_POINT_OLD_TIMESTAMP) )
+    {
+        thread.pointChange(ptDataMsg.getId(), ptDataMsg.getValue(), ptDataMsg.getTime(), ptDataMsg.getQuality(), ptDataMsg.getTags());
+    }
 
     _dispatchConnectionBad = false;
 }
