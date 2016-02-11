@@ -146,11 +146,7 @@ public class CbcController {
 
         if (cbc.getId() != null) {
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
-            model.addAttribute("analogPoints", points.get(PointType.Analog));
-            model.addAttribute("pulseAccumulatorPoints", points.get(PointType.PulseAccumulator));
-            model.addAttribute("calcAnalogPoints", points.get(PointType.CalcAnalog));
-            model.addAttribute("statusPoints", points.get(PointType.Status));
-            model.addAttribute("calcStatusPoints", points.get(PointType.CalcStatus));
+            model.addAttribute("points", points);
         }
 
         List<LiteYukonPAObject> routes = new ArrayList<>(dbCache.getAllRoutes());
