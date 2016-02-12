@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
+import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMapper;
+import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMapper.PointMapper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
@@ -62,6 +64,7 @@ import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
+import com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyGatewaySimulatorRequest;
@@ -78,6 +81,7 @@ import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 @Controller
 @RequestMapping("/rfn/*")
@@ -96,6 +100,8 @@ public class NmIntegrationController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
+    @Autowired private RfnMeterDataSimulatorServiceImpl rfnMeterDataSimulator;
+    @Autowired private UnitOfMeasureToPointMapper unitOfMeasureToPointMapper;
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
@@ -905,6 +911,25 @@ public class NmIntegrationController {
         } catch (Exception e) {
             resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
+    }
+    
+    @RequestMapping("stopMetersArchieveRequest")
+    public String stopRfnMeterSimulator() {
+        rfnMeterDataSimulator.stopSimulator();
+        return "redirect:viewMeterReadArchiveRequest";
+    }
+    
+    @RequestMapping("startMetersArchieveRequest")
+    public String sendRfnMetersArchiveRequest() {
+        PaoType paoType = PaoType.RFN420FL;
+        List<RfnDevice> rfnDeviceList = new ArrayList<RfnDevice>();
+        
+        if (null != paoType) {
+             rfnDeviceList = rfnDeviceDao.getDevicesByPaoType(paoType);
+             Multimap<PaoType, PointMapper> pointMapperMap = unitOfMeasureToPointMapper.getPointMapper();
+             rfnMeterDataSimulator.sendRfnMeterMessages(rfnDeviceList,pointMapperMap);
+        } 
+        return "redirect:viewMeterReadArchiveRequest";
     }
     
     @InitBinder
