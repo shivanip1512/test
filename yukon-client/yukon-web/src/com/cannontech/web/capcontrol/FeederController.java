@@ -250,7 +250,7 @@ public class FeederController {
     }
     
 
-    public static final Comparator<CapBankAssignment> BANK_TRIP_ORDER_COMPARATOR = new Comparator<CapBankAssignment>() {
+    private static final Comparator<CapBankAssignment> BANK_TRIP_ORDER_COMPARATOR = new Comparator<CapBankAssignment>() {
         @Override
         public int compare(CapBankAssignment o1, CapBankAssignment o2) {
             Float order1 = o1.getTripOrder();
@@ -264,7 +264,7 @@ public class FeederController {
         }
     };
     
-    public static final Comparator<CapBankAssignment> BANK_CLOSE_ORDER_COMPARATOR = new Comparator<CapBankAssignment>() {
+    private static final Comparator<CapBankAssignment> BANK_CLOSE_ORDER_COMPARATOR = new Comparator<CapBankAssignment>() {
         @Override
         public int compare(CapBankAssignment o1, CapBankAssignment o2) {
             Float order1 = o1.getCloseOrder();

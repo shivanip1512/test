@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
@@ -204,6 +205,7 @@ public class CapbankDaoImpl implements CapbankDao {
     }
     
     @Override
+    @Transactional
     public boolean assignAndOrderCapbank(YukonPao feeder, YukonPao capbank, float controlOrder, float closeOrder, float tripOrder) {
         int feederId = feeder.getPaoIdentifier().getPaoId();
         int capbankId = capbank.getPaoIdentifier().getPaoId();

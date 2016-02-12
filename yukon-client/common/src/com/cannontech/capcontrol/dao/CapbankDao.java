@@ -90,6 +90,17 @@ public interface CapbankDao {
      */
     public PaoIdentifier getParentBus(int bankId);
 
+    /**
+     * Assigns a capbank to a feeder and processes the necessary dbchange
+     * messages.
+     * @param feeder the YukonPao of the feeder being assigned to
+     * @param capbank the YukonPao of the capbank being assigned
+     * @param controlOrder the order of the control
+     * @param closeOrder the close order for the control
+     * @param tripOrder the trip order for the coontrol
+     * @return true if the assignment occurred with only one row in the db
+     *         updated, false otherwise.
+     */
     boolean assignAndOrderCapbank(YukonPao feeder, YukonPao capbank, float controlOrder, float closeOrder, float tripOrder);
 
 }
