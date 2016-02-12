@@ -343,10 +343,10 @@ public class EstimatedLoadController {
     }
     
     @RequestMapping("summary-error")
-    public String summaryErrorPopup(ModelMap model, YukonUserContext userContext, int scenarioId) {
+    public String summaryErrorPopup(ModelMap model, YukonUserContext userContext, int paoId) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        LiteYukonPAObject pao = cache.getAllPaosMap().get(scenarioId);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         String name = pao.getPaoName();
         model.addAttribute("title", accessor.getMessage(elKey + "popup.program.title", name));
         
@@ -371,7 +371,7 @@ public class EstimatedLoadController {
             for (int programId : summary.getProgramsInError()) {
                 EstimatedLoadResult result;
                 if (pao.getPaoIdentifier().getPaoType() == PaoType.LM_SCENARIO) {
-                    result = helper.findScenarioProgramValue(programId, scenarioId, true);
+                    result = helper.findScenarioProgramValue(programId, paoId, true);
                 } else {
                     result = helper.findProgramValue(programId, true);
                 }
