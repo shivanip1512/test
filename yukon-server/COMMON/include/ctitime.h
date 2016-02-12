@@ -83,7 +83,7 @@ public:
     std::string asString(DisplayOffset offset, DisplayTimezone timezone) const;
     std::string asString() const;
 
-    CtiTime addDays(const int days, bool DSTflag = true);
+    CtiTime &addDays(const int days, bool DSTflag = true);
 
     static CtiTime now();
     static CtiTime beginDST(unsigned year);

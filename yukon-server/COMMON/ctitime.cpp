@@ -133,7 +133,6 @@ CtiTime& CtiTime::operator = (const CtiTime& ct)
 CtiTime& CtiTime::addSeconds(const int secs)
 {
     if( !is_special() ){
-        //boost::mutex::scoped_lock scoped_lock(_secs_mutex);
         _seconds += secs;
     }
     return *this;
@@ -146,28 +145,46 @@ CtiTime& CtiTime::addMinutes(const int mins)
 }
 
 /*
- *  Will add one day to the time. flag is set to true so that if you add a day from mignight
+ *  Will add one day to the time. flag is set to true so that if you add a day from midnight
  *  and it crosses a DST boundary, the result is still midnight the following day.
  *  Set flag = false if you do not wish to keep the time the same while adding days.
  */
-CtiTime CtiTime::addDays(const int days, bool DSTflag)
+CtiTime &CtiTime::addDays(const int days, bool DSTflag)
 {
-    if (DSTflag) {
+    if( is_special() )
+    {
+        return *this;
+    }
 
+    //  Should we adjust for DST changes?
+    if( DSTflag )
+    {
         CtiTime DSTtest = *this;
         DSTtest.addSeconds(days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR);
 
+        //  If DST didn't change, just add days as usual
         if ( DSTtest.isDST() == isDST() )
+        {
             return addSeconds(days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR);
-        if ( isDST() ) {
-            return addSeconds( days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR + SECONDS_PER_MINUTE *MINUTES_PER_HOUR );
-        }else
-            return addSeconds( days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR - SECONDS_PER_MINUTE *MINUTES_PER_HOUR );
+        }
 
-    }else{
+        if ( isDST() )
+        {
+            //  If it's DST now (one hour ahead), but DST will stop, add on another hour to make the wall clock time match.
+            //    Ex: 13:00 CDT (UTC-0500) -> 12:00 CST (UTC-0600) + 1 hour = 13:00 CST.
+            return addSeconds( days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR + SECONDS_PER_MINUTE *MINUTES_PER_HOUR );
+        }
+        else
+        {
+            //  Conversely:
+            //    Ex: 13:00 CST (UTC-0600) -> 14:00 CDT (UTC-0500) - 1 hour = 13:00 CDT.
+            return addSeconds( days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR - SECONDS_PER_MINUTE *MINUTES_PER_HOUR );
+        }
+    }
+    else
+    {
         return addSeconds(days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR);
     }
-
 }
 
 
@@ -366,6 +383,12 @@ bool CtiTime::is_pos_infinity() const
 
 bool CtiTime::isDST() const
 {
+    //  pos_infinity, neg_infinity, or not_a_time (January 1, 1970)
+    if( is_special() )
+    {
+        return false;
+    }
+
     struct tm ctm;
     ctm = *localtime(&_seconds);
     return ctm.tm_isdst;
@@ -424,7 +447,7 @@ static const std::map<std::wstring, std::string> timeZoneAbbrevMap {
     { L"Argentina Standard Time", "ART-ARG" },
     { L"GMT Standard Time", "GMT" },
     { L"Coordinated Universal Time", "GMT" },
-    { L"Greenwich Standard Time", "GMT-GBR" } 
+    { L"Greenwich Standard Time", "GMT-GBR" }
 };
 
 /**

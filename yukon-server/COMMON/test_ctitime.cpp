@@ -2,7 +2,6 @@
 
 #include "ctitime.h"
 #include "ctidate.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/assign/list_of.hpp>
 
 #include "boost_test_helpers.h"
@@ -10,69 +9,115 @@
 #include <windows.h>
 
 using namespace boost::gregorian;
-using namespace boost::posix_time;
 
 BOOST_AUTO_TEST_SUITE( test_ctitime )
 
 BOOST_AUTO_TEST_CASE(test_ctitime_specials)
 {
+    {
+        CtiTime t{ CtiTime::neg_infin };
 
-    //check boost special values
-    /*std::cout << endl;*/
-    ptime x(date(boost::date_time::neg_infin), boost::date_time::neg_infin);
-    /*std::cout << "neg_infin ptime hour: " << x.time_of_day().hours() << std::endl;
-    std::cout << "neg_infin ptime seconds: " << x.time_of_day().seconds() << std::endl;
-    std::cout << endl;*/
+        BOOST_CHECK_EQUAL(t.is_special(), true);
+        BOOST_CHECK_EQUAL(t.isValid(), false);
+        BOOST_CHECK_EQUAL(t.isDST(), false);
+        BOOST_CHECK_EQUAL(t.is_neg_infinity(), true);
 
-    ptime y(date(boost::date_time::not_a_date_time), boost::date_time::not_a_date_time);
-    /*std::cout << "not_a_date_time ptime hour: " << y.time_of_day().hours() << std::endl;
-    std::cout << "not_a_date_time ptime seconds: " << y.time_of_day().seconds() << std::endl;
-    std::cout << endl;*/
+        t.addDays(1);
 
+        BOOST_CHECK_EQUAL(t.is_neg_infinity(), true);
 
-    // check the special time values
-    CtiTime ct1 = CtiTime(CtiTime::neg_infin);
-    BOOST_CHECK_EQUAL( ct1.is_special(), true );
+        t.addDays(-1);
 
-   /* std::cout << "neg_infin time as string: " << ct1.asString() << std::endl;
-    std::cout << "neg_infin time hour: " << ct1.hour() << std::endl;
-    std::cout << "neg_infin time seconds: " << ct1.second() << std::endl;
-    std::cout << endl;*/
+        BOOST_CHECK_EQUAL(t.is_neg_infinity(), true);
+    }
 
-    ct1 = CtiTime(CtiTime::not_a_time);
+    {
+        CtiTime t{ CtiTime::pos_infin };
 
-    BOOST_CHECK_EQUAL( ct1.is_special(), true );
-    /*std::cout << "not_a_time as string: " << ct1.asString() << std::endl;
-    std::cout << "not_a_time hour: " << ct1.hour() << std::endl;
-    std::cout << "not_a_time seconds: " << ct1.second() << std::endl;
-    std::cout << endl;*/
+        BOOST_CHECK_EQUAL(t.is_special(), true);
+        BOOST_CHECK_EQUAL(t.isValid(), false);
+        BOOST_CHECK_EQUAL(t.isDST(), false);
+        BOOST_CHECK_EQUAL(t.is_pos_infinity(), true);
 
-    BOOST_CHECK_EQUAL( CtiTime((unsigned long)0).is_special(), true );
-    BOOST_CHECK_EQUAL( CtiTime(CtiTime::neg_infin).isValid(), false );
-    BOOST_CHECK_EQUAL( CtiTime(CtiTime::pos_infin).isValid(), false );
-    BOOST_CHECK_EQUAL( CtiTime((unsigned long)0).isValid(), false );
-    BOOST_CHECK_EQUAL( CtiTime(ct1).isValid(), false );
+        t.addDays(1);
 
+        BOOST_CHECK_EQUAL(t.is_pos_infinity(), true);
+
+        t.addDays(-1);
+
+        BOOST_CHECK_EQUAL(t.is_pos_infinity(), true);
+    }
+
+    {
+        CtiTime t{ CtiTime::not_a_time };
+
+        BOOST_CHECK_EQUAL(t.is_special(), true);
+        BOOST_CHECK_EQUAL(t.isValid(), false);
+        BOOST_CHECK_EQUAL(t.isDST(), false);
+        BOOST_CHECK_EQUAL(t.seconds(), 0);
+
+        t.addDays(1);
+
+        BOOST_CHECK_EQUAL(t.seconds(), 0);
+
+        t.addDays(-1);
+
+        BOOST_CHECK_EQUAL(t.seconds(), 0);
+    }
+
+    {
+        CtiTime t{ 0UL };
+
+        BOOST_CHECK_EQUAL(t.is_special(), true);
+        BOOST_CHECK_EQUAL(t.isValid(), false);
+        BOOST_CHECK_EQUAL(t.isDST(), false);
+        BOOST_CHECK_EQUAL(t.seconds(), 0);
+
+        t.addDays(1);
+
+        BOOST_CHECK_EQUAL(t.seconds(), 0);
+
+        t.addDays(-1);
+
+        BOOST_CHECK_EQUAL(t.seconds(), 0);
+    }
 
     // check creating a CtiTime using a CtiDate
-    CtiDate cd;
+    {
+        CtiDate d{ 25, 12, 2016 };
 
-    CtiTime ct3(cd);
-    //std::cout << "here" << std::endl;
-    BOOST_CHECK_EQUAL( cd.asString(), ct3.date().asString() );
+        CtiTime t{ d };
 
+        BOOST_CHECK_EQUAL(d.asString(), t.date().asString());
+    }
 
-    // check creating a CtiTime from a special CtiDate
+    // check creating special CtiTimes from special CtiDates
+    {
+        CtiDate d{ CtiDate::neg_infin };
+        CtiTime t{ d };
 
-    CtiDate cd1(CtiDate::not_a_date);
-    CtiDate cd2(CtiDate::pos_infin);
+        BOOST_CHECK_EQUAL(t.is_special(), true);
+        BOOST_CHECK_EQUAL(t.isValid(), false);
+        BOOST_CHECK_EQUAL(t.is_neg_infinity(), true);
+    }
 
-    CtiTime ct4(cd1);
-    CtiTime ct6(cd2);
+    {
+        CtiDate d{ CtiDate::pos_infin };
+        CtiTime t{ d };
 
-    BOOST_CHECK_EQUAL( ct4.isValid(), false );
-    BOOST_CHECK_EQUAL( ct6.is_pos_infinity(), true );
-    BOOST_CHECK_EQUAL( ct6.isValid(), false );
+        BOOST_CHECK_EQUAL(t.is_special(), true);
+        BOOST_CHECK_EQUAL(t.isValid(), false);
+        BOOST_CHECK_EQUAL(t.is_pos_infinity(), true);
+    }
+
+    {
+        CtiDate d{ CtiDate::not_a_date };
+        CtiTime t{ d };
+
+        BOOST_CHECK_EQUAL(t.isValid(), false);
+        BOOST_CHECK_EQUAL(t.is_special(), true);
+        BOOST_CHECK_EQUAL(t.seconds(), 0);
+    }
 }
 
 
