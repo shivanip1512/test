@@ -125,7 +125,7 @@ $(document).on('click', '.valueMinus', function(event) {
     input.val(value.toFixed(4));
 });
 $(document).on('click', '.dateTimeClear', function(event) {
-    $(event.target).prev().val('');
+    $(event.currentTarget).prev().val('');
 });
 </script>
 
