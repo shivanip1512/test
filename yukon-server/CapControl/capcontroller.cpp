@@ -332,11 +332,6 @@ void CtiCapController::messageSender()
                                 store->updateSubstationObjectSet(currentStation->getPaoId(), stationChanges);
                                 currentStation->setStationUpdatedFlag(false);
                             }
-                            if (currentArea->getAreaUpdatedFlag())
-                            {
-                                store->updateAreaObjectSet(currentArea->getPaoId(), areaChanges);
-                                currentArea->setAreaUpdatedFlag(false);
-                            }
                             subStationBusChanges.push_back(currentSubstationBus);
                             currentSubstationBus->setBusUpdatedFlag(false);
                         }
@@ -346,6 +341,15 @@ void CtiCapController::messageSender()
                 if (subStationBusChanges.size() > 0)
                 {
                     getOutClientMsgQueueHandle().write(new CtiCCSubstationBusMsg( subStationBusChanges, CtiCCSubstationBusMsg::SubBusModified ));
+                }
+
+                for ( CtiCCAreaPtr currentArea : *store->getCCGeoAreas( 0, false ) )
+                {
+                    if (currentArea->getAreaUpdatedFlag())
+                    {
+                        store->updateAreaObjectSet(currentArea->getPaoId(), areaChanges);
+                        currentArea->setAreaUpdatedFlag(false);
+                    }
                 }
                 if (areaChanges.size() > 0)
                 {
