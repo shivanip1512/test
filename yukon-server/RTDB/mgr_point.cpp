@@ -179,7 +179,7 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
         }
 
         if(pntType == InvalidPointType || pntType == StatusOutputPointType ||
-           pntType == StatusPointType )
+           pntType == StatusPointType || pntType == CalculatedStatusPointType)
         {
             start = start.now();
 
@@ -345,8 +345,7 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
             }
         }
 
-        if(pntType == InvalidPointType || pntType == CalculatedPointType ||
-           pntType == CalculatedStatusPointType )
+        if(pntType == InvalidPointType || pntType == CalculatedPointType)
         {
             start = start.now();
 
