@@ -660,11 +660,9 @@ long CtiCCCapBank::getTagsControlStatus() const
 
     Sets the parentId (feederId) of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setParentId(long parentId)
+void CtiCCCapBank::setParentId(long parentId)
 {
     _parentId = parentId;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -672,11 +670,9 @@ CtiCCCapBank& CtiCCCapBank::setParentId(long parentId)
 
     Sets the alarm inhibit of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setAlarmInhibitFlag(bool alarminhibit)
+void CtiCCCapBank::setAlarmInhibitFlag(bool alarminhibit)
 {
     _alarminhibitflag = alarminhibit;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -684,11 +680,9 @@ CtiCCCapBank& CtiCCCapBank::setAlarmInhibitFlag(bool alarminhibit)
 
     Sets the control inhibit of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlInhibitFlag(bool controlinhibit)
+void CtiCCCapBank::setControlInhibitFlag(bool controlinhibit)
 {
     _controlinhibitflag = controlinhibit;
-
-    return *this;
 }
 
 
@@ -697,11 +691,9 @@ CtiCCCapBank& CtiCCCapBank::setControlInhibitFlag(bool controlinhibit)
 
     Sets the max daily operations of the cap bank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMaxDailyOperation(long maxdailyops)
+void CtiCCCapBank::setMaxDailyOperation(long maxdailyops)
 {
     _maxdailyops = maxdailyops;
-
-    return *this;
 }
 
 
@@ -710,10 +702,9 @@ CtiCCCapBank& CtiCCCapBank::setMaxDailyOperation(long maxdailyops)
 
     Sets the current daily operations of the cap bank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(long operations)
+void CtiCCCapBank::setCurrentDailyOperations(long operations)
 {
     _dirty |= setVariableIfDifferent(_currentdailyoperations, operations);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -721,11 +712,9 @@ CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(long operations)
 
     Sets the max operation disable flag for the cap bank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMaxOpsDisableFlag(bool maxopsdisable)
+void CtiCCCapBank::setMaxOpsDisableFlag(bool maxopsdisable)
 {
     _maxopsdisableflag = maxopsdisable;
-
-    return *this;
 }
 
 
@@ -734,11 +723,9 @@ CtiCCCapBank& CtiCCCapBank::setMaxOpsDisableFlag(bool maxopsdisable)
 
     Sets the operational state of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOperationalState(const string& operational)
+void CtiCCCapBank::setOperationalState(const string& operational)
 {
     _operationalstate = operational;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -746,22 +733,18 @@ CtiCCCapBank& CtiCCCapBank::setOperationalState(const string& operational)
 
     Sets the operational state of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOperationalState(int value)
+void CtiCCCapBank::setOperationalState(int value)
 {
     _operationalstate = convertOperationalState(value);
-
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setControllerType
 
     Sets the controller type of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControllerType(const string& controllertype)
+void CtiCCCapBank::setControllerType(const string& controllertype)
 {
     _controllertype = controllertype;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -769,11 +752,9 @@ CtiCCCapBank& CtiCCCapBank::setControllerType(const string& controllertype)
 
     Sets the control device id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlDeviceId(long controldevice)
+void CtiCCCapBank::setControlDeviceId(long controldevice)
 {
     _controldeviceid = controldevice;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -781,20 +762,14 @@ CtiCCCapBank& CtiCCCapBank::setControlDeviceId(long controldevice)
 
     Sets the control point id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlPointId(long controlpoint)
+void CtiCCCapBank::setControlPointId(long controlpoint)
 {
     _controlpointid = controlpoint;
-
-    return *this;
 }
 
-
-
-CtiCCCapBank& CtiCCCapBank::setControlDeviceType(const string& controlDeviceType)
+void CtiCCCapBank::setControlDeviceType(const string& controlDeviceType)
 {
     _controlDeviceType = controlDeviceType;
-
-    return *this;
 
 }
 /*---------------------------------------------------------------------------
@@ -802,11 +777,9 @@ CtiCCCapBank& CtiCCCapBank::setControlDeviceType(const string& controlDeviceType
 
     Sets the bank size of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setBankSize(long size)
+void CtiCCCapBank::setBankSize(long size)
 {
     _banksize = size;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -814,11 +787,9 @@ CtiCCCapBank& CtiCCCapBank::setBankSize(long size)
 
     Sets the type of switch of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTypeOfSwitch(const string& switchtype)
+void CtiCCCapBank::setTypeOfSwitch(const string& switchtype)
 {
     _typeofswitch = switchtype;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -826,11 +797,9 @@ CtiCCCapBank& CtiCCCapBank::setTypeOfSwitch(const string& switchtype)
 
     Sets the switch manufacture of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setSwitchManufacture(const string& manufacture)
+void CtiCCCapBank::setSwitchManufacture(const string& manufacture)
 {
     _switchmanufacture = manufacture;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -838,11 +807,9 @@ CtiCCCapBank& CtiCCCapBank::setSwitchManufacture(const string& manufacture)
 
     Sets the map location id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMapLocationId(const string& maplocation)
+void CtiCCCapBank::setMapLocationId(const string& maplocation)
 {
     _maplocationid = maplocation;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -850,11 +817,9 @@ CtiCCCapBank& CtiCCCapBank::setMapLocationId(const string& maplocation)
 
     Sets the RecloseDelay of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setRecloseDelay(long reclose)
+void CtiCCCapBank::setRecloseDelay(long reclose)
 {
     _reclosedelay = reclose;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -862,11 +827,9 @@ CtiCCCapBank& CtiCCCapBank::setRecloseDelay(long reclose)
 
     Sets the control order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlOrder(float order)
+void CtiCCCapBank::setControlOrder(float order)
 {
     _controlorder = order;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -874,11 +837,9 @@ CtiCCCapBank& CtiCCCapBank::setControlOrder(float order)
 
     Sets the trip order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTripOrder(float order)
+void CtiCCCapBank::setTripOrder(float order)
 {
     _triporder = order;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -886,32 +847,26 @@ CtiCCCapBank& CtiCCCapBank::setTripOrder(float order)
 
     Sets the close order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setCloseOrder(float order)
+void CtiCCCapBank::setCloseOrder(float order)
 {
     _closeorder = order;
-
-    return *this;
 }
-
-
 
 /*---------------------------------------------------------------------------
     setStatusPointId
 
     Sets the status point id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setStatusPointId(long statuspoint)
+void CtiCCCapBank::setStatusPointId(long statuspoint)
 {
     _statuspointid = statuspoint;
-
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setVerificationFlag
 
     Sets the verification flag, b4 capbank is exercised in the verification routine
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setVerificationFlag(bool verificationFlag)
+void CtiCCCapBank::setVerificationFlag(bool verificationFlag)
 {
     if (verificationFlag)
     {
@@ -920,15 +875,11 @@ CtiCCCapBank& CtiCCCapBank::setVerificationFlag(bool verificationFlag)
     }
 
     _dirty |= setVariableIfDifferent(_verificationFlag,verificationFlag);
-
-    return *this;
 }
 
-
-CtiCCCapBank& CtiCCCapBank::setSelectedForVerificationFlag(bool individualVerificationFlag)
+void CtiCCCapBank::setSelectedForVerificationFlag(bool individualVerificationFlag)
 {
     _selectedForVerificationFlag = individualVerificationFlag;
-    return *this;
 }
 bool CtiCCCapBank::isSelectedForVerification( ) const
 {
@@ -936,26 +887,22 @@ bool CtiCCCapBank::isSelectedForVerification( ) const
 }
 
 
-CtiCCCapBank& CtiCCCapBank::setPerformingVerificationFlag(bool performingVerificationFlag)
+void CtiCCCapBank::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
     _dirty |= setVariableIfDifferent(_performingVerificationFlag, performingVerificationFlag);
-    return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setVerificationDoneFlag(bool verificationDoneFlag)
+void CtiCCCapBank::setVerificationDoneFlag(bool verificationDoneFlag)
 {
     _dirty |= setVariableIfDifferent(_verificationDoneFlag,verificationDoneFlag);
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setPorterRetFailFlag(bool flag)
+void CtiCCCapBank::setPorterRetFailFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_porterRetFailFlag, flag);
-    return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setUnsolicitedPendingFlag(bool flag)
+void CtiCCCapBank::setUnsolicitedPendingFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_unsolicitedPendingFlag, flag);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -963,30 +910,27 @@ CtiCCCapBank& CtiCCCapBank::setUnsolicitedPendingFlag(bool flag)
 
     Sets the retry failed flag, b4 if a capbank has been tried after a failed state..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setRetryOpenFailedFlag(bool retryOpenFailedFlag)
+void CtiCCCapBank::setRetryOpenFailedFlag(bool retryOpenFailedFlag)
 {
     _dirty |= setVariableIfDifferent(_retryOpenFailedFlag, retryOpenFailedFlag);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setRetryCloseFailedFlag
 
     Sets the retry failed flag, b4 if a capbank has been tried after a failed state..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(bool retryCloseFailedFlag)
+void CtiCCCapBank::setRetryCloseFailedFlag(bool retryCloseFailedFlag)
 {
     _dirty |= setVariableIfDifferent(_retryCloseFailedFlag, retryCloseFailedFlag);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setOvUvDisabledFlag
 
     Sets the ovUvDisabledFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(bool ovUvDisabledFlag)
+void CtiCCCapBank::setOvUvDisabledFlag(bool ovUvDisabledFlag)
 {
     _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, ovUvDisabledFlag);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -994,10 +938,9 @@ CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(bool ovUvDisabledFlag)
 
     Sets the LocalControlFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setLocalControlFlag(bool localControlFlag)
+void CtiCCCapBank::setLocalControlFlag(bool localControlFlag)
 {
     _dirty |= setVariableIfDifferent(_localControlFlag, localControlFlag);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1005,10 +948,9 @@ CtiCCCapBank& CtiCCCapBank::setLocalControlFlag(bool localControlFlag)
 
     Sets the ovUvDisabledFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(bool ovUvSituationFlag)
+void CtiCCCapBank::setOvUvSituationFlag(bool ovUvSituationFlag)
 {
     _dirty |= setVariableIfDifferent(_ovuvSituationFlag, ovUvSituationFlag);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1016,30 +958,27 @@ CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(bool ovUvSituationFlag)
 
     Sets the maxDailyOpsHitFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(bool flag)
+void CtiCCCapBank::setMaxDailyOpsHitFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_maxDailyOpsHitFlag, flag);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setControlStatusPartialFlag(
 
     Sets the ControlStatusPartialFlag( ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusPartialFlag(bool flag)
+void CtiCCCapBank::setControlStatusPartialFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_controlStatusPartialFlag, flag);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setControlStatusSignificantFlag
 
     Sets the ControlStatusPartialFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(bool flag)
+void CtiCCCapBank::setControlStatusSignificantFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_controlStatusSignificantFlag, flag);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1047,40 +986,36 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(bool flag)
 
     Sets the ControlStatusAbnQualityFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusAbnQualityFlag(bool flag)
+void CtiCCCapBank::setControlStatusAbnQualityFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_controlStatusAbnQualityFlag, flag);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setControlStatusFailFlag
 
     Sets the ControlStatusFailFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusFailFlag(bool flag)
+void CtiCCCapBank::setControlStatusFailFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_controlStatusFailFlag, flag);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setControlStatusCommFailFlag
 
     Sets the ControlStatusCommFailFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusCommFailFlag(bool flag)
+void CtiCCCapBank::setControlStatusCommFailFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_controlStatusCommFailFlag, flag);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setControlStatusNoControlFlag
 
     Sets the ControlStatusNoControlFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(bool flag)
+void CtiCCCapBank::setControlStatusNoControlFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_controlStatusNoControlFlag, flag);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1088,10 +1023,9 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(bool flag)
 
     Sets the ControlStatusNoControlFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(bool flag)
+void CtiCCCapBank::setControlStatusUnSolicitedFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_controlStatusUnSolicitedFlag, flag);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1099,10 +1033,9 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(bool flag)
 
     Sets the ReEnableOvUvFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setReEnableOvUvFlag(bool flag)
+void CtiCCCapBank::setReEnableOvUvFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_reEnableOvUvFlag, flag);
-    return *this;
 }
 
 
@@ -1111,7 +1044,7 @@ CtiCCCapBank& CtiCCCapBank::setReEnableOvUvFlag(bool flag)
 
     Sets the ControlStatusQuality ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity quality, string partialPhaseInfo)
+void CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity quality, string partialPhaseInfo)
 {
 
     _controlStatusQuality = quality;
@@ -1210,8 +1143,6 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             break;
         }
     }
-
-    return *this;
 }
 
 string CtiCCCapBank::getControlStatusQualityString()
@@ -1272,7 +1203,7 @@ string CtiCCCapBank::getControlStatusQualityString()
 /*
     The input 'value' to this function is REQUIRED to be in host byte order
 */
-CtiCCCapBank& CtiCCCapBank::setIpAddress(unsigned long value)
+void CtiCCCapBank::setIpAddress(unsigned long value)
 {
     _ipAddress = "(none)";
     if (value > 0)
@@ -1292,83 +1223,67 @@ CtiCCCapBank& CtiCCCapBank::setIpAddress(unsigned long value)
         temp = (value & 0xFF);
         _ipAddress += itoa(temp,tempchar,10);
     }
-    return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setUDPPort(long value)
+void CtiCCCapBank::setUDPPort(long value)
 {
     _dirty |= setVariableIfDifferent(_udpPortNumber, value);
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setReportedCBCLastControlReason(long value)
+void CtiCCCapBank::setReportedCBCLastControlReason(long value)
 {
     _dirty |= setVariableIfDifferent(_reportedCBCLastControlReason, value);
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setPartialPhaseInfo(const string& info)
+void CtiCCCapBank::setPartialPhaseInfo(const string& info)
 {
     _dirty |= setVariableIfDifferent(_partialPhaseInfo, info);
-    return *this;
-
 }
-CtiCCCapBank& CtiCCCapBank::setReportedCBCState(long value)
+void CtiCCCapBank::setReportedCBCState(long value)
 {
     _dirty |= setVariableIfDifferent(_reportedCBCState, value);
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setReportedCBCStateTime(const CtiTime& timestamp)
+void CtiCCCapBank::setReportedCBCStateTime(const CtiTime& timestamp)
 {
     _dirty |= setVariableIfDifferent(_reportedCBCStateTime, timestamp);
-    return *this;
-
 }
 
-CtiCCCapBank& CtiCCCapBank::setIgnoreFlag(bool flag)
+void CtiCCCapBank::setIgnoreFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_ignoreFlag, flag);
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setIgnoredReason(long value)
+void CtiCCCapBank::setIgnoredReason(long value)
 {
     _dirty |= setVariableIfDifferent(_ignoreReason, value);
-    return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setIgnoreIndicatorTimeUpdated(const CtiTime& timestamp)
+void CtiCCCapBank::setIgnoreIndicatorTimeUpdated(const CtiTime& timestamp)
 {
     _ignoreIndicatorTimeUpdated = timestamp;
-    return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setUnsolicitedChangeTimeUpdated(const CtiTime& timestamp)
+void CtiCCCapBank::setUnsolicitedChangeTimeUpdated(const CtiTime& timestamp)
 {
     _unsolicitedChangeTimeUpdated = timestamp;
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setBeforeVarsString(const string& before)
+void CtiCCCapBank::setBeforeVarsString(const string& before)
 {
     _dirty |= setVariableIfDifferent(_sBeforeVars, before);
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setAfterVarsString(const string& after)
+void CtiCCCapBank::setAfterVarsString(const string& after)
 {
     _dirty |= setVariableIfDifferent(_sAfterVars, after);
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setPercentChangeString(const string& percent)
+void CtiCCCapBank::setPercentChangeString(const string& percent)
 {
     _dirty |= setVariableIfDifferent(_sPercentChange, percent);
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setActionId(long actionId)
+void CtiCCCapBank::setActionId(long actionId)
 {
     _dirty |= setVariableIfDifferent(_actionId, actionId);
-    return *this;
 }
 
 bool CtiCCCapBank::updateVerificationState(void)
@@ -1511,29 +1426,23 @@ bool CtiCCCapBank::updateVerificationState(void)
     return _verificationDoneFlag;
 }
 
-CtiCCCapBank& CtiCCCapBank::setVCtrlIndex(int vCtrlIndex)
+void CtiCCCapBank::setVCtrlIndex(int vCtrlIndex)
 {
     _dirty |= setVariableIfDifferent(_vCtrlIndex, vCtrlIndex);
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setPreviousVerificationControlStatus(long status)
+void CtiCCCapBank::setPreviousVerificationControlStatus(long status)
 {
     _dirty |= setVariableIfDifferent(_prevVerificationControlStatus, status);
-    return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setAssumedOrigVerificationState(int assumedOrigCapBankPos)
+void CtiCCCapBank::setAssumedOrigVerificationState(int assumedOrigCapBankPos)
 {
     _dirty |= setVariableIfDifferent(_assumedOrigCapBankPos,assumedOrigCapBankPos);
-    return *this;
 }
 
-
-
-CtiCCCapBank& CtiCCCapBank::initVerificationControlStatus()
+void CtiCCCapBank::initVerificationControlStatus()
 {
    _verificationControlStatus = getControlStatus();
-   return *this;
 }
 
 bool CtiCCCapBank::handlePointResponseDeltaChange(long pointId, double newDelta, bool staticDelta)
@@ -1564,7 +1473,7 @@ bool CtiCCCapBank::isExpresscom()
 
     Sets the control status of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatus(long status)
+void CtiCCCapBank::setControlStatus(long status)
 {
 
     if (_verificationFlag)
@@ -1577,14 +1486,11 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(long status)
     {
         _dirty |= setVariableIfDifferent(_controlstatus, status);
     }
-
-    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setControlRecentlySentFlag(bool flag)
+void CtiCCCapBank::setControlRecentlySentFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_controlRecentlySentFlag, flag);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1593,11 +1499,9 @@ CtiCCCapBank& CtiCCCapBank::setControlRecentlySentFlag(bool flag)
     Sets the point id for the analog point that hold the number of number of
     operations performed on the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(long operationpointid)
+void CtiCCCapBank::setOperationAnalogPointId(long operationpointid)
 {
     _operationanalogpointid = operationpointid;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1605,11 +1509,10 @@ CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(long operationpointid)
 
     Sets the number of operations performed on this capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTotalOperations(long operations)
+void CtiCCCapBank::setTotalOperations(long operations)
 {
     _dirty |= setVariableIfDifferent(_totaloperations, operations);
     _totaloperations = operations;
-    return *this;
 }
 
 
@@ -1618,7 +1521,7 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperations(long operations)
 
     Sets the current daily operations of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTotalOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
+void CtiCCCapBank::setTotalOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
 {
     if( _totaloperations != operations )
     {
@@ -1629,8 +1532,6 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperationsAndSendMsg(long operations, CtiMul
         _dirty = true;
     }
     _totaloperations = operations;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1638,10 +1539,9 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperationsAndSendMsg(long operations, CtiMul
 
     Sets the timestamp of the last status point data msg sent by dispatch
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const CtiTime& laststatuschangetime)
+void CtiCCCapBank::setLastStatusChangeTime(const CtiTime& laststatuschangetime)
 {
     _dirty |= setVariableIfDifferent(_laststatuschangetime, laststatuschangetime);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1649,14 +1549,13 @@ CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const CtiTime& laststatuscha
 
     Sets the tags of control status on the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(long tags)
+void CtiCCCapBank::setTagsControlStatus(long tags)
 {
     _dirty |= setVariableIfDifferent(_tagscontrolstatus, tags);
-    return *this;
 }
 
 
-CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::set<long>& pointAddMsg)
+void CtiCCCapBank::addAllCapBankPointsToMsg(std::set<long>& pointAddMsg)
 {
 
     if( getStatusPointId() > 0 )
@@ -1683,7 +1582,6 @@ CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::set<long>& pointAddMsg
     {
         pointAddMsg.insert(getOperationStats().getMonthlyOpSuccessPercentId());
     }
-    return *this;
 }
 
 Cti::CapControl::PointResponse CtiCCCapBank::getPointResponse(const CtiCCMonitorPoint & point)

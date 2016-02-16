@@ -206,24 +206,21 @@ double CtiCCAreaBase::getEstPFactor() const
 
     Sets the ControlPointId of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlPointId(long pointId)
+void CtiCCAreaBase::setVoltReductionControlPointId(long pointId)
 {
     _voltReductionControlPointId = pointId;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setControlValue
 
     Sets the ControlValue flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlValue(bool flag)
+void CtiCCAreaBase::setVoltReductionControlValue(bool flag)
 {
     const bool hasChanged = setVariableIfDifferent(_voltReductionControlValue, flag);
 
     _dirty |= hasChanged;
     _areaUpdatedFlag |= hasChanged;
-
-    return *this;
 }
 
 
@@ -232,14 +229,12 @@ CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlValue(bool flag)
 
     Sets the ovuv disable flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setOvUvDisabledFlag(bool flag)
+void CtiCCAreaBase::setOvUvDisabledFlag(bool flag)
 {
     const bool hasChanged = setVariableIfDifferent(_ovUvDisabledFlag, flag);
 
     _dirty |= hasChanged;
     _areaUpdatedFlag |= hasChanged;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -247,20 +242,18 @@ CtiCCAreaBase& CtiCCAreaBase::setOvUvDisabledFlag(bool flag)
 
     Sets the PFactor of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setPFactor(double pfactor)
+void CtiCCAreaBase::setPFactor(double pfactor)
 {
     _areaUpdatedFlag |= setVariableIfDifferent(_pfactor, pfactor);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setEstPFactor
 
     Sets the estPFactor of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setEstPFactor(double estpfactor)
+void CtiCCAreaBase::setEstPFactor(double estpfactor)
 {
     _areaUpdatedFlag |= setVariableIfDifferent(_estPfactor, estpfactor);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -278,21 +271,15 @@ bool CtiCCAreaBase::getAreaUpdatedFlag() const
 
     Sets the AreaUpdated flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setAreaUpdatedFlag(bool flag)
+void CtiCCAreaBase::setAreaUpdatedFlag(bool flag)
 {
     _areaUpdatedFlag = flag;
-    return *this;
 }
 
 void CtiCCAreaBase::addSubstationId(long subId)
 {
     _subStationIds.push_back(subId);
 }
-PaoIdVector::iterator CtiCCAreaBase::removeSubstationId(PaoIdVector::iterator subIter)
-{
-    return _subStationIds.erase(subIter);
-}
-
 
 void CtiCCAreaBase::removeSubstationId(long subId)
 {

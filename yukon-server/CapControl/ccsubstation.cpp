@@ -131,8 +131,6 @@ void CtiCCSubstation::restore(Cti::RowReader& rdr)
 {
     CapControlPao::restore(rdr);
 
-    string tempBoolString;
-
     rdr["voltreductionpointid"] >> _voltReductionControlId;
 
     setParentId(0);
@@ -347,32 +345,29 @@ bool CtiCCSubstation::isDirty() const
 
     Sets the ovuv disable flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setOvUvDisabledFlag(bool flag)
+void CtiCCSubstation::setOvUvDisabledFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setVoltReductionFlag
 
     Sets the VoltReduction flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setVoltReductionFlag(bool flag)
+void CtiCCSubstation::setVoltReductionFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_voltReductionFlag, flag);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setChildVoltReductionFlag
 
     Sets the ChildVoltReduction flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setChildVoltReductionFlag(bool flag)
+void CtiCCSubstation::setChildVoltReductionFlag(bool flag)
 {
     const bool flagChanged = setVariableIfDifferent(_childVoltReductionFlag, flag);
     _dirty |= flagChanged;
     _stationUpdatedFlag |= flagChanged;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -380,10 +375,9 @@ CtiCCSubstation& CtiCCSubstation::setChildVoltReductionFlag(bool flag)
 
     Sets the VoltReductionControlId of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setVoltReductionControlId(long pointid)
+void CtiCCSubstation::setVoltReductionControlId(long pointid)
 {
     _voltReductionControlId = pointid;
-    return *this;
 }
 
 
@@ -392,10 +386,9 @@ CtiCCSubstation& CtiCCSubstation::setVoltReductionControlId(long pointid)
 
     Sets the parentID (AreaID) of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setParentId(long parentId)
+void CtiCCSubstation::setParentId(long parentId)
 {
     _parentId = parentId;
-    return *this;
 }
 
 
@@ -404,10 +397,9 @@ CtiCCSubstation& CtiCCSubstation::setParentId(long parentId)
 
     Sets the ParentName in the substation bus
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setParentName(const string& parentName)
+void CtiCCSubstation::setParentName(const string& parentName)
 {
     _dirty |= setVariableIfDifferent(_parentName, parentName);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -415,20 +407,18 @@ CtiCCSubstation& CtiCCSubstation::setParentName(const string& parentName)
 
     Sets the DisplayOrder (AreaID) of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setDisplayOrder(long displayOrder)
+void CtiCCSubstation::setDisplayOrder(long displayOrder)
 {
     _displayOrder = displayOrder;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setPFactor
 
     Sets the pfactor (calculated) of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setPFactor(double pfactor)
+void CtiCCSubstation::setPFactor(double pfactor)
 {
     _dirty |= setVariableIfDifferent(_pfactor, pfactor);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -436,7 +426,7 @@ CtiCCSubstation& CtiCCSubstation::setPFactor(double pfactor)
 
     Sets the estpfactor (calculated) of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setEstPFactor(double estpfactor)
+void CtiCCSubstation::setEstPFactor(double estpfactor)
 {
 
     if (_estPfactor != estpfactor)
@@ -445,7 +435,6 @@ CtiCCSubstation& CtiCCSubstation::setEstPFactor(double estpfactor)
         _dirty = true;
         _estPfactor = estpfactor;
     }
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -453,10 +442,9 @@ CtiCCSubstation& CtiCCSubstation::setEstPFactor(double estpfactor)
 
     Sets the Special Area Enabled Flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setSaEnabledFlag(bool flag)
+void CtiCCSubstation::setSaEnabledFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_saEnabledFlag, flag);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -464,12 +452,11 @@ CtiCCSubstation& CtiCCSubstation::setSaEnabledFlag(bool flag)
 
     Sets the Substation RecentlyControlled Flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setRecentlyControlledFlag(bool flag)
+void CtiCCSubstation::setRecentlyControlledFlag(bool flag)
 {
     const bool flagChanged = setVariableIfDifferent(_recentlyControlledFlag, flag);
     _dirty |= flagChanged;
     _stationUpdatedFlag |= flagChanged;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -477,10 +464,9 @@ CtiCCSubstation& CtiCCSubstation::setRecentlyControlledFlag(bool flag)
 
     Sets the Substation RecentlyControlled Flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setStationUpdatedFlag(bool flag)
+void CtiCCSubstation::setStationUpdatedFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_stationUpdatedFlag, flag);
-    return *this;
 }
 
 
@@ -489,10 +475,9 @@ CtiCCSubstation& CtiCCSubstation::setStationUpdatedFlag(bool flag)
 
     Sets the Special Area Enabled Id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setSaEnabledId(long saId)
+void CtiCCSubstation::setSaEnabledId(long saId)
 {
     _dirty |= setVariableIfDifferent(_saEnabledId, saId);
-    return *this;
 }
 
 
@@ -530,7 +515,7 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
 
     Sets the recently controlled flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
+void CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
@@ -552,12 +537,10 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
     {
         setRecentlyControlledFlag(false);
     }
-
-    return *this;
 }
 
 
-CtiCCSubstation& CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
+void CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
@@ -579,8 +562,6 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
     {
         setChildVoltReductionFlag(false);
     }
-
-    return *this;
 }
 
 

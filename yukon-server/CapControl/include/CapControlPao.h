@@ -19,7 +19,6 @@ class CapControlPao
         std::string _paoType;
         std::string _paoDescription;
         bool _disableFlag;
-        std::string _paoStatistics;
 
         long    _disabledStatePointId;
         Cti::CapControl::PointIdVector _pointIds;
@@ -50,9 +49,6 @@ class CapControlPao
 
         bool getDisableFlag() const;
         void setDisableFlag(bool disableFlag, int priority = 7);
-
-        const std::string& getPaoStatistics() const;
-        void setPaoStatistics(const std::string& paoStatistics);
 
         CapControlPao& operator=(const CapControlPao& right);
 

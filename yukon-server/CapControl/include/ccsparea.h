@@ -8,7 +8,6 @@ class CtiCCSpecial : public CtiCCAreaBase
 public:
     DECLARE_COLLECTABLE( CtiCCSpecial );
 
-public:
     CtiCCSpecial();
     CtiCCSpecial(StrategyManager * strategyManager);
     CtiCCSpecial(Cti::RowReader& rdr, StrategyManager * strategyManager);

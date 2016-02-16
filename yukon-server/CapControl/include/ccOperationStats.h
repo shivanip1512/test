@@ -52,37 +52,37 @@ public:
     double  getMonthlyOpSuccessPercent() const;
 
 
-    CtiCCOperationStats& setPAOId(long paoId);
-    CtiCCOperationStats& setUserDefOpCount(long value);
-    CtiCCOperationStats& setUserDefConfFail(long value);
-    CtiCCOperationStats& setDailyOpCount(long value);
-    CtiCCOperationStats& setDailyConfFail(long value);
-    CtiCCOperationStats& setWeeklyOpCount(long value);
-    CtiCCOperationStats& setWeeklyConfFail(long value);
-    CtiCCOperationStats& setMonthlyOpCount(long value);
-    CtiCCOperationStats& setMonthlyConfFail(long value);
-    CtiCCOperationStats& incrementAllOpCounts();
-    CtiCCOperationStats& incrementAllOpFails();
-    CtiCCOperationStats& incrementMonthlyOpCounts();
-    CtiCCOperationStats& incrementMonthlyOpFails();
-    CtiCCOperationStats& incrementWeeklyOpCounts();
-    CtiCCOperationStats& incrementWeeklyOpFails();
-    CtiCCOperationStats& incrementDailyOpCounts();
-    CtiCCOperationStats& incrementDailyOpFails();
-    CtiCCOperationStats& setUserDefOpSuccessPercentId(long pointId);
-    CtiCCOperationStats& setUserDefOpSuccessPercent(double value);
-    CtiCCOperationStats& setDailyOpSuccessPercentId(long pointId);
-    CtiCCOperationStats& setDailyOpSuccessPercent(double  value);
-    CtiCCOperationStats& setWeeklyOpSuccessPercentId(long pointId);
-    CtiCCOperationStats& setWeeklyOpSuccessPercent(double value);
-    CtiCCOperationStats& setMonthlyOpSuccessPercentId(long pointId);
-    CtiCCOperationStats& setMonthlyOpSuccessPercent(double value);
+    void setPAOId(long paoId);
+    void setUserDefOpCount(long value);
+    void setUserDefConfFail(long value);
+    void setDailyOpCount(long value);
+    void setDailyConfFail(long value);
+    void setWeeklyOpCount(long value);
+    void setWeeklyConfFail(long value);
+    void setMonthlyOpCount(long value);
+    void setMonthlyConfFail(long value);
+    void incrementAllOpCounts();
+    void incrementAllOpFails();
+    void incrementMonthlyOpCounts();
+    void incrementMonthlyOpFails();
+    void incrementWeeklyOpCounts();
+    void incrementWeeklyOpFails();
+    void incrementDailyOpCounts();
+    void incrementDailyOpFails();
+    void setUserDefOpSuccessPercentId(long pointId);
+    void setUserDefOpSuccessPercent(double value);
+    void setDailyOpSuccessPercentId(long pointId);
+    void setDailyOpSuccessPercent(double  value);
+    void setWeeklyOpSuccessPercentId(long pointId);
+    void setWeeklyOpSuccessPercent(double value);
+    void setMonthlyOpSuccessPercentId(long pointId);
+    void setMonthlyOpSuccessPercent(double value);
 
 
 
     double calculateSuccessPercent(capcontrol::ccStatsType type);
     bool setSuccessPercentPointId(long tempPointId, long tempPointOffset);
-    CtiCCOperationStats& createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
+    void createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
     bool isDirty();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);

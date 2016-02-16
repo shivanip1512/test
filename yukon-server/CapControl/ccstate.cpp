@@ -74,11 +74,9 @@ long CtiCCState::getBackgroundColor() const
 
     Sets the Text of the state
 ---------------------------------------------------------------------------*/
-CtiCCState& CtiCCState::setText(const string& text)
+void CtiCCState::setText(const string& text)
 {
     _text = text;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -86,11 +84,9 @@ CtiCCState& CtiCCState::setText(const string& text)
 
     Sets the foreground color of the state
 ---------------------------------------------------------------------------*/
-CtiCCState& CtiCCState::setForegroundColor(long foregroundcolor)
+void CtiCCState::setForegroundColor(long foregroundcolor)
 {
     _foregroundcolor = foregroundcolor;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -98,11 +94,9 @@ CtiCCState& CtiCCState::setForegroundColor(long foregroundcolor)
 
     Sets the background color of the state
 ---------------------------------------------------------------------------*/
-CtiCCState& CtiCCState::setBackgroundColor(long backgroundcolor)
+void CtiCCState::setBackgroundColor(long backgroundcolor)
 {
     _backgroundcolor = backgroundcolor;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------

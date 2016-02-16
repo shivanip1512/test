@@ -179,7 +179,7 @@ bool CtiCCArea::getChildVoltReductionFlag() const
 
     Sets the ControlValue of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setChildVoltReductionFlag(bool flag)
+void CtiCCArea::setChildVoltReductionFlag(bool flag)
 {
     if(_childVoltReductionFlag != flag)
     {
@@ -187,7 +187,6 @@ CtiCCArea& CtiCCArea::setChildVoltReductionFlag(bool flag)
         setDirty(true);
     }
     _childVoltReductionFlag = flag;
-    return *this;
 }
 
 
@@ -196,12 +195,11 @@ CtiCCArea& CtiCCArea::setChildVoltReductionFlag(bool flag)
 
     Sets the reEnable Area flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setReEnableAreaFlag(bool flag)
+void CtiCCArea::setReEnableAreaFlag(bool flag)
 {
     if(_reEnableAreaFlag != flag)
         setDirty(true);
     _reEnableAreaFlag = flag;
-    return *this;
 }
 
 

@@ -16,7 +16,6 @@ class CtiCCAreaBase : public Controllable
 public:
     DECLARE_COLLECTABLE( CtiCCAreaBase );
 
-public:
     CtiCCAreaBase();
     CtiCCAreaBase(StrategyManager * strategyManager);
     CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyManager);
@@ -31,14 +30,13 @@ public:
 
     Cti::CapControl::PaoIdVector getSubstationIds() const {return _subStationIds;}
     void addSubstationId(long subId);
-    Cti::CapControl::PaoIdVector::iterator removeSubstationId(Cti::CapControl::PaoIdVector::iterator subIter);
     void removeSubstationId(long subId);
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
 
-    CtiCCAreaBase& setVoltReductionControlPointId(long pointId);
-    CtiCCAreaBase& setVoltReductionControlValue(bool flag);
-    CtiCCAreaBase& setOvUvDisabledFlag(bool flag);
+    void setVoltReductionControlPointId(long pointId);
+    void setVoltReductionControlValue(bool flag);
+    void setOvUvDisabledFlag(bool flag);
 
     void updatePowerFactorData();
 
@@ -52,16 +50,13 @@ public:
 
     CtiCCAreaBase& operator=(const CtiCCAreaBase& right);
 
-    CtiCCAreaBase& setAreaUpdatedFlag(bool flag);
+    void setAreaUpdatedFlag(bool flag);
     bool getAreaUpdatedFlag() const;
-
-
-public:
 
     double getPFactor() const;
     double getEstPFactor() const;
-    CtiCCAreaBase& setPFactor(double pfactor);
-    CtiCCAreaBase& setEstPFactor(double estPfactor);
+    void setPFactor(double pfactor);
+    void setEstPFactor(double estPfactor);
 
 private:
 

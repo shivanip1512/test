@@ -1083,7 +1083,6 @@ void CtiCCSubstationBus::getAllAltSubValues(double &volt, double &var, double &w
         var  = _currentvarloadpointvalue;
         watt = _currentwattloadpointvalue;
     }
-    return;
 }
 long CtiCCSubstationBus::getSwitchOverPointId() const
 {
@@ -1205,10 +1204,9 @@ const CtiRegression& CtiCCSubstationBus::getRegressionC()
 
     Sets the parentID (AreaID) of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setParentId(long parentId)
+void CtiCCSubstationBus::setParentId(long parentId)
 {
     _parentId = parentId;
-    return *this;
 }
 
 
@@ -1217,10 +1215,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setParentId(long parentId)
 
     Sets the ParentControlUnits in the substation bus
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setParentControlUnits(const string& parentControlUnits)
+void CtiCCSubstationBus::setParentControlUnits(const string& parentControlUnits)
 {
     _dirty |= setVariableIfDifferent(_parentControlUnits, parentControlUnits);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1228,10 +1225,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setParentControlUnits(const string& pare
 
     Sets the ParentName in the substation bus
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setParentName(const string& parentName)
+void CtiCCSubstationBus::setParentName(const string& parentName)
 {
     _dirty |= setVariableIfDifferent(_parentName, parentName);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1239,50 +1235,45 @@ CtiCCSubstationBus& CtiCCSubstationBus::setParentName(const string& parentName)
 
     Sets the DisplayOrder of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setDisplayOrder(long displayOrder)
+void CtiCCSubstationBus::setDisplayOrder(long displayOrder)
 {
     _displayOrder = displayOrder;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setIVControlTot
 
     Sets the Integrated Volt or var Control Total of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setIVControlTot(double value)
+void CtiCCSubstationBus::setIVControlTot(double value)
 {
     _dirty |= setVariableIfDifferent(_iVControlTot, value);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setIVCoont
 
     Sets the Integrated Volt or var Control Count of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setIVCount(long value)
+void CtiCCSubstationBus::setIVCount(long value)
 {
     _dirty |= setVariableIfDifferent(_iVCount, value);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setIWControlTot
 
     Sets the Integrated Watt Control Total of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setIWControlTot(double value)
+void CtiCCSubstationBus::setIWControlTot(double value)
 {
     _dirty |= setVariableIfDifferent(_iWControlTot, value);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setIWCoont
 
     Sets the Integrated Watt Control Count of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setIWCount(long value)
+void CtiCCSubstationBus::setIWCount(long value)
 {
     _iWCount = value;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1290,10 +1281,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIWCount(long value)
 
     Sets the Integrated Volt/Var Control of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setIVControl(double value)
+void CtiCCSubstationBus::setIVControl(double value)
 {
     _iVControl = value;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1301,30 +1291,27 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIVControl(double value)
 
     Sets the Integrated Watt Control of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setIWControl(double value)
+void CtiCCSubstationBus::setIWControl(double value)
 {
     _iWControl = value;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setUsePhaseData flag
 
     Sets the UsePhaseData flag  of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setUsePhaseData(bool flag)
+void CtiCCSubstationBus::setUsePhaseData(bool flag)
 {
     _usePhaseData = flag;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setPhaseBid
 
     Sets the PhaseB pointid  of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBId(long pointid)
+void CtiCCSubstationBus::setPhaseBId(long pointid)
 {
     _phaseBid = pointid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1332,20 +1319,18 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBId(long pointid)
 
     Sets the PhaseC pointid  of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCId(long pointid)
+void CtiCCSubstationBus::setPhaseCId(long pointid)
 {
     _phaseCid = pointid;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setTotalizedControlFlag
 
     Sets the TotalizedControlFlag  of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setTotalizedControlFlag(bool flag)
+void CtiCCSubstationBus::setTotalizedControlFlag(bool flag)
 {
     _totalizedControlFlag = flag;
-    return *this;
 }
 
 
@@ -1354,7 +1339,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setTotalizedControlFlag(bool flag)
 
     Sets the setPhaseAValue Var of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(double value, CtiTime timestamp)
+void CtiCCSubstationBus::setPhaseAValue(double value, CtiTime timestamp)
 {
     _dirty |= setVariableIfDifferent(_phaseAvalue, value);
 
@@ -1366,7 +1351,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(double value, CtiTime tim
             CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionA  " << timestamp.seconds() << "  and " << value);
         }
     }
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1374,7 +1358,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(double value, CtiTime tim
 
     Sets the setPhaseBValue Var of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(double value, CtiTime timestamp)
+void CtiCCSubstationBus::setPhaseBValue(double value, CtiTime timestamp)
 {
     _dirty |= setVariableIfDifferent(_phaseBvalue, value);
 
@@ -1386,7 +1370,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(double value, CtiTime tim
             CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionB  " << timestamp.seconds() << "  and " << value);
         }
     }
-    return *this;
 }
 
 
@@ -1396,7 +1379,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(double value, CtiTime tim
 
     Sets the setPhaseCValue Var of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(double value, CtiTime timestamp)
+void CtiCCSubstationBus::setPhaseCValue(double value, CtiTime timestamp)
 {
     _dirty |= setVariableIfDifferent(_phaseCvalue, value);
 
@@ -1408,7 +1391,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(double value, CtiTime tim
             CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionC  " << timestamp.seconds() << "  and " << value);
         }
     }
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1416,10 +1398,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(double value, CtiTime tim
 
     Sets the setPhaseAValue Var of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValueBeforeControl(double value)
+void CtiCCSubstationBus::setPhaseAValueBeforeControl(double value)
 {
     _phaseAvalueBeforeControl = value;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1427,10 +1408,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValueBeforeControl(double value
 
     Sets the setPhaseBValue Var of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValueBeforeControl(double value)
+void CtiCCSubstationBus::setPhaseBValueBeforeControl(double value)
 {
     _phaseBvalueBeforeControl = value;
-    return *this;
 }
 
 
@@ -1440,10 +1420,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValueBeforeControl(double value
 
     Sets the setPhaseCValue Var of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValueBeforeControl(double value)
+void CtiCCSubstationBus::setPhaseCValueBeforeControl(double value)
 {
     _phaseCvalueBeforeControl = value;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1451,10 +1430,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValueBeforeControl(double value
 
     Sets the current var load point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointId(long currentvarid)
+void CtiCCSubstationBus::setCurrentVarLoadPointId(long currentvarid)
 {
     _currentvarloadpointid = currentvarid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1462,7 +1440,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointId(long currentvar
 
     Sets the current var load point value of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(double value, CtiTime timestamp)
+void CtiCCSubstationBus::setCurrentVarLoadPointValue(double value, CtiTime timestamp)
 {
     _dirty |= setVariableIfDifferent(_currentvarloadpointvalue, value);
 
@@ -1474,7 +1452,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(double value
             CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regression  " << timestamp.seconds() << "  and " << value);
         }
     }
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1482,10 +1459,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(double value
 
     Sets the current watt load point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointId(long currentwattid)
+void CtiCCSubstationBus::setCurrentWattLoadPointId(long currentwattid)
 {
     _currentwattloadpointid = currentwattid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1493,20 +1469,18 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointId(long currentwa
 
     Sets the current watt load point value of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointValue(double currentwattval)
+void CtiCCSubstationBus::setCurrentWattLoadPointValue(double currentwattval)
 {
     _dirty |= setVariableIfDifferent(_currentwattloadpointvalue, currentwattval);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setCurrentVoltLoadPointId
 
     Sets the current volt load point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltLoadPointId(long currentvoltid)
+void CtiCCSubstationBus::setCurrentVoltLoadPointId(long currentvoltid)
 {
     _currentvoltloadpointid = currentvoltid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1514,10 +1488,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltLoadPointId(long currentvo
 
     Sets the current volt load point value of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltLoadPointValue(double currentvoltval)
+void CtiCCSubstationBus::setCurrentVoltLoadPointValue(double currentvoltval)
 {
     _dirty |= setVariableIfDifferent(_currentvoltloadpointvalue, currentvoltval);
-    return *this;
 }
 
 
@@ -1526,10 +1499,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltLoadPointValue(double curr
 
     Sets the map location id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(const string& maplocation)
+void CtiCCSubstationBus::setMapLocationId(const string& maplocation)
 {
     _maplocationid = maplocation;
-    return *this;
 }
 
 
@@ -1538,20 +1510,18 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(const string& maplocati
 
     Sets the Solution of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setSolution(const string& text)
+void CtiCCSubstationBus::setSolution(const string& text)
 {
     _solution = text;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setTargetVarValue
 
     Sets the target var value of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setTargetVarValue(double value)
+void CtiCCSubstationBus::setTargetVarValue(double value)
 {
     _targetvarvalue = value;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1559,10 +1529,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setTargetVarValue(double value)
 
     Sets the decimal places of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(long places)
+void CtiCCSubstationBus::setDecimalPlaces(long places)
 {
     _decimalplaces = places;
-    return *this;
 }
 
 long CtiCCSubstationBus::getNextTODStartTime()
@@ -1598,7 +1567,7 @@ long CtiCCSubstationBus::getNextTODStartTime()
     Figures out when the substation should be checked again according to the
     control interval.
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
+void CtiCCSubstationBus::figureNextCheckTime()
 {
     CtiTime currenttime = CtiTime();
     if (getLikeDayControlFlag())
@@ -1689,7 +1658,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
 
         }
     }
-    return *this;
 }
 
 double CtiCCSubstationBus::getSetPoint()
@@ -1711,10 +1679,9 @@ double CtiCCSubstationBus::getSetPoint()
 
     Sets the new point data received flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setNewPointDataReceivedFlag(bool newpointdatareceived)
+void CtiCCSubstationBus::setNewPointDataReceivedFlag(bool newpointdatareceived)
 {
     _dirty |= setVariableIfDifferent(_newpointdatareceivedflag, newpointdatareceived);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1722,10 +1689,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setNewPointDataReceivedFlag(bool newpoin
 
     Sets the substation updated flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setBusUpdatedFlag(bool busupdated)
+void CtiCCSubstationBus::setBusUpdatedFlag(bool busupdated)
 {
     _busupdatedflag = busupdated;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1733,30 +1699,27 @@ CtiCCSubstationBus& CtiCCSubstationBus::setBusUpdatedFlag(bool busupdated)
 
     Sets the last current var point update time of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
+void CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
 {
     _dirty |= setVariableIfDifferent(_lastcurrentvarpointupdatetime, lastpointupdate);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setLastWattPointTime
 
     Sets the last current Watt point update time of the subbus
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setLastWattPointTime(const CtiTime& lastpointupdate)
+void CtiCCSubstationBus::setLastWattPointTime(const CtiTime& lastpointupdate)
 {
     _dirty |= setVariableIfDifferent(_lastWattPointTime, lastpointupdate);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setLastVoltPointTime
 
     Sets the last current Volt point update time of the subbus
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setLastVoltPointTime(const CtiTime& lastpointupdate)
+void CtiCCSubstationBus::setLastVoltPointTime(const CtiTime& lastpointupdate)
 {
     _dirty |= setVariableIfDifferent(_lastVoltPointTime, lastpointupdate);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1764,10 +1727,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastVoltPointTime(const CtiTime& last
 
     Sets the estimated var load point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointId(long estimatedvarid)
+void CtiCCSubstationBus::setEstimatedVarLoadPointId(long estimatedvarid)
 {
     _estimatedvarloadpointid = estimatedvarid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1775,13 +1737,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointId(long estimate
 
     Sets the estimated var load point value of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(double estimatedvarval)
+void CtiCCSubstationBus::setEstimatedVarLoadPointValue(double estimatedvarval)
 {
     const bool varChanged = setVariableIfDifferent(_estimatedvarloadpointvalue, estimatedvarval);
     _busupdatedflag |= varChanged;
     _dirty |= varChanged;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1789,10 +1749,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(double est
 
     Sets the daily operations analog point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setDailyOperationsAnalogPointId(long opanalogpointid)
+void CtiCCSubstationBus::setDailyOperationsAnalogPointId(long opanalogpointid)
 {
     _dailyoperationsanalogpointid = opanalogpointid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1800,10 +1759,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDailyOperationsAnalogPointId(long opa
 
     Sets the power factor point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPowerFactorPointId(long pfpointid)
+void CtiCCSubstationBus::setPowerFactorPointId(long pfpointid)
 {
     _powerfactorpointid = pfpointid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1811,10 +1769,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPowerFactorPointId(long pfpointid)
 
     Sets the estimated power factor point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorPointId(long epfpointid)
+void CtiCCSubstationBus::setEstimatedPowerFactorPointId(long epfpointid)
 {
     _estimatedpowerfactorpointid = epfpointid;
-    return *this;
 }
 
 
@@ -1823,7 +1780,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorPointId(long epfp
 
     Sets the current daily operations of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
+void CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
 {
     if( _currentdailyoperations != operations )
     {
@@ -1834,8 +1791,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(long
         _dirty = true;
     }
     _currentdailyoperations = operations;
-
-    return *this;
 }
 
 
@@ -1844,10 +1799,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(long
 
     Sets the current daily operations of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(long operations)
+void CtiCCSubstationBus::setCurrentDailyOperations(long operations)
 {
     _dirty |= setVariableIfDifferent(_currentdailyoperations, operations);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1855,10 +1809,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(long operation
 
     Sets the flag if the substation is in peak time
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPeakTimeFlag(bool peaktime)
+void CtiCCSubstationBus::setPeakTimeFlag(bool peaktime)
 {
     _dirty |= setVariableIfDifferent(_peaktimeflag, peaktime);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1866,10 +1819,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakTimeFlag(bool peaktime)
 
     Sets the recently controlled flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setRecentlyControlledFlag(bool recentlycontrolled)
+void CtiCCSubstationBus::setRecentlyControlledFlag(bool recentlycontrolled)
 {
     _dirty |= setVariableIfDifferent(_recentlycontrolledflag, recentlycontrolled);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1877,7 +1829,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setRecentlyControlledFlag(bool recentlyc
 
     Sets the recently controlled flag of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::checkAndUpdateRecentlyControlledFlag()
+void CtiCCSubstationBus::checkAndUpdateRecentlyControlledFlag()
 {
     int numberOfCapBanksPending = 0;
     bool pendingBanks = false;
@@ -1914,8 +1866,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkAndUpdateRecentlyControlledFlag()
     {
         setRecentlyControlledFlag(false);
     }
-
-    return *this;
 }
 
 
@@ -1924,16 +1874,14 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkAndUpdateRecentlyControlledFlag()
 
     Sets the last operation time of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setLastOperationTime(const CtiTime& lastoperation)
+void CtiCCSubstationBus::setLastOperationTime(const CtiTime& lastoperation)
 {
     _dirty |= setVariableIfDifferent(_lastoperationtime, lastoperation);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setLastVerificationCheck(const CtiTime& checkTime)
+void CtiCCSubstationBus::setLastVerificationCheck(const CtiTime& checkTime)
 {
     _lastVerificationCheck = checkTime;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1941,15 +1889,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastVerificationCheck(const CtiTime& 
 
     Sets the var value before control of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(double oldvarval, long originalParentId)
+void CtiCCSubstationBus::setVarValueBeforeControl(double oldvarval, long originalParentId)
 {
     _dirty |= setVariableIfDifferent(_varvaluebeforecontrol, oldvarval);
 
     setPhaseAValueBeforeControl(getPhaseAValue());
     setPhaseBValueBeforeControl(getPhaseBValue());
     setPhaseCValueBeforeControl(getPhaseCValue());
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1957,13 +1903,12 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(double oldvarva
 
     Sets the pao id of the last feeder controlled in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPAOId(long lastfeederpao)
+void CtiCCSubstationBus::setLastFeederControlledPAOId(long lastfeederpao)
 {
     _dirty |= setVariableIfDifferent(_lastfeedercontrolledpaoid, lastfeederpao);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlled(long lastfeederpao)
+void CtiCCSubstationBus::setLastFeederControlled(long lastfeederpao)
 {
     setLastFeederControlledPAOId(lastfeederpao);
     setLastFeederControlledPosition(0);
@@ -1978,8 +1923,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlled(long lastfeederp
             break;
         }
     }
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1987,10 +1930,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlled(long lastfeederp
 
     Sets the position of the last feeder controlled in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPosition(long lastfeederposition)
+void CtiCCSubstationBus::setLastFeederControlledPosition(long lastfeederposition)
 {
     _dirty |= setVariableIfDifferent(_lastfeedercontrolledposition, lastfeederposition);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1998,10 +1940,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPosition(long las
 
     Sets the PowerFactorValue in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPowerFactorValue(double pfval)
+void CtiCCSubstationBus::setPowerFactorValue(double pfval)
 {
     _dirty |= setVariableIfDifferent(_powerfactorvalue, pfval);
-    return *this;
 }
 
 
@@ -2023,17 +1964,15 @@ void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
         setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(estVarTotal, wattTotal));
         setBusUpdatedFlag(true);
     }
-    return;
 }
 /*---------------------------------------------------------------------------
     setKVARSolution
 
     Sets the KVARSolution in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setKVARSolution(double solution)
+void CtiCCSubstationBus::setKVARSolution(double solution)
 {
     _dirty |= setVariableIfDifferent(_kvarsolution, solution);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -2041,10 +1980,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setKVARSolution(double solution)
 
     Sets the EstimatedPowerFactorValue in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorValue(double epfval)
+void CtiCCSubstationBus::setEstimatedPowerFactorValue(double epfval)
 {
     _dirty |= setVariableIfDifferent(_estimatedpowerfactorvalue, epfval);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -2052,10 +1990,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorValue(double epfv
 
     Sets the CurrentVarPointQuality in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarPointQuality(long cvpq)
+void CtiCCSubstationBus::setCurrentVarPointQuality(long cvpq)
 {
     _dirty |= setVariableIfDifferent(_currentvarpointquality, cvpq);
-    return *this;
 }
 
 
@@ -2064,10 +2001,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarPointQuality(long cvpq)
 
     Sets the CurrentWattPointQuality in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattPointQuality(long cwpq)
+void CtiCCSubstationBus::setCurrentWattPointQuality(long cwpq)
 {
     _dirty |= setVariableIfDifferent(_currentwattpointquality, cwpq);
-    return *this;
 }
 
 
@@ -2076,10 +2012,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattPointQuality(long cwpq)
 
     Sets the CurrentVoltPointQuality in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltPointQuality(long cvpq)
+void CtiCCSubstationBus::setCurrentVoltPointQuality(long cvpq)
 {
     _dirty |= setVariableIfDifferent(_currentvoltpointquality, cvpq);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -2087,69 +2022,57 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltPointQuality(long cvpq)
 
     Sets the WaiveControlFlag in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setWaiveControlFlag(bool waive)
+void CtiCCSubstationBus::setWaiveControlFlag(bool waive)
 {
     _dirty |= setVariableIfDifferent(_waivecontrolflag, waive);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setAltDualSubId(long altDualSubId)
+void CtiCCSubstationBus::setAltDualSubId(long altDualSubId)
 {
     _dirty |= setVariableIfDifferent(_altDualSubId, altDualSubId);
-    return *this;
 }
-CtiCCSubstationBus& CtiCCSubstationBus::setAltSubControlValue(double controlValue)
+void CtiCCSubstationBus::setAltSubControlValue(double controlValue)
 {
     _dirty |= setVariableIfDifferent(_altSubControlValue, controlValue);
-    return *this;
 }
-CtiCCSubstationBus& CtiCCSubstationBus::setAllAltSubValues(double volt, double var, double watt)
+void CtiCCSubstationBus::setAllAltSubValues(double volt, double var, double watt)
 {
     _altSubVoltVal = volt;
     _altSubVarVal = var;
     _altSubWattVal = watt;
-
-    return *this;
 }
 
 
-CtiCCSubstationBus& CtiCCSubstationBus::setSwitchOverPointId(long pointId)
+void CtiCCSubstationBus::setSwitchOverPointId(long pointId)
 {
     _dirty |= setVariableIfDifferent(_switchOverPointId, pointId);
-    return *this;
 }
-CtiCCSubstationBus& CtiCCSubstationBus::setSwitchOverStatus(bool status)
+void CtiCCSubstationBus::setSwitchOverStatus(bool status)
 {
     _dirty |= setVariableIfDifferent(_switchOverStatus, status);
-    return *this;
 }
-CtiCCSubstationBus& CtiCCSubstationBus::setPrimaryBusFlag(bool status)
+void CtiCCSubstationBus::setPrimaryBusFlag(bool status)
 {
     _dirty |= setVariableIfDifferent(_primaryBusFlag, status);
-    return *this;
 }
-CtiCCSubstationBus& CtiCCSubstationBus::setDualBusEnable(bool flag)
+void CtiCCSubstationBus::setDualBusEnable(bool flag)
 {
     _dirty |= setVariableIfDifferent(_dualBusEnable, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setEventSequence(long eventSeq)
+void CtiCCSubstationBus::setEventSequence(long eventSeq)
 {
     _dirty |= setVariableIfDifferent(_eventSeq, eventSeq);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setReEnableBusFlag(bool flag)
+void CtiCCSubstationBus::setReEnableBusFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_reEnableBusFlag, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setMultiMonitorFlag(bool flag)
+void CtiCCSubstationBus::setMultiMonitorFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_multiMonitorFlag, flag);
-    return *this;
 }
 
 void CtiCCSubstationBus::reOrderFeederDisplayOrders()
@@ -2171,7 +2094,7 @@ void CtiCCSubstationBus::reOrderFeederDisplayOrders()
     Figures out the estimated var point value according to the states
     of the individual cap banks in each of the feeders
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
+void CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
 {
     if( getCurrentVarLoadPointId() > 0 )
     {
@@ -2207,8 +2130,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
     {
         setEstimatedVarLoadPointValue(0.0);
     }
-
-    return *this;
 }
 
 void CtiCCSubstationBus::checkForMaxDailyOpsHit()
@@ -2274,7 +2195,7 @@ bool CtiCCSubstationBus::maxOperationsHitDisableBus()
 
 
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     bool keepGoing = true;
 
@@ -2576,8 +2497,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
             CTILOG_DEBUG(dout, "Cannot control an additional bank because not past control delay time, in sub bus: " << getPaoName());
         }
     }
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -5297,7 +5216,7 @@ bool CtiCCSubstationBus::isAlreadyControlled()
 }
 
 
-CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify(EventLogEntries &ccEvents)
+void CtiCCSubstationBus::getNextCapBankToVerify(EventLogEntries &ccEvents)
 {
     _currentVerificationFeederId = -1;
     _currentVerificationCapBankId = -1;
@@ -5322,7 +5241,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify(EventLogEntries &
                 if( currentCapBank->getVerificationFlag() && !currentCapBank->getVerificationDoneFlag() )
                 {
                     _currentVerificationCapBankId = currentCapBank->getPaoId();
-                    return *this;
+                    return;
                 }
             }
             currentFeeder->setVerificationDoneFlag(true);
@@ -5331,129 +5250,103 @@ CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify(EventLogEntries &
         }
     }
     setBusUpdatedFlag(true);
-
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setVerificationFlag(bool verificationFlag)
+void CtiCCSubstationBus::setVerificationFlag(bool verificationFlag)
 {
     _dirty |= setVariableIfDifferent(_verificationFlag, verificationFlag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setPerformingVerificationFlag(bool performingVerificationFlag)
+void CtiCCSubstationBus::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
     _dirty |= setVariableIfDifferent(_performingVerificationFlag, performingVerificationFlag);
-    return *this;
 }
-CtiCCSubstationBus& CtiCCSubstationBus::setVerificationDoneFlag(bool verificationDoneFlag)
+void CtiCCSubstationBus::setVerificationDoneFlag(bool verificationDoneFlag)
 {
     _dirty |= setVariableIfDifferent(_verificationDoneFlag, verificationDoneFlag);
-    return *this;
 }
 
-
-CtiCCSubstationBus& CtiCCSubstationBus::setOverlappingVerificationFlag(bool overlapFlag)
+void CtiCCSubstationBus::setOverlappingVerificationFlag(bool overlapFlag)
 {
     _dirty |= setVariableIfDifferent(_overlappingSchedulesVerificationFlag, overlapFlag);
-    return *this;
 }
 
-
-CtiCCSubstationBus& CtiCCSubstationBus::setPreOperationMonitorPointScanFlag( bool flag)
+void CtiCCSubstationBus::setPreOperationMonitorPointScanFlag( bool flag)
 {
     _dirty |= setVariableIfDifferent(_preOperationMonitorPointScanFlag, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setOperationSentWaitFlag( bool flag)
+void CtiCCSubstationBus::setOperationSentWaitFlag( bool flag)
 {
     _dirty |= setVariableIfDifferent(_operationSentWaitFlag, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setPostOperationMonitorPointScanFlag( bool flag)
+void CtiCCSubstationBus::setPostOperationMonitorPointScanFlag( bool flag)
 {
     _dirty |= setVariableIfDifferent(_postOperationMonitorPointScanFlag, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setWaitForReCloseDelayFlag(bool flag)
+void CtiCCSubstationBus::setWaitForReCloseDelayFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_waitForReCloseDelayFlag, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setWaitToFinishRegularControlFlag(bool flag)
+void CtiCCSubstationBus::setWaitToFinishRegularControlFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_waitToFinishRegularControlFlag, flag);
-    return *this;
 }
-CtiCCSubstationBus& CtiCCSubstationBus::setMaxDailyOpsHitFlag(bool flag)
+void CtiCCSubstationBus::setMaxDailyOpsHitFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_maxDailyOpsHitFlag, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setOvUvDisabledFlag(bool flag)
+void CtiCCSubstationBus::setOvUvDisabledFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
-    return *this;
 }
-CtiCCSubstationBus& CtiCCSubstationBus::setCorrectionNeededNoBankAvailFlag(bool flag)
+void CtiCCSubstationBus::setCorrectionNeededNoBankAvailFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_correctionNeededNoBankAvailFlag, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setLikeDayControlFlag(bool flag)
+void CtiCCSubstationBus::setLikeDayControlFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_likeDayControlFlag, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setVoltReductionControlId(long pointid)
+void CtiCCSubstationBus::setVoltReductionControlId(long pointid)
 {
     _voltReductionControlId = pointid;
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setDisableBusPointId(long pointid)
+void CtiCCSubstationBus::setDisableBusPointId(long pointid)
 {
     _disableBusPointId = pointid;
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setVoltReductionFlag(bool flag)
+void CtiCCSubstationBus::setVoltReductionFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_voltReductionFlag, flag);
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setSendMoreTimeControlledCommandsFlag(bool flag)
+void CtiCCSubstationBus::setSendMoreTimeControlledCommandsFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_sendMoreTimeControlledCommandsFlag, flag);
-    return *this;
 }
 
-
-
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationFeederId(long feederId)
+void CtiCCSubstationBus::setCurrentVerificationFeederId(long feederId)
 {
     _dirty |= setVariableIfDifferent(_currentVerificationFeederId, feederId);
-    return *this;
 }
 
 
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankId(long capBankId)
+void CtiCCSubstationBus::setCurrentVerificationCapBankId(long capBankId)
 {
     _dirty |= setVariableIfDifferent(_currentVerificationCapBankId, capBankId);
-    return *this;
 }
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankState(long status)
+void CtiCCSubstationBus::setCurrentVerificationCapBankState(long status)
 {
     _dirty |= setVariableIfDifferent(_currentCapBankToVerifyAssumedOrigState, status);
-    return *this;
 }
 
 
@@ -5653,7 +5546,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
     return retVal;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+void CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
 
@@ -5755,14 +5648,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                     //setNewPointDataReceivedFlag(false);
                     //regardless what happened the substation bus should be should be sent to the client
                     setBusUpdatedFlag(true);
-                    return *this;
+                    return;
                 }
             }
         }
     }
-
-
-    return *this;
 }
 /*---------------------------------------------------------------------------
     isAlreadyControlled
@@ -5903,7 +5793,7 @@ bool CtiCCSubstationBus::isVerificationAlreadyControlled()
     return returnBoolean;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages)
+void CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages)
 {
     bool verifyCapFound = false;
 
@@ -6040,8 +5930,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
            CTILOG_DEBUG(dout, "DISABLED VERIFICATION ON: subBusID: "<<getPaoName() << "( "<<getPaoId()<<" ) ");
         }
     }
-
-    return *this;
 }
 
 
@@ -8146,7 +8034,7 @@ std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllSwitchedCapBanks( )
     return banks;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime,
+void CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     CtiRequestMsg* request = NULL;
@@ -8306,10 +8194,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
+void CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     CtiRequestMsg* request = NULL;
@@ -8409,7 +8296,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
         }
 
     }
-    return *this;
 }
 
 void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
@@ -8503,7 +8389,7 @@ bool CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheckOnFeeders()
     return retFlag;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::verifyControlledStatusFlags()
+void CtiCCSubstationBus::verifyControlledStatusFlags()
 {
 
     for(long j=0;j<getCCFeeders().size();j++)
@@ -8526,10 +8412,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::verifyControlledStatusFlags()
             }
         }
     }
-    return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(std::set<long>& pointAddMsg)
+void CtiCCSubstationBus::addAllSubPointsToMsg(std::set<long>& pointAddMsg)
 {
 
     if( getCurrentVarLoadPointId() > 0 )
@@ -8600,8 +8485,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(std::set<long>& poi
     {
         pointAddMsg.insert(getOperationStats().getMonthlyOpSuccessPercentId());
     }
-
-    return *this;
 }
 
 
@@ -9207,10 +9090,9 @@ long CtiCCSubstationBus::getCommsStatePointId() const
     return _commsStatePointId;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::setCommsStatePointId(long newId)
+void CtiCCSubstationBus::setCommsStatePointId(long newId)
 {
     _commsStatePointId = newId;
-    return *this;
 }
 
 bool CtiCCSubstationBus::addMonitorPoint(long pointIdKey, CtiCCMonitorPointPtr monPoint)

@@ -33,40 +33,40 @@ public:
     double  getMonthlyCommSuccessPercent() const;
 
 
-    CtiCCConfirmationStats& setPAOId(long paoId);
-    CtiCCConfirmationStats& setUserDefCommCount(long value);
-    CtiCCConfirmationStats& setUserDefCommFail(long value);
-    CtiCCConfirmationStats& setDailyCommCount(long value);
-    CtiCCConfirmationStats& setDailyCommFail(long value);
-    CtiCCConfirmationStats& setWeeklyCommCount(long value);
-    CtiCCConfirmationStats& setWeeklyCommFail(long value);
-    CtiCCConfirmationStats& setMonthlyCommCount(long value);
-    CtiCCConfirmationStats& setMonthlyCommFail(long value);
-    CtiCCConfirmationStats& setUserDefCommSuccessPercentId(long pointId);
-    CtiCCConfirmationStats& setUserDefCommSuccessPercent(double value);
-    CtiCCConfirmationStats& setDailyCommSuccessPercentId(long pointId);
-    CtiCCConfirmationStats& setDailyCommSuccessPercent(double  value);
-    CtiCCConfirmationStats& setWeeklyCommSuccessPercentId(long pointId);
-    CtiCCConfirmationStats& setWeeklyCommSuccessPercent(double value);
-    CtiCCConfirmationStats& setMonthlyCommSuccessPercentId(long pointId);
-    CtiCCConfirmationStats& setMonthlyCommSuccessPercent(double value);
+    void setPAOId(long paoId);
+    void setUserDefCommCount(long value);
+    void setUserDefCommFail(long value);
+    void setDailyCommCount(long value);
+    void setDailyCommFail(long value);
+    void setWeeklyCommCount(long value);
+    void setWeeklyCommFail(long value);
+    void setMonthlyCommCount(long value);
+    void setMonthlyCommFail(long value);
+    void setUserDefCommSuccessPercentId(long pointId);
+    void setUserDefCommSuccessPercent(double value);
+    void setDailyCommSuccessPercentId(long pointId);
+    void setDailyCommSuccessPercent(double  value);
+    void setWeeklyCommSuccessPercentId(long pointId);
+    void setWeeklyCommSuccessPercent(double value);
+    void setMonthlyCommSuccessPercentId(long pointId);
+    void setMonthlyCommSuccessPercent(double value);
 
-    CtiCCConfirmationStats& incrementAllCommCounts(long attempts);
-    CtiCCConfirmationStats& incrementAllCommFails(long errors);
-    CtiCCConfirmationStats& incrementMonthlyCommCounts(long attempts);
-    CtiCCConfirmationStats& incrementMonthlyCommFails(long errors);
-    CtiCCConfirmationStats& incrementWeeklyCommCounts(long attempts);
-    CtiCCConfirmationStats& incrementWeeklyCommFails(long errors);
-    CtiCCConfirmationStats& incrementDailyCommCounts(long attempts);
-    CtiCCConfirmationStats& incrementDailyCommFails(long errors);
-    CtiCCConfirmationStats& incrementUserDefCommCounts(long attempts);
-    CtiCCConfirmationStats& incrementUserDefCommFails(long errors);
+    void incrementAllCommCounts(long attempts);
+    void incrementAllCommFails(long errors);
+    void incrementMonthlyCommCounts(long attempts);
+    void incrementMonthlyCommFails(long errors);
+    void incrementWeeklyCommCounts(long attempts);
+    void incrementWeeklyCommFails(long errors);
+    void incrementDailyCommCounts(long attempts);
+    void incrementDailyCommFails(long errors);
+    void incrementUserDefCommCounts(long attempts);
+    void incrementUserDefCommFails(long errors);
 
 
 
     double calculateSuccessPercent(capcontrol::ccStatsType type);
     bool setSuccessPercentPointId(long tempPointId, long tempPointOffset);
-    CtiCCConfirmationStats& createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
+    void createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
     CtiCCConfirmationStats* replicate() const;
 

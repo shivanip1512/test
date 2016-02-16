@@ -24,9 +24,9 @@ public:
     long getForegroundColor() const;
     long getBackgroundColor() const;
 
-    CtiCCState& setText(const std::string& text);
-    CtiCCState& setForegroundColor(long foregroundcolor);
-    CtiCCState& setBackgroundColor(long backgroundcolor);
+    void setText(const std::string& text);
+    void setForegroundColor(long foregroundcolor);
+    void setBackgroundColor(long backgroundcolor);
 
     CtiCCState& operator=(const CtiCCState& right);
 

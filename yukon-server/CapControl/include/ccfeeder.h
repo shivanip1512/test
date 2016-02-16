@@ -36,7 +36,6 @@ class CtiCCFeeder : public Controllable
 public:
     DECLARE_COLLECTABLE( CtiCCFeeder );
 
-public:
     CtiCCFeeder();
     CtiCCFeeder(StrategyManager * strategyManager);
     CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager);
@@ -131,79 +130,79 @@ public:
         std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks();
     void deleteCCCapBank(long capBankId);
 
-    CtiCCFeeder& setParentId(long parentId);
-    CtiCCFeeder& setCurrentVarLoadPointId(long currentvarid);
-    CtiCCFeeder& setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp);
-    CtiCCFeeder& setCurrentWattLoadPointId(long currentwattid);
-    CtiCCFeeder& setCurrentWattLoadPointValue(double currentwattval);
-    CtiCCFeeder& setCurrentVoltLoadPointId(long currentvoltid);
-    CtiCCFeeder& setCurrentVoltLoadPointValue(double currentvoltval);
-    CtiCCFeeder& setMapLocationId(const std::string& maplocation);
-    CtiCCFeeder& setDisplayOrder(float order);
-    CtiCCFeeder& setNewPointDataReceivedFlag(bool newpointdatareceived);
-    CtiCCFeeder& setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
-    CtiCCFeeder& setEstimatedVarLoadPointId(long estimatedvarid);
-    CtiCCFeeder& setEstimatedVarLoadPointValue(double estimatedvarval);
-    CtiCCFeeder& setDailyOperationsAnalogPointId(long opspointid);
-    CtiCCFeeder& setPowerFactorPointId(long pfpointid);
-    CtiCCFeeder& setEstimatedPowerFactorPointId(long epfpointid);
-    CtiCCFeeder& setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges);
-    CtiCCFeeder& setCurrentDailyOperations(long operations);
-    CtiCCFeeder& setRecentlyControlledFlag(bool recentlycontrolled);
-    CtiCCFeeder& setLastOperationTime(const CtiTime& lastoperation);
-    CtiCCFeeder& setVarValueBeforeControl(double oldvarval);
-    CtiCCFeeder& setLastCapBankControlledDeviceId(long lastcapbank);
+    void setParentId(long parentId);
+    void setCurrentVarLoadPointId(long currentvarid);
+    void setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp);
+    void setCurrentWattLoadPointId(long currentwattid);
+    void setCurrentWattLoadPointValue(double currentwattval);
+    void setCurrentVoltLoadPointId(long currentvoltid);
+    void setCurrentVoltLoadPointValue(double currentvoltval);
+    void setMapLocationId(const std::string& maplocation);
+    void setDisplayOrder(float order);
+    void setNewPointDataReceivedFlag(bool newpointdatareceived);
+    void setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
+    void setEstimatedVarLoadPointId(long estimatedvarid);
+    void setEstimatedVarLoadPointValue(double estimatedvarval);
+    void setDailyOperationsAnalogPointId(long opspointid);
+    void setPowerFactorPointId(long pfpointid);
+    void setEstimatedPowerFactorPointId(long epfpointid);
+    void setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges);
+    void setCurrentDailyOperations(long operations);
+    void setRecentlyControlledFlag(bool recentlycontrolled);
+    void setLastOperationTime(const CtiTime& lastoperation);
+    void setVarValueBeforeControl(double oldvarval);
+    void setLastCapBankControlledDeviceId(long lastcapbank);
     void setBusOptimizedVarCategory(const long varcategory);
     void setBusOptimizedVarOffset(const double varoffset);
-    CtiCCFeeder& setPowerFactorValue(double pfval);
-    CtiCCFeeder& setKVARSolution(double solution);
-    CtiCCFeeder& setEstimatedPowerFactorValue(double epfval);
-    CtiCCFeeder& setCurrentVarPointQuality(long cvpq);
-    CtiCCFeeder& setCurrentWattPointQuality(long cwpq);
-    CtiCCFeeder& setCurrentVoltPointQuality(long cvpq);
-    CtiCCFeeder& setWaiveControlFlag(bool waive);
-    CtiCCFeeder& setParentControlUnits(const std::string& parentControlUnits);
-    CtiCCFeeder& setParentName(const std::string& parentName);
-    CtiCCFeeder& setDecimalPlaces(long decimalPlaces);
-    CtiCCFeeder& setPeakTimeFlag(bool peakTimeFlag);
-    CtiCCFeeder& setPorterRetFailFlag(bool flag);
-    CtiCCFeeder& setEventSequence(long eventSeq);
-    CtiCCFeeder& setMultiMonitorFlag(bool flag);
-    CtiCCFeeder& setVerificationFlag(bool verificationFlag);
-    CtiCCFeeder& setPerformingVerificationFlag(bool performingVerificationFlag);
-    CtiCCFeeder& setVerificationDoneFlag(bool verificationDoneFlag);
-    CtiCCFeeder& setPreOperationMonitorPointScanFlag( bool flag);
-    CtiCCFeeder& setOperationSentWaitFlag( bool flag);
-    CtiCCFeeder& setPostOperationMonitorPointScanFlag( bool flag);
-    CtiCCFeeder& setWaitForReCloseDelayFlag(bool flag);
-    CtiCCFeeder& setMaxDailyOpsHitFlag(bool flag);
-    CtiCCFeeder& setOvUvDisabledFlag(bool flag);
-    CtiCCFeeder& setCorrectionNeededNoBankAvailFlag(bool flag);
-    CtiCCFeeder& setLikeDayControlFlag(bool flag);
-    CtiCCFeeder& setLastVerificationMsgSentSuccessfulFlag(bool flag);
-    CtiCCFeeder& setCurrentVerificationCapBankId(long capBankId);
-    CtiCCFeeder& setCurrentVerificationCapBankState(long status);
-    CtiCCFeeder& setTargetVarValue(double value);
-    CtiCCFeeder& setSolution(const std::string& text);
-    CtiCCFeeder& setIVControlTot(double value);
-    CtiCCFeeder& setIVCount(long value);
-    CtiCCFeeder& setIWControlTot(double value);
-    CtiCCFeeder& setIWCount(long value);
-    CtiCCFeeder& setIVControl(double value);
-    CtiCCFeeder& setIWControl(double value);
-    CtiCCFeeder& setUsePhaseData(bool flag);
-    CtiCCFeeder& setPhaseBId(long pointid);
-    CtiCCFeeder& setPhaseCId(long pointid);
-    CtiCCFeeder& setPhaseAValue(double value, CtiTime timestamp);
-    CtiCCFeeder& setPhaseBValue(double value, CtiTime timestamp);
-    CtiCCFeeder& setPhaseCValue(double value, CtiTime timestamp);
-    CtiCCFeeder& setTotalizedControlFlag(bool flag);
-    CtiCCFeeder& setPhaseAValueBeforeControl(double value);
-    CtiCCFeeder& setPhaseBValueBeforeControl(double value);
-    CtiCCFeeder& setPhaseCValueBeforeControl(double value);
-    CtiCCFeeder& setLastWattPointTime(const CtiTime& lastpointupdate);
-    CtiCCFeeder& setLastVoltPointTime(const CtiTime& lastpointupdate);
-    CtiCCFeeder& setRetryIndex(long value);
+    void setPowerFactorValue(double pfval);
+    void setKVARSolution(double solution);
+    void setEstimatedPowerFactorValue(double epfval);
+    void setCurrentVarPointQuality(long cvpq);
+    void setCurrentWattPointQuality(long cwpq);
+    void setCurrentVoltPointQuality(long cvpq);
+    void setWaiveControlFlag(bool waive);
+    void setParentControlUnits(const std::string& parentControlUnits);
+    void setParentName(const std::string& parentName);
+    void setDecimalPlaces(long decimalPlaces);
+    void setPeakTimeFlag(bool peakTimeFlag);
+    void setPorterRetFailFlag(bool flag);
+    void setEventSequence(long eventSeq);
+    void setMultiMonitorFlag(bool flag);
+    void setVerificationFlag(bool verificationFlag);
+    void setPerformingVerificationFlag(bool performingVerificationFlag);
+    void setVerificationDoneFlag(bool verificationDoneFlag);
+    void setPreOperationMonitorPointScanFlag( bool flag);
+    void setOperationSentWaitFlag( bool flag);
+    void setPostOperationMonitorPointScanFlag( bool flag);
+    void setWaitForReCloseDelayFlag(bool flag);
+    void setMaxDailyOpsHitFlag(bool flag);
+    void setOvUvDisabledFlag(bool flag);
+    void setCorrectionNeededNoBankAvailFlag(bool flag);
+    void setLikeDayControlFlag(bool flag);
+    void setLastVerificationMsgSentSuccessfulFlag(bool flag);
+    void setCurrentVerificationCapBankId(long capBankId);
+    void setCurrentVerificationCapBankState(long status);
+    void setTargetVarValue(double value);
+    void setSolution(const std::string& text);
+    void setIVControlTot(double value);
+    void setIVCount(long value);
+    void setIWControlTot(double value);
+    void setIWCount(long value);
+    void setIVControl(double value);
+    void setIWControl(double value);
+    void setUsePhaseData(bool flag);
+    void setPhaseBId(long pointid);
+    void setPhaseCId(long pointid);
+    void setPhaseAValue(double value, CtiTime timestamp);
+    void setPhaseBValue(double value, CtiTime timestamp);
+    void setPhaseCValue(double value, CtiTime timestamp);
+    void setTotalizedControlFlag(bool flag);
+    void setPhaseAValueBeforeControl(double value);
+    void setPhaseBValueBeforeControl(double value);
+    void setPhaseCValueBeforeControl(double value);
+    void setLastWattPointTime(const CtiTime& lastpointupdate);
+    void setLastVoltPointTime(const CtiTime& lastpointupdate);
+    void setRetryIndex(long value);
 
     void figureAndSetTargetVarValue(const std::string& controlMethod, const std::string& controlUnits, bool peakTimeFlag);
     CtiCCCapBankPtr getLastCapBankControlledDevice();
@@ -239,12 +238,11 @@ public:
     bool checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     void orderBanksOnFeeder();
-    double figureCurrentSetPoint(const CtiTime& currentDateTime);
     bool isPeakTime(const CtiTime& currentDateTime);
     bool isControlPoint(long pointid);
     void updateIntegrationVPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
     void updateIntegrationWPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
-    CtiCCFeeder& figureEstimatedVarLoadPointValue();
+    void figureEstimatedVarLoadPointValue();
     bool isAlreadyControlled(long minConfirmPercent,
                              long currentVarPointQuality, double varAValueBeforeControl,
                              double varBValueBeforeControl, double varCValueBeforeControl,
@@ -289,13 +287,13 @@ public:
 
 
     bool areThereMoreCapBanksToVerify();
-    CtiCCFeeder& getNextCapBankToVerify();
+    void getNextCapBankToVerify();
 
     bool capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, long minConfirmPercent,
                                          long failurePercent, double varAValue, double varBValue, double varCValue);
     bool capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
                                                  long minConfirmPercent, long failPercent);
-    CtiCCFeeder& addAllFeederPointsToMsg(std::set<long>& pointAddMsg);
+    void addAllFeederPointsToMsg(std::set<long>& pointAddMsg);
     CtiCCCapBank* getMonitorPointParentBank(const CtiCCMonitorPoint & point);
 
     bool isDataOldAndFallBackNecessary(std::string controlUnits);

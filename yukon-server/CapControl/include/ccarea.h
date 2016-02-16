@@ -8,7 +8,6 @@ class CtiCCArea : public CtiCCAreaBase
 public:
     DECLARE_COLLECTABLE( CtiCCArea )
 
-public:
     CtiCCArea();
     CtiCCArea(StrategyManager * strategyManager);
     CtiCCArea(Cti::RowReader& rdr, StrategyManager * strategyManager);
@@ -21,8 +20,8 @@ public:
 
     void deleteCCSubs(long subId);
 
-    CtiCCArea& setReEnableAreaFlag(bool flag);
-    CtiCCArea& setChildVoltReductionFlag(bool flag);
+    void setReEnableAreaFlag(bool flag);
+    void setChildVoltReductionFlag(bool flag);
 
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     void checkAndUpdateChildVoltReductionFlags();

@@ -37,8 +37,6 @@ CtiCCOperationStats::CtiCCOperationStats()
 
     _insertDynamicDataFlag = true;
     _dirty = true;
-
-    return;
 }
 
 
@@ -68,8 +66,6 @@ void CtiCCOperationStats::init()
     _weeklyConfFail = 0;
     _monthlyOpCount = 0;
     _monthlyConfFail = 0;
-
-    return;
 }
 
 long CtiCCOperationStats::getPAOId() const
@@ -144,109 +140,90 @@ double CtiCCOperationStats::getMonthlyOpSuccessPercent() const
 }
 
 
-CtiCCOperationStats& CtiCCOperationStats::setPAOId(long paoId)
+void CtiCCOperationStats::setPAOId(long paoId)
 {
     _paoid = paoId;
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setUserDefOpCount(long value)
+void CtiCCOperationStats::setUserDefOpCount(long value)
 {
     _dirty |= setVariableIfDifferent(_userDefOpCount, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setUserDefConfFail(long value)
+void CtiCCOperationStats::setUserDefConfFail(long value)
 {
     _dirty |= setVariableIfDifferent(_userDefConfFail, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setDailyOpCount(long value)
+void CtiCCOperationStats::setDailyOpCount(long value)
 {
     _dirty |= setVariableIfDifferent(_dailyOpCount, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setDailyConfFail(long value)
+void CtiCCOperationStats::setDailyConfFail(long value)
 {
     _dirty |= setVariableIfDifferent(_dailyConfFail, value);
-    return *this;
 }
 
-
-CtiCCOperationStats& CtiCCOperationStats::setWeeklyOpCount(long value)
+void CtiCCOperationStats::setWeeklyOpCount(long value)
 {
     _dirty |= setVariableIfDifferent(_weeklyOpCount, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setWeeklyConfFail(long value)
+void CtiCCOperationStats::setWeeklyConfFail(long value)
 {
     _dirty |= setVariableIfDifferent(_weeklyConfFail, value);
-    return *this;
 }
 
-
-CtiCCOperationStats& CtiCCOperationStats::setMonthlyOpCount(long value)
+void CtiCCOperationStats::setMonthlyOpCount(long value)
 {
     _dirty |= setVariableIfDifferent(_monthlyOpCount, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setMonthlyConfFail(long value)
+void CtiCCOperationStats::setMonthlyConfFail(long value)
 {
     _dirty |= setVariableIfDifferent(_monthlyConfFail, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setUserDefOpSuccessPercentId(long pointId)
+void CtiCCOperationStats::setUserDefOpSuccessPercentId(long pointId)
 {
     _dirty |= setVariableIfDifferent(_userDefOpSuccessPercentId, pointId);
-    return *this;
 }
-CtiCCOperationStats& CtiCCOperationStats::setUserDefOpSuccessPercent(double value)
+void CtiCCOperationStats::setUserDefOpSuccessPercent(double value)
 {
     _dirty |= setVariableIfDifferent(_userDefOpSuccessPercent, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setDailyOpSuccessPercentId(long pointId)
+void CtiCCOperationStats::setDailyOpSuccessPercentId(long pointId)
 {
     _dirty |= setVariableIfDifferent(_dailyOpSuccessPercentId, pointId);
-    return *this;
 }
-CtiCCOperationStats& CtiCCOperationStats::setDailyOpSuccessPercent(double  value)
+void CtiCCOperationStats::setDailyOpSuccessPercent(double  value)
 {
     _dirty |= setVariableIfDifferent(_dailyOpSuccessPercent, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setWeeklyOpSuccessPercentId(long pointId)
+void CtiCCOperationStats::setWeeklyOpSuccessPercentId(long pointId)
 {
     _dirty |= setVariableIfDifferent(_weeklyOpSuccessPercentId, pointId);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setWeeklyOpSuccessPercent(double value)
+void CtiCCOperationStats::setWeeklyOpSuccessPercent(double value)
 {
     _dirty |= setVariableIfDifferent(_weeklyOpSuccessPercent, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setMonthlyOpSuccessPercentId(long pointId)
+void CtiCCOperationStats::setMonthlyOpSuccessPercentId(long pointId)
 {
     _dirty |= setVariableIfDifferent(_monthlyOpSuccessPercentId, pointId);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::setMonthlyOpSuccessPercent(double value)
+void CtiCCOperationStats::setMonthlyOpSuccessPercent(double value)
 {
     _dirty |= setVariableIfDifferent(_monthlyOpSuccessPercent, value);
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::createPointDataMsgs(CtiMultiMsg_vec& pointChanges)
+void CtiCCOperationStats::createPointDataMsgs(CtiMultiMsg_vec& pointChanges)
 {
     if (getUserDefOpSuccessPercentId() > 0)
     {
@@ -264,9 +241,8 @@ CtiCCOperationStats& CtiCCOperationStats::createPointDataMsgs(CtiMultiMsg_vec& p
     {
         pointChanges.push_back(new CtiPointDataMsg(getMonthlyOpSuccessPercentId(),getMonthlyOpSuccessPercent(),NormalQuality,AnalogPointType));
     }
-    return *this;
 }
-CtiCCOperationStats& CtiCCOperationStats::incrementAllOpCounts()
+void CtiCCOperationStats::incrementAllOpCounts()
 {
     setMonthlyOpCount(_monthlyOpCount+1);
     setWeeklyOpCount(_weeklyOpCount+1);
@@ -276,11 +252,9 @@ CtiCCOperationStats& CtiCCOperationStats::incrementAllOpCounts()
     _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
     _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
-
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::incrementAllOpFails()
+void CtiCCOperationStats::incrementAllOpFails()
 {
     setMonthlyConfFail(_monthlyConfFail+1);
     setWeeklyConfFail(_weeklyConfFail+1);
@@ -290,48 +264,37 @@ CtiCCOperationStats& CtiCCOperationStats::incrementAllOpFails()
     _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
     _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
-
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::incrementMonthlyOpCounts()
+void CtiCCOperationStats::incrementMonthlyOpCounts()
 {
     setMonthlyOpCount(_monthlyOpCount+1);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
-
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::incrementMonthlyOpFails()
+void CtiCCOperationStats::incrementMonthlyOpFails()
 {
     setMonthlyConfFail(_monthlyConfFail+1);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
-
-    return *this;
 }
 
-
-CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpCounts()
+void CtiCCOperationStats::incrementWeeklyOpCounts()
 {
     setMonthlyOpCount(_monthlyOpCount+1);
     setWeeklyOpCount(_weeklyOpCount+1);
     _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
-
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpFails()
+void CtiCCOperationStats::incrementWeeklyOpFails()
 {
     setMonthlyConfFail(_monthlyConfFail+1);
     setWeeklyConfFail(_weeklyConfFail+1);
     _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
-
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpCounts()
+void CtiCCOperationStats::incrementDailyOpCounts()
 {
     setDailyOpCount(_dailyOpCount+1);
     setMonthlyOpCount(_monthlyOpCount+1);
@@ -339,11 +302,9 @@ CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpCounts()
     _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
     _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
-
-    return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpFails()
+void CtiCCOperationStats::incrementDailyOpFails()
 {
     setMonthlyConfFail(_monthlyConfFail+1);
     setWeeklyConfFail(_weeklyConfFail+1);
@@ -351,12 +312,7 @@ CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpFails()
     _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
     _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
     _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
-
-    return *this;
 }
-
-
-
 
 bool CtiCCOperationStats::isDirty()
 {
@@ -527,10 +483,6 @@ void CtiCCOperationStats::setDynamicData(Cti::RowReader& rdr)
 
     _insertDynamicDataFlag = false;
     _dirty = false;
-
-    //return *this;
-
-
 }
 /*---------------------------------------------------------------------------
     replicate

@@ -889,10 +889,9 @@ const CtiRegression& CtiCCFeeder::getRegressionC()
 
     Sets the parentID (subBusID) of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setParentId(long parentId)
+void CtiCCFeeder::setParentId(long parentId)
 {
     _parentId = parentId;
-    return *this;
 }
 
 
@@ -901,10 +900,9 @@ CtiCCFeeder& CtiCCFeeder::setParentId(long parentId)
 
     Sets the current var load point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointId(long currentvarid)
+void CtiCCFeeder::setCurrentVarLoadPointId(long currentvarid)
 {
     _currentvarloadpointid = currentvarid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -912,7 +910,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointId(long currentvarid)
 
     Sets the current var load point value of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp)
+void CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp)
 {
     _dirty |= setVariableIfDifferent(_currentvarloadpointvalue, currentvarval);
 
@@ -923,7 +921,6 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiT
             CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regression  " << timestamp.seconds() << "  and " << currentvarval);
         }
     }
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -931,10 +928,9 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiT
 
     Sets the current watt load point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointId(long currentwattid)
+void CtiCCFeeder::setCurrentWattLoadPointId(long currentwattid)
 {
     _currentwattloadpointid = currentwattid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -942,20 +938,18 @@ CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointId(long currentwattid)
 
     Sets the current watt load point value of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointValue(double currentwattval)
+void CtiCCFeeder::setCurrentWattLoadPointValue(double currentwattval)
 {
     _dirty |= setVariableIfDifferent(_currentwattloadpointvalue, currentwattval);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setCurrentVoltLoadPointId
 
     Sets the current volt load point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentVoltLoadPointId(long currentvoltid)
+void CtiCCFeeder::setCurrentVoltLoadPointId(long currentvoltid)
 {
     _currentvoltloadpointid = currentvoltid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -963,10 +957,9 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVoltLoadPointId(long currentvoltid)
 
     Sets the current watt load point value of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentVoltLoadPointValue(double currentvoltval)
+void CtiCCFeeder::setCurrentVoltLoadPointValue(double currentvoltval)
 {
     _dirty |= setVariableIfDifferent(_currentvoltloadpointvalue, currentvoltval);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -974,10 +967,9 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVoltLoadPointValue(double currentvoltval)
 
     Sets the map location id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setMapLocationId(const string& maplocation)
+void CtiCCFeeder::setMapLocationId(const string& maplocation)
 {
     _maplocationid = maplocation;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -985,10 +977,9 @@ CtiCCFeeder& CtiCCFeeder::setMapLocationId(const string& maplocation)
 
     Sets the display order of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setDisplayOrder(float order)
+void CtiCCFeeder::setDisplayOrder(float order)
 {
     _displayorder = order;
-    return *this;
 }
 
 
@@ -997,10 +988,9 @@ CtiCCFeeder& CtiCCFeeder::setDisplayOrder(float order)
 
     Sets the new point data received flag of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setNewPointDataReceivedFlag(bool newpointdatareceived)
+void CtiCCFeeder::setNewPointDataReceivedFlag(bool newpointdatareceived)
 {
     _dirty |= setVariableIfDifferent(_newpointdatareceivedflag, newpointdatareceived);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1008,30 +998,27 @@ CtiCCFeeder& CtiCCFeeder::setNewPointDataReceivedFlag(bool newpointdatareceived)
 
     Sets the last current var point update time of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
+void CtiCCFeeder::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
 {
     _dirty |= setVariableIfDifferent(_lastcurrentvarpointupdatetime, lastpointupdate);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setLastWattPointTime
 
     Sets the last current Watt point update time of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setLastWattPointTime(const CtiTime& lastpointupdate)
+void CtiCCFeeder::setLastWattPointTime(const CtiTime& lastpointupdate)
 {
     _dirty |= setVariableIfDifferent(_lastWattPointTime, lastpointupdate);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setLastVoltPointTime
 
     Sets the last current Volt point update time of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setLastVoltPointTime(const CtiTime& lastpointupdate)
+void CtiCCFeeder::setLastVoltPointTime(const CtiTime& lastpointupdate)
 {
     _dirty |= setVariableIfDifferent(_lastVoltPointTime, lastpointupdate);
-    return *this;
 }
 
 
@@ -1040,10 +1027,9 @@ CtiCCFeeder& CtiCCFeeder::setLastVoltPointTime(const CtiTime& lastpointupdate)
 
     Sets the estimated var load point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointId(long estimatedvarid)
+void CtiCCFeeder::setEstimatedVarLoadPointId(long estimatedvarid)
 {
     _estimatedvarloadpointid = estimatedvarid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1051,10 +1037,9 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointId(long estimatedvarid)
 
     Sets the estimated var load point value of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointValue(double estimatedvarval)
+void CtiCCFeeder::setEstimatedVarLoadPointValue(double estimatedvarval)
 {
     _dirty |= setVariableIfDifferent(_estimatedvarloadpointvalue, estimatedvarval);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1062,10 +1047,9 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointValue(double estimatedvarval)
 
     Sets the daily operations analog point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setDailyOperationsAnalogPointId(long opspointid)
+void CtiCCFeeder::setDailyOperationsAnalogPointId(long opspointid)
 {
     _dailyoperationsanalogpointid = opspointid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1073,10 +1057,9 @@ CtiCCFeeder& CtiCCFeeder::setDailyOperationsAnalogPointId(long opspointid)
 
     Sets the power factor point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPowerFactorPointId(long pfpointid)
+void CtiCCFeeder::setPowerFactorPointId(long pfpointid)
 {
     _powerfactorpointid = pfpointid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1084,10 +1067,9 @@ CtiCCFeeder& CtiCCFeeder::setPowerFactorPointId(long pfpointid)
 
     Sets the estimated power factor point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorPointId(long epfpointid)
+void CtiCCFeeder::setEstimatedPowerFactorPointId(long epfpointid)
 {
     _estimatedpowerfactorpointid = epfpointid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1095,7 +1077,7 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorPointId(long epfpointid)
 
     Sets the current daily operations of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
+void CtiCCFeeder::setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
 {
     if( _currentdailyoperations != operations )
     {
@@ -1106,18 +1088,15 @@ CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperationsAndSendMsg(long operations, C
         _dirty = true;
     }
     _currentdailyoperations = operations;
-
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setCurrentDailyOperations
 
     Sets the current daily operations of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperations(long operations)
+void CtiCCFeeder::setCurrentDailyOperations(long operations)
 {
     _dirty |= setVariableIfDifferent(_currentdailyoperations, operations);
-    return *this;
 }
 
 
@@ -1126,10 +1105,9 @@ CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperations(long operations)
 
     Sets the recently controlled flag of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setRecentlyControlledFlag(bool recentlycontrolled)
+void CtiCCFeeder::setRecentlyControlledFlag(bool recentlycontrolled)
 {
     _dirty |= setVariableIfDifferent(_recentlycontrolledflag, recentlycontrolled);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1137,10 +1115,9 @@ CtiCCFeeder& CtiCCFeeder::setRecentlyControlledFlag(bool recentlycontrolled)
 
     Sets the last operation time of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setLastOperationTime(const CtiTime& lastoperation)
+void CtiCCFeeder::setLastOperationTime(const CtiTime& lastoperation)
 {
     _dirty |= setVariableIfDifferent(_lastoperationtime,lastoperation);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1148,15 +1125,13 @@ CtiCCFeeder& CtiCCFeeder::setLastOperationTime(const CtiTime& lastoperation)
 
     Sets the var value before control of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setVarValueBeforeControl(double oldvarval)
+void CtiCCFeeder::setVarValueBeforeControl(double oldvarval)
 {
     _dirty |= setVariableIfDifferent(_varvaluebeforecontrol, oldvarval);
 
     setPhaseAValueBeforeControl(getPhaseAValue());
     setPhaseBValueBeforeControl(getPhaseBValue());
     setPhaseCValueBeforeControl(getPhaseCValue());
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1164,10 +1139,9 @@ CtiCCFeeder& CtiCCFeeder::setVarValueBeforeControl(double oldvarval)
 
     Sets the device id of the last cap bank controlled in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setLastCapBankControlledDeviceId(long lastcapbank)
+void CtiCCFeeder::setLastCapBankControlledDeviceId(long lastcapbank)
 {
     _dirty |= setVariableIfDifferent(_lastcapbankcontrolleddeviceid, lastcapbank);
-    return *this;
 }
 
 // These 2 functions are here just to unit test the sort comparator for bus optimized feeder
@@ -1185,10 +1159,9 @@ void CtiCCFeeder::setBusOptimizedVarOffset(const double varoffset)
 
     Sets the PowerFactorValue in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPowerFactorValue(double pfval)
+void CtiCCFeeder::setPowerFactorValue(double pfval)
 {
     _dirty |= setVariableIfDifferent(_powerfactorvalue, pfval);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1196,10 +1169,9 @@ CtiCCFeeder& CtiCCFeeder::setPowerFactorValue(double pfval)
 
     Sets the KVARSolution in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setKVARSolution(double solution)
+void CtiCCFeeder::setKVARSolution(double solution)
 {
     _dirty |= setVariableIfDifferent(_kvarsolution, solution);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1207,10 +1179,9 @@ CtiCCFeeder& CtiCCFeeder::setKVARSolution(double solution)
 
     Sets the EstimatedPowerFactorValue in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorValue(double epfval)
+void CtiCCFeeder::setEstimatedPowerFactorValue(double epfval)
 {
     _dirty |= setVariableIfDifferent(_estimatedpowerfactorvalue, epfval);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1218,10 +1189,9 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorValue(double epfval)
 
     Sets the CurrentVarPointQuality in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentVarPointQuality(long cvpq)
+void CtiCCFeeder::setCurrentVarPointQuality(long cvpq)
 {
     _dirty |= setVariableIfDifferent(_currentvarpointquality, cvpq);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1229,10 +1199,9 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarPointQuality(long cvpq)
 
     Sets the CurrentWattPointQuality in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentWattPointQuality(long cwpq)
+void CtiCCFeeder::setCurrentWattPointQuality(long cwpq)
 {
     _dirty |= setVariableIfDifferent(_currentwattpointquality, cwpq);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1240,10 +1209,9 @@ CtiCCFeeder& CtiCCFeeder::setCurrentWattPointQuality(long cwpq)
 
     Sets the CurrentVoltPointQuality in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentVoltPointQuality(long cvpq)
+void CtiCCFeeder::setCurrentVoltPointQuality(long cvpq)
 {
     _dirty |= setVariableIfDifferent(_currentvoltpointquality, cvpq);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1251,10 +1219,9 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVoltPointQuality(long cvpq)
 
     Sets the WaiveControlFlag in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setWaiveControlFlag(bool waive)
+void CtiCCFeeder::setWaiveControlFlag(bool waive)
 {
     _dirty |= setVariableIfDifferent(_waivecontrolflag, waive);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1262,10 +1229,9 @@ CtiCCFeeder& CtiCCFeeder::setWaiveControlFlag(bool waive)
 
     Sets the ParentControlUnits in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setParentControlUnits(const string& parentControlUnits)
+void CtiCCFeeder::setParentControlUnits(const string& parentControlUnits)
 {
     _dirty |= setVariableIfDifferent(_parentControlUnits, parentControlUnits);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1273,10 +1239,9 @@ CtiCCFeeder& CtiCCFeeder::setParentControlUnits(const string& parentControlUnits
 
     Sets the ParentName in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setParentName(const string& parentName)
+void CtiCCFeeder::setParentName(const string& parentName)
 {
     _dirty |= setVariableIfDifferent(_parentName, parentName);
-    return *this;
 }
 
 
@@ -1285,10 +1250,9 @@ CtiCCFeeder& CtiCCFeeder::setParentName(const string& parentName)
 
     Sets the ParentDecimalPlaces in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setDecimalPlaces(long decimalPlaces)
+void CtiCCFeeder::setDecimalPlaces(long decimalPlaces)
 {
     _dirty |= setVariableIfDifferent(_decimalPlaces, decimalPlaces);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1296,28 +1260,24 @@ CtiCCFeeder& CtiCCFeeder::setDecimalPlaces(long decimalPlaces)
 
     Sets the ParentPeakTimeFlag in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPeakTimeFlag(bool peakTimeFlag)
+void CtiCCFeeder::setPeakTimeFlag(bool peakTimeFlag)
 {
     _dirty |= setVariableIfDifferent(_peakTimeFlag, peakTimeFlag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setPorterRetFailFlag(bool flag)
+void CtiCCFeeder::setPorterRetFailFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_porterRetFailFlag, flag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setEventSequence(long eventSeq)
+void CtiCCFeeder::setEventSequence(long eventSeq)
 {
     _dirty |= setVariableIfDifferent(_eventSeq, eventSeq);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setMultiMonitorFlag(bool flag)
+void CtiCCFeeder::setMultiMonitorFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_multiMonitorFlag, flag);
-    return *this;
 }
 
 
@@ -2091,7 +2051,7 @@ void CtiCCFeeder::createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg
     Figures out the estimated var point value according to the states
     of the individual cap banks in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
+void CtiCCFeeder::figureEstimatedVarLoadPointValue()
 {
     if( getCurrentVarLoadPointId() > 0 )
     {
@@ -2117,21 +2077,7 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
     {
         setEstimatedVarLoadPointValue(0.0);
     }
-
-    return *this;
 }
-
-
-/*---------------------------------------------------------------------------
-    figureCurrentSetPoint
-
-    Returns the current set point depending on if it is peak or off peak
-    time and sets the set point status
----------------------------------------------------------------------------*/
-/*double CtiCCFeeder::figureCurrentSetPoint(const CtiTime& currentDateTime)
-{
-    return (isPeakTime(currentDateTime)?_peaksetpoint:_offpeaksetpoint);
-}   */
 
 /*---------------------------------------------------------------------------
     isPeakTime
@@ -4190,7 +4136,7 @@ bool CtiCCFeeder::areThereMoreCapBanksToVerify()
 }
 
 
-CtiCCFeeder& CtiCCFeeder::getNextCapBankToVerify()
+void CtiCCFeeder::getNextCapBankToVerify()
 {
     _currentVerificationCapBankId = -1;
 
@@ -4201,11 +4147,10 @@ CtiCCFeeder& CtiCCFeeder::getNextCapBankToVerify()
         if( currentCapBank->getVerificationFlag() && !currentCapBank->getVerificationDoneFlag() )
         {
             _currentVerificationCapBankId = currentCapBank->getPaoId();
-            return *this;
+            return;
         }
     }
     setVerificationDoneFlag(true);
-    return *this;
 }
 
 
@@ -4690,7 +4635,7 @@ bool CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& current
    return returnBoolean;
 }
 
-CtiCCFeeder& CtiCCFeeder::setVerificationFlag(bool verificationFlag)
+void CtiCCFeeder::setVerificationFlag(bool verificationFlag)
 {
     if( verificationFlag )
     {
@@ -4698,97 +4643,79 @@ CtiCCFeeder& CtiCCFeeder::setVerificationFlag(bool verificationFlag)
     }
 
     _dirty |= setVariableIfDifferent(_verificationFlag, verificationFlag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setPerformingVerificationFlag(bool performingVerificationFlag)
+void CtiCCFeeder::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
     _dirty |= setVariableIfDifferent(_performingVerificationFlag, performingVerificationFlag);
-    return *this;
 }
-CtiCCFeeder& CtiCCFeeder::setVerificationDoneFlag(bool verificationDoneFlag)
+void CtiCCFeeder::setVerificationDoneFlag(bool verificationDoneFlag)
 {
     _dirty |= setVariableIfDifferent(_verificationDoneFlag, verificationDoneFlag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setPreOperationMonitorPointScanFlag( bool flag)
+void CtiCCFeeder::setPreOperationMonitorPointScanFlag( bool flag)
 {
     _dirty |= setVariableIfDifferent(_preOperationMonitorPointScanFlag, flag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setOperationSentWaitFlag( bool flag)
+void CtiCCFeeder::setOperationSentWaitFlag( bool flag)
 {
     _dirty |= setVariableIfDifferent(_operationSentWaitFlag, flag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setPostOperationMonitorPointScanFlag( bool flag)
+void CtiCCFeeder::setPostOperationMonitorPointScanFlag( bool flag)
 {
     _dirty |= setVariableIfDifferent(_postOperationMonitorPointScanFlag, flag);
-    return *this;
 }
 
-
-
-CtiCCFeeder& CtiCCFeeder::setWaitForReCloseDelayFlag(bool flag)
+void CtiCCFeeder::setWaitForReCloseDelayFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_waitForReCloseDelayFlag, flag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setMaxDailyOpsHitFlag(bool flag)
+void CtiCCFeeder::setMaxDailyOpsHitFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_maxDailyOpsHitFlag, flag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setOvUvDisabledFlag(bool flag)
+void CtiCCFeeder::setOvUvDisabledFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setCorrectionNeededNoBankAvailFlag(bool flag)
+void CtiCCFeeder::setCorrectionNeededNoBankAvailFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_correctionNeededNoBankAvailFlag, flag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setLikeDayControlFlag(bool flag)
+void CtiCCFeeder::setLikeDayControlFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_likeDayControlFlag, flag);
-    return *this;
 }
-CtiCCFeeder& CtiCCFeeder::setLastVerificationMsgSentSuccessfulFlag(bool flag)
+void CtiCCFeeder::setLastVerificationMsgSentSuccessfulFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_lastVerificationMsgSentSuccessful, flag);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankId(long capBankId)
+void CtiCCFeeder::setCurrentVerificationCapBankId(long capBankId)
 {
     _dirty |= setVariableIfDifferent(_currentVerificationCapBankId, capBankId);
-    return *this;
 }
-CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankState(long status)
+void CtiCCFeeder::setCurrentVerificationCapBankState(long status)
 {
     _dirty |= setVariableIfDifferent(_currentCapBankToVerifyAssumedOrigState, status);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setTargetVarValue(double value)
+void CtiCCFeeder::setTargetVarValue(double value)
 {
     _dirty |= setVariableIfDifferent(_targetvarvalue, value);
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setSolution(const string &text)
+void CtiCCFeeder::setSolution(const string &text)
 {
     string temp = text;
     _dirty |= setVariableIfDifferent(_solution, temp);
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -4796,79 +4723,72 @@ CtiCCFeeder& CtiCCFeeder::setSolution(const string &text)
 
     Sets the Integrated Volt or var Control Total of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setIVControlTot(double value)
+void CtiCCFeeder::setIVControlTot(double value)
 {
     _dirty |= setVariableIfDifferent(_iVControlTot, value);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setIVCoont
 
     Sets the Integrated Volt or var Control Count of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setIVCount(long value)
+void CtiCCFeeder::setIVCount(long value)
 {
     _dirty |= setVariableIfDifferent(_iVCount, value);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setIWControlTot
 
     Sets the Integrated Watt Control Total of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setIWControlTot(double value)
+void CtiCCFeeder::setIWControlTot(double value)
 {
     _dirty |= setVariableIfDifferent(_iWControlTot, value);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setIWCoont
 
     Sets the Integrated Watt Control Count of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setIWCount(long value)
+void CtiCCFeeder::setIWCount(long value)
 {
     _dirty |= setVariableIfDifferent(_iWCount, value);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setIVControl
 
     Sets the Integrated Volt/Var Control of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setIVControl(double value)
+void CtiCCFeeder::setIVControl(double value)
 {
     _dirty |= setVariableIfDifferent(_iVControl, value);
-    return *this;
-}/*---------------------------------------------------------------------------
+}
+/*---------------------------------------------------------------------------
     setIWControl
 
     Sets the Integrated Watt Control  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setIWControl(double value)
+void CtiCCFeeder::setIWControl(double value)
 {
     _dirty |= setVariableIfDifferent(_iWControl, value);
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setUsePhaseData flag
 
     Sets the UsePhaseData flag  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setUsePhaseData(bool flag)
+void CtiCCFeeder::setUsePhaseData(bool flag)
 {
     _usePhaseData = flag;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setPhaseBid
 
     Sets the PhaseB pointid  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPhaseBId(long pointid)
+void CtiCCFeeder::setPhaseBId(long pointid)
 {
     _phaseBid = pointid;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -4876,10 +4796,9 @@ CtiCCFeeder& CtiCCFeeder::setPhaseBId(long pointid)
 
     Sets the PhaseC pointid  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPhaseCId(long pointid)
+void CtiCCFeeder::setPhaseCId(long pointid)
 {
     _phaseCid = pointid;
-    return *this;
 }
 
 
@@ -4888,10 +4807,9 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCId(long pointid)
 
     Sets the TotalizedControlFlag of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setTotalizedControlFlag(bool flag)
+void CtiCCFeeder::setTotalizedControlFlag(bool flag)
 {
     _totalizedControlFlag = flag;
-    return *this;
 }
 
 
@@ -4900,7 +4818,7 @@ CtiCCFeeder& CtiCCFeeder::setTotalizedControlFlag(bool flag)
 
     Sets the PhaseAValue VAr  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPhaseAValue(double value, CtiTime timestamp)
+void CtiCCFeeder::setPhaseAValue(double value, CtiTime timestamp)
 {
     _dirty |= setVariableIfDifferent(_phaseAvalue, value);
 
@@ -4912,14 +4830,13 @@ CtiCCFeeder& CtiCCFeeder::setPhaseAValue(double value, CtiTime timestamp)
             CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionA  " << timestamp.seconds() << "  and " << value);
         }
     }
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setPhaseBValue
 
     Sets the PhaseBValue VAr  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPhaseBValue(double value, CtiTime timestamp)
+void CtiCCFeeder::setPhaseBValue(double value, CtiTime timestamp)
 {
     _dirty |= setVariableIfDifferent(_phaseBvalue, value);
 
@@ -4931,14 +4848,13 @@ CtiCCFeeder& CtiCCFeeder::setPhaseBValue(double value, CtiTime timestamp)
             CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionB  " << timestamp.seconds() << "  and " << value);
         }
     }
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setPhaseCValue
 
     Sets the PhaseCValue VAr  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPhaseCValue(double value, CtiTime timestamp)
+void CtiCCFeeder::setPhaseCValue(double value, CtiTime timestamp)
 {
     _dirty |= setVariableIfDifferent(_phaseCvalue, value);
 
@@ -4950,7 +4866,6 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCValue(double value, CtiTime timestamp)
             CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionC  " << timestamp.seconds() << "  and " << value);
         }
     }
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -4958,38 +4873,33 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCValue(double value, CtiTime timestamp)
 
     Sets the PhaseAValue VAr  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPhaseAValueBeforeControl(double value)
+void CtiCCFeeder::setPhaseAValueBeforeControl(double value)
 {
     _phaseAvalueBeforeControl = value;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setPhaseBValue
 
     Sets the PhaseBValue VAr  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPhaseBValueBeforeControl(double value)
+void CtiCCFeeder::setPhaseBValueBeforeControl(double value)
 {
     _phaseBvalueBeforeControl = value;
-    return *this;
 }
 /*---------------------------------------------------------------------------
     setPhaseCValue
 
     Sets the PhaseCValue VAr  of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPhaseCValueBeforeControl(double value)
+void CtiCCFeeder::setPhaseCValueBeforeControl(double value)
 {
     _phaseCvalueBeforeControl = value;
-    return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setRetryIndex(long value)
+void CtiCCFeeder::setRetryIndex(long value)
 {
     _dirty |= setVariableIfDifferent(_retryIndex, value);
-    return *this;
 }
-
 
 bool CtiCCFeeder::getVerificationFlag() const
 {
@@ -5632,7 +5542,7 @@ bool CtiCCFeeder::scanAllMonitorPoints()
     return retVal;
 }
 
-CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(std::set<long>& pointAddMsg)
+void CtiCCFeeder::addAllFeederPointsToMsg(std::set<long>& pointAddMsg)
 {
 
     if( getCurrentVarLoadPointId() > 0 )
@@ -5663,12 +5573,7 @@ CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(std::set<long>& pointAddMsg)
     {
         pointAddMsg.insert(getEstimatedPowerFactorPointId());
     }
-
-    return *this;
 }
-
-
-
 
 /*---------------------------------------------------------------------------
     isDirty

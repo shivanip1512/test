@@ -121,16 +121,6 @@ void CapControlPao::setDisableFlag(bool disableFlag, int priority)
     }
 }
 
-const std::string& CapControlPao::getPaoStatistics() const
-{
-    return _paoStatistics;
-}
-
-void CapControlPao::setPaoStatistics(const std::string& paoStatistics)
-{
-    _paoStatistics = paoStatistics;
-}
-
 CapControlPao& CapControlPao::operator=(const CapControlPao& right)
 {
     if (this != &right)

@@ -10,7 +10,6 @@ class CtiCCSubstation : public CapControlPao
 public:
     DECLARE_COLLECTABLE( CtiCCSubstation );
 
-public:
     CtiCCSubstation();
     CtiCCSubstation(Cti::RowReader& rdr);
     CtiCCSubstation(const CtiCCSubstation& substation);
@@ -36,26 +35,26 @@ public:
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
 
-    CtiCCSubstation& setOvUvDisabledFlag(bool flag);
-    CtiCCSubstation& setVoltReductionFlag(bool flag);
-    CtiCCSubstation& setParentName(const std::string& name);
-    CtiCCSubstation& setParentId(long parentId);
-    CtiCCSubstation& setDisplayOrder(long displayOrder);
-    CtiCCSubstation& setPFactor(double pfactor);
-    CtiCCSubstation& setEstPFactor(double estpfactor);
-    CtiCCSubstation& setSaEnabledFlag(bool flag);
-    CtiCCSubstation& setRecentlyControlledFlag(bool flag);
-    CtiCCSubstation& setStationUpdatedFlag(bool flag);
-    CtiCCSubstation& setSaEnabledId(long saId);
-    CtiCCSubstation& setVoltReductionControlId(long pointid);
-    CtiCCSubstation& setChildVoltReductionFlag(bool flag);
+    void setOvUvDisabledFlag(bool flag);
+    void setVoltReductionFlag(bool flag);
+    void setParentName(const std::string& name);
+    void setParentId(long parentId);
+    void setDisplayOrder(long displayOrder);
+    void setPFactor(double pfactor);
+    void setEstPFactor(double estpfactor);
+    void setSaEnabledFlag(bool flag);
+    void setRecentlyControlledFlag(bool flag);
+    void setStationUpdatedFlag(bool flag);
+    void setSaEnabledId(long saId);
+    void setVoltReductionControlId(long pointid);
+    void setChildVoltReductionFlag(bool flag);
 
     void getPowerFactorData( double & watts, double & vars, double & estimatedVars );
     void updatePowerFactorData();
 
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
-    CtiCCSubstation& checkAndUpdateRecentlyControlledFlag();
-    CtiCCSubstation& checkAndUpdateChildVoltReductionFlags();
+    void checkAndUpdateRecentlyControlledFlag();
+    void checkAndUpdateChildVoltReductionFlags();
     bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(Cti::RowReader& rdr);
@@ -64,7 +63,7 @@ public:
 
     CtiCCSubstation* replicate() const;
 
-    private:
+private:
 
     std::string _parentName;
     long _parentId;
