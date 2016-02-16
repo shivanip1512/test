@@ -209,6 +209,8 @@ void releaseDBConnection(SAConnection *connection)
         if(connHolder.connection == connection)
         {
             connHolder.inUse = false;
+            delete connHolder.connection;
+            connHolder.connection = 0;
             return;
         }
     }
