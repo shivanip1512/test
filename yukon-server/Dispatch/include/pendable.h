@@ -2,7 +2,7 @@
 
 #include "pending_info.h"
 
-class CtiPendable
+class CtiPendable final
 {
 public:
 
@@ -16,70 +16,31 @@ public:
 
     };
 
-    LONG _pointID;
-    INT _action;                        // This is add, remove,...
-    CtiPendingPointOperations *_ppo;
-    CtiTime _time;
+    const long _pointID;
+    const int _action;                        // This is add, remove,...
+    const std::unique_ptr<CtiPendingPointOperations> _ppo;
+    const CtiTime _time;
 
-    INT _limit;                         // Used only if the action is CtiPendableAction_RemoveLimit.
-    DOUBLE _value;                      // Point value.
-    UINT _tags;
+    int _limit;                         // Used only if the action is CtiPendableAction_RemoveLimit.
+    double _value;                      // Point value.
+    unsigned _tags;
 
-
-public:
-
-    CtiPendable(LONG pid, int action, CtiPendingPointOperations *ppo = 0, CtiTime ppotm = CtiTime()) :
+    CtiPendable(LONG pid, int action, std::unique_ptr<CtiPendingPointOperations>&& ppo = nullptr, CtiTime ppotm = CtiTime()) :
         _pointID(pid),
         _action(action),
-        _ppo(ppo),
+        _ppo(std::move(ppo)),
         _time(ppotm),
         _value(0.0),
         _tags(0)
     {}
 
-    CtiPendable(const CtiPendable& aRef)
-    {
-        *this = aRef;
-    }
-
-    virtual ~CtiPendable()
-    {
-        if(_ppo)
-        {
-            delete _ppo;
-        }
-    }
-
-    CtiPendable& operator=(const CtiPendable& aRef)
-    {
-        if(this != &aRef)
-        {
-            _pointID = aRef._pointID;
-            _action = aRef._action;
-            _time = aRef._time;
-
-            _limit = aRef._limit;
-            _value = aRef._value;
-            _tags = aRef._tags;
-
-
-            if(_ppo)
-            {
-                delete _ppo;
-            }
-
-            if(aRef._ppo)
-            {
-                _ppo = CTIDBG_new CtiPendingPointOperations(*aRef._ppo);
-            }
-        }
-        return *this;
-    }
+    CtiPendable(const CtiPendable& aRef) = delete;
+    CtiPendable& operator=(const CtiPendable& aRef) = delete;
 
     bool operator<(const CtiPendable &rhs) const
     {
         return _time < rhs._time;
     }
 
-    INT getAction() const { return _action; }
+    int getAction() const { return _action; }
 };

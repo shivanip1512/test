@@ -759,7 +759,7 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                 CtiPointDataMsg *pPseudoValPD = 0;
 
-                CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
+                auto pendingControlRequest = std::make_unique<CtiPendingPointOperations>(pPoint->getID());
                 pendingControlRequest->setType(CtiPendingPointOperations::pendingControl);
                 pendingControlRequest->setControlState( CtiPendingPointOperations::controlSentToPorter );
                 pendingControlRequest->setTime( Cmd->getMessageTime() );
@@ -796,7 +796,7 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     pendingControlRequest->setSignal( pFailSig );
                 }
 
-                addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
+                addToPendingSet(std::move(pendingControlRequest), Cmd->getMessageTime());
 
                 if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
                 {
@@ -992,7 +992,7 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                         if(pControlPoint)
                         {
-                            CtiPendingPointOperations *pendingSeasonReset = CTIDBG_new CtiPendingPointOperations(pControlPoint->getID());
+                            auto pendingSeasonReset = std::make_unique<CtiPendingPointOperations>(pControlPoint->getID());
                             pendingSeasonReset->setType(CtiPendingPointOperations::pendingControl);                  // Must be a pendingControl Type to help us if we are currently controlling this group!
                             pendingSeasonReset->setControlState(CtiPendingPointOperations::controlSeasonalReset);    // control state clues the guts on what we are trying to do for this command.
                             pendingSeasonReset->setExcludeFromHistory(false);
@@ -1011,7 +1011,7 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             pendingSeasonReset->getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
 
                             //verifyControlTimesValid(pendingSeasonReset);
-                            addToPendingSet(pendingSeasonReset, Cmd->getMessageTime());
+                            addToPendingSet(std::move(pendingSeasonReset), Cmd->getMessageTime());
                         }
                     }
                 }
@@ -2208,7 +2208,6 @@ BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn,
 int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 {
     int status = ClientErrors::None;
-    bool isPseudo = false;
 
     CtiServerExclusion pmguard(_server_exclusion);
 
@@ -2238,7 +2237,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 }
             }
 
-            CtiPendingPointOperations *pendingControlLMMsg = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
+            auto pendingControlLMMsg = std::make_unique<CtiPendingPointOperations>(pPoint->getID());
             pendingControlLMMsg->setType(CtiPendingPointOperations::pendingControl);
             pendingControlLMMsg->setControlState( CtiPendingPointOperations::controlPending );
             pendingControlLMMsg->setTime( pMsg->getStartDateTime() );
@@ -2267,7 +2266,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
             const CtiTablePointAlarming alarming = PointMgr.getAlarming(*pPoint);
 
-            CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
+            auto pFailSig = std::make_unique<CtiSignalMsg>(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
 
             pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK));
             if(pFailSig->getSignalCategory() > SignalEvent)
@@ -2277,42 +2276,37 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
             }
             pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
 
-            pendingControlLMMsg->setSignal( pFailSig );
+            pendingControlLMMsg->setSignal( pFailSig.release() );
 
             if(isDeviceGroupType(pMsg->getPAOId()) && _pendingOpThread.getCurrentControlPriority(pMsg->getPointId()) >= pMsg->getControlPriority())
             {
-                CtiPointSPtr pControlStatus = PointMgr.getControlOffsetEqual(pMsg->getPAOId() , 1);
-                if(pControlStatus->isPseudoPoint())
+                if( auto pControlStatus = PointMgr.getControlOffsetEqual(pMsg->getPAOId(), 1) )
                 {
-                    // There is no physical point to observe and respect.  We lie to the control point.
-                    CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), pMsg->getRawState(), NormalQuality, StatusPointType, (pMsg->getRawState() == CONTROLLED ? string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " controlling") : string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring")));
-                    pData->setMessagePriority( pData->getMessagePriority() + 1 );
-                    MainQueue_.putQueue(pData);
-                }
+                    if( pControlStatus->isPseudoPoint() )
+                    {
+                        // There is no physical point to observe and respect.  We lie to the control point.
+                        auto pData = std::make_unique<CtiPointDataMsg>(pControlStatus->getPointID(), pMsg->getRawState(), NormalQuality, StatusPointType, (pMsg->getRawState() == CONTROLLED ? string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " controlling") : string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring")));
+                        pData->setMessagePriority( pData->getMessagePriority() + 1 );
+                        MainQueue_.putQueue(pData.release());
+                    }
 
-                if(pMsg->getRawState() == CONTROLLED && pMsg->getControlDuration() > 0)
+                    if( pMsg->getRawState() == CONTROLLED && pMsg->getControlDuration() > 0 )
+                    {
+                        // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
+                        auto pData = std::make_unique<CtiPointDataMsg>(pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
+                        pData->setTime(CtiTime() + pMsg->getControlDuration());
+                        pData->setMessagePriority(pData->getMessagePriority() - 1);
+                        MainQueue_.putQueue(pData.release());
+                    }
+
+                }
+                else
                 {
-                    // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
-                    CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
-                    pData->setTime( CtiTime() + pMsg->getControlDuration() );
-                    pData->setMessagePriority( pData->getMessagePriority() - 1 );
-                    //vgList.push_back(pData);
-                    MainQueue_.putQueue(pData);
+                    CTILOG_WARN(dout, "No control status point for device group id " << pMsg->getPAOId());
                 }
             }
 
-            if( isPseudo )
-            {
-                CtiPendingPointOperations *controlCompleteControlMsg = CTIDBG_new CtiPendingPointOperations(*pendingControlLMMsg);
-                addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
-
-                controlCompleteControlMsg->setControlState(CtiPendingPointOperations::controlCompleteCommanded);
-                addToPendingSet( controlCompleteControlMsg, pMsg->getMessageTime() );
-            }
-            else
-            {
-                addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
-            }
+            addToPendingSet(std::move(pendingControlLMMsg), pMsg->getMessageTime());
 
             pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
             bumpDeviceToAlternateRate( *pPoint );
@@ -3024,12 +3018,12 @@ YukonError_t CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg &pData, CtiM
 
         pDyn->setInDelayedData(true);
 
-        CtiPendingPointOperations *pendingPointData = CTIDBG_new CtiPendingPointOperations(pData.getId());
+        auto pendingPointData = std::make_unique<CtiPendingPointOperations>(pData.getId());
         pendingPointData->setType(CtiPendingPointOperations::pendingPointData);
         pendingPointData->setTime( pData.getTime() );
         pendingPointData->setPointData( (CtiPointDataMsg*)pData.replicateMessage() );
 
-        addToPendingSet(pendingPointData);
+        addToPendingSet(std::move(pendingPointData));
 
         return ClientErrors::None;
     }
@@ -4489,7 +4483,7 @@ void CtiVanGogh::VGAppMonitorThread()
 
             Cti::reportSystemMetrics( CompileInfo );
 
-            nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
+            nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds
         }
     }
 
@@ -4544,7 +4538,7 @@ void CtiVanGogh::VGAppMonitorThread()
 
                     Cti::reportSystemMetrics( CompileInfo );
 
-                    nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
+                    nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds
                 }
 
                 //Check thread watcher status
@@ -5306,7 +5300,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg &pData, CtiMultiW
 
                 if(duration > 0)  // Am I required to hold in this state for a bit before the announcement of this condition?
                 {
-                    CtiPendingPointOperations *pendingPointLimit = CTIDBG_new CtiPendingPointOperations(pointNumeric.getID());
+                    auto pendingPointLimit = std::make_unique<CtiPendingPointOperations>(pointNumeric.getID());
                     pendingPointLimit->setType(CtiPendingPointOperations::pendingLimit + numericAlarmOffset);
                     pendingPointLimit->setLimitBeingTimed( numericAlarmOffset );
                     pendingPointLimit->setTime( CtiTime() );
@@ -5317,7 +5311,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg &pData, CtiMultiW
                     // If there is a limit duration, we modify the data message, so clients don't immediately know that this point is in a pending alarm.
                     pData.resetTags( TAG_ACTIVE_ALARM | TAG_UNACKNOWLEDGED_ALARM );
 
-                    addToPendingSet(pendingPointLimit);
+                    addToPendingSet(std::move(pendingPointLimit));
 
                     CTILOG_INFO(dout, "LIMIT Violation, " << text << ": " << pData.getString());
                 }
@@ -6078,9 +6072,9 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, const CtiPointDataMsg &pData,
     }
 }
 
-bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations *&pendingOp, CtiTime &updatetime)
+bool CtiVanGogh::addToPendingSet(std::unique_ptr<CtiPendingPointOperations> &&pendingOp, CtiTime &updatetime)
 {
-    _pendingOpThread.push(CTIDBG_new CtiPendable(pendingOp->getPointID(), CtiPendable::CtiPendableAction_Add, pendingOp, updatetime));
+    _pendingOpThread.push(CTIDBG_new CtiPendable(pendingOp->getPointID(), CtiPendable::CtiPendableAction_Add, std::move(pendingOp), updatetime));
     return true;
 }
 

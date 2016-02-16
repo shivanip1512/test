@@ -267,7 +267,7 @@ public:
     void processTagMessage(CtiTagMsg &tagMsg);
     void updateGroupPseduoControlPoint(const CtiPointBase &point, const CtiTime &delaytime);
 
-    bool addToPendingSet(CtiPendingPointOperations *&pendingOp, CtiTime &updatetime = CtiTime());
+    bool addToPendingSet(std::unique_ptr<CtiPendingPointOperations>&& pendingOp, CtiTime &updatetime = CtiTime());
     bool removePointDataFromPending(LONG pID);
 };
 
