@@ -7,13 +7,12 @@
 #include <string>
 
 class CtiFDRPoint;
-typedef boost::shared_ptr<CtiFDRPoint> CtiFDRPointSPtr;
 
 class IM_EX_FDRBASE CtiFDRDestination : public Cti::Loggable
 {
     public:
         CtiFDRDestination () {}; // this is only defined so this class can be used in an std::map
-        CtiFDRDestination( CtiFDRPointSPtr &parentPoint, const std::string &translation, const std::string &destination = std::string() );
+        CtiFDRDestination( const long parentPoint, const std::string &translation, const std::string &destination = std::string() );
         virtual ~CtiFDRDestination();
         CtiFDRDestination& operator=( const CtiFDRDestination &other );
 
@@ -27,8 +26,8 @@ class IM_EX_FDRBASE CtiFDRDestination : public Cti::Loggable
         std::string  getDestination(void) const;
         CtiFDRDestination& setDestination (std::string aDestination);
 
-        CtiFDRPointSPtr getParentPoint( void ) const;
-        CtiFDRDestination& setParentPoint( CtiFDRPointSPtr & parentPoint );
+        long getParentPointId( void ) const;
+        CtiFDRDestination & setParentPointId( const long parentPointId );
 
         bool operator<(const CtiFDRDestination& other) const;
         bool operator==(const CtiFDRDestination& other) const;
@@ -39,7 +38,7 @@ class IM_EX_FDRBASE CtiFDRDestination : public Cti::Loggable
         // private data
         std::string      iTranslation;
         std::string      iDestination;
-        CtiFDRPointSPtr  iParentPoint;
+        long             iParentPointId;
 };
 
 IM_EX_FDRBASE std::ostream& operator<< (std::ostream& os, const CtiFDRDestination& dest);

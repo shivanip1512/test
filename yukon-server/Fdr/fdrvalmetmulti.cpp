@@ -394,7 +394,8 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                                                    unsigned int& bufferSize)
 {
     CHAR *valmet=NULL;
-    CtiFDRPoint point = *(destination.getParentPoint());
+    CtiFDRManager* mgrPtr = getSendToList().getPointList();
+    CtiFDRPointSPtr &point = mgrPtr->findFDRPointID( destination.getParentPointId() );
 
    /* we allocate a valmet message here and it will be deleted
     * inside of the write function on the connection
@@ -409,9 +410,9 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
     valmet = new CHAR[sizeof(ValmetExtendedInterface_t)];
     ValmetExtendedInterface_t *ptr = (ValmetExtendedInterface_t *)valmet;
 
-    if (point.isCommStatus() && point.getValue() != 0)
+    if (point->isCommStatus() && point->getValue() != 0)
     {
-        updatePointQualitiesOnDevice(NonUpdatedQuality, point.getPaoID());
+        updatePointQualitiesOnDevice(NonUpdatedQuality, point->getPaoID());
     }
    /**************************
     * we allocate a valmet message here and it will be deleted
@@ -425,9 +426,9 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
         return false;
     }
     // set the timestamp, everything else is based on type of message
-    strcpy (ptr->TimeStamp,  YukonToForeignTime (point.getLastTimeStamp()).c_str());
+    strcpy (ptr->TimeStamp,  YukonToForeignTime (point->getLastTimeStamp()).c_str());
 
-    switch (point.getPointType())
+    switch (point->getPointType())
     {
         case AnalogPointType:
         case CalculatedPointType:
@@ -436,14 +437,14 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
             {
                 ptr->Function = htons (SINGLE_SOCKET_VALUE);
                 strcpy(ptr->Value.Name,valmetPortId.PointName.c_str());
-                ptr->Value.Quality = YukonToForeignQuality (point);
-                ptr->Value.LongValue = CtiFDRSocketInterface::htonieeef (point.getValue());
+                ptr->Value.Quality = YukonToForeignQuality (*point);
+                ptr->Value.LongValue = CtiFDRSocketInterface::htonieeef (point->getValue());
 
                 if (isPortLoggingNotRestricted(destination) && getDebugLevel () & DATA_SEND_DEBUGLEVEL)
                 {
-                    CTILOG_DEBUG(dout, "Analog/Calculated point "<< point.getPointID() <<
+                    CTILOG_DEBUG(dout, "Analog/Calculated point "<< point->getPointID() <<
                             " queued as "<< ptr->Value.Name <<
-                            " value "<< point.getValue() <<" with quality of "<< ForeignQualityToString(ptr->Value.Quality) <<
+                            " value "<< point->getValue() <<" with quality of "<< ForeignQualityToString(ptr->Value.Quality) <<
                             " to "<< getInterfaceName() <<" on Port "<< atoi(destination.getTranslationValue("Port").c_str()));
                 }
                 break;
@@ -452,32 +453,32 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
         case CalculatedStatusPointType:
         case StatusPointType:
             {
-                if (point.isControllable())
+                if (point->isControllable())
                 {
                     ptr->Function = htons (SINGLE_SOCKET_CONTROL);
                     strcpy (ptr->Control.Name,valmetPortId.PointName.c_str());
 
                     // check for validity of the status, we only have open or closed in controls
-                    if ((point.getValue() != STATE_OPENED) && (point.getValue() != STATE_CLOSED))
+                    if ((point->getValue() != STATE_OPENED) && (point->getValue() != STATE_CLOSED))
                     {
                         delete [] valmet;
                         valmet = NULL;
 
                         if (isPortLoggingNotRestricted(destination) && getDebugLevel() & DATA_SEND_ERR_DEBUGLEVEL)
                         {
-                            CTILOG_ERROR(dout, "Point "<< point.getPointID() <<" State "<< point.getValue() <<" is invalid for interface "<< getInterfaceName());
+                            CTILOG_ERROR(dout, "Point "<< point->getPointID() <<" State "<< point->getValue() <<" is invalid for interface "<< getInterfaceName());
                         }
                     }
                     else
                     {
-                        ptr->Control.Value = YukonToForeignStatus (point.getValue());
+                        ptr->Control.Value = YukonToForeignStatus (point->getValue());
 
                          if (isPortLoggingNotRestricted(destination) && getDebugLevel () & DATA_SEND_DEBUGLEVEL)
                          {
                              Cti::StreamBuffer logmsg;
 
-                             logmsg <<"Control point "<< point.getPointID() <<" queued as " << ptr->Control.Name;
-                             if (point.getValue() == STATE_OPENED)
+                             logmsg <<"Control point "<< point->getPointID() <<" queued as " << ptr->Control.Name;
+                             if (point->getValue() == STATE_OPENED)
                              {
                                  logmsg <<" state of Open ";
                              }
@@ -495,29 +496,29 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                 {
                     ptr->Function = htons (SINGLE_SOCKET_STATUS);
                     strcpy (ptr->Value.Name,valmetPortId.PointName.c_str());
-                    ptr->Status.Quality = YukonToForeignQuality (point);
+                    ptr->Status.Quality = YukonToForeignQuality (*point);
 
                     // check for validity of the status, we only have open or closed for Valmet
-                    if ((point.getValue() != STATE_OPENED) && (point.getValue() != STATE_CLOSED))
+                    if ((point->getValue() != STATE_OPENED) && (point->getValue() != STATE_CLOSED))
                     {
                         delete [] valmet;
                         valmet = NULL;
 
                         if (isPortLoggingNotRestricted(destination) && getDebugLevel() & DATA_SEND_ERR_DEBUGLEVEL)
                         {
-                            CTILOG_ERROR(dout, "Point "<< point.getPointID() <<" State "<< point.getValue() <<" is invalid for interface "<< getInterfaceName());
+                            CTILOG_ERROR(dout, "Point "<< point->getPointID() <<" State "<< point->getValue() <<" is invalid for interface "<< getInterfaceName());
                         }
                     }
                     else
                     {
-                        ptr->Status.Value = YukonToForeignStatus (point.getValue());
+                        ptr->Status.Value = YukonToForeignStatus (point->getValue());
 
                          if (isPortLoggingNotRestricted(destination) && getDebugLevel () & DATA_SEND_DEBUGLEVEL)
                          {
                              Cti::StreamBuffer logmsg;
 
-                             logmsg <<" Status point " << point.getPointID() <<" queued as "<< point.getTranslateName(string (FDR_VALMETMULTI));
-                             if (point.getValue() == STATE_OPENED)
+                             logmsg <<" Status point " << point->getPointID() <<" queued as "<< point->getTranslateName(string (FDR_VALMETMULTI));
+                             if (point->getValue() == STATE_OPENED)
                              {
                                  logmsg << " state of Open ";
                              }

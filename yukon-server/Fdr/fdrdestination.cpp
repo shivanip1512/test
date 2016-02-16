@@ -10,10 +10,10 @@
 
 using std::string;
 
-CtiFDRDestination::CtiFDRDestination( CtiFDRPointSPtr &parentPoint, const string &translation, const string &destination )
+CtiFDRDestination::CtiFDRDestination( const long parentPointId, const string &translation, const string &destination )
 :   iTranslation(translation),
     iDestination(destination),
-    iParentPoint(parentPoint)
+    iParentPointId(parentPointId)
 {
 }
 
@@ -27,16 +27,16 @@ CtiFDRDestination& CtiFDRDestination::operator=( const CtiFDRDestination &other 
     {
         iDestination = other.getDestination();
         iTranslation = other.getTranslation();
-        iParentPoint = other.getParentPoint();
+        iParentPointId = other.getParentPointId();
     }
     return *this;
 }
 
 bool CtiFDRDestination::operator<(const CtiFDRDestination& other) const
 {
-    if (iParentPoint->getPointID() != other.getParentPoint()->getPointID())
+    if( getParentPointId() != other.getParentPointId() )
     {
-        return iParentPoint->getPointID() < other.getParentPoint()->getPointID();
+        return getParentPointId() < other.getParentPointId();
     }
     else if (iDestination != other.iDestination)
     {
@@ -52,7 +52,7 @@ bool CtiFDRDestination::operator==(const CtiFDRDestination& other) const
 {
     bool eq = false;
 
-    if (iParentPoint->getPointID() == other.getParentPoint()->getPointID())
+    if( getParentPointId() == other.getParentPointId() )
     {
         if (iDestination == other.iDestination)
         {
@@ -98,15 +98,15 @@ CtiFDRDestination& CtiFDRDestination::setDestination (string aDestination)
   return *this;
 }
 
-CtiFDRPointSPtr CtiFDRDestination::getParentPoint( void ) const
+long CtiFDRDestination::getParentPointId( void ) const
 {
-    return iParentPoint;
+    return iParentPointId;
 }
 
-CtiFDRDestination& CtiFDRDestination::setParentPoint( CtiFDRPointSPtr & aParentPoint )
+CtiFDRDestination& CtiFDRDestination::setParentPointId( const long aParentPointId )
 {
-  iParentPoint = aParentPoint;
-  return *this;
+    iParentPointId = aParentPointId;
+    return *this;
 }
 
 string CtiFDRDestination::getTranslationValue(string propertyName) const {
@@ -142,7 +142,7 @@ string CtiFDRDestination::getTranslationValue(string propertyName) const {
 std::ostream& operator<< (std::ostream& os, const CtiFDRDestination& dest)
 {
     return os << "[destination " << dest.getDestination()
-        << " for " << *dest.getParentPoint() << "]";
+        << " for " << dest.getParentPointId() << "]";
 }
 
 string CtiFDRDestination::toString() const

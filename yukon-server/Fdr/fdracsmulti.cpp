@@ -291,7 +291,8 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                                            unsigned int& bufferSize)
 {
     CHAR* acs = NULL;
-    CtiFDRPoint point = *(destination.getParentPoint());
+    CtiFDRManager* mgrPtr = getSendToList().getPointList();
+    CtiFDRPointSPtr point = mgrPtr->findFDRPointID( destination.getParentPointId());
 
    /* we allocate a acs message here and it will be deleted
     * inside of the write function on the connection
@@ -313,13 +314,13 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
         return false;
     }
     // set the timestamp, everything else is based on type of message
-    strcpy (ptr->TimeStamp,  YukonToForeignTime (point.getLastTimeStamp()).c_str());
+    strcpy (ptr->TimeStamp,  YukonToForeignTime (point->getLastTimeStamp()).c_str());
 
     ptr->Value.RemoteNumber = htons(acsId.RemoteNumber);
     ptr->Value.PointNumber = htons(acsId.PointNumber);
     ptr->Value.CategoryCode = acsId.CategoryCode;
 
-    switch (point.getPointType())
+    switch (point->getPointType())
     {
         case AnalogPointType:
         case CalculatedPointType:
@@ -328,12 +329,12 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
             {
                 ptr->Function = htons (SINGLE_SOCKET_VALUE);
 
-                ptr->Value.Quality = YukonToForeignQuality (point.getQuality());
-                ptr->Value.LongValue = CtiFDRSocketInterface::htonieeef (point.getValue());
+                ptr->Value.Quality = YukonToForeignQuality (point->getQuality());
+                ptr->Value.LongValue = CtiFDRSocketInterface::htonieeef (point->getValue());
 
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CTILOG_DEBUG(dout, logNow() <<"New Analog/Calculated value "<< point.getValue() << " from "<< point <<" queued to "<< acsId);
+                    CTILOG_DEBUG(dout, logNow() <<"New Analog/Calculated value "<< point->getValue() << " from "<< *point <<" queued to "<< acsId);
                 }
 
                 break;
@@ -345,30 +346,30 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                 /* status point is both status and or control so we must check
                  * here if we are supposed to be sending a control
                  */
-                if (point.isControllable())
+                if (point->isControllable())
                 {
                     // we are doing control
                     ptr->Function = htons (SINGLE_SOCKET_CONTROL);
 
                     // check for validity of the status, we only have open or closed for ACS
-                    if ((point.getValue() != STATE_OPENED) && (point.getValue() != STATE_CLOSED))
+                    if ((point->getValue() != STATE_OPENED) && (point->getValue() != STATE_CLOSED))
                     {
                         delete [] acs;
                         acs = NULL;
 
                         if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CTILOG_DEBUG(dout, logNow() <<"Invalid control state of "<< point.getValue() <<" for "<< point);
+                            CTILOG_DEBUG(dout, logNow() <<"Invalid control state of "<< point->getValue() <<" for "<< *point);
                         }
                     }
                     else
                     {
-                        ptr->Control.Value = YukonToForeignStatus (point.getValue());
+                        ptr->Control.Value = YukonToForeignStatus (point->getValue());
 
                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CTILOG_DEBUG(dout, logNow() <<"New Control State "<< (point.getValue() == STATE_OPENED ? "OPEN" : "CLOSE") <<
-                                    " ("<< ptr->Control.Value <<") from "<< point <<" queued to "<< acsId);
+                            CTILOG_DEBUG(dout, logNow() <<"New Control State "<< (point->getValue() == STATE_OPENED ? "OPEN" : "CLOSE") <<
+                                    " ("<< ptr->Control.Value <<") from "<< *point <<" queued to "<< acsId);
                         }
                     }
                 }
@@ -376,27 +377,27 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                 {
                     ptr->Function = htons (SINGLE_SOCKET_STATUS);
                     // everything for control and status is the same except function
-                    ptr->Status.Quality = YukonToForeignQuality (point.getQuality());
+                    ptr->Status.Quality = YukonToForeignQuality (point->getQuality());
 
                     // check for validity of the status, we only have open or closed for ACS
-                    if ((point.getValue() != STATE_OPENED) && (point.getValue() != STATE_CLOSED))
+                    if ((point->getValue() != STATE_OPENED) && (point->getValue() != STATE_CLOSED))
                     {
                         delete [] acs;
                         acs = NULL;
 
                         if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CTILOG_DEBUG(dout, logNow() <<"State "<< point.getValue() <<" is invalid for "<< point);
+                            CTILOG_DEBUG(dout, logNow() <<"State "<< point->getValue() <<" is invalid for "<< *point);
                         }
                     }
                     else
                     {
-                        ptr->Status.Value = YukonToForeignStatus (point.getValue());
+                        ptr->Status.Value = YukonToForeignStatus (point->getValue());
 
                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CTILOG_DEBUG(dout, logNow() <<"New Status Value "<< (point.getValue() == STATE_OPENED ? "OPEN" : "CLOSE") <<
-                                    " ("<< ptr->Control.Value <<") from "<< point <<" queued to "<< acsId);
+                            CTILOG_DEBUG(dout, logNow() <<"New Status Value "<< (point->getValue() == STATE_OPENED ? "OPEN" : "CLOSE") <<
+                                    " ("<< ptr->Control.Value <<") from "<< *point <<" queued to "<< acsId);
                         }
                     }
                 }

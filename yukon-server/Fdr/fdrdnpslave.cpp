@@ -75,7 +75,12 @@ DnpSlave::DnpSlave() :
     _porterConnection.setName("FDR DNP Slave to Porter");
 }
 
-DnpSlave::~DnpSlave() = default;
+DnpSlave::~DnpSlave()
+{
+    _sendMap.clear();
+    _receiveMap.clear();
+    _serverNameLookup.clear();
+}
 
 void DnpSlave::startup()
 {
@@ -384,6 +389,13 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 {
     const CtiTime Now;
 
+#if defined (LEAK_CHECK)
+    static _CrtMemState s1;
+    _CrtMemCheckpoint( &s1 );
+    //_CrtMemDumpStatistics( &s1 );
+    CTILOG_DEBUG( dout, "Memory: size " << s1.lSizes[1] << ", count " << s1.lCounts[1] );
+#endif
+
     std::vector<std::unique_ptr<Protocols::DnpSlave::output_point>> outputPoints;
 
     {
@@ -399,8 +411,9 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
                 dnpId.MasterId == _dnpSlave.getDstAddr() )
             {
                 const CtiFDRDestination &fdrdest = kv.first;
-                CtiFDRPointSPtr fdrPoint = fdrdest.getParentPoint();
-                if( !findPointIdInList( fdrPoint->getPointID(), getSendToList(), *fdrPoint ) )
+                long fdrPointId = fdrdest.getParentPointId();
+                CtiFDRPointSPtr fdrPoint( new CtiFDRPoint());
+                if( !findPointIdInList( fdrPointId, getSendToList(), *fdrPoint ) )
                     continue;
 
                 std::unique_ptr<Protocols::DnpSlave::output_point> point;
@@ -553,15 +566,10 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
                 && dnpId.Offset == ( control.offset + 1 ) )  //  DnpId offsets are 1-based (Yukon is 1-based, DNP is 0-based)
             {
                 const CtiFDRDestination &fdrdest = kv.first;
-                CtiFDRPointSPtr fdrPoint = fdrdest.getParentPoint();
-
-                {
-
-                    if( !findPointIdInList( fdrPoint->getPointID(), getReceiveFromList(), *fdrPoint ) )
-                    {
-                        continue;
-                    }
-                }
+                long fdrPointId = fdrdest.getParentPointId();
+                CtiFDRPointSPtr fdrPoint( new CtiFDRPoint() );
+                if( !findPointIdInList( fdrPointId, getReceiveFromList(), *fdrPoint ) )
+                    continue;
 
                 if( fdrPoint->isControllable() )
                 {
@@ -1015,15 +1023,10 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
             && dnpId.Offset    == (analog.offset + 1) )
         {
             const CtiFDRDestination &fdrdest = kv.first;
-            CtiFDRPointSPtr fdrPoint = fdrdest.getParentPoint();
-
-            {
-
-                if ( ! findPointIdInList(fdrPoint->getPointID(),getReceiveFromList(),*fdrPoint) )
-                {
-                    continue;
-                }
-            }
+            long fdrPointId = fdrdest.getParentPointId();
+            CtiFDRPointSPtr fdrPoint( new CtiFDRPoint() );
+            if( !findPointIdInList( fdrPointId, getReceiveFromList(), *fdrPoint ) )
+                continue;
 
             if( fdrPoint->isControllable() )
             {

@@ -77,9 +77,10 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
     for (; destIter != destEnd; ++destIter)
     {
         const CtiFDRDestination& dest = (*destIter).second;
-        CtiFDRPoint& point = *dest.getParentPoint();
+        CtiFDRManager* mgrPtr = _parent->getSendToList().getPointList();
+        CtiFDRPointSPtr& point = mgrPtr->findFDRPointID( dest.getParentPointId() );
 
-        if (!(*checkFunc)(point.getPointType()))
+        if (!(*checkFunc)(point->getPointType()))
         {
             if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
@@ -90,10 +91,10 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
 
         double value = rawValue;
 
-        if (checkValueType(point.getPointType())) // is this correct???
+        if( checkValueType( point->getPointType() ) ) // is this correct???
         {
-            value *= point.getMultiplier();
-            value += point.getOffset();
+            value *= point->getMultiplier();
+            value += point->getOffset();
         }
 
         if (timestamp == PASTDATE)
@@ -105,10 +106,10 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
             continue;
         }
         CtiPointDataMsg* pData;
-        pData = new CtiPointDataMsg(point.getPointID(),
+        pData = new CtiPointDataMsg(point->getPointID(),
                                     value,
                                     quality,
-                                    point.getPointType());
+                                    point->getPointType());
 
         pData->setTime(timestamp);
 
@@ -117,7 +118,7 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
 
         if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CTILOG_DEBUG(dout, _parent->logNow() <<"New value of "<< value <<" updated for "<< point);
+            CTILOG_DEBUG(dout, _parent->logNow() <<"New value of "<< value <<" updated for "<< *point);
         }
 
         sentAPoint = true;
@@ -158,9 +159,10 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
     for (; destIter != destEnd; ++destIter)
     {
         const CtiFDRDestination& dest = (*destIter).second;
-        CtiFDRPoint& point = *dest.getParentPoint();
-
-        if (!checkStatusType(point.getPointType()))
+        CtiFDRManager* mgrPtr = _parent->getSendToList().getPointList();
+        CtiFDRPointSPtr& point = mgrPtr->findFDRPointID( dest.getParentPointId() );
+        
+        if (!checkStatusType(point->getPointType()))
         {
             CTILOG_ERROR(dout, _parent->logNow() <<"Foreign control point "<< id <<
                     " was mapped to non-control point "<< dest);
@@ -171,7 +173,7 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
             continue;
         }
 
-        if (!point.isControllable())
+        if (!point->isControllable())
         {
             CTILOG_ERROR(dout, _parent->logNow() <<"Foreign control point "<< id
                     <<" was mapped to "<< dest <<", which is not configured for control");
@@ -189,7 +191,7 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
 
         cmdMsg->insert( -1 );                // This is the dispatch token and is unimplemented at this time
         cmdMsg->insert(0);                   // device id, unknown at this point, dispatch will find it
-        cmdMsg->insert(point.getPointID());  // point for control
+        cmdMsg->insert(point->getPointID());  // point for control
         cmdMsg->insert(controlState);
         _parent->sendMessageToDispatch(cmdMsg);
 
