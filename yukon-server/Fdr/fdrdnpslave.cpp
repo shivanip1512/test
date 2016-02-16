@@ -75,12 +75,7 @@ DnpSlave::DnpSlave() :
     _porterConnection.setName("FDR DNP Slave to Porter");
 }
 
-DnpSlave::~DnpSlave()
-{
-    _sendMap.clear();
-    _receiveMap.clear();
-    _serverNameLookup.clear();
-}
+DnpSlave::~DnpSlave() = default;
 
 void DnpSlave::startup()
 {
