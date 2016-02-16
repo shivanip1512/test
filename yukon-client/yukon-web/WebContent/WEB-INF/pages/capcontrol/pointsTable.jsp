@@ -24,7 +24,7 @@
                             <cti:pointStatus pointId="${point.pointId}" statusPointOnly="${true}"/>
                         </td>
                         <td class="wsnw">
-                            <cti:pointValue pointId="${point.pointId}" format="SHORT" />
+                            <cti:pointValue pointId="${point.pointId}" format="${point.format}" />
                        </td>
                        <td class="wsnw">
                             <tags:historicalValue pao="${area}" pointId="${point.pointId}" />

@@ -8,6 +8,7 @@ public class PointInfo {
     private PointIdentifier pointIdentifier;
     private String unitOfMeasure;
     private int stateGroupId;
+    private String format = "SHORT";
 
     public int getPointId() {
         return pointId;
@@ -90,5 +91,13 @@ public class PointInfo {
         } else if (!unitOfMeasure.equals(other.unitOfMeasure))
             return false;
         return true;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 }

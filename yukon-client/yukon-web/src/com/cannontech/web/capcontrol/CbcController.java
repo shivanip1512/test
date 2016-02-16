@@ -23,9 +23,14 @@ import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
@@ -40,6 +45,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ImmutableMap;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
@@ -52,8 +58,20 @@ public class CbcController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
+    @Autowired private AttributeService attributeService;
+
 
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
+    
+    private static final Map<BuiltInAttribute,String> formatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
+            .put(BuiltInAttribute.FIRMWARE_VERSION, "{rawValue|firmwareVersion}")
+            .put(BuiltInAttribute.IP_ADDRESS, "{rawValue|ipAddress}")
+            .put(BuiltInAttribute.NEUTRAL_CURRENT_SENSOR, "{rawValue|neutralCurrent}")
+            .put(BuiltInAttribute.SERIAL_NUMBER, "{rawValue|long}")
+            .put(BuiltInAttribute.UDP_PORT, "{rawValue|long}")
+            .put(BuiltInAttribute.LAST_CONTROL_REASON, "{rawValue|lastControlReason}")
+            .put(BuiltInAttribute.IGNORED_CONTROL_REASON, "{rawValue|ignoredControlReason}")
+            .build();
 
     @RequestMapping(value = "cbc/{id}", method = RequestMethod.GET)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
@@ -146,6 +164,21 @@ public class CbcController {
 
         if (cbc.getId() != null) {
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
+            //check for special formats
+            for(List<PointInfo> pointList : points.values()){
+                for(PointInfo point : pointList){
+                    LitePoint litePoint = pointDao.getLitePoint(point.getPointId());
+                    PointIdentifier pid = new PointIdentifier(point.getType(), litePoint.getPointOffset());
+                    PaoTypePointIdentifier pptId = PaoTypePointIdentifier.of(cbc.getPaoType(), pid);
+                    //This set should contain 0 items if there is not a special format, or 1 if there is
+                    Set<BuiltInAttribute> attributes = attributeService.findAttributesForPoint(pptId, formatMappings.keySet());
+                    for (BuiltInAttribute attribute: attributes) {
+                        if (formatMappings.get(attribute) != null) {
+                            point.setFormat(formatMappings.get(attribute));
+                        }
+                    }
+                }
+            }
             model.addAttribute("points", points);
         }
 
