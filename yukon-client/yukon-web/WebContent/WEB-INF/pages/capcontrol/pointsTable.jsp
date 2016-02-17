@@ -22,6 +22,16 @@
                         </td>
                         <td class="state-indicator">
                             <cti:pointStatus pointId="${point.pointId}" statusPointOnly="${true}"/>
+                            <c:if test="${point.format == '{rawValue|lastControlReason}'}">
+                                <span class="box state-box"
+                                    data-format="background"
+                                    data-color-updater="POINT/${point.pointId}/{rawValue|lastControlReasonColor}"></span>
+                            </c:if>
+                            <c:if test="${point.format == '{rawValue|ignoredControlReason}'}">
+                                <span class="box state-box"
+                                    data-format="background"
+                                    data-color-updater="POINT/${point.pointId}/{rawValue|ignoredControlReasonColor}"></span>
+                            </c:if>
                         </td>
                         <td class="wsnw">
                             <cti:pointValue pointId="${point.pointId}" format="${point.format}" />
