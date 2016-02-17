@@ -134,7 +134,12 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
                 boolean sendBilling = false;
                 // For reading type "Billing" messages should be send per hour
                 if (minsCounter % 60 == 0) {
+                    hourlyCounter = 0;
                     sendBilling = true;
+                }
+                // Reset the counter after 24 hrs.
+                if(minsCounter % 1400 == 0) {
+                    perDayCounter = 0;
                 }
                 minsCounter++;
                 Map<RfnMeterReadingType, List<RfnDevice>> meterList = generateMeterList(rfnMeterList,
