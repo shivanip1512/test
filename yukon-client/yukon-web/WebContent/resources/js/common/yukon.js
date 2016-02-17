@@ -722,7 +722,6 @@ $(function () {
                         data = JSON.stringify(mapData);
                     }
                     
-                    
                 }
             }
            
@@ -730,15 +729,15 @@ $(function () {
                 data = settings.data;
             }
             
-            if (type === 'json') {
-                data = JSON.stringify(data);
-            }
-            
             if(settings.data == null || (typeof settings.data != 'string' && typeof settings.data != 'object' && typeof settings.data != 'json')){
                 var mapData = {"com.cannontech.yukon.request.csrf.token" : csrfVal};
                 data = JSON.stringify(mapData);
             }else{
                 data[csrfName] = csrfVal;	
+            }
+            
+            if (type === 'json') {
+                data = JSON.stringify(data);
             }
             
             settings.data = data;
