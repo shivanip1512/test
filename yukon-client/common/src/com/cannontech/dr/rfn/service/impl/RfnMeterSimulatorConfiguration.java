@@ -9,8 +9,8 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public enum RfnMeterSimulatorConfiguration {
 
-    USAGE(BuiltInAttribute.USAGE ,GenerationType.HOURLY, GeneratedValueType.INCREASING,100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL),
-    DELIVERED_KWH(BuiltInAttribute.DELIVERED_KWH ,GenerationType.NEW, GeneratedValueType.DECREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL),
+    USAGE(BuiltInAttribute.USAGE ,GenerationType.HOURLY, GeneratedValueType.INCREASING,100.00, 1000000.00, 20.00, false, RfnMeterReadingType.INTERVAL),
+    DELIVERED_KWH(BuiltInAttribute.DELIVERED_KWH ,GenerationType.NEW, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL),
     RECEIVED_KWH(BuiltInAttribute.RECEIVED_KWH ,GenerationType.HOURLY, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL),
     SUM_KWH(BuiltInAttribute.SUM_KWH, GenerationType.HOURLY, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL),
     NET_KWH(BuiltInAttribute.NET_KWH ,GenerationType.HOURLY, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL),
