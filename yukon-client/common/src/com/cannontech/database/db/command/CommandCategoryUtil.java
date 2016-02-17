@@ -63,7 +63,7 @@ public class CommandCategoryUtil {
      */
     public static boolean isCommandCategory(String category) {
         
-        for (CommandCategory commandCategory : CommandCategory.values()) {
+        for (CommandCategory commandCategory :  getAllCategories()) {
             if (commandCategory.getDbString().equalsIgnoreCase(category)) return true;
         }
         

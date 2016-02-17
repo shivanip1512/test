@@ -1,5 +1,10 @@
 package com.cannontech.database.db.command;
 
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
+
 public enum CommandCategory {
     
     ALPHA_BASE("All Alpha Meters"),
@@ -34,6 +39,15 @@ public enum CommandCategory {
     SA205_SERIAL("SA205Serial"),
     SA305_SERIAL("SA305Serial");
     
+    private final static Map<String, CommandCategory> lookupByDbString;
+
+    static {
+        Builder<String, CommandCategory> dbBuilder = ImmutableMap.builder();
+        for (CommandCategory value : CommandCategory.values()) {
+            dbBuilder.put(value.getDbString(), value);
+        }
+        lookupByDbString = dbBuilder.build();
+    }
     private String dbString;
     
     private CommandCategory(String dbString) {
@@ -42,5 +56,9 @@ public enum CommandCategory {
     
     public String getDbString() {
         return dbString;
+    }
+    
+    public static CommandCategory getForDbString(String dbString) {
+        return lookupByDbString.get(dbString);
     }
 }

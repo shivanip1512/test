@@ -104,10 +104,11 @@ public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropLi
                     ((Command) o).setCategory(getDeviceType());
                     writeDBChange((Command) o, TransactionType.INSERT);
                     Command cmd = (Command) o;
+                    System.out.println(getDeviceType());
                     if (CommandCategoryUtil.isCommandCategory(getDeviceType())) {
                         // The deviceType is actually a category, not a
                         // deviceType from YukonPaobject.paoType column
-                        List<PaoType> paoTypes = CommandCategoryUtil.getAllTypesForCategory(CommandCategory.valueOf(getDeviceType()));
+                        List<PaoType> paoTypes = CommandCategoryUtil.getAllTypesForCategory(CommandCategory.getForDbString(getDeviceType()));
                         DeviceTypeCommand dbP = null;
                         for (PaoType paoType : paoTypes) {
                             // Add to DeviceTypeCommand table, entries for all

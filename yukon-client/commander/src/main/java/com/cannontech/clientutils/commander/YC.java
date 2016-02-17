@@ -11,11 +11,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,8 +45,6 @@ import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -62,7 +55,6 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -1320,7 +1312,7 @@ public class YC extends Observable implements MessageListener {
         
         if (CommandCategoryUtil.isCommandCategory(deviceType)) {
             // The deviceType is actually a category, not a deviceType from YukonPaobject.paoType column
-            CommandCategory category = CommandCategory.valueOf(deviceType);
+            CommandCategory category = CommandCategory.getForDbString(deviceType);
             List<PaoType> paoTypes = CommandCategoryUtil.getAllTypesForCategory(category);
             DeviceTypeCommand deviceTypeCommand = null;
             for (PaoType paoType : paoTypes) {
