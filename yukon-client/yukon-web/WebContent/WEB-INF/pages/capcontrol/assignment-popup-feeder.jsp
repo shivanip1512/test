@@ -32,7 +32,7 @@ $(function() {
 });
 </script>
 
-<cti:msgScope paths="modules.capcontrol">
+<cti:msgScope paths="yukon.web.modules.capcontrol">
 
 <div class="column-12-12 clearfix select-box">
     <div id="unassigned" class="column one select-box-available" style="min-height:150px;">
@@ -70,7 +70,7 @@ $(function() {
     </div>
     
      <div id="tripOrder" class="column one select-box-trip-order js-with-movables" data-item-selector=".select-box-item" style="margin-top:15px;">
-        <h3><i:inline key="yukon.web.modules.capcontrol.bankMove.tripOrder"/></h3>
+        <h3><i:inline key=".bankMove.tripOrder"/></h3>
         <c:forEach var="item" items="${tripOrders}" varStatus="status">
             <div class="select-box-item cm" style="padding-left:10px;"
                 data-id="${item.id}">${fn:escapeXml(item.name)}
@@ -87,7 +87,7 @@ $(function() {
         </c:forEach>
     </div>
         <div id="closeOrder" class="column two nogutter select-box-close-order js-with-movables" data-item-selector=".select-box-item" style="margin-top:15px;">
-        <h3><i:inline key="yukon.web.modules.capcontrol.bankMove.closeOrder"/></h3>
+        <h3><i:inline key=".bankMove.closeOrder"/></h3>
         <c:forEach var="item" items="${closeOrders}" varStatus="status">
             <div class="select-box-item cm" style="padding-left:10px;"
                 data-id="${item.id}">${fn:escapeXml(item.name)}
