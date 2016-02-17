@@ -200,8 +200,6 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
 {
     restore(rdr);
 
-    _operationStats.setPAOId(getPaoId());
-    _confirmationStats.setPAOId(getPaoId());
     _originalParent.setPAOId(getPaoId());
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -229,16 +227,6 @@ CtiCCFeeder::~CtiCCFeeder()
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-}
-
-CtiCCOperationStats& CtiCCFeeder::getOperationStats()
-{
-    return _operationStats;
-}
-
-CtiCCConfirmationStats& CtiCCFeeder::getConfirmationStats()
-{
-    return _confirmationStats;
 }
 
 CtiCCOriginalParent& CtiCCFeeder::getOriginalParent()
@@ -5853,8 +5841,6 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
             _cccapbanks.insert(((CtiCCCapBank*)right._cccapbanks[i])->replicate());
         }
 
-        _operationStats = right._operationStats;
-        _confirmationStats = right._confirmationStats;
         _originalParent = right._originalParent;
         _insertDynamicDataFlag = right._insertDynamicDataFlag;
         _dirty = right._dirty;

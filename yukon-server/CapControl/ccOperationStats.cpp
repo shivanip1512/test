@@ -12,7 +12,6 @@
 
 using namespace capcontrol;
 using std::string;
-using std::endl;
 
 extern unsigned long _CC_DEBUG;
 

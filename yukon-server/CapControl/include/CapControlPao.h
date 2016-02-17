@@ -2,6 +2,9 @@
 
 #include "yukon.h"
 #include "cctypes.h"
+#include "ccOperationStats.h"
+#include "ccConfirmationStats.h"
+
 
 namespace Cti
 {
@@ -22,6 +25,9 @@ class CapControlPao
 
         long    _disabledStatePointId;
         Cti::CapControl::PointIdVector _pointIds;
+
+        CtiCCOperationStats     _operationStats;
+        CtiCCConfirmationStats  _confirmationStats;
 
     public:
 
@@ -63,5 +69,8 @@ class CapControlPao
         Cti::CapControl::PointIdVector* getPointIds() {return &_pointIds;}
         void removePointId(long pId);
         void addPointId(const long ID);
+
+        CtiCCOperationStats &    getOperationStats();
+        CtiCCConfirmationStats & getConfirmationStats();
 };
 

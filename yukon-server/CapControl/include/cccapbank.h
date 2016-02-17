@@ -2,8 +2,6 @@
 
 #include "ccmonitorpoint.h"
 #include "cctwowaycbcpoints.h"
-#include "ccoperationstats.h"
-#include "ccConfirmationStats.h"
 #include "ccoriginalparent.h"
 #include "cctypes.h"
 #include "ctitime.h"
@@ -232,8 +230,6 @@ public:
 
     bool isExpresscom();
 
-    CtiCCOperationStats& getOperationStats();
-    CtiCCConfirmationStats& getConfirmationStats();
     CtiCCOriginalParent& getOriginalParent();
     const CtiCCOriginalParent& getOriginalParent() const;
 
@@ -371,8 +367,6 @@ private:
     CtiTime _ignoreIndicatorTimeUpdated;
     CtiTime _unsolicitedChangeTimeUpdated;
 
-    CtiCCOperationStats _operationStats;
-    CtiCCConfirmationStats _confirmationStats;
     CtiCCOriginalParent _originalParent;
 
     long _actionId;

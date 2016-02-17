@@ -1,8 +1,6 @@
 #pragma once
 
 #include "CapControlPao.h"
-#include "ccOperationStats.h"
-#include "ccConfirmationStats.h"
 
 
 class CtiCCSubstation : public CapControlPao
@@ -32,8 +30,6 @@ public:
 
     Cti::CapControl::PaoIdVector getCCSubIds() const {return _subBusIds;};
     void addCCSubId(long busId){_subBusIds.push_back(busId);};
-    CtiCCOperationStats& getOperationStats();
-    CtiCCConfirmationStats& getConfirmationStats();
 
     void setOvUvDisabledFlag(bool flag);
     void setVoltReductionFlag(bool flag);
@@ -82,8 +78,6 @@ private:
     long _saEnabledId;
 
     long _voltReductionControlId;
-    CtiCCOperationStats _operationStats;
-    CtiCCConfirmationStats _confirmationStats;
 
     //don't stream
     bool _insertDynamicDataFlag;
@@ -92,8 +86,6 @@ private:
     Cti::CapControl::PaoIdVector _subBusIds;
 
     void restore(Cti::RowReader& rdr);
-
-
 };
 
 typedef CtiCCSubstation* CtiCCSubstationPtr;

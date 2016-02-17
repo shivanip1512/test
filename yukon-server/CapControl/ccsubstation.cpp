@@ -40,8 +40,6 @@ _dirty(false)
 CtiCCSubstation::CtiCCSubstation(Cti::RowReader& rdr) : CapControlPao(rdr)
 {
     restore(rdr);
-    _operationStats.setPAOId(getPaoId());
-    _confirmationStats.setPAOId(getPaoId());
 }
 
 CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation)
@@ -63,18 +61,6 @@ CtiCCSubstation::~CtiCCSubstation()
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
-
-CtiCCOperationStats& CtiCCSubstation::getOperationStats()
-{
-    return _operationStats;
-}
-
-
-CtiCCConfirmationStats& CtiCCSubstation::getConfirmationStats()
-{
-    return _confirmationStats;
-}
-
 
 /*---------------------------------------------------------------------------
     operator=
@@ -104,9 +90,6 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
 
         _subBusIds.clear();
         _subBusIds.assign(right._subBusIds.begin(), right._subBusIds.end());
-
-        _operationStats = right._operationStats;
-        _confirmationStats = right._confirmationStats;
 
     }
     return *this;

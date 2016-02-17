@@ -95,8 +95,6 @@ _parentId(0)
     restore(rdr);
      _monitorPoint.clear();
      _ovuvSituationFlag = false;
-     _operationStats.setPAOId(getPaoId());
-     _confirmationStats.setPAOId(getPaoId());
      _originalParent.setPAOId(getPaoId());
 }
 
@@ -120,16 +118,6 @@ CtiCCTwoWayPoints & CtiCCCapBank::getTwoWayPoints()
     }
 
     return *_twoWayPoints;
-}
-
-CtiCCOperationStats& CtiCCCapBank::getOperationStats()
-{
-    return _operationStats;
-}
-
-CtiCCConfirmationStats& CtiCCCapBank::getConfirmationStats()
-{
-    return _confirmationStats;
 }
 
 CtiCCOriginalParent& CtiCCCapBank::getOriginalParent()
@@ -1721,8 +1709,6 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         _ovuvSituationFlag = rightObj._ovuvSituationFlag;
 
         _originalParent = rightObj._originalParent;
-
-        _operationStats = rightObj._operationStats;
 
         if ( rightObj._twoWayPoints )
         {

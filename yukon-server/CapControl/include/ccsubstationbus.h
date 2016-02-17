@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Controllable.h"
-#include "ccOperationStats.h"
-#include "ccConfirmationStats.h"
 #include "regression.h"
 #include "ccfeeder.h"
 #include "TimeOfDayStrategy.h"
@@ -356,9 +354,6 @@ public:
 
     std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
-    CtiCCOperationStats& getOperationStats();
-    CtiCCConfirmationStats& getConfirmationStats();
-
     CtiCCSubstationBus& operator=(const CtiCCSubstationBus& right);
 
     CtiCCSubstationBus* replicate() const;
@@ -483,9 +478,6 @@ private:
     CtiTime _lastWattPointTime;
     CtiTime _lastVoltPointTime;
     long    _commsStatePointId;
-
-    CtiCCOperationStats _operationStats;
-    CtiCCConfirmationStats _confirmationStats;
 
     //don't stream
     bool _insertDynamicDataFlag;

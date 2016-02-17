@@ -4,11 +4,9 @@
 #include "pointtypes.h"
 #include "pointdefs.h"
 #include "msg_pdata.h"
-#include "logger.h"
 #include "ccutil.h"
 
 using namespace capcontrol;
-using std::endl;
 
 extern unsigned long _CC_DEBUG;
 

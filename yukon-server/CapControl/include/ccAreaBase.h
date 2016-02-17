@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Controllable.h"
-#include "ccOperationStats.h"
-#include "ccConfirmationStats.h"
 
 namespace Cti
 {
@@ -31,8 +29,6 @@ public:
     Cti::CapControl::PaoIdVector getSubstationIds() const {return _subStationIds;}
     void addSubstationId(long subId);
     void removeSubstationId(long subId);
-    CtiCCOperationStats& getOperationStats();
-    CtiCCConfirmationStats& getConfirmationStats();
 
     void setVoltReductionControlPointId(long pointId);
     void setVoltReductionControlValue(bool flag);
@@ -71,11 +67,6 @@ private:
     bool _areaUpdatedFlag;
 
     Cti::CapControl::PaoIdVector _subStationIds;
-
-    CtiCCOperationStats _operationStats;
-    CtiCCConfirmationStats _confirmationStats;
-
-
 };
 
 typedef CtiCCAreaBase* CtiCCAreaBasePtr;

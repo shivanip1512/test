@@ -52,8 +52,6 @@ CtiCCAreaBase::CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyMana
         _areaUpdatedFlag(false)
 {
     restore(rdr);
-    _operationStats.setPAOId(getPaoId());
-    _confirmationStats.setPAOId(getPaoId());
 }
 
 CtiCCAreaBase::CtiCCAreaBase(const CtiCCAreaBase& base)
@@ -73,17 +71,6 @@ CtiCCAreaBase::~CtiCCAreaBase()
     }
 }
 
-CtiCCOperationStats& CtiCCAreaBase::getOperationStats()
-{
-    return _operationStats;
-}
-
-CtiCCConfirmationStats& CtiCCAreaBase::getConfirmationStats()
-{
-    return _confirmationStats;
-}
-
-
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
@@ -102,9 +89,6 @@ CtiCCAreaBase& CtiCCAreaBase::operator=(const CtiCCAreaBase& right)
         _additionalFlags = right._additionalFlags;
 
         _subStationIds = right._subStationIds;
-
-        _operationStats = right._operationStats;
-        _confirmationStats = right._confirmationStats;
 
         _dirty = right._dirty;
         _areaUpdatedFlag = right._areaUpdatedFlag;

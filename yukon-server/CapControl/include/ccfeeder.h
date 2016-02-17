@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Controllable.h"
-#include "ccOperationStats.h"
-#include "ccConfirmationStats.h"
 #include "ccOriginalParent.h"
 #include "regression.h"
 #include "cccapbank.h"
@@ -298,8 +296,6 @@ public:
 
     bool isDataOldAndFallBackNecessary(std::string controlUnits);
 
-    CtiCCOperationStats& getOperationStats();
-    CtiCCConfirmationStats& getConfirmationStats();
     CtiCCOriginalParent& getOriginalParent();
     const CtiCCOriginalParent& getOriginalParent() const;
 
@@ -418,8 +414,6 @@ private:
     CtiTime _lastVoltPointTime;
     long _retryIndex;
 
-    CtiCCOperationStats _operationStats;
-    CtiCCConfirmationStats _confirmationStats;
     CtiCCOriginalParent _originalParent;
 
     //don't stream

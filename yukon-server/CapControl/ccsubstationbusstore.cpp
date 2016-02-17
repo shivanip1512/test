@@ -9664,6 +9664,101 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 
 }
 
+void CtiCCSubstationBusStore::setOperationSuccessPercents( CapControlPao * object,
+                                                           CCStatsObject   userDef,
+                                                           CCStatsObject   daily,
+                                                           CCStatsObject   weekly,
+                                                           CCStatsObject   monthly )
+{
+    object->getOperationStats().setUserDefOpSuccessPercent( userDef.getAverage() );
+    object->getOperationStats().setUserDefOpCount( userDef.getOpCount() );
+    object->getOperationStats().setUserDefConfFail( userDef.getFailCount() );
+    object->getOperationStats().setDailyOpSuccessPercent(  daily.getAverage() );
+    object->getOperationStats().setDailyOpCount( daily.getOpCount() );
+    object->getOperationStats().setDailyConfFail( daily.getFailCount() );
+    object->getOperationStats().setWeeklyOpSuccessPercent( weekly.getAverage() );
+    object->getOperationStats().setWeeklyOpCount( weekly.getOpCount() );
+    object->getOperationStats().setWeeklyConfFail( weekly.getFailCount() );
+    object->getOperationStats().setMonthlyOpSuccessPercent( monthly.getAverage() );
+    object->getOperationStats().setMonthlyOpCount( monthly.getOpCount() );
+    object->getOperationStats().setMonthlyConfFail( monthly.getFailCount() );
+}
+
+void CtiCCSubstationBusStore::setConfirmationSuccessPercents( CapControlPao * object,
+                                                              CCStatsObject   userDef,
+                                                              CCStatsObject   daily,
+                                                              CCStatsObject   weekly,
+                                                              CCStatsObject   monthly )
+{
+    object->getConfirmationStats().setUserDefCommSuccessPercent( userDef.getAverage() );
+    object->getConfirmationStats().setUserDefCommCount( userDef.getOpCount() );
+    object->getConfirmationStats().setUserDefCommFail( userDef.getFailCount() );
+    object->getConfirmationStats().setDailyCommSuccessPercent(  daily.getAverage() );
+    object->getConfirmationStats().setDailyCommCount( daily.getOpCount() );
+    object->getConfirmationStats().setDailyCommFail( daily.getFailCount() );
+    object->getConfirmationStats().setWeeklyCommSuccessPercent( weekly.getAverage() );
+    object->getConfirmationStats().setWeeklyCommCount( weekly.getOpCount() );
+    object->getConfirmationStats().setWeeklyCommFail( weekly.getFailCount() );
+    object->getConfirmationStats().setMonthlyCommSuccessPercent( monthly.getAverage() );
+    object->getConfirmationStats().setMonthlyCommCount( monthly.getOpCount() );
+    object->getConfirmationStats().setMonthlyCommFail( monthly.getFailCount() );
+}
+
+void CtiCCSubstationBusStore::incrementConfirmationPercentTotals( CapControlPao * object,
+                                                                  CCStatsObject & userDef,
+                                                                  CCStatsObject & daily,
+                                                                  CCStatsObject & weekly,
+                                                                  CCStatsObject & monthly )
+{
+    if ( object->getConfirmationStats().getUserDefCommCount() > 0 )
+    {
+        userDef.incrementTotal( object->getConfirmationStats().getUserDefCommSuccessPercent() );
+        userDef.incrementOpCount( 1 );
+    }
+    if ( object->getConfirmationStats().getDailyCommCount() > 0 )
+    {
+        daily.incrementTotal( object->getConfirmationStats().getDailyCommSuccessPercent() );
+        daily.incrementOpCount( 1 );
+    }
+    if ( object->getConfirmationStats().getWeeklyCommCount() > 0 )
+    {
+        weekly.incrementTotal( object->getConfirmationStats().getWeeklyCommSuccessPercent() );
+        weekly.incrementOpCount( 1 );
+    }
+    if ( object->getConfirmationStats().getMonthlyCommCount() > 0 )
+    {
+        monthly.incrementTotal( object->getConfirmationStats().getMonthlyCommSuccessPercent() );
+        monthly.incrementOpCount( 1 );
+    }
+}
+
+void CtiCCSubstationBusStore::incrementOperationPercentTotals( CapControlPao * object,
+                                                               CCStatsObject & userDef,
+                                                               CCStatsObject & daily,
+                                                               CCStatsObject & weekly,
+                                                               CCStatsObject & monthly )
+{
+    if ( object->getOperationStats().getUserDefOpCount() > 0 )
+    {
+        userDef.incrementTotal( object->getOperationStats().getUserDefOpSuccessPercent() );
+        userDef.incrementOpCount( 1 );
+    }
+    if ( object->getOperationStats().getDailyOpCount() > 0 )
+    {
+        daily.incrementTotal( object->getOperationStats().getDailyOpSuccessPercent() );
+        daily.incrementOpCount( 1 );
+    }
+    if ( object->getOperationStats().getWeeklyOpCount() > 0 )
+    {
+        weekly.incrementTotal( object->getOperationStats().getWeeklyOpSuccessPercent() );
+        weekly.incrementOpCount( 1 );
+    }
+    if ( object->getOperationStats().getMonthlyOpCount() > 0 )
+    {
+        monthly.incrementTotal( object->getOperationStats().getMonthlyOpSuccessPercent() );
+        monthly.incrementOpCount( 1 );
+    }
+}
 
 /*---------------------------------------------------------------------------
     setControlStatus

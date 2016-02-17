@@ -15,6 +15,9 @@ CapControlPao::CapControlPao() :
 CapControlPao::CapControlPao(Cti::RowReader& rdr)
 {
     restore(rdr);
+
+    _operationStats.setPAOId(getPaoId());
+    _confirmationStats.setPAOId(getPaoId());
 }
 
 CapControlPao::~CapControlPao()
@@ -134,6 +137,8 @@ CapControlPao& CapControlPao::operator=(const CapControlPao& right)
         _disableFlag = right._disableFlag;
         _disabledStatePointId = right._disabledStatePointId;
         _pointIds = right._pointIds;
+        _operationStats = right._operationStats;
+        _confirmationStats = right._confirmationStats;
     }
     return *this;
 }
@@ -176,4 +181,13 @@ void CapControlPao::addPointId(const long ID)
     _pointIds.push_back(ID);
 }
 
+CtiCCOperationStats & CapControlPao::getOperationStats()
+{
+    return _operationStats;
+}
+
+CtiCCConfirmationStats & CapControlPao::getConfirmationStats()
+{
+    return _confirmationStats;
+}
 

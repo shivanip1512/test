@@ -235,9 +235,6 @@ CtiCCSubstationBus::CtiCCSubstationBus(Cti::RowReader& rdr, StrategyManager * st
 {
     restore(rdr);
 
-    _operationStats.setPAOId(getPaoId());
-    _confirmationStats.setPAOId(getPaoId());
-
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -264,16 +261,6 @@ CtiCCSubstationBus::~CtiCCSubstationBus()
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-}
-
-CtiCCOperationStats& CtiCCSubstationBus::getOperationStats()
-{
-    return _operationStats;
-}
-
-CtiCCConfirmationStats& CtiCCSubstationBus::getConfirmationStats()
-{
-    return _confirmationStats;
 }
 
 /*---------------------------------------------------------------------------
@@ -8628,9 +8615,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
 
         _percentToClose = right._percentToClose;
 
-        _operationStats = right._operationStats;
-        _confirmationStats = right._confirmationStats;
-
         regression = right.regression;
         regressionA = right.regressionA;
         regressionB = right.regressionB;
@@ -9215,6 +9199,4 @@ std::vector<Cti::CapControl::PointResponse> CtiCCSubstationBus::getPointResponse
 
     return results;
 }
-
-
 
