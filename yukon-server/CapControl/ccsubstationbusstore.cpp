@@ -28,7 +28,7 @@
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
 #include "mgr_config.h"
-
+#include "std_helper.h"
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -381,52 +381,46 @@ int CtiCCSubstationBusStore::getNbrOfCapBanksWithPointID(long point_id)
 {
     return _pointid_capbank_map.count(point_id);
 }
+
 CtiCCAreaPtr CtiCCSubstationBusStore::findAreaByPAObjectID(long paobject_id)
 {
-    PaoIdToAreaMap::iterator iter = _paobject_area_map.find(paobject_id);
-    return (iter == _paobject_area_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _paobject_area_map, paobject_id, nullptr );
 }
 CtiCCSpecialPtr CtiCCSubstationBusStore::findSpecialAreaByPAObjectID(long paobject_id)
 {
-    PaoIdToSpecialAreaMap::iterator iter = _paobject_specialarea_map.find(paobject_id);
-    return (iter == _paobject_specialarea_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _paobject_specialarea_map, paobject_id, nullptr );
 }
 CtiCCSubstationPtr CtiCCSubstationBusStore::findSubstationByPAObjectID(long paobject_id)
 {
-    PaoIdToSubstationMap::iterator iter = _paobject_substation_map.find(paobject_id);
-    return (iter == _paobject_substation_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _paobject_substation_map, paobject_id, nullptr );
 }
-
 CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByPAObjectID(long paobject_id)
 {
-    PaoIdToSubBusMap::iterator iter = _paobject_subbus_map.find(paobject_id);
-    return (iter == _paobject_subbus_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _paobject_subbus_map, paobject_id, nullptr );
 }
 
 CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByCapBankID(long cap_bank_id)
 {
-    long subBusId = findSubBusIDbyCapBankID(cap_bank_id);
-    if (subBusId == NULL)
-        return NULL;
-    return findSubBusByPAObjectID(subBusId);
+    if ( long subBusId = findSubBusIDbyCapBankID( cap_bank_id ) )
+    {
+        return findSubBusByPAObjectID( subBusId );
+    }
+
+    return nullptr;
 }
 
 CtiCCFeederPtr CtiCCSubstationBusStore::findFeederByPAObjectID(long paobject_id)
 {
-    PaoIdToFeederMap::iterator iter = _paobject_feeder_map.find(paobject_id);
-    return (iter == _paobject_feeder_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _paobject_feeder_map, paobject_id, nullptr );
 }
-
 CtiCCCapBankPtr CtiCCSubstationBusStore::findCapBankByPAObjectID(long paobject_id)
 {
-    PaoIdToCapBankMap::iterator iter = _paobject_capbank_map.find(paobject_id);
-    return (iter == _paobject_capbank_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _paobject_capbank_map, paobject_id, nullptr );
 }
 
 long CtiCCSubstationBusStore::findAreaIDbySubstationID(long substationId)
 {
-    ChildToParentMap::iterator iter = _substation_area_map.find(substationId);
-    return (iter == _substation_area_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _substation_area_map, substationId, 0 );
 }
 bool CtiCCSubstationBusStore::findSpecialAreaIDbySubstationID(long substationId, ChildToParentMultiMap::iterator &begin, ChildToParentMultiMap::iterator &end)
 {
@@ -437,29 +431,23 @@ bool CtiCCSubstationBusStore::findSpecialAreaIDbySubstationID(long substationId,
 
 long CtiCCSubstationBusStore::findSubstationIDbySubBusID(long subBusId)
 {
-    ChildToParentMap::iterator iter = _subbus_substation_map.find(subBusId);
-    return (iter == _subbus_substation_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _subbus_substation_map, subBusId, 0 );
 }
-
 long CtiCCSubstationBusStore::findSubBusIDbyFeederID(long feederId)
 {
-    ChildToParentMap::iterator iter = _feeder_subbus_map.find(feederId);
-    return (iter == _feeder_subbus_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _feeder_subbus_map, feederId, 0 );
 }
 long CtiCCSubstationBusStore::findSubBusIDbyCapBankID(long capBankId)
 {
-    ChildToParentMap::iterator iter = _capbank_subbus_map.find(capBankId);
-    return (iter == _capbank_subbus_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _capbank_subbus_map, capBankId, 0 );
 }
 long CtiCCSubstationBusStore::findFeederIDbyCapBankID(long capBankId)
 {
-    ChildToParentMap::iterator iter = _capbank_feeder_map.find(capBankId);
-    return (iter == _capbank_feeder_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _capbank_feeder_map, capBankId, 0 );
 }
 long CtiCCSubstationBusStore::findCapBankIDbyCbcID(long cbcId)
 {
-    ChildToParentMap::iterator iter = _cbc_capbank_map.find(cbcId);
-    return (iter == _cbc_capbank_map.end() ? NULL : iter->second);
+    return Cti::mapFindOrDefault( _cbc_capbank_map, cbcId, 0 );
 }
 
 long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
@@ -9240,26 +9228,18 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
     {
-        long i = 0;
-        for(i=0;i<_ccSubstationBuses->size();i++)
+        for ( auto currentSubstationBus : *_ccSubstationBuses )
         {
-            CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
+            CCStatsObject subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly,
+                          subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp;
 
-            CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-            CCStatsObject subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly;
-            CCStatsObject subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp;
-            long numOfFdrs = ccFeeders.size();
-            for(long j=0; j < numOfFdrs; j++)
+            for ( auto currentFeeder : currentSubstationBus->getCCFeeders() )
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+                CCStatsObject feederUserDef, feederDaily, feederWeekly, feederMonthly,
+                              feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp;
 
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                CCStatsObject feederUserDef, feederDaily, feederWeekly, feederMonthly;
-                CCStatsObject feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp;
-                for(long k=0;k<ccCapBanks.size();k++)
+                for ( auto currentCapBank : currentFeeder->getCCCapBanks() )
                 {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
                     if(currentCapBank->getControlDeviceId() > 0 && !currentCapBank->getDisableFlag())
                     {
                         //Confirmation Stats Total
@@ -9306,79 +9286,66 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
                             feederMonthlyOp.incrementOpCount(1);
                         }
                     }
-
                 }
-                setConfirmationSuccessPercents(currentFeeder, feederUserDef, feederDaily, feederWeekly, feederMonthly);
-                setOperationSuccessPercents(currentFeeder, feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp);
+                setConfirmationSuccessPercents( *currentFeeder, feederUserDef, feederDaily, feederWeekly, feederMonthly);
+                setOperationSuccessPercents( *currentFeeder, feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp);
 
-                incrementConfirmationPercentTotals(currentFeeder, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly);
-                incrementOperationPercentTotals(currentFeeder, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
-
+                incrementConfirmationPercentTotals( *currentFeeder, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly);
+                incrementOperationPercentTotals( *currentFeeder, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
             }
-            setConfirmationSuccessPercents(currentSubstationBus, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly);
-            setOperationSuccessPercents(currentSubstationBus, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
+            setConfirmationSuccessPercents( *currentSubstationBus, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly);
+            setOperationSuccessPercents( *currentSubstationBus, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
         }
 
-        for(i=0;i<_ccSubstations->size();i++)
+        for ( auto currentStation : *_ccSubstations )
         {
-            CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
-            CCStatsObject subUserDef, subDaily, subWeekly, subMonthly;
-            CCStatsObject subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp;
-            long numOfBuses = currentStation->getCCSubIds().size();
-            for each (long busId in currentStation->getCCSubIds())
-            {
-                CtiCCSubstationBusPtr currentSubstationBus = findSubBusByPAObjectID(busId);
-                if (currentSubstationBus != NULL)
-                {
-                    incrementConfirmationPercentTotals(currentSubstationBus, subUserDef, subDaily, subWeekly, subMonthly);
-                    incrementOperationPercentTotals(currentSubstationBus, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp);
+            CCStatsObject subUserDef, subDaily, subWeekly, subMonthly,
+                          subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp;
 
+            for ( long busId : currentStation->getCCSubIds() )
+            {
+                if ( auto currentSubstationBus = findSubBusByPAObjectID( busId ) )
+                {
+                    incrementConfirmationPercentTotals( *currentSubstationBus, subUserDef, subDaily, subWeekly, subMonthly);
+                    incrementOperationPercentTotals( *currentSubstationBus, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp);
                 }
             }
-            setConfirmationSuccessPercents(currentStation, subUserDef, subDaily, subWeekly, subMonthly);
-            setOperationSuccessPercents(currentStation, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp);
-
+            setConfirmationSuccessPercents( *currentStation, subUserDef, subDaily, subWeekly, subMonthly);
+            setOperationSuccessPercents( *currentStation, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp);
         }
 
-        for(i=0;i<_ccGeoAreas->size();i++)
+        for ( auto currentArea : *_ccGeoAreas )
         {
-            CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
-            CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly;
-            CCStatsObject areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
-            long numOfSubs = currentArea->getSubstationIds().size();
-            for each (long subId in currentArea->getSubstationIds())
+            CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly,
+                          areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
+
+            for ( long subId : currentArea->getSubstationIds() )
             {
-                CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(subId);
-                if (currentStation != NULL)
+                if ( auto currentStation = findSubstationByPAObjectID( subId ) )
                 {
-                   incrementConfirmationPercentTotals(currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
-                   incrementOperationPercentTotals(currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
-
-               }
-           }
-           setConfirmationSuccessPercents(currentArea, areaUserDef, areaDaily, areaWeekly, areaMonthly);
-           setOperationSuccessPercents(currentArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
-
-        }
-
-        for(i=0;i<_ccSpecialAreas->size();i++)
-        {
-            CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
-            CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly;
-            CCStatsObject areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
-            long numOfSubs = currentSpArea->getSubstationIds().size();
-            for each (long subId in currentSpArea->getSubstationIds())
-            {
-                CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(subId);
-                if (currentStation != NULL)
-                {
-                    incrementConfirmationPercentTotals(currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
-                    incrementOperationPercentTotals(currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
-
+                   incrementConfirmationPercentTotals( *currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+                   incrementOperationPercentTotals( *currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
                 }
            }
-           setConfirmationSuccessPercents(currentSpArea, areaUserDef, areaDaily, areaWeekly, areaMonthly);
-           setOperationSuccessPercents(currentSpArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
+           setConfirmationSuccessPercents( *currentArea, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+           setOperationSuccessPercents( *currentArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
+        }
+
+        for ( auto currentSpArea : *_ccSpecialAreas )
+        {
+            CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly,
+                          areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
+
+            for ( long subId : currentSpArea->getSubstationIds() )
+            {
+                if ( auto currentStation = findSubstationByPAObjectID( subId ) )
+                {
+                    incrementConfirmationPercentTotals( *currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+                    incrementOperationPercentTotals( *currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
+                }
+            }
+            setConfirmationSuccessPercents( *currentSpArea, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+            setOperationSuccessPercents( *currentSpArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
         }
     }
 }
@@ -9664,98 +9631,98 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 
 }
 
-void CtiCCSubstationBusStore::setOperationSuccessPercents( CapControlPao * object,
+void CtiCCSubstationBusStore::setOperationSuccessPercents( CapControlPao & object,
                                                            CCStatsObject   userDef,
                                                            CCStatsObject   daily,
                                                            CCStatsObject   weekly,
                                                            CCStatsObject   monthly )
 {
-    object->getOperationStats().setUserDefOpSuccessPercent( userDef.getAverage() );
-    object->getOperationStats().setUserDefOpCount( userDef.getOpCount() );
-    object->getOperationStats().setUserDefConfFail( userDef.getFailCount() );
-    object->getOperationStats().setDailyOpSuccessPercent(  daily.getAverage() );
-    object->getOperationStats().setDailyOpCount( daily.getOpCount() );
-    object->getOperationStats().setDailyConfFail( daily.getFailCount() );
-    object->getOperationStats().setWeeklyOpSuccessPercent( weekly.getAverage() );
-    object->getOperationStats().setWeeklyOpCount( weekly.getOpCount() );
-    object->getOperationStats().setWeeklyConfFail( weekly.getFailCount() );
-    object->getOperationStats().setMonthlyOpSuccessPercent( monthly.getAverage() );
-    object->getOperationStats().setMonthlyOpCount( monthly.getOpCount() );
-    object->getOperationStats().setMonthlyConfFail( monthly.getFailCount() );
+    object.getOperationStats().setUserDefOpSuccessPercent( userDef.getAverage() );
+    object.getOperationStats().setUserDefOpCount( userDef.getOpCount() );
+    object.getOperationStats().setUserDefConfFail( userDef.getFailCount() );
+    object.getOperationStats().setDailyOpSuccessPercent(  daily.getAverage() );
+    object.getOperationStats().setDailyOpCount( daily.getOpCount() );
+    object.getOperationStats().setDailyConfFail( daily.getFailCount() );
+    object.getOperationStats().setWeeklyOpSuccessPercent( weekly.getAverage() );
+    object.getOperationStats().setWeeklyOpCount( weekly.getOpCount() );
+    object.getOperationStats().setWeeklyConfFail( weekly.getFailCount() );
+    object.getOperationStats().setMonthlyOpSuccessPercent( monthly.getAverage() );
+    object.getOperationStats().setMonthlyOpCount( monthly.getOpCount() );
+    object.getOperationStats().setMonthlyConfFail( monthly.getFailCount() );
 }
 
-void CtiCCSubstationBusStore::setConfirmationSuccessPercents( CapControlPao * object,
+void CtiCCSubstationBusStore::setConfirmationSuccessPercents( CapControlPao & object,
                                                               CCStatsObject   userDef,
                                                               CCStatsObject   daily,
                                                               CCStatsObject   weekly,
                                                               CCStatsObject   monthly )
 {
-    object->getConfirmationStats().setUserDefCommSuccessPercent( userDef.getAverage() );
-    object->getConfirmationStats().setUserDefCommCount( userDef.getOpCount() );
-    object->getConfirmationStats().setUserDefCommFail( userDef.getFailCount() );
-    object->getConfirmationStats().setDailyCommSuccessPercent(  daily.getAverage() );
-    object->getConfirmationStats().setDailyCommCount( daily.getOpCount() );
-    object->getConfirmationStats().setDailyCommFail( daily.getFailCount() );
-    object->getConfirmationStats().setWeeklyCommSuccessPercent( weekly.getAverage() );
-    object->getConfirmationStats().setWeeklyCommCount( weekly.getOpCount() );
-    object->getConfirmationStats().setWeeklyCommFail( weekly.getFailCount() );
-    object->getConfirmationStats().setMonthlyCommSuccessPercent( monthly.getAverage() );
-    object->getConfirmationStats().setMonthlyCommCount( monthly.getOpCount() );
-    object->getConfirmationStats().setMonthlyCommFail( monthly.getFailCount() );
+    object.getConfirmationStats().setUserDefCommSuccessPercent( userDef.getAverage() );
+    object.getConfirmationStats().setUserDefCommCount( userDef.getOpCount() );
+    object.getConfirmationStats().setUserDefCommFail( userDef.getFailCount() );
+    object.getConfirmationStats().setDailyCommSuccessPercent(  daily.getAverage() );
+    object.getConfirmationStats().setDailyCommCount( daily.getOpCount() );
+    object.getConfirmationStats().setDailyCommFail( daily.getFailCount() );
+    object.getConfirmationStats().setWeeklyCommSuccessPercent( weekly.getAverage() );
+    object.getConfirmationStats().setWeeklyCommCount( weekly.getOpCount() );
+    object.getConfirmationStats().setWeeklyCommFail( weekly.getFailCount() );
+    object.getConfirmationStats().setMonthlyCommSuccessPercent( monthly.getAverage() );
+    object.getConfirmationStats().setMonthlyCommCount( monthly.getOpCount() );
+    object.getConfirmationStats().setMonthlyCommFail( monthly.getFailCount() );
 }
 
-void CtiCCSubstationBusStore::incrementConfirmationPercentTotals( CapControlPao * object,
+void CtiCCSubstationBusStore::incrementConfirmationPercentTotals( CapControlPao & object,
                                                                   CCStatsObject & userDef,
                                                                   CCStatsObject & daily,
                                                                   CCStatsObject & weekly,
                                                                   CCStatsObject & monthly )
 {
-    if ( object->getConfirmationStats().getUserDefCommCount() > 0 )
+    if ( object.getConfirmationStats().getUserDefCommCount() > 0 )
     {
-        userDef.incrementTotal( object->getConfirmationStats().getUserDefCommSuccessPercent() );
+        userDef.incrementTotal( object.getConfirmationStats().getUserDefCommSuccessPercent() );
         userDef.incrementOpCount( 1 );
     }
-    if ( object->getConfirmationStats().getDailyCommCount() > 0 )
+    if ( object.getConfirmationStats().getDailyCommCount() > 0 )
     {
-        daily.incrementTotal( object->getConfirmationStats().getDailyCommSuccessPercent() );
+        daily.incrementTotal( object.getConfirmationStats().getDailyCommSuccessPercent() );
         daily.incrementOpCount( 1 );
     }
-    if ( object->getConfirmationStats().getWeeklyCommCount() > 0 )
+    if ( object.getConfirmationStats().getWeeklyCommCount() > 0 )
     {
-        weekly.incrementTotal( object->getConfirmationStats().getWeeklyCommSuccessPercent() );
+        weekly.incrementTotal( object.getConfirmationStats().getWeeklyCommSuccessPercent() );
         weekly.incrementOpCount( 1 );
     }
-    if ( object->getConfirmationStats().getMonthlyCommCount() > 0 )
+    if ( object.getConfirmationStats().getMonthlyCommCount() > 0 )
     {
-        monthly.incrementTotal( object->getConfirmationStats().getMonthlyCommSuccessPercent() );
+        monthly.incrementTotal( object.getConfirmationStats().getMonthlyCommSuccessPercent() );
         monthly.incrementOpCount( 1 );
     }
 }
 
-void CtiCCSubstationBusStore::incrementOperationPercentTotals( CapControlPao * object,
+void CtiCCSubstationBusStore::incrementOperationPercentTotals( CapControlPao & object,
                                                                CCStatsObject & userDef,
                                                                CCStatsObject & daily,
                                                                CCStatsObject & weekly,
                                                                CCStatsObject & monthly )
 {
-    if ( object->getOperationStats().getUserDefOpCount() > 0 )
+    if ( object.getOperationStats().getUserDefOpCount() > 0 )
     {
-        userDef.incrementTotal( object->getOperationStats().getUserDefOpSuccessPercent() );
+        userDef.incrementTotal( object.getOperationStats().getUserDefOpSuccessPercent() );
         userDef.incrementOpCount( 1 );
     }
-    if ( object->getOperationStats().getDailyOpCount() > 0 )
+    if ( object.getOperationStats().getDailyOpCount() > 0 )
     {
-        daily.incrementTotal( object->getOperationStats().getDailyOpSuccessPercent() );
+        daily.incrementTotal( object.getOperationStats().getDailyOpSuccessPercent() );
         daily.incrementOpCount( 1 );
     }
-    if ( object->getOperationStats().getWeeklyOpCount() > 0 )
+    if ( object.getOperationStats().getWeeklyOpCount() > 0 )
     {
-        weekly.incrementTotal( object->getOperationStats().getWeeklyOpSuccessPercent() );
+        weekly.incrementTotal( object.getOperationStats().getWeeklyOpSuccessPercent() );
         weekly.incrementOpCount( 1 );
     }
-    if ( object->getOperationStats().getMonthlyOpCount() > 0 )
+    if ( object.getOperationStats().getMonthlyOpCount() > 0 )
     {
-        monthly.incrementTotal( object->getOperationStats().getMonthlyOpSuccessPercent() );
+        monthly.incrementTotal( object.getOperationStats().getMonthlyOpSuccessPercent() );
         monthly.incrementOpCount( 1 );
     }
 }

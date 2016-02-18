@@ -308,25 +308,25 @@ public:
         return paobjectMap->find(paoId)->second;
     }
 
-    void setOperationSuccessPercents( CapControlPao * object,
+    void setOperationSuccessPercents( CapControlPao & object,
                                       CCStatsObject   userDef,
                                       CCStatsObject   daily,
                                       CCStatsObject   weekly,
                                       CCStatsObject   monthly );
 
-    void setConfirmationSuccessPercents( CapControlPao * object,
+    void setConfirmationSuccessPercents( CapControlPao & object,
                                          CCStatsObject   userDef,
                                          CCStatsObject   daily,
                                          CCStatsObject   weekly,
                                          CCStatsObject   monthly );
 
-    void incrementConfirmationPercentTotals( CapControlPao * object,
+    void incrementConfirmationPercentTotals( CapControlPao & object,
                                              CCStatsObject & userDef,
                                              CCStatsObject & daily,
                                              CCStatsObject & weekly,
                                              CCStatsObject & monthly );
 
-    void incrementOperationPercentTotals( CapControlPao * object,
+    void incrementOperationPercentTotals( CapControlPao & object,
                                           CCStatsObject & userDef,
                                           CCStatsObject & daily,
                                           CCStatsObject & weekly,
