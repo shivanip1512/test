@@ -402,7 +402,9 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
                 long fdrPointId = fdrdest.getParentPointId();
                 CtiFDRPointSPtr fdrPoint( new CtiFDRPoint());
                 if( !findPointIdInList( fdrPointId, getSendToList(), *fdrPoint ) )
+                {
                     continue;
+                }
 
                 std::unique_ptr<Protocols::DnpSlave::output_point> point;
 
