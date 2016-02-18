@@ -4,6 +4,7 @@
 
 #include "fdrpoint.h"
 #include "fdrdestination.h"
+#include "fdrpointlist.h"
 #include "logger.h"
 #include "dllbase.h"  //  for Boost_char_tokenizer
 #include "guard.h"
@@ -109,7 +110,21 @@ CtiFDRDestination& CtiFDRDestination::setParentPointId( const long aParentPointI
     return *this;
 }
 
-string CtiFDRDestination::getTranslationValue(string propertyName) const {
+/************************************************************************
+* Function Name: CtiFDRDestination::findDestPointFromList(CtiFDRPointList &list)
+*
+* Description: finds the parent point from the CtiFDRDestination. Returns
+*              Null if not found.
+*
+*************************************************************************
+*/
+CtiFDRPointSPtr CtiFDRDestination::findPointFromList( const CtiFDRPointList &list ) const
+{
+    CtiFDRManager* mgrPtr = list.getPointList();
+    return mgrPtr->findFDRPointID( getParentPointId() );
+}
+
+string CtiFDRDestination::getTranslationValue( string propertyName ) const {
     string result("");
     string nameValuePair;
     int pos;
@@ -138,6 +153,7 @@ string CtiFDRDestination::getTranslationValue(string propertyName) const {
     }
     return result;
 }
+
 
 std::ostream& operator<< (std::ostream& os, const CtiFDRDestination& dest)
 {

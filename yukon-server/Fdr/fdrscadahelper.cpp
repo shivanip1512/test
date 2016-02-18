@@ -77,8 +77,7 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
     for (; destIter != destEnd; ++destIter)
     {
         const CtiFDRDestination& dest = (*destIter).second;
-        CtiFDRManager* mgrPtr = _parent->getSendToList().getPointList();
-        CtiFDRPointSPtr& point = mgrPtr->findFDRPointID( dest.getParentPointId() );
+        CtiFDRPointSPtr& point = dest.findPointFromList( _parent->getSendToList() );
 
         if (!(*checkFunc)(point->getPointType()))
         {
@@ -159,9 +158,8 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
     for (; destIter != destEnd; ++destIter)
     {
         const CtiFDRDestination& dest = (*destIter).second;
-        CtiFDRManager* mgrPtr = _parent->getSendToList().getPointList();
-        CtiFDRPointSPtr& point = mgrPtr->findFDRPointID( dest.getParentPointId() );
-        
+        CtiFDRPointSPtr& point = dest.findPointFromList( _parent->getSendToList() );
+
         if (!checkStatusType(point->getPointType()))
         {
             CTILOG_ERROR(dout, _parent->logNow() <<"Foreign control point "<< id <<

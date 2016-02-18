@@ -384,13 +384,6 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 {
     const CtiTime Now;
 
-#if defined (LEAK_CHECK)
-    static _CrtMemState s1;
-    _CrtMemCheckpoint( &s1 );
-    //_CrtMemDumpStatistics( &s1 );
-    CTILOG_DEBUG( dout, "Memory: size " << s1.lSizes[1] << ", count " << s1.lCounts[1] );
-#endif
-
     std::vector<std::unique_ptr<Protocols::DnpSlave::output_point>> outputPoints;
 
     {
@@ -562,17 +555,19 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
             {
                 const CtiFDRDestination &fdrdest = kv.first;
                 long fdrPointId = fdrdest.getParentPointId();
-                CtiFDRPointSPtr fdrPoint( new CtiFDRPoint() );
-                if( !findPointIdInList( fdrPointId, getReceiveFromList(), *fdrPoint ) )
-                    continue;
-
-                if( fdrPoint->isControllable() )
+                CtiFDRPoint fdrPoint;
+                if( !findPointIdInList( fdrPointId, getReceiveFromList(), fdrPoint ) )
                 {
-                    if( isDnpDeviceId( fdrPoint->getPaoID() ) )
+                    continue;
+                }
+
+                if( fdrPoint.isControllable() )
+                {
+                    if( isDnpDeviceId( fdrPoint.getPaoID() ) )
                     {
-                        control.status = tryPorterControl( control, fdrPoint->getPointID() );
+                        control.status = tryPorterControl( control, fdrPoint.getPointID() );
                     }
-                    else if( tryDispatchControl( control, fdrPoint->getPointID() ) )
+                    else if( tryDispatchControl( control, fdrPoint.getPointID() ) )
                     {
                         control.status = ControlStatus::Success;
                     }
@@ -1019,17 +1014,19 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
         {
             const CtiFDRDestination &fdrdest = kv.first;
             long fdrPointId = fdrdest.getParentPointId();
-            CtiFDRPointSPtr fdrPoint( new CtiFDRPoint() );
-            if( !findPointIdInList( fdrPointId, getReceiveFromList(), *fdrPoint ) )
-                continue;
-
-            if( fdrPoint->isControllable() )
+            CtiFDRPoint fdrPoint;
+            if( !findPointIdInList( fdrPointId, getReceiveFromList(), fdrPoint ) )
             {
-                if( isDnpDeviceId(fdrPoint->getPaoID()) )
+                continue;
+            }
+
+            if( fdrPoint.isControllable() )
+            {
+                if( isDnpDeviceId( fdrPoint.getPaoID() ) )
                 {
-                    analog.status = tryPorterAnalogOutput(analog, fdrPoint->getPointID());
+                    analog.status = tryPorterAnalogOutput( analog, fdrPoint.getPointID() );
                 }
-                else if( tryDispatchAnalogOutput(analog, fdrPoint->getPointID()) )
+                else if( tryDispatchAnalogOutput( analog, fdrPoint.getPointID() ) )
                 {
                     analog.status = ControlStatus::Success;
                 }

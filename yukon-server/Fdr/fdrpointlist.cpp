@@ -34,7 +34,7 @@ CtiMutex& CtiFDRPointList::getMutex ()
     return iMux;
 }
 
-CtiFDRManager *CtiFDRPointList::getPointList ()
+CtiFDRManager *CtiFDRPointList::getPointList () const
 {
     return iPointList;
 }

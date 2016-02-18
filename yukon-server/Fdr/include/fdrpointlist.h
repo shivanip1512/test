@@ -20,7 +20,7 @@ class IM_EX_FDRBASE CtiFDRPointList
 
         CtiMutex& getMutex (void);
 
-        CtiFDRManager *getPointList (void);
+        CtiFDRManager *getPointList (void) const;
         CtiFDRPointList& setPointList (CtiFDRPointList &aList);
         CtiFDRPointList& setPointList (CtiFDRManager *aList);
 

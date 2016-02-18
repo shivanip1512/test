@@ -7,6 +7,8 @@
 #include <string>
 
 class CtiFDRPoint;
+class CtiFDRPointList;
+typedef boost::shared_ptr<CtiFDRPoint> CtiFDRPointSPtr;
 
 class IM_EX_FDRBASE CtiFDRDestination : public Cti::Loggable
 {
@@ -28,6 +30,8 @@ class IM_EX_FDRBASE CtiFDRDestination : public Cti::Loggable
 
         long getParentPointId( void ) const;
         CtiFDRDestination & setParentPointId( const long parentPointId );
+
+        CtiFDRPointSPtr findPointFromList( const CtiFDRPointList &list ) const;
 
         bool operator<(const CtiFDRDestination& other) const;
         bool operator==(const CtiFDRDestination& other) const;

@@ -291,8 +291,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                                            unsigned int& bufferSize)
 {
     CHAR* acs = NULL;
-    CtiFDRManager* mgrPtr = getSendToList().getPointList();
-    CtiFDRPointSPtr point = mgrPtr->findFDRPointID( destination.getParentPointId());
+    CtiFDRPointSPtr& point = destination.findPointFromList( getSendToList() );
 
    /* we allocate a acs message here and it will be deleted
     * inside of the write function on the connection

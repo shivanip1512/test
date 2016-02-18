@@ -394,8 +394,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
                                                    unsigned int& bufferSize)
 {
     CHAR *valmet=NULL;
-    CtiFDRManager* mgrPtr = getSendToList().getPointList();
-    CtiFDRPointSPtr &point = mgrPtr->findFDRPointID( destination.getParentPointId() );
+    CtiFDRPointSPtr& point = destination.findPointFromList( getSendToList() );
 
    /* we allocate a valmet message here and it will be deleted
     * inside of the write function on the connection
