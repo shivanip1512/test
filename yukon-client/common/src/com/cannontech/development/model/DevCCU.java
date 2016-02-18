@@ -1,4 +1,4 @@
-package com.cannontech.web.dev.database.objects;
+package com.cannontech.development.model;
 
 public enum DevCCU {
     CART_711("* CCU 711 CART", 2, DevCommChannel.CART_PORT_1),

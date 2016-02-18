@@ -37,7 +37,6 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.dev.database.service.impl.DevObjectCreationBase;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.PointModel;
@@ -55,7 +54,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired private StateDao stateDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    protected static final Logger log = YukonLogManager.getLogger(DevObjectCreationBase.class);
+    protected static final Logger log = YukonLogManager.getLogger(PointEditorServiceImpl.class);
 
     @Override
     public PointModel getModelForId(int id) {

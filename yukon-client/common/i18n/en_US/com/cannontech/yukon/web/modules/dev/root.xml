@@ -154,6 +154,7 @@
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.log">* See console log for execution details</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.runSetup.label">Run Setup</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.status.label">Status</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.options">Options</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.roleProperties">Update Role Properties</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.roleProperties.title">Enables (most) role properties one would want enabled on a development machine</entry>
@@ -165,10 +166,10 @@
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.createCartObjects">Create Cart Objects</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.createRfnTemplateMeters">Create RFN Template Meters</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.routeId">Select Route</entry>
-    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.numAdditionalMeters"># of Additional MCTs (per type)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.numAdditionalMeters">Additional Devices (per type)</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.meterTypes">Meter Types</entry>
-    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.addressRangeMin">Address Range Min</entry>
-    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.addressRangeMax">Address Range Max</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.addressRangeMin">Range Min</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.addressRangeMax">Range Max</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.title">Cap Control</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol">Cap Control</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.cbcTypes">CBC Types</entry>

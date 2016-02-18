@@ -1,4 +1,4 @@
-package com.cannontech.web.dev.database.service.impl;
+package com.cannontech.development.service.impl;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -32,12 +32,12 @@ import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
 import com.cannontech.database.db.port.PortTiming;
 import com.cannontech.database.db.route.CarrierRoute;
-import com.cannontech.web.dev.database.objects.DevAMR;
-import com.cannontech.web.dev.database.objects.DevCCU;
-import com.cannontech.web.dev.database.objects.DevCommChannel;
-import com.cannontech.web.dev.database.objects.DevMeter;
-import com.cannontech.web.dev.database.objects.DevPaoType;
-import com.cannontech.web.dev.database.service.DevAMRCreationService;
+import com.cannontech.development.model.DevAMR;
+import com.cannontech.development.model.DevCCU;
+import com.cannontech.development.model.DevCommChannel;
+import com.cannontech.development.model.DevMeter;
+import com.cannontech.development.model.DevPaoType;
+import com.cannontech.development.service.DevAMRCreationService;
 import com.google.common.collect.Lists;
 
 public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements DevAMRCreationService {
@@ -96,7 +96,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         // if this comm channel exists already, then return
         LiteYukonPAObject existingCommChannel = paoDao.findUnique(commChannel.getName(), PaoType.TSERVER_SHARED);
         if (existingCommChannel != null) {
-            log.debug("Comm Channel with name " + commChannel.getName() + " already exists. Skipping.");
+            log.info("Comm Channel with name " + commChannel.getName() + " already exists. Skipping.");
             return;
         }
 
@@ -126,7 +126,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         terminalServerSharedPort.setPortTiming(new PortTiming(portTerminalServer.getPortID(),commChannel.getPortTimingPreTxWait(),0,0,0,0));
 
         dbPersistentDao.performDBChange(terminalServerSharedPort, TransactionType.INSERT);
-        log.debug("Comm Channel with name " + commChannel.getName() + " created.");
+        log.info("Comm Channel with name " + commChannel.getName() + " created.");
     }
 
     private void createAllCCUs(DevAMR devAmr) {
@@ -146,7 +146,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
             LiteYukonPAObject liteYukonPAObject =
                 deviceDao.getLiteYukonPAObject(devCCU.getName(), PaoType.CCU711);
             if (liteYukonPAObject != null) {
-                log.debug("CCU with name " + devCCU.getName() + " already exists. Skipping.");
+                log.info("CCU with name " + devCCU.getName() + " already exists. Skipping.");
                 return;
             }
         } catch (NotFoundException e) {
@@ -190,7 +190,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         newVal.addDBPersistent(route);
 
         dbPersistentDao.performDBChange(newVal, TransactionType.INSERT);
-        log.debug("CCU with name " + devCCU.getName() + " created.");
+        log.info("CCU with name " + devCCU.getName() + " created.");
     }
 
     private List<YukonPao> createAllMeters(DevAMR devAMR) {
@@ -206,10 +206,10 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
                 for (int i = 0; i < devAMR.getNumAdditionalMeters(); i++) {
                     if (addressCount == delayCount) {
                         try {
-                            log.debug("----Delaying " + delayTimeInSeconds + " seconds.");
+                            log.info("----Delaying " + delayTimeInSeconds + " seconds.");
                             TimeUnit.SECONDS.sleep(delayTimeInSeconds);
                             delayCount += createMetersBeforeDelay;
-                            log.debug("----Delaying done. Next delay after " + delayCount + " devices created.");
+                            log.info("----Delaying done. Next delay after " + delayCount + " devices created.");
                         } catch (InterruptedException e) {}
                     }
                     address = devAMR.getAddressRangeMin() + addressCount;
@@ -270,7 +270,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
     private boolean canCreateMeter(DevAMR devAMR, String name, Integer address) {
 //        checkIsCancelled();
         if (address != null && address >= devAMR.getAddressRangeMax()) {
-            log.debug("Meter with name " + name + " has address greater than max address range of "
+            log.info("Meter with name " + name + " has address greater than max address range of "
                     + devAMR.getAddressRangeMax() + " . Skipping.");
             devAMR.incrementFailureCount();
             return false;
@@ -279,7 +279,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
             // if this device exists already, then return
             SimpleDevice existingMeter = deviceDao.findYukonDeviceObjectByName(name);
             if (existingMeter != null) {
-                log.debug("Meter with name " + name + " already exists. Skipping.");
+                log.info("Meter with name " + name + " already exists. Skipping.");
                 devAMR.incrementFailureCount();
                 return false;
             }
@@ -301,7 +301,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         YukonDevice yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(type, name, address, routeId, createPoints);
         deviceDao.changeMeterNumber(yukonDevice, Integer.toString(address));
         devAMR.incrementSuccessCount();
-        log.debug("Plc Meter with name " + name + " created.");
+        log.info("Plc Meter with name " + name + " created.");
         return yukonDevice;
     }
     
@@ -312,7 +312,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
 
         YukonDevice yukonDevice = deviceCreationService.createRfnDeviceByDeviceType(type, name, rfId, createPoints);
         devAMR.incrementSuccessCount();
-        log.debug("Rfn Meter with name " + name + " created.");
+        log.info("Rfn Meter with name " + name + " created.");
         return yukonDevice;
     }
 

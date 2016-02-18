@@ -15,7 +15,6 @@
     
     <bean id="devDatabasePopulationService" class="com.cannontech.web.dev.database.service.impl.DevDatabasePopulationServiceImpl"/>
     <bean id="devRolePropUpdaterService" class="com.cannontech.web.dev.database.service.impl.DevRolePropUpdaterServiceImpl"/>
-    <bean id="devAMRCreationService" class="com.cannontech.web.dev.database.service.impl.DevAMRCreationServiceImpl"/>
     <bean id="devCapControlCreationService" class="com.cannontech.web.dev.database.service.impl.DevCapControlCreationServiceImpl"/>
     <bean id="devStarsCreationService" class="com.cannontech.web.dev.database.service.impl.DevStarsCreationServiceImpl"/>
     <bean id="devEventLogCreationService" class="com.cannontech.web.dev.database.service.impl.DevEventLogCreationService"/>

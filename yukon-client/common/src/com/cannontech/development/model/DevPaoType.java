@@ -1,8 +1,10 @@
-package com.cannontech.web.dev.database.objects;
+package com.cannontech.development.model;
+
+import java.io.Serializable;
 
 import com.cannontech.common.pao.PaoType;
 
-public class DevPaoType {
+public class DevPaoType implements Serializable{
     private boolean create = false;
     private PaoType paoType;
 

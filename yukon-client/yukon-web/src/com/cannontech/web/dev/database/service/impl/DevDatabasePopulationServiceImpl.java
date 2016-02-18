@@ -2,8 +2,8 @@ package com.cannontech.web.dev.database.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.development.service.DevAMRCreationService;
 import com.cannontech.web.dev.DevDbSetupTask;
-import com.cannontech.web.dev.database.service.DevAMRCreationService;
 import com.cannontech.web.dev.database.service.DevCapControlCreationService;
 import com.cannontech.web.dev.database.service.DevDatabasePopulationService;
 import com.cannontech.web.dev.database.service.DevRolePropUpdaterService;

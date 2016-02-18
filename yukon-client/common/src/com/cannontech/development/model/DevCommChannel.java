@@ -1,4 +1,4 @@
-package com.cannontech.web.dev.database.objects;
+package com.cannontech.development.model;
 
 import com.cannontech.common.pao.PaoType;
 

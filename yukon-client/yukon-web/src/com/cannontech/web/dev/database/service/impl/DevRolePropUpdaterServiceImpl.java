@@ -10,6 +10,7 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.development.service.impl.DevObjectCreationBase;
 import com.cannontech.web.dev.database.objects.DevRoleProperties;
 import com.cannontech.web.dev.database.service.DevRolePropUpdaterService;
 import com.google.common.collect.Maps;

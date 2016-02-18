@@ -3,6 +3,8 @@ package com.cannontech.web.dev.database.objects;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.development.model.DevObject;
+import com.cannontech.development.model.DevPaoType;
 import com.google.common.collect.Lists;
 
 public class DevCapControl extends DevObject {

@@ -32,27 +32,31 @@ import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.development.model.DevAMR;
+import com.cannontech.development.model.DevCCU;
+import com.cannontech.development.model.DevCommChannel;
+import com.cannontech.development.model.DevPaoType;
+import com.cannontech.development.service.DevAMRCreationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.simulators.message.request.AMRCreationSimulatorRequest;
+import com.cannontech.simulators.message.request.AMRCreationSimulatorStatusRequest;
+import com.cannontech.simulators.message.response.SimulatorResponse;
+import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.dev.database.objects.DevAMR;
-import com.cannontech.web.dev.database.objects.DevCCU;
 import com.cannontech.web.dev.database.objects.DevCapControl;
-import com.cannontech.web.dev.database.objects.DevCommChannel;
 import com.cannontech.web.dev.database.objects.DevEventLog;
-import com.cannontech.web.dev.database.objects.DevPaoType;
 import com.cannontech.web.dev.database.objects.DevRoleProperties;
 import com.cannontech.web.dev.database.objects.DevStars;
-import com.cannontech.web.dev.database.service.DevAMRCreationService;
 import com.cannontech.web.dev.database.service.DevCapControlCreationService;
 import com.cannontech.web.dev.database.service.DevRolePropUpdaterService;
 import com.cannontech.web.dev.database.service.DevStarsCreationService;
 import com.cannontech.web.dev.database.service.impl.DevEventLogCreationService;
 import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -74,6 +78,8 @@ public class SetupDevDbMethodController {
     @Autowired private RoleDao roleDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
+    @Autowired private IDatabaseCache databaseCache;
 
     @RequestMapping("main")
     public void main(ModelMap model) {
@@ -95,8 +101,7 @@ public class SetupDevDbMethodController {
         model.addAttribute("resGroups", resGroups);
         model.addAttribute("allGroups", allGroups);
 
-        LiteYukonPAObject[] allRoutes = paoDao.getAllLiteRoutes();
-        model.addAttribute("allRoutes", allRoutes);
+        model.addAttribute("allRoutes", databaseCache.getAllRoutes());
 
         List<LiteStarsEnergyCompany> allEnergyCompanies = starsDatabaseCache.getAllEnergyCompanies();
         model.addAttribute("allEnergyCompanies", allEnergyCompanies);
@@ -152,27 +157,56 @@ public class SetupDevDbMethodController {
         return "setupDatabase/rolePropertyWidget.jsp";
     }
 
-    @RequestMapping("setupAMR") 
+    @RequestMapping("setupAMR")
     public String setupAMR(DevAMR devAMR, BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
-        
+
         amrValidator.validate(devAMR, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Unable to start Setup AMR. Check Fields."));
-        } else if (!devAMRCreationService.isRunning()) {
+            flashScope.setError(
+                YukonMessageSourceResolvable.createDefaultWithoutCode("Unable to start Setup AMR. Check Fields."));
+        } else {
             try {
-                devAMRCreationService.executeSetup(devAMR);
-                flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Successfully Setup AMR"));
+                AMRCreationSimulatorRequest request = new AMRCreationSimulatorRequest(devAMR);
+                SimulatorResponse response =
+                    simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+                if (response.isSuccessful()) {
+                    flashScope.setConfirm(
+                        YukonMessageSourceResolvable.createDefaultWithoutCode("Devices are being created."));
+                } else {
+                    flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                        "Can't create devices. AMR Creation Service is already running."));
+                }
             } catch (Exception e) {
-                log.warn("caught exception in Setup AMR", e);
-                flashScope.setError(YukonMessageSourceResolvable
-                                    .createDefaultWithoutCode("Unable to setup AMR: " + e.getMessage()));
+                log.error(e);
+                flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                    "Unable to send message to Simulator Service: " + e.getMessage()));
             }
         }
 
-        LiteYukonPAObject[] allRoutes = paoDao.getAllLiteRoutes();
-        model.addAttribute("allRoutes", allRoutes);
+        model.addAttribute("allRoutes", databaseCache.getAllRoutes());
 
+        return "setupDatabase/amrWidget.jsp";
+    }
+    
+    @RequestMapping("status")
+    public String status(FlashScope flashScope, ModelMap model) {
+        try {
+            SimulatorResponse response = simulatorsCommunicationService.sendRequest(
+                new AMRCreationSimulatorStatusRequest(), SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("AMR Creation Service is already running."));
+            } else {
+                flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("AMR Creation Service is ready to create devices."));
+            }
+        } catch (Exception e) {
+            log.error(e);
+            flashScope.setError(
+                YukonMessageSourceResolvable.createDefaultWithoutCode("Unable to send message to Simulator Service: " + e.getMessage()));
+        }
+
+        model.addAttribute("allRoutes", databaseCache.getAllRoutes());
+        model.addAttribute("devAMR",  new DevAMR());
         return "setupDatabase/amrWidget.jsp";
     }
 

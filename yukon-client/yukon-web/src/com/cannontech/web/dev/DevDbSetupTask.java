@@ -1,6 +1,6 @@
 package com.cannontech.web.dev;
 
-import com.cannontech.web.dev.database.objects.DevAMR;
+import com.cannontech.development.model.DevAMR;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.objects.DevRoleProperties;
 import com.cannontech.web.dev.database.objects.DevStars;

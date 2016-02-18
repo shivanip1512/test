@@ -1,6 +1,6 @@
-package com.cannontech.web.dev.database.service;
+package com.cannontech.development.service;
 
-import com.cannontech.web.dev.database.objects.DevAMR;
+import com.cannontech.development.model.DevAMR;
 
 public interface DevAMRCreationService {
     void executeSetup(DevAMR devAMR);

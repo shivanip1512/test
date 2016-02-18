@@ -20,6 +20,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
+import com.cannontech.development.model.DevPaoType;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.BulkPointDataInjectionService;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -28,7 +29,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.user.UserUtils;
 import com.cannontech.web.dev.DevDbSetupTask;
-import com.cannontech.web.dev.database.objects.DevPaoType;
 import com.cannontech.web.dev.database.service.DevDatabasePopulationService;
 import com.google.common.collect.Maps;
 

@@ -18,12 +18,11 @@ import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.schedule.dao.PaoScheduleDao;
-import com.cannontech.core.schedule.model.PaoSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
+import com.cannontech.development.model.DevCommChannel;
+import com.cannontech.development.model.DevPaoType;
+import com.cannontech.development.service.impl.DevObjectCreationBase;
 import com.cannontech.web.dev.database.objects.DevCapControl;
-import com.cannontech.web.dev.database.objects.DevCommChannel;
-import com.cannontech.web.dev.database.objects.DevPaoType;
 import com.cannontech.web.dev.database.service.DevCapControlCreationService;
 
 public class DevCapControlCreationServiceImpl extends DevObjectCreationBase implements DevCapControlCreationService {
@@ -33,8 +32,6 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     @Autowired private FeederDao feederDao;
     @Autowired private SubstationBusDao substationBusDao;
     @Autowired private CapbankControllerDao capbankControllerDao;
-    @Autowired private PaoScheduleDao paoScheduleDao;
-    @Autowired private StrategyDao strategyDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
 
     private static final ReentrantLock _lock = new ReentrantLock();

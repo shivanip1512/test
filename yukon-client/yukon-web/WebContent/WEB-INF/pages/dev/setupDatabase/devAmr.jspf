@@ -8,6 +8,14 @@
 <div id="amr" class="devWidget">
     <cti:flashScopeMessages />
     <div class="widgetMessage"></div>
+
+     <p class="dialogFootnote">
+            Click on status button to verify that Simulators Service is running or to check the status of device creation.
+     </p>
+     <cti:url var="statusUrl" value="status"/>
+     <cti:button nameKey="status" type="submit" href="${statusUrl}"  busy="true" classes="action primary"/>
+    
+    <br> <br>
     <form:form commandName="devAMR" action="setupAMR" method="post" id="setupAMRForm">
         <cti:csrfToken/>
         <div class="widgetContent">

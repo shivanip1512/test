@@ -1,8 +1,9 @@
-package com.cannontech.web.dev.database.objects;
+package com.cannontech.development.model;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class DevObject {
+public abstract class DevObject implements Serializable{
     private AtomicInteger successCount = new AtomicInteger();
     private AtomicInteger failureCount = new AtomicInteger();
 
