@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -520,8 +521,8 @@ public class MeterEventsReportController {
             DateTime timeStamp = new DateTime(event.getPointValueHolder().getPointDataTimeStamp(), userContext.getJodaTimeZone());
             String dateTimeString = timeStamp.toString(DateTimeFormat.mediumDateTime());
             dataRow[2] = dateTimeString;
-            dataRow[3] = event.getPointName();
-            dataRow[4] = pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, userContext);
+            dataRow[3] = StringEscapeUtils.escapeCsv(event.getPointName());
+            dataRow[4] = StringEscapeUtils.escapeCsv(pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, userContext));
             dataRows.add(dataRow);
         }
         
