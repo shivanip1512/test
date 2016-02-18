@@ -6,6 +6,7 @@
 <%@ attribute name="controls" %>
 <%@ attribute name="escapeTitle" type="java.lang.Boolean" description="If true, html escapes the title text." %>
 <%@ attribute name="helpText" description="The text to put inside of a help popup." %>
+<%@ attribute name="infoText" description="The text to put inside of a information popup." %>
 <%@ attribute name="helpUrl" description="A url used to load a help popup with content before showing." %>
 <%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
 <%@ attribute name="hideInitially" type="java.lang.Boolean" %>
@@ -42,6 +43,12 @@
                 data-popup="#section-container-info-popup-${id}"
                 data-popup-toggle=""/>
         </c:if>
+        
+        <c:if test="${not empty pageScope.infoText}">
+            <cti:icon icon="icon-information" classes="fn cp" 
+                data-popup="#section-container-information-popup-${id}"
+                data-popup-toggle=""/>
+        </c:if>
         <div class="controls">${controls}</div>
     </div>
     <%-- Body --%>
@@ -53,4 +60,10 @@
             data-title="${pageScope.title}" 
             <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if>
             data-width="600">${helpText}</div>
+</c:if>
+<%-- Information Popup --%>
+<c:if test="${not empty pageScope.infoText}">
+    <div id="section-container-information-popup-${id}" class="dn" 
+            data-title="${pageScope.title}" 
+           data-width="500">${infoText}</div>
 </c:if>

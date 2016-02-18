@@ -14,9 +14,10 @@
 <cti:msgScope paths=".${nameKey},">
     <cti:msg2 var="title" key=".title" arguments="${arguments}"/>
     <cti:msg2 var="helpText" key=".helpText" arguments="${arguments}" blankIfMissing="true"/>
+    <cti:msg2 var="infoText" key=".infoText" arguments="${arguments}" blankIfMissing="true"/>
 </cti:msgScope>
 <tags:sectionContainer title="${pageScope.title}" id="${pageScope.id}" styleClass="${pageScope.styleClass}" 
-    helpText="${pageScope.helpText}" hideEnabled="${pageScope.hideEnabled}" hideInitially="${pageScope.hideInitially}" 
+    helpText="${pageScope.helpText}" infoText="${pageScope.infoText}" hideEnabled="${pageScope.hideEnabled}" hideInitially="${pageScope.hideInitially}" 
     controls="${pageScope.controls}"
     ><jsp:doBody/>
 </tags:sectionContainer>
