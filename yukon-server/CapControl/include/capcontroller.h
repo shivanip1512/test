@@ -93,7 +93,12 @@ class CtiCapController : public MessageListener
         void checkDispatch();
         void checkPIL();
 
-        void registerForPoints(bool reregister);
+        enum class RegistrationMethod {
+            ReRegisterAllPoints,
+            RegisterOnlyNewPoints
+        };
+        void registerForPoints( const RegistrationMethod m = RegistrationMethod::RegisterOnlyNewPoints );
+
         void updateAllPointQualities(long quality);
 
         void parseMessage(CtiMessage* message);

@@ -250,7 +250,7 @@ void CtiCapController::messageSender()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     {
         CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
-        registerForPoints(false);
+        registerForPoints( RegistrationMethod::RegisterOnlyNewPoints );
     }
 
     try
@@ -272,7 +272,7 @@ void CtiCapController::messageSender()
 
                     if( store->getReregisterForPoints() )
                     {
-                        registerForPoints(true);
+                        registerForPoints( RegistrationMethod::ReRegisterAllPoints );
                         store->setReregisterForPoints(false);
                         waitToBroadCastEverything = true;
                     }
@@ -448,7 +448,7 @@ void CtiCapController::controlLoop()
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
         {
             CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
-            registerForPoints(false);
+            registerForPoints( RegistrationMethod::RegisterOnlyNewPoints );
         }
         store->setReregisterForPoints(false);
         store->verifySubBusAndFeedersStates();
@@ -1270,9 +1270,9 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
             _dispatchConnection->start();
 
             // send a registration message to Dispatch
-            auto *msg = new CtiRegistrationMsg( "CapController", 0, false ); 
+            auto msg = std::make_unique<CtiRegistrationMsg>( "CapController", 0, false );
             msg->setAppExpirationDelay( 900 );
-            _dispatchConnection->WriteConnQue( msg, CALLSITE );
+            _dispatchConnection->WriteConnQue( msg.release(), CALLSITE );
 
             return _dispatchConnection;
         }
@@ -1322,9 +1322,9 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPorterConnection()
             _porterConnection->start();
 
             // send a registration message to Porter
-            auto *msg = new CtiRegistrationMsg( "CapController", 0, false );
+            auto msg = std::make_unique<CtiRegistrationMsg>( "CapController", 0, false );
             msg->setAppExpirationDelay( 900 );
-            _porterConnection->WriteConnQue(msg, CALLSITE);
+            _porterConnection->WriteConnQue(msg.release(), CALLSITE);
 
             return _porterConnection;
         }
@@ -1430,7 +1430,7 @@ void CtiCapController::updateAllPointQualities(long quality)
 
     Registers for all points of the substations buses.
 ---------------------------------------------------------------------------*/
-void CtiCapController::registerForPoints(bool reregister)
+void CtiCapController::registerForPoints( const RegistrationMethod m )
 {
     CTILOG_INFO(dout, "Registering for point changes.");
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -1735,7 +1735,7 @@ void CtiCapController::registerForPoints(bool reregister)
 
         try
         {
-            if( reregister )
+            if( m == RegistrationMethod::ReRegisterAllPoints )
             {
                 getDispatchConnection()->unRegisterForPoints( this, registrationIds );
             }
