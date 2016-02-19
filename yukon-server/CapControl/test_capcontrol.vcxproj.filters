@@ -338,6 +338,9 @@
     <ClCompile Include="IgnoredControlReason.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_ccStatistics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CapControlDispatchConnection.h">

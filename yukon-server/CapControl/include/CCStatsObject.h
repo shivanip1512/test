@@ -1,5 +1,6 @@
 #pragma once
 
+
 class CCStatsObject
 {
 public:
@@ -7,18 +8,14 @@ public:
     ~CCStatsObject();
 
     long getOpCount();
-    void setOpCount(long val);
     long getFailCount();
-    void setFailCount(long val);
+
     void incrementOpCount(long val);
-    double getTotal();
-    void setTotal(double val);
     void incrementTotal(double val);
 
     double getAverage();
 
     CCStatsObject& operator=(const CCStatsObject& right);
-
 
 private:
 
