@@ -1271,7 +1271,7 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
 
             // send a registration message to Dispatch
             auto *msg = new CtiRegistrationMsg( "CapController", 0, false ); 
-            msg->setAppExpirationDelay( 90 );
+            msg->setAppExpirationDelay( 900 );
             _dispatchConnection->WriteConnQue( msg, CALLSITE );
 
             return _dispatchConnection;
@@ -1323,7 +1323,7 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPorterConnection()
 
             // send a registration message to Porter
             auto *msg = new CtiRegistrationMsg( "CapController", 0, false );
-            msg->setAppExpirationDelay( 90 );
+            msg->setAppExpirationDelay( 900 );
             _porterConnection->WriteConnQue(msg, CALLSITE);
 
             return _porterConnection;
