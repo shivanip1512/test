@@ -42,7 +42,12 @@ void DispatchConnection::registerForPoints(::MessageListener* listener, const st
     {
         if (_registeredPoints.find(pointId) == _registeredPoints.end())
         {
-            _addList.insert(pointId);
+            CTILOG_DEBUG( dout, "Registering for point " << pointId );
+            _addList.insert( pointId );
+        }
+        else
+        {
+            CTILOG_DEBUG( dout, "Already registered for point " << pointId );
         }
     }
 

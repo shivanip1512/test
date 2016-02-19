@@ -17,7 +17,8 @@ YukonError_t CtiRegistrationExecutor::ServerExecute(CtiServer *Svr)
             {
                 sptr->setClientName(Msg->getAppName());
                 sptr->setClientAppId(Msg->getAppId());
-                sptr->setClientUnique(Msg->getAppIsUnique());
+                sptr->setClientUnique( Msg->getAppIsUnique() );
+                sptr->setClientExpirationDelay( Msg->getAppExpirationDelay() );
 
                 return Svr->clientRegistration(sptr);
             }

@@ -1196,12 +1196,16 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
 
 void CtiPointClientManager::expire(long pid)
 {
-    removePoint(pid, true);
+    CTILOG_DEBUG( dout, "Expiring point " << pid );
+
+    removePoint( pid, true );
     Inherited::expire(pid);
 }
 
 void CtiPointClientManager::erase(long pid)
 {
+    CTILOG_DEBUG(dout, "Erasing point " << pid );
+
     coll_type::writer_lock_guard_t guard( getLock() );
 
     auto pointConIter = _pointConnectionMap.find( pid );
@@ -1231,18 +1235,11 @@ void CtiPointClientManager::erase(long pid)
 void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
 {
     coll_type::writer_lock_guard_t guard( getLock() );
-    for( ConnectionMgrPointMap::iterator iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++ )
-    {
-        CTILOG_DEBUG(dout, "Removing point " << pointID << " from _conMgrPointMap @ 0x" << hex << &iter->second);
-        iter->second.erase(pointID);
-    }
 
     //Either this is an expiration and the dynamic values need to be written to the DB, or
     //this is a deletion, and the values cannot be written to the db.
     if(!isExpiration)
     {
-        coll_type::reader_lock_guard_t guard(getLock());
-
         _dynamic.erase(pointID);
         _pointConnectionMap.erase(pointID);
 

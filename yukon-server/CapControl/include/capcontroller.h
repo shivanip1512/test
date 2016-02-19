@@ -93,7 +93,7 @@ class CtiCapController : public MessageListener
         void checkDispatch();
         void checkPIL();
 
-        void registerForPoints(const CtiCCSubstationBus_vec& subBuses);
+        void registerForPoints(bool reregister);
         void updateAllPointQualities(long quality);
 
         void parseMessage(CtiMessage* message);
