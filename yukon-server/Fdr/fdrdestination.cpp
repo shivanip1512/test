@@ -111,11 +111,8 @@ CtiFDRDestination& CtiFDRDestination::setParentPointId( const long aParentPointI
 }
 
 /************************************************************************
-* Function Name: CtiFDRDestination::findDestPointFromList(CtiFDRPointList &list)
-*
-* Description: finds the parent point from the CtiFDRDestination. Returns
+* Finds the parent point from the CtiFDRDestination. Returns
 *              Null if not found.
-*
 *************************************************************************
 */
 CtiFDRPointSPtr CtiFDRDestination::findPointFromList( const CtiFDRPointList &list ) const
