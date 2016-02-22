@@ -25,12 +25,12 @@ CCStatsObject& CCStatsObject::operator=(const CCStatsObject& right)
 }
 
 
-long CCStatsObject::getOpCount()
+long CCStatsObject::getOpCount() const
 {
     return _opCount;
 }
 
-long CCStatsObject::getFailCount()
+long CCStatsObject::getFailCount() const
 {
     return _failCount;
 }
@@ -55,5 +55,11 @@ double CCStatsObject::getAverage()
     _failCount = ((100 - avg) / 100 ) * _opCount;
 
     return avg;
+}
+
+void CCStatsObject::addSample( const double sample )
+{
+    incrementTotal( sample );
+    incrementOpCount( 1 );
 }
 

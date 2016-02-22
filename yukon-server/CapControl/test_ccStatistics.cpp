@@ -11,24 +11,20 @@ BOOST_AUTO_TEST_SUITE( test_ccStatistics )
 BOOST_AUTO_TEST_CASE( test_ccStatistics_stats_object )
 {
 /* 
-    The CCStatsObject maintains a running average of the values inserted with incrementTotal().  These
+    The CCStatsObject maintains a running average of the values inserted with addSample().  These sample
         values are the 'success percentages' of other objects in the heirarchy. Eg, a stats object for a
         feeders daily op count will take as input the daily op success percentage of each capbank attached
         to the feeder.
  
-        They are always written to in the following sequence:
-            1. incrementTotal( x )
+        They are always written as follows:
+            1. addSample( x )
                 'x' is a success percentage in the range [0.0, 100.0]
- 
-            2. incrementOpCount( x )
-                'x' is always 1
  
         code
         ----
         CCStatsObject   feederUserDef;
  
-        feederUserDef.incrementTotal(currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
-        feederUserDef.incrementOpCount(1);
+        feederUserDef.addSample(currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
  
         The CCStatsObject is always polled for its values in a certain way as well. The values are used to
             initialize the statistics of a different object.
@@ -101,8 +97,7 @@ BOOST_AUTO_TEST_CASE( test_ccStatistics_stats_object )
     boost::for_each( inputValues,
                      [ & ]( double input )
                      {
-                         statistic.incrementTotal( input );
-                         statistic.incrementOpCount( 1 );
+                         statistic.addSample( input );
 
                          testResults.push_back( { statistic.getAverage(),
                                                   statistic.getOpCount(),
@@ -127,11 +122,8 @@ BOOST_AUTO_TEST_CASE( test_ccStatistics_stats_object )
     BOOST_CHECK_EQUAL(      20, statistic2.getOpCount()        );
     BOOST_CHECK_EQUAL(       8, statistic2.getFailCount()      );
 
-    statistic.incrementTotal( 80.0 );
-    statistic.incrementOpCount( 1 );
-
-    statistic.incrementTotal( 60.0 );
-    statistic.incrementOpCount( 1 );
+    statistic.addSample( 80.0 );
+    statistic.addSample( 60.0 );
 
     BOOST_CHECK_CLOSE(  58.384, statistic.getAverage(),  1e-3 );
     BOOST_CHECK_EQUAL(      22, statistic.getOpCount()        );
