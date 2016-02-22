@@ -153,4 +153,7 @@ public class YukonLogManager {
         return  tempLogger;	
     }
     
+    public static Logger getRfnCommsLogger() {
+        return getLogger("rfnCommsLogger");
+    }
 }
