@@ -138,7 +138,7 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
                     sendBilling = true;
                 }
                 // Reset the counter after 24 hrs.
-                if(minsCounter % 1400 == 0) {
+                if (minsCounter % 1440 == 0) {
                     perDayCounter = 0;
                 }
                 minsCounter++;
@@ -235,7 +235,7 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
                     }
                     datedChannelData.setUnitOfMeasureModifiers(modifiers);
                    
-                    if (!RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getDated()) { 
+                    if (!RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).isDated()) { 
                         channelDataList.add(datedChannelData);
                     } else { 
                         datedChannelData.setTimeStamp(DateTime.now().getMillis());

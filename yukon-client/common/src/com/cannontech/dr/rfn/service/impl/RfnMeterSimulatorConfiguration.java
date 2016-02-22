@@ -49,12 +49,12 @@ public enum RfnMeterSimulatorConfiguration {
     Double minValue = null;
     Double maxValue = null;
     Double changeBy = 0.0;
-    Boolean dated; 
+    boolean dated; 
     RfnMeterReadingType rfnMeterReadingType = null;
     
 
     private RfnMeterSimulatorConfiguration(BuiltInAttribute attribute, GenerationType generationType, GeneratedValueType valueType,
-            Double minValue, Double maxValue, Double changeBy, Boolean dated,RfnMeterReadingType rfnMeterReadingType) {
+            Double minValue, Double maxValue, Double changeBy, boolean dated,RfnMeterReadingType rfnMeterReadingType) {
         this.attribute = attribute;
         this.generationType = generationType;
         this.valueType = valueType;
@@ -81,7 +81,7 @@ public enum RfnMeterSimulatorConfiguration {
         return changeBy;
     }
 
-    public Boolean getDated() {
+    public boolean isDated() {
         return dated;
     }
     
