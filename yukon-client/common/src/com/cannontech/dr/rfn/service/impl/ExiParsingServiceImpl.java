@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseExiException;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.rfn.service.ExiParsingService;
 
@@ -43,11 +44,12 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     
     @Autowired ResourceLoader loader;
     private final static Logger log = YukonLogManager.getLogger(ExiParsingServiceImpl.class);
-    
+    private static final Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
+
     private Map<Schema, EXISchema> schemas = new HashMap<Schema, EXISchema>();
     
     @Override
-    public SimpleXPathTemplate parseRfLcrReading(byte[] payload) {
+    public SimpleXPathTemplate parseRfLcrReading(RfnIdentifier rfnId, byte[] payload) {
 
         byte[] data = Arrays.copyOf(payload, payload.length);
         if (data[0] == expresscomPayloadHeader) {
@@ -107,14 +109,14 @@ public class ExiParsingServiceImpl implements ExiParsingService {
             throw new ParseExiException("Out of heap memory when parsing EXI payload, likely due to malformed EXI encoded data.", e);
         }
        
-        if (log.isTraceEnabled()) {
-            final String reconstitutedString = xmlWriter.getBuffer().toString();
-            log.trace("Decoded RFN LCR payload XML: " + reconstitutedString);
+        final String reconstitutedString = xmlWriter.getBuffer().toString();
+        if (rfnCommsLog.isDebugEnabled()) {
+            rfnCommsLog.debug("    device: " + rfnId + " payload: " + reconstitutedString);
         }
         
         // Convert transformed output to SimpleXPathTemplate.
         SimpleXPathTemplate template = new SimpleXPathTemplate();
-        template.setContext(xmlWriter.getBuffer().toString());
+        template.setContext(reconstitutedString);
         return template;
     }
     

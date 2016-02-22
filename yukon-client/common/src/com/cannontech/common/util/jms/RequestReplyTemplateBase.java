@@ -20,6 +20,7 @@ import com.cannontech.common.util.ExceptionHelper;
 
 public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     protected static final Logger log = YukonLogManager.getLogger(RequestReplyTemplateBase.class);
+    private static final Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
     protected ConfigurationSource configurationSource;
     protected ConnectionFactory connectionFactory;
     protected ExecutorService readRequestThreadPool;
@@ -59,7 +60,12 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
                 try {
                     JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
 
-                    log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
+                    if (rfnCommsLog.isInfoEnabled()) {
+                        rfnCommsLog.info("<<< " + requestPayload.toString());
+                    }
+                    if (log.isTraceEnabled()) {
+                        log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
+                    }
                     jmsTemplate.execute(new SessionCallback<Object>() {
 
                         @Override

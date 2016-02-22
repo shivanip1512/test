@@ -11,13 +11,16 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 
 public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Serializable>
     extends RequestReplyTemplateBase<JmsReplyReplyHandler<R1, R2>> {
+    private static final Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
     
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
             ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
@@ -38,7 +41,12 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         ObjectMessage requestMessage = session.createObjectMessage(requestPayload);
         
         requestMessage.setJMSReplyTo(replyQueue);
-        log.trace("Sending requestMessage to producer " + requestMessage.toString());
+        if (log.isTraceEnabled()) {
+            log.trace("Sending requestMessage to producer " + requestMessage.toString());
+        }
+        if (rfnCommsLog.isInfoEnabled()) {
+            rfnCommsLog.info("<<< " + requestPayload.toString());
+        }
         producer.send(requestMessage);
         
         handleRepliesAndOrTimeouts(callback, reply1Timeout, reply2Timeout, replyConsumer);

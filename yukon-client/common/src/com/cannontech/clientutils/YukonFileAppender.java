@@ -41,6 +41,8 @@ public class YukonFileAppender extends AppenderSkeleton {
      */
     private String maxFileSizeString;
     private String logRetentionDaysString;
+    private String subdirectory;
+    private String filenamePrefix;
 
     private int maxFileOpenRetries = DatedFileAppender.MAX_FILE_OPEN_RETRIES;
     private int retryDelayInMs = DatedFileAppender.RETRY_DELAY_IN_MS;
@@ -78,17 +80,21 @@ public class YukonFileAppender extends AppenderSkeleton {
     public void activateOptions() {
         super.activateOptions();
 
-        //initialize dailyRollingFileAppender
         //get the name of the application running this appender
-
-        String nameOfApp = BootstrapUtils.getApplicationName();
-        String directory = BootstrapUtils.getServerLogDir();
-        String fileName = directory + nameOfApp + ".log";
+        String nameOfApp;
+        if (filenamePrefix == null) {
+            nameOfApp = BootstrapUtils.getApplicationName();
+        } else {
+            nameOfApp = filenamePrefix;
+        }
+        
+        //determine the directory the file should be placed in.  a subdirectory can be added in the configuration xml.
+        String directory = BootstrapUtils.getServerLogDir() + ((subdirectory == null) ? "" : subdirectory);
 
         //create a DatedFileAppender to take over the actual appending, rollover, and timing issues
         dailyRollingFileAppender = new DatedFileAppender(directory, nameOfApp + "_", ".log");
         dailyRollingFileAppender.setName("dailyRollingFileAppender");
-        dailyRollingFileAppender.setFile(fileName);
+        dailyRollingFileAppender.setFile(directory + nameOfApp + ".log");
         dailyRollingFileAppender.setSystemInfoString(CtiUtilities.getSystemInfoString());
         dailyRollingFileAppender.setMaxFileSize(maxFileSize);
 
@@ -264,5 +270,13 @@ public class YukonFileAppender extends AppenderSkeleton {
      */
     public void setConversionPattern(String conversionPattern) {
         this.conversionPattern = conversionPattern;
+    }
+
+    public void setSubdirectory(String subdirectory) {
+        this.subdirectory = subdirectory;
+    }
+
+    public void setFilenamePrefix(String filenamePrefix) {
+        this.filenamePrefix = filenamePrefix;
     }
 }

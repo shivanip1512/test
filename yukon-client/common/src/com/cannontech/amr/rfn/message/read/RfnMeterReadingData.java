@@ -102,10 +102,10 @@ public class RfnMeterReadingData implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("RfnMeterReadingData [channelDataList=%s, datedChannelDataList=%s, rfnIdentifier=%s, timeStamp=%s, recordInterval=%s]",
+            .format("RfnMeterReadingData [rfnIdentifier=%s, channelDataList=%s, datedChannelDataList=%s, timeStamp=%s, recordInterval=%s]",
+                    rfnIdentifier,
                     channelDataList,
                     datedChannelDataList,
-                    rfnIdentifier,
                     timeStamp,
                     recordInterval);
     }

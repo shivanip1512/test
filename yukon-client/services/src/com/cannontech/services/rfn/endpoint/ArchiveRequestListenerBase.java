@@ -7,11 +7,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
+import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.service.RfnChannelDataConverter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -31,6 +33,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage> {
     
     private static final Logger log = YukonLogManager.getLogger(ArchiveRequestListenerBase.class);
+    private static final Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
 
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired protected RfnChannelDataConverter pointDataProducer;
@@ -78,8 +81,11 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                 try {
                     T request = inQueue.take();
                     processRequest(request);
-                    log.debug("Processed Archive Request for " + request.getRfnIdentifier() + " on " + getName()
-                              + ", queue size is: " + inQueue.size());
+                    if (log.isDebugEnabled()) {
+                        log.debug("Processed Archive Request for " + request.getRfnIdentifier() + " on " + getName()
+                                + ", queue size is: " + inQueue.size());
+                    }
+                    doCommsLogging(request);
                 } catch (InterruptedException e) {
                     log.warn("received shutdown signal, queue size: " + inQueue.size());
                     break;
@@ -90,14 +96,40 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
             }
         }
 
+        /**
+         * Decide how to handle RFN comms logging based on request type and log level.
+         * @param request The RFN archive request sent from network manager.
+         */
+        private void doCommsLogging(T request) {
+            Level logLevel = rfnCommsLog.getLevel();
+            if (request instanceof RfnMeterReadingArchiveRequest) {
+                if (Level.DEBUG.isGreaterOrEqual(logLevel)) {
+                    rfnCommsLog.debug(">>> " + request.toString());
+                } else if (Level.INFO.isGreaterOrEqual(logLevel)) {
+                    RfnMeterReadingArchiveRequest meterRequest = (RfnMeterReadingArchiveRequest) request;
+                    rfnCommsLog.info(">>> " +
+                        String.format("RfnMeterReadingArchiveRequest [rfnIdentifier=%s, dataPointId=%s, readingType=%s]",
+                                meterRequest.getRfnIdentifier(),
+                                meterRequest.getDataPointId(),
+                                meterRequest.getReadingType()));
+                }
+            } else {
+                if (Level.INFO.isGreaterOrEqual(logLevel)) {
+                    rfnCommsLog.info(">>> " + request.toString());
+                }
+            }
+        }
+
         protected void processRequest(T request) {
             RfnIdentifier rfnIdentifier = request.getRfnIdentifier();
             if ("_EMPTY_".equals(rfnIdentifier.getSensorSerialNumber())
                 || "_EMPTY_".equals(rfnIdentifier.getSensorManufacturer())
                 || "_EMPTY_".equals(rfnIdentifier.getSensorModel())) {
-                log.info("Serial Number:" + rfnIdentifier.getSensorSerialNumber() + " Sensor Manufacturer:"
-                         + rfnIdentifier.getSensorManufacturer() + " Sensor Model:" + rfnIdentifier.getSensorModel());
-                log.info("Sending Acknowledgement");
+                if (log.isInfoEnabled()) {
+                    log.info("Serial Number:" + rfnIdentifier.getSensorSerialNumber() + " Sensor Manufacturer:"
+                             + rfnIdentifier.getSensorManufacturer() + " Sensor Model:" + rfnIdentifier.getSensorModel());
+                    log.info("Sending Acknowledgement");
+                }
                 sendAcknowledgement(request);
                 return;
             }

@@ -73,7 +73,7 @@ public class RfnLcrReadingArchiveRequest extends RfnLcrArchiveRequest implements
     
     @Override
     public String toString() {
-        return String.format("RfnLcrReadingArchiveRequest [data=%s, type=%s, dataPointId=%s]", data, type, dataPointId);
+        return String.format("RfnLcrReadingArchiveRequest [rfnIdentifier=%s, data=%s, type=%s, dataPointId=%s]", getRfnIdentifier(), data, type, dataPointId);
     }
     
 }

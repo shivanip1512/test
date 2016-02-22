@@ -3,6 +3,8 @@ package com.cannontech.dr.rfn.message.archive;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import javax.xml.bind.DatatypeConverter;
+
 public class RfnLcrReading implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,7 +55,7 @@ public class RfnLcrReading implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("RfnLcrReading [payload=%s, timeStamp=%s]", Arrays.toString(payload), timeStamp);
+        return String.format("RfnLcrReading [payload=0x%s, timeStamp=%s]", DatatypeConverter.printHexBinary(payload), timeStamp);
     }
 
 }

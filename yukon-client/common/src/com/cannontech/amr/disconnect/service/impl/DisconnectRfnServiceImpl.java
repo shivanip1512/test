@@ -43,6 +43,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     @Autowired @Qualifier("longRunning") private Executor executor;
     
     private final Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
+    private final Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
     
     @Override
     public void cancel(DisconnectResult result, YukonUserContext userContext) {
@@ -63,8 +64,8 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                     if (disconnectCallback.isCanceled()) {
                         callback.cancel();
                     } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("RFN send " + command.getRfnMeterDisconnectStatusType() + " to "+meter);
+                        if (rfnCommsLog.isInfoEnabled()) {
+                            rfnCommsLog.info("<<< Sent disconnect command: " + command.getRfnMeterDisconnectStatusType() + " to " + ((RfnMeter) meter).getRfnIdentifier());
                         }
                         rfnMeterDisconnectService.send((RfnMeter) meter, command.getRfnMeterDisconnectStatusType(), callback);
                     }
@@ -105,8 +106,8 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         }
         
         public void cancel() {
-            if (log.isDebugEnabled()) {
-                log.debug("RFN send canceled:" + meter);
+            if (rfnCommsLog.isInfoEnabled()) {
+                rfnCommsLog.info("RFN send canceled:" + meter);
             }
             callback.canceled(meter);
             complete();
@@ -147,8 +148,8 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
 
        
         private void proccessResult(RfnMeterDisconnectState state, PointValueQualityHolder pointData, MessageSourceResolvable message) {
-            if (log.isDebugEnabled()) {
-                log.debug("RFN proccessState:" + meter + " State:" + state);
+            if (rfnCommsLog.isInfoEnabled()) {
+                rfnCommsLog.info("RFN proccessState:" + meter + " state:" + state);
             }
             /*
              * message is null if the state == UNKNOWN

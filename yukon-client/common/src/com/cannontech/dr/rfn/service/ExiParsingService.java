@@ -7,6 +7,7 @@ import org.openexi.proc.common.EXIOptionsException;
 import org.openexi.sax.TransmogrifierException;
 
 import com.cannontech.common.exception.ParseExiException;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.google.common.collect.ImmutableMap;
 
@@ -59,7 +60,7 @@ public interface ExiParsingService {
      * @return SimpleXPathTemplate The fully decoded XML document converted to a SimpleXPathTemplate.
      * @throws ParseExiException If EXI payload cannot be properly expanded. 
      */
-    public SimpleXPathTemplate parseRfLcrReading(byte[] payload) throws ParseExiException;
+    public SimpleXPathTemplate parseRfLcrReading(RfnIdentifier rfnId, byte[] payload) throws ParseExiException;
 
     /**
      * This method encodes an XML payload into the EXI format.  It is only used for testing purposes within the
