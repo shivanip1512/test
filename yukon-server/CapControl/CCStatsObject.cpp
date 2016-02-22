@@ -3,63 +3,26 @@
 #include "ccstatsobject.h"
 
 
-CCStatsObject::CCStatsObject()
-{
-    _opCount          = 0;
-    _total            = 0;
-    _failCount        = 0;
-};
-CCStatsObject::~CCStatsObject()
-{
-};
-
-CCStatsObject& CCStatsObject::operator=(const CCStatsObject& right)
-{
-    if( this != &right )
-    {
-        _opCount =  right._opCount;
-        _total   =  right._total;
-        _failCount = right._failCount;
-    }
-    return *this;
-}
-
 
 long CCStatsObject::getOpCount() const
 {
-    return _opCount;
+    return count( accumulator );
 }
 
 long CCStatsObject::getFailCount() const
 {
-    return _failCount;
+    return ( ( 100.0 - getAverage() ) / 100.0 ) * getOpCount();
 }
 
-void CCStatsObject::incrementOpCount(long val)
+double CCStatsObject::getAverage() const
 {
-    _opCount += val;
+    return getOpCount() > 0
+            ? mean( accumulator )
+            : 100.0;
 }
 
-void CCStatsObject::incrementTotal(double val)
+void CCStatsObject::addSuccessSample( const double sample )
 {
-    _total += val;
-}
-
-double CCStatsObject::getAverage()
-{
-    double avg = 100;
-    if( _opCount > 0 )
-    {
-        avg = _total / _opCount;
-    }
-    _failCount = ((100 - avg) / 100 ) * _opCount;
-
-    return avg;
-}
-
-void CCStatsObject::addSample( const double sample )
-{
-    incrementTotal( sample );
-    incrementOpCount( 1 );
+    accumulator( sample );
 }
 

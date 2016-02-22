@@ -1,28 +1,25 @@
 #pragma once
 
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+
+using namespace boost::accumulators;
+
 
 class CCStatsObject
 {
 public:
-    CCStatsObject();
-    ~CCStatsObject();
 
     long getOpCount() const;
     long getFailCount() const;
 
-    double getAverage();
+    double getAverage() const;
 
-    void addSample( const double sample );
-
-    CCStatsObject& operator=(const CCStatsObject& right);
+    void addSuccessSample( const double sample );
 
 private:
 
-    void incrementOpCount(long val);
-    void incrementTotal(double val);
-
-    long _opCount;       
-    double _total;  
-    long _failCount;  
+    accumulator_set<double, stats<tag::mean>>   accumulator;
 };
 

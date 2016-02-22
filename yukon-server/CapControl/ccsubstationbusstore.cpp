@@ -9245,37 +9245,37 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
                         //Confirmation Stats Total
                         if (currentCapBank->getConfirmationStats().getUserDefCommCount() > 0)
                         {
-                            feederUserDef.addSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
+                            feederUserDef.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
                         }
                         if (currentCapBank->getConfirmationStats().getDailyCommCount() > 0)
                         {
-                            feederDaily.addSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
+                            feederDaily.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
                         }
                         if (currentCapBank->getConfirmationStats().getWeeklyCommCount() > 0)
                         {
-                            feederWeekly.addSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
+                            feederWeekly.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
                         }
                         if (currentCapBank->getConfirmationStats().getMonthlyCommCount() > 0)
                         {
-                            feederMonthly.addSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
+                            feederMonthly.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
                         }
 
                         //Operations Stats Total
                         if (currentCapBank->getOperationStats().getUserDefOpCount() > 0)
                         {
-                            feederUserDefOp.addSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
+                            feederUserDefOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
                         }
                         if (currentCapBank->getOperationStats().getDailyOpCount() > 0)
                         {
-                            feederDailyOp.addSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
+                            feederDailyOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
                         }
                         if (currentCapBank->getOperationStats().getWeeklyOpCount() > 0)
                         {
-                            feederWeeklyOp.addSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
+                            feederWeeklyOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
                         }
                         if (currentCapBank->getOperationStats().getMonthlyOpCount() > 0)
                         {
-                            feederMonthlyOp.addSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
+                            feederMonthlyOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
                         }
                     }
                 }
@@ -9624,10 +9624,10 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 }
 
 void CtiCCSubstationBusStore::setOperationSuccessPercents( CapControlPao & object,
-                                                           CCStatsObject   userDef,
-                                                           CCStatsObject   daily,
-                                                           CCStatsObject   weekly,
-                                                           CCStatsObject   monthly )
+                                                           const CCStatsObject & userDef,
+                                                           const CCStatsObject & daily,
+                                                           const CCStatsObject & weekly,
+                                                           const CCStatsObject & monthly )
 {
     object.getOperationStats().setUserDefOpSuccessPercent( userDef.getAverage() );
     object.getOperationStats().setUserDefOpCount( userDef.getOpCount() );
@@ -9644,10 +9644,10 @@ void CtiCCSubstationBusStore::setOperationSuccessPercents( CapControlPao & objec
 }
 
 void CtiCCSubstationBusStore::setConfirmationSuccessPercents( CapControlPao & object,
-                                                              CCStatsObject   userDef,
-                                                              CCStatsObject   daily,
-                                                              CCStatsObject   weekly,
-                                                              CCStatsObject   monthly )
+                                                              const CCStatsObject & userDef,
+                                                              const CCStatsObject & daily,
+                                                              const CCStatsObject & weekly,
+                                                              const CCStatsObject & monthly )
 {
     object.getConfirmationStats().setUserDefCommSuccessPercent( userDef.getAverage() );
     object.getConfirmationStats().setUserDefCommCount( userDef.getOpCount() );
@@ -9671,19 +9671,19 @@ void CtiCCSubstationBusStore::incrementConfirmationPercentTotals( CapControlPao 
 {
     if ( object.getConfirmationStats().getUserDefCommCount() > 0 )
     {
-        userDef.addSample( object.getConfirmationStats().getUserDefCommSuccessPercent() );
+        userDef.addSuccessSample( object.getConfirmationStats().getUserDefCommSuccessPercent() );
     }
     if ( object.getConfirmationStats().getDailyCommCount() > 0 )
     {
-        daily.addSample( object.getConfirmationStats().getDailyCommSuccessPercent() );
+        daily.addSuccessSample( object.getConfirmationStats().getDailyCommSuccessPercent() );
     }
     if ( object.getConfirmationStats().getWeeklyCommCount() > 0 )
     {
-        weekly.addSample( object.getConfirmationStats().getWeeklyCommSuccessPercent() );
+        weekly.addSuccessSample( object.getConfirmationStats().getWeeklyCommSuccessPercent() );
     }
     if ( object.getConfirmationStats().getMonthlyCommCount() > 0 )
     {
-        monthly.addSample( object.getConfirmationStats().getMonthlyCommSuccessPercent() );
+        monthly.addSuccessSample( object.getConfirmationStats().getMonthlyCommSuccessPercent() );
     }
 }
 
@@ -9695,19 +9695,19 @@ void CtiCCSubstationBusStore::incrementOperationPercentTotals( CapControlPao & o
 {
     if ( object.getOperationStats().getUserDefOpCount() > 0 )
     {
-        userDef.addSample( object.getOperationStats().getUserDefOpSuccessPercent() );
+        userDef.addSuccessSample( object.getOperationStats().getUserDefOpSuccessPercent() );
     }
     if ( object.getOperationStats().getDailyOpCount() > 0 )
     {
-        daily.addSample( object.getOperationStats().getDailyOpSuccessPercent() );
+        daily.addSuccessSample( object.getOperationStats().getDailyOpSuccessPercent() );
     }
     if ( object.getOperationStats().getWeeklyOpCount() > 0 )
     {
-        weekly.addSample( object.getOperationStats().getWeeklyOpSuccessPercent() );
+        weekly.addSuccessSample( object.getOperationStats().getWeeklyOpSuccessPercent() );
     }
     if ( object.getOperationStats().getMonthlyOpCount() > 0 )
     {
-        monthly.addSample( object.getOperationStats().getMonthlyOpSuccessPercent() );
+        monthly.addSuccessSample( object.getOperationStats().getMonthlyOpSuccessPercent() );
     }
 }
 

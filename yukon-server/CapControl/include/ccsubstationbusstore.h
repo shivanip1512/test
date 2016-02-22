@@ -309,16 +309,16 @@ public:
     }
 
     void setOperationSuccessPercents( CapControlPao & object,
-                                      CCStatsObject   userDef,
-                                      CCStatsObject   daily,
-                                      CCStatsObject   weekly,
-                                      CCStatsObject   monthly );
+                                      const CCStatsObject & userDef,
+                                      const CCStatsObject & daily,
+                                      const CCStatsObject & weekly,
+                                      const CCStatsObject & monthly );
 
     void setConfirmationSuccessPercents( CapControlPao & object,
-                                         CCStatsObject   userDef,
-                                         CCStatsObject   daily,
-                                         CCStatsObject   weekly,
-                                         CCStatsObject   monthly );
+                                         const CCStatsObject & userDef,
+                                         const CCStatsObject & daily,
+                                         const CCStatsObject & weekly,
+                                         const CCStatsObject & monthly );
 
     void incrementConfirmationPercentTotals( CapControlPao & object,
                                              CCStatsObject & userDef,

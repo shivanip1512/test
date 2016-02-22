@@ -11,32 +11,30 @@ BOOST_AUTO_TEST_SUITE( test_ccStatistics )
 BOOST_AUTO_TEST_CASE( test_ccStatistics_stats_object )
 {
 /* 
-    The CCStatsObject maintains a running average of the values inserted with addSample().  These sample
+    The CCStatsObject maintains a running average of the values inserted with addSuccessSample().  These sample
         values are the 'success percentages' of other objects in the heirarchy. Eg, a stats object for a
         feeders daily op count will take as input the daily op success percentage of each capbank attached
         to the feeder.
  
-        They are always written as follows:
-            1. addSample( x )
+        They are added as follows:
+            1. addSuccessSample( x )
                 'x' is a success percentage in the range [0.0, 100.0]
  
         code
         ----
         CCStatsObject   feederUserDef;
  
-        feederUserDef.addSample(currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
+        feederUserDef.addSuccessSample(currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
  
-        The CCStatsObject is always polled for its values in a certain way as well. The values are used to
-            initialize the statistics of a different object.
+        The CCStatsObject is then polled for results. These values are used to initialize the statistics of
+            a parent object.
  
-        The calling sequence is as follows:
+        The reporting functions are:
             1. getAverage()
             2. getOpCount()
             3. getFailCount()
  
-            The reason for this is that the call to getAverage() actually updates the value for the failCount,
-                so it must occur before the call to getFailCount() or data will be inconsistent.  The call to
-                getOpCount() is unaffected and can happen anywhere.
+            They can be called in an arbitrary order.
  
         code
         ----
@@ -97,7 +95,7 @@ BOOST_AUTO_TEST_CASE( test_ccStatistics_stats_object )
     boost::for_each( inputValues,
                      [ & ]( double input )
                      {
-                         statistic.addSample( input );
+                         statistic.addSuccessSample( input );
 
                          testResults.push_back( { statistic.getAverage(),
                                                   statistic.getOpCount(),
@@ -122,8 +120,8 @@ BOOST_AUTO_TEST_CASE( test_ccStatistics_stats_object )
     BOOST_CHECK_EQUAL(      20, statistic2.getOpCount()        );
     BOOST_CHECK_EQUAL(       8, statistic2.getFailCount()      );
 
-    statistic.addSample( 80.0 );
-    statistic.addSample( 60.0 );
+    statistic.addSuccessSample( 80.0 );
+    statistic.addSuccessSample( 60.0 );
 
     BOOST_CHECK_CLOSE(  58.384, statistic.getAverage(),  1e-3 );
     BOOST_CHECK_EQUAL(      22, statistic.getOpCount()        );
@@ -150,6 +148,14 @@ BOOST_AUTO_TEST_CASE( test_ccStatistics_stats_object )
     BOOST_CHECK_CLOSE(  58.384, statistic2.getAverage(),  1e-3 );
     BOOST_CHECK_EQUAL(      22, statistic2.getOpCount()        );
     BOOST_CHECK_EQUAL(       9, statistic2.getFailCount()      );
+
+    // breaking of the order dependency
+
+    statistic2.addSuccessSample( 0.0 );
+
+    BOOST_CHECK_EQUAL(      10, statistic2.getFailCount()      );
+    BOOST_CHECK_EQUAL(      23, statistic2.getOpCount()        );
+    BOOST_CHECK_CLOSE(  55.845, statistic2.getAverage(),  1e-3 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
