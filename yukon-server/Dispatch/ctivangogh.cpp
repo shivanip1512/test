@@ -3032,7 +3032,7 @@ YukonError_t CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg &pData, CtiM
     // may clear active alarms.
     try
     {
-        if(pData.getTime() < pDyn->getTimeStamp())
+        if(pData.getTime() < pDyn->getTimeStamp() && pDyn->getQuality() != UnintializedQuality)
         {
             pData.setTags(TAG_POINT_OLD_TIMESTAMP);
         }
