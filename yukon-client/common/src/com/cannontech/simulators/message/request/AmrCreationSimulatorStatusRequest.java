@@ -5,7 +5,7 @@ import com.cannontech.simulators.SimulatorType;
 /**
  * Request to create meters.
  */
-public class AMRCreationSimulatorStatusRequest implements SimulatorRequest {
+public class AmrCreationSimulatorStatusRequest implements SimulatorRequest {
     private static final long serialVersionUID = 1L;
        
     @Override

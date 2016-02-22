@@ -84,13 +84,13 @@ public class DevBuildDatabasePopulationService {
     private void insertInitialDatabaseData() {
         // Setup task 
         DevDbSetupTask task = new DevDbSetupTask();
-        List<DevPaoType> meters = task.getDevAMR().getMeterTypes();
+        List<DevPaoType> meters = task.getDevAmr().getMeterTypes();
         //Select all meter types
         for (DevPaoType dpt : meters) {
             dpt.setCreate(true);
         }
-        task.getDevAMR().setMeterTypes(meters);
-        task.getDevAMR().setNumAdditionalMeters(50);
+        task.getDevAmr().setMeterTypes(meters);
+        task.getDevAmr().setNumAdditionalMeters(50);
         task.getDevStars().setNewEnergyCompanyName("Cooper EC");
 
         log.info("executing initial database population...");

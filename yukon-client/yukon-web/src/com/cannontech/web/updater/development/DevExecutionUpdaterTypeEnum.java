@@ -11,7 +11,7 @@ public enum DevExecutionUpdaterTypeEnum {
     AMR_TOTAL_COUNT(new ResultAccessor<DevDbSetupTask>() {
         @Override
         public Object getValue(DevDbSetupTask devDbSetupTask) {
-            String result = getTotalCountString(devDbSetupTask, getDevAMR(devDbSetupTask));
+            String result = getTotalCountString(devDbSetupTask, getDevAmr(devDbSetupTask));
             return result;
         }
     }),
@@ -32,7 +32,7 @@ public enum DevExecutionUpdaterTypeEnum {
 	AMR_SUCCESS_COUNT(new ResultAccessor<DevDbSetupTask>() {
         @Override
         public Object getValue(DevDbSetupTask devDbSetupTask) {
-            String result = getSuccessCountString(devDbSetupTask, getDevAMR(devDbSetupTask));
+            String result = getSuccessCountString(devDbSetupTask, getDevAmr(devDbSetupTask));
             return result;
         }
     }),
@@ -53,7 +53,7 @@ public enum DevExecutionUpdaterTypeEnum {
 	AMR_FAILURE_COUNT(new ResultAccessor<DevDbSetupTask>() {
         @Override
         public Object getValue(DevDbSetupTask devDbSetupTask) {
-            String result = getFailureCountString(devDbSetupTask, getDevAMR(devDbSetupTask));
+            String result = getFailureCountString(devDbSetupTask, getDevAmr(devDbSetupTask));
             return result;
         }
     }),
@@ -110,8 +110,8 @@ public enum DevExecutionUpdaterTypeEnum {
         return result;
     }
     
-    private static DevObject getDevAMR(DevDbSetupTask devDbSetupTask) {
-        DevObject devObj = devDbSetupTask != null ? devDbSetupTask.getDevAMR() : null;
+    private static DevObject getDevAmr(DevDbSetupTask devDbSetupTask) {
+        DevObject devObj = devDbSetupTask != null ? devDbSetupTask.getDevAmr() : null;
         return devObj;
     }
     

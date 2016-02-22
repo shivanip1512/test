@@ -2,7 +2,7 @@ package com.cannontech.web.dev.database.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.development.service.DevAMRCreationService;
+import com.cannontech.development.service.DevAmrCreationService;
 import com.cannontech.web.dev.DevDbSetupTask;
 import com.cannontech.web.dev.database.service.DevCapControlCreationService;
 import com.cannontech.web.dev.database.service.DevDatabasePopulationService;
@@ -11,7 +11,7 @@ import com.cannontech.web.dev.database.service.DevStarsCreationService;
 
 public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationService {
     @Autowired private DevRolePropUpdaterService devRolePropUpdaterService;
-    @Autowired private DevAMRCreationService devAMRCreationService;
+    @Autowired private DevAmrCreationService devAmrCreationService;
     @Autowired private DevCapControlCreationService devCapControlCreationService;
     @Autowired private DevStarsCreationService devStarsCreationService;
     private DevDbSetupTask devDbSetupTask;
@@ -36,7 +36,7 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
             devStarsCreationService.executeEnergyCompanyCreation(devDbSetupTask.getDevStars());
             devStarsCreationService.executeStarsAccountCreation(devDbSetupTask.getDevStars());
             devRolePropUpdaterService.executeSetup(devDbSetupTask.getDevRoleProperties());
-            devAMRCreationService.executeSetup(devDbSetupTask.getDevAMR());
+            devAmrCreationService.executeSetup(devDbSetupTask.getDevAmr());
             devCapControlCreationService.executeSetup(devDbSetupTask.getDevCapControl());
         } catch (Exception e) {
             devDbSetupTask.setHasRun(false);

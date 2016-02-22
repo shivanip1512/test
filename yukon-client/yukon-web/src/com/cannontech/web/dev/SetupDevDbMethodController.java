@@ -33,14 +33,14 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.development.model.DevAMR;
+import com.cannontech.development.model.DevAmr;
 import com.cannontech.development.model.DevCCU;
 import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevPaoType;
-import com.cannontech.development.service.DevAMRCreationService;
+import com.cannontech.development.service.DevAmrCreationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.simulators.message.request.AMRCreationSimulatorRequest;
-import com.cannontech.simulators.message.request.AMRCreationSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.AmrCreationSimulatorRequest;
+import com.cannontech.simulators.message.request.AmrCreationSimulatorStatusRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -71,7 +71,7 @@ public class SetupDevDbMethodController {
     @Autowired private PaoDao paoDao;
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private DevRolePropUpdaterService devRolePropUpdaterService;
-    @Autowired private DevAMRCreationService devAMRCreationService;
+    @Autowired private DevAmrCreationService devAmrCreationService;
     @Autowired private DevCapControlCreationService devCapControlCreationService;
     @Autowired private DevStarsCreationService devStarsCreationService;
     @Autowired private DevEventLogCreationService devEventLogCreationService;
@@ -85,7 +85,7 @@ public class SetupDevDbMethodController {
     public void main(ModelMap model) {
 
         model.addAttribute("devRoleProperties",new DevRoleProperties());
-        model.addAttribute("devAMR",  new DevAMR());
+        model.addAttribute("devAmr",  new DevAmr());
         model.addAttribute("devCapControl", new DevCapControl());
         model.addAttribute("devStars", new DevStars());
         model.addAttribute("devEventLog",new DevEventLog());
@@ -116,7 +116,7 @@ public class SetupDevDbMethodController {
         Map<String, Object> json = Maps.newHashMapWithExpectedSize(8);
 
         json.put("roleProperties", !devRolePropUpdaterService.isRunning());
-        json.put("amr", !devAMRCreationService.isRunning());
+        json.put("amr", !devAmrCreationService.isRunning());
         json.put("capControl", !devCapControlCreationService.isRunning());
         json.put("capControlProgress", devCapControlCreationService.getPercentComplete());
         json.put("stars", !devStarsCreationService.isRunning());
@@ -158,16 +158,16 @@ public class SetupDevDbMethodController {
     }
 
     @RequestMapping("setupAMR")
-    public String setupAMR(DevAMR devAMR, BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
+    public String setupAMR(DevAmr devAmr, BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
 
-        amrValidator.validate(devAMR, bindingResult);
+        amrValidator.validate(devAmr, bindingResult);
 
         if (bindingResult.hasErrors()) {
             flashScope.setError(
                 YukonMessageSourceResolvable.createDefaultWithoutCode("Unable to start Setup AMR. Check Fields."));
         } else {
             try {
-                AMRCreationSimulatorRequest request = new AMRCreationSimulatorRequest(devAMR);
+                AmrCreationSimulatorRequest request = new AmrCreationSimulatorRequest(devAmr);
                 SimulatorResponse response =
                     simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
                 if (response.isSuccessful()) {
@@ -193,7 +193,7 @@ public class SetupDevDbMethodController {
     public String status(FlashScope flashScope, ModelMap model) {
         try {
             SimulatorResponse response = simulatorsCommunicationService.sendRequest(
-                new AMRCreationSimulatorStatusRequest(), SimulatorResponseBase.class);
+                new AmrCreationSimulatorStatusRequest(), SimulatorResponseBase.class);
             if (response.isSuccessful()) {
                 flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("AMR Creation Service is already running."));
             } else {
@@ -206,7 +206,7 @@ public class SetupDevDbMethodController {
         }
 
         model.addAttribute("allRoutes", databaseCache.getAllRoutes());
-        model.addAttribute("devAMR",  new DevAMR());
+        model.addAttribute("devAmr",  new DevAmr());
         return "setupDatabase/amrWidget.jsp";
     }
 
@@ -390,32 +390,32 @@ public class SetupDevDbMethodController {
         }
     };
 
-    private final Validator amrValidator = new SimpleValidator<DevAMR>(DevAMR.class) {
+    private final Validator amrValidator = new SimpleValidator<DevAmr>(DevAmr.class) {
 
         @Override
-        public void doValidation(DevAMR devAMR, Errors errors) {
+        public void doValidation(DevAmr devAmr, Errors errors) {
 
-            if (devAMR.getNumAdditionalMeters() == null
-                    || devAMR.getNumAdditionalMeters() < 0) {
+            if (devAmr.getNumAdditionalMeters() == null
+                    || devAmr.getNumAdditionalMeters() < 0) {
                 errors.rejectValue("numAdditionalMeters",
                         "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
-            if (devAMR.getAddressRangeMax() == null
-                    || devAMR.getAddressRangeMax() < 0) {
+            if (devAmr.getAddressRangeMax() == null
+                    || devAmr.getAddressRangeMax() < 0) {
                 errors.rejectValue("addressRangeMax",
                         "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
-            if (devAMR.getAddressRangeMin() == null
-                    || devAMR.getAddressRangeMin() < 0) {
+            if (devAmr.getAddressRangeMin() == null
+                    || devAmr.getAddressRangeMin() < 0) {
                 errors.rejectValue("addressRangeMin",
                         "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
-            if (devAMR.getAddressRangeMin() != null
-                    && devAMR.getAddressRangeMax() != null
-                    && devAMR.getAddressRangeMin() >= devAMR
+            if (devAmr.getAddressRangeMin() != null
+                    && devAmr.getAddressRangeMax() != null
+                    && devAmr.getAddressRangeMin() >= devAmr
                             .getAddressRangeMax()) {
                 String[] arg = { "Must be smaller than Address Range Min" };
                 errors.rejectValue(

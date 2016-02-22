@@ -9,7 +9,7 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Multimap;
 
-public class DevAMR extends DevObject {
+public class DevAmr extends DevObject {
     private boolean createCartObjects = true;
     private boolean createRfnTemplates = true;
     private int routeId;

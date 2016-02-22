@@ -7,34 +7,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.development.service.DevAMRCreationService;
+import com.cannontech.development.service.DevAmrCreationService;
 import com.cannontech.simulators.SimulatorType;
-import com.cannontech.simulators.message.request.AMRCreationSimulatorRequest;
-import com.cannontech.simulators.message.request.AMRCreationSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.AmrCreationSimulatorRequest;
+import com.cannontech.simulators.message.request.AmrCreationSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 
-public class AMRCreationSimulatorMessageHandler extends SimulatorMessageHandler {
-    private static final Logger log = YukonLogManager.getLogger(AMRCreationSimulatorMessageHandler.class);
-    @Autowired private DevAMRCreationService devAMRCreationService;
+public class AmrCreationSimulatorMessageHandler extends SimulatorMessageHandler {
+    private static final Logger log = YukonLogManager.getLogger(AmrCreationSimulatorMessageHandler.class);
+    @Autowired private DevAmrCreationService devAmrCreationService;
     @Autowired @Qualifier("longRunning") private Executor executor;
 
-    public AMRCreationSimulatorMessageHandler() {
+    public AmrCreationSimulatorMessageHandler() {
         super(SimulatorType.AMR_CREATION);
     }
 
     @Override
     public SimulatorResponse handle(SimulatorRequest simulatorRequest) {
         try {
-            if (simulatorRequest instanceof AMRCreationSimulatorRequest) {
-                AMRCreationSimulatorRequest request = (AMRCreationSimulatorRequest) simulatorRequest;
-                if (!devAMRCreationService.isRunning()) {
+            if (simulatorRequest instanceof AmrCreationSimulatorRequest) {
+                AmrCreationSimulatorRequest request = (AmrCreationSimulatorRequest) simulatorRequest;
+                if (!devAmrCreationService.isRunning()) {
                     Thread thread = new Thread() {
                         @Override
                         public void run() {
                             try {
-                                devAMRCreationService.executeSetup(request.getDevAMR());
+                                devAmrCreationService.executeSetup(request.getDevAmr());
                             } catch (Exception e) {
                                 log.error("Asynchronous device creation failed", e);
                             }
@@ -44,12 +44,8 @@ public class AMRCreationSimulatorMessageHandler extends SimulatorMessageHandler 
                     return new SimulatorResponseBase(true);
                 }
                 return new SimulatorResponseBase(false);
-            } else if (simulatorRequest instanceof AMRCreationSimulatorStatusRequest) {
-                if (devAMRCreationService.isRunning()) {
-                    return new SimulatorResponseBase(true);
-                } else {
-                    return new SimulatorResponseBase(false);
-                }
+            } else if (simulatorRequest instanceof AmrCreationSimulatorStatusRequest) {
+                return new SimulatorResponseBase(devAmrCreationService.isRunning());
             } else {
                 throw new IllegalArgumentException(
                     "Unsupported request type received: " + simulatorRequest.getClass().getCanonicalName());

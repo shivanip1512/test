@@ -16,7 +16,7 @@
      <cti:button nameKey="status" type="submit" href="${statusUrl}"  busy="true" classes="action primary"/>
     
     <br> <br>
-    <form:form commandName="devAMR" action="setupAMR" method="post" id="setupAMRForm">
+    <form:form commandName="devAmr" action="setupAMR" method="post" id="setupAMRForm">
         <cti:csrfToken/>
         <div class="widgetContent">
             <tags:nameValueContainer2>
@@ -38,10 +38,10 @@
                         Check All
                     </label>
                 </li>
-                <c:forEach items="${devAMR.meterTypes}" var="meterType" varStatus="status">
+                <c:forEach items="${devAmr.meterTypes}" var="meterType" varStatus="status">
                     <li class="subItemCheckbox">
                         <label> 
-                            <tags:checkbox path="meterTypes[${status.index}].create" styleClass="js-check_single_meter" />${devAMR.meterTypes[status.index].paoType}
+                            <tags:checkbox path="meterTypes[${status.index}].create" styleClass="js-check_single_meter" />${devAmr.meterTypes[status.index].paoType}
                         </label>
                     </li>
                 </c:forEach>

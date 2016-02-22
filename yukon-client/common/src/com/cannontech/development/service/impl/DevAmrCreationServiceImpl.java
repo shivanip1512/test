@@ -32,15 +32,15 @@ import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
 import com.cannontech.database.db.port.PortTiming;
 import com.cannontech.database.db.route.CarrierRoute;
-import com.cannontech.development.model.DevAMR;
+import com.cannontech.development.model.DevAmr;
 import com.cannontech.development.model.DevCCU;
 import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevMeter;
 import com.cannontech.development.model.DevPaoType;
-import com.cannontech.development.service.DevAMRCreationService;
+import com.cannontech.development.service.DevAmrCreationService;
 import com.google.common.collect.Lists;
 
-public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements DevAMRCreationService {
+public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements DevAmrCreationService {
     
     private static final ReentrantLock _lock = new ReentrantLock();
     private static final int delayTimeInSeconds = 3;
@@ -53,7 +53,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
     
     @Override
     @Transactional
-    public void executeSetup(DevAMR devAmr) {
+    public void executeSetup(DevAmr devAmr) {
         if(_lock.tryLock()) {
             try  {
                 createAllCommChannels(devAmr);
@@ -66,10 +66,10 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
     }
     
     private List<YukonPao> createTestMeters(List<PaoType> types, int numToCreate) {
-        DevAMR devAMR = new DevAMR();
-        devAMR.setCreateCartObjects(false);
-        devAMR.setCreateRfnTemplates(false);
-        devAMR.setNumAdditionalMeters(numToCreate);
+        DevAmr devAmr = new DevAmr();
+        devAmr.setCreateCartObjects(false);
+        devAmr.setCreateRfnTemplates(false);
+        devAmr.setNumAdditionalMeters(numToCreate);
         
         List<DevPaoType> devPaoTypes = Lists.newArrayListWithCapacity(types.size());
         for (PaoType paoType: types) {
@@ -77,11 +77,11 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
             devPaoType.setCreate(true);
             devPaoTypes.add(devPaoType);
         }
-        devAMR.setMeterTypes(devPaoTypes);
-        return createAllMeters(devAMR);
+        devAmr.setMeterTypes(devPaoTypes);
+        return createAllMeters(devAmr);
     }    
     
-    private void createAllCommChannels(DevAMR devAmr) {
+    private void createAllCommChannels(DevAmr devAmr) {
         if (!devAmr.isCreateCartObjects()) {
             return;
         }
@@ -129,7 +129,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         log.info("Comm Channel with name " + commChannel.getName() + " created.");
     }
 
-    private void createAllCCUs(DevAMR devAmr) {
+    private void createAllCCUs(DevAmr devAmr) {
         if (!devAmr.isCreateCartObjects()) {
             return;
         }
@@ -193,17 +193,17 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         log.info("CCU with name " + devCCU.getName() + " created.");
     }
 
-    private List<YukonPao> createAllMeters(DevAMR devAMR) {
+    private List<YukonPao> createAllMeters(DevAmr devAmr) {
         log.info("Creating Meters ...");
         List<YukonPao> createdMeters = Lists.newArrayList();
-        createdMeters.addAll(createCartMeters(devAMR));
-        createdMeters.addAll(createRfnTemplateMeters(devAMR));
+        createdMeters.addAll(createCartMeters(devAmr));
+        createdMeters.addAll(createRfnTemplateMeters(devAmr));
         int addressCount = 0;
         int delayCount = createMetersBeforeDelay;
-        int address = devAMR.getAddressRangeMin();
-        for (DevPaoType meterType: devAMR.getMeterTypes()) {
+        int address = devAmr.getAddressRangeMin();
+        for (DevPaoType meterType: devAmr.getMeterTypes()) {
             if (meterType.isCreate()) {
-                for (int i = 0; i < devAMR.getNumAdditionalMeters(); i++) {
+                for (int i = 0; i < devAmr.getNumAdditionalMeters(); i++) {
                     if (addressCount == delayCount) {
                         try {
                             log.info("----Delaying " + delayTimeInSeconds + " seconds.");
@@ -212,15 +212,15 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
                             log.info("----Delaying done. Next delay after " + delayCount + " devices created.");
                         } catch (InterruptedException e) {}
                     }
-                    address = devAMR.getAddressRangeMin() + addressCount;
+                    address = devAmr.getAddressRangeMin() + addressCount;
                     String meterName = meterType.getPaoType().getPaoTypeName() + " " + address;
                     YukonPao meter;
                     if (meterType.getPaoType().isRfn()) {
                         RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(meterType.getPaoType()).get(0);
                         RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address), templateSettings.getManufacturer(), templateSettings.getModel());
-                        meter = createRfnMeter(devAMR, meterType.getPaoType(), meterName, rfId, true);
+                        meter = createRfnMeter(devAmr, meterType.getPaoType(), meterName, rfId, true);
                     } else {
-                        meter = createPlcMeter(devAMR, meterType.getPaoType(), meterName, address, devAMR.getRouteId(), true);
+                        meter = createPlcMeter(devAmr, meterType.getPaoType(), meterName, address, devAmr.getRouteId(), true);
                     }
                     if (meter != null) {
                         createdMeters.add(meter);
@@ -233,8 +233,8 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         return createdMeters;
     }
     
-    private List<YukonPao> createCartMeters(DevAMR devAMR) {
-        if (!devAMR.isCreateCartObjects()) {
+    private List<YukonPao> createCartMeters(DevAmr devAmr) {
+        if (!devAmr.isCreateCartObjects()) {
             return Lists.newArrayList();
         }
 
@@ -242,7 +242,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         log.info("Creating Software Cart Meters ...");
         for (DevMeter meter : DevMeter.values()) {
             int routeId = getRouteIdForMeter(meter);
-            YukonPao createdMeter = createPlcMeter(devAMR, meter.getPaoType(), meter.getName(), meter.getAddress(), routeId, true);
+            YukonPao createdMeter = createPlcMeter(devAmr, meter.getPaoType(), meter.getName(), meter.getAddress(), routeId, true);
             if (createdMeter != null) {
                 createdMeters.add(createdMeter);
             }
@@ -250,8 +250,8 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         return createdMeters;
     }
     
-    private List<YukonPao> createRfnTemplateMeters(DevAMR devAMR) {
-        if (!devAMR.isCreateRfnTemplates()) {
+    private List<YukonPao> createRfnTemplateMeters(DevAmr devAmr) {
+        if (!devAmr.isCreateRfnTemplates()) {
             return Lists.newArrayList();
         }
 
@@ -259,7 +259,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         log.info("Creating Rfn Template Meters ...");
         for (RfnManufacturerModel rfnManufacturerModel : RfnManufacturerModel.values()) {
             String templateName = "*RfnTemplate_" + rfnManufacturerModel.getManufacturer() + "_" + rfnManufacturerModel.getModel();
-            YukonPao rfnMeter = createRfnMeter(devAMR, rfnManufacturerModel.getType(), templateName, RfnIdentifier.BLANK, true);
+            YukonPao rfnMeter = createRfnMeter(devAmr, rfnManufacturerModel.getType(), templateName, RfnIdentifier.BLANK, true);
             if (rfnMeter != null) {
                 createdMeters.add(rfnMeter);
             }
@@ -267,12 +267,12 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         return createdMeters;
     }
     
-    private boolean canCreateMeter(DevAMR devAMR, String name, Integer address) {
+    private boolean canCreateMeter(DevAmr devAmr, String name, Integer address) {
 //        checkIsCancelled();
-        if (address != null && address >= devAMR.getAddressRangeMax()) {
+        if (address != null && address >= devAmr.getAddressRangeMax()) {
             log.info("Meter with name " + name + " has address greater than max address range of "
-                    + devAMR.getAddressRangeMax() + " . Skipping.");
-            devAMR.incrementFailureCount();
+                    + devAmr.getAddressRangeMax() + " . Skipping.");
+            devAmr.incrementFailureCount();
             return false;
         }
         try {
@@ -280,7 +280,7 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
             SimpleDevice existingMeter = deviceDao.findYukonDeviceObjectByName(name);
             if (existingMeter != null) {
                 log.info("Meter with name " + name + " already exists. Skipping.");
-                devAMR.incrementFailureCount();
+                devAmr.incrementFailureCount();
                 return false;
             }
         } catch (NotFoundException e) {
@@ -289,8 +289,8 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
         return true;
     }
 
-    private YukonPao createPlcMeter(DevAMR devAMR, PaoType type, String name, int address, int routeId, boolean createPoints) {
-        if (!canCreateMeter(devAMR, name, address)) {
+    private YukonPao createPlcMeter(DevAmr devAmr, PaoType type, String name, int address, int routeId, boolean createPoints) {
+        if (!canCreateMeter(devAmr, name, address)) {
             return null;
         }
         
@@ -300,18 +300,18 @@ public class DevAMRCreationServiceImpl extends DevObjectCreationBase implements 
 
         YukonDevice yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(type, name, address, routeId, createPoints);
         deviceDao.changeMeterNumber(yukonDevice, Integer.toString(address));
-        devAMR.incrementSuccessCount();
+        devAmr.incrementSuccessCount();
         log.info("Plc Meter with name " + name + " created.");
         return yukonDevice;
     }
     
-    private YukonPao createRfnMeter(DevAMR devAMR, PaoType type, String name, RfnIdentifier rfId, boolean createPoints) {
-        if (!canCreateMeter(devAMR, name, null)) {
+    private YukonPao createRfnMeter(DevAmr devAmr, PaoType type, String name, RfnIdentifier rfId, boolean createPoints) {
+        if (!canCreateMeter(devAmr, name, null)) {
             return null;
         }
 
         YukonDevice yukonDevice = deviceCreationService.createRfnDeviceByDeviceType(type, name, rfId, createPoints);
-        devAMR.incrementSuccessCount();
+        devAmr.incrementSuccessCount();
         log.info("Rfn Meter with name " + name + " created.");
         return yukonDevice;
     }

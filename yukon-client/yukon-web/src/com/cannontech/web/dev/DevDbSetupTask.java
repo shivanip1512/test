@@ -1,6 +1,6 @@
 package com.cannontech.web.dev;
 
-import com.cannontech.development.model.DevAMR;
+import com.cannontech.development.model.DevAmr;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.objects.DevRoleProperties;
 import com.cannontech.web.dev.database.objects.DevStars;
@@ -8,7 +8,7 @@ import com.cannontech.web.dev.database.objects.DevStars;
 public class DevDbSetupTask {
 
     private DevRoleProperties devRoleProperties = new DevRoleProperties();
-    private DevAMR devAMR = new DevAMR();
+    private DevAmr devAmr = new DevAmr();
     private DevCapControl devCapControl = new DevCapControl();
     private DevStars devStars = new DevStars();
     private boolean running = false;
@@ -23,12 +23,12 @@ public class DevDbSetupTask {
         this.devRoleProperties = devRoleProperties;
     }
 
-    public DevAMR getDevAMR() {
-        return devAMR;
+    public DevAmr getDevAmr() {
+        return devAmr;
     }
 
-    public void setDevAMR(DevAMR devAMR) {
-        this.devAMR = devAMR;
+    public void setDevAmr(DevAmr devAmr) {
+        this.devAmr = devAmr;
     }
 
     public DevCapControl getDevCapControl() {
