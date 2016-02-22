@@ -113,7 +113,8 @@ void reportSystemMetrics( const compileinfo_t &info )
         buf << "Total processor time: " << CtiNumStr( cpuTotal, 3 ) << "%";
         CTILOG_INFO( dout, buf.extractToString());
 
-        EAS_DBG_CHECK
+        // Uncomment this to enable periodic reporting of heap statistics
+        // EAS_DBG_CHECK
     }
 }
 
