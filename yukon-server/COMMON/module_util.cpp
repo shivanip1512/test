@@ -112,6 +112,8 @@ void reportSystemMetrics( const compileinfo_t &info )
         double cpuTotal = pdhGetCpuTotal();
         buf << "Total processor time: " << CtiNumStr( cpuTotal, 3 ) << "%";
         CTILOG_INFO( dout, buf.extractToString());
+
+        EAS_DBG_CHECK
     }
 }
 

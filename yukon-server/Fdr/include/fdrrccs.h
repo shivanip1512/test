@@ -27,6 +27,8 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
     typedef CtiFDR_Inet Inherited;
 
     public:
+        DEBUG_INSTRUMENTATION
+
         // constructors and destructors
         CtiFDR_Rccs();
 

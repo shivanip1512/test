@@ -11,6 +11,7 @@ class IM_EX_FDRBASE CtiFDRPointList
 {
 
     public:
+        DEBUG_INSTRUMENTATION
 
         CtiFDRPointList();
 

@@ -2,6 +2,7 @@
 
 
 #include "dlldefs.h"
+#include "utility.h"
 
 #include <boost/optional.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -18,6 +19,7 @@ namespace Fdr
 class IM_EX_FDRBASE Translation
 {
 public:
+    DEBUG_INSTRUMENTATION
 
     using PropertyKey   = std::string;
     using PropertyValue = std::string;

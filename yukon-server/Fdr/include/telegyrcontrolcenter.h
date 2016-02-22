@@ -11,6 +11,7 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrControlCenter
 {
 
    public:
+      DEBUG_INSTRUMENTATION
 
       CtiTelegyrControlCenter( void );
       virtual ~CtiTelegyrControlCenter();

@@ -11,6 +11,8 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
     typedef CtiFDRInterface Inherited;
 
     public:
+        DEBUG_INSTRUMENTATION;
+
         // constructors and destructors
         CtiFDRCygnet();
 

@@ -15,6 +15,8 @@
 class IM_EX_FDRBASE CtiFDRInterface
 {
     public:
+        DEBUG_INSTRUMENTATION
+
         // constructors and destructors
         CtiFDRInterface(std::string & interfaceType);
 

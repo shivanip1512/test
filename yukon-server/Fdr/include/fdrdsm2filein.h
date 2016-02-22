@@ -10,6 +10,8 @@ class IM_EX_FDRDSM2FILEIN CtiFDR_Dsm2Filein : public CtiFDRTextFileBase
     typedef CtiFDRTextFileBase Inherited;
 
 public:
+    DEBUG_INSTRUMENTATION;
+
     // constructors and destructors
     CtiFDR_Dsm2Filein();
 

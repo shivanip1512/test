@@ -13,6 +13,8 @@ class IM_EX_FDRBASE CtiFDR_LodeStarImportBase : public CtiFDRTextFileBase, CtiRT
     typedef CtiFDRTextFileBase Inherited;
 
 public:
+    DEBUG_INSTRUMENTATION
+
     // constructors and destructors
     //CtiFDR_LodeStarImportBase();
     CtiFDR_LodeStarImportBase(std::string &aInterface);

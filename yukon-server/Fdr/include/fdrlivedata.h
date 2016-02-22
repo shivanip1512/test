@@ -17,6 +17,8 @@
 class IM_EX_FDRLIVEDATAAPI CtiFDRLiveData : public CtiFDRSimple
 {
 public:
+  DEBUG_INSTRUMENTATION
+
   // typedefs
   typedef CtiFDRInterface Inherited;
   typedef unsigned long LDAddress;

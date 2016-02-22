@@ -22,6 +22,8 @@ class __declspec(dllexport) FDRTriStateSub : public CtiFDRFtpInterface
     typedef CtiFDRFtpInterface Inherited;
 
     public:
+        DEBUG_INSTRUMENTATION
+
         // constructors and destructors
         FDRTriStateSub(); 
         virtual ~FDRTriStateSub();

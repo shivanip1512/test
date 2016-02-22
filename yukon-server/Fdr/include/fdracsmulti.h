@@ -178,6 +178,8 @@ class CtiTime;
 class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
 {
     public:
+        DEBUG_INSTRUMENTATION;
+
         // helper structs
         typedef CtiFDRScadaServer Inherited;
 

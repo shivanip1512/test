@@ -9,6 +9,8 @@
 class IM_EX_FDRBASE CtiFDR_LodeStarInfoTable 
 {
 public:
+    DEBUG_INSTRUMENTATION
+
     CtiFDR_LodeStarInfoTable(std::string &aDrivePath, std::string &aFileName,std::string &aFolderName);
     ~CtiFDR_LodeStarInfoTable();
     CtiFDR_LodeStarInfoTable& operator=( const CtiFDR_LodeStarInfoTable &other );

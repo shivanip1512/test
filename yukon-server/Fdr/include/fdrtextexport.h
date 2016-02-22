@@ -10,6 +10,8 @@ class IM_EX_FDRTEXTEXPORT CtiFDR_TextExport : public CtiFDRTextFileBase
     typedef CtiFDRTextFileBase Inherited;
 
 public:
+    DEBUG_INSTRUMENTATION
+
     // constructors and destructors
     CtiFDR_TextExport();
 

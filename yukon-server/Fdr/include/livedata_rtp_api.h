@@ -19,6 +19,8 @@ extern "C" {
  */
 class CompletionCallback {
 public:
+  DEBUG_INSTRUMENTATION
+
   CompletionCallback() {};
   virtual ~CompletionCallback() {};
   virtual void complete() = 0;
@@ -37,6 +39,8 @@ protected:
  */
 class WriteCallback {
 public:
+    DEBUG_INSTRUMENTATION
+
   WriteCallback() {};
   virtual ~WriteCallback() {};
   virtual bool write(unsigned long address, unsigned long length, void * buffer) = 0;
@@ -66,6 +70,7 @@ class LiveDataApi {
 
 
 public: 
+  DEBUG_INSTRUMENTATION
 
   LiveDataApi();
 

@@ -11,6 +11,8 @@ class IM_EX_STD_FDRLODESTARIMPORT CtiFDR_StandardLodeStar : public CtiFDR_LodeSt
     typedef CtiFDR_LodeStarImportBase Inherited;
 
 public:
+    DEBUG_INSTRUMENTATION
+
     // constructors and destructors
     CtiFDR_StandardLodeStar();
 

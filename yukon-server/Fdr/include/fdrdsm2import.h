@@ -10,6 +10,8 @@ class IM_EX_FDRDSM2IMPORT CtiFDR_Dsm2Import : public CtiFDRAsciiImportBase
     typedef CtiFDRAsciiImportBase Inherited;
 
     public:
+        DEBUG_INSTRUMENTATION;
+
         // constructors and destructors
         CtiFDR_Dsm2Import(); 
 

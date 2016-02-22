@@ -5,6 +5,8 @@
 class IM_EX_FDRBASE CtiFDRTextFileInterfaceParts 
 {
     public:
+        DEBUG_INSTRUMENTATION
+
         // constructors and destructors
         CtiFDRTextFileInterfaceParts(std::string &aFileName=std::string ("yukon.txt"), std::string &aPath=std::string("\\yukon\\server\\import"), int aInterval=900); 
         virtual ~CtiFDRTextFileInterfaceParts();

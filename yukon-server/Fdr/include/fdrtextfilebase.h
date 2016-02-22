@@ -9,6 +9,8 @@ class IM_EX_FDRBASE CtiFDRTextFileBase : public CtiFDRInterface
     typedef CtiFDRInterface Inherited;
 
 public:
+    DEBUG_INSTRUMENTATION
+
     // constructors and destructors
     CtiFDRTextFileBase(std::string &interfaceType); 
 

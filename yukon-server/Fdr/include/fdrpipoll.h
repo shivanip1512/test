@@ -23,6 +23,7 @@ private:
   typedef std::map<unsigned int, PiEventInfo> PollDataMap;
 
 public:
+  DEBUG_INSTRUMENTATION
 
   // constructors and destructors
   CtiFDRPiPoll();

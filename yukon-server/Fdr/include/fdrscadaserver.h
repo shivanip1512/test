@@ -20,6 +20,8 @@ class IM_EX_FDRBASE CtiFDRScadaServer : public CtiFDRSocketServer
 {
 
     public:
+        DEBUG_INSTRUMENTATION
+
         // constructors and destructors
         CtiFDRScadaServer(std::string &);
         virtual ~CtiFDRScadaServer();

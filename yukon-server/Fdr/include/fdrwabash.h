@@ -9,6 +9,8 @@ class __declspec(dllexport) FDRWabash : public CtiFDRInterface
 {
         typedef CtiFDRInterface Inherited;
     public:
+        DEBUG_INSTRUMENTATION
+
         // constructors and destructors
         FDRWabash();
         virtual ~FDRWabash();

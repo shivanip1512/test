@@ -10,6 +10,8 @@ class IM_EX_FDRBEPC CtiFDR_BEPC : public CtiFDRTextFileBase
     typedef CtiFDRTextFileBase Inherited;
 
 public:
+    DEBUG_INSTRUMENTATION;
+
     // constructors and destructors
     CtiFDR_BEPC();
 

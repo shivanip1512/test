@@ -23,6 +23,8 @@ namespace Fdr {
 
 struct DnpId : public Cti::Loggable
 {
+    DEBUG_INSTRUMENTATION;
+
     USHORT MasterId;
     USHORT SlaveId;
     UINT   PointType;
@@ -52,6 +54,7 @@ struct DnpId : public Cti::Loggable
 class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 {
     public:
+        DEBUG_INSTRUMENTATION;
         // constructors and destructors
         DnpSlave();
         ~DnpSlave();  //  delay definition for incomplete AttributeService type

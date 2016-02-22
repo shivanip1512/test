@@ -119,6 +119,8 @@ class IM_EX_FDRACS CtiFDR_ACS : public CtiFDRSingleSocket
     typedef CtiFDRSingleSocket Inherited;
 
     public:
+        DEBUG_INSTRUMENTATION;
+
         // constructors and destructors
         CtiFDR_ACS();
 

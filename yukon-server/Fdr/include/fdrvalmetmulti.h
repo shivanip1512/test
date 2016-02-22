@@ -52,6 +52,8 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
     typedef CtiFDRScadaServer Inherited;
 
     public:
+        DEBUG_INSTRUMENTATION
+
         // constructors and destructors
         CtiFDR_ValmetMulti();
 

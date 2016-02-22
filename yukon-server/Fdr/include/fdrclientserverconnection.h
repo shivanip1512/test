@@ -7,6 +7,7 @@
 #include <windows.h>
 #include "string.h"
 #include "worker_thread.h"
+#include "utility.h"
 
 class CtiFDRScadaServer;
 class CtiFDRSocketServer;
@@ -23,6 +24,8 @@ class CtiFDRSocketServer;
 class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnection
 {
     public:
+        DEBUG_INSTRUMENTATION;
+
         CtiFDRClientServerConnection(const std::string& connectionName,
                                      SOCKET theSocket,
                                      CtiFDRSocketServer *aParent);

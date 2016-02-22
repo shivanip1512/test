@@ -16,6 +16,7 @@ class RWThreadFunction;
 class IM_EX_FDRBASE CtiFDRSocketLayer
 {
     public:
+        DEBUG_INSTRUMENTATION
 
         typedef enum {
              Server_Single=0,

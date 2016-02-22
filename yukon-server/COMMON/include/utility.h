@@ -311,3 +311,6 @@ struct priority_sort : public std::binary_function<T, T, bool>
         return lhs.Priority > rhs.Priority;
     }
 };
+
+#define DEBUG_INSTRUMENTATION \
+    EAS_DBG_NEW

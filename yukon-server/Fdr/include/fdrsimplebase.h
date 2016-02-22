@@ -15,6 +15,7 @@ class IM_EX_FDRBASE CtiFDRSimple : public CtiFDRInterface
   typedef CtiFDRInterface Inherited;
 
 public:
+  DEBUG_INSTRUMENTATION
 
   // constructors and destructors
   CtiFDRSimple(std::string interfaceName);

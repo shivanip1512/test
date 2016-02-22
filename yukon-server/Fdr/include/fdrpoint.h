@@ -7,6 +7,7 @@
 #include "fdrdestination.h"
 #include "types.h"
 #include "ctitime.h"
+#include "utility.h"
 
 class CtiTime;
 
@@ -16,6 +17,7 @@ class IM_EX_FDRBASE CtiFDRPoint : public Cti::Loggable
 {
 
 public:
+    DEBUG_INSTRUMENTATION
 
     CtiFDRPoint( long pointID = 0);
     virtual ~CtiFDRPoint();

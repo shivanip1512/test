@@ -9,6 +9,8 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
     typedef CtiFDRInterface Inherited;
 
     public:
+        DEBUG_INSTRUMENTATION;
+
         // constructors and destructors
         CtiFDRAsciiImportBase(std::string &interfaceType); 
     

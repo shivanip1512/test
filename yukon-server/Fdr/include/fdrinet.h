@@ -90,6 +90,8 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
     typedef CtiFDRSocketInterface Inherited;
 
     public:
+        DEBUG_INSTRUMENTATION
+
         // constructors and destructors
         CtiFDR_Inet(std::string aName=std::string ("INET"));
 

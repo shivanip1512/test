@@ -10,6 +10,8 @@ class IM_EX_FDRSTEC CtiFDR_STEC : public CtiFDRFtpInterface
     typedef CtiFDRFtpInterface Inherited;
 
     public:
+        DEBUG_INSTRUMENTATION
+
         // constructors and destructors
         CtiFDR_STEC();
 

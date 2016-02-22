@@ -13,6 +13,8 @@ typedef boost::shared_ptr<CtiFDRPoint> CtiFDRPointSPtr;
 class IM_EX_FDRBASE CtiFDRDestination : public Cti::Loggable
 {
     public:
+        DEBUG_INSTRUMENTATION;
+
         CtiFDRDestination () {}; // this is only defined so this class can be used in an std::map
         CtiFDRDestination( const long parentPoint, const std::string &translation, const std::string &destination = std::string() );
         virtual ~CtiFDRDestination();

@@ -5,11 +5,14 @@
 #include "pointtypes.h"
 #include "dlldefs.h"
 #include "fdr.h"
+#include "utility.h"
 
 
 class IM_EX_FDRBASE CtiFDRPointIdMap
 {
-    public:    
+    public:
+        DEBUG_INSTRUMENTATION
+
         CtiFDRPointIdMap( long pointID = 0, std::string & translateName = std::string(), std::string & destinationName = std::string(), FDRDbReloadReason aReason=NotReloaded);
         ~CtiFDRPointIdMap();
 

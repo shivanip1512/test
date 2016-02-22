@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pointdefs.h"
+#include "utility.h"
 
 #define  FDR_VALMET "VALMET"
 #define  FDR_VALMETMULTI "VALMETMULTI"
