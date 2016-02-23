@@ -167,7 +167,7 @@ class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
     typedef CtiFDRSingleSocket Inherited;
 
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         // constructors and destructors
         CtiFDR_Rdex();

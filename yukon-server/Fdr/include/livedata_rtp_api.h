@@ -19,7 +19,7 @@ extern "C" {
  */
 class CompletionCallback {
 public:
-  DEBUG_INSTRUMENTATION
+  DEBUG_INSTRUMENTATION;
 
   CompletionCallback() {};
   virtual ~CompletionCallback() {};
@@ -39,7 +39,7 @@ protected:
  */
 class WriteCallback {
 public:
-    DEBUG_INSTRUMENTATION
+    DEBUG_INSTRUMENTATION;
 
   WriteCallback() {};
   virtual ~WriteCallback() {};
@@ -70,7 +70,7 @@ class LiveDataApi {
 
 
 public: 
-  DEBUG_INSTRUMENTATION
+  DEBUG_INSTRUMENTATION;
 
   LiveDataApi();
 

@@ -11,7 +11,7 @@
 class IM_EX_FDRBASE CtiFDRPointIdMap
 {
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         CtiFDRPointIdMap( long pointID = 0, std::string & translateName = std::string(), std::string & destinationName = std::string(), FDRDbReloadReason aReason=NotReloaded);
         ~CtiFDRPointIdMap();

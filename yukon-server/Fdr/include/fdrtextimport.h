@@ -12,7 +12,7 @@ class IM_EX_FDRTEXTIMPORT CtiFDR_TextImport : public CtiFDRTextFileBase
     typedef CtiFDRTextFileBase Inherited;
 
 public:
-    DEBUG_INSTRUMENTATION
+    DEBUG_INSTRUMENTATION;
 
     // constructors and destructors
     CtiFDR_TextImport();

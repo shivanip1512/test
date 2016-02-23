@@ -18,7 +18,7 @@ template<typename T>
 class IM_EX_FDRBASE CtiFDRScadaHelper
 {
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         CtiFDRScadaHelper(CtiFDRScadaServer* parent);
         virtual ~CtiFDRScadaHelper();

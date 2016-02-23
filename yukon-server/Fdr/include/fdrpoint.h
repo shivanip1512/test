@@ -17,7 +17,7 @@ class IM_EX_FDRBASE CtiFDRPoint : public Cti::Loggable
 {
 
 public:
-    DEBUG_INSTRUMENTATION
+    DEBUG_INSTRUMENTATION;
 
     CtiFDRPoint( long pointID = 0);
     virtual ~CtiFDRPoint();

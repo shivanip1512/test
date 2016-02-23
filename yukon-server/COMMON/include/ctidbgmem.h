@@ -73,5 +73,5 @@ static void* operator new[]( std::size_t sz )                     \
 #define EAS_DBG_CHECK \
     static _CrtMemState s1; \
     _CrtMemCheckpoint( &s1 ); \
-    CTILOG_INFO( dout, "Heap: size " << s1.lSizes[1] << ", count " << s1.lCounts[1] ); 
+    CTILOG_INFO( dout, "Heap: size " << s1.lSizes[1] << ", count " << s1.lCounts[1] )
 #endif

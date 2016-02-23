@@ -114,7 +114,7 @@ void reportSystemMetrics( const compileinfo_t &info )
         CTILOG_INFO( dout, buf.extractToString());
 
         // Uncomment this to enable periodic reporting of heap statistics
-        // EAS_DBG_CHECK
+        EAS_DBG_CHECK;
     }
 }
 

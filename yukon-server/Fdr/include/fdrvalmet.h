@@ -14,7 +14,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
     typedef CtiFDRSingleSocket Inherited;
 
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         // constructors and destructors
         CtiFDR_Valmet();

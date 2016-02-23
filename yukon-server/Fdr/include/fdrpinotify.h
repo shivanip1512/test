@@ -16,7 +16,7 @@ class IM_EX_FDRPIBASEAPI CtiFDRPiNotify : public CtiFDRPiBase
   typedef std::multimap<PiPointId, PiPointInfo> PiPointMap;
 
 public:
-  DEBUG_INSTRUMENTATION
+  DEBUG_INSTRUMENTATION;
 
   // constructors and destructors
   CtiFDRPiNotify();

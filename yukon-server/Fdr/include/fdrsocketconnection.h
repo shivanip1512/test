@@ -9,7 +9,7 @@ class CtiFDRSocketLayer;
 class IM_EX_FDRBASE CtiFDRSocketConnection 
 {                                    
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         CtiFDRSocketConnection(CtiFDRSocketLayer * aParent=NULL);
         CtiFDRSocketConnection(CtiFDRSocketLayer * aParent, const Cti::SocketAddress& aAddr );

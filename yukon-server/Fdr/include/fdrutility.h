@@ -19,7 +19,7 @@ namespace Fdr
 class IM_EX_FDRBASE Translation
 {
 public:
-    DEBUG_INSTRUMENTATION
+    DEBUG_INSTRUMENTATION;
 
     using PropertyKey   = std::string;
     using PropertyValue = std::string;

@@ -251,7 +251,7 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
     typedef CtiFDRSingleSocket Inherited;
 
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         // constructors and destructors
         CtiFDR_XA21LM();

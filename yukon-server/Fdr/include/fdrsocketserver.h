@@ -12,7 +12,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 {
 
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         // constructors and destructors
         CtiFDRSocketServer(std::string);

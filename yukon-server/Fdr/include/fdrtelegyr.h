@@ -56,7 +56,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       typedef CtiFDRInterface Inherited;
 
    public:
-       DEBUG_INSTRUMENTATION
+       DEBUG_INSTRUMENTATION;
 
       // constructors and destructors
       CtiFDRTelegyr();

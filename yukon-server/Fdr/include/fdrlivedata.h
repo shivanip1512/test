@@ -17,7 +17,7 @@
 class IM_EX_FDRLIVEDATAAPI CtiFDRLiveData : public CtiFDRSimple
 {
 public:
-  DEBUG_INSTRUMENTATION
+  DEBUG_INSTRUMENTATION;
 
   // typedefs
   typedef CtiFDRInterface Inherited;

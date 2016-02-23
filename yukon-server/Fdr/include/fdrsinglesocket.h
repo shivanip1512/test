@@ -27,7 +27,7 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
     typedef CtiFDRSocketInterface Inherited;
 
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         // constructors and destructors
         CtiFDRSingleSocket(std::string &);

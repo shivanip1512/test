@@ -14,7 +14,7 @@
 class IM_EX_FDRPIBASEAPI CtiFDRPiBase : public CtiFDRSimple
 {
 public:
-  DEBUG_INSTRUMENTATION
+  DEBUG_INSTRUMENTATION;
 
   CtiFDRPiBase();
   virtual ~CtiFDRPiBase();

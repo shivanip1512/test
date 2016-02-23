@@ -14,7 +14,7 @@
 class IM_EX_FDRTELEGYRAPI CtiTelegyrGroup
 {
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         CtiTelegyrGroup( void );
         virtual ~CtiTelegyrGroup();

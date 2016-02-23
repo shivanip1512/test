@@ -12,7 +12,7 @@ class IM_EX_FDRTRISTATE CtiFDR_Tristate : public CtiFDRFtpInterface
     typedef CtiFDRFtpInterface Inherited;
 
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         // constructors and destructors
         CtiFDR_Tristate(); 

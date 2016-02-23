@@ -16,7 +16,7 @@ static HANDLE iShutdown;
 class CtiFDRService : public CService
 {
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         CtiFDRService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType);
         virtual void Run();

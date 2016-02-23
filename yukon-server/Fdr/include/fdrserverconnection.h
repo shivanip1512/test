@@ -12,7 +12,7 @@ class IM_EX_FDRBASE CtiFDRServerConnection : public CtiFDRSocketConnection
     typedef CtiFDRSocketConnection Inherited;
 
     public:
-        DEBUG_INSTRUMENTATION
+        DEBUG_INSTRUMENTATION;
 
         CtiFDRServerConnection(SOCKET aSocket, const Cti::SocketAddress& aAddr, CtiFDRSocketLayer * aParent=NULL);
         ~CtiFDRServerConnection();
