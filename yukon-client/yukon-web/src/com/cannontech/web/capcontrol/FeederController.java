@@ -191,6 +191,8 @@ public class FeederController {
 
         int id;
         try {
+            //Saving the Cap Bank List occurs at a separate call
+            feeder.setUpdateBankList(false);
             id = feederService.save(feeder);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e);

@@ -27,6 +27,7 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
     private com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder =
         new com.cannontech.database.db.capcontrol.CapControlFeeder();
     private List<CCFeederBankList> ccBankListVector;
+    private boolean updateBankList = true;
 
     public Integer getId() {
         return capControlFeeder.getFeederID();
@@ -155,15 +156,25 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
         super.update();
 
         getCapControlFeeder().update();
-
-        CCFeederBankList.deleteCapBanksFromFeederList(getCapControlPAOID(), null, getDbConnection());
-
-        for( int i = 0; i < getChildList().size(); i++ ) {
-            getChildList().get(i).add();
+        
+        if(isUpdateBankList()){
+            CCFeederBankList.deleteCapBanksFromFeederList(getCapControlPAOID(), null, getDbConnection());
+    
+            for( int i = 0; i < getChildList().size(); i++ ) {
+                getChildList().get(i).add();
+            }
         }
         
         ZoneService zoneService = YukonSpringHook.getBean("zoneService", ZoneService.class);
         zoneService.handleFeederUpdate(getCapControlPAOID());
+    }
+
+    public boolean isUpdateBankList() {
+        return updateBankList;
+    }
+
+    public void setUpdateBankList(boolean updateBankList) {
+        this.updateBankList = updateBankList;
     }
 
 }
