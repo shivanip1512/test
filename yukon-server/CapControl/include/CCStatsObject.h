@@ -4,7 +4,6 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 
-using namespace boost::accumulators;
 
 
 class CCStatsObject
@@ -20,6 +19,14 @@ public:
 
 private:
 
-    accumulator_set<double, stats<tag::mean>>   accumulator;
+    boost::accumulators::accumulator_set
+    <
+        double,
+        boost::accumulators::stats
+        <
+            boost::accumulators::tag::mean
+        >
+    >
+    accumulator;
 };
 

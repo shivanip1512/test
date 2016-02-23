@@ -2,6 +2,7 @@
 
 #include "ccstatsobject.h"
 
+using namespace boost::accumulators;
 
 
 long CCStatsObject::getOpCount() const
