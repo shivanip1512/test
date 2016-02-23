@@ -18,9 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
-import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
@@ -36,7 +35,7 @@ import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
-public class PointUpdateBackingService implements BulkUpdateBackingService, AllPointDataListener {
+public class PointUpdateBackingService implements BulkUpdateBackingService, PointDataListener {
     private final static Logger log = YukonLogManager.getLogger(PointUpdateBackingService.class);
 
     @Autowired private AsyncDynamicDataSource asyncDataSource;
@@ -193,34 +192,11 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
 
     @Override
     public void pointDataReceived(PointValueQualityHolder pointData) {
-        log.debug("Point data received for point id=" + pointData.getId());
-        DatedPointValue old = cache.getIfPresent(pointData.getId());
-        if (old == null) {
-            usePointData(pointData);
-        } else {
-            checkBeforeUsing(old, pointData);
-        }
-    }
-    
-    /**
-     * The point data can actually be older than the most current value but we want to use it instead.
-     * This will happen if the point data was recorded before the point was created in Yukon e.g.: peak demand.
-     * We want to replace our 'newer' uninitialized value with the a real value recorded before our point was created.
-     */
-    private void checkBeforeUsing(DatedPointValue old, PointValueQualityHolder pointData) {
-        boolean isNewer = pointData.getPointDataTimeStamp().after(old.value.getPointDataTimeStamp());
-        boolean previouslyUninitialized = old.value.getPointQuality() == PointQuality.Uninitialized;
-        if (isNewer || previouslyUninitialized) {
-            usePointData(pointData);
-        }
-    }
-    
-    private void usePointData(PointValueQualityHolder pointData) {
         DatedPointValue value = new DatedPointValue(pointData);
         log.debug("Added Point data to cache for point id=" + pointData.getId());
         cache.put(pointData.getId(), value);
     }
-    
+        
     @PostConstruct
     private void init(){
         alwaysRegisterForPoints = configSource.getBoolean(MasterConfigBoolean.POINT_UPDATE_REGISTRATION, true);
