@@ -6,15 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,6 +42,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.dr.rfn.model.RfnMeterSimulatorStatus;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -52,13 +57,14 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 
+    private final static Map<Integer,Long> perMinuteMsgCount = new ConcurrentHashMap<>();
     private static List<Future<?>> futures;
     private ScheduledFuture<?> msgSimulatorFt = null;
     private Map<RfnDevice, Map<Attribute, TimestampValue>> storedValue = new HashMap<>();
     private int hourlyCounter = 0;
     private int perDayCounter = 0;
     private int minsCounter = 0;
-    
+    private RfnMeterSimulatorStatus rfnMeterSimulatorStatus = new RfnMeterSimulatorStatus();
     
     private JmsTemplate jmsTemplate;
     
@@ -70,12 +76,36 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
         jmsTemplate.setPubSubDomain(false);
     }
 
+    public RfnMeterSimulatorStatus getExistingRfnMeterSimulatorStatus() {
+        return rfnMeterSimulatorStatus;        
+    }
+    
+    public long getPerMinuteMsgCount() {
+        int minuteOfHour = new Instant().get(DateTimeFieldType.minuteOfHour());
+        if (perMinuteMsgCount.isEmpty() || !perMinuteMsgCount.containsKey(minuteOfHour)) {
+            return 0;
+        } else {
+            return perMinuteMsgCount.get(minuteOfHour);
+        }
+    }
 
     @Override
     public synchronized void sendRfnMeterMessages(List<RfnDevice> rfnDeviceList,
             Multimap<PaoType, PointMapper> pointMapperMap) {
 
         futures = new ArrayList<Future<?>>();
+        
+        final AtomicBoolean isRunningRfnBillingType = rfnMeterSimulatorStatus.getIsRunningRfnBillingType();
+        isRunningRfnBillingType.set(true);
+        final AtomicBoolean isRunningRfnCurrentType = rfnMeterSimulatorStatus.getIsRunningRfnCurrentType();
+        isRunningRfnCurrentType.set(true);
+        final AtomicBoolean isRunningRfnIntervalType = rfnMeterSimulatorStatus.getIsRunningRfnIntervalType();
+        isRunningRfnIntervalType.set(true);
+        final AtomicBoolean isRunningRfnProfileType = rfnMeterSimulatorStatus.getIsRunningRfnProfileType();
+        isRunningRfnProfileType.set(true);
+        final AtomicBoolean isRunningRfnStatusType = rfnMeterSimulatorStatus.getIsRunningRfnStatusType();
+        isRunningRfnStatusType.set(true);
+        
         int minsCounter = 0;
         try {
             Map<RfnMeterReadingType, Integer> messagePerMin = getNumberOfMessagesPerMinute(rfnDeviceList);
@@ -89,6 +119,7 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
 
         } catch (Exception e) {
             log.error("RF Meter Data Simulator has encountered an unexpected error.", e);
+            rfnMeterSimulatorStatus.setErrorMessage(e.getMessage());
         }
     }
     
@@ -130,30 +161,69 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
         @Override
         public void run() {
             log.debug("RFN Meter message simulator sending message...");
-                RfnMeterReadingArchiveRequest meterArchiveRequest;
-                boolean sendBilling = false;
-                // For reading type "Billing" messages should be send per hour
-                if (minsCounter % 60 == 0) {
-                    hourlyCounter = 0;
-                    sendBilling = true;
-                }
-                // Reset the counter after 24 hrs.
-                if (minsCounter % 1440 == 0) {
-                    perDayCounter = 0;
-                }
-                minsCounter++;
-                Map<RfnMeterReadingType, List<RfnDevice>> meterList = generateMeterList(rfnMeterList,
-                                                                                        messagePerMin,
-                                                                                        sendBilling);
-                for (RfnMeterReadingType type : meterList.keySet()) {
-                    for (RfnDevice meter : meterList.get(type)) {
-                        RfnMeterReadingData meterReadingData = generateMeterReadingData(meter,
-                                                                                        pointMapperMap,
-                                                                                        type);
-                        meterArchiveRequest = generateArchiveRequest(meterReadingData, type);
-                        sendArchiveRequest(meterReadingArchiveRequestQueueName, meterArchiveRequest);
+
+            if (new Instant().get(DateTimeFieldType.minuteOfDay()) == 0) {
+                // Reinitialize counter for the fresh day
+                rfnMeterSimulatorStatus.resetCompletionState();
+            }
+
+            AtomicLong billingTypeNumComplete = rfnMeterSimulatorStatus.getNumCompleteRfnBillingType();
+            AtomicLong currentTypeNumComplete = rfnMeterSimulatorStatus.getNumCompleteRfnCurrentType();
+            AtomicLong intervalTypeNumComplete = rfnMeterSimulatorStatus.getNumCompleteRfnIntervalType();
+            AtomicLong profileTypeNumComplete = rfnMeterSimulatorStatus.getNumCompleteRfnProfileType();
+            AtomicLong statusTypeNumComplete = rfnMeterSimulatorStatus.getNumCompleteRfnStatusType();
+
+            RfnMeterReadingArchiveRequest meterArchiveRequest;
+            boolean sendBilling = false;
+            // For reading type "Billing" messages should be send per hour
+            if (minsCounter % 60 == 0) {
+                hourlyCounter = 0;
+                sendBilling = true;
+            }
+            // Reset the counter after 24 hrs.
+            if (minsCounter % 1440 == 0) {
+                perDayCounter = 0;
+            }
+            minsCounter++;
+            Map<RfnMeterReadingType, List<RfnDevice>> meterList =
+                generateMeterList(rfnMeterList, messagePerMin, sendBilling);
+            for (RfnMeterReadingType type : meterList.keySet()) {
+                for (RfnDevice meter : meterList.get(type)) {
+                    RfnMeterReadingData meterReadingData = generateMeterReadingData(meter, pointMapperMap, type);
+                    meterArchiveRequest = generateArchiveRequest(meterReadingData, type);
+                    sendArchiveRequest(meterReadingArchiveRequestQueueName, meterArchiveRequest);
+
+                    long msgCount = 0;
+                    if (type.equals(RfnMeterReadingType.BILLING)) {
+                        int minuteOfHour = new Instant().get(DateTimeFieldType.minuteOfHour());
+                        if (perMinuteMsgCount.containsKey(minuteOfHour)) {
+                            msgCount = perMinuteMsgCount.get(minuteOfHour);
+                        }
+                        msgCount++;
+                        perMinuteMsgCount.clear();
+                        // the record will have the number of messages sent for the current minute only
+                        perMinuteMsgCount.put(minuteOfHour, msgCount);
+                        billingTypeNumComplete.incrementAndGet();
+                        rfnMeterSimulatorStatus.setLastFinishedInjectionRfnBillingType(Instant.now());
+                    }
+                    if (type.equals(RfnMeterReadingType.CURRENT)) {
+                        currentTypeNumComplete.incrementAndGet();
+                        rfnMeterSimulatorStatus.setLastFinishedInjectionRfnCurrentType(Instant.now());
+                    }
+                    if (type.equals(RfnMeterReadingType.INTERVAL)) {
+                        intervalTypeNumComplete.incrementAndGet();
+                        rfnMeterSimulatorStatus.setLastFinishedInjectionRfnIntervalType(Instant.now());
+                    }
+                    if (type.equals(RfnMeterReadingType.PROFILE)) {
+                        profileTypeNumComplete.incrementAndGet();
+                        rfnMeterSimulatorStatus.setLastFinishedInjectionRfnProfileType(Instant.now());
+                    }
+                    if (type.equals(RfnMeterReadingType.STATUS)) {
+                        statusTypeNumComplete.incrementAndGet();
+                        rfnMeterSimulatorStatus.setLastFinishedInjectionRfnStatusType(Instant.now());
                     }
                 }
+            }
         }
 
     }
@@ -161,31 +231,39 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
     /**
      * Identifies the devices for which messages have to be send for a minute.
      */
-    private Map<RfnMeterReadingType, List<RfnDevice>> generateMeterList(
-            List<RfnDevice> rfnMeterList, Map<RfnMeterReadingType, Integer> messagePerMin,
-            boolean sendHourly) {
-
+    private Map<RfnMeterReadingType, List<RfnDevice>> generateMeterList(List<RfnDevice> rfnMeterList,
+            Map<RfnMeterReadingType, Integer> messagePerMin, boolean sendHourly) {
         Map<RfnMeterReadingType, List<RfnDevice>> meterList = new HashMap<>();
 
         if (sendHourly) {
-            List<RfnDevice> billingDevices = rfnMeterList.subList(perDayCounter,
-                                                                  perDayCounter + messagePerMin.get(RfnMeterReadingType.BILLING));
-            meterList.put(RfnMeterReadingType.BILLING, billingDevices);
-            perDayCounter = perDayCounter + messagePerMin.get(RfnMeterReadingType.BILLING);
+            if ((perDayCounter + messagePerMin.get(RfnMeterReadingType.BILLING)) <= rfnMeterList.size()) {
+                List<RfnDevice> billingDevices =
+                    rfnMeterList.subList(perDayCounter, perDayCounter + messagePerMin.get(RfnMeterReadingType.BILLING));
+                meterList.put(RfnMeterReadingType.BILLING, billingDevices);
+                System.out.println(Instant.now() + "Sending message for billingDevices " + billingDevices);
+                perDayCounter = perDayCounter + messagePerMin.get(RfnMeterReadingType.BILLING);
+            }
+        }
+        if ((hourlyCounter + messagePerMin.get(RfnMeterReadingType.INTERVAL)) <= rfnMeterList.size()) {
+            List<RfnDevice> intervalDevices =
+                rfnMeterList.subList(hourlyCounter, hourlyCounter + messagePerMin.get(RfnMeterReadingType.INTERVAL));
+            meterList.put(RfnMeterReadingType.INTERVAL, intervalDevices);
+            System.out.println("Sending message for intervalDevices " + intervalDevices);
         }
 
-        List<RfnDevice> intervalDevices = rfnMeterList.subList(hourlyCounter,
-                                                               hourlyCounter + messagePerMin.get(RfnMeterReadingType.INTERVAL));
-        List<RfnDevice> profileDevices = rfnMeterList.subList(hourlyCounter,
-                                                              hourlyCounter + messagePerMin.get(RfnMeterReadingType.PROFILE));
+        if ((hourlyCounter + messagePerMin.get(RfnMeterReadingType.PROFILE)) <= rfnMeterList.size()) {
+            List<RfnDevice> profileDevices =
+                rfnMeterList.subList(hourlyCounter, hourlyCounter + messagePerMin.get(RfnMeterReadingType.PROFILE));
+            meterList.put(RfnMeterReadingType.PROFILE, profileDevices);
+        }
 
-        hourlyCounter = hourlyCounter + messagePerMin.get(RfnMeterReadingType.INTERVAL);
-
-        meterList.put(RfnMeterReadingType.INTERVAL, intervalDevices);
-        meterList.put(RfnMeterReadingType.PROFILE, profileDevices);
+        if (((hourlyCounter + messagePerMin.get(RfnMeterReadingType.INTERVAL)) <= rfnMeterList.size())
+            || (hourlyCounter + messagePerMin.get(RfnMeterReadingType.PROFILE) <= rfnMeterList.size())) {
+            hourlyCounter = hourlyCounter + messagePerMin.get(RfnMeterReadingType.INTERVAL);
+        }
         return meterList;
     }
-    
+
     /**
      * Generate the actual RFN meter message to send
      */
@@ -380,7 +458,11 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
         perDayCounter = 0;
         minsCounter = 0;
         msgSimulatorFt.cancel(true);
-
+        RfnMeterSimulatorStatus.reInitializeStatus(rfnMeterSimulatorStatus);
+        if (!rfnMeterSimulatorStatus.getIsRunningRfnBillingType().get()) {
+            // Flush the counter if both simulators are off
+            perMinuteMsgCount.clear();
+        }
     }
     
     /**

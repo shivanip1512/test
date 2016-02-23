@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.ConnectionFactory;
 import javax.management.ObjectName;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +62,7 @@ import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
+import com.cannontech.dr.rfn.model.RfnMeterSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
@@ -73,12 +75,14 @@ import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.model.DataSimulatorStatus;
+import com.cannontech.web.dev.model.MeterRfnSimulatorStatus;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -97,6 +101,7 @@ public class NmIntegrationController {
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     private final DataSimulatorStatus dataSimulatorStatus = new DataSimulatorStatus();
     private final DataSimulatorStatus existingDataSimulatorStatus = new DataSimulatorStatus();
+    private final MeterRfnSimulatorStatus existingMeterRfnSimulatorStatus = new MeterRfnSimulatorStatus();
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
@@ -590,6 +595,15 @@ public class NmIntegrationController {
         return "rfn/dataSimulator.jsp";
     }
 
+    @RequestMapping("viewRfnMeterSimulator")
+    public String viewRfnMeterSimulator(ModelMap model, YukonUserContext userContext) {
+        ImmutableSet<PaoType> paoType = PaoType.getRfMeterTypes();
+        RfnMeterSimulatorStatus rfnMeterSimulatorStatus = new RfnMeterSimulatorStatus();
+        model.addAttribute("paoTypes", paoType);
+        model.addAttribute("rfnMeterSimulatorStatus", rfnMeterSimulatorStatus);
+        model.addAttribute("existingDataSimulatorStatus", existingrfnMeterSimulatorStatus(userContext));
+        return "rfn/rfnMeterSimulator.jsp";
+    }
 
     @RequestMapping(value = "startDataSimulator")
     @ResponseBody
@@ -835,6 +849,214 @@ public class NmIntegrationController {
         return dataSimulatorStatusJson;
     }
     
+    @RequestMapping("existing-rfnMetersimulator-status")
+    @ResponseBody
+    public Map<String, Object> existingrfnMeterSimulatorStatus(YukonUserContext userContext) {
+        RfnMeterSimulatorStatus rfnMeterSimulatorStatus = rfnMeterDataSimulator.getExistingRfnMeterSimulatorStatus();
+
+        existingMeterRfnSimulatorStatus.setErrorMessage(rfnMeterSimulatorStatus.getErrorMessage());
+
+        existingMeterRfnSimulatorStatus.setLastFinishedInjectionRfnBillingType(rfnMeterSimulatorStatus.getLastFinishedInjectionRfnBillingType());
+        existingMeterRfnSimulatorStatus.setLastFinishedInjectionRfnCurrentType(rfnMeterSimulatorStatus.getLastFinishedInjectionRfnCurrentType());
+        existingMeterRfnSimulatorStatus.setLastFinishedInjectionRfnIntervalType(rfnMeterSimulatorStatus.getLastFinishedInjectionRfnIntervalType());
+        existingMeterRfnSimulatorStatus.setLastFinishedInjectionRfnProfileType(rfnMeterSimulatorStatus.getLastFinishedInjectionRfnProfileType());
+        existingMeterRfnSimulatorStatus.setLastFinishedInjectionRfnStatusType(rfnMeterSimulatorStatus.getLastFinishedInjectionRfnStatusType());
+
+        existingMeterRfnSimulatorStatus.getIsRunningRfnBillingType().set(
+            rfnMeterSimulatorStatus.getIsRunningRfnBillingType().get());
+        existingMeterRfnSimulatorStatus.getIsRunningRfnCurrentType().set(
+            rfnMeterSimulatorStatus.getIsRunningRfnCurrentType().get());
+        existingMeterRfnSimulatorStatus.getIsRunningRfnIntervalType().set(
+            rfnMeterSimulatorStatus.getIsRunningRfnIntervalType().get());
+        existingMeterRfnSimulatorStatus.getIsRunningRfnProfileType().set(
+            rfnMeterSimulatorStatus.getIsRunningRfnProfileType().get());
+        existingMeterRfnSimulatorStatus.getIsRunningRfnStatusType().set(
+            rfnMeterSimulatorStatus.getIsRunningRfnStatusType().get());
+
+        existingMeterRfnSimulatorStatus.getNumCompleteRfnBillingType().set(
+            rfnMeterSimulatorStatus.getNumCompleteRfnBillingType().get());
+        existingMeterRfnSimulatorStatus.getNumCompleteRfnCurrentType().set(
+            rfnMeterSimulatorStatus.getNumCompleteRfnCurrentType().get());
+        existingMeterRfnSimulatorStatus.getNumCompleteRfnIntervalType().set(
+            rfnMeterSimulatorStatus.getNumCompleteRfnIntervalType().get());
+        existingMeterRfnSimulatorStatus.getNumCompleteRfnProfileType().set(
+            rfnMeterSimulatorStatus.getNumCompleteRfnProfileType().get());
+        existingMeterRfnSimulatorStatus.getNumCompleteRfnStatusType().set(
+            rfnMeterSimulatorStatus.getNumCompleteRfnStatusType().get());
+
+        Map<String, Object> rfnMeterSimulatorStatusJson = Maps.newHashMapWithExpectedSize(10);
+
+        rfnMeterSimulatorStatusJson.put("isRunningRfnBillingType",
+            existingMeterRfnSimulatorStatus.getIsRunningRfnBillingType().get());
+        rfnMeterSimulatorStatusJson.put("isRunningRfnCurrentType",
+            existingMeterRfnSimulatorStatus.getIsRunningRfnCurrentType());
+        rfnMeterSimulatorStatusJson.put("isRunningRfnIntervalType",
+            existingMeterRfnSimulatorStatus.getIsRunningRfnIntervalType());
+        rfnMeterSimulatorStatusJson.put("isRunningRfnProfileType",
+            existingMeterRfnSimulatorStatus.getIsRunningRfnProfileType());
+        rfnMeterSimulatorStatusJson.put("isRunningRfnStatusType",
+            existingMeterRfnSimulatorStatus.getIsRunningRfnStatusType());
+
+        rfnMeterSimulatorStatusJson.put("sCancelledRfnBillingType",
+            existingMeterRfnSimulatorStatus.getIsCancelledRfnBillingType().get());
+        rfnMeterSimulatorStatusJson.put("isCancelledRfnCurrentType",
+            existingMeterRfnSimulatorStatus.getIsCancelledRfnCurrentType().get());
+        rfnMeterSimulatorStatusJson.put("isCancelledRfnIntervalType",
+            existingMeterRfnSimulatorStatus.getIsCancelledRfnIntervalType().get());
+        rfnMeterSimulatorStatusJson.put("isCancelledRfnProfileType",
+            existingMeterRfnSimulatorStatus.getIsCancelledRfnProfileType().get());
+        rfnMeterSimulatorStatusJson.put("isCancelledRfnStatusType",
+            existingMeterRfnSimulatorStatus.getIsCancelledRfnStatusType().get());
+
+        rfnMeterSimulatorStatusJson.put("numTotalRfnMeters", existingMeterRfnSimulatorStatus.getNumTotalRfnMeters());
+
+        rfnMeterSimulatorStatusJson.put("numCompleteRfnBillingType",
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnBillingType().get());
+        rfnMeterSimulatorStatusJson.put("numCompleteRfnCurrentType",
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnCurrentType().get());
+        rfnMeterSimulatorStatusJson.put("numCompleteRfnIntervalType",
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnIntervalType().get());
+        rfnMeterSimulatorStatusJson.put("numCompleteRfnProfileType",
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnProfileType().get());
+        rfnMeterSimulatorStatusJson.put("numCompleteRfnStatusType",
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnStatusType().get());
+
+        Instant lastRunRfnBillingType = existingMeterRfnSimulatorStatus.getLastFinishedInjectionRfnBillingType();
+        Instant lastRunRfnCurrentType = existingMeterRfnSimulatorStatus.getLastFinishedInjectionRfnCurrentType();
+        Instant lastRunRfnIntervalType = existingMeterRfnSimulatorStatus.getLastFinishedInjectionRfnIntervalType();
+        Instant lastRunRfnProfileType = existingMeterRfnSimulatorStatus.getLastFinishedInjectionRfnProfileType();
+        Instant lastRunRfnStatusType = existingMeterRfnSimulatorStatus.getLastFinishedInjectionRfnStatusType();
+
+        setMeterStausForRfnBillingTypeMeterReading(rfnMeterSimulatorStatusJson, lastRunRfnBillingType, userContext);
+        setMeterStausForRfnCurrentTypeMeterReading(rfnMeterSimulatorStatusJson, lastRunRfnCurrentType, userContext);
+        setMeterStausForRfnIntervalTypeMeterReading(rfnMeterSimulatorStatusJson, lastRunRfnIntervalType, userContext);
+        setMeterStausForRfnProfileTypeMeterReading(rfnMeterSimulatorStatusJson, lastRunRfnProfileType, userContext);
+        setMeterStausForRfnStatusTypeMeterReading(rfnMeterSimulatorStatusJson, lastRunRfnStatusType, userContext);
+
+        String errorMessage = existingMeterRfnSimulatorStatus.getErrorMessage();
+        if (!StringUtils.isBlank(errorMessage)) {
+            rfnMeterSimulatorStatusJson.put("hasError", true);
+            rfnMeterSimulatorStatusJson.put("errorMessage", "Error Occured: " + errorMessage);
+        }
+
+        return rfnMeterSimulatorStatusJson;
+    }
+
+    private void setMeterStausForRfnBillingTypeMeterReading(Map<String, Object> rfnMeterSimulatorStatusJson,
+            Instant lastRunRfnBillingType, YukonUserContext userContext) {
+        if (existingMeterRfnSimulatorStatus.getNumTotalRfnMeters() != 0
+            && !existingMeterRfnSimulatorStatus.getIsCancelledRfnBillingType().get()) {
+            existingMeterRfnSimulatorStatus.setIsRunningRfnBillingType(true);
+            rfnMeterSimulatorStatusJson.put("statusRfnBillingType", "running");
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+            if (lastRunRfnBillingType != null) {
+                String lastSimulationStr =
+                    dateFormattingService.format(lastRunRfnBillingType, DateFormatEnum.DATEHM, userContext);
+                rfnMeterSimulatorStatusJson.put("lastSimulationRfnBillingType", lastSimulationStr);
+            }
+        } else if (lastRunRfnBillingType != null) {
+            String lastSimulationStr =
+                dateFormattingService.format(lastRunRfnBillingType, DateFormatEnum.DATEHM, userContext);
+            rfnMeterSimulatorStatusJson.put("statusRfnBillingType", "notRunning");
+            rfnMeterSimulatorStatusJson.put("lastSimulationRfnBillingType", lastSimulationStr);
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+        } else {
+            rfnMeterSimulatorStatusJson.put("statusRfnBillingType", "neverRan");
+        }
+    }
+
+    private void setMeterStausForRfnCurrentTypeMeterReading(Map<String, Object> rfnMeterSimulatorStatusJson,
+            Instant lastRunRfnCurrentType, YukonUserContext userContext) {
+        if (existingMeterRfnSimulatorStatus.getNumTotalRfnMeters() != 0
+            && !existingMeterRfnSimulatorStatus.getIsCancelledRfnCurrentType().get()) {
+            existingMeterRfnSimulatorStatus.setIsRunningRfnCurrentType(true);
+            rfnMeterSimulatorStatusJson.put("statusRfnCurrentType", "running");
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+            if (lastRunRfnCurrentType != null) {
+                String lastSimulationStr =
+                    dateFormattingService.format(lastRunRfnCurrentType, DateFormatEnum.DATEHM, userContext);
+                rfnMeterSimulatorStatusJson.put("lastSimulationRfnCurrentType", lastSimulationStr);
+            }
+        } else if (lastRunRfnCurrentType != null) {
+            String lastSimulationStr =
+                dateFormattingService.format(lastRunRfnCurrentType, DateFormatEnum.DATEHM, userContext);
+            rfnMeterSimulatorStatusJson.put("statusRfnCurrentType", "notRunning");
+            rfnMeterSimulatorStatusJson.put("lastSimulationRfnCurrentType", lastSimulationStr);
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+        } else {
+            rfnMeterSimulatorStatusJson.put("statusRfnCurrentType", "neverRan");
+        }
+    }
+
+    private void setMeterStausForRfnIntervalTypeMeterReading(Map<String, Object> rfnMeterSimulatorStatusJson,
+            Instant lastRunRfnIntervalType, YukonUserContext userContext) {
+        if (existingMeterRfnSimulatorStatus.getNumTotalRfnMeters() != 0
+            && !existingMeterRfnSimulatorStatus.getIsCancelledRfnIntervalType().get()) {
+            existingMeterRfnSimulatorStatus.setIsRunningRfnIntervalTType(true);
+            rfnMeterSimulatorStatusJson.put("statusRfnIntervalType", "running");
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+            if (lastRunRfnIntervalType != null) {
+                String lastSimulationStr =
+                    dateFormattingService.format(lastRunRfnIntervalType, DateFormatEnum.DATEHM, userContext);
+                rfnMeterSimulatorStatusJson.put("lastSimulationRfnIntervalType", lastSimulationStr);
+            }
+        } else if (lastRunRfnIntervalType != null) {
+            String lastSimulationStr =
+                dateFormattingService.format(lastRunRfnIntervalType, DateFormatEnum.DATEHM, userContext);
+            rfnMeterSimulatorStatusJson.put("statusRfnIntervalType", "notRunning");
+            rfnMeterSimulatorStatusJson.put("lastSimulationRfnIntervalType", lastSimulationStr);
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+        } else {
+            rfnMeterSimulatorStatusJson.put("statusRfnIntervalType", "neverRan");
+        }
+    }
+
+    private void setMeterStausForRfnProfileTypeMeterReading(Map<String, Object> rfnMeterSimulatorStatusJson,
+            Instant lastRunRfnProfileType, YukonUserContext userContext) {
+        if (existingMeterRfnSimulatorStatus.getNumTotalRfnMeters() != 0
+            && !existingMeterRfnSimulatorStatus.getIsCancelledRfnProfileType().get()) {
+            existingMeterRfnSimulatorStatus.setIsRunningRfnProfileType(true);
+            rfnMeterSimulatorStatusJson.put("statusRfnProfileType", "running");
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+            if (lastRunRfnProfileType != null) {
+                String lastSimulationStr =
+                    dateFormattingService.format(lastRunRfnProfileType, DateFormatEnum.DATEHM, userContext);
+                rfnMeterSimulatorStatusJson.put("lastSimulationRfnProfileType", lastSimulationStr);
+            }
+        } else if (lastRunRfnProfileType != null) {
+            String lastSimulationStr =
+                dateFormattingService.format(lastRunRfnProfileType, DateFormatEnum.DATEHM, userContext);
+            rfnMeterSimulatorStatusJson.put("statusRfnProfileType", "notRunning");
+            rfnMeterSimulatorStatusJson.put("lastSimulationRfnProfileType", lastSimulationStr);
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+        } else {
+            rfnMeterSimulatorStatusJson.put("statusRfnProfileType", "neverRan");
+        }
+    }
+
+    private void setMeterStausForRfnStatusTypeMeterReading(Map<String, Object> rfnMeterSimulatorStatusJson,
+            Instant lastRunRfnStatusType, YukonUserContext userContext) {
+        if (existingMeterRfnSimulatorStatus.getNumTotalRfnMeters() != 0
+            && !existingMeterRfnSimulatorStatus.getIsCancelledRfnStatusType().get()) {
+            existingMeterRfnSimulatorStatus.setIsRunningRfnStatusType(true);
+            rfnMeterSimulatorStatusJson.put("statusRfnStatusType", "running");
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+            if (lastRunRfnStatusType != null) {
+                String lastSimulationStr =
+                    dateFormattingService.format(lastRunRfnStatusType, DateFormatEnum.DATEHM, userContext);
+                rfnMeterSimulatorStatusJson.put("lastSimulationRfnStatusType", lastSimulationStr);
+            }
+        } else if (lastRunRfnStatusType != null) {
+            String lastSimulationStr =
+                dateFormattingService.format(lastRunRfnStatusType, DateFormatEnum.DATEHM, userContext);
+            rfnMeterSimulatorStatusJson.put("statusRfnStatusType", "notRunning");
+            rfnMeterSimulatorStatusJson.put("lastSimulationRfnStatusType", lastSimulationStr);
+            rfnMeterSimulatorStatusJson.put("perMinuteMsgCount", rfnMeterDataSimulator.getPerMinuteMsgCount());
+        } else {
+            rfnMeterSimulatorStatusJson.put("statusRfnStatusType", "neverRan");
+        }
+    }
+
     private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event) {
         List<RfnConditionType> rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
         model.addAttribute("rfnConditionTypes", rfnConditionTypes);
@@ -915,23 +1137,79 @@ public class NmIntegrationController {
     
     @RequestMapping("stopMetersArchieveRequest")
     public String stopRfnMeterSimulator() {
+        existingMeterRfnSimulatorStatus.getIsCancelledRfnBillingType().set(true);
+        existingMeterRfnSimulatorStatus.getIsCancelledRfnCurrentType().set(true);
+        existingMeterRfnSimulatorStatus.getIsCancelledRfnIntervalType().set(true);
+        existingMeterRfnSimulatorStatus.getIsCancelledRfnProfileType().set(true);
+        existingMeterRfnSimulatorStatus.getIsCancelledRfnStatusType().set(true);
+        
         rfnMeterDataSimulator.stopSimulator();
         return "redirect:viewMeterReadArchiveRequest";
     }
     
     @RequestMapping("startMetersArchieveRequest")
-    public String sendRfnMetersArchiveRequest() {
-        PaoType paoType = PaoType.RFN420FL;
+    public String startMetersArchieveRequest(HttpServletRequest request) {
+        String paoTypeSelected = request.getParameter("paoTypeSelected");
         List<RfnDevice> rfnDeviceList = new ArrayList<RfnDevice>();
-        
-        if (null != paoType) {
-             rfnDeviceList = rfnDeviceDao.getDevicesByPaoType(paoType);
-             Multimap<PaoType, PointMapper> pointMapperMap = unitOfMeasureToPointMapper.getPointMapper();
-             rfnMeterDataSimulator.sendRfnMeterMessages(rfnDeviceList,pointMapperMap);
-        } 
+
+        if (paoTypeSelected != null && paoTypeSelected.equalsIgnoreCase("All RFN Type")) {
+            ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
+            if (null != paoTypes) {
+                rfnDeviceList = rfnDeviceDao.getDevicesByPaoTypes(paoTypes);
+            }
+        } else {
+            PaoType paoType = PaoType.valueOf(paoTypeSelected);
+            rfnDeviceList = rfnDeviceDao.getDevicesByPaoType(paoType);
+        }
+
+        if (!rfnDeviceList.isEmpty()) {
+
+            long numTotalRfnMeters = rfnDeviceList.size();
+            existingMeterRfnSimulatorStatus.setNumTotalRfnMeters(numTotalRfnMeters);
+
+            final AtomicBoolean isRunningRfnBillingType = existingMeterRfnSimulatorStatus.getIsRunningRfnBillingType();
+            final AtomicBoolean isRunningRfnCurrentType = existingMeterRfnSimulatorStatus.getIsRunningRfnCurrentType();
+            final AtomicBoolean isRunningRfnIntervalType =
+                existingMeterRfnSimulatorStatus.getIsRunningRfnIntervalType();
+            final AtomicBoolean isRunningRfnProfileType = existingMeterRfnSimulatorStatus.getIsRunningRfnProfileType();
+            final AtomicBoolean isRunningRfnStatusType = existingMeterRfnSimulatorStatus.getIsRunningRfnStatusType();
+
+            isRunningRfnBillingType.compareAndSet(false, true);
+            isRunningRfnCurrentType.compareAndSet(false, true);
+            isRunningRfnIntervalType.compareAndSet(false, true);
+            isRunningRfnProfileType.compareAndSet(false, true);
+            isRunningRfnStatusType.compareAndSet(false, true);
+
+            final AtomicBoolean isCancelledRfnBillingType =
+                existingMeterRfnSimulatorStatus.getIsCancelledRfnBillingType();
+            final AtomicBoolean isCancelledRfnCurrentType =
+                existingMeterRfnSimulatorStatus.getIsCancelledRfnCurrentType();
+            final AtomicBoolean isCancelledRfnIntervalType =
+                existingMeterRfnSimulatorStatus.getIsCancelledRfnIntervalType();
+            final AtomicBoolean isCancelledRfnProfileType =
+                existingMeterRfnSimulatorStatus.getIsCancelledRfnProfileType();
+            final AtomicBoolean isCancelledRfnStatusType =
+                existingMeterRfnSimulatorStatus.getIsCancelledRfnStatusType();
+
+            isCancelledRfnBillingType.set(false);
+            isCancelledRfnCurrentType.set(false);
+            isCancelledRfnIntervalType.set(false);
+            isCancelledRfnProfileType.set(false);
+            isCancelledRfnStatusType.set(false);
+
+            existingMeterRfnSimulatorStatus.setErrorMessage(null);
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnBillingType().set(0);
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnCurrentType().set(0);
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnIntervalType().set(0);
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnProfileType().set(0);
+            existingMeterRfnSimulatorStatus.getNumCompleteRfnStatusType().set(0);
+
+            Multimap<PaoType, PointMapper> pointMapperMap = unitOfMeasureToPointMapper.getPointMapper();
+            rfnMeterDataSimulator.sendRfnMeterMessages(rfnDeviceList, pointMapperMap);
+        }
         return "redirect:viewMeterReadArchiveRequest";
     }
-    
+
     @InitBinder
     public void setupBinder(WebDataBinder binder, YukonUserContext userContext) {
         
