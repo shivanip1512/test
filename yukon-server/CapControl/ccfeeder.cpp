@@ -4214,7 +4214,7 @@ bool CtiCCFeeder::isAlreadyControlled(long minConfirmPercent, long currentVarPoi
     double newVarValue = currentVarLoadPointValue;
     long bankId = getLastCapBankControlledDeviceId();
 
-    CtiCCCapBankPtr currentCapBank = store->getCapBankByPaoId(bankId);
+    CtiCCCapBankPtr currentCapBank = store->findCapBankByPAObjectID(bankId);
 
     if (currentCapBank != NULL)
     {

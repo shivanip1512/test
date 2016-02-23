@@ -97,7 +97,7 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
             bus->updatePointResponse(prKey, pointResponse);
         }
 
-        CtiCCCapBankPtr bankPtr = store->getCapBankByPaoId(bankId);
+        CtiCCCapBankPtr bankPtr = store->findCapBankByPAObjectID(bankId);
         if (bankPtr == NULL)
         {
             if (_CC_DEBUG & CC_DEBUG_EXTENDED)

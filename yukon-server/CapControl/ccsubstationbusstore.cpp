@@ -30,6 +30,8 @@
 #include "mgr_config.h"
 #include "std_helper.h"
 
+#include <boost/range/algorithm/for_each.hpp>
+
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/assign/list_of.hpp>
@@ -71,7 +73,6 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() :
     _reregisterforpoints(true),
     _reloadfromamfmsystemflag(false),
     _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
-    _wassubbusdeletedflag(false),
     _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
     _strategyManager        ( make_unique<StrategyManager>( make_unique<StrategyDBLoader>() ) ),
     _zoneManager            ( make_unique<ZoneDBLoader>() ),
@@ -89,7 +90,6 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() :
     _linkDropOutTime = CtiTime();
 
     _voltReductionSystemDisabled = false;
-    _voltDisabledCount = 0;
 
     _pointDataHandler.setPointDataListener(this);
     _daoFactory = boost::shared_ptr<DaoFactory>(new DatabaseDaoFactory());
@@ -450,22 +450,6 @@ long CtiCCSubstationBusStore::findCapBankIDbyCbcID(long cbcId)
     return Cti::mapFindOrDefault( _cbc_capbank_map, cbcId, 0 );
 }
 
-long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
-{
-    PaoIdToPointIdMultiMap::iterator iter = _altsub_sub_idmap.find(altSubId);
-    if (iter == _altsub_sub_idmap.end())
-    {
-        return NULL;
-    }
-    while (index > 1)
-    {
-        iter++;
-        index--;
-    }
-    return (iter == _altsub_sub_idmap.end() ? NULL : iter->second);
-
-}
-
 void CtiCCSubstationBusStore::addAreaToPaoMap(CtiCCAreaPtr area)
 {
     _paobject_area_map[area->getPaoId()] = area;
@@ -636,12 +620,6 @@ std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByCapCont
     }
 
     return subBuses;
-}
-
-CtiCCCapBankPtr CtiCCSubstationBusStore::getCapBankByPaoId(int paoId)
-{
-    CtiCCCapBankPtr bank = findCapBankByPAObjectID(paoId);
-    return bank;
 }
 
 CapBankList CtiCCSubstationBusStore::getCapBanksByPaoId(int paoId)
@@ -2662,18 +2640,6 @@ void CtiCCSubstationBusStore::setReloadFromAMFMSystemFlag(bool reload)
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
     _reloadfromamfmsystemflag = reload;
-}
-
-bool CtiCCSubstationBusStore::getWasSubBusDeletedFlag()
-{
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
-    return _wassubbusdeletedflag;
-}
-
-void CtiCCSubstationBusStore::setWasSubBusDeletedFlag(bool wasDeleted)
-{
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
-    _wassubbusdeletedflag = wasDeleted;
 }
 
 bool CtiCCSubstationBusStore::get2wayFlagUpdate()
@@ -8069,7 +8035,6 @@ void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(PaoIdVector sta
     }
     addVectorIdsToSet(stationIdList, modifiedStationIdsSet);
     msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
-    return;
 }
 void CtiCCSubstationBusStore::addVectorIdsToSet(const PaoIdVector idVector, PaoIdSet &idSet)
 {
@@ -8307,7 +8272,6 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 {
     bool sendBusInfo = false;
     bool forceFullReload = false;
-    CtiTime currentDateTime;
 
     PaoIdSet modifiedBusIdsSet;
     PaoIdSet modifiedStationIdsSet;
@@ -8445,8 +8409,6 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 initializeAllPeakTimeFlagsAndMonitorPoints(false);
 
                 createAndSendClientMessages(msgBitMask, msgSubsBitMask, modifiedBusIdsSet, modifiedStationIdsSet, capMessages);
-
-                _wassubbusdeletedflag = false;
             }
         }
     }
@@ -8474,39 +8436,20 @@ void CtiCCSubstationBusStore::checkAndUpdateVoltReductionFlagsByBus(CtiCCSubstat
 
 void CtiCCSubstationBusStore::updateSubstationObjectSet(long substationId, CtiCCSubstation_set &modifiedStationsSet)
 {
-    CtiCCSubstationPtr station = findSubstationByPAObjectID(substationId);
-    if (station != NULL)
+    if ( CtiCCSubstationPtr station = findSubstationByPAObjectID( substationId ) )
     {
         modifiedStationsSet.insert(station);
     }
-
 }
 
 void CtiCCSubstationBusStore::updateAreaObjectSet(long areaId, CtiCCArea_set &modifiedAreasSet)
 {
-    CtiCCAreaPtr area = findAreaByPAObjectID(areaId);
-    if (area != NULL)
+    if ( CtiCCAreaPtr area = findAreaByPAObjectID( areaId ) )
     {
         modifiedAreasSet.insert(area);
     }
-
 }
 
-
-void CtiCCSubstationBusStore::sendUserQuit(void *who)
-{
-    string *strPtr = (string *) who;
-
-    CTILOG_INFO(dout, *strPtr << " has asked for shutdown.");
-
-    CtiCCExecutorFactory::createExecutor(new CtiCCShutdown())->execute();
-}
-
-
-void CtiCCSubstationBusStore::periodicComplain( void *la )
-{
-   CTILOG_ERROR(dout, "CapControl periodic thread is AWOL");
-}
 
 void CtiCCSubstationBusStore::insertDBReloadList(CcDbReloadInfo x)
 {
@@ -8825,17 +8768,6 @@ void CtiCCSubstationBusStore::insertItemsIntoMap(int mapType, long* first, long*
         default:
             break;
     }
-    return;
-}
-
-void CtiCCSubstationBusStore::setRegMask(long mask)
-{
-    _regMask = mask;
-    return;
-}
-long CtiCCSubstationBusStore::getRegMask(void)
-{
-    return _regMask;
 }
 
 void CtiCCSubstationBusStore::removeItemsFromMap(int mapType, long first)
@@ -8905,7 +8837,6 @@ void CtiCCSubstationBusStore::removeItemsFromMap(int mapType, long first)
         default:
             break;
     }
-    return;
 }
 PaoIdToSubBusMap* CtiCCSubstationBusStore::getPAOSubMap()
 {
@@ -8929,7 +8860,6 @@ PaoIdToSpecialAreaMap* CtiCCSubstationBusStore::getPAOSpecialAreaMap()
 void CtiCCSubstationBusStore::setLinkStatusPointId(long pointId)
 {
     _linkStatusPointId = pointId;
-    return;
 }
 long CtiCCSubstationBusStore::getLinkStatusPointId(void)
 {
@@ -8939,7 +8869,6 @@ long CtiCCSubstationBusStore::getLinkStatusPointId(void)
 void CtiCCSubstationBusStore::setLinkStatusFlag(bool flag)
 {
     _linkStatusFlag = flag;
-    return;
 }
 bool CtiCCSubstationBusStore::getLinkStatusFlag(void)
 {
@@ -8955,7 +8884,6 @@ const CtiTime& CtiCCSubstationBusStore::getLinkDropOutTime() const
 void CtiCCSubstationBusStore::setLinkDropOutTime(const CtiTime& dropOutTime)
 {
     _linkDropOutTime = dropOutTime;
-    return;
 }
 
 bool CtiCCSubstationBusStore::getVoltReductionSystemDisabled()
@@ -8966,18 +8894,6 @@ bool CtiCCSubstationBusStore::getVoltReductionSystemDisabled()
 void CtiCCSubstationBusStore::setVoltReductionSystemDisabled(bool disableFlag)
 {
     _voltReductionSystemDisabled = disableFlag;
-    return;
-}
-
-long CtiCCSubstationBusStore::getVoltDisabledCount()
-{
-    return _voltDisabledCount;
-}
-
-void CtiCCSubstationBusStore::setVoltDisabledCount(long value)
-{
-    _voltDisabledCount = value;
-    return;
 }
 
 void CtiCCSubstationBusStore::calculateParentPowerFactor( long subBusId )
@@ -9109,8 +9025,6 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_ve
 
         createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
     }
-
-    return;
 }
 
 
@@ -9121,51 +9035,27 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_ve
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::resetAllOperationStats()
 {
+    std::function<void (CapControlPao *)>  initOpStats =
+        []( CapControlPao * pao )
+        {
+            pao->getOperationStats().init();
+        };
 
-    long i=0;
-    for(i=0;i<_ccGeoAreas->size();i++)
+    boost::for_each( *_ccGeoAreas, initOpStats );
+    boost::for_each( *_ccSpecialAreas, initOpStats );
+    boost::for_each( *_ccSubstations, initOpStats );
+
+    for ( auto currentSubstationBus : *_ccSubstationBuses )
     {
-        CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
-        currentArea->getOperationStats().init();
-    }
-
-    for(i=0;i<_ccSpecialAreas->size();i++)
-    {
-        CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
-        currentSpArea->getOperationStats().init();
-
-    }
-
-    for(i=0;i<_ccSubstations->size();i++)
-    {
-        CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
-        currentStation->getOperationStats().init();
-
-    }
-
-    for(i=0;i<_ccSubstationBuses->size();i++)
-    {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
         currentSubstationBus->getOperationStats().init();
 
-        CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-
-        for(long j=0; j < ccFeeders.size(); j++)
+        for ( auto currentFeeder : currentSubstationBus->getCCFeeders() )
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
             currentFeeder->getOperationStats().init();
 
-            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-            for(long k=0;k<ccCapBanks.size();k++)
-            {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
-                currentCapBank->getOperationStats().init();
-            }
+            boost::for_each( currentFeeder->getCCCapBanks(), initOpStats );
         }
     }
-
-    return;
 }
 
 
@@ -9176,51 +9066,27 @@ void CtiCCSubstationBusStore::resetAllOperationStats()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::resetAllConfirmationStats()
 {
+    std::function<void (CapControlPao *)>  initConfStats =
+        []( CapControlPao * pao )
+        {
+            pao->getConfirmationStats().init();
+        };
 
-    long i=0;
-    for(i=0;i<_ccGeoAreas->size();i++)
+    boost::for_each( *_ccGeoAreas, initConfStats );
+    boost::for_each( *_ccSpecialAreas, initConfStats );
+    boost::for_each( *_ccSubstations, initConfStats );
+
+    for ( auto currentSubstationBus : *_ccSubstationBuses )
     {
-        CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
-        currentArea->getConfirmationStats().init();
-    }
-
-    for(i=0;i<_ccSpecialAreas->size();i++)
-    {
-        CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
-        currentSpArea->getConfirmationStats().init();
-
-    }
-
-    for(i=0;i<_ccSubstations->size();i++)
-    {
-        CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
-        currentStation->getConfirmationStats().init();
-
-    }
-
-    for(i=0;i<_ccSubstationBuses->size();i++)
-    {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
         currentSubstationBus->getConfirmationStats().init();
 
-        CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-
-        for(long j=0; j < ccFeeders.size(); j++)
+        for ( auto currentFeeder : currentSubstationBus->getCCFeeders() )
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
             currentFeeder->getConfirmationStats().init();
 
-            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-            for(long k=0;k<ccCapBanks.size();k++)
-            {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
-                currentCapBank->getConfirmationStats().init();
-            }
+            boost::for_each( currentFeeder->getCCCapBanks(), initConfStats );
         }
     }
-
-    return;
 }
 
 
@@ -9526,7 +9392,6 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
     {
         CtiTime currentDateTime;
         CtiTime userDefWindow = currentDateTime.seconds() - ((_OP_STATS_USER_DEF_PERIOD * 60 ) + 3600);
-        INT capCount = 0;
         CtiDate oneMonthAgo = CtiDate() -  31; //today - 30 days
         CtiDate yesterday = CtiDate() -  1;
 
@@ -9758,8 +9623,6 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_
         cap->getOperationStats().incrementAllOpFails();
         createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
     }
-
-    return;
 }
 
 void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges)
@@ -9862,8 +9725,6 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
-    return;
 }
 
 
@@ -9887,7 +9748,6 @@ void CtiCCSubstationBusStore::createOperationStatPointDataMsgs(CtiMultiMsg_vec& 
 
     if (spArea != NULL)
         spArea->getOperationStats().createPointDataMsgs(pointChanges);
-    return;
 }
 
 void CtiCCSubstationBusStore::cascadeAreaStrategySettings(CtiCCAreaBase* object)
@@ -9948,7 +9808,6 @@ void CtiCCSubstationBusStore::getSubBusParentInfo(CtiCCSubstationBus* bus, long 
             }
         }
     }
-    return;
 }
 
 
@@ -9977,7 +9836,6 @@ void CtiCCSubstationBusStore::getFeederParentInfo(CtiCCFeeder* feeder, long &spA
             }
         }
     }
-    return;
 }
 
 

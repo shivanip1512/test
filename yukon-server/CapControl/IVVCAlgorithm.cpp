@@ -513,7 +513,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             int bankId = state->getControlledBankId();
 
-            CtiCCCapBankPtr bank = store->getCapBankByPaoId(bankId);
+            CtiCCCapBankPtr bank = store->findCapBankByPAObjectID(bankId);
             if (bank == NULL)
             {
                 state->setState(IVVCState::IVVC_WAIT);
@@ -953,7 +953,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    CtiCCCapBankPtr bank = store->getCapBankByPaoId(bankId);
+    CtiCCCapBankPtr bank = store->findCapBankByPAObjectID(bankId);
     if (bank != NULL)
     {
         long feederId = bank->getParentId();
@@ -1225,7 +1225,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
         pointValues.erase(pointId);
     }//At this point we have removed the var and watt points. Only volt points remain.
 
-    CtiCCCapBankPtr currentBank = store->getCapBankByPaoId(subbus->getCurrentVerificationCapBankId());;
+    CtiCCCapBankPtr currentBank = store->findCapBankByPAObjectID(subbus->getCurrentVerificationCapBankId());;
 
 
     state->_estimated[currentBank->getPaoId()].capbank = currentBank;
@@ -1940,7 +1940,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
                 for each ( const Zone::IdSet::value_type & capBankId in zone->getBankIds() )
                 {
-                    CtiCCCapBankPtr bank = store->getCapBankByPaoId( capBankId );
+                    CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( capBankId );
                     if ( bank )
                     {
                         for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )

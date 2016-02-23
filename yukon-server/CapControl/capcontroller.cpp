@@ -258,8 +258,6 @@ void CtiCapController::messageSender()
         while(true)
         {
             CtiTime currentDateTime;
-            bool waitToBroadCastEverything = false;
-
             {
                 CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
                 if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
@@ -274,7 +272,6 @@ void CtiCapController::messageSender()
                     {
                         registerForPoints( RegistrationMethod::ReRegisterAllPoints );
                         store->setReregisterForPoints(false);
-                        waitToBroadCastEverything = true;
                     }
                 }
                 catch(...)
@@ -456,7 +453,6 @@ void CtiCapController::controlLoop()
         CtiPAOScheduleManager* scheduleMgr = CtiPAOScheduleManager::getInstance();
         scheduleMgr->start();
 
-        CtiTime registerTimeElapsed;
         CtiCCSubstation_set stationChanges;
         CtiCCArea_set areaChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
@@ -1916,18 +1912,11 @@ void CtiCapController::parseMessage(CtiMessage *message)
 {
     try
     {
-        CtiMultiMsg* msgMulti;
-        CtiPointDataMsg* pData;
-        CtiCommandMsg* cmdMsg;
-        CtiDBChangeMsg* dbChange;
-        CtiSignalMsg* signal;
-        CtiTagMsg* tagMsg;
-        int i = 0;
         switch( message->isA() )
         {
             case MSG_DBCHANGE:
                 {
-                    dbChange = (CtiDBChangeMsg *)message;
+                    CtiDBChangeMsg * dbChange = (CtiDBChangeMsg *)message;
                     if( dbChange->getSource() != CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE &&
                         ( (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_CAP_CONTROL) ||
                           (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE) ||
@@ -1938,15 +1927,6 @@ void CtiCapController::parseMessage(CtiMessage *message)
                         if( _CC_DEBUG & CC_DEBUG_STANDARD )
                         {
                             CTILOG_DEBUG(dout, "Relevant database change.  Setting reload flag.");
-                        }
-
-                        if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
-                            ( resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS ||
-                              resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION ||
-                              resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA||
-                              resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SPECIALAREA ) )
-                        {
-                            CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(true);
                         }
 
                         CcDbReloadInfo reloadInfo = resolveCapControlType(dbChange);
@@ -2004,7 +1984,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                 break;
             case MSG_POINTDATA:
                 {
-                    pData = (CtiPointDataMsg*) message;
+                    CtiPointDataMsg * pData = (CtiPointDataMsg*) message;
                     pointDataMsg(pData);
                 }
                 break;
@@ -2021,7 +2001,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                         CTILOG_DEBUG(dout, "Command Message received from Dispatch");
                     }
 
-                    cmdMsg = (CtiCommandMsg *)message;
+                    CtiCommandMsg * cmdMsg = (CtiCommandMsg *)message;
                     if( cmdMsg->getOperation() == CtiCommandMsg::AreYouThere )
                     {
                         try
@@ -2053,13 +2033,13 @@ void CtiCapController::parseMessage(CtiMessage *message)
                 break;
             case MSG_MULTI:
                 {
-                    msgMulti = (CtiMultiMsg *)message;
+                    CtiMultiMsg * msgMulti = (CtiMultiMsg *)message;
                     CtiMultiMsg_vec& temp = msgMulti->getData( );
                     if(temp.size() > 1 &&  _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                     {
                         CTILOG_DEBUG(dout, "ParseMessage MsgMulti has "<< temp.size() <<" entries.");
                     }
-                    for(i=0;i<temp.size( );i++)
+                    for(int i=0;i<temp.size( );i++)
                     {
                         parseMessage(temp[i]);
                     }
@@ -2067,13 +2047,13 @@ void CtiCapController::parseMessage(CtiMessage *message)
                 break;
             case MSG_SIGNAL:
                 {
-                    signal = (CtiSignalMsg *)message;
+                    const CtiSignalMsg * signal = static_cast<const CtiSignalMsg *>( message );
                     signalMsg(signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo());
                 }
                 break;
             case MSG_TAG:
                 {
-                    tagMsg = (CtiTagMsg*)message;
+                    const CtiTagMsg * tagMsg = static_cast<const CtiTagMsg *>( message );
                     {
                         if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
                         {
@@ -2092,7 +2072,6 @@ void CtiCapController::parseMessage(CtiMessage *message)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-    return;
 }
 
 
@@ -2236,8 +2215,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
             string text = currentSubstationBus->getPaoName();
             if (currentSubstationBus->getAltDualSubId() != currentSubstationBus->getPaoId())
             {
-                CtiCCSubstationBusPtr altSub = NULL;
-                altSub = store->findSubBusByPAObjectID(currentSubstationBus->getAltDualSubId());
+                CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID(currentSubstationBus->getAltDualSubId());
                 if (altSub != NULL)
                 {
                     if (value > 0)
@@ -2500,7 +2478,6 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-    return;
 }
 
 void CtiCapController::checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand)
@@ -4047,8 +4024,6 @@ void CtiCapController::signalMsg(long pointID, unsigned tags, const string& text
 
         CTILOG_DEBUG(dout, list);
     }
-
-    return;
 }
 
 /*---------------------------------------------------------------------------

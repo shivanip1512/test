@@ -169,8 +169,6 @@ public:
     void setReregisterForPoints(bool reregister);
     bool getReloadFromAMFMSystemFlag();
     void setReloadFromAMFMSystemFlag(bool reload);
-    bool getWasSubBusDeletedFlag();
-    void setWasSubBusDeletedFlag(bool wasDeleted);
     bool get2wayFlagUpdate();
     void set2wayFlagUpdate(bool flag);
 
@@ -217,8 +215,6 @@ public:
     long findSubBusIDbyCapBankID(long capBankId);
     long findFeederIDbyCapBankID(long capBankId);
     long findCapBankIDbyCbcID(long cbcId);
-
-    long findSubIDbyAltSubID(long altSubId, int index);
 
     void insertItemsIntoMap(int mapType, long* first, long* second);
     void removeItemsFromMap(int mapType, long first);
@@ -392,9 +388,6 @@ public:
     void clearRejectedCapBankList();
     void checkRejectedList();
 
-    void setRegMask(long mask);
-    long getRegMask(void);
-
     void setLinkStatusPointId(long pointId);
     long getLinkStatusPointId(void);
 
@@ -403,8 +396,6 @@ public:
 
     bool getVoltReductionSystemDisabled();
     void setVoltReductionSystemDisabled(bool disableFlag);
-    long getVoltDisabledCount();
-    void setVoltDisabledCount(long value);
     void checkAndUpdateVoltReductionFlagsByBus(CtiCCSubstationBusPtr bus);
 
     const CtiTime& getLinkDropOutTime() const;
@@ -417,8 +408,6 @@ public:
 
     static const std::string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const std::string CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE;
-    static void sendUserQuit(void *who);
-    static void periodicComplain( void *la );
 
     bool getStoreRecentlyReset();
     void setStoreRecentlyReset(bool flag);
@@ -456,7 +445,6 @@ public:
     CtiCCSubstationBus_vec getSubBusesByFeederId(int feederId);
     CtiCCSubstationBus_vec getSubBusesByCapControlByIdAndType(int paoId, Cti::CapControl::CapControlType type);
 
-    CtiCCCapBankPtr getCapBankByPaoId(int paoId);
     CapBankList getCapBanksByPaoId(int paoId);
     CapBankList getCapBanksByPaoIdAndType(int paoId, Cti::CapControl::CapControlType type);
     CtiCCSubstationBus_vec getAllSubBusesByIdAndType(int paoId, Cti::CapControl::CapControlType type);
@@ -519,9 +507,7 @@ private:
     bool _isvalid;
     bool _storeRecentlyReset;
     bool _reregisterforpoints;
-    long _regMask;
     bool _reloadfromamfmsystemflag;
-    bool _wassubbusdeletedflag;
     CtiTime _lastdbreloadtime;
     CtiTime _lastindividualdbreloadtime;
     bool _2wayFlagUpdate;
@@ -531,7 +517,6 @@ private:
     CtiTime _linkDropOutTime;
 
     bool _voltReductionSystemDisabled;
-    int  _voltDisabledCount;
 
     CapControlPointDataHandler _pointDataHandler;
     std::auto_ptr<AttributeService> _attributeService;

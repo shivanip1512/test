@@ -271,7 +271,7 @@ void VerificationExecutor::startVerification()
     currentSubstationBus->setVerificationStrategy( ConvertIntToVerificationStrategy(_verifyType));
     currentSubstationBus->setVerificationDisableOvUvFlag(_disableOvUv);
     currentSubstationBus->setCapBankInactivityTime(_inactiveTime);
-    CtiCCCapBankPtr bank = store->getCapBankByPaoId(_bankId);
+    CtiCCCapBankPtr bank = store->findCapBankByPAObjectID(_bankId);
     if (bank)
     {
         bank->setSelectedForVerificationFlag(true);
