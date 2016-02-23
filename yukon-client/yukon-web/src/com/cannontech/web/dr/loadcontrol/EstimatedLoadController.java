@@ -27,7 +27,6 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.weather.WeatherDataService;
 import com.cannontech.common.weather.WeatherLocation;
@@ -57,7 +56,6 @@ import com.cannontech.dr.estimatedload.NoGearFormulaException;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
 import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelperImpl.ButtonInfo;
-import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -96,11 +94,9 @@ public class EstimatedLoadController {
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private ServerDatabaseCache cache;
-    @Autowired private AttributeService attributeService;
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private FormulaBeanValidator formulaBeanValidator;
     @Autowired private EstimatedLoadBackingServiceHelper helper;
-    @Autowired private ScenarioDao scenarioDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public static enum SortBy {
@@ -342,6 +338,12 @@ public class EstimatedLoadController {
         return "dr/estimatedLoad/programError.jsp";
     }
     
+    /**
+     * @param model the model map
+     * @param userContext the user context
+     * @param paoId the PAObject Id.  This should either be a control area or scenario otherwise it will return an error page
+     * @return the jsp of the view
+     */
     @RequestMapping("summary-error")
     public String summaryErrorPopup(ModelMap model, YukonUserContext userContext, int paoId) {
         
