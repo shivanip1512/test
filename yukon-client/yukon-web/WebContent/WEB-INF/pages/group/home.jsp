@@ -277,7 +277,8 @@ function confirmRemoveAllDevices(confirmText) {
                                     <c:choose>
                                         <c:when test="${groupModifiable}">
                                             <cti:url value="/group/editor/addDevicesByCollection" var="selectionUrl"/>
-                                            <form action="${selectionUrl}" class="dib">
+                                            <form  method="post" action="${selectionUrl}" class="dib">
+                                                <cti:csrfToken />
                                                 <tags:deviceCollectionPicker multi="true" submit="true" 
                                                     title=".add.title">
                                                     <cti:msg2 key=".addDevices"/>

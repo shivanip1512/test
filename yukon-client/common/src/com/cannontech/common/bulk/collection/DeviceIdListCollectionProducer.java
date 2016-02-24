@@ -29,6 +29,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.util.ServletUtil;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 /**
  * Implementation of DeviceCollectionProducer for an id list
@@ -37,6 +38,8 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
     
     @Autowired private DeviceDao deviceDao;
     @Autowired @Qualifier("memory") private DeviceMemoryCollectionProducer memoryCollectionProducer;
+    
+    public static final int PARTITION_SIZE = 1000;
     
     @Override
     public DeviceCollectionType getSupportedType() {
@@ -72,9 +75,11 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
         boolean containsSystemDevice = Iterables.any(idList, Predicates.equalTo(Device.SYSTEM_DEVICE_ID));
         Validate.isTrue(!containsSystemDevice, "cannot create DeviceCollection that contains the system device");
         
-        if (idList.size() > 200) {
+        for (List<Integer> devicesId : Lists.partition(idList, PARTITION_SIZE)) {
+            if (devicesId.size() > 200){
             /* For large lists of ids, convert to memory list since url's can only be so long. */
-            return memoryCollectionProducer.createDeviceCollection(idList);
+            memoryCollectionProducer.createDeviceCollection(devicesId);
+            }
         }
         return createDeviceCollection(idList, ids);
     }
