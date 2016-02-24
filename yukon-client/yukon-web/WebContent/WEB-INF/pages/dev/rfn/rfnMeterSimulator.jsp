@@ -142,7 +142,7 @@
 <tags:sectionContainer2 nameKey="rfnMeterSimulator">
 	<div id='rfnMeterForm'>
     <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".rfnMeterSimulator.paoType">
+        <tags:nameValue2 nameKey=".rfnMeterSimulator.rfnMeterType">
          <tags:selectWithItems path="rfnMeterSimulatorStatus.paoType" items="${paoTypes}" 
                id="pao-type" defaultItemLabel="ALL RFN Type" defaultItemValue="ALL RFN Type"/>
          </tags:nameValue2>
