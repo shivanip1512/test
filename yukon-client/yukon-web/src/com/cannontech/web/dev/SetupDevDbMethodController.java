@@ -207,7 +207,7 @@ public class SetupDevDbMethodController {
 
         model.addAttribute("allRoutes", databaseCache.getAllRoutes());
         model.addAttribute("devAmr",  new DevAmr());
-        return "setupDatabase/amrWidget.jsp";
+        return "redirect:main";
     }
 
     @RequestMapping("setupCapControl")
