@@ -164,6 +164,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
             if (getIntervalData) {
                 List<PointValueHolder> pointValues = getPointValueFromMeterAndReadings(meter, intervalReadings);
                 for (PointValueHolder pointValueHolder : pointValues) {
+                    if (leakRate == null) continue;
                     WaterMeterLeak leak = new WaterMeterLeak();
                     leak.setMeter(meter);
                     leak.setPointValueHolder(pointValueHolder);
