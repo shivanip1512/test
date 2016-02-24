@@ -2,6 +2,39 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     
+    <!-- Shared keys (user and operator pages) -->
+    <entry key="yukon.web.modules.dr.cc.programType">Program Type</entry>
+    <entry key="yukon.web.modules.dr.cc.programName">Program Name</entry>
+    <entry key="yukon.web.modules.dr.cc.programEvent">Event #</entry>
+    <entry key="yukon.web.modules.dr.cc.programState">State</entry>
+    <entry key="yukon.web.modules.dr.cc.programStart">Start Time</entry>
+    <entry key="yukon.web.modules.dr.cc.programStop">Stop Time</entry>
+    <entry key="yukon.web.modules.dr.cc.eventNumber">Event Number</entry>
+    <entry key="yukon.web.modules.dr.cc.startDate">Start Date</entry>
+    <entry key="yukon.web.modules.dr.cc.notificationTime">Notification Time</entry>
+    <entry key="yukon.web.modules.dr.cc.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.dr.cc.stopTime">Stop Time</entry>
+    <entry key="yukon.web.modules.dr.cc.duration">Duration</entry>
+    <entry key="yukon.web.modules.dr.cc.durationMinutes">{0} minutes</entry>
+    <entry key="yukon.web.modules.dr.cc.state">State</entry>
+    <entry key="yukon.web.modules.dr.cc.message">Message</entry>
+    <entry key="yukon.web.modules.dr.cc.initialEvent">Initial Event</entry>
+    <entry key="yukon.web.modules.dr.cc.latestRevision">Latest Revision</entry>
+    <entry key="yukon.web.modules.dr.cc.reason">Reason</entry>
+    
+    <!-- overview.jsp -->
+    <entry key="yukon.web.modules.dr.cc.user.overview.pageTitle">Event Overview</entry>
+    <entry key="yukon.web.modules.dr.cc.user.overview.pageName">Overview</entry>
+    <entry key="yukon.web.modules.dr.cc.user.overview.noEvents">No events</entry>
+    <entry key="yukon.web.modules.dr.cc.user.overview.currentEvents.title">Current Events</entry>
+    <entry key="yukon.web.modules.dr.cc.user.overview.pendingEvents.title">Pending Events</entry>
+    <entry key="yukon.web.modules.dr.cc.user.overview.recentEvents.title">Recent Events</entry>
+    
+    <!-- detail.jsp (user event detail) -->
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.pageTitle">{0}</entry>
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.pageHeading">{1} - {2} Event</entry>
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.crumbTitle">Event Details</entry>
+       
     <!-- home.jsp -->
     <entry key="yukon.web.modules.dr.cc.home.pageTitle">Commercial Curtailment</entry>
     <entry key="yukon.web.modules.dr.cc.home.pageName">Commercial Curtailment</entry>
@@ -9,12 +42,6 @@
     <entry key="yukon.web.modules.dr.cc.home.availablePrograms">Available Programs</entry>
     <entry key="yukon.web.modules.dr.cc.home.start">Start</entry>
     <entry key="yukon.web.modules.dr.cc.home.history">History</entry>
-    <entry key="yukon.web.modules.dr.cc.home.programType">Program Type</entry>
-    <entry key="yukon.web.modules.dr.cc.home.programName">Program Name</entry>
-    <entry key="yukon.web.modules.dr.cc.home.programEvent">Event #</entry>
-    <entry key="yukon.web.modules.dr.cc.home.programState">State</entry>
-    <entry key="yukon.web.modules.dr.cc.home.programStart">Start Time</entry>
-    <entry key="yukon.web.modules.dr.cc.home.programStop">Stop Time</entry>
     <entry key="yukon.web.modules.dr.cc.home.noEvents">No events</entry>
     <entry key="yukon.web.modules.dr.cc.home.setup">Setup</entry>
     <entry key="yukon.web.modules.dr.cc.home.groups">Groups</entry>
@@ -25,21 +52,9 @@
     <entry key="yukon.web.modules.dr.cc.detail.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.dr.cc.detail.pageHeading">{1} - {2} Event {3}</entry>
     <entry key="yukon.web.modules.dr.cc.detail.crumbTitle">{0}</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.eventNumber">Event Number</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.startDate">Start Date</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.notificationTime">Notification Time</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.startTime">Start Time</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.stopTime">Stop Time</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.duration">Duration</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.durationMinutes">{0} minutes</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.state">State</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.message">Message</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.initialEvent">Initial Event</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.latestRevision">Latest Revision</entry>
     <entry key="yukon.web.modules.dr.cc.detail.operations">Operations</entry>
     <entry key="yukon.web.modules.dr.cc.detail.noNotifications">No Notifications</entry>
     <entry key="yukon.web.modules.dr.cc.detail.company">Company</entry>
-    <entry key="yukon.web.modules.dr.cc.detail.reason">Reason</entry>
     <entry key="yukon.web.modules.dr.cc.detail.notificationType">Notification Type</entry>
     <entry key="yukon.web.modules.dr.cc.detail.suppress.label">Suppress</entry>
     <entry key="yukon.web.modules.dr.cc.detail.suppress.success">Event suppressed.</entry>

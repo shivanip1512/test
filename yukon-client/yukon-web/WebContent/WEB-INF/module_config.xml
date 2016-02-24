@@ -542,6 +542,16 @@
             </page>
         </pages>
       </page>
+      <page name="cc.user.overview" type="BASIC">
+        <link>/dr/cc/user/overview</link>
+        <pages>
+          <page name="cc.user.event.detail" type="BASIC">
+             <labelArgument>${displayName}</labelArgument>
+             <labelArgument>${program.programType.name}</labelArgument>
+             <labelArgument>${program.name}</labelArgument>
+           </page>
+        </pages>
+      </page>
       <page name="home" type="BASIC">
         <link>/dr/home</link>
         <pages>

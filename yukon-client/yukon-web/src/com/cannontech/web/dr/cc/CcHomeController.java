@@ -1178,6 +1178,9 @@ public class CcHomeController {
 
         model.addAttribute("affectedCustomers", composeEventHeading(eventHeadingBase, userContext, "accounting_affected_customers"));
         
+        String tz = userContext.getTimeZone().getDisplayName();
+        model.addAttribute("tz", tz);
+        
         return "dr/cc/detail.jsp";
     }
     
@@ -1222,6 +1225,9 @@ public class CcHomeController {
         
         Boolean canEventBeRemoved = notifStrategy.canCustomersBeRemovedFromEvent(curtailmentEvent, user);
         model.addAttribute("showRemoveButton", canEventBeRemoved);
+        
+        String tz = userContext.getTimeZone().getDisplayName();
+        model.addAttribute("tz", tz);
         
         return "dr/cc/detail.jsp";
     }
@@ -1351,6 +1357,9 @@ public class CcHomeController {
         
         Boolean canEventBeExtended = strategy.canEventBeExtended(event, user);
         model.addAttribute("showExtendButton", canEventBeExtended);
+        
+        String tz = userContext.getTimeZone().getDisplayName();
+        model.addAttribute("tz", tz);
         
         return "dr/cc/detail.jsp";
     }
