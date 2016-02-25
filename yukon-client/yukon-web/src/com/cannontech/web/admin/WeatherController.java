@@ -11,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.weather.GeographicCoordinate;
 import com.cannontech.common.weather.NoaaWeatherDataService;
 import com.cannontech.common.weather.WeatherDataService;
@@ -33,7 +34,6 @@ public class WeatherController {
 
     private static final String baseKey = "yukon.web.modules.adminSetup.config.weather.";
     private static final int numWeatherStationsToReturn = 5;
-    public final static char[] ILLEGAL_NAME_CHARS = { '\'', ',', '|', '"', '/', '\\' };
 
     @RequestMapping("/config/weather")
     public String weather(ModelMap model) {
@@ -87,7 +87,7 @@ public class WeatherController {
         if (StringUtils.isBlank(weatherLocationBean.getStationId())) {
             bindingResult.rejectValue("stationId", baseKey + "errors.noStationId");
         }
-        if (StringUtils.containsAny(weatherLocationBean.getName(), ILLEGAL_NAME_CHARS)) {
+        if (StringUtils.containsAny(weatherLocationBean.getName(), PaoUtils.ILLEGAL_NAME_CHARS)) {
             bindingResult.rejectValue("name", baseKey + "errors.invalidName");
         }
 
