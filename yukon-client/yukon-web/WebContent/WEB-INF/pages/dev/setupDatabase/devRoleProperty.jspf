@@ -6,6 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <div id="roleProperties" class="devWidget">
+    <cti:flashScopeMessages />
     <c:if test="${fn:length(results) > 0}">
         <div class="results">
             <div class="resultMessage">

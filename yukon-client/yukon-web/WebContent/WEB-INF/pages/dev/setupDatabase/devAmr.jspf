@@ -6,6 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <div id="amr" class="devWidget">
+    <cti:flashScopeMessages />
     <div class="widgetMessage"></div>
 
      <p class="dialogFootnote">

@@ -6,6 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <div id="stars" class="devWidget">
+    <cti:flashScopeMessages />
 <div class="widgetMessage"></div>
     <form:form commandName="devStars" action="setupStars" method="post" id="setupStarsForm">
         <cti:csrfToken/>
