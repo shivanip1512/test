@@ -193,7 +193,9 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, Poin
     @Override
     public void pointDataReceived(PointValueQualityHolder pointData) {
         DatedPointValue value = new DatedPointValue(pointData);
-        log.debug("Added Point data to cache for point id=" + pointData.getId());
+        if(log.isDebugEnabled()){
+            log.debug("Added Point data to cache "+pointData +" PointDataTimeStamp="+pointData.getPointDataTimeStamp());
+        }
         cache.put(pointData.getId(), value);
     }
         
