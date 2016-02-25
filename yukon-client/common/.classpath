@@ -319,7 +319,7 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/hamcrest-core-1.3.jar" sourcepath="/third-party/linked-sources/hamcrest-core-1.3-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/junit-4.11.jar" sourcepath="/third-party/linked-sources/junit-4.11-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-xml-2.1.4.RELEASE.jar" sourcepath="C:/Users/E9915066/Downloads/spring-xml-2.1.4.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-xml-2.1.4.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-xml-2.1.4.RELEASE-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
