@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -37,12 +36,10 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
     
     @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private IDatabaseCache dbCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ZoneDao zoneDao;
     
@@ -143,24 +140,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         return orphans;
     }
     
-    @Override
-    public boolean assignSubstationBus(YukonPao subBus, String substationName) {
-        
-        LiteYukonPAObject substation = dbCache.getAllCapControlSubStations()
-            .parallelStream()
-            .filter(new Predicate<LiteYukonPAObject>() {
-
-                @Override
-                public boolean test(LiteYukonPAObject station) {
-                    return station.getPaoName().equals(substationName);
-                }
-            })
-            .findFirst()
-            .get();
-
-        return (substation == null) ? false : assignSubstationBus(substation, subBus);
-    }
-  
     @Override
     public boolean assignSubstationBus(YukonPao substation, YukonPao substationBus) {
         SqlStatementBuilder displaySql = new SqlStatementBuilder();

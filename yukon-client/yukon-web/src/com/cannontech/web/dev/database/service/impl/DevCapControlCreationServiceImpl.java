@@ -10,14 +10,12 @@ import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.FeederDao;
-import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
-import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevPaoType;
@@ -69,16 +67,16 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     private void createCapControl(DevCapControl devCapControl) {
         log.info("Creating (and assigning) Cap Control Objects ...");
         for (int areaIndex = 0; areaIndex  < devCapControl.getNumAreas(); areaIndex++) { // Areas
-            String areaName = createArea(devCapControl, areaIndex);
+            PaoIdentifier areaPao = createArea(devCapControl, areaIndex);
             for (int subIndex = 0; subIndex < devCapControl.getNumSubs(); subIndex++) { // Substations
-                String subName = createSubstation(devCapControl, areaIndex, areaName, subIndex);
+                PaoIdentifier substationPao = createSubstation(devCapControl, areaIndex, areaPao , subIndex);
                 for (int subBusIndex = 0; subBusIndex < devCapControl.getNumSubBuses(); subBusIndex++) { // Substations Buses
-                    String subBusName = createAndAssignSubstationBus(devCapControl, areaIndex, subIndex, subName, subBusIndex);
+                    PaoIdentifier subBusPao =  createAndAssignSubstationBus(devCapControl, areaIndex, subIndex, substationPao , subBusIndex);
                     for (int feederIndex = 0; feederIndex < devCapControl.getNumFeeders(); feederIndex++) { // Feeders
-                        String feederName = createAndAssignFeeder(devCapControl, areaIndex, subIndex, subBusIndex, subBusName, feederIndex);
+                        PaoIdentifier feederPao = createAndAssignFeeder(devCapControl, areaIndex, subIndex, subBusIndex, subBusPao, feederIndex);
                         for (int capBankIndex = 0; capBankIndex < devCapControl.getNumCapBanks(); capBankIndex++) { // CapBanks & CBCs
-                            String capBankName = createAndAssignCapBank(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederName, capBankIndex);
-                            createAndAssignCBC(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederName, capBankIndex, capBankName);
+                            PaoIdentifier capBankPao = createAndAssignCapBank(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederPao, capBankIndex);
+                            createAndAssignCBC(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, capBankIndex, capBankPao);
                         }
                     }
                 }
@@ -90,7 +88,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         }
     }
 
-    private void logCapControlAssignment(String child, String parent) {
+    private void logCapControlAssignment(String child, PaoIdentifier parent) {
         log.info(child + " assigned to " + parent);
     }
     
@@ -99,27 +97,27 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             if (regType.isCreate()) {
                 String regName = regType.getPaoType().getPaoTypeName() + " " + Integer.toString(regIndex);
                 createCapControlObject(devCapControl, regType.getPaoType(), regName, false, 0);
-//                complete++;
-//                log.info(complete + " / " + total);
             }
         }
     }
     
-    private void createCapControlObject(DevCapControl devCapControl, PaoType paoType, String name, boolean disabled, int portId) {
+
+    private PaoIdentifier createCapControlObject(DevCapControl devCapControl, PaoType paoType, String name, boolean disabled, int portId) {
+        PaoIdentifier paoIdentifier = null;
         try {
-            LiteYukonPAObject litePao = getPaoByName(name);
-            if (litePao != null) {
+            List<LiteYukonPAObject> paos =  paoDao.getLiteYukonPaoByName(name, false);
+            if (!paos.isEmpty()) {
                 complete++;
                 log.info(complete + " / " + total + " CapControl object with name " + name + " already exists. Skipping...");
                 devCapControl.incrementFailureCount();
-                return;
+                return paos.get(0).getPaoIdentifier();
             }
 
             if (paoType.isCbc()) {
                 DeviceConfiguration config = deviceConfigurationDao.getDefaultDNPConfiguration();
-                capControlCreationService.createCbc(paoType, name, disabled, portId, config);
+                paoIdentifier = capControlCreationService.createCbc(paoType, name, disabled, portId, config);
             } else {
-                capControlCreationService.createCapControlObject(paoType, name, false);
+                paoIdentifier = capControlCreationService.createCapControlObject(paoType, name, false);
             }
             devCapControl.incrementSuccessCount();
             complete++;
@@ -129,83 +127,77 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             log.info(complete + " / " + total + " CapControl object with name " + name + " already exists. Skipping");
             devCapControl.incrementFailureCount();
         }
+        return paoIdentifier;
     }
 
-    private void createAndAssignCBC(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, int feederIndex, String feederName,
-                             int capBankIndex, String capBankName) {
-        DevPaoType cbcType = devCapControl.getCbcType();
-        if (cbcType == null) {
-            return;
+    
+    private void createAndAssignCBC(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, int feederIndex,
+                             int capBankIndex, PaoIdentifier capBankPao) {
+        if (capBankPao != null && devCapControl.getCbcType() != null) {
+            PaoType paoType = devCapControl.getCbcType().getPaoType();
+            String cbcName = paoType.getPaoTypeName() + " " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
+            PaoIdentifier cbcPao =  createCapControlCBC(devCapControl, paoType, cbcName, false, DevCommChannel.SIM);
+            capbankControllerDao.assignController(capBankPao.getPaoId(), cbcPao.getPaoId());
+            logCapControlAssignment(cbcName, capBankPao);
         }
-        String cbcName = cbcType.getPaoType().getPaoTypeName() + " " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
-        createCapControlCBC(devCapControl, cbcType.getPaoType(), cbcName, false, DevCommChannel.SIM);
-        int cbcPaoId = getPaoIdByName(cbcName);
-        capbankControllerDao.assignController(cbcPaoId, capBankName);
-        logCapControlAssignment(cbcName, capBankName);
-    }
-
-    private String createAndAssignCapBank(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, int feederIndex, String feederName,
-                             int capBankIndex) {
-        String capBankName = "CapBank " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
-        createCapControlObject(devCapControl, PaoType.CAPBANK, capBankName, false, 0);
-        YukonPao capBankPao = getPaoByName(capBankName);
-        capbankDao.assignCapbank(capBankPao, feederName);
-        logCapControlAssignment(capBankName, feederName);
-//        complete++;
-//        log.info(complete + " / " + total);
-        return capBankName;
-    }
-
-    private String createAndAssignFeeder(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, String subBusName, int feederIndex) {
-        String feederName = "Feeder " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex);
-        createCapControlObject(devCapControl, PaoType.CAP_CONTROL_FEEDER, feederName, false, 0);
-        YukonPao feederPao = getPaoByName(feederName);
-        feederDao.assignFeeder(feederPao, subBusName);
-        logCapControlAssignment(feederName, subBusName);
-//        complete++;
-//        log.info(complete + " / " + total);
-        return feederName;
-    }
-
-    private String createAndAssignSubstationBus(DevCapControl devCapControl, int areaIndex, int subIndex, String subName, int subBusIndex) {
-        String subBusName = "Substation Bus " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex);
-        createCapControlObject(devCapControl, PaoType.CAP_CONTROL_SUBBUS, subBusName, false, 0);
-        YukonPao subBusPao = getPaoByName(subBusName);
-        substationBusDao.assignSubstationBus(subBusPao, subName);
-        logCapControlAssignment(subBusName, subName);
-//        complete++;
-//        log.info(complete + " / " + total);
-        return subBusName;
-    }
-
-    private String createSubstation(DevCapControl devCapControl, int areaIndex, String areaName, int subIndex) {
-        String subName = "Substation " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex);
-        createCapControlObject(devCapControl, PaoType.CAP_CONTROL_SUBSTATION, subName, false, 0);
-        YukonPao subPao = getPaoByName(subName);
-        substationDao.assignSubstation(subPao, areaName);
-        logCapControlAssignment(subName, areaName);
-//        complete++;
-//        log.info(complete + " / " + total);
-        return subName;
-    }
-
-    private String createArea(DevCapControl devCapControl, int areaIndex) {
-        String areaName = "Area " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex);
-        createCapControlObject(devCapControl, PaoType.CAP_CONTROL_AREA, areaName, false, 0);
-//        complete++;
-//        log.info(complete + " / " + total);
-        return areaName;
     }
     
-    private void createCapControlCBC(DevCapControl devCapControl, PaoType paoType, String name, boolean disabled, DevCommChannel commChannel) {
+    private PaoIdentifier createAndAssignCapBank(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, int feederIndex, PaoIdentifier feederPao,
+                             int capBankIndex) {
+        PaoIdentifier capBankPao = null;
+        if(feederPao != null){
+            String capBankName = "CapBank " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
+            capBankPao = createCapControlObject(devCapControl, PaoType.CAPBANK, capBankName, false, 0);
+            capbankDao.assignCapbank(feederPao, capBankPao);
+            logCapControlAssignment(capBankName, feederPao);
+        }
+        return capBankPao;
+    }
+
+    private PaoIdentifier createAndAssignFeeder(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, PaoIdentifier subBusPao, int feederIndex) {
+        PaoIdentifier feederPao = null;
+        if (subBusPao != null) {
+            String feederName = "Feeder " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex);
+            feederPao = createCapControlObject(devCapControl, PaoType.CAP_CONTROL_FEEDER, feederName, false, 0);
+            feederDao.assignFeeder(subBusPao, feederPao);
+            logCapControlAssignment(feederName, subBusPao);
+        }
+        return feederPao;
+    }
+
+    private  PaoIdentifier createAndAssignSubstationBus(DevCapControl devCapControl, int areaIndex, int subIndex, PaoIdentifier substationPao , int subBusIndex) {
+        PaoIdentifier subBusPao = null;
+        if (substationPao != null) {
+            String subBusName = "Substation Bus " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex);
+            subBusPao = createCapControlObject(devCapControl, PaoType.CAP_CONTROL_SUBBUS, subBusName, false, 0);
+            substationBusDao.assignSubstationBus(substationPao, subBusPao);
+            logCapControlAssignment(subBusName, substationPao);
+        }
+        return subBusPao;
+    }
+
+    private PaoIdentifier createSubstation(DevCapControl devCapControl, int areaIndex, PaoIdentifier areaPao, int subIndex) {
+        PaoIdentifier substationPao = null;
+        if (areaPao != null) {
+            String subName = "Substation " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex);
+            substationPao = createCapControlObject(devCapControl, PaoType.CAP_CONTROL_SUBSTATION, subName, false, 0);
+            substationDao.assignSubstation(areaPao, substationPao);
+            logCapControlAssignment(subName, areaPao);
+        }
+        return substationPao;
+    }
+
+    private PaoIdentifier createArea(DevCapControl devCapControl, int areaIndex) {
+        String areaName = "Area " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex);
+        return createCapControlObject(devCapControl, PaoType.CAP_CONTROL_AREA, areaName, false, 0);
+    }
+    
+    private PaoIdentifier createCapControlCBC(DevCapControl devCapControl, PaoType paoType, String name, boolean disabled, DevCommChannel commChannel) {
         List<LiteYukonPAObject> commChannels = paoDao.getLiteYukonPaoByName(commChannel.getName(), false);
         if (commChannels.size() != 1) {
             throw new RuntimeException("Couldn't find comm channel " + commChannel.getName());
         }
         int portId = commChannels.get(0).getPaoIdentifier().getPaoId();
-        createCapControlObject(devCapControl, paoType, name, disabled, portId);
-//        complete++;
-//        log.info(complete + " / " + total);
+        return createCapControlObject(devCapControl, paoType, name, disabled, portId);
     }
-
 }

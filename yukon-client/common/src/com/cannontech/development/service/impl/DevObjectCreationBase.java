@@ -23,7 +23,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -40,23 +39,6 @@ public abstract class DevObjectCreationBase {
     @Autowired private PaoDefinitionService paoDefinitionService;
     @Autowired private RolePropertyEditorDao rolePropertyEditorDao;
     @Autowired private RoleDao roleDao;
-
-    protected LiteYukonPAObject getPaoByName(String paoName) {
-        List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(paoName, false);
-        if (paos.size() != 1) {
-            return null;
-        }
-        LiteYukonPAObject litePao = paos.get(0);
-        return litePao;
-    }
-
-    protected int getPaoIdByName(String paoName) {
-        LiteYukonPAObject litePao = getPaoByName(paoName);
-        if (litePao == null) {
-            return -1;
-        }
-        return litePao.getYukonID();
-    }
 
     protected SmartMultiDBPersistent createSmartDBPersistent(DeviceBase deviceBase) {
         if (deviceBase == null) {

@@ -53,18 +53,7 @@ public interface SubstationBusDao {
     public List<LiteYukonPAObject> getUnassignedBuses();
     
     public List<LiteCapControlObject> getOrphans();
-    
-    /**
-     * This method assigns a {@link SubstationBus} to a {@link Substation} and
-     * performs all necessary db change messaging.
-     * @param subBus the Pao of the {@link SubstationBus} being assigned.
-     * @param substationName the name of the {@link Substation} being assigned
-     *            to.
-     * @return true if the assignment occurred and only updated one row in the
-     *         db, false otherwise.
-     */
-    public boolean assignSubstationBus(YukonPao subBus, String substationName);
-    
+        
     /**
      * This method assigns a {@link SubstationBus} to a {@link Substation} and
      * performs all necessary db change messaging.

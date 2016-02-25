@@ -13,16 +13,6 @@ public interface SubstationDao {
      * This method assigns a {@link Substation} to an Area and performs the
      * necessary db change messaging. Works for both areas and special areas.
      * @param substation the pao of the {@link Substation} being assigned.
-     * @param areaName the name of the area being assigned to.
-     * @return true if the assignment occurred and only one row in the db was
-     *         updated, false otherwise.
-     */
-    public boolean assignSubstation(YukonPao substation, String areaName);
-
-    /**
-     * This method assigns a {@link Substation} to an Area and performs the
-     * necessary db change messaging. Works for both areas and special areas.
-     * @param substation the pao of the {@link Substation} being assigned.
      * @param area the pao of the area being assigned to.
      * @return true if the assignment occurred and only one row in the db was
      *         updated, false otherwise.

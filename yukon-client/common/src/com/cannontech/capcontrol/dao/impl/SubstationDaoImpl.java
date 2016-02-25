@@ -31,7 +31,6 @@ public class SubstationDaoImpl implements SubstationDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache dbCache;
     
     /** SELECT QUERY */
@@ -81,12 +80,6 @@ public class SubstationDaoImpl implements SubstationDao {
         return stations;
     }
     
-    @Override
-    public boolean assignSubstation(YukonPao substation, String areaName) {
-        YukonPao area = paoDao.findYukonPao(areaName, PaoType.CAP_CONTROL_AREA);
-        return (area == null) ? false : assignSubstation(area, substation);
-    };
-
     @Override
     public boolean assignSubstation(YukonPao area, YukonPao substation) {
         int areaId = area.getPaoIdentifier().getPaoId();
