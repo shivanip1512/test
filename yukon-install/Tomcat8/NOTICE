@@ -10,10 +10,10 @@ open source software.  The original software and
 related information is available at
 http://nsis.sourceforge.net.
 
-Java compilation software for JSP pages is provided by Eclipse,
-which is open source software.  The original software and
-related information is available at
-http://www.eclipse.org.
+Java compilation software for JSP pages is provided by the Eclipse
+JDT Core Batch Compiler component, which is open source software.
+The original software and related information is available at
+http://www.eclipse.org/jdt/core/.
 
 For the bayeux implementation
 The org.apache.cometd.bayeux API is derivative work originating at the Dojo Foundation
@@ -33,4 +33,13 @@ The original XML Schemas for Java EE Deployment Descriptors:
  - web-app_3_0.xsd
  - web-common_3_0.xsd
  - web-fragment_3_0.xsd
-may be obtained from http://java.sun.com/xml/ns/javaee/
+ - javaee_7.xsd
+ - javaee_web_services_1_4.xsd
+ - javaee_web_services_client_1_4.xsd
+ - jsp_2_3.xsd
+ - web-app_3_1.xsd
+ - web-common_3_1.xsd
+ - web-fragment_3_1.xsd
+
+may be obtained from:
+http://www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/index.html

@@ -21,6 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 import org.junit.After;
@@ -444,6 +445,21 @@ public class ServletUtilTest {
 
             @Override
             public Part getPart(String name) throws IOException, IllegalStateException, ServletException {
+                return null;
+            }
+
+            @Override
+            public long getContentLengthLong() {
+                return 0;
+            }
+
+            @Override
+            public String changeSessionId() {
+                return null;
+            }
+
+            @Override
+            public <T extends HttpUpgradeHandler> T upgrade(Class<T> arg0) throws IOException, ServletException {
                 return null;
             }
         };

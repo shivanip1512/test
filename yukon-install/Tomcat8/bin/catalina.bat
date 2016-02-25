@@ -63,7 +63,7 @@ rem   JPDA_TRANSPORT  (Optional) JPDA transport used when the "jpda start"
 rem                   command is executed. The default is "dt_socket".
 rem
 rem   JPDA_ADDRESS    (Optional) Java runtime options used when the "jpda start"
-rem                   command is executed. The default is 8000.
+rem                   command is executed. The default is localhost:8000.
 rem
 rem   JPDA_SUSPEND    (Optional) Java runtime options used when the "jpda start"
 rem                   command is executed. Specifies whether JVM should suspend
@@ -128,6 +128,23 @@ rem Copy CATALINA_BASE from CATALINA_HOME if not defined
 if not "%CATALINA_BASE%" == "" goto gotBase
 set "CATALINA_BASE=%CATALINA_HOME%"
 :gotBase
+
+rem Ensure that neither CATALINA_HOME nor CATALINA_BASE contains a semi-colon
+rem as this is used as the separator in the classpath and Java provides no
+rem mechanism for escaping if the same character appears in the path. Check this
+rem by replacing all occurrences of ';' with '' and checking that neither
+rem CATALINA_HOME nor CATALINA_BASE have changed
+if "%CATALINA_HOME%" == "%CATALINA_HOME:;=%" goto homeNoSemicolon
+echo Using CATALINA_HOME:   "%CATALINA_HOME%"
+echo Unable to start as CATALINA_HOME contains a semicolon (;) character
+goto end
+:homeNoSemicolon
+
+if "%CATALINA_BASE%" == "%CATALINA_BASE:;=%" goto baseNoSemicolon
+echo Using CATALINA_BASE:   "%CATALINA_BASE%"
+echo Unable to start as CATALINA_BASE contains a semicolon (;) character
+goto end
+:baseNoSemicolon
 
 rem Ensure that any user defined CLASSPATH variables are not used on startup,
 rem but allow them to be specified in setenv.bat, in rare case when it is needed.
@@ -209,7 +226,7 @@ if not "%JPDA_TRANSPORT%" == "" goto gotJpdaTransport
 set JPDA_TRANSPORT=dt_socket
 :gotJpdaTransport
 if not "%JPDA_ADDRESS%" == "" goto gotJpdaAddress
-set JPDA_ADDRESS=8000
+set JPDA_ADDRESS=localhost:8000
 :gotJpdaAddress
 if not "%JPDA_SUSPEND%" == "" goto gotJpdaSuspend
 set JPDA_SUSPEND=n

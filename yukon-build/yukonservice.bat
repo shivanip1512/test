@@ -19,7 +19,7 @@ cd %CATALINA_HOME%
 
 set CATALINA_BASE=%CATALINA_HOME%
  
-set EXECUTABLE=%CATALINA_HOME%\bin\tomcat7.exe
+set EXECUTABLE=%CATALINA_HOME%\bin\tomcat8.exe
 
 set SERVICE_NAME=YukonWebApplicationService
 

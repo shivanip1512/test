@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Scanner;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -44,6 +45,24 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
         ServletInputStream inputStream = new ServletInputStream() {
             public int read() throws IOException {
                 return byteArrayInputStream.read();
+            }
+
+            @Override
+            public boolean isFinished() {
+            
+                return false;
+            }
+
+            @Override
+            public boolean isReady() {
+             
+                return false;
+            }
+
+            @Override
+            public void setReadListener(ReadListener arg0) {
+               
+
             }
         };
         return inputStream;
