@@ -87,10 +87,10 @@ public class WeatherController {
         if (StringUtils.isBlank(weatherLocationBean.getStationId())) {
             bindingResult.rejectValue("stationId", baseKey + "errors.noStationId");
         }
-         if(StringUtils.containsAny(weatherLocationBean.getName(), ILLEGAL_NAME_CHARS)){
-             bindingResult.rejectValue("name", baseKey + "errors.invalidName");
-         }
-         
+        if (StringUtils.containsAny(weatherLocationBean.getName(), ILLEGAL_NAME_CHARS)) {
+            bindingResult.rejectValue("name", baseKey + "errors.invalidName");
+        }
+
         if (bindingResult.hasErrors()) {
             int numStations = addWeatherStationsToModel(model, requestedCoordinate);
             if (numStations < numWeatherStationsToReturn) {
