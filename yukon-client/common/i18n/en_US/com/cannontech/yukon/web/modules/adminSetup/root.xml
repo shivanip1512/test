@@ -102,6 +102,7 @@
     <entry key="yukon.web.modules.adminSetup.config.weather.error.dispatchNotConnected">There is a problem connecting to dispatch. Data will not update until connection is established.</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.error.problemLoadingStationData">There is a problem loading weather station data from NOAA. Check your logs for more information.</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.errors.noStationId">You must select a weather station</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.errors.invalidName">Station name cannot include any of the following characters: / \\ , ' |</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.errors.invalidLongitude">Invalid Longitude</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.errors.invalidLatitude">Invalid Latitude</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.humidity">Humidity</entry>

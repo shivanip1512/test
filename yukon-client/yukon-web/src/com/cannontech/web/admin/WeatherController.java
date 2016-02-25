@@ -33,6 +33,7 @@ public class WeatherController {
 
     private static final String baseKey = "yukon.web.modules.adminSetup.config.weather.";
     private static final int numWeatherStationsToReturn = 5;
+    public final static char[] ILLEGAL_NAME_CHARS = { '\'', ',', '|', '"', '/', '\\' };
 
     @RequestMapping("/config/weather")
     public String weather(ModelMap model) {
@@ -86,7 +87,10 @@ public class WeatherController {
         if (StringUtils.isBlank(weatherLocationBean.getStationId())) {
             bindingResult.rejectValue("stationId", baseKey + "errors.noStationId");
         }
-
+         if(StringUtils.containsAny(weatherLocationBean.getName(), ILLEGAL_NAME_CHARS)){
+             bindingResult.rejectValue("name", baseKey + "errors.invalidName");
+         }
+         
         if (bindingResult.hasErrors()) {
             int numStations = addWeatherStationsToModel(model, requestedCoordinate);
             if (numStations < numWeatherStationsToReturn) {
