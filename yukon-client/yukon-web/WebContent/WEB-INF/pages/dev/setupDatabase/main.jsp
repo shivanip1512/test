@@ -68,11 +68,13 @@
     <div id="amrTab" class="clearfix"><%@include file="devAmr.jspf"%></div>
     <div id="capControlTab" class="clearfix"><%@include file="devCapControl.jspf"%></div>
     <div id="eventLogTab" class="clearfix"><%@include file="devEventLog.jspf"%></div>
+    <input type="hidden" id="tabToSelect" value="${selectedTab}"/>
 </div>
 
 <script type="text/javascript">
     $(function() {
-        $('#tabs').tabs({show: {height: 'toggle', duration: 200}});
+        var selectedTab = $('#tabToSelect').val();
+        $('#tabs').tabs({show: {height: 'toggle', duration: 200}, active: selectedTab});
 
             var ajaxSubmitOptions = {
                 beforeSubmit:  beforeSubmit,        // pre-submit callback 

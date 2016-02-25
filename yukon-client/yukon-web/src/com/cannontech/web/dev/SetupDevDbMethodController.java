@@ -17,6 +17,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -107,6 +108,8 @@ public class SetupDevDbMethodController {
         model.addAttribute("allEnergyCompanies", allEnergyCompanies);
         
         model.addAttribute("eventSourceList", Lists.newArrayList(EventSource.values()));
+        
+        
     }
 
     @RequestMapping("checkAvailability")
@@ -190,7 +193,7 @@ public class SetupDevDbMethodController {
     }
     
     @RequestMapping("status")
-    public String status(FlashScope flashScope, ModelMap model) {
+    public String status(FlashScope flashScope, ModelMap model, final RedirectAttributes redirectAttributes) {
         try {
             SimulatorResponse response = simulatorsCommunicationService.sendRequest(
                 new AmrCreationSimulatorStatusRequest(), SimulatorResponseBase.class);
@@ -205,9 +208,13 @@ public class SetupDevDbMethodController {
                 YukonMessageSourceResolvable.createDefaultWithoutCode("Unable to send message to Simulator Service: " + e.getMessage()));
         }
 
-        model.addAttribute("allRoutes", databaseCache.getAllRoutes());
-        model.addAttribute("devAmr",  new DevAmr());
+        //ModelAndView mav = new ModelAndView("redirect:main");
+       // mav.addObject("selectedTab", 2);
+       // return mav;
+        redirectAttributes.addFlashAttribute("selectedTab", 2);
         return "redirect:main";
+        //model.addAttribute("selectedTab", 2);
+       // return new ModelAndView("redirect:main");
     }
 
     @RequestMapping("setupCapControl")

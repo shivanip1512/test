@@ -6,7 +6,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <div id="eventLog" class="devWidget">
-    <cti:flashScopeMessages />
     <div class="widgetMessage"></div>
     <form:form commandName="devEventLog" action="setupEventLog" method="post" id="setupEventLogForm">
         <cti:csrfToken/>

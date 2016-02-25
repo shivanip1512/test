@@ -6,7 +6,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <div id="capControl" class="devWidget">
-    <cti:flashScopeMessages />
     <div class="widgetMessage"></div>
     <form:form commandName="devCapControl" action="setupCapControl" method="post" id="setupCapControlForm">
         <cti:csrfToken/>
