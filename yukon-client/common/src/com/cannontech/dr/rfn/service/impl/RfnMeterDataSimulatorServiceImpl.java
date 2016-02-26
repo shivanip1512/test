@@ -240,7 +240,6 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
                 List<RfnDevice> billingDevices =
                     rfnMeterList.subList(perDayCounter, perDayCounter + messagePerMin.get(RfnMeterReadingType.BILLING));
                 meterList.put(RfnMeterReadingType.BILLING, billingDevices);
-                System.out.println(Instant.now() + "Sending message for billingDevices " + billingDevices);
                 perDayCounter = perDayCounter + messagePerMin.get(RfnMeterReadingType.BILLING);
             }
         }
@@ -248,7 +247,6 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
             List<RfnDevice> intervalDevices =
                 rfnMeterList.subList(hourlyCounter, hourlyCounter + messagePerMin.get(RfnMeterReadingType.INTERVAL));
             meterList.put(RfnMeterReadingType.INTERVAL, intervalDevices);
-            System.out.println("Sending message for intervalDevices " + intervalDevices);
         }
 
         if ((hourlyCounter + messagePerMin.get(RfnMeterReadingType.PROFILE)) <= rfnMeterList.size()) {
