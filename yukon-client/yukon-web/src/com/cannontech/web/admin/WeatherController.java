@@ -87,8 +87,8 @@ public class WeatherController {
         if (StringUtils.isBlank(weatherLocationBean.getStationId())) {
             bindingResult.rejectValue("stationId", baseKey + "errors.noStationId");
         }
-        if (StringUtils.containsAny(weatherLocationBean.getName(), PaoUtils.ILLEGAL_NAME_CHARS)) {
-            bindingResult.rejectValue("name", baseKey + "errors.invalidName");
+        if (!(PaoUtils.isValidPaoName(weatherLocationBean.getName()))) {
+            bindingResult.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
         }
 
         if (bindingResult.hasErrors()) {
