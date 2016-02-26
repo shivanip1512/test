@@ -75,10 +75,10 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
         boolean containsSystemDevice = Iterables.any(idList, Predicates.equalTo(Device.SYSTEM_DEVICE_ID));
         Validate.isTrue(!containsSystemDevice, "cannot create DeviceCollection that contains the system device");
         
-        for (List<Integer> devicesId : Lists.partition(idList, PARTITION_SIZE)) {
-            if (devicesId.size() > 200){
+        for (List<Integer> deviceIds : Lists.partition(idList, PARTITION_SIZE)) {
+            if (deviceIds.size() > 200) {
             /* For large lists of ids, convert to memory list since url's can only be so long. */
-            memoryCollectionProducer.createDeviceCollection(devicesId);
+            memoryCollectionProducer.createDeviceCollection(deviceIds);
             }
         }
         return createDeviceCollection(idList, ids);
