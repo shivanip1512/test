@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -59,6 +61,7 @@ public class CbcController {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
     @Autowired private AttributeService attributeService;
+    @Autowired private CapbankDao capbankDao;
 
 
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
@@ -163,6 +166,12 @@ public class CbcController {
         model.addAttribute("availablePorts", dbCache.getAllPorts());
 
         if (cbc.getId() != null) {
+            //parent may not be populated if validation errors were found and we are redirecting back to the page
+            PaoIdentifier capbank = capbankDao.findCapBankByCbc(cbc.getId());
+            if (capbank != null) {
+                LiteYukonPAObject parent = dbCache.getAllPaosMap().get(capbank.getPaoId());
+                cbc.setParent(parent);
+            }
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
             //check for special formats
             for(List<PointInfo> pointList : points.values()){

@@ -221,6 +221,7 @@
                 <cti:button nameKey="save" type="submit" classes="primary action" />
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
+            <c:set var="deleteDisabled" value="false" />
                 <c:if test="${not empty cbc.parent}">
                     <c:set var="deleteDisabled" value="true" />
                     <c:set var="deleteTitle" value="Can not delete while attached to a cap bank" />

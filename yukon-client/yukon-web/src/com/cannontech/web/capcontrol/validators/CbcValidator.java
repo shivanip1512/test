@@ -82,9 +82,11 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
         Integer serialNumber = cbc.getDeviceCBC().getSerialNumber();
         YukonValidationUtils.checkRange(errors, "deviceCBC.serialNumber", serialNumber,
             0, Integer.MAX_VALUE, true);
-        String[] paos = DeviceCBC.isSerialNumberUnique(serialNumber, cbc.getId());
-        if (paos != null && paos.length > 0) {
-            errors.rejectValue("deviceCBC.serialNumber", basekey + ".duplicateSerial", paos, "Serial Number in use");
+        if (serialNumber != null) {
+            String[] paos = DeviceCBC.isSerialNumberUnique(serialNumber, cbc.getId());
+            if (paos != null && paos.length > 0) {
+                errors.rejectValue("deviceCBC.serialNumber", basekey + ".duplicateSerial", paos, "Serial Number in use");
+            }
         }
     }
 
