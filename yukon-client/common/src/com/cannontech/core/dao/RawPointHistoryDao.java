@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
@@ -345,4 +346,16 @@ public interface RawPointHistoryDao {
     * if no value exists for that point in time
     */
    public PointValueQualityHolder getSpecificValue(int pointId, long timestamp) throws NotFoundException;
+   
+   /**
+    * Method to get a list of point values for a given point and time period and add it to queue.
+    * @param pointId - Id of point to get values for
+    * @param instantRange - time period, also defines clusivity
+    * @param order - controls ordering by timestamp and changeid
+    * @param queue - Queue in which data has to be added
+    * @return List of values for the point
+    */
+   
+   void queuePointData(int pointId, Range<Instant> instantRange, Order order,
+        BlockingQueue<PointValueHolder> queue);
 }

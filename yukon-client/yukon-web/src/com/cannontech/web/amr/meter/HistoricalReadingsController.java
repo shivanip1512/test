@@ -1,16 +1,24 @@
 package com.cannontech.web.amr.meter;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.model.Direction;
@@ -39,9 +48,10 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -60,6 +70,7 @@ public class HistoricalReadingsController {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private static String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
+    private Logger log = YukonLogManager.getLogger(HistoricalReadingsController.class);
     
     private static int MAX_ROWS_DISPLAY = 100;
     private static final String PERIOD = "period";
@@ -123,12 +134,57 @@ public class HistoricalReadingsController {
     }
      
     @RequestMapping("download")
-    public String download(String period, int pointId, HttpServletResponse response, YukonUserContext context) 
-            throws IOException {
-        
-        List<List<String>> points = getLimitedPointData(period, context, Order.REVERSE, OrderBy.TIMESTAMP, pointId);
-        buildCsv(context, points, response);
+    public String download(String period, int pointId, HttpServletResponse response,
+            YukonUserContext context) throws IOException {
 
+        BlockingQueue<PointValueHolder> queue = new ArrayBlockingQueue<PointValueHolder>(100000);
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        String[] headerRow = new String[2];
+        headerRow[0] = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
+        headerRow[1] = accessor.getMessage(baseKey + "tableHeader.value.linkText");
+
+        String fileName = "HistoryReadings.csv";
+        queueLimitedPointData(period, context, Order.REVERSE, OrderBy.TIMESTAMP, pointId, queue);
+        response.setContentType("text/csv");
+        response.setHeader("Content-Type", "application/force-download");
+        fileName = ServletUtil.makeWindowsSafeFileName(fileName);
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+        Writer writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+        CSVWriter csvWriter = new CSVWriter(writer);
+        csvWriter.writeNext(headerRow);
+        try {
+            while (true) {
+                PointValueHolder pointValueHolder = queue.take();
+
+                List<String> row = Lists.newArrayList();
+                row.add(pointFormattingService.getValueString(pointValueHolder,
+                                                              Format.DATE,
+                                                              context));
+                row.add(pointFormattingService.getValueString(pointValueHolder,
+                                                              Format.SHORT,
+                                                              context));
+
+                String[] dataRows = new String[row.size()];
+                dataRows = (String[]) row.toArray(dataRows);
+                System.out.println("Writing");
+                csvWriter.writeNext(dataRows);
+
+                if (queue.size() == 0) {
+                    break;
+                }
+            }
+
+        } catch (InterruptedException e) {
+            log.debug("Error while downloading " + e);
+        } finally {
+            try {
+                csvWriter.close();
+            } catch (IOException e) {
+                log.debug("Error while closing writer " + e);
+            }
+        }
         return null;
     }
     
@@ -179,27 +235,7 @@ public class HistoricalReadingsController {
         }
         return attributeMsg;
     }
-    
-    private void buildCsv(YukonUserContext userContext, List<List<String>> points, HttpServletResponse response) 
-            throws IOException{
-        
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String[] headerRow = new String[2];
-        headerRow[0] = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
-        headerRow[1] = accessor.getMessage(baseKey + "tableHeader.value.linkText");
-                
-        List<String[]> dataRows = Lists.transform( points, new Function<List<String>, String[]>() {
-            @Override
-            public String[] apply(List<String> point) {
-                String[] row = new String[]{point.get(0),  point.get(1)};
-                return row;
-            }
-        });
-        
-        //write out the file
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "HistoryReadings.csv");
-    }
-        
+  
     private List<List<String>> getLimitedPointData(String period, 
             final YukonUserContext userContext, 
             Order order, 
@@ -218,21 +254,6 @@ public class HistoricalReadingsController {
                     order, 
                     MAX_ROWS_DISPLAY);
         }
-        else if(period.equals(ONE_MONTH)){
-            DateTime startDate = new DateTime(userContext.getJodaTimeZone());
-            startDate = startDate.minusDays(30);
-            DateTime endDate = new DateTime(userContext.getJodaTimeZone());
-            Range<Date> dateRange = new Range<Date>(startDate.toDate(), true, endDate.toDate(), false);
-            data = rawPointHistoryDao.getPointData(pointId,
-                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), 
-                    order); 
-        }else if(period.equals(ALL)){
-            Instant startDate = new Instant(0);
-            Range<Date> dateRange = new Range<Date>(startDate.toDate(), true, null, true);
-            data = rawPointHistoryDao.getPointData(pointId,  
-                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), 
-                    order);
-        }
         data = sort(data, order, orderBy);
         List<List<String>> points = Lists.transform(data, new Function<PointValueHolder, List<String>>() {
             @Override
@@ -245,6 +266,49 @@ public class HistoricalReadingsController {
         });
         return points;
     }
+    
+    private void queueLimitedPointData(String period, final YukonUserContext userContext,
+            Order order, OrderBy orderBy, int pointId, BlockingQueue<PointValueHolder> queue) {
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+        Range<Date> dateRange = null;
+
+        if (period.equals(ONE_MONTH)) {
+            DateTime startDate = new DateTime(userContext.getJodaTimeZone());
+            startDate = startDate.minusDays(30);
+            DateTime endDate = new DateTime(userContext.getJodaTimeZone());
+            dateRange = new Range<Date>(startDate.toDate(), true, endDate.toDate(), false);
+
+        } else if (period.equals(ALL)) {
+            Instant startDate = new Instant(0);
+            dateRange = new Range<Date>(startDate.toDate(), true, null, true);
+        }
+        executorService.submit(new DataQueuer(queue, pointId, dateRange, order));
+    }
+    
+    private class DataQueuer extends Thread {
+        BlockingQueue<PointValueHolder> queue;
+        int pointId;
+        Range<Date> dateRange;
+        Order order;
+
+        DataQueuer(BlockingQueue<PointValueHolder> queue, int pointId, Range<Date> dateRange,
+                Order order) {
+            this.queue = queue;
+            this.pointId = pointId;
+            this.dateRange = dateRange;
+            this.order = order;
+        }
+
+        public void run() {
+            rawPointHistoryDao.queuePointData(pointId,
+                                              dateRange.translate(CtiUtilities.INSTANT_FROM_DATE),
+                                              order,
+                                              queue);
+        }
+    }
+    
+ 
     
     private String getDownloadUrl(String period, int pointId) {
         return "/meter/historicalReadings/download?" + PERIOD + "=" + period + "&pointId=" + pointId;

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
@@ -48,6 +49,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.vendor.DatabaseVendor;
@@ -210,6 +212,31 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 		return executeQuery(sql);
 	}
 
+    @Override
+    public void queuePointData(int pointId, Range<Instant> instantRange, Order order,
+            BlockingQueue<PointValueHolder> queue) {
+        SqlFragmentSource sql = buildSql(instantRange, Collections.singleton(pointId), order, true);
+        executeQueryToQueue(sql, queue);
+    }
+
+    private void executeQueryToQueue(SqlFragmentSource sql, BlockingQueue<PointValueHolder> q) {
+        yukonTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                PointValueBuilder builder = PointValueBuilder.create();
+                builder.withResultSet(rs);
+                builder.withType(rs.getString("pointtype"));
+                PointValueQualityHolder pvh = builder.build();
+                try {
+                    q.put(pvh);
+                } catch (InterruptedException e) {
+                    log.debug("Error while queuing data " + e);
+                }
+
+            }
+        });
+    }
+    
     @Override
     public List<PointValueHolder> getPointData(Set<Integer> pointIds, final ReadableRange<Instant> range,
                                                final boolean excludeDisabledPaos, final Order order) {
