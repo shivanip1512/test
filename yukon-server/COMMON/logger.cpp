@@ -107,6 +107,11 @@ static const size_t MaxMessageSize = 1024 * 1024;  //  1 MB, which should be eno
 
 void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const char* file, const char* func, int line)
 {
+    if( LogManager::inShutdown )
+    {
+        return;
+    }
+
     std::string message = logStream.extractToString();
     const size_t messageSize = message.size();
     if( messageSize > MaxMessageSize )

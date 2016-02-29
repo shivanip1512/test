@@ -29,7 +29,16 @@ log4cxx::LogString toLogStr(const std::string &str)
 
 AutoShutdownLoggers::~AutoShutdownLoggers()
 {
-    log4cxx::LogManager::shutdown();
+    LogManager::inShutdown = true;
+
+    try
+    {
+        log4cxx::LogManager::shutdown();
+    }
+    catch( ... )
+    {
+        // This page intentionally left blank.
+    }
 }
 
 ///  class FileInfo ///
@@ -101,6 +110,8 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
 }
 
 /// class LogManager ///
+
+bool LogManager::inShutdown = false;
 
 LogManager::LogManager(const std::string &baseLoggerName)
     :   _baseLoggerName(baseLoggerName),
