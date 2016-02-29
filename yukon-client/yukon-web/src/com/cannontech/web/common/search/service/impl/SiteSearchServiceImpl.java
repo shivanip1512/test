@@ -12,16 +12,15 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -154,16 +153,16 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         }
         
         LiteYukonUser user = userContext.getYukonUser();
-        BooleanQuery query = buildBaseQuery(user);
+        BooleanQuery.Builder query = buildBaseQuery(user);
         
-        BooleanQuery searchStrQuery = new BooleanQuery();
-        QueryParser parser = new QueryParser(Version.LUCENE_34, "primarySearch", analyzer);
+        BooleanQuery.Builder searchStrQuery = new BooleanQuery.Builder();
+        QueryParser parser = new QueryParser("primarySearch", analyzer);
         try {
             searchStrQuery.add(parser.parse(queryString), Occur.MUST);
         } catch (ParseException parseException) {
             throw new RuntimeException("could not parse search string " + queryString, parseException);
         }
-        query.add(searchStrQuery, Occur.MUST);
+        query.add(searchStrQuery.build(), Occur.MUST);
         
         DocumentHandler handler = new DocumentHandler(startIndex, numWanted, user);
         
@@ -176,7 +175,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                 if (log.isDebugEnabled()) {
                     log.debug("searching, for up to " + handler.numToQuery + " documents");
                 }
-            } while (!searchTemplate.doCallBackSearch(query, handler, handler.numToQuery));
+            } while (!searchTemplate.doCallBackSearch(query.build(), handler, handler.numToQuery));
             
             SearchResults<Page> results = handler.getSearchResults();
             return results;
@@ -192,14 +191,14 @@ public class SiteSearchServiceImpl implements SiteSearchService {
      * Start out a Lucene {@link BooleanQuery} for both search and auto-complete that includes sub-queries to limit
      * the results based on user permissions.
      */
-    private BooleanQuery buildBaseQuery(LiteYukonUser user) {
+    private BooleanQuery.Builder buildBaseQuery(LiteYukonUser user) {
         
-        BooleanQuery query = new BooleanQuery();
+        BooleanQuery.Builder query = new BooleanQuery.Builder();
         Query noEcQuery = new TermQuery(new Term("energyCompanyId", "none"));
         
         try {
             EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
-            BooleanQuery ecQuery = new BooleanQuery();
+            BooleanQuery.Builder ecQuery = new BooleanQuery.Builder();
             ecQuery.add(noEcQuery, Occur.SHOULD);
             ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(energyCompany.getId()))), Occur.SHOULD);
             boolean searchChildEcs = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
@@ -208,7 +207,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                     ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(childEc.getId()))), Occur.SHOULD);
                 }
             }
-            query.add(ecQuery, Occur.MUST);
+            query.add(ecQuery.build(), Occur.MUST);
         } catch (EnergyCompanyNotFoundException ecnfe) {
             // Operator is not part of an energy company.
             query.add(noEcQuery, Occur.MUST);
@@ -235,8 +234,8 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         }
         
         final LiteYukonUser user = userContext.getYukonUser();
-        BooleanQuery baseQuery = buildBaseQuery(user);
-        QueryParser parser = new QueryParser(Version.LUCENE_34, fieldName, analyzer);
+        BooleanQuery.Builder baseQuery = buildBaseQuery(user);
+        QueryParser parser = new QueryParser(fieldName, analyzer);
         parser.setDefaultOperator(Operator.AND);
         try {
             baseQuery.add(parser.parse(queryString), Occur.MUST);
@@ -294,7 +293,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
             log.trace("autocomplete - Searching with Lucene query: " + baseQuery);
         }
         try {
-            boolean foundOne = searchTemplate.doCallBackSearch(baseQuery, handler, maxResults);
+            boolean foundOne = searchTemplate.doCallBackSearch(baseQuery.build(), handler, maxResults);
             return foundOne;
         } catch (IOException e) {
             log.error("error querying for [" + queryString + "]", e);

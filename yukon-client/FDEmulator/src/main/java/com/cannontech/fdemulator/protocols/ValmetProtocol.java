@@ -39,7 +39,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.util.ThreadInterruptedException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.fdemulator.common.FDEProtocol;
@@ -47,6 +46,7 @@ import com.cannontech.fdemulator.common.FDTestPanel;
 import com.cannontech.fdemulator.common.FDTestPanelNotifier;
 import com.cannontech.fdemulator.common.FdeLogger;
 import com.cannontech.fdemulator.common.TraceLogPanel;
+import com.cannontech.fdemulator.exception.ThreadInterruptedException;
 import com.cannontech.fdemulator.fileio.ValmetFileIO;
 
 /**

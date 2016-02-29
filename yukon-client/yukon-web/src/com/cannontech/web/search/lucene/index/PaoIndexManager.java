@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -60,44 +61,43 @@ public class PaoIndexManager extends SimpleIndexManager {
         return sql;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected Document createDocument(YukonResultSet rs) throws SQLException {
         Document doc = new Document();
 
         int paoId = rs.getInt("paobjectId");
         String paoIdStr = Integer.toString(paoId);
-        doc.add(new Field("paoid", paoIdStr, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("paoid", paoIdStr, TYPE_STORED));
 
         String paoName = rs.getString("paoName");
-        doc.add(new Field("pao", paoName, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new TextField("pao", paoName, Field.Store.YES));
 
         String type = rs.getString("type");
-        doc.add(new Field("type", type, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("type", type, TYPE_STORED));
 
         String category = rs.getString("category");
         String paoClass = rs.getString("paoClass");
-        doc.add(new Field("category", category, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("paoclass", paoClass, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("category", category, TYPE_STORED));
+        doc.add(new Field("paoclass", paoClass, TYPE_STORED));
 
         String all = paoName + " " + type + " " + paoIdStr + " " + paoClass + " " + category;
-        doc.add(new Field("all", all, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new TextField("all", all, Field.Store.YES));
 
         String deviceId = rs.getString("deviceId");
         String isDevice = String.valueOf(!StringUtils.isEmpty(deviceId));
         deviceId = deviceId == null ? "" : deviceId;
-        doc.add(new Field("deviceId", deviceId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("isDevice", isDevice, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("deviceId", deviceId, TYPE_STORED));
+        doc.add(new Field("isDevice", isDevice, TYPE_NOT_STORED));
 
         String meterNumber = rs.getString("meternumber");
         String isMeter = String.valueOf(!StringUtils.isEmpty(meterNumber));
         meterNumber = meterNumber == null ? "" : meterNumber;
-        doc.add(new Field("meterNumber", meterNumber, Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("isMeter", isMeter, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new TextField("meterNumber", meterNumber, Field.Store.YES));
+        doc.add(new Field("isMeter", isMeter, TYPE_NOT_STORED));
 
         DisplayablePao displayablePao =
                 paoLoadingService.getDisplayablePao(new PaoIdentifier(paoId, PaoType.getForDbString(type)));
-        doc.add(new Field("deviceName", displayablePao.getName(), Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new TextField("deviceName", displayablePao.getName(), Field.Store.YES));
         return doc;
     }
 

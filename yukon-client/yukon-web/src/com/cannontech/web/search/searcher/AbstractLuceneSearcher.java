@@ -8,15 +8,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.util.Version;
 
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
@@ -95,7 +94,7 @@ public abstract class AbstractLuceneSearcher<E> {
             query = new MatchAllDocsQuery();
         } else {
             String newQueryString = StringUtils.join(cleanList.toArray(), " ");
-            QueryParser parser = new QueryParser(Version.LUCENE_34, "all", analyzer);
+            QueryParser parser = new QueryParser("all", analyzer);
             parser.setDefaultOperator(QueryParser.AND_OPERATOR);
             query = parser.parse(newQueryString);
         }
@@ -109,10 +108,10 @@ public abstract class AbstractLuceneSearcher<E> {
         }
         
         Query criteriaQuery = criteria.getCriteria();
-        BooleanQuery finalQuery = new BooleanQuery(false);
+        BooleanQuery.Builder finalQuery = new BooleanQuery.Builder().setDisableCoord(false);
         finalQuery.add(originalQuery, BooleanClause.Occur.MUST);
         finalQuery.add(criteriaQuery, BooleanClause.Occur.MUST);
-        return finalQuery;
+        return finalQuery.build();
     }
     
     public final IndexManager getIndexManager() {

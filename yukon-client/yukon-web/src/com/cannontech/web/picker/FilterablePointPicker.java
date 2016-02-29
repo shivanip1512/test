@@ -13,7 +13,7 @@ public class FilterablePointPicker extends PointPicker {
     public YukonObjectCriteria combineCriteria(YukonObjectCriteria criteria, YukonUserContext userContext, String extraArgs) {
         
         FilterType filterType = FilterType.valueOf(extraArgs);
-        final BooleanQuery query = new BooleanQuery(false);
+        final BooleanQuery.Builder query = new BooleanQuery.Builder().setDisableCoord(false);
         
         if (criteria != null) {
             query.add(criteria.getCriteria(), Occur.MUST);
@@ -24,7 +24,7 @@ public class FilterablePointPicker extends PointPicker {
         return new YukonObjectCriteria() {
             @Override
             public Query getCriteria() {
-                return query;
+                return query.build();
             }
         };
     }

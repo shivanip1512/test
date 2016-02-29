@@ -1,9 +1,7 @@
 package com.cannontech.web.search.lucene;
 
-import java.io.Reader;
-
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
 
 public class YukonObjectAnalyzer extends Analyzer {
 
@@ -12,10 +10,10 @@ public class YukonObjectAnalyzer extends Analyzer {
     }
 
     @Override
-    public TokenStream tokenStream(String fieldName, Reader reader) {
-        TokenStream stream = new PrefixTokenizer(reader);
-        return stream;
+    protected TokenStreamComponents createComponents(String fieldName) {
+        Tokenizer stream = new PrefixTokenizer();
+        TokenStreamComponents tokenStream = new TokenStreamComponents(stream);
+        return tokenStream;
     }
-
 
 }

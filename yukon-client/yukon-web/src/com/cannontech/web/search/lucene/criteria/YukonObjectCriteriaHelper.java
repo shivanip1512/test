@@ -10,18 +10,19 @@ import org.apache.lucene.search.TermRangeQuery;
 
 public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
     
-    BooleanQuery query = new BooleanQuery(false);
+    BooleanQuery.Builder query = new BooleanQuery.Builder().setDisableCoord(false);
     
     public YukonObjectCriteriaHelper() {
         query.setMinimumNumberShouldMatch(1);
     }
     
     public Query getCriteria() {
-        return query;
+        return query.build();
     }
     
     protected void addCriteria(String field, String value, BooleanClause.Occur clause) {
         TermQuery termQuery = new TermQuery(new Term(field, value));
+   
         query.add(termQuery, clause);
     }
     
@@ -32,7 +33,7 @@ public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
     
     protected void addCriteria(String field, String lowerTerm, String upperTerm, boolean includeLower,
                                boolean includeUpper, BooleanClause.Occur clause) {
-        TermRangeQuery rangeQuery = new TermRangeQuery(field, lowerTerm, upperTerm, includeLower, includeUpper);
+        TermRangeQuery rangeQuery = TermRangeQuery.newStringRange(field, lowerTerm, upperTerm, includeLower, includeUpper);
         query.add(rangeQuery, clause);
     }
     

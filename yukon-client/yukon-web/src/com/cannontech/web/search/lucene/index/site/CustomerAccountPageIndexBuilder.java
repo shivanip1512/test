@@ -1,6 +1,7 @@
 package com.cannontech.web.search.lucene.index.site;
 
-import static com.cannontech.message.dispatch.message.DBChangeMsg.*;
+import static com.cannontech.message.dispatch.message.DBChangeMsg.CAT_CUSTOMER_ACCOUNT;
+import static com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB;
 
 import java.sql.SQLException;
 
@@ -9,7 +10,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;

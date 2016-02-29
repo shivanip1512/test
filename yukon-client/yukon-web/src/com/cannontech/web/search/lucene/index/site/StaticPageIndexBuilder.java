@@ -33,10 +33,10 @@ public class StaticPageIndexBuilder implements PageIndexBuilder {
     }
 
     public Query getUserContextQuery(YukonUserContext userContext) {
-        BooleanQuery userContextQuery = new BooleanQuery();
+        BooleanQuery.Builder userContextQuery = new BooleanQuery.Builder();
         userContextQuery.add(new TermQuery(new Term("theme", userContext.getThemeName())), Occur.MUST);
         userContextQuery.add(new TermQuery(new Term("locale", userContext.getLocale().toLanguageTag())), Occur.MUST);
-        return userContextQuery;
+        return userContextQuery.build();
     }
 
     public IndexUpdateInfo buildIndexUpdateInfo(YukonUserContext userContext) {

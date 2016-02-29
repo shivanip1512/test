@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -57,10 +58,10 @@ public class LoginGroupIndexManager extends SimpleIndexManager {
         String groupID = Integer.toString(groupIDInt);
         
         String all = groupName + " " + groupID;
-        doc.add(new Field("group", groupName, Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("all", all, Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("groupid", groupID, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("groupName", groupName, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new TextField("group", groupName, Field.Store.YES));
+        doc.add(new TextField("all", all, Field.Store.YES));
+        doc.add(new Field("groupid", groupID, TYPE_STORED));
+        doc.add(new Field("groupName", groupName, TYPE_NOT_STORED));
 
         return doc;
     }

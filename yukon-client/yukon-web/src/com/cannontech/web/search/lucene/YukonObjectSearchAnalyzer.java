@@ -1,12 +1,10 @@
 package com.cannontech.web.search.lucene;
 
-import java.io.Reader;
-
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharTokenizer;
-import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.LowerCaseFilter;
+import org.apache.lucene.analysis.util.CharTokenizer;
 
 /**
  * Compatible with PointDeviceAnalyzer, but doesn't emit prefix tokens for search
@@ -19,17 +17,18 @@ public class YukonObjectSearchAnalyzer extends Analyzer {
     }
 
     @Override
-    public TokenStream tokenStream(String fieldName, Reader reader) {
-        
-        TokenStream stream =
-            new CharTokenizer(Version.LUCENE_34, reader) {
-                @Override
-                protected boolean isTokenChar(int c) {
-                    return PrefixTokenizer.isTokenChar(c);
-                }
-            };
-            
-        stream = new LowerCaseFilter(Version.LUCENE_34, stream);
-        return stream;
+    protected TokenStreamComponents createComponents(String fieldName) {
+
+        Tokenizer tokenizer = new CharTokenizer() {
+            @Override
+            protected boolean isTokenChar(int c) {
+                return PrefixTokenizer.isTokenChar(c);
+            }
+        };
+
+        TokenStream stream = new LowerCaseFilter(tokenizer);
+        TokenStreamComponents tokenStream = new TokenStreamComponents(tokenizer, stream);
+        return tokenStream;
     }
+
 }

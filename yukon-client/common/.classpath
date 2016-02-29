@@ -330,11 +330,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/jsch-0.1.44.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/lucene-core-3.4.0.jar" sourcepath="/third-party/linked-sources/lucene-3.4.0-src.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/joda-time-2.3.jar" sourcepath="/third-party/linked-sources/joda-time-2.3-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

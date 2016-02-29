@@ -1,11 +1,10 @@
 package com.cannontech.web.search.lucene;
 
 import java.io.IOException;
-import java.io.Reader;
 
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 
 /**
  * Similar to a CharTokenizer, this will return every prefix of a term in addition to
@@ -27,14 +26,14 @@ public final class PrefixTokenizer extends Tokenizer {
     private final char[] ioBuffer = new char[IO_BUFFER_SIZE];
     private int length = 0;
     private int start = 0;
-
-    public PrefixTokenizer(Reader input) {
-        super(input);
-
+    final protected CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+    final protected OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+    
+    public PrefixTokenizer() {
         clearAttributes();
         addAttribute(CharTermAttribute.class);
     }
-
+    
     /**
      * Called on each token character to normalize it before it is added to the
      * token. The default implementation does nothing. Subclasses may use this
@@ -77,20 +76,27 @@ public final class PrefixTokenizer extends Tokenizer {
                 if (length == 0) {
                     start = offset - 1;
                 }
-
                 buffer[length++] = normalize(c); // buffer it, normalized
-
-                CharTermAttribute charTermAttribute = getAttribute(CharTermAttribute.class);
-                Token token = new Token(new String(buffer, 0, length), start, start + length);
-                charTermAttribute.append(token);
-
+                termAtt.copyBuffer(buffer, 0, length);
+                offsetAtt.setOffset(correctOffset(start), correctOffset(start+length));
                 return true;
             } else if (length > 0) {
                 length = 0;
             }
         }
-
-        // We have reached the end of the string.
         return false;
+    }
+    
+    @Override
+    public final void end() throws IOException {
+      super.end();
+      final int finalOffset = correctOffset(offset);
+      this.offsetAtt.setOffset(finalOffset, finalOffset);
+    }
+
+    @Override
+    public void reset() throws IOException {
+      super.reset();
+      offset = bufferIndex = dataLen = length= 0;
     }
 }

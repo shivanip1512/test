@@ -12,9 +12,9 @@ import com.cannontech.core.dao.NotFoundException;
 
 public class LuceneQueryHelper {
 
-    public static void buildQueryByFilterType(BooleanQuery query, FilterType filterType) {
+    public static void buildQueryByFilterType(BooleanQuery.Builder query, FilterType filterType) {
         
-        BooleanQuery pointTypeQuery = new BooleanQuery();
+        BooleanQuery.Builder pointTypeQuery = new BooleanQuery.Builder();
         
         switch (filterType) {
             case ANALOGPOINT:
@@ -29,18 +29,18 @@ public class LuceneQueryHelper {
                 throw new NotFoundException("Could not build Query for unknown filtertype: " + filterType.name());
         }
     
-        query.add(pointTypeQuery, BooleanClause.Occur.MUST);
+        query.add(pointTypeQuery.build(), BooleanClause.Occur.MUST);
     }
     
-    public static void buildQueryByEnergyCompanyIds(BooleanQuery query, Set<Integer> energyCompanyIds) {
-        BooleanQuery energyCompanyIdQuery = new BooleanQuery();
+    public static void buildQueryByEnergyCompanyIds(BooleanQuery.Builder query, Set<Integer> energyCompanyIds) {
+        BooleanQuery.Builder energyCompanyIdQuery = new BooleanQuery.Builder();
         
         for (Integer energyCompanyId : energyCompanyIds) {
             energyCompanyIdQuery.add(buildQuery("energyCompanyId", Integer.toString(energyCompanyId)), 
                     BooleanClause.Occur.SHOULD);
         }
         
-        query.add(energyCompanyIdQuery, BooleanClause.Occur.MUST);
+        query.add(energyCompanyIdQuery.build(), BooleanClause.Occur.MUST);
     }
     
     private static TermQuery buildQuery(String field, String value) {

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.pao.PaoCategory;
@@ -78,19 +79,19 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         String deviceid = Integer.toString(rs.getInt("paobjectid"));
         String stateGroupID = Integer.toString(stateGrpID);
         String all = pointName + " " + paoName + " " + pointid + " " + deviceid;
-        doc.add(new Field("point", pointName, Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("device", paoName, Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("all", all, Field.Store.NO, Field.Index.ANALYZED));
+        doc.add(new TextField("point", pointName, Field.Store.YES));
+        doc.add(new TextField("device", paoName, Field.Store.YES));
+        doc.add(new TextField("all", all, Field.Store.NO));
 
-        doc.add(new Field("uomid", uomid, Field.Store.NO, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("pointid", pointid, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("deviceid", deviceid, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("uomid", uomid, TYPE_NOT_STORED));
+        doc.add(new Field("pointid", pointid, TYPE_STORED));
+        doc.add(new Field("deviceid", deviceid, TYPE_STORED));
 
-        doc.add(new Field("pointtype", pointType, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("stategroupid", stateGroupID, Field.Store.NO, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("paotype", paoType, Field.Store.NO, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("pointName", pointName, Field.Store.NO, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("pointoffset", Integer.toString(pointOffset), Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("pointtype", pointType, TYPE_STORED));
+        doc.add(new Field("stategroupid", stateGroupID, TYPE_NOT_STORED));
+        doc.add(new Field("paotype", paoType, TYPE_NOT_STORED));
+        doc.add(new Field("pointName", pointName, TYPE_NOT_STORED));
+        doc.add(new Field("pointoffset", Integer.toString(pointOffset), TYPE_NOT_STORED));
 
         return doc;
     }

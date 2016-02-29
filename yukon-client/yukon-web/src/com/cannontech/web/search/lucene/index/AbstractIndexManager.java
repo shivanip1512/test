@@ -21,7 +21,11 @@ import javax.annotation.PreDestroy;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
@@ -31,7 +35,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
-import org.apache.lucene.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -75,6 +78,18 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
     private AtomicInteger updatesCommittedCount = new AtomicInteger(0);
     private AtomicInteger updateErrorCount = new AtomicInteger(0);
 
+    
+    public static final FieldType TYPE_NOT_STORED = new FieldType(StringField.TYPE_NOT_STORED);
+
+    /** Indexed, tokenized, stored. */
+    public static final FieldType TYPE_STORED = new FieldType(StringField.TYPE_STORED);
+
+    static {
+
+        TYPE_NOT_STORED.setOmitNorms(false);
+        TYPE_STORED.setOmitNorms(false);
+    };
+
     private boolean isBuilding;
     private boolean buildIndex;
     private LinkedBlockingQueue<IndexUpdateInfo> updateQueue;
@@ -92,7 +107,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
         // stable of the implementations.  Once they fix some of the other options we should look at switching.
         File indexFileLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + getIndexName() + "/index");
         try {
-            indexLocation = new SimpleFSDirectory(indexFileLocation);
+            indexLocation = new SimpleFSDirectory(indexFileLocation.toPath());
             // Read in the information from the version file (if it exists)
             versionFile = new File(indexFileLocation, "version.txt");
 
@@ -115,24 +130,11 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             log.error("Exception reading " + getIndexName() + " lucene index directory", e);
         }
 
-        boolean indexLocked = false;
-        try {
-            if(IndexWriter.isLocked(indexLocation)){
-                IndexWriter.unlock(indexLocation);
-                indexLocked = true;
-            }
-        } catch (IOException e) {
-            // ignore - must be no index
-        }
-
-        // If index is locked, must have shutdown improperly last time - rebuild
-        final boolean forceRebuild = indexLocked;
-
         // Start the index manager thread
         managerThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                processBuild(forceRebuild);
+                processBuild(false);
                 processUpdates();
             }
         }, getIndexName() + "IndexManager");
@@ -242,7 +244,8 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             }
 
             // Make sure we don't search while someone is updating the index
-            try (IndexSearcher indexSearcher = new IndexSearcher(indexLocation)) {
+            try (IndexReader indexReader = DirectoryReader.open(indexLocation)) {
+                IndexSearcher indexSearcher = new IndexSearcher(indexReader);
                 TopDocs topDocs = indexSearcher.search(query, maxResults);
                 return handler.processHits(topDocs, indexSearcher);
             }
@@ -361,10 +364,9 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
      */
     private void processBuild(boolean forceRebuild) {
         if (!forceRebuild) {
-            boolean indexExists = true;
+            boolean indexExists;
             try {
-                IndexSearcher indexSearcher = new IndexSearcher(indexLocation);
-                indexSearcher.close();
+                indexExists = DirectoryReader.indexExists(indexLocation);
             } catch (IOException e) {
                 indexExists = false;
             }
@@ -392,7 +394,6 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             recordCount = calculateDocumentCount();
 
             buildDocuments(indexWriter, count);
-            indexWriter.optimize();
 
             // Reset the current document count and clear any exceptions
             count.set(0);
@@ -490,7 +491,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
      * Can be used by base classes to process a set of updates immediately.  This is for indexing site map
      * pages just before doing a search.  There are so few of them, we can afford to do this.
      */
-    protected void indexImmediately(IndexUpdateInfo indexUpdateInfo) {
+    protected synchronized void indexImmediately(IndexUpdateInfo indexUpdateInfo) {
         try (IndexWriter indexWriter = new IndexWriter(indexLocation, getIndexWriterConfig())) {
             processSingleInfoWithWriter(indexWriter, indexUpdateInfo);
         } catch (IOException e) {
@@ -499,7 +500,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
     }
 
     protected IndexWriterConfig getIndexWriterConfig() {
-        IndexWriterConfig writerConfig = new IndexWriterConfig(Version.LUCENE_34, getAnalyzer());
+        IndexWriterConfig writerConfig = new IndexWriterConfig(getAnalyzer());
         writerConfig.setMaxBufferedDocs(maxBufferedDocs);
         return writerConfig;
     }

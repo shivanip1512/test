@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -55,7 +56,7 @@ public class UserIndexManager extends SimpleIndexManager {
     protected Document createDocument(YukonResultSet rs) throws SQLException {
 
         Document doc = new Document();
-
+        
         String userName = rs.getString("username");
         String status = rs.getString("status");
         int userIDInt = rs.getInt("userid");
@@ -63,12 +64,12 @@ public class UserIndexManager extends SimpleIndexManager {
         //will not be setting password here; no need for it
         
         String all = userName + " " + userID;
-        doc.add(new Field("user", userName, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new TextField("user", userName, Field.Store.YES));
         /*Don't store this; we don't want to display based off of this one*/
-        doc.add(new Field("all", all, Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("userid", userID, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("status", status, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("userName", userName, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new TextField("all", all, Field.Store.YES));
+        doc.add(new Field("userid", userID, TYPE_STORED));
+        doc.add(new Field("status", status, TYPE_STORED));
+        doc.add(new Field("userName", userName, TYPE_NOT_STORED));
 
         return doc;
     }

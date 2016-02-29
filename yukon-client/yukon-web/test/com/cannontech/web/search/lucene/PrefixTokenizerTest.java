@@ -9,9 +9,12 @@ import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 public class PrefixTokenizerTest extends TestCase {
+    private YukonObjectAnalyzer analyzer;
+
     /*
      * Test method for 'com.cannontech.common.search.PrefixTokenizer.next()'
      */
@@ -61,13 +64,15 @@ public class PrefixTokenizerTest extends TestCase {
 
     private void testNextHelper(String testInput, List<String> expectedList) throws IOException {
         List<String> tokeTextList = new ArrayList<String>();
-        try (PrefixTokenizer tokenizer = new PrefixTokenizer(new StringReader(testInput))) {
-            while (tokenizer.incrementToken()) {
-                CharTermAttribute termAttribute = tokenizer.getAttribute(CharTermAttribute.class);
-                String tokenText = termAttribute.toString();
-                tokeTextList.add(tokenText);
-            }
+        analyzer = new YukonObjectAnalyzer();
+        TokenStream stream = analyzer.tokenStream(null, new StringReader(testInput));
+        stream.reset();
+        while (stream.incrementToken()) {
+            CharTermAttribute termAttribute = stream.addAttribute(CharTermAttribute.class);
+            tokeTextList.add(termAttribute.toString());
         }
+        stream.end();
+        stream.close();
 
         assertEquals("Lists don't match", expectedList, tokeTextList);
     }

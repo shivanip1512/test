@@ -1,7 +1,7 @@
 package com.cannontech.web.search.lucene.index.site;
 
-import static com.cannontech.common.constants.YukonListEntryTypes.*;
-import static com.cannontech.message.dispatch.message.DBChangeMsg.*;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER;
+import static com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_INVENTORY_DB;
 
 import java.sql.SQLException;
 
@@ -13,7 +13,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
@@ -152,29 +151,29 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
 
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
-        BooleanQuery hardwareQuery = null;
+        BooleanQuery.Builder hardwareQuery = null;
         if (!rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user)) {
-            hardwareQuery = new BooleanQuery();
+            hardwareQuery = new BooleanQuery.Builder();
             hardwareQuery.add(new TermQuery(new Term("module", "operator")), Occur.MUST);
             hardwareQuery.add(new TermQuery(new Term("pageName", "hardware.VIEW")), Occur.MUST);
         }
 
-        BooleanQuery inventoryQuery = null;
+        BooleanQuery.Builder inventoryQuery = null;
         if (!rolePropertyDao.checkRole(YukonRole.INVENTORY, user)) {
-            inventoryQuery = new BooleanQuery();
+            inventoryQuery = new BooleanQuery.Builder();
             inventoryQuery.add(new TermQuery(new Term("module", "operator")), Occur.MUST);
             inventoryQuery.add(new TermQuery(new Term("pageName", "inventory.VIEW")), Occur.MUST);
         }
 
         if (hardwareQuery != null && inventoryQuery != null) {
-            BooleanQuery limitingQuery = new BooleanQuery();
-            limitingQuery.add(hardwareQuery, Occur.SHOULD);
-            limitingQuery.add(inventoryQuery, Occur.SHOULD);
-            return limitingQuery;
+            BooleanQuery.Builder limitingQuery = new BooleanQuery.Builder();
+            limitingQuery.add(hardwareQuery.build(), Occur.SHOULD);
+            limitingQuery.add(inventoryQuery.build(), Occur.SHOULD);
+            return limitingQuery.build();
         } else if (hardwareQuery != null) {
-            return hardwareQuery;
+            return hardwareQuery.build();
         } else if (inventoryQuery != null) {
-            return inventoryQuery;
+            return inventoryQuery.build();
         }
 
         return null;

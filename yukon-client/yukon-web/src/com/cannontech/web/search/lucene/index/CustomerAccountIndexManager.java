@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -72,10 +73,10 @@ public class CustomerAccountIndexManager extends SimpleIndexManager {
         int energyCompanyIdInt = rs.getInt("EnergyCompanyId");
         String energyCompanyId = Integer.toString(energyCompanyIdInt);
         
-        doc.add(new Field("all", accountNumber, Field.Store.NO, Field.Index.ANALYZED));
-        doc.add(new Field("accountNumber", accountNumber, Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("accountId", accountId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("energyCompanyId", energyCompanyId, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new TextField("all", accountNumber, Field.Store.NO));
+        doc.add(new TextField("accountNumber", accountNumber, Field.Store.YES));
+        doc.add(new Field("accountId", accountId, TYPE_STORED));
+        doc.add(new Field("energyCompanyId", energyCompanyId, TYPE_NOT_STORED));
 
         return doc;
     }

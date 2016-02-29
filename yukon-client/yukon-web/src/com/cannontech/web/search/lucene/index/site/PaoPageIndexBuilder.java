@@ -135,12 +135,12 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
         }
 
         // Since this is used with "MUST_NOT", we OR them all together.
-        BooleanQuery retVal = new BooleanQuery();
+        BooleanQuery.Builder retVal = new BooleanQuery.Builder();
         for (Query limitingQuery : limitingQueries) {
             retVal.add(limitingQuery, Occur.SHOULD);
         }
 
-        return retVal;
+        return retVal.build();
     }
 
     @Override

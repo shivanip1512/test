@@ -11,6 +11,9 @@ import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 
 import com.cannontech.web.search.lucene.index.PageType;
 import com.google.common.base.Joiner;
@@ -125,42 +128,47 @@ public final class DocumentBuilder {
     public Document build() {
         
         Document document = new Document();
+        FieldType fieldTypeStore = new FieldType(StringField.TYPE_STORED);
+        fieldTypeStore.setOmitNorms(false);
+        
+        FieldType fieldTypeNotStore = new FieldType(StringField.TYPE_NOT_STORED);
+        fieldTypeNotStore.setOmitNorms(false);
         
         // Search Fields
-        document.add(new Field("pageKey", pageKey, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        document.add(new Field("pageType", pageType.name(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+        document.add(new Field("pageKey", pageKey, fieldTypeStore));
+        document.add(new Field("pageType", pageType.name(), fieldTypeStore));
         String ecIdStr = ecId == null ? "none" : ecId.toString();
-        document.add(new Field("energyCompanyId", ecIdStr, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        document.add(new Field("energyCompanyId", ecIdStr, fieldTypeStore));
         
         // "primarySearch" in case we want to add another, lower scored search field later.
         String primarySearch = searchStringJoiner.join(primarySearchValues);
-        document.add(new Field("primarySearch", primarySearch, Field.Store.NO, Field.Index.ANALYZED));
+        document.add(new TextField("primarySearch", primarySearch, Field.Store.NO));
         
         // Result Fields
         if (pageType == PageType.USER_PAGE || pageType == PageType.LEGACY) {
-            document.add(new Field("module", module, Field.Store.YES, Field.Index.NOT_ANALYZED));
-            document.add(new Field("pageName", pageName, Field.Store.YES, Field.Index.NOT_ANALYZED));
-            document.add(new Field("path", path, Field.Store.YES, Field.Index.NOT_ANALYZED));
+            document.add(new Field("module", module, fieldTypeStore));
+            document.add(new Field("pageName", pageName, fieldTypeStore));
+            document.add(new Field("path", path, fieldTypeStore));
         }
         
         for (int index = 0; index < pageArgs.length; index++) {
-            document.add(new Field("pageArg" + index, pageArgs[index], Field.Store.YES, Field.Index.ANALYZED));
+            document.add(new TextField("pageArg" + index, pageArgs[index], Field.Store.YES));
         }
         
         if (summaryArgs != null) {
             for (int index = 0; index < summaryArgs.length; index++) {
                 String summaryArg = summaryArgs[index] == null ? "" : summaryArgs[index];
-                document.add(new Field("summaryArg" + index, summaryArg, Field.Store.YES, Field.Index.ANALYZED));
+                document.add(new TextField("summaryArg" + index, summaryArg, Field.Store.YES));
             }
         }
         
         if (theme != null && locale != null) {
-            document.add(new Field("theme", theme, Field.Store.NO, Field.Index.NOT_ANALYZED));
-            document.add(new Field("locale", locale.toLanguageTag(), Field.Store.NO, Field.Index.NOT_ANALYZED));
+            document.add(new Field("theme", theme, fieldTypeNotStore));
+            document.add(new Field("locale", locale.toLanguageTag(), fieldTypeNotStore));
         }
         
         for (Map.Entry<String, String> entry : dataFields.entrySet()) {
-            document.add(new Field(entry.getKey(), entry.getValue(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            document.add(new Field(entry.getKey(), entry.getValue(), fieldTypeStore));
         }
         
         return document;

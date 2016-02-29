@@ -57,7 +57,7 @@ public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccoun
         searchableEnergyCompanyIds.add(yukonEnergyCompany.getEnergyCompanyId());
 
         // Build up lucene query
-        final BooleanQuery query = new BooleanQuery(false);
+        final BooleanQuery.Builder query = new BooleanQuery.Builder().setDisableCoord(false);
         if (baseCriteria != null) {
             query.add(baseCriteria.getCriteria(), Occur.MUST);
         }
@@ -67,7 +67,7 @@ public class CustomerAccountPicker extends LucenePicker<UltraLightCustomerAccoun
         return new YukonObjectCriteria() {
             @Override
             public Query getCriteria() {
-                return query;
+                return query.build();
             }
         };
     }
