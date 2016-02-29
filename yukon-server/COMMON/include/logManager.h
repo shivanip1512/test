@@ -79,7 +79,7 @@ public:
     LoggerPtr getLogger () const;
     LoggerPtr getLogger (const std::string &loggerName) const;
 
-    static bool inShutdown;
+    static std::atomic<bool> inShutdown;
 };
 
 }

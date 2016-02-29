@@ -35,7 +35,7 @@ AutoShutdownLoggers::~AutoShutdownLoggers()
     {
         log4cxx::LogManager::shutdown();
     }
-    catch( ... )
+    catch( log4cxx::helpers::ThreadException e )
     {
         // This page intentionally left blank.
     }
@@ -111,7 +111,7 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
 
 /// class LogManager ///
 
-bool LogManager::inShutdown = false;
+std::atomic<bool>  LogManager::inShutdown( false );
 
 LogManager::LogManager(const std::string &baseLoggerName)
     :   _baseLoggerName(baseLoggerName),
