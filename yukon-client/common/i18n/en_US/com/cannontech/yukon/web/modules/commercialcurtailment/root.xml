@@ -34,6 +34,13 @@
     <entry key="yukon.web.modules.dr.cc.user.event.detail.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.dr.cc.user.event.detail.pageHeading">{1} - {2} Event</entry>
     <entry key="yukon.web.modules.dr.cc.user.event.detail.crumbTitle">Event Details</entry>
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.buyThroughExpired">The Buy Through election period has expired.</entry>
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.revision">Revision {0}</entry>
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.currentPrice">Current Price ($/kW)</entry>
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.energyBuyThrough">Energy Buy Through (kW)</entry>
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.saveBuyThrough.label">Save Buy Through</entry>
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.saveBuyThrough.success">kW Buy Through has been saved.</entry>
+    <entry key="yukon.web.modules.dr.cc.user.event.detail.saveBuyThrough.failure">Unable to save prices.</entry>
        
     <!-- home.jsp -->
     <entry key="yukon.web.modules.dr.cc.home.pageTitle">Commercial Curtailment</entry>

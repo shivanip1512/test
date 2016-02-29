@@ -26,7 +26,7 @@ import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramType;
-import com.cannontech.cc.model.ProgramTypeEnum;
+import com.cannontech.cc.model.CurtailmentProgramType;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -120,9 +120,9 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public ProgramTypeEnum getProgramType(int programId) {
+    public CurtailmentProgramType getProgramType(int programId) {
         Integer programTypeId = programDao.getForId(programId).getProgramType().getId();
-        return ProgramTypeEnum.withId(programTypeId);
+        return CurtailmentProgramType.withId(programTypeId);
     }
     
     public ProgramTypeDao getProgramTypeDao() {

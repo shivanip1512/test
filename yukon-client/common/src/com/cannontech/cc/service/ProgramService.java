@@ -9,7 +9,7 @@ import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramType;
-import com.cannontech.cc.model.ProgramTypeEnum;
+import com.cannontech.cc.model.CurtailmentProgramType;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -23,7 +23,7 @@ public interface ProgramService {
 
     Program getProgramById(Integer programId);
 
-    ProgramTypeEnum getProgramType(int programId);
+    CurtailmentProgramType getProgramType(int programId);
 
     boolean isEventsExistForProgram(Program program);
 
