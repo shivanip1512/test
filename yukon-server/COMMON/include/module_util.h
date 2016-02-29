@@ -29,6 +29,16 @@ IM_EX_CTIBASE HANDLE createExclusiveEvent(bool manualReset,
 IM_EX_CTIBASE void reportSystemMetrics( const compileinfo_t &info );
 IM_EX_CTIBASE double getCPULoad();
 
+/* Called when we get an SEH exception.  Generates a minidump. */
+#define ETN_MINIDUMP_EXCEPTION_FILTER \
+static LONG WINAPI MinidumpExceptionFilter( LPEXCEPTION_POINTERS pExceptionPtrs ) \
+{ \
+    return Cti::MinidumpExceptionFilter( pExceptionPtrs, CompileInfo ); \
+}
+
+
+IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter( const LPEXCEPTION_POINTERS &pExceptionPtrs, const Cti::compileinfo_t &info );
+
 struct CallSite
 {
     const char *file;

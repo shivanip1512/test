@@ -2251,18 +2251,19 @@ void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
     }
 }
 
-LONG WINAPI CreateMiniDumpExceptionHandler(const Cti::compileinfo_t &info)
+LONG WINAPI CreateMiniDumpExceptionHandler( const Cti::compileinfo_t &info, const LPEXCEPTION_POINTERS &pExceptionPtrs )
 {
     std::ostringstream os;
     os << info.project << "-" << GetCurrentThreadId();
-    CreateMiniDump(os.str());
+    CreateMiniDump(os.str(), pExceptionPtrs);
 
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
-void CreateMiniDump( const std::string &dumpfilePrefix )
+void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTERS &pExceptionPtrs )
 {
     ostringstream os;
+    struct _MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
 
     time_t now    =  time(0);
     tm     now_tm = *localtime(&now);
@@ -2287,7 +2288,14 @@ void CreateMiniDump( const std::string &dumpfilePrefix )
         return;
     }
 
-    if( !MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), outfile, MiniDumpWithDataSegs, NULL, NULL, NULL) )
+    if( pExceptionPtrs )
+    {
+        dumpInfo.ThreadId = GetCurrentThreadId();
+        dumpInfo.ExceptionPointers = pExceptionPtrs;
+        dumpInfo.ClientPointers = true;
+    }
+
+    if( !MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), outfile, MiniDumpWithFullMemory, &dumpInfo, NULL, NULL ) )
     {
         ostringstream os;
 

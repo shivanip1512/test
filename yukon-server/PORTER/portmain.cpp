@@ -35,10 +35,7 @@ LPTSTR szDisplayName = "Yukon Port Control Service";
 LPTSTR szDesc = "Controls communications to field devices";
 
 /* Called when we get an SEH exception.  Generates a minidump. */
-static LONG WINAPI MinidumpExceptionFilter(PEXCEPTION_POINTERS pExceptionPtrs)
-{
-    return CreateMiniDumpExceptionHandler(CompileInfo);
-}
+ETN_MINIDUMP_EXCEPTION_FILTER;
 
 int main(int argc, char* argv[])
 {

@@ -96,8 +96,8 @@ struct CtiQueueAnalysis_t
 
 IM_EX_CTIBASE void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName);
 
-IM_EX_CTIBASE void CreateMiniDump(const std::string &dumpfilePrefix);
-IM_EX_CTIBASE LONG WINAPI CreateMiniDumpExceptionHandler(const Cti::compileinfo_t &info);
+IM_EX_CTIBASE void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTERS &pExceptionPtrs=0 );
+IM_EX_CTIBASE LONG WINAPI CreateMiniDumpExceptionHandler( const Cti::compileinfo_t &info, const LPEXCEPTION_POINTERS &pExceptionPtrs );
 
 IM_EX_CTIBASE void  incrementCount();
 IM_EX_CTIBASE void  decrementCount();

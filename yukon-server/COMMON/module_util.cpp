@@ -160,6 +160,14 @@ double getCPULoad()
     return cpuLoad/processorCount*100;  // Handle multiple cores & Dont forget this is in percent.
 }
 
+/* Called when we get an SEH exception.  Generates a minidump. */
+
+IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter( const LPEXCEPTION_POINTERS &pExceptionPtrs, const Cti::compileinfo_t &info )
+{
+    return CreateMiniDumpExceptionHandler( info, pExceptionPtrs );
+}
+
+
 //std::ostream &operator<<(std::ostream &o, const ::Cti::CallSite &cs)
 //{
 //    return o << "( called from " << cs.file << " : " << cs.line << " )";

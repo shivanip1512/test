@@ -22,10 +22,7 @@ Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 extern INT ScannerMainFunction(INT, CHAR**);
 
 /* Called when we get an SEH exception.  Generates a minidump. */
-static LONG WINAPI MinidumpExceptionFilter(PEXCEPTION_POINTERS pExceptionPtrs)
-{
-    return CreateMiniDumpExceptionHandler(CompileInfo);
-}
+ETN_MINIDUMP_EXCEPTION_FILTER;
 
 int main(int argc, char* argv[])
 {
