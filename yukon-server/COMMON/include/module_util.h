@@ -33,11 +33,11 @@ IM_EX_CTIBASE double getCPULoad();
 #define ETN_MINIDUMP_EXCEPTION_FILTER \
 static LONG WINAPI MinidumpExceptionFilter( LPEXCEPTION_POINTERS pExceptionPtrs ) \
 { \
-    return Cti::MinidumpExceptionFilter( pExceptionPtrs, CompileInfo ); \
+    return Cti::MinidumpExceptionFilter( CompileInfo, pExceptionPtrs ); \
 }
 
 
-IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter( const LPEXCEPTION_POINTERS &pExceptionPtrs, const Cti::compileinfo_t &info );
+IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter(const Cti::compileinfo_t &info, const LPEXCEPTION_POINTERS &pExceptionPtrs );
 
 struct CallSite
 {

@@ -111,7 +111,7 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
 
 /// class LogManager ///
 
-std::atomic<bool>  LogManager::inShutdown( false );
+std::atomic<bool>  LogManager::inShutdown { false };
 
 LogManager::LogManager(const std::string &baseLoggerName)
     :   _baseLoggerName(baseLoggerName),

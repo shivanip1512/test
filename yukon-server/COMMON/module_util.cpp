@@ -162,7 +162,7 @@ double getCPULoad()
 
 /* Called when we get an SEH exception.  Generates a minidump. */
 
-IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter( const LPEXCEPTION_POINTERS &pExceptionPtrs, const Cti::compileinfo_t &info )
+IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter( const Cti::compileinfo_t &info, const LPEXCEPTION_POINTERS &pExceptionPtrs )
 {
     return CreateMiniDumpExceptionHandler( info, pExceptionPtrs );
 }
