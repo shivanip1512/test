@@ -94,7 +94,7 @@ targetNamespace="http://yukon.cannontech.com/api">
                 <xsd:element name="after">
                     <xsd:complexType><xsd:complexContent>
                     <xsd:extension base="yukon:ValueProducer">
-                        <xsd:attribute name="date" type="xsd:dateTime"/> <!-- beginning of time if not specified -->
+                        <xsd:attribute name="date" type="xsd:dateTime"/> <!-- null (beginning of time) if not specified -->
                         <xsd:attribute name="index" type="xsd:positiveInteger" default="1"/>
                         <xsd:attribute name="inclusive" type="xsd:boolean" default="false"/>
                     </xsd:extension>
@@ -103,7 +103,7 @@ targetNamespace="http://yukon.cannontech.com/api">
                 <xsd:element name="allBefore">
                     <xsd:complexType><xsd:complexContent>
                     <xsd:extension base="yukon:ValueProducer">
-                        <xsd:attribute name="date" type="xsd:dateTime"/>
+                        <xsd:attribute name="date" type="xsd:dateTime"/> <!-- now if not specified -->
                         <xsd:attribute name="limit" type="yukon:UnboundedLimit" default="unbounded"/>
                         <xsd:attribute name="inclusive" type="xsd:boolean" default="true"/>
                         <xsd:attribute name="order" type="yukon:Order" default="descending"/>
@@ -113,7 +113,7 @@ targetNamespace="http://yukon.cannontech.com/api">
                 <xsd:element name="allAfter">
                     <xsd:complexType><xsd:complexContent>
                     <xsd:extension base="yukon:ValueProducer">
-                        <xsd:attribute name="date" type="xsd:dateTime"/>
+                        <xsd:attribute name="date" type="xsd:dateTime"/> <!-- null (beginning of time) if not specified -->
                         <xsd:attribute name="limit" type="yukon:UnboundedLimit" default="unbounded"/>
                         <xsd:attribute name="inclusive" type="xsd:boolean" default="false"/>
                         <xsd:attribute name="order" type="yukon:Order" default="ascending"/>
@@ -123,9 +123,9 @@ targetNamespace="http://yukon.cannontech.com/api">
                 <xsd:element name="allBetween">
                     <xsd:complexType><xsd:complexContent>
                     <xsd:extension base="yukon:ValueProducer">
-                        <xsd:attribute name="from" type="xsd:dateTime"/>
+                        <xsd:attribute name="from" type="xsd:dateTime"/> <!-- now if not specified -->
                         <xsd:attribute name="fromInclusive" type="xsd:boolean" default="false"/>
-                        <xsd:attribute name="to" type="xsd:dateTime"/>
+                        <xsd:attribute name="to" type="xsd:dateTime"/> <!-- null (end of time) if not specified -->
                         <xsd:attribute name="toInclusive" type="xsd:boolean" default="true"/>
                         <xsd:attribute name="order" type="yukon:Order" default="ascending"/>
                         <xsd:attribute name="limit" type="yukon:UnboundedLimit" default="unbounded"/>
