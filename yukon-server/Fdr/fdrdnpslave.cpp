@@ -400,8 +400,8 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
             {
                 const CtiFDRDestination &fdrdest = kv.first;
                 long fdrPointId = fdrdest.getParentPointId();
-                CtiFDRPointSPtr fdrPoint( new CtiFDRPoint());
-                if( !findPointIdInList( fdrPointId, getSendToList(), *fdrPoint ) )
+                CtiFDRPoint fdrPoint;
+                if( !findPointIdInList( fdrPointId, getSendToList(), fdrPoint ) )
                 {
                     continue;
                 }
@@ -412,25 +412,25 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
                 {
                 case StatusPointType:
                 {
-                    CTILOG_DEBUG( dout, logNow() << " sending StatusPoint for " << dnpId.toString() << ", Value=" << fdrPoint->getValue() * dnpId.Multiplier );
+                    CTILOG_DEBUG( dout, logNow() << " sending StatusPoint for " << dnpId.toString() << ", Value=" << fdrPoint.getValue() * dnpId.Multiplier );
                     auto s = std::make_unique<Protocols::DnpSlave::output_digital>();
-                    s->status = fdrPoint->getValue();
+                    s->status = fdrPoint.getValue();
                     point = std::move( s );
                     break;
                 }
                 case AnalogPointType:
                 {
-                    CTILOG_DEBUG( dout, logNow() << " sending AnalogPoint for " << dnpId.toString() << ", Value=" << fdrPoint->getValue() * dnpId.Multiplier );
+                    CTILOG_DEBUG( dout, logNow() << " sending AnalogPoint for " << dnpId.toString() << ", Value=" << fdrPoint.getValue() * dnpId.Multiplier );
                     auto a = std::make_unique<Protocols::DnpSlave::output_analog>();
-                    a->value = fdrPoint->getValue() * dnpId.Multiplier;
+                    a->value = fdrPoint.getValue() * dnpId.Multiplier;
                     point = std::move( a );
                     break;
                 }
                 case PulseAccumulatorPointType:
                 {
-                    CTILOG_DEBUG( dout, logNow() << " sending AccumulatorPoint for " << dnpId.toString() << ", Value=" << fdrPoint->getValue() * dnpId.Multiplier );
+                    CTILOG_DEBUG( dout, logNow() << " sending AccumulatorPoint for " << dnpId.toString() << ", Value=" << fdrPoint.getValue() * dnpId.Multiplier );
                     auto c = std::make_unique<Protocols::DnpSlave::output_counter>();
-                    c->value = fdrPoint->getValue() * dnpId.Multiplier;
+                    c->value = fdrPoint.getValue() * dnpId.Multiplier;
                     point = std::move( c );
                     break;
                 }
@@ -441,7 +441,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
                 }
                 }
 
-                point->online = YukonToForeignQuality( fdrPoint->getQuality(), fdrPoint->getLastTimeStamp(), Now );
+                point->online = YukonToForeignQuality( fdrPoint.getQuality(), fdrPoint.getLastTimeStamp(), Now );
                 point->offset = dnpId.Offset - 1;  //  convert to DNP's 0-based indexing
 
                 outputPoints.emplace_back( std::move( point ) );

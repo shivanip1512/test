@@ -77,7 +77,12 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
     for (; destIter != destEnd; ++destIter)
     {
         const CtiFDRDestination& dest = (*destIter).second;
-        CtiFDRPointSPtr& point = dest.findPointFromList( _parent->getSendToList() );
+        CtiFDRPointSPtr point = dest.findPointFromList( _parent->getSendToList() );
+        if( point == nullptr )
+        {
+            CTILOG_ERROR( dout, "Point was not found in send list: " << dest );
+            continue;
+        }
 
         if (!(*checkFunc)(point->getPointType()))
         {
@@ -158,7 +163,12 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
     for (; destIter != destEnd; ++destIter)
     {
         const CtiFDRDestination& dest = (*destIter).second;
-        CtiFDRPointSPtr& point = dest.findPointFromList( _parent->getSendToList() );
+        CtiFDRPointSPtr point = dest.findPointFromList( _parent->getSendToList() );
+        if( point == nullptr )
+        {
+            CTILOG_ERROR( dout, "Point was not found in destination list: " << dest );
+            continue;
+        }
 
         if (!checkStatusType(point->getPointType()))
         {

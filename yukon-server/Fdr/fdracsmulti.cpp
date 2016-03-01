@@ -291,7 +291,12 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                                            unsigned int& bufferSize)
 {
     CHAR* acs = NULL;
-    CtiFDRPointSPtr& point = destination.findPointFromList( getSendToList() );
+    CtiFDRPointSPtr point = destination.findPointFromList( getSendToList() );
+    if( point == nullptr )
+    {
+        CTILOG_ERROR( dout, "Point was not found in send list: " << destination );
+        return false;
+    }
 
    /* we allocate a acs message here and it will be deleted
     * inside of the write function on the connection
