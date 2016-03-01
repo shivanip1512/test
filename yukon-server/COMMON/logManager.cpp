@@ -38,6 +38,9 @@ AutoShutdownLoggers::~AutoShutdownLoggers()
     catch( log4cxx::helpers::ThreadException e )
     {
         // This page intentionally left blank.
+        //
+        // We can't log about this error, but it shouldn't cause an abort.  We want to continue 
+        // cleanly shutting down the remainder of the process, so swallow the exception.
     }
 }
 
