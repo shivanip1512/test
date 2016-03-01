@@ -11,8 +11,8 @@ public class YukonObjectAnalyzer extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(String fieldName) {
-        Tokenizer stream = new PrefixTokenizer();
-        TokenStreamComponents tokenStream = new TokenStreamComponents(stream);
+        Tokenizer tokenizer = new PrefixTokenizer();
+        TokenStreamComponents tokenStream = new TokenStreamComponents(tokenizer);
         return tokenStream;
     }
 
