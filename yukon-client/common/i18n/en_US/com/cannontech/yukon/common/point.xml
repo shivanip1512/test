@@ -232,7 +232,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.PASSWORD_TABLE_CRC_ERROR">Password Table Crc Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PHASE_ANGLE_DISPLACEMENT">Phase Angle Displacement</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PHASE_LOSS">Phase Loss</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC">Polarity and Cross-phase and Energy Flow Diagnostic</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC">Polarity Cross-phase and Energy Flow Diagnostic</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POTENTIAL_INDICATOR_WARNING">Potential Indicator Warning</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FAIL_DATA_SAVE_ERROR">Power Fail Data Save Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FAILURE">Power Failure</entry>
