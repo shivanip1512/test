@@ -58,7 +58,7 @@ const std::string& CapControlPao::getPaoCategory() const
     return _paoCategory;
 }
 
-void CapControlPao::setPaocategory(const std::string& paoCategory)
+void CapControlPao::setPaoCategory(const std::string& paoCategory)
 {
     _paoCategory = paoCategory;
 }
@@ -119,7 +119,7 @@ void CapControlPao::setDisableFlag(bool disableFlag, int priority)
             CtiPointDataMsg* pMsg = new CtiPointDataMsg(
                                 _disabledStatePointId, _disableFlag ? 1.0 : 0.0 ); // NormalQuality, StatusPointType
             pMsg->setMessagePriority(priority);
-            CtiCapController::getInstance()->getDispatchConnection()->WriteConnQue(pMsg, CALLSITE);
+            CtiCapController::getInstance()->sendMessageToDispatch(pMsg);
         }
     }
 }
@@ -159,8 +159,8 @@ void CapControlPao::setDisabledStatePointId( const long newId, bool sendDisableP
     _disabledStatePointId = newId;
     if ( sendDisablePointMessage )
     {
-        CtiCapController::getInstance()->getDispatchConnection()->WriteConnQue( 
-            new CtiPointDataMsg(_disabledStatePointId, _disableFlag ? 1.0 : 0.0), CALLSITE);
+        CtiCapController::getInstance()->sendMessageToDispatch( 
+            new CtiPointDataMsg(_disabledStatePointId, _disableFlag ? 1.0 : 0.0));
     }
 }
 

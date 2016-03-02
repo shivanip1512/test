@@ -110,7 +110,7 @@ struct gang_operated_voltage_regulator_fixture_core
     {
         regulator->setPaoId( 23456 );
         regulator->setPaoName( "Test Regulator #1" );
-        regulator->setPaocategory( "CAPCONTROL" );
+        regulator->setPaoCategory( "CAPCONTROL" );
         regulator->setPaoType( VoltageRegulator::LoadTapChanger );
 
         fixtureConfig->insertValue( "voltageChangePerTap", "0.75" );

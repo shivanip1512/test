@@ -524,6 +524,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="test_capcontroller.cpp">
     </ClCompile>
+    <ClCompile Include="test_ccAreas.cpp" />
     <ClCompile Include="test_ccexecutor.cpp">
     </ClCompile>
     <ClCompile Include="test_ccFeeder.cpp">

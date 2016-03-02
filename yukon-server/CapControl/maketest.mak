@@ -63,7 +63,8 @@ test_PhaseOperatedVoltageRegulator.obj \
 test_utils.obj \
 test_TwoWayCBCPoints.obj \
 test_BusOptimizedSort.obj \
-test_ccStatistics.obj
+test_ccStatistics.obj \
+test_ccAreas.obj
 
 
 CAPCTRLBASEOBJS= \

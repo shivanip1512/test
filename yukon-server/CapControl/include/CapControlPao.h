@@ -39,7 +39,7 @@ class CapControlPao
         void setPaoId(int paoId);
 
         const std::string& getPaoCategory() const;
-        void setPaocategory(const std::string& paoCategory);
+        void setPaoCategory(const std::string& paoCategory);
 
         const std::string& getPaoClass() const;
         void setPaoClass(const std::string& paoClass);
