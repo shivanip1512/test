@@ -38,7 +38,7 @@ import java.util.List;
 * @author Glen Smith
 *
 */
-public class CSVWriter {
+public class CSVWriter implements AutoCloseable {
    
    private Writer rawWriter;
 

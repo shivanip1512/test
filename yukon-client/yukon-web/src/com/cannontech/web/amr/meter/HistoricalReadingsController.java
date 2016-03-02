@@ -151,10 +151,10 @@ public class HistoricalReadingsController {
         fileName = ServletUtil.makeWindowsSafeFileName(fileName);
         response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
-        Writer writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
-        CSVWriter csvWriter = new CSVWriter(writer);
-        csvWriter.writeNext(headerRow);
-        try {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+                CSVWriter csvWriter = new CSVWriter(writer);) {
+            csvWriter.writeNext(headerRow);
+
             while (true) {
                 PointValueHolder pointValueHolder = queue.take();
 
@@ -168,7 +168,6 @@ public class HistoricalReadingsController {
 
                 String[] dataRows = new String[row.size()];
                 dataRows = (String[]) row.toArray(dataRows);
-                System.out.println("Writing");
                 csvWriter.writeNext(dataRows);
 
                 if (queue.size() == 0) {
@@ -177,13 +176,7 @@ public class HistoricalReadingsController {
             }
 
         } catch (InterruptedException e) {
-            log.debug("Error while downloading " + e);
-        } finally {
-            try {
-                csvWriter.close();
-            } catch (IOException e) {
-                log.debug("Error while closing writer " + e);
-            }
+            log.error("Error while downloading " + e);
         }
         return null;
     }
@@ -267,6 +260,9 @@ public class HistoricalReadingsController {
         return points;
     }
     
+    /**
+     * Create a thread to queue point data.
+     */
     private void queueLimitedPointData(String period, final YukonUserContext userContext,
             Order order, OrderBy orderBy, int pointId, BlockingQueue<PointValueHolder> queue) {
         ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -286,6 +282,9 @@ public class HistoricalReadingsController {
         executorService.submit(new DataQueuer(queue, pointId, dateRange, order));
     }
     
+    /**
+     * Thread to execute query for queuing point data.
+     */
     private class DataQueuer extends Thread {
         BlockingQueue<PointValueHolder> queue;
         int pointId;
