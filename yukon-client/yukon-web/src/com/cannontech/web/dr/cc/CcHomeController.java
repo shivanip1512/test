@@ -91,13 +91,11 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteComparators;
-import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -120,7 +118,6 @@ import com.cannontech.web.dr.cc.service.CiCustomerVerificationService;
 import com.cannontech.web.dr.cc.service.CiEventCreationService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
-import com.cannontech.web.tools.trends.TrendUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 //TODO JAVA 8 - Replace Filters and Functions with lambdas
@@ -132,6 +129,7 @@ public class CcHomeController {
     
     @Autowired private AccountingEventDao accountingEventDao;
     @Autowired private BaseEventDao baseEventDao;
+    @Autowired private CcTrendHelper trendHelper;
     @Autowired private CiEventCreationService ciEventCreationService;
     @Autowired private CiInitEventModelValidator eventModelValidator;
     @Autowired private CiCurtailmentService ciCurtailmentService;
@@ -146,7 +144,6 @@ public class CcHomeController {
     @Autowired private EconomicEventDao economicEventDao;
     @Autowired private EconomicEventParticipantDao economicEventParticipantDao;
     @Autowired private EconomicService economicService;
-    @Autowired private GraphDao graphDao;
     @Autowired private GroupBeanValidator groupBeanValidator;
     @Autowired private GroupCustomerNotifDao groupCustomerNotifDao;
     @Autowired private GroupDao groupDao;
@@ -208,21 +205,7 @@ public class CcHomeController {
         });
         model.addAttribute("programs", allPrograms);
         
-        //Set up trends
-        List<LiteGraphDefinition> trends = graphDao.getGraphDefinitions();
-        model.addAttribute("trends", trends);
-        
-        if (trendId != null) {
-            LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(trendId);
-            model.addAttribute("trendId", trendId);
-            model.addAttribute("trendName", trend.getName());
-            model.addAttribute("showTrends", true);
-        } else if (!trends.isEmpty()) {
-            model.addAttribute("trendId", trends.get(0).getGraphDefinitionID());
-            model.addAttribute("trendName", trends.get(0).getName());
-        }
-        
-        model.addAttribute("labels", TrendUtils.getLabels(userContext, messageSourceResolver));
+        trendHelper.setUpTrends(model, userContext, trendId, true);
         
         return "dr/cc/home.jsp";
     }

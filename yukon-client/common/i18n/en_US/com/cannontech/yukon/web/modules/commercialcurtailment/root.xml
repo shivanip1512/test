@@ -3,6 +3,7 @@
 <properties>
     
     <!-- Shared keys (user and operator pages) -->
+    <entry key="yukon.web.modules.dr.cc.trends">Trends</entry>
     <entry key="yukon.web.modules.dr.cc.programType">Program Type</entry>
     <entry key="yukon.web.modules.dr.cc.programName">Program Name</entry>
     <entry key="yukon.web.modules.dr.cc.programEvent">Event #</entry>
@@ -29,6 +30,7 @@
     <entry key="yukon.web.modules.dr.cc.user.overview.currentEvents.title">Current Events</entry>
     <entry key="yukon.web.modules.dr.cc.user.overview.pendingEvents.title">Pending Events</entry>
     <entry key="yukon.web.modules.dr.cc.user.overview.recentEvents.title">Recent Events</entry>
+    <entry key="yukon.web.modules.dr.cc.user.overview.events">Events</entry>
     
     <!-- detail.jsp (user event detail) -->
     <entry key="yukon.web.modules.dr.cc.user.event.detail.pageTitle">{0}</entry>
@@ -53,7 +55,6 @@
     <entry key="yukon.web.modules.dr.cc.home.setup">Setup</entry>
     <entry key="yukon.web.modules.dr.cc.home.groups">Groups</entry>
     <entry key="yukon.web.modules.dr.cc.home.customers">Customers</entry>
-    <entry key="yukon.web.modules.dr.cc.home.trends">Trends</entry>
     
     <!-- detail.jsp -->
     <entry key="yukon.web.modules.dr.cc.detail.pageTitle">{0}</entry>

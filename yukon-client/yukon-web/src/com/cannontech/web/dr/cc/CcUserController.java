@@ -25,6 +25,7 @@ import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.model.AccountingEvent;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CurtailmentEvent;
+import com.cannontech.cc.model.CurtailmentProgramType;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventParticipantSelection;
@@ -32,7 +33,6 @@ import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
 import com.cannontech.cc.model.Program;
-import com.cannontech.cc.model.CurtailmentProgramType;
 import com.cannontech.cc.service.CustomerEventService;
 import com.cannontech.cc.service.EconomicService;
 import com.cannontech.cc.service.EconomicStrategy;
@@ -50,6 +50,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 public class CcUserController {
     private static Logger log = YukonLogManager.getLogger(CcUserController.class);
     @Autowired private AccountingEventDao accountingEventDao;
+    @Autowired private CcTrendHelper trendHelper;
     @Autowired private CurtailmentEventDao curtailmentEventDao;
     @Autowired private CurtailmentEventNotifDao curtailmentEventNotifDao;
     @Autowired private CustomerEventService customerEventService;
@@ -59,14 +60,19 @@ public class CcUserController {
     @Autowired private StrategyFactory strategyFactory;
     
     @RequestMapping("overview")
-    public String overview(ModelMap model, LiteYukonUser user) {
+    public String overview(ModelMap model, YukonUserContext userContext, Integer trendId) {
         
+        LiteYukonUser user = userContext.getYukonUser();
+        
+        // Set up event overview
         List<BaseEvent> currentEvents = customerEventService.getCurrentEvents(user);
         model.addAttribute("currentEvents", currentEvents);
         List<BaseEvent> pendingEvents = customerEventService.getPendingEvents(user);
         model.addAttribute("pendingEvents", pendingEvents);
         List<BaseEvent> recentEvents = customerEventService.getRecentEvents(user);
         model.addAttribute("recentEvents", recentEvents);
+        
+        trendHelper.setUpTrends(model, userContext, trendId, false);
         
         return "dr/cc/user/overview.jsp";
     }
