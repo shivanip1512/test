@@ -25,20 +25,20 @@
         <div class="column one">
             <cti:tabs>
                 <cti:tab title="Info">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Name">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".name">
                             <form:hidden path="pAOStatistics"/>
                             <form:hidden path="id"/>
                             <tags:input path="name"/>
-                        </tags:nameValue>
-                        <tags:nameValue name="Status">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".status">
                             <tags:switchButton path="disabled" inverse="${true}"
                                 offNameKey=".disabled.label" onNameKey=".enabled.label" />
-                        </tags:nameValue>
-                        <tags:nameValue name="Map Location ID">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".mapLocationID">
                             <tags:input path="capControlFeeder.mapLocationID"/>
-                        </tags:nameValue>
-                        <tags:nameValue name="Parent">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".parent">
                             <c:if test="${empty parent }">
                                 <span class="empty-list">No Parent</span>
                             </c:if>
@@ -46,8 +46,8 @@
                                 <cti:url var="editParent" value="/capcontrol/buses/${parent.liteID}"/>
                                     <a href="${editParent}">${parent.paoName}</a>
                             </c:if>
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </cti:tab>
                 <%@ include file="strategyTab.jsp" %>
                 </cti:tabs>
@@ -56,17 +56,17 @@
             <div class="column two nogutter">
             <cti:tabs>
                 <cti:tab title="Control Points">
-                    <tags:nameValueContainer>
+                    <tags:nameValueContainer2>
 
-                        <tags:nameValue name="Use Per Phase Var Data">
+                        <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
                             <tags:switchButton path="capControlFeeder.usePhaseDataBoolean" toggleGroup="perPhase" toggleAction="hide"/>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                         <%-- Only when per phase --%>
-                        <tags:nameValue name="Use Totalized Values" data-toggle-group="perPhase">
+                        <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
                             <tags:switchButton path="capControlFeeder.controlFlagBoolean"/>
-                        </tags:nameValue>
+                        </tags:nameValue2>
                 
-                            <tags:nameValue name="Var Point / Phase A">
+                            <tags:nameValue2 nameKey=".points.varPhaseA">
                                 <form:hidden id="var-point-input" path="capControlFeeder.currentVarLoadPointID" />
                                 <tags:pickerDialog
                                     id="varPointPicker"
@@ -81,12 +81,12 @@
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                     </c:if>
                                 </cti:displayForPageEditModes>
-                            </tags:nameValue>
+                            </tags:nameValue2>
                             
                         <%-- Var point when not per phase --%>
                         <%-- Phase A when per phase --%>
                             <%-- Only when per phase --%>
-                            <tags:nameValue name="Phase B" data-toggle-group="perPhase">
+                            <tags:nameValue2 nameKey=".points.phaseB" data-toggle-group="perPhase">
                                 <form:hidden id="phase-b-point-input" path="capControlFeeder.phaseB"/>
                                 <tags:pickerDialog
                                     id="phaseBPointPicker"
@@ -101,9 +101,9 @@
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                     </c:if>
                                 </cti:displayForPageEditModes>
-                            </tags:nameValue>
+                            </tags:nameValue2>
                             <%-- Only when per phase --%>
-                            <tags:nameValue name="Phase C" data-toggle-group="perPhase">
+                            <tags:nameValue2 nameKey=".points.phaseC" data-toggle-group="perPhase">
                                 <form:hidden id="phase-c-point-input" path="capControlFeeder.phaseC"/>
                                 <tags:pickerDialog
                                     id="phaseCPointPicker"
@@ -118,9 +118,9 @@
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                     </c:if>
                                 </cti:displayForPageEditModes>
-                            </tags:nameValue>
+                            </tags:nameValue2>
 
-                        <tags:nameValue name="Watt Point">
+                        <tags:nameValue2 nameKey=".points.watt">
                             <form:hidden id="watt-point-input" path="capControlFeeder.currentWattLoadPointID"/>
                             <tags:pickerDialog
                                 id="wattPointPicker"
@@ -135,9 +135,9 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
+                        </tags:nameValue2>
 
-                        <tags:nameValue name="Volt Point">
+                        <tags:nameValue2 nameKey=".points.volt">
                             <form:hidden id="volt-point-input" path="capControlFeeder.currentVoltLoadPointID"/>
                             <tags:pickerDialog
                                 id="voltPointPicker"
@@ -152,8 +152,8 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </cti:tab>
                     <cti:tab title="Attached Points">
                         <div class="scroll-md">

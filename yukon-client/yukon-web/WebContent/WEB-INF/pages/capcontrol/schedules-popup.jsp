@@ -53,9 +53,9 @@ $('.js-remove-schedule').click(function(event) {
     <thead>
         <tr>
             <th></th>
-            <th>Schedule</th>
-            <th>Command</th>
-            <th style="width:15%">OV/UV</th>
+            <th><i:inline key=".schedules.schedule"/></th>
+            <th><i:inline key=".schedules.command"/></th>
+            <th style="width:15%"><i:inline key=".schedules.ovuv"/></th>
         </tr>
     </thead>
     <tfoot></tfoot>
@@ -77,7 +77,7 @@ $('.js-remove-schedule').click(function(event) {
                 </td>
                 <td>
                     <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value">
-                        <option value="">Please select</option>
+                        <option value=""><i:inline key=".schedules.pleaseSelect"/></option>
                         <c:forEach var="commandOption" items="${scheduleCommands}">
                             <option value="${commandOption.commandName}"
                                 <c:if test="${schedule.command == commandOption.commandName}"> selected="selected" </c:if>>
@@ -98,7 +98,7 @@ $('.js-remove-schedule').click(function(event) {
             </td>
             <td>
                 <select name="schedules[${idx}].scheduleID">
-                    <option value="-1">Please select</option>
+                    <option value="-1"><i:inline key=".schedules.pleaseSelect"/></option>
                     <c:forEach var="scheduleOption" items="${allSchedules}">
                         <option value="${scheduleOption.id}">
                             ${fn:escapeXml(scheduleOption.name)}</option>
@@ -107,7 +107,7 @@ $('.js-remove-schedule').click(function(event) {
             </td>
             <td>
                 <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value">
-                    <option value="-1">Please select</option>
+                    <option value="-1"><i:inline key=".schedules.pleaseSelect"/></option>
                      <c:forEach var="commandOption" items="${scheduleCommands}">
                         <option value="${commandOption.commandName}">
                             ${fn:escapeXml(commandOption.commandName)}</option>

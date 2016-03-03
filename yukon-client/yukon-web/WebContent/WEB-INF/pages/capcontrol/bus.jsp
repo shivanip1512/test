@@ -26,24 +26,24 @@
         <div class="column one">
             <cti:tabs>
                 <cti:tab title="Info">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Name">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".name">
                             <tags:switchButton path="capControlSubstationBus.multiMonitorControlBoolean" classes="dn"/>
                             <form:hidden path="pAOStatistics"/>
                             <form:hidden path="id"/>
                             <tags:input path="name"/>
-                        </tags:nameValue>
-                        <tags:nameValue name="Status">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".status">
                             <tags:switchButton path="disabled" inverse="${true}"
                                 offNameKey=".disabled.label" onNameKey=".enabled.label" />
-                        </tags:nameValue>
-                        <tags:nameValue name="Geographical Name">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".geographicalName">
                             <tags:input path="geoAreaName"/>
-                        </tags:nameValue>
-                        <tags:nameValue name="Map Location ID">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".mapLocationID">
                             <tags:input path="capControlSubstationBus.mapLocationID"/>
-                        </tags:nameValue>
-                        <tags:nameValue name="Parent">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".parent">
                             <c:if test="${empty parentName}">
                                 <span class="empty-list"><i:inline key="yukon.common.none"/></span>
                             </c:if>
@@ -51,17 +51,17 @@
                                 <cti:url var="parentLink" value="${parentLink}" />
                                 <a href="${parentLink}">${parentName}</a>
                             </c:if>
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </cti:tab>
                 <%@ include file="strategyTab.jsp" %>
                 <cti:tab title="Schedules">
                     <table class="full-width stacked">
                         <thead>
                             <tr>
-                                <th>Schedule</th>
-                                <th>Command</th>
-                                <th>OV/UV</th>
+                                <th><i:inline key=".schedules.schedule"/></th>
+                                <th><i:inline key=".schedules.command"/></th>
+                                <th><i:inline key=".schedules.ovuv"/></th>
                             </tr>
                         </thead>
                         <tfoot></tfoot>
@@ -105,8 +105,8 @@
         <div class="column two nogutter">
             <cti:tabs>
                 <cti:tab title="Control Points">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Volt Reduction Control Point">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".points.voltReduction">
                             <form:hidden id="volt-reduction-bus-point-input" path="capControlSubstationBus.voltReductionPointId"/>
                             <tags:pickerDialog
                                 id="voltReductionPointPicker"
@@ -121,8 +121,8 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
-                        <tags:nameValue name="Substation Bus Disable Point">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".points.substationBusDisable">
                             <%-- Point Picker --%>
                             <form:hidden id="disable-bus-point-input" path="capControlSubstationBus.disableBusPointId"/>
                             <tags:pickerDialog
@@ -138,20 +138,19 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
+                        </tags:nameValue2>
 
-                        <tags:nameValue name="Use Per Phase Var Data">
+                        <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
                             <tags:switchButton path="capControlSubstationBus.usePhaseDataBoolean" 
                                 toggleGroup="perPhase" toggleAction="hide"/>
-                        </tags:nameValue>
-                        <tags:nameValue name="Use Totalized Values" data-toggle-group="perPhase">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
                             <tags:switchButton path="capControlSubstationBus.controlFlagBoolean"/>
-                        </tags:nameValue>
+                        </tags:nameValue2>
 
                         <%-- Var point when not per phase --%>
                         <%-- Phase A when not per phase --%>
-                        <%-- TODO Maybe invent a way to change this text? --%>
-                        <tags:nameValue name="Var Point / Phase A">
+                        <tags:nameValue2 nameKey=".points.varPhaseA">
                             <form:hidden id="var-point-input" path="capControlSubstationBus.currentVarLoadPointID"/>
                             <tags:pickerDialog
                                 id="varPointPicker"
@@ -166,8 +165,8 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
-                        <tags:nameValue name="Phase B" data-toggle-group="perPhase">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".points.phaseB" data-toggle-group="perPhase">
                             <form:hidden id="phase-b-point-input" path="capControlSubstationBus.phaseB"/>
                             <tags:pickerDialog
                                 id="phaseBPointPicker"
@@ -182,8 +181,8 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
-                        <tags:nameValue name="Phase C" data-toggle-group="perPhase">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".points.phaseC" data-toggle-group="perPhase">
                             <form:hidden id="phase-c-point-input" path="capControlSubstationBus.phaseC"/>
                             <tags:pickerDialog
                                 id="phaseCPointPicker"
@@ -198,9 +197,9 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
+                        </tags:nameValue2>
 
-                        <tags:nameValue name="Watt Point">
+                        <tags:nameValue2 nameKey=".points.watt">
                             <form:hidden id="watt-point-input" path="capControlSubstationBus.currentWattLoadPointID"/>
                             <tags:pickerDialog
                                 id="wattPointPicker"
@@ -215,9 +214,9 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
+                        </tags:nameValue2>
 
-                        <tags:nameValue name="Volt Point">
+                        <tags:nameValue2 nameKey=".points.volt">
                             <form:hidden id="volt-point-input" path="capControlSubstationBus.currentVoltLoadPointID"/>
                             <tags:pickerDialog
                                 id="voltPointPicker"
@@ -232,8 +231,8 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </cti:tab>
                 <cti:tab title="Attached Points">
                     <div class="scroll-md">
@@ -246,11 +245,11 @@
                     </cti:checkRolesAndProperties>
                 </cti:tab>
                 <cti:tab title="Dual Bus">
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Enable Dual Bus">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".bus.enableDualBus">
                             <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean" toggleGroup="dualBus" toggleAction="hide"/>
-                        </tags:nameValue>
-                        <tags:nameValue name="Alternate Bus" data-toggle-group="dualBus">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".bus.alternateBus" data-toggle-group="dualBus">
                             <form:hidden id="switch-alt-bus-input" path="capControlSubstationBus.altSubPAOId"/>
                             <tags:pickerDialog
                                 id="altBusPicker"
@@ -265,8 +264,8 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
-                        <tags:nameValue name="Switch Point">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".switchPoint">
                             <form:hidden id="switch-point-input" path="capControlSubstationBus.switchPointID"/>
                             <tags:pickerDialog
                                 id="switchPointPicker"
@@ -281,8 +280,8 @@
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                 </c:if>
                             </cti:displayForPageEditModes>
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
                 </cti:tab>
             </cti:tabs>
         </div>

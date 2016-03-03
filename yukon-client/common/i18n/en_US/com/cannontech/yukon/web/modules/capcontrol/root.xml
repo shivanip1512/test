@@ -69,8 +69,12 @@
     <entry key="yukon.web.modules.capcontrol.banks">Banks</entry>
     <entry key="yukon.web.modules.capcontrol.device">Device</entry>
     <entry key="yukon.web.modules.capcontrol.name">Name</entry>
+    <entry key="yukon.web.modules.capcontrol.parent">Parent</entry>
+    <entry key="yukon.web.modules.capcontrol.geographicalName">Geographical Name</entry>
+    <entry key="yukon.web.modules.capcontrol.mapLocationID">Map Location ID</entry>
     <entry key="yukon.web.modules.capcontrol.actions">Actions</entry>
     <entry key="yukon.web.modules.capcontrol.state">State</entry>
+    <entry key="yukon.web.modules.capcontrol.status">Status</entry>
     <entry key="yukon.web.modules.capcontrol.target">Target</entry>
     <entry key="yukon.web.modules.capcontrol.lastRunTime">Last Run Time</entry>
     <entry key="yukon.web.modules.capcontrol.nextRunTime">Next Run Time</entry>
@@ -89,6 +93,29 @@
     <entry key="yukon.web.modules.capcontrol.signalQuality">(*)</entry>
     <entry key="yukon.web.modules.capcontrol.alerts">Alerts:</entry>
     <entry key="yukon.web.modules.capcontrol.unknownState">Unknown ({0})</entry>
+    
+    <!-- Cap Control Schedule Popup -->
+    <entry key="yukon.web.modules.capcontrol.schedules.schedule">Schedule</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.command">Command</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.ovuv">OV/UV</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.pleaseSelect">Please select</entry>
+        
+    <!-- Cap Control Points -->
+    <entry key="yukon.web.modules.capcontrol.points.voltReduction">Volt Reduction Control Point</entry>
+    <entry key="yukon.web.modules.capcontrol.points.substationBusDisable">Substation Bus Disable Point</entry>
+    <entry key="yukon.web.modules.capcontrol.points.varPhaseA">Var Point/Phase A</entry>
+    <entry key="yukon.web.modules.capcontrol.points.phaseB">Phase B</entry>
+    <entry key="yukon.web.modules.capcontrol.points.phaseC">Phase C</entry>
+    <entry key="yukon.web.modules.capcontrol.points.watt">Watt Point</entry>
+    <entry key="yukon.web.modules.capcontrol.points.volt">Volt Point</entry>
+    <entry key="yukon.web.modules.capcontrol.points.usePerPhaseVarData">Use Per Phase Var Data</entry>
+    <entry key="yukon.web.modules.capcontrol.points.useTotalizedValues">Use Totalized Values</entry>
+    
+    <!-- Dual Bus -->
+    <entry key="yukon.web.modules.capcontrol.bus.enableDualBus">Enable Dual Bus</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.alternateBus">Alternate Bus</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.switchPoint">Switch Point</entry>
+    
     
     <!-- bankMove.jsp -->
     <entry key="yukon.web.modules.capcontrol.bankMove.currentLocation">Current Location</entry>
