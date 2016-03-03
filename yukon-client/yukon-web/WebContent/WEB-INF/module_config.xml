@@ -744,7 +744,7 @@
             <link>/capcontrol/buses/${busId}</link>
             <labelArgument>${busName}</labelArgument>
             <pages>
-              <page name="orphan.bus.EDIT" type="BASIC" hideFavorite="true">
+              <page name="bus.orphan.EDIT" type="BASIC" hideFavorite="true">
                 <labelArgument>${busName}</labelArgument>
               </page>
             </pages>
@@ -754,7 +754,7 @@
             <link>/capcontrol/feeders/${feederId}</link>
             <labelArgument>${feederName}</labelArgument>
             <pages>
-              <page name="orphan.feeder.EDIT" type="BASIC" hideFavorite="true">
+              <page name="feeder.orphan.EDIT" type="BASIC" hideFavorite="true">
                 <labelArgument>${feederName}</labelArgument>
               </page>
             </pages>
@@ -773,6 +773,9 @@
               </page>
             </pages>
           </page>
+          <page name="cbc.CREATE" type="BASIC"/>
+          <page name="feeder.CREATE" type="BASIC"/>
+          <page name="bus.CREATE" type="BASIC"/>
           <page name="recentEvents" type="DETAIL_CHILD"/>
         </pages>
       </page>

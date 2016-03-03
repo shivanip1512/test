@@ -423,6 +423,9 @@
     <entry key="yukon.web.modules.capcontrol.substation.filter.hoverText"></entry>
     <entry key="yukon.web.modules.capcontrol.substation.filter.label">Filter:</entry>
 
+    <entry key="yukon.web.modules.capcontrol.bus.CREATE.pageHeading">Create Bus</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.CREATE.crumbTitle">Create Bus</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.CREATE.pageTitle">Create Bus</entry>
     <entry key="yukon.web.modules.capcontrol.bus.VIEW.pageTitle">Bus: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.bus.VIEW.pageHeading">{0}</entry>
     <entry key="yukon.web.modules.capcontrol.bus.VIEW.crumbTitle">{0}</entry>
@@ -439,6 +442,9 @@
     <entry key="yukon.web.modules.capcontrol.bus.orphan.CREATE.pageHeading">Create Bus</entry>
     <entry key="yukon.web.modules.capcontrol.bus.orphan.CREATE.crumbTitle">Create</entry>
     
+    <entry key="yukon.web.modules.capcontrol.feeder.CREATE.pageHeading">Create Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.CREATE.crumbTitle">Create Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.CREATE.pageTitle">Create Feeder</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.VIEW.pageTitle">Feeder: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.VIEW.pageHeading">{0}</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.VIEW.crumbTitle">{0}</entry>
@@ -914,6 +920,9 @@
     <entry key="yukon.web.modules.capcontrol.regulator.setup.mapping.result.title">Attribute Mapping Results ({0})</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.setup.mapping.new.label">Build Attribute Mappings</entry>
     <!-- <entry key="yukon.web.modules.capcontrol.capControlCBC.capControlCBC.EDIT.pageTitle">CBC Editor: {0} Edit</entry> -->
+    <entry key="yukon.web.modules.capcontrol.cbc.CREATE.pageHeading">Create CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.CREATE.crumbTitle">Create CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.CREATE.pageTitle">Create CBC</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.EDIT.pageHeading">Edit {0}</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.EDIT.crumbTitle">Edit</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.EDIT.pageTitle">CBC: {0}</entry>
