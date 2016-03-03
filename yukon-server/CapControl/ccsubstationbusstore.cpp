@@ -3998,24 +3998,32 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
         CtiTime currentDateTime;
         {
-            static const string sqlNoID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                              "YP.description, YP.disableflag, CCA.voltreductionpointid "
-                                           "FROM yukonpaobject YP, capcontrolarea CCA "
-                                           "WHERE YP.paobjectid = CCA.areaid";
+            std::string sql = 
+                "SELECT "
+                    "Y.PAObjectID, "
+                    "Y.Category, "
+                    "Y.PAOClass, "
+                    "Y.PAOName, "
+                    "Y.Type, "
+                    "Y.Description, "
+                    "Y.DisableFlag, "
+                    "A.VoltReductionPointID, "
+                    "D.additionalflags, "
+                    "D.ControlValue "
+                "FROM "
+                    "YukonPAObject Y "
+                        "JOIN CAPCONTROLAREA A "
+                            "ON Y.PAObjectID = A.AreaID "
+                        "LEFT OUTER JOIN DYNAMICCCAREA D "
+                            "ON A.AreaID = D.AreaID";
+
+            if ( areaId > 0 )
+            {
+                sql += " WHERE Y.PAObjectID = " + std::to_string( areaId );
+            }
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if(areaId > 0)
-            {
-                static const string sqlID = string(sqlNoID + " AND YP.paobjectid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << areaId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
+            Cti::Database::DatabaseReader rdr(connection, sql);
 
             rdr.execute();
 
@@ -4169,44 +4177,6 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
              }
         }
         {
-            static const string sqlNoID =  "SELECT DCA.areaid, DCA.additionalflags, DCA.controlvalue "
-                                           "FROM capcontrolarea CCA, dynamicccarea DCA "
-                                           "WHERE CCA.areaid = DCA.areaid";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if(areaId > 0)
-            {
-                static const string sqlID = string(sqlNoID + " AND CCA.areaid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << areaId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentAreaId;
-
-                rdr["areaid"] >> currentAreaId;
-                if (CtiCCAreaPtr currentCCArea = findInMap(currentAreaId, paobject_area_map))
-                {
-                     currentCCArea->setDynamicData(rdr);
-                }
-
-            }
-        }
-        {
             static const string sqlNoID =  "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "
                                            "FROM capcontrolarea CCA, point PT "
                                            "WHERE CCA.areaid = PT.paobjectid";
@@ -4349,15 +4319,29 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
     {
         CtiTime currentDateTime;
         {
-            static const string sqlNoID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                              "YP.description, YP.disableflag, CSA.voltreductionpointid "
-                                           "FROM yukonpaobject YP, capcontrolspecialarea CSA "
-                                           "WHERE YP.paobjectid = CSA.areaid";
+
+            std::string sql = 
+                "SELECT "
+                    "Y.PAObjectID, "
+                    "Y.Category, "
+                    "Y.PAOClass, "
+                    "Y.PAOName, "
+                    "Y.Type, "
+                    "Y.Description, "
+                    "Y.DisableFlag, "
+                    "A.VoltReductionPointID, "
+                    "D.additionalflags, "
+                    "D.ControlValue "
+                "FROM "
+                    "YukonPAObject Y "
+                        "JOIN CAPCONTROLSPECIALAREA A "
+                            "ON Y.PAObjectID = A.AreaID "
+                        "LEFT OUTER JOIN DYNAMICCCSPECIALAREA D "
+                            "ON A.AreaID = D.AreaID";
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            Cti::Database::DatabaseReader rdr(connection, sql);
 
-            rdr.setCommandText(sqlNoID);
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -4475,34 +4459,6 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                      }
                  }
              }
-        }
-        {
-            static const string sqlNoID =  "SELECT DSA.areaid, DSA.additionalflags, DSA.controlvalue "
-                                           "FROM capcontrolspecialarea CSA, dynamicccspecialarea DSA "
-                                           "WHERE CSA.areaid = DSA.areaid";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            rdr.setCommandText(sqlNoID);
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentSpAreaId;
-
-                rdr["areaid"] >> currentSpAreaId;
-
-                if (CtiCCSpecialPtr currentCCSpArea = findInMap(currentSpAreaId, paobject_specialarea_map))
-                {
-                     currentCCSpArea->setDynamicData(rdr);
-                }
-            }
         }
         {
             static const string sqlNoID =  "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "

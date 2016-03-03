@@ -11,19 +11,11 @@ BOOST_AUTO_TEST_SUITE( test_Area )
 
 BOOST_AUTO_TEST_CASE( test_ccArea_construction )
 {
-/*
-    Documenting the CtiCCArea two stage initialization.
-        1. Static data from YukonPAObject & CAPCONTROLAREA is initialized.
-        2. Dynamic data from DYNAMICCCAREA is populated
- 
-        Bugs or general weirdness
-            none(?)
-*/
     boost::ptr_map< long, CtiCCArea >    areas;
 
-    {   // Stage 1: Core area object initialization
+    {   // Core area object initialization
 
-        using CCAreaRow     = Cti::Test::StringRow<8>;
+        using CCAreaRow     = Cti::Test::StringRow<10>;
         using CCAreaReader  = Cti::Test::TestReader<CCAreaRow>;
 
         CCAreaRow columnNames =
@@ -35,7 +27,9 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
             "Type",
             "Description",
             "DisableFlag",
-            "VoltReductionPointID"
+            "VoltReductionPointID",
+            "additionalflags",
+            "ControlValue"
         };
 
         std::vector<CCAreaRow> rowVec
@@ -48,7 +42,9 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
                 "CCAREA",
                 "Top Secret",
                 "N",
-                "551"
+                "551",
+                CCAreaReader::getNullString(),
+                CCAreaReader::getNullString()
             },
             {
                 "22",
@@ -58,7 +54,9 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
                 "CCAREA",
                 "(none)",
                 "Y",
-                "0"
+                "0",
+                CCAreaReader::getNullString(),
+                CCAreaReader::getNullString()
             },
             {
                 "42",
@@ -68,7 +66,9 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
                 "CCAREA",
                 "Something About You",
                 "N",
-                "0"
+                "0",
+                "YNYNNNNNNNNNNNNNNNNN",
+                "1"
             },
             {
                 "52",
@@ -78,7 +78,9 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
                 "CCAREA",
                 "",
                 "N",
-                "651"
+                "651",
+                "NYNYNNNNNNNNNNNNNNNN",
+                "1"
             }
         };
 
@@ -91,44 +93,6 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
             reader[ "PAObjectID" ] >> paoID;
 
             areas.insert( paoID, new CtiCCArea( reader, nullptr ) );
-        }
-    }
-
-    {   // Stage 2: Area dynamic data initialization
-
-        using CCAreaRow     = Cti::Test::StringRow<3>;
-        using CCAreaReader  = Cti::Test::TestReader<CCAreaRow>;
-
-        CCAreaRow columnNames =
-        {
-            "AreaID",
-            "additionalflags",
-            "ControlValue"
-        };
-
-        std::vector<CCAreaRow> rowVec
-        {
-            {
-                "42",
-                "YNYNNNNNNNNNNNNNNNNN",
-                "1"
-            },
-            {
-                "52",
-                "NYNYNNNNNNNNNNNNNNNN",
-                "1"
-            }
-        };
-
-        CCAreaReader reader( columnNames, rowVec );
-
-        while ( reader() )
-        {
-            long    areaID;
-
-            reader[ "AreaID" ] >> areaID;
-
-            areas[ areaID ].setDynamicData( reader );
         }
     }
 
@@ -154,20 +118,20 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
                                                      
     // CtiCCAreaBase                                 
     BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
-    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
-    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );  // no dynamic data -- default = false
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );           // no dynamic data -- default = false
     BOOST_CHECK_EQUAL(                       "", areas[  2 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].isSpecial() );
-    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );            // no dynamic data -- default = false
     BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
     BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
                                                          
     BOOST_CHECK_EQUAL(                        0, areas[  2 ].getSubstationIds().size() );
                                                          
     // CtiCCArea                                         
-    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getReEnableAreaFlag() );
-    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getChildVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getReEnableAreaFlag() );           // no dynamic data -- default = false
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getChildVoltReductionFlag() );     // no dynamic data -- default = false
                           
 // Second entry           
                           
@@ -228,20 +192,20 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
                           
     // CtiCCAreaBase                                     
     BOOST_CHECK_EQUAL(                        0, areas[ 42 ].getVoltReductionControlPointId() );
-    BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getVoltReductionControlValue() );
-    BOOST_CHECK_EQUAL(                     true, areas[ 42 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getVoltReductionControlValue() );  // dynamic data == 1 but since pointID == 0 -- false
+    BOOST_CHECK_EQUAL(                     true, areas[ 42 ].getOvUvDisabledFlag() );           // additionalflags[ 0 ] == 'y' -- true
     BOOST_CHECK_EQUAL(   "ynynnnnnnnnnnnnnnnnn", areas[ 42 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[ 42 ].isDirty() );
     BOOST_CHECK_EQUAL(                    false, areas[ 42 ].isSpecial() );
-    BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getAreaUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getAreaUpdatedFlag() );            // additionalflags[ 3 ] == 'n' -- false
     BOOST_CHECK_EQUAL(                       -1, areas[ 42 ].getPFactor() );
     BOOST_CHECK_EQUAL(                       -1, areas[ 42 ].getEstPFactor() );
                           
     BOOST_CHECK_EQUAL(                        0, areas[ 42 ].getSubstationIds().size() );
                           
     // CtiCCArea                                         
-    BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getReEnableAreaFlag() );
-    BOOST_CHECK_EQUAL(                     true, areas[ 42 ].getChildVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getReEnableAreaFlag() );           // additionalflags[ 1 ] == 'n' -- false
+    BOOST_CHECK_EQUAL(                     true, areas[ 42 ].getChildVoltReductionFlag() );     // additionalflags[ 2 ] == 'y' -- true
                           
 // Fourth entry           
                           
@@ -265,7 +229,7 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
                           
     // CtiCCAreaBase      
     BOOST_CHECK_EQUAL(                      651, areas[ 52 ].getVoltReductionControlPointId() );
-    BOOST_CHECK_EQUAL(                     true, areas[ 52 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                     true, areas[ 52 ].getVoltReductionControlValue() );  // dynamic data == 1 with pointID > 0 -- true
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].getOvUvDisabledFlag() );
     BOOST_CHECK_EQUAL(   "nynynnnnnnnnnnnnnnnn", areas[ 52 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].isDirty() );
@@ -284,19 +248,15 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
 BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
 {
 /*
-    Documenting the CtiCCSpecial two stage initialization.
-        1. Static data from YukonPAObject & CAPCONTROLSPECIALAREA is initialized.
-        2. Dynamic data from DYNAMICCCSPECIALAREA is populated
- 
-        Bugs or general weirdness
-            Objects are marked as 'dirty' on stage one completion -- shouldn't do that.
-                Objects with dynamic data have their dirty flag cleared after the call to setDynamicData()
+    Bugs or general weirdness
+        Objects are marked as 'dirty' on completion if they don't have dynamic data.
+        We aren't serializing the areaUpdated flag like we do for CtiCCArea
 */
     boost::ptr_map< long, CtiCCSpecial >    areas;
 
-    {   // Stage 1: Core area object initialization
+    {   // Core area object initialization
 
-        using CCAreaRow     = Cti::Test::StringRow<8>;
+        using CCAreaRow     = Cti::Test::StringRow<10>;
         using CCAreaReader  = Cti::Test::TestReader<CCAreaRow>;
 
         CCAreaRow columnNames =
@@ -308,7 +268,9 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
             "Type",
             "Description",
             "DisableFlag",
-            "VoltReductionPointID"
+            "VoltReductionPointID",
+            "additionalflags",
+            "ControlValue"
         };
 
         std::vector<CCAreaRow> rowVec
@@ -321,7 +283,9 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
                 "CCSPECIALAREA",
                 "Top Secret",
                 "N",
-                "551"
+                "551",
+                CCAreaReader::getNullString(),
+                CCAreaReader::getNullString()
             },
             {
                 "22",
@@ -331,7 +295,9 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
                 "CCSPECIALAREA",
                 "(none)",
                 "Y",
-                "0"
+                "0",
+                CCAreaReader::getNullString(),
+                CCAreaReader::getNullString()
             },
             {
                 "42",
@@ -341,7 +307,9 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
                 "CCSPECIALAREA",
                 "Something About You",
                 "N",
-                "0"
+                "0",
+                "YNYNNNNNNNNNNNNNNNNN",
+                "1"
             },
             {
                 "52",
@@ -351,7 +319,9 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
                 "CCSPECIALAREA",
                 "",
                 "N",
-                "651"
+                "651",
+                "NYNYNNNNNNNNNNNNNNNN",
+                "1"
             }
         };
 
@@ -364,44 +334,6 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
             reader[ "PAObjectID" ] >> paoID;
 
             areas.insert( paoID, new CtiCCSpecial( reader, nullptr ) );
-        }
-    }
-
-    {   // Stage 2: Area dynamic data initialization
-
-        using CCAreaRow     = Cti::Test::StringRow<3>;
-        using CCAreaReader  = Cti::Test::TestReader<CCAreaRow>;
-
-        CCAreaRow columnNames =
-        {
-            "AreaID",
-            "additionalflags",
-            "ControlValue"
-        };
-
-        std::vector<CCAreaRow> rowVec
-        {
-            {
-                "42",
-                "YNYNNNNNNNNNNNNNNNNN",
-                "1"
-            },
-            {
-                "52",
-                "NYNYNNNNNNNNNNNNNNNN",
-                "1"
-            }
-        };
-
-        CCAreaReader reader( columnNames, rowVec );
-
-        while ( reader() )
-        {
-            long    areaID;
-
-            reader[ "AreaID" ] >> areaID;
-
-            areas[ areaID ].setDynamicData( reader );
         }
     }
 
@@ -430,7 +362,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
     BOOST_CHECK_EQUAL(                       "", areas[  2 ].getAdditionalFlags() );
-    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );               // why true? shouldn't be - we were just created
     BOOST_CHECK_EQUAL(                     true, areas[  2 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
     BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
@@ -465,7 +397,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getVoltReductionControlValue() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getOvUvDisabledFlag() );
     BOOST_CHECK_EQUAL(                       "", areas[ 22 ].getAdditionalFlags() );
-    BOOST_CHECK_EQUAL(                     true, areas[ 22 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[ 22 ].isDirty() );               // why true? shouldn't be - we were just created
     BOOST_CHECK_EQUAL(                     true, areas[ 22 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getAreaUpdatedFlag() );
     BOOST_CHECK_EQUAL(                       -1, areas[ 22 ].getPFactor() );
@@ -537,7 +469,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(   "nynynnnnnnnnnnnnnnnn", areas[ 52 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].isDirty() );
     BOOST_CHECK_EQUAL(                     true, areas[ 52 ].isSpecial() );
-    BOOST_CHECK_EQUAL(                    false, areas[ 52 ].getAreaUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[ 52 ].getAreaUpdatedFlag() );    // additionalflags[ 3 ] == 'y' is unserialized -- false
     BOOST_CHECK_EQUAL(                       -1, areas[ 52 ].getPFactor() );
     BOOST_CHECK_EQUAL(                       -1, areas[ 52 ].getEstPFactor() );
                           

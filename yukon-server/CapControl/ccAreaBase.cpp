@@ -52,6 +52,11 @@ CtiCCAreaBase::CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyMana
         _areaUpdatedFlag(false)
 {
     restore(rdr);
+
+    if ( !rdr["additionalflags"].isNull() )
+    {
+        setDynamicData( rdr );
+    }
 }
 
 CtiCCAreaBase::CtiCCAreaBase(const CtiCCAreaBase& base)

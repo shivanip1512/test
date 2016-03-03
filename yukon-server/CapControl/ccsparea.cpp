@@ -31,6 +31,11 @@ CtiCCSpecial::CtiCCSpecial(Cti::RowReader& rdr, StrategyManager * strategyManage
     : CtiCCAreaBase(rdr, strategyManager)
 {
     restore(rdr);
+
+    if ( !rdr["additionalflags"].isNull() )
+    {
+        setDynamicData( rdr );
+    }
 }
 
 CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)
@@ -78,8 +83,6 @@ CtiCCSpecial* CtiCCSpecial::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiCCSpecial::restore(Cti::RowReader& rdr)
 {
-    CtiCCAreaBase::restore(rdr);
-
     setDirty(true);
     _insertDynamicDataFlag = true;
 }
@@ -134,7 +137,6 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
 void CtiCCSpecial::setDynamicData(Cti::RowReader& rdr)
 {
-    CtiCCAreaBase::setDynamicData(rdr);
     _insertDynamicDataFlag = false;
     setDirty(false);
 }

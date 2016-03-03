@@ -38,6 +38,10 @@ CtiCCArea::CtiCCArea(Cti::RowReader& rdr, StrategyManager * strategyManager)
 {
     restore(rdr);
 
+    if ( !rdr["additionalflags"].isNull() )
+    {
+        setDynamicData( rdr );
+    }
 }
 
 CtiCCArea::CtiCCArea(const CtiCCArea& area)
@@ -88,7 +92,6 @@ CtiCCArea* CtiCCArea::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiCCArea::restore(Cti::RowReader& rdr)
 {
-    CtiCCAreaBase::restore(rdr);
     _reEnableAreaFlag = false;
     _childVoltReductionFlag = false;
 
@@ -150,7 +153,6 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
 
 void CtiCCArea::setDynamicData(Cti::RowReader& rdr)
 {
-    CtiCCAreaBase::setDynamicData(rdr);
     _reEnableAreaFlag = (getAdditionalFlags()[1]=='y');
     _childVoltReductionFlag = (getAdditionalFlags()[2]=='y');
     setAreaUpdatedFlag(getAdditionalFlags()[3]=='y');
