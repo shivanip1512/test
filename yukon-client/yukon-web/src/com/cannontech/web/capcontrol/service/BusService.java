@@ -46,4 +46,9 @@ public interface BusService {
      * The assignments are done in order given with increasing consecutive displayOrders.
      */
     void assignFeeders(int busId, Iterable<Integer> feederIds);
+    
+    /**
+     * Saves the schedule assignments for the bus
+     */
+    void saveSchedules(CapControlSubBus bus);
 }

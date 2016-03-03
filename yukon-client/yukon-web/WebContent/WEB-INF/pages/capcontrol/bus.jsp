@@ -54,9 +54,8 @@
                     </tags:nameValueContainer>
                 </cti:tab>
                 <%@ include file="strategyTab.jsp" %>
-                <%-- TODO Make this tab fully functional --%>
                 <cti:tab title="Schedules">
-                    <table class="section-table">
+                    <table class="full-width stacked">
                         <thead>
                             <tr>
                                 <th>Schedule</th>
@@ -70,36 +69,36 @@
                             <c:set var="idx" value="${status.index}" />
                             <tr>
                                 <td>
-                                    <%-- TODO Select Schedule--%>
-                                    <tags:input path="schedules[${idx}].scheduleID"/>
+                                    <c:forEach var="scheduleOption" items="${allSchedules}">
+                                        <c:if test="${schedule.scheduleID == scheduleOption.id}">
+                                            ${fn:escapeXml(scheduleOption.name)}                                            
+                                        </c:if>                              
+                                    </c:forEach>
                                 </td>
                                 <td>
-                                    <%-- TODO Select for defaults --%>
-                                    <tags:input path="schedules[${idx}].command"/>
+                                    ${fn:escapeXml(schedule.command)}                                            
                                 </td>
                                 <td>
-                                    <tags:switchButton path="schedules[${idx}].disableOvUvBoolean"/>
+                                    <c:choose>
+                                        <c:when test="${schedule.disableOvUvBoolean}">
+                                            <span class="success">On</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="error">Off</span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </td>
                             </tr>
                             </c:forEach>
-                            <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <c:set var="idx" value="${fn:length(bus.schedules)}" />
-                            <tr>
-                                <td>
-                                    <tags:input path="schedules[${idx}].scheduleID"/>
-                                </td>
-                                <td>
-                                    <tags:input path="schedules[${idx}].command"/>
-                                </td>
-                                <td>
-                                    <tags:switchButton path="schedules[${idx}].disableOvUvBoolean"/>
-                                </td>
-                            </tr>
-                            </cti:displayForPageEditModes>
                         </tbody>
                         </table>
+                        <c:if test="${canEdit}">
+                            <div class="action-area">
+                                <cti:button nameKey="edit" icon="icon-pencil" data-popup=".js-edit-sched-popup"
+                                    data-popup-toggle="" />
+                            </div>
+                        </c:if>
                 </cti:tab>
-                <%-- TOOD Maybe an add schedule button? --%>
             </cti:tabs>
         </div>
         <div class="column two nogutter">
@@ -248,11 +247,23 @@
                 <cti:tab title="Dual Bus">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Enable Dual Bus">
-                            <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean"/>
+                            <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean" toggleGroup="dualBus" toggleAction="hide"/>
                         </tags:nameValue>
-                        <tags:nameValue name="Alternate Bus">
-                            <%-- TODO Bus picker --%>
-                            <tags:input path="capControlSubstationBus.altSubPAOId"/>
+                        <tags:nameValue name="Alternate Bus" data-toggle-group="dualBus">
+                            <form:hidden id="switch-alt-bus-input" path="capControlSubstationBus.altSubPAOId"/>
+                            <tags:pickerDialog
+                                id="altBusPicker"
+                                type="capControlSubstationBusPicker"
+                                linkType="selection"
+                                selectionProperty="paoName"
+                                destinationFieldId="switch-alt-bus-input"
+                                viewOnlyMode="${mode == 'VIEW'}"
+                                allowEmptySelection="${true}"/>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:if test="${empty bus.capControlSubstationBus.altSubPAOId}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                </c:if>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue>
                         <tags:nameValue name="Switch Point">
                             <form:hidden id="switch-point-input" path="capControlSubstationBus.switchPointID"/>
@@ -364,6 +375,16 @@
     data-url="<cti:url value="/capcontrol/strategy-assignment/${bus.id}"/>"
     data-event="yukon:vv:strategy-assignment:save"
     data-width="500"></div>
+    
+    <%-- EDIT SCHEDULES POPUP --%>
+<div class="dn js-edit-sched-popup"
+    data-dialog
+    data-object-id="${bus.id}"
+    data-title="<cti:msg2 key=".edit.schedule"/>"
+    data-ok-text="<cti:msg2 key="yukon.common.save"/>"
+    data-url="<cti:url value="/capcontrol/buses/${bus.id}/schedules/edit"/>"
+    data-event="yukon:vv:schedule:save"
+    data-width="750"></div>
     
 
 </cti:standardPage>

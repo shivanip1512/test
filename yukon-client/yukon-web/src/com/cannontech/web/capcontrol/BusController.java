@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.capcontrol.ScheduleCommand;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -30,6 +31,8 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.schedule.dao.PaoScheduleDao;
+import com.cannontech.core.schedule.model.PaoSchedule;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -42,6 +45,7 @@ import com.cannontech.database.model.Season;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.models.Assignment;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
@@ -69,6 +73,7 @@ public class BusController {
     @Autowired private StrategyDao strategyDao;
     @Autowired private StrategyService strategyService;
     @Autowired private SubstationBusDao busDao;
+    @Autowired private PaoScheduleDao paoScheduleDao;
 
     private Logger log = YukonLogManager.getLogger(getClass());
 
@@ -168,8 +173,11 @@ public class BusController {
 
         }
 
-
         model.addAttribute("bus", bus);
+        
+        List<PaoSchedule> schedules = paoScheduleDao.getAll();
+        model.addAttribute("allSchedules", schedules);
+        model.addAttribute("scheduleCommands", ScheduleCommand.values());
 
         model.addAttribute("canEdit", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user));
 
@@ -245,6 +253,25 @@ public class BusController {
         model.addAttribute("unassigned", unassigned);
 
         return "assignment-popup.jsp";
+    }
+    
+    @RequestMapping("buses/{busId}/schedules/edit")
+    public String editSchedules(ModelMap model, @PathVariable int busId) {
+        CapControlSubBus bus = busService.get(busId);
+        model.addAttribute("bus", bus);
+        model.addAttribute("allSchedules", paoScheduleDao.getAll());
+        model.addAttribute("scheduleCommands", ScheduleCommand.values());
+
+        return "schedules-popup.jsp";
+    }
+    
+    @RequestMapping(value="buses/{busId}/schedules", method=RequestMethod.POST)
+    public void saveSchedules(@ModelAttribute("bus") CapControlSubBus bus, HttpServletResponse resp, 
+            YukonUserContext userContext, FlashScope flash, @PathVariable int busId) {
+        bus.setId(busId);
+        busService.saveSchedules(bus);
+        flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".schedules.updated"));
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
     @RequestMapping(value="buses/{busId}/feeders", method=RequestMethod.POST)

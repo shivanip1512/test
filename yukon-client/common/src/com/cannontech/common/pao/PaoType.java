@@ -274,6 +274,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> ecobeeTypes;
     private final static ImmutableSet<PaoType> transmitterTypes;
     private final static ImmutableSet<PaoType> rfGatewayTypes;
+    private final static ImmutableSet<PaoType> substationBusTypes;
     
     public final static int INVALID = -1;
     
@@ -291,6 +292,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             log.warn("Caught exception while building lookup maps, look for a duplicate name or db string.", e);
             throw e;
         }
+        
+        substationBusTypes = ImmutableSet.of(CAP_CONTROL_SUBBUS);
         
         lmProgramTypes = ImmutableSet.of(
             LM_CURTAIL_PROGRAM,
@@ -874,5 +877,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     @Override
     public String getFormatKey() {
         return "yukon.common.pao." + name();
+    }
+
+    public static ImmutableSet<PaoType> getSubstationbustypes() {
+        return substationBusTypes;
     }
 }

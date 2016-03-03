@@ -88,6 +88,12 @@ public class BusServiceImpl implements BusService {
             paoPersistenceService.updatePao(completeBus);
         }
 
+        return completeBus.getPaObjectId();
+    }
+    
+    @Override
+    public void saveSchedules(CapControlSubBus bus) {
+
         List<PaoScheduleAssignment> assignments = bus.getSchedules().stream()
             .filter(new Predicate<PAOScheduleAssign>() {
                 @Override
@@ -108,7 +114,6 @@ public class BusServiceImpl implements BusService {
         paoScheduleDao.deleteAssignmentsForPao(bus.getId());
         paoScheduleDao.assignCommand(assignments);
 
-        return completeBus.getPaObjectId();
     }
 
     @Override

@@ -74,7 +74,21 @@ yukon.da.bus = (function () {
                     }
                 });
             });
+            
+            $(document).on('yukon:vv:schedule:save', function (ev) {
 
+                var dialog = $('.js-edit-sched-popup');
+
+                $('.js-edit-sched-popup form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        dialog.dialog('close');
+                        window.location.reload();
+                    },
+                    error: function (xhr, status, error, $form) {
+                        dialog.html(xhr.responseText);
+                    }
+                });
+            });
         }
     };
 

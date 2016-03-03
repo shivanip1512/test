@@ -178,4 +178,9 @@
 
 <entry key="yukon.web.picker.notificationGroupPicker.dialogTitle">Select Notification Group</entry>
 
+<!-- Cap Control Substation Bus Picker -->
+<entry key="yukon.web.picker.capControlSubstationBusPicker.dialogTitle">Select Substation Bus</entry>
+
+
+
 </properties>

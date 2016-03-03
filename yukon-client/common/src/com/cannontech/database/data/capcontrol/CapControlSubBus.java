@@ -177,7 +177,8 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
         bus.setPAOStatistics(completeBus.getStatistics());
 
         CapControlSubstationBus innerBus = new CapControlSubstationBus();
-        innerBus.setAltSubPAOId(completeBus.getAltSubId());
+        int altSubId = completeBus.getAltSubId();
+        innerBus.setAltSubPAOId(altSubId != 0 ? altSubId : null);
         innerBus.setControlFlagBoolean(completeBus.getControlFlag());
 
         int varPoint = completeBus.getCurrentVarLoadPointId();
@@ -214,7 +215,8 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
 
         CapControlSubstationBus innerBus = getCapControlSubstationBus();
 
-        completeBus.setAltSubId(innerBus.getAltSubPAOId());
+        Integer altSubId = innerBus.getAltSubPAOId();
+        completeBus.setAltSubId(altSubId != null ? altSubId : 0);
         completeBus.setControlFlag(innerBus.getControlFlagBoolean());
 
         Integer varPoint = innerBus.getCurrentVarLoadPointID();
