@@ -60,15 +60,10 @@
                 </td>
                 <%-- Name --%>
                 <td id="anc_${subbusId}"  class="wsnw">
-                    <cti:url var="editUrl" value="/editor/cbcBase.jsf">
-                        <cti:param name="type" value="2"/>
-                        <cti:param name="itemid" value="${subbusId}"/>
-                    </cti:url>
-
-                    <a href="${editUrl}">
-                        ${fn:escapeXml(viewableSubBus.ccName)}
-                    </a>
-
+                    <cti:url var="editUrl" value="/capcontrol/buses/${subbusId}" />
+                        <a href="${editUrl}">
+                            ${fn:escapeXml(viewableSubBus.ccName)}
+                        </a> 
                 </td>
 
                 <%-- State --%>

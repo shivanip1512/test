@@ -33,8 +33,9 @@
                             <form:hidden path="id"/>
                             <tags:input path="name"/>
                         </tags:nameValue>
-                        <tags:nameValue name="Disabled">
-                            <tags:switchButton path="disabled"/>
+                        <tags:nameValue name="Status">
+                            <tags:switchButton path="disabled" inverse="${true}"
+                                offNameKey=".disabled.label" onNameKey=".enabled.label" />
                         </tags:nameValue>
                         <tags:nameValue name="Geographical Name">
                             <tags:input path="geoAreaName"/>
@@ -302,11 +303,10 @@
                 <ul class="striped-list simple-list">
                     <c:forEach var="feeder" items="${feederList}">
                     <li>
-                        <cti:url var="feederUrl" value="/editor/cbcBase.jsf">
-                            <cti:param name="type" value="2"/>
-                            <cti:param name="itemid" value="${feeder.ccId}"/>
-                        </cti:url>
-                        <a href="${feederUrl}">${fn:escapeXml(feeder.ccName)}</a>
+                         <cti:url var="feederUrl" value="/capcontrol/feeders/${feeder.ccId}" />
+                            <a href="${feederUrl}">
+                                ${fn:escapeXml(feeder.ccName)}
+                            </a> 
                     </li>
                     </c:forEach>
                 </ul>

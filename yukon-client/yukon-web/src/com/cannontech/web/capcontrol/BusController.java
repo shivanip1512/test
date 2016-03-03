@@ -83,8 +83,10 @@ public class BusController {
     public String view(ModelMap model, @PathVariable int id, LiteYukonUser user) {
 
         CapControlSubBus bus = busService.get(id);
-
-        model.addAttribute("mode", PageEditMode.VIEW);
+        
+        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
+        model.addAttribute("mode", mode);
 
         return setUpModel(model, bus, user);
     }

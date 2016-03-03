@@ -31,19 +31,20 @@
                             <form:hidden path="id"/>
                             <tags:input path="name"/>
                         </tags:nameValue>
-                        <tags:nameValue name="Disabled">
-                            <tags:switchButton path="disabled"/>
+                        <tags:nameValue name="Status">
+                            <tags:switchButton path="disabled" inverse="${true}"
+                                offNameKey=".disabled.label" onNameKey=".enabled.label" />
                         </tags:nameValue>
                         <tags:nameValue name="Map Location ID">
                             <tags:input path="capControlFeeder.mapLocationID"/>
                         </tags:nameValue>
                         <tags:nameValue name="Parent">
-                            <c:if test="${empty parentName}">
-                                <span class="empty-list"><i:inline key="yukon.common.none"/></span>
+                            <c:if test="${empty parent }">
+                                <span class="empty-list">No Parent</span>
                             </c:if>
-                            <c:if test="${not empty parentName}">
-                                <cti:url var="parentLink" value="${parentLink}" />
-                                <a href="${parentLink}">${parentName}</a>
+                            <c:if test="${not empty parent}">
+                                <cti:url var="editParent" value="/capcontrol/buses/${parent.liteID}"/>
+                                    <a href="${editParent}">${parent.paoName}</a>
                             </c:if>
                         </tags:nameValue>
                     </tags:nameValueContainer>

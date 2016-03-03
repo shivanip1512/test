@@ -37,11 +37,10 @@
             </td>
             <%-- Name --%>
             <td class="wsnw">
-                <cti:url var="editUrl" value="/editor/cbcBase.jsf">
-                    <cti:param name="type" value="2"/>
-                    <cti:param name="itemid" value="${feederId}"/>
-                </cti:url>
-                <a href="${editUrl}">${fn:escapeXml(viewfeeder.ccName)}</a>
+                <cti:url var="editUrl" value="/capcontrol/feeders/${feederId}" />
+                    <a href="${editUrl}">
+                        ${fn:escapeXml(viewfeeder.ccName)}
+                    </a> 
             </td>
 
             <%-- State --%>

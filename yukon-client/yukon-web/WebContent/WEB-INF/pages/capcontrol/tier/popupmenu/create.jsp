@@ -10,8 +10,8 @@
             <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=4002"/>"><i:inline key=".type.AREA"/></a></div>
             <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=4003"/>"><i:inline key=".type.SPECIAL_AREA"/></a></div>
             <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=4004"/>"><i:inline key=".type.SUBSTATION"/></a></div>
-            <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=4000"/>"><i:inline key=".type.SUBBUS"/></a></div>
-            <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=4001"/>"><i:inline key=".type.FEEDER"/></a></div>
+            <div class="stacked"><a href="<cti:url value="/capcontrol/buses/create"/>"><i:inline key=".type.SUBBUS"/></a></div>
+            <div class="stacked"><a href="<cti:url value="/capcontrol/feeders/create"/>"><i:inline key=".type.FEEDER"/></a></div>
         </div>
         <div class="column two nogutter">
             <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=1050"/>"><i:inline key=".type.CAPBANK"/></a></div>

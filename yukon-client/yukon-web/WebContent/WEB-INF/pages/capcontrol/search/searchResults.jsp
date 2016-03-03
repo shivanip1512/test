@@ -74,6 +74,14 @@
                                         <cti:url var="editUrl" value="/capcontrol/cbc/${row.itemId}" />
                                         <a href="${editUrl}">${fn:escapeXml(row.name)}</a>
                                     </c:when>
+                                    <c:when test="${searchType == 'FEEDER'}">
+                                        <cti:url var="editUrl" value="/capcontrol/feeders/${row.itemId}" />
+                                        <a href="${editUrl}">${fn:escapeXml(row.name)}</a>
+                                    </c:when>
+                                    <c:when test="${searchType == 'BUS'}">
+                                        <cti:url var="editUrl" value="/capcontrol/buses/${row.itemId}" />
+                                        <a href="${editUrl}">${fn:escapeXml(row.name)}</a>
+                                    </c:when>
                                     <c:otherwise>
                                         <cti:url var="resultUrl" value="/editor/cbcBase.jsf">
                                             <cti:param name="type" value="2"/>

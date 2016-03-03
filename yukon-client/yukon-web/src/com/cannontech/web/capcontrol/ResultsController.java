@@ -54,7 +54,6 @@ public class ResultsController {
     @Autowired private CapbankDao capbankDao;
     @Autowired private CapbankControllerDao cbcDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private CapControlUrlService capcontrolUrlService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private VoltageRegulatorDao voltageRegulatorDao; 
     @Autowired private CapControlDao capControlDao; 
@@ -62,6 +61,8 @@ public class ResultsController {
     private enum SearchType {
         REGULATOR,
         CBC,
+        FEEDER,
+        BUS,
         CAPCONTROL,
         GENERAL,
         ;
@@ -93,13 +94,13 @@ public class ResultsController {
             model.addAttribute("pageName", "orphanedSubs");
         }
         else if( CBCWebUtils.TYPE_ORPH_SUBS.equals(srchCriteria) ) {
-            searchType = SearchType.CAPCONTROL;
+            searchType = SearchType.BUS;
             ccObjects = substationBusDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedBuses.pageName");
             model.addAttribute("pageName", "orphanedBuses");
         }
         else if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
-            searchType = SearchType.CAPCONTROL;
+            searchType = SearchType.FEEDER;
             ccObjects = feederDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedFeeders.pageName");
             model.addAttribute("pageName", "orphanedFeeders");
@@ -172,6 +173,14 @@ public class ResultsController {
         } else if (searchType == SearchType.CBC) {
             PaoType cbcType = PaoType.getForDbString(dbType);
             String returnValue = cbcType.getDbString();
+            return returnValue;
+        } else if (searchType == SearchType.FEEDER) {
+            CapControlType ccType = CapControlType.getCapControlType(dbType);
+            String returnValue = ccType.getDisplayValue();
+            return returnValue;
+        } else if (searchType == SearchType.BUS) {
+            CapControlType ccType = CapControlType.getCapControlType(dbType);
+            String returnValue = ccType.getDisplayValue();
             return returnValue;
         } else if (searchType == SearchType.GENERAL) {
             return dbType;

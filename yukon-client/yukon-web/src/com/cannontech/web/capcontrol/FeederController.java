@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -81,7 +80,9 @@ public class FeederController {
     @RequestMapping(value="feeders/{id}", method=RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, LiteYukonUser user) {
         CapControlFeeder feeder = feederService.get(id);
-        model.addAttribute("mode", PageEditMode.VIEW);
+        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
+        model.addAttribute("mode", mode);
         return setUpModel(model, feeder, user);
     }
 
@@ -123,8 +124,7 @@ public class FeederController {
                 Integer parentId = feederDao.getParentSubBusID(feeder.getId());
                 if (parentId != null) {
                     LiteYukonPAObject parent = dbCache.getAllPaosMap().get(parentId);
-                    model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
-                    model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
+                    model.addAttribute("parent", parent);
                 }
             }catch( EmptyResultDataAccessException e ){
                 //do nothing
