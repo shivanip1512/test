@@ -7,8 +7,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-
-<cti:tab title="Strategy">
+<cti:msg2 var="strategyTab" key=".strategyTab"/>
+<cti:tab title="${strategyTab}">
 
     <%-- SEASON SCHEDULE --%>
     <tags:nameValueContainer2 tableClass="stacked">

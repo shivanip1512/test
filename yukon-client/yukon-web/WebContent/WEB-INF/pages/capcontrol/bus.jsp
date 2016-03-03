@@ -25,7 +25,8 @@
     <div class="column-12-12">
         <div class="column one">
             <cti:tabs>
-                <cti:tab title="Info">
+                <cti:msg2 var="infoTab" key=".infoTab"/>
+                <cti:tab title="${infoTab}">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
                             <tags:switchButton path="capControlSubstationBus.multiMonitorControlBoolean" classes="dn"/>
@@ -37,7 +38,7 @@
                             <tags:switchButton path="disabled" inverse="${true}"
                                 offNameKey=".disabled.label" onNameKey=".enabled.label" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".geographicalName">
+                        <tags:nameValue2 nameKey=".geoName">
                             <tags:input path="geoAreaName"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".mapLocationID">
@@ -55,7 +56,8 @@
                     </tags:nameValueContainer2>
                 </cti:tab>
                 <%@ include file="strategyTab.jsp" %>
-                <cti:tab title="Schedules">
+                <cti:msg2 var="schedulesTab" key=".schedulesTab"/>
+                <cti:tab title="${schedulesTab}">
                     <table class="full-width stacked">
                         <thead>
                             <tr>
@@ -104,7 +106,8 @@
         </div>
         <div class="column two nogutter">
             <cti:tabs>
-                <cti:tab title="Control Points">
+                <cti:msg2 var="controlPointsTab" key=".controlPointsTab"/>
+                <cti:tab title="${controlPointsTab}">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".points.voltReduction">
                             <form:hidden id="volt-reduction-bus-point-input" path="capControlSubstationBus.voltReductionPointId"/>
@@ -234,7 +237,8 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </cti:tab>
-                <cti:tab title="Attached Points">
+                <cti:msg2 var="attachedPointsTab" key=".attachedPointsTab"/>
+                <cti:tab title="${attachedPointsTab}">
                     <div class="scroll-md">
                         <%@ include file="pointsTable.jsp" %>
                     </div>
@@ -244,7 +248,8 @@
                         </div>
                     </cti:checkRolesAndProperties>
                 </cti:tab>
-                <cti:tab title="Dual Bus">
+                <cti:msg2 var="dualBusTab" key=".dualBusTab"/>
+                <cti:tab title="${dualBusTab}">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".bus.enableDualBus">
                             <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean" toggleGroup="dualBus" toggleAction="hide"/>
@@ -287,10 +292,11 @@
         </div>
     </div>
     <cti:csrfToken/>
-
-    <tags:sectionContainer title="Feeders" styleClass="clear">
+    
+    <cti:msg2 var="feedersSection" key=".feedersSection"/>
+    <tags:sectionContainer title="${feedersSection}" styleClass="clear">
         <c:if test="${empty feederList}">
-            <span class="empty-list">No Assigned Feeders</span>
+            <span class="empty-list"><i:inline key=".bus.noAssignedFeeders"/></span>
         </c:if>
         <c:if test="${not empty feederList}">
             <c:if test="${not orphan}">

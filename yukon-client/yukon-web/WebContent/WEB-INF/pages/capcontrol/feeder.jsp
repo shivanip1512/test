@@ -24,7 +24,8 @@
     <div class="column-14-10">
         <div class="column one">
             <cti:tabs>
-                <cti:tab title="Info">
+                <cti:msg2 var="infoTab" key=".infoTab"/>
+                <cti:tab title="${infoTab}">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
                             <form:hidden path="pAOStatistics"/>
@@ -55,7 +56,8 @@
 
             <div class="column two nogutter">
             <cti:tabs>
-                <cti:tab title="Control Points">
+                <cti:msg2 var="controlPointsTab" key=".controlPointsTab"/>
+                <cti:tab title="${controlPointsTab}">
                     <tags:nameValueContainer2>
 
                         <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
@@ -155,7 +157,8 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </cti:tab>
-                    <cti:tab title="Attached Points">
+                    <cti:msg2 var="attachedPointsTab" key=".attachedPointsTab"/>
+                    <cti:tab title="${attachedPointsTab}">
                         <div class="scroll-md">
                             <%@ include file="pointsTable.jsp" %>
                         </div>
@@ -169,9 +172,10 @@
              </div>
           </div>
                 
-    <tags:sectionContainer title="CapBanks" styleClass="clear">
+    <cti:msg2 var="capBanksSection" key=".capBanksSection"/>
+    <tags:sectionContainer title="${capBanksSection}" styleClass="clear">
         <c:if test="${empty capBankList}">
-            <span class="empty-list">No Assigned Cap Banks</span>
+            <span class="empty-list"><i:inline key=".feeder.noAssignedCapBanks"/></span>
         </c:if>
         <c:if test="${not empty capBankList}">
             <c:if test="${not orphan}">
