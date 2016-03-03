@@ -3981,24 +3981,16 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                                   PointIdToAreaMultiMap *pointid_area_map,
                                   CtiCCArea_vec *ccGeoAreas)
 {
-    CtiCCAreaPtr areaToUpdate = NULL;
-
-    if (areaId > 0)
-    {
-        areaToUpdate = findAreaByPAObjectID(areaId);
-    }
-
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
     {
-        if (areaToUpdate != NULL)
+        if ( areaId > 0 )
         {
             deleteArea(areaId);
         }
 
-        CtiTime currentDateTime;
         {
-            std::string sql = 
+            static const std::string sql = 
                 "SELECT "
                     "Y.PAObjectID, "
                     "Y.Category, "
@@ -4017,13 +4009,21 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                         "LEFT OUTER JOIN DYNAMICCCAREA D "
                             "ON A.AreaID = D.AreaID";
 
-            if ( areaId > 0 )
-            {
-                sql += " WHERE Y.PAObjectID = " + std::to_string( areaId );
-            }
+            static const std::string sqlID = sql +
+                " WHERE Y.PAObjectID = ?";
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection, sql);
+            Cti::Database::DatabaseReader     rdr( connection );
+
+            if ( areaId > 0 )
+            {
+                rdr.setCommandText( sqlID );
+                rdr << areaId;
+            }
+            else
+            {
+                rdr.setCommandText( sql );
+            }
 
             rdr.execute();
 
@@ -4313,14 +4313,12 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                                   PointIdToSpecialAreaMultiMap *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas)
 {
-    CtiCCSpecialPtr spAreaToUpdate = NULL;
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
     {
-        CtiTime currentDateTime;
         {
 
-            std::string sql = 
+            static const std::string sql = 
                 "SELECT "
                     "Y.PAObjectID, "
                     "Y.Category, "
@@ -4340,7 +4338,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                             "ON A.AreaID = D.AreaID";
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection, sql);
+            Cti::Database::DatabaseReader     rdr(connection, sql);
 
             rdr.execute();
 
