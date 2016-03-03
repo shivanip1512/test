@@ -212,7 +212,7 @@ void VerificationExecutor::startVerification()
                 additional += currentSubstationBus->getPaoDescription();
                 additional += ")";
             }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
             INT seqId = CCEventSeqIdGen();
             currentSubstationBus->setEventSequence(seqId);
@@ -291,7 +291,7 @@ void VerificationExecutor::startVerification()
         additional += currentSubstationBus->getPaoDescription();
         additional += ")";
     }
-    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName));
+    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
     INT seqId = CCEventSeqIdGen();
     currentSubstationBus->setEventSequence(seqId);
@@ -363,7 +363,7 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
                 additional += currentSubstationBus->getPaoDescription();
                 additional += ")";
             }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
             long stationId, areaId, spAreaId;
             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
@@ -417,7 +417,7 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
                 additional += currentSubstationBus->getPaoDescription();
                 additional += ")";
             }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
             long stationId, areaId, spAreaId;
             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);

@@ -119,7 +119,7 @@ void CapControlPao::setDisableFlag(bool disableFlag, int priority)
             CtiPointDataMsg* pMsg = new CtiPointDataMsg(
                                 _disabledStatePointId, _disableFlag ? 1.0 : 0.0 ); // NormalQuality, StatusPointType
             pMsg->setMessagePriority(priority);
-            CtiCapController::getInstance()->sendMessageToDispatch(pMsg);
+            CtiCapController::getInstance()->sendMessageToDispatch(pMsg, CALLSITE);
         }
     }
 }
@@ -160,7 +160,7 @@ void CapControlPao::setDisabledStatePointId( const long newId, bool sendDisableP
     if ( sendDisablePointMessage )
     {
         CtiCapController::getInstance()->sendMessageToDispatch( 
-            new CtiPointDataMsg(_disabledStatePointId, _disableFlag ? 1.0 : 0.0));
+            new CtiPointDataMsg(_disabledStatePointId, _disableFlag ? 1.0 : 0.0), CALLSITE);
     }
 }
 

@@ -2142,7 +2142,7 @@ void CtiCCSubstationBus::checkForMaxDailyOpsHit()
             CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
                                                                                 TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, getCurrentDailyOperations() );
             pSig->setCondition(CtiTablePointAlarming::highReasonability);
-            CtiCapController::getInstance()->sendMessageToDispatch(pSig);
+            CtiCapController::getInstance()->sendMessageToDispatch(pSig, CALLSITE);
         }
         setSolution(text);
         setMaxDailyOpsHitFlag(true);
@@ -2171,7 +2171,7 @@ bool CtiCCSubstationBus::maxOperationsHitDisableBus()
        CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
                                                                            TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, getCurrentDailyOperations() );
        pSig->setCondition(CtiTablePointAlarming::highReasonability);
-       CtiCapController::getInstance()->sendMessageToDispatch(pSig);
+       CtiCapController::getInstance()->sendMessageToDispatch(pSig, CALLSITE);
    }
 
    return false;
@@ -6844,7 +6844,7 @@ bool CtiCCSubstationBus::scanAllMonitorPoints()
 
                             pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
 
-                            CtiCapController::getInstance()->sendMessageToDispatch(pAltRate);
+                            CtiCapController::getInstance()->sendMessageToDispatch(pAltRate, CALLSITE);
 
                             CTILOG_INFO(dout, "Requesting scans at the alternate scan rate for " << currentCapBank->getPaoName());
 

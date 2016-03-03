@@ -2191,7 +2191,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                     text += " Disabled";
                     string additional = string("Inhibit PointId Updated");
 
-                    sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
+                    sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"), CALLSITE);
                 }
 
             }
@@ -2204,7 +2204,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                 text += " Enabled";
                 string additional = string("Inhibit PointId Updated");
 
-                sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
+                sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"), CALLSITE);
 
             }
 
@@ -2346,7 +2346,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                 }
             }
             string additional = string("Dual Bus Switch PointId Updated");
-            sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
+            sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"), CALLSITE);
         }
     }
     else if (value > 0 && !currentSubstationBus->getDisableFlag() && !currentSubstationBus->getDualBusEnable() )
@@ -2362,7 +2362,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
         text += " Disabled";
         string additional = string("Inhibit PointId Updated");
 
-        sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
+        sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"), CALLSITE);
 
     }
     if (updateSwitchOverStatus)
@@ -2718,7 +2718,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         currentSubstationBus->setCurrentVarPointQuality(quality);
                         if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
                         {
-                            sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                            sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType), CALLSITE);
                         }
 
                         if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
@@ -2733,11 +2733,11 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             currentSubstationBus->setBusUpdatedFlag(true);
                             if( currentSubstationBus->getPowerFactorPointId() > 0 )
                             {
-                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                             }
                             if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
                             {
-                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                             }
                         }
                         else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
@@ -2784,11 +2784,11 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             currentSubstationBus->setBusUpdatedFlag(true);
                             if( currentSubstationBus->getPowerFactorPointId() > 0 )
                             {
-                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                             }
                             if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
                             {
-                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                             }
                         }
                         else if( !ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
@@ -3052,7 +3052,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             currentFeeder->setCurrentVarPointQuality(quality);
                             if( currentFeeder->getEstimatedVarLoadPointId() > 0 )
                             {
-                                sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedVarLoadPointId(),currentFeeder->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                                sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedVarLoadPointId(),currentFeeder->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType), CALLSITE);
                             }
 
                             if( currentFeeder->getCurrentWattLoadPointId() > 0 )
@@ -3067,11 +3067,11 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                                 if( currentFeeder->getPowerFactorPointId() > 0 )
                                 {
-                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                                 }
                                 if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
                                 {
-                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                                 }
                             }
                             else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
@@ -3109,11 +3109,11 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                                 if( currentFeeder->getPowerFactorPointId() > 0 )
                                 {
-                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                                 }
                                 if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
                                 {
-                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                                 }
                             }
                             else if( !ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
@@ -3308,14 +3308,14 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         }
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
-                            sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                            sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType), CALLSITE);
 
                         if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
                         {
                             currentSubstationBus->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
                             {
-                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                             }
                         }
                         if( currentFeeder->getCurrentWattLoadPointId() > 0 )
@@ -3323,7 +3323,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             currentFeeder->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                             if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
                             {
-                                sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                             }
                         }
                     }
@@ -3386,7 +3386,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                     currentCapBank->setAfterVarsString("Adjusted to CBC Reported State");
                                     currentSubstationBus->setBusUpdatedFlag(true);
                                     CTILOG_INFO(dout, "Adjusting CapBank status to match CBC...");
-                                    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE), CALLSITE);
 
                                 }
 
@@ -3726,7 +3726,7 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
                         text1 += currentCapBank->getControlStatusText();
                         currentCapBank->setControlRecentlySentFlag(false);
 
-                        sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                        sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE), CALLSITE);
                         long stationId, areaId, spAreaId;
                         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                         EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress());
@@ -3738,7 +3738,7 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
                         currentFeeder->setRetryIndex(0);
 
                     }
-                    sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,userName));
+                    sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,userName), CALLSITE);
                 }
                 else
                 {
@@ -3829,7 +3829,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
         currentCapBank->setPercentChangeString(" verify set to CBC state ");
     }
 
-    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE), CALLSITE);
     long stationId, areaId, spAreaId;
     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
@@ -3938,7 +3938,7 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
     opText += " Sent, CBC Local Change";
     currentCapBank->setControlStatusQuality(CC_UnSolicited);
 
-    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE), CALLSITE);
 
     //send the cceventmsg.
     long stationId, areaId, spAreaId;
@@ -4032,11 +4032,11 @@ void CtiCapController::signalMsg(long pointID, unsigned tags, const string& text
     Sends a cti message to dispatch, this is a way for other threads to use
     the CtiCapController's connection to dispatch.
 ---------------------------------------------------------------------------*/
-void CtiCapController::sendMessageToDispatch( CtiMessage* message )
+void CtiCapController::sendMessageToDispatch( CtiMessage* message, ::Cti::CallSite cs )
 {
     try
     {
-        getDispatchConnection()->WriteConnQue(message, CALLSITE);
+        getDispatchConnection()->WriteConnQue(message, cs);
     }
     catch(...)
     {

@@ -5501,7 +5501,7 @@ bool CtiCCFeeder::scanAllMonitorPoints()
 
                             pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
 
-                            CtiCapController::getInstance()->sendMessageToDispatch(pAltRate);
+                            CtiCapController::getInstance()->sendMessageToDispatch(pAltRate, CALLSITE);
                             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                             {
                                 CTILOG_DEBUG(dout, "MULTIVOLT: Requesting scans at the alternate scan rate for " << currentCapBank->getPaoName());

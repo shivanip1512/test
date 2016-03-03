@@ -116,7 +116,7 @@ private:
 
 struct Test_CtiCapController : CtiCapController
 {
-    virtual void sendMessageToDispatch(CtiMessage *message){delete message; return;};
+    virtual void sendMessageToDispatch(CtiMessage *message, ::Cti::CallSite cs){delete message; return;};
     void adjustAlternateSettings(long pointID, CtiCCSubstationBusPtr bus){adjustAlternateBusModeValues(pointID, 0, bus);};
 };
 

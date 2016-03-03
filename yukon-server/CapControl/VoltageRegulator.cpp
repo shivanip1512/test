@@ -698,7 +698,7 @@ void VoltageRegulator::submitControlCommands( Policy::Action                  & 
     signal->setText( signal->getText() + getPhaseString() );
     signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
 
-    CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+    CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
 
     boost::optional<double> newSetPoint;
 
@@ -744,7 +744,7 @@ try
 
         signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
 
-        CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+        CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
 
         const long pointPaoID = request->DeviceId();
 
@@ -836,7 +836,7 @@ void VoltageRegulator::submitRemoteControlCommands( Policy::Actions             
 
         signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
 
-        CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+        CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
 
         enqueueRegulatorEvent( RegulatorEvent::makeRemoteControlEvent( eventType,
                                                                        getPaoId(),
@@ -887,7 +887,7 @@ long VoltageRegulator::submitKeepAliveCommands( Policy::Actions & actions )
 
         signal->setAdditionalInfo( "Voltage Regulator Name: " + getPaoName() );
 
-        CtiCapController::getInstance()->sendMessageToDispatch( signal.release() );
+        CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
 
         CtiCapController::getInstance()->manualCapBankControl( request.release() );
     }

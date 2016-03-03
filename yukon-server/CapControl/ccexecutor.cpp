@@ -222,7 +222,7 @@ void CtiCCCommandExecutor::EnableSubstation()
 
     if (multi->getCount() > 0)
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
     }
     else
     {
@@ -261,7 +261,7 @@ void CtiCCCommandExecutor::DisableSubstation()
 
     if (multi->getCount() > 0)
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
     }
     else
     {
@@ -309,7 +309,7 @@ void CtiCCCommandExecutor::EnableSubstationBus(long subBusId)
         additional += currentSubstationBus->getPaoDescription();
         additional += ")";
     }
-    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
     if (!currentSubstationBus->getVerificationFlag())
     {
@@ -355,7 +355,7 @@ void CtiCCCommandExecutor::DisableSubstationBus(long subBusId)
         additional += currentSubstationBus->getPaoDescription();
         additional += ")";
     }
-    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
     if (!currentSubstationBus->getVerificationFlag())
     {
@@ -404,7 +404,7 @@ void CtiCCCommandExecutor::EnableFeeder()
                         additional += currentFeeder->getPaoDescription();
                         additional += ")";
                     }
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
                     INT seqId = CCEventSeqIdGen();
                     currentSubstationBus->setEventSequence(seqId);
@@ -462,7 +462,7 @@ void CtiCCCommandExecutor::DisableFeeder()
                         additional += currentFeeder->getPaoDescription();
                         additional += ")";
                     }
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
                     long stationId, areaId, spAreaId;
                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
@@ -524,7 +524,7 @@ void CtiCCCommandExecutor::EnableCapBank()
                         }
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
                             INT seqId = CCEventSeqIdGen();
                             currentSubstationBus->setEventSequence(seqId);
@@ -537,7 +537,7 @@ void CtiCCCommandExecutor::EnableCapBank()
                             CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
                                           << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
 
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
                         }
                     }
                     else
@@ -596,7 +596,7 @@ void CtiCCCommandExecutor::DisableCapBank()
                         }
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
                             long stationId, areaId, spAreaId;
                             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
@@ -607,7 +607,7 @@ void CtiCCCommandExecutor::DisableCapBank()
                             CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
                                           << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
 
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
                         }
                     }
                     else
@@ -688,8 +688,8 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
 
     capBank->setControlStatus(controlStatus);
 
-    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-    CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
+    CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE), CALLSITE);
 
     int subId = store->findSubBusIDbyCapBankID(bankId);
     int feederId = store->findFeederIDbyCapBankID(bankId);
@@ -1655,7 +1655,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
     for each(CtiSignalMsg* message in signals)
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(message);
+        CtiCapController::getInstance()->sendMessageToDispatch(message, CALLSITE);
     }
     signals.clear();
 
@@ -1672,7 +1672,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
     if (multi->getCount() > 0)
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
     }
     else
     {
@@ -2610,7 +2610,7 @@ void CtiCCCommandExecutor::EnableArea()
 
     if (multi->getCount() > 0)
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
     }
     else
     {
@@ -2689,7 +2689,7 @@ void CtiCCCommandExecutor::DisableArea()
 
     if (multi->getCount() > 0)
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
     }
     else
     {
@@ -2949,7 +2949,7 @@ void CtiCCCommandExecutor::EnableSystem()
 
     if (multi->getCount() > 0)
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
     }
     else
     {
@@ -3004,7 +3004,7 @@ void CtiCCCommandExecutor::DisableSystem()
 
     if (multi->getCount() > 0)
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
     }
     else
     {
@@ -3829,7 +3829,7 @@ void CtiCCCommandExecutor::ConfirmArea()
 
         if (multi->getCount() > 0)
         {
-            CtiCapController::getInstance()->sendMessageToDispatch(multi);
+            CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
         }
         else
         {
@@ -3897,7 +3897,7 @@ void CtiCCCommandExecutor::ConfirmArea()
 
                 if (multi->getCount() > 0)
                 {
-                    CtiCapController::getInstance()->sendMessageToDispatch(multi);
+                    CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
                 }
                 else
                 {
@@ -3956,7 +3956,7 @@ void CtiCCCommandExecutor::ConfirmSubstation()
 
         if (multi->getCount() > 0)
         {
-            CtiCapController::getInstance()->sendMessageToDispatch(multi);
+            CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
         }
         else
         {
@@ -5171,7 +5171,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
         CTILOG_INFO(dout, "Reset Daily Operations for PAO Id: " << paoId);
         if( pointChanges.size() > 0 )
         {
-            CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+            CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg, CALLSITE);
         }
         else
             delete multiDispatchMsg;
@@ -5270,7 +5270,7 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
 
     if (multi->getCount() > 0)
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        CtiCapController::getInstance()->sendMessageToDispatch(multi, CALLSITE);
     }
     else
     {
@@ -5741,7 +5741,7 @@ void CtiCCClientMsgExecutor::execute()
 ---------------------------------------------------------------------------*/
 void CtiCCForwardMsgToDispatchExecutor::execute()
 {
-    CtiCapController::getInstance()->sendMessageToDispatch(_ctiMessage->replicateMessage());
+    CtiCapController::getInstance()->sendMessageToDispatch(_ctiMessage->replicateMessage(), CALLSITE);
 }
 
 /*===========================================================================
@@ -5852,7 +5852,7 @@ void CtiCCPointDataMsgExecutor::execute()
                                 currentCapBank->setPorterRetFailFlag(false);
                                 currentSubstationBus->figureEstimatedVarLoadPointValue();
                                 if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
-                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType), CALLSITE);
 
                                 string text = "";
                                 if (logToCCEvent)
@@ -5914,7 +5914,7 @@ void CtiCCPointDataMsgExecutor::execute()
                             long stationId, areaId, spAreaId;
                             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                             CtiCapController::submitEventLogEntry(EventLogEntry(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), text, _pointDataMsg->getUser() ));
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),text,additional,CapControlLogType,SignalEvent,_pointDataMsg->getUser()));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),text,additional,CapControlLogType,SignalEvent,_pointDataMsg->getUser()), CALLSITE);
                         }
                         found = true;
                         break;
@@ -5933,7 +5933,7 @@ void CtiCCPointDataMsgExecutor::execute()
     }
     _pointDataMsg->setTags(tags | TAG_POINT_FORCE_UPDATE);
 
-    CtiCapController::getInstance()->sendMessageToDispatch(_pointDataMsg->replicateMessage());
+    CtiCapController::getInstance()->sendMessageToDispatch(_pointDataMsg->replicateMessage(), CALLSITE);
 }
 
 

@@ -1487,7 +1487,7 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
             //sending a signal message to dispatch so that changes from the amfm are in the system log
             string text("Import from AMFM system caused database changes");
             string additional = string();
-            CtiCapController::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control") );
+            CtiCapController::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"), CALLSITE );
         }
     }
 
@@ -1750,7 +1750,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += tempchar;
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
-                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"), CALLSITE);
                                     CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setBankSize(kvarrating);
@@ -1773,7 +1773,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += tempFixedOperationalStateString;
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
-                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"), CALLSITE);
                                     CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setOperationalState(ciStringEqual(cap_fs,tempFixedOperationalStateString)?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
@@ -1794,7 +1794,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += cap_disable_flag;
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
-                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"), CALLSITE);
                                     CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setDisableFlag(ciStringEqual(cap_disable_flag,m3iAMFMDisabledString));
@@ -1815,7 +1815,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += translateCBCModelToControllerType(cbc_model);
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
-                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"), CALLSITE);
                                     CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setControllerType(translateCBCModelToControllerType(cbc_model));
@@ -1836,7 +1836,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += location;
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
-                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"), CALLSITE);
                                     CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setPaoDescription(location);
@@ -1960,7 +1960,7 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
                     additional += ", id: ";
                     _ltoa(currentFeeder->getPaoId(),tempchar,10);
                     additional += tempchar;
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"), CALLSITE);
                     CTILOG_INFO(dout, text << ", " << additional);
                 }
 
@@ -2019,7 +2019,7 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
         additional += tempchar;
         additional += ", on Feeder: ";
         additional += currentFeeder->getPaoName();
-        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"), CALLSITE);
         CTILOG_INFO(dout, text << ", " << additional);
     }
 }
@@ -2243,7 +2243,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                             if( multiDispatchMsg->getCount() > 0 )
                             {
                                 multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
-                                CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+                                CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg, CALLSITE);
                             }
                             else
                             {
@@ -2718,7 +2718,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                                 currentCapBank->setAfterVarsString("abnormal data");
                                 currentCapBank->setPercentChangeString(" --- ");
-                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
+                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE), CALLSITE);
                                 long stationId, areaId, spAreaId;
                                 getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                                 EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending, CloseQuestionable", "cap control");
@@ -2737,7 +2737,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                                 currentCapBank->setAfterVarsString("abnormal data");
                                 currentCapBank->setPercentChangeString(" --- ");
-                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
+                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE), CALLSITE);
                                 long stationId, areaId, spAreaId;
                                 getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                                 EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending, OpenQuestionable", "cap control");
@@ -2774,7 +2774,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE), CALLSITE);
                             long stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                             EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled, CloseQuestionable", "cap control");
@@ -2792,7 +2792,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE), CALLSITE);
                             long stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                             EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled, OpenQuestionable", "cap control");
@@ -2851,7 +2851,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE), CALLSITE);
                             long stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
@@ -2871,7 +2871,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE), CALLSITE);
                             long stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
@@ -2972,7 +2972,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
     if( pointChanges.size() > 0 )
     {
         multiPointMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
-        CtiCapController::getInstance()->sendMessageToDispatch(multiPointMsg);
+        CtiCapController::getInstance()->sendMessageToDispatch(multiPointMsg, CALLSITE);
     }
     else
         delete multiPointMsg;
@@ -3007,7 +3007,7 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
                                               bus->getPaoCategory(), bus->getPaoType(),
                                               ChangeTypeUpdate);
     dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
 
     return true; // No error occured!
 }
@@ -3056,11 +3056,11 @@ bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool 
     if (disableFlag)
     {
         pao->setDisableFlag(disableFlag, MAXPRIORITY);//high priority, process before DB Change
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
     }
     else
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
         pao->setDisableFlag(disableFlag); //normal priority, DB Change will be processed first
     }
 
@@ -3095,7 +3095,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
                                                   capbank->getPaoType(),
                                                   ChangeTypeUpdate);
     dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
 
     return true;
 }
@@ -3140,7 +3140,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
                                                       capbank->getPaoType(),
                                                       ChangeTypeUpdate);
         dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
     }
 
     return paobjectUpdateSuccessful && capbankUpdateSuccessful;
@@ -3193,7 +3193,7 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
                                                   feeder->getPaoType(),
                                                   ChangeTypeUpdate);
     dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
 
     return insertSuccessful;
 }
@@ -3239,7 +3239,7 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
                                                   bus->getPaoType(),
                                                   ChangeTypeUpdate);
     dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
 
     return insertSuccesful;
 }
