@@ -39,7 +39,7 @@ struct gang_operated_voltage_regulator_fixture_core
             }
         }
 
-        virtual void sendMessageToDispatch(CtiMessage* message, ::Cti::CallSite cs) override
+        virtual void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
         {
             signalMessages.push_back(message);
         }

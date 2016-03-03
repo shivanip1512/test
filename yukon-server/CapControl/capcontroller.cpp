@@ -4032,7 +4032,7 @@ void CtiCapController::signalMsg(long pointID, unsigned tags, const string& text
     Sends a cti message to dispatch, this is a way for other threads to use
     the CtiCapController's connection to dispatch.
 ---------------------------------------------------------------------------*/
-void CtiCapController::sendMessageToDispatch( CtiMessage* message, ::Cti::CallSite cs )
+void CtiCapController::sendMessageToDispatch( CtiMessage* message, Cti::CallSite cs )
 {
     try
     {
