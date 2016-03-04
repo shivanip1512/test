@@ -100,7 +100,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
     @PostConstruct
     public void init() {
         maxBufferedDocs = configurationSource.getInteger("WEB_INDEX_MANAGER_MAX_BUFFERED_DOCS", maxBufferedDocs);
-        int queueSize = configurationSource.getInteger("WEB_INDEX_MANAGER_QUEUE_SIZE", 1000);
+        int queueSize = configurationSource.getInteger("WEB_INDEX_MANAGER_QUEUE_SIZE", 10000);
         updateQueue = new LinkedBlockingQueue<IndexUpdateInfo>(queueSize);
 
         // Using SimpleFSDirectory isn't the speediest form of Directories, but seems to be the most
@@ -200,11 +200,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
                 dbChange.getCategory());
 
             if (info != null) {
-                boolean success = updateQueue.offer(info);
-                if (!success) {
-                    log.error("Unable to insert IndexUpdateInfo onto work queue (it is full), index will be out of sync");
-                    updateErrorCount.getAndIncrement();
-                }
+                updateQueue.put(info);
             }
         } catch (RuntimeException e) {
             if (log.isDebugEnabled()) {
@@ -214,6 +210,8 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             }
             updateErrorCount.getAndIncrement();
             currentException = e;
+        } catch (InterruptedException e) {
+            log.error("Caught exception handling db change for " + getIndexName() + ": " + e);
         }
     }
 
