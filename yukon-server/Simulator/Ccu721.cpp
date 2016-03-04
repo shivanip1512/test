@@ -612,6 +612,8 @@ error_t Ccu721::extractQueueEntry(const bytes &command_data, int index, int next
         request.stagesToFollow  = command_data[index + 2];
         entry.dlc_length        = command_data[index + 3];
 
+        request.length = entry.dlc_length+4;        // Request length is the length of the dlc header and data.
+
         switch( command_data[index + 4] & 0xf0 )
         {
             default:
@@ -635,7 +637,7 @@ error_t Ccu721::extractQueueEntry(const bytes &command_data, int index, int next
                 bytes b_word_buf = bytes(command_data.begin() + (index + 4), command_data.begin() + (index + 11));
 
                 // Create it and store it in the holder.
-                EmetconWord::restoreWords(b_word_buf,b_word_holder);
+                EmetconWord::restoreWords( b_word_buf, b_word_holder );
 
                 const EmetconWordB &bWord = *boost::static_pointer_cast<const EmetconWordB>(b_word_holder[0]);
 
