@@ -67,7 +67,7 @@ void WorkerThread::interrupt()
 /**
  * force termination of the thread
  */
-void WorkerThread::terminate()
+void WorkerThread::terminateThread()
 {
     TerminateThread( _thread.native_handle(), EXIT_SUCCESS );
 }
@@ -107,7 +107,7 @@ void WorkerThread::tryJoinOrTerminateFor( const Timing::Chrono &duration )
     {
         CTILOG_WARN(dout, "Join did not complete for " << duration << ", terminating thread " << _function._name);
 
-        terminate();
+        terminateThread();
     }
 }
 /**

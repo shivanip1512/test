@@ -343,7 +343,7 @@ void CtiCalcLogicService::Run( )
 
                                 Cti::reportSystemMetrics( CompileInfo );
 
-                                nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
+                                nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds
                             }
 
                             Sleep(15000);
@@ -424,7 +424,7 @@ void CtiCalcLogicService::Run( )
                             previous = next;
                             NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( Now, CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                            dispatchConnection->WriteConnQue( new CtiPointDataMsg(pointID, ThreadMonitor.getState(), 
+                            dispatchConnection->WriteConnQue( new CtiPointDataMsg(pointID, ThreadMonitor.getState(),
                                 NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()), CALLSITE);
                         }
                     }
@@ -446,7 +446,7 @@ void CtiCalcLogicService::Run( )
 
                         Cti::reportSystemMetrics( CompileInfo );
 
-                        nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
+                        nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds
                     }
 
                     Sleep(1000);
@@ -506,7 +506,7 @@ void CtiCalcLogicService::Run( )
                 if( ! calcThreadFunc.tryJoinFor(Cti::Timing::Chrono::seconds(30)) )
                 {
                     CTILOG_ERROR(dout, "CalcLogicSvc main did not shutdown gracefully.  Will attempt a forceful shutdown.");
-                    calcThreadFunc.terminate();
+                    calcThreadFunc.terminateThread();
                 }
                 else
                 {

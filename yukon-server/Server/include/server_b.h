@@ -53,7 +53,7 @@ public:
    virtual std::string getMyServerName() const;
 
    virtual void  shutdown();
-   void          terminate();
+   void          terminateServerThread();
 
    ptr_type findConnectionManager(const Cti::ConnectionHandle handle);
 };

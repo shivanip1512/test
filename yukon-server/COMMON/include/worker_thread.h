@@ -82,7 +82,7 @@ public:
     bool isRunning();
     void start();
     void interrupt();
-    void terminate();
+    void terminateThread();
 
     void join();
     bool tryJoinFor( const Timing::Chrono &duration );

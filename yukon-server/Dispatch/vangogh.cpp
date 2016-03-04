@@ -48,7 +48,7 @@ int DispatchMainFunction(int argc, char **argv)
         CreateMiniDump("dispatch");
 
         CTILOG_ERROR(dout, "Could not Join Dispatch - Terminating");
-        VanGogh.terminate();
+        VanGogh.terminateServerThread();
     }
 
     _CrtSetAllocHook(pfnOldCrtAllocHook);

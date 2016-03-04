@@ -413,7 +413,7 @@ bool CtiServer::join(unsigned long millis)
 }
 
 /* Use Only as a last resort */
-void CtiServer::terminate()
+void CtiServer::terminateServerThread()
 {
     TerminateThread(_mainThread.native_handle(), EXIT_SUCCESS); //This is a last resort
 }
