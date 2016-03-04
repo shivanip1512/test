@@ -6,72 +6,50 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.joda.time.Instant;
 
 public class RfnLcrDataSimulatorStatus {
-    private volatile Instant lastFinishedInjection6200;
-    private AtomicLong numComplete6200;
-    private volatile String errorMessage;
-    private AtomicBoolean isRunning6200;
+    
+    private volatile Instant startTime;
+    private volatile Instant stopTime;
+    private AtomicLong success = new AtomicLong(0);
+    private AtomicLong failure = new AtomicLong(0);
+    private AtomicBoolean running = new AtomicBoolean(false);
+    
+    private volatile Instant lastInjectionTime;
 
-    private volatile Instant lastFinishedInjection6600;
-    private AtomicLong numComplete6600;
-    private AtomicBoolean isRunning6600;
-
-    public RfnLcrDataSimulatorStatus() {
-        this.numComplete6200 = new AtomicLong();
-        this.isRunning6200 = new AtomicBoolean();
-        this.numComplete6600 = new AtomicLong();
-        this.isRunning6600 = new AtomicBoolean();
+    public Instant getStartTime() {
+        return startTime;
+    }
+    public void setStartTime(Instant startTime) {
+        this.startTime = startTime;
+    }
+    public AtomicLong getSuccess() {
+        return success;
+    }
+    public void setSuccess(AtomicLong success) {
+        this.success = success;
+    }
+    public Instant getLastInjectionTime() {
+        return lastInjectionTime;
+    }
+    public void setLastInjectionTime(Instant lastInjectionTime) {
+        this.lastInjectionTime = lastInjectionTime;
+    }
+    public AtomicLong getFailure() {
+        return failure;
+    }
+    public void setFailure(AtomicLong failure) {
+        this.failure = failure;
     }
 
-    public static void reInitializeStatus(RfnLcrDataSimulatorStatus status) {
-        status.numComplete6200 = new AtomicLong();
-        status.isRunning6200 = new AtomicBoolean();
-        status.numComplete6600 = new AtomicLong();
-        status.isRunning6600 = new AtomicBoolean();
-        status.errorMessage = null;
+    public AtomicBoolean isRunning() {
+        return running;
     }
-    public Instant getLastFinishedInjection6200() {
-        return lastFinishedInjection6200;
+    public void setRunning(AtomicBoolean running) {
+        this.running = running;
     }
-
-    public void setLastFinishedInjection6200(Instant lastFinishedInjection6200) {
-        this.lastFinishedInjection6200 = lastFinishedInjection6200;
+    public Instant getStopTime() {
+        return stopTime;
     }
-
-    public Instant getLastFinishedInjection6600() {
-        return lastFinishedInjection6600;
+    public void setStopTime(Instant stopTime) {
+        this.stopTime = stopTime;
     }
-
-    public void setLastFinishedInjection6600(Instant lastFinishedInjection6600) {
-        this.lastFinishedInjection6600 = lastFinishedInjection6600;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    public AtomicLong getNumComplete6200() {
-        return numComplete6200;
-    }
-
-    public AtomicBoolean getIsRunning6200() {
-        return isRunning6200;
-    }
-
-    public AtomicLong getNumComplete6600() {
-        return numComplete6600;
-    }
-
-    public AtomicBoolean getIsRunning6600() {
-        return isRunning6600;
-    }
-
-    public void resetCompletionState() {
-        this.numComplete6200 = new AtomicLong();
-        this.numComplete6600 = new AtomicLong();
-    }
-
 }

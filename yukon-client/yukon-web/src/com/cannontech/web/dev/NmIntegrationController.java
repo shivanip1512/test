@@ -56,7 +56,6 @@ import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.development.model.DataSimulatorParameters;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -74,7 +73,6 @@ import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.dev.model.DataSimulatorStatus;
 import com.cannontech.web.dev.model.MeterRfnSimulatorStatus;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -99,8 +97,6 @@ public class NmIntegrationController {
     @Autowired private YsmJmxQueryService jmxQueryService;
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
-    private final DataSimulatorStatus dataSimulatorStatus = new DataSimulatorStatus();
-    private final DataSimulatorStatus existingDataSimulatorStatus = new DataSimulatorStatus();
     private final MeterRfnSimulatorStatus existingMeterRfnSimulatorStatus = new MeterRfnSimulatorStatus();
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
@@ -584,10 +580,9 @@ public class NmIntegrationController {
 
     @RequestMapping("viewLcrDataSimulator")
     public String viewLcrDataSimulator(ModelMap model, YukonUserContext userContext) {
-        model.addAttribute("isRunning", dataSimulator.isRunning());
         SimulatorSettings currentSettings = dataSimulator.getCurrentSettings();
         if (currentSettings == null) {
-            currentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 123456789, 1390000000, 0.0);
+            currentSettings = new SimulatorSettings(100000, 200000, 300000, 320000);
         }
         model.addAttribute("currentSettings", currentSettings);
         model.addAttribute("dataSimulatorStatus", dataSimulatorStatus(userContext));
@@ -607,246 +602,63 @@ public class NmIntegrationController {
 
     @RequestMapping(value = "startDataSimulator")
     @ResponseBody
-    public void startDataSimulator(final DataSimulatorParameters dataSimulatorParameters) {
-        final AtomicBoolean isRunning6200 = dataSimulatorStatus.getIsRunning6200();
-        if (!isRunning6200.compareAndSet(false, true)) {
-            return;
-        }
-
-        final AtomicBoolean isCancelled6200 = dataSimulatorStatus.getIsCancelled6200();
-        isCancelled6200.set(false);
-        dataSimulatorStatus.setErrorMessage(null);
-        SimulatorSettings settings =
-            new SimulatorSettings(dataSimulatorParameters.getLcr6200serialFrom(),
-                dataSimulatorParameters.getLcr6200serialTo(), dataSimulatorParameters.getLcr6600serialFrom(),
-                dataSimulatorParameters.getLcr6600serialTo(), dataSimulatorParameters.getMessageId(),
-                dataSimulatorParameters.getMessageIdTimestamp(), dataSimulatorParameters.getDaysBehind());
-        dataSimulatorStatus.getNumComplete6200().set(0);
-        dataSimulatorStatus.setNumTotal6200(dataSimulatorParameters.getLcr6200serialTo()
-            - dataSimulatorParameters.getLcr6200serialFrom());
-        // 6600
-        final AtomicBoolean isRunning6600 = dataSimulatorStatus.getIsRunning6600();
-        if (!isRunning6600.compareAndSet(false, true)) {
-            return;
-        }
-
-        final AtomicBoolean isCancelled6600 = dataSimulatorStatus.getIsCancelled6600();
-        isCancelled6600.set(false);
-
-        dataSimulatorStatus.getNumComplete6600().set(0);
-        dataSimulatorStatus.setNumTotal6600(dataSimulatorParameters.getLcr6600serialTo()
-            - dataSimulatorParameters.getLcr6600serialFrom());
-        // End
-        dataSimulator.startSimulator(settings);
-
+    public void startDataSimulator(final SimulatorSettings settings) {
+        dataSimulator.sendMessagesByRange(settings);
     }
 
     @RequestMapping(value = "stopDataSimulator")
     public void stopDataSimulator() {
-        dataSimulatorStatus.getIsCancelled6200().set(true);
-        dataSimulatorStatus.getIsCancelled6600().set(true);
-        dataSimulator.stopSimulator();
+        dataSimulator.stopRangeSimulator();
     }
 
     @RequestMapping(value = "sendLcrDeviceMessages", method = RequestMethod.GET)
     @ResponseBody
     public void sendLcrDeviceMessages() {
-        List<RfnDevice> rfnLcrDeviceList = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfLcrTypes());
-        getDeviceCountByType(rfnLcrDeviceList);
-        final AtomicBoolean isRunning6200 = existingDataSimulatorStatus.getIsRunning6200();
-
-        // 6200
-        if (!isRunning6200.compareAndSet(false, true)) {
-            return;
-        }
-
-        final AtomicBoolean isCancelled6200 = existingDataSimulatorStatus.getIsCancelled6200();
-        isCancelled6200.set(false);
-        existingDataSimulatorStatus.setErrorMessage(null);
-        existingDataSimulatorStatus.getNumComplete6200().set(0);
-        // 6600
-        final AtomicBoolean isRunning6600 = existingDataSimulatorStatus.getIsRunning6600();
-        if (!isRunning6600.compareAndSet(false, true)) {
-            return;
-        }
-
-        final AtomicBoolean isCancelled6600 = existingDataSimulatorStatus.getIsCancelled6600();
-        isCancelled6600.set(false);
-
-        existingDataSimulatorStatus.getNumComplete6600().set(0);
-        // End
-
-        dataSimulator.sendLcrDeviceMessages(rfnLcrDeviceList);
-    }
-
-    private void getDeviceCountByType(List<RfnDevice> rfnLcrDeviceList) {
-        long total6200Devices = 0;
-        long total6600Devices = 0;
-        for (RfnDevice device : rfnLcrDeviceList) {
-            if (device.getPaoIdentifier().getPaoType().equals(PaoType.LCR6200_RFN)) {
-                total6200Devices++;
-            } else if (device.getPaoIdentifier().getPaoType().equals(PaoType.LCR6600_RFN)) {
-                total6600Devices++;
-            }
-        }
-        existingDataSimulatorStatus.setNumTotal6200(total6200Devices);
-        existingDataSimulatorStatus.setNumTotal6600(total6600Devices);
+        dataSimulator.sendMessagesToAllDevices();
     }
 
     @RequestMapping(value = "stopSendingLcrDeviceMessages", method = RequestMethod.GET)
     public String stopSendLcrDeviceMessages() {
-        existingDataSimulatorStatus.getIsCancelled6200().set(true);
-        existingDataSimulatorStatus.getIsCancelled6600().set(true);
-        dataSimulator.stopMessageSimulator();
+        dataSimulator.stopAllDeviceSimulator();
         return "redirect:viewLcrDataSimulator";
     }
 
     @RequestMapping("datasimulator-status")
     @ResponseBody
     public Map<String, Object> dataSimulatorStatus(YukonUserContext userContext) {
-
-        RfnLcrDataSimulatorStatus rfnLcrDataSimulatorStatus = dataSimulator.getRfnLcrDataSimulatorStatus();
-
-        dataSimulatorStatus.setErrorMessage(rfnLcrDataSimulatorStatus.getErrorMessage());
-        dataSimulatorStatus.setLastFinishedInjection6200(rfnLcrDataSimulatorStatus.getLastFinishedInjection6200());
-        dataSimulatorStatus.getIsRunning6200().set(rfnLcrDataSimulatorStatus.getIsRunning6200().get());
-        dataSimulatorStatus.getNumComplete6200().set(rfnLcrDataSimulatorStatus.getNumComplete6200().get());
-
-        dataSimulatorStatus.setLastFinishedInjection6600(rfnLcrDataSimulatorStatus.getLastFinishedInjection6600());
-        dataSimulatorStatus.getIsRunning6600().set(rfnLcrDataSimulatorStatus.getIsRunning6600().get());
-        dataSimulatorStatus.getNumComplete6600().set(rfnLcrDataSimulatorStatus.getNumComplete6600().get());
-
-        Map<String, Object> dataSimulatorStatusJson = Maps.newHashMapWithExpectedSize(10);
-        dataSimulatorStatusJson.put("isRunning6200", dataSimulatorStatus.getIsRunning6200().get());
-        dataSimulatorStatusJson.put("isCancelled6200", dataSimulatorStatus.getIsCancelled6200().get());
-        dataSimulatorStatusJson.put("numTotal6200", dataSimulatorStatus.getNumTotal6200() * 1440);
-        dataSimulatorStatusJson.put("numComplete6200", dataSimulatorStatus.getNumComplete6200().get());
-        Instant lastRun6200 = dataSimulatorStatus.getLastFinishedInjection6200();
-
-        dataSimulatorStatusJson.put("isRunning6600", dataSimulatorStatus.getIsRunning6600().get());
-        dataSimulatorStatusJson.put("isCancelled6600", dataSimulatorStatus.getIsCancelled6600().get());
-        dataSimulatorStatusJson.put("numTotal6600", dataSimulatorStatus.getNumTotal6600() * 1440);
-        dataSimulatorStatusJson.put("numComplete6600", dataSimulatorStatus.getNumComplete6600().get());
-        Instant lastRun6600 = dataSimulatorStatus.getLastFinishedInjection6600();
-
-        if (dataSimulatorStatus.getNumTotal6200() != 0 && !dataSimulatorStatus.getIsCancelled6200().get()) {
-            dataSimulatorStatus.setIsRunning6200(true);
-            dataSimulatorStatusJson.put("status6200", "running");
-            dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
-            if (lastRun6200 != null) {
-                String lastSimulationStr =
-                    dateFormattingService.format(lastRun6200, DateFormatEnum.DATEHM, userContext);
-                dataSimulatorStatusJson.put("lastSimulation6200", lastSimulationStr);
-            }
-        } else if (lastRun6200 != null) {
-            String lastSimulationStr = dateFormattingService.format(lastRun6200, DateFormatEnum.DATEHM, userContext);
-            dataSimulatorStatusJson.put("status6200", "notRunning");
-            dataSimulatorStatusJson.put("lastSimulation6200", lastSimulationStr);
-            dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
-        } else {
-            dataSimulatorStatusJson.put("status6200", "neverRan");
-        }
-
-        String errorMessage = dataSimulatorStatus.getErrorMessage();
-        if (!StringUtils.isBlank(errorMessage)) {
-            dataSimulatorStatusJson.put("hasError", true);
-            dataSimulatorStatusJson.put("errorMessage", "Error Occured: " + errorMessage);
-        }
-        // 6600
-        if (dataSimulatorStatus.getNumTotal6600() != 0 && !dataSimulatorStatus.getIsCancelled6600().get()) {
-            dataSimulatorStatus.setIsRunning6600(true);
-            dataSimulatorStatusJson.put("status6600", "running");
-            dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
-            if (lastRun6600 != null) {
-                String lastSimulationStr =
-                    dateFormattingService.format(lastRun6600, DateFormatEnum.DATEHM, userContext);
-                dataSimulatorStatusJson.put("lastSimulation6600", lastSimulationStr);
-            }
-        } else if (lastRun6600 != null) {
-            String lastSimulationStr = dateFormattingService.format(lastRun6600, DateFormatEnum.DATEHM, userContext);
-            dataSimulatorStatusJson.put("status6600", "notRunning");
-            dataSimulatorStatusJson.put("lastSimulation6600", lastSimulationStr);
-            dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
-        } else {
-            dataSimulatorStatusJson.put("status6600", "neverRan");
-        }
-
-        // End
-        return dataSimulatorStatusJson;
+        RfnLcrDataSimulatorStatus status = dataSimulator.getStatusByRange();
+        return buildSimulatorStatusJson(status);
     }
 
     @RequestMapping("existing-datasimulator-status")
     @ResponseBody
     public Map<String, Object> existingDataSimulatorStatus(YukonUserContext userContext) {
-        RfnLcrDataSimulatorStatus rfnLcrDataSimulatorStatus = dataSimulator.getRfnLcrExistingDataSimulatorStatus();
+        RfnLcrDataSimulatorStatus status = dataSimulator.getAllDevicesStatus();      
+        return buildSimulatorStatusJson(status);
+    }
+    
+    private Map<String, Object> buildSimulatorStatusJson(RfnLcrDataSimulatorStatus status) {
+        Map<String, Object> json = Maps.newHashMapWithExpectedSize(6);
 
-        existingDataSimulatorStatus.setErrorMessage(rfnLcrDataSimulatorStatus.getErrorMessage());
-        existingDataSimulatorStatus.setLastFinishedInjection6200(rfnLcrDataSimulatorStatus.getLastFinishedInjection6200());
-        existingDataSimulatorStatus.getIsRunning6200().set(rfnLcrDataSimulatorStatus.getIsRunning6200().get());
-        existingDataSimulatorStatus.getNumComplete6200().set(rfnLcrDataSimulatorStatus.getNumComplete6200().get());
-
-        existingDataSimulatorStatus.setLastFinishedInjection6600(rfnLcrDataSimulatorStatus.getLastFinishedInjection6600());
-        existingDataSimulatorStatus.getIsRunning6600().set(rfnLcrDataSimulatorStatus.getIsRunning6600().get());
-        existingDataSimulatorStatus.getNumComplete6600().set(rfnLcrDataSimulatorStatus.getNumComplete6600().get());
-
-        Map<String, Object> dataSimulatorStatusJson = Maps.newHashMapWithExpectedSize(10);
-        dataSimulatorStatusJson.put("isRunning6200", existingDataSimulatorStatus.getIsRunning6200().get());
-        dataSimulatorStatusJson.put("isCancelled6200", existingDataSimulatorStatus.getIsCancelled6200().get());
-        dataSimulatorStatusJson.put("numTotal6200", existingDataSimulatorStatus.getNumTotal6200());
-        dataSimulatorStatusJson.put("numComplete6200", existingDataSimulatorStatus.getNumComplete6200().get());
-        Instant lastRun6200 = existingDataSimulatorStatus.getLastFinishedInjection6200();
-
-        dataSimulatorStatusJson.put("isRunning6600", existingDataSimulatorStatus.getIsRunning6600().get());
-        dataSimulatorStatusJson.put("isCancelled6600", existingDataSimulatorStatus.getIsCancelled6600().get());
-        dataSimulatorStatusJson.put("numTotal6600", existingDataSimulatorStatus.getNumTotal6600());
-        dataSimulatorStatusJson.put("numComplete6600", existingDataSimulatorStatus.getNumComplete6600().get());
-        Instant lastRun6600 = existingDataSimulatorStatus.getLastFinishedInjection6600();
-
-        if (existingDataSimulatorStatus.getNumTotal6200() != 0
-            && !existingDataSimulatorStatus.getIsCancelled6200().get()) {
-            existingDataSimulatorStatus.setIsRunning6200(true);
-            dataSimulatorStatusJson.put("status6200", "running");
-            dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
-            if (lastRun6200 != null) {
-                String lastSimulationStr =
-                    dateFormattingService.format(lastRun6200, DateFormatEnum.DATEHM, userContext);
-                dataSimulatorStatusJson.put("lastSimulation6200", lastSimulationStr);
-            }
-        } else if (lastRun6200 != null) {
-            String lastSimulationStr = dateFormattingService.format(lastRun6200, DateFormatEnum.DATEHM, userContext);
-            dataSimulatorStatusJson.put("status6200", "notRunning");
-            dataSimulatorStatusJson.put("lastSimulation6200", lastSimulationStr);
-            dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
+        if (status.getStartTime() == null) {
+            json.put("startTime", "");
         } else {
-            dataSimulatorStatusJson.put("status6200", "neverRan");
+            json.put("startTime", status.getStartTime().toDateTime().toString("MM/dd/YYYY HH:mm"));
         }
-
-        String errorMessage = existingDataSimulatorStatus.getErrorMessage();
-        if (!StringUtils.isBlank(errorMessage)) {
-            dataSimulatorStatusJson.put("hasError", true);
-            dataSimulatorStatusJson.put("errorMessage", "Error Occured: " + errorMessage);
-        }
-        // 6600
-        if (existingDataSimulatorStatus.getNumTotal6600() != 0
-            && !existingDataSimulatorStatus.getIsCancelled6600().get()) {
-            existingDataSimulatorStatus.setIsRunning6600(true);
-            dataSimulatorStatusJson.put("status6600", "running");
-            dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
-            if (lastRun6600 != null) {
-                String lastSimulationStr =
-                    dateFormattingService.format(lastRun6600, DateFormatEnum.DATEHM, userContext);
-                dataSimulatorStatusJson.put("lastSimulation6600", lastSimulationStr);
-            }
-        } else if (lastRun6600 != null) {
-            String lastSimulationStr = dateFormattingService.format(lastRun6600, DateFormatEnum.DATEHM, userContext);
-            dataSimulatorStatusJson.put("status6600", "notRunning");
-            dataSimulatorStatusJson.put("lastSimulation6600", lastSimulationStr);
-            dataSimulatorStatusJson.put("perMinuteMsgCount", dataSimulator.getPerMinuteMsgCount());
+        if (status.getStopTime() == null) {
+            json.put("stopTime", "");
         } else {
-            dataSimulatorStatusJson.put("status6600", "neverRan");
+            json.put("stopTime", status.getStopTime().toDateTime().toString("MM/dd/YYYY HH:mm"));
         }
-        // End
-        return dataSimulatorStatusJson;
+        json.put("success", status.getSuccess());
+        json.put("failure", status.getFailure());
+        json.put("running", status.isRunning());
+        if (status.getLastInjectionTime() == null) {
+            json.put("lastInjectionTime", "");
+        } else {
+            json.put("lastInjectionTime", status.getLastInjectionTime().toDateTime().toString("MM/dd/YYYY HH:mm"));
+        }
+        return json;
     }
     
     @RequestMapping("existing-rfnMetersimulator-status")

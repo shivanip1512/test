@@ -1,8 +1,5 @@
 package com.cannontech.dr.rfn.service;
 
-import java.util.List;
-
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 
@@ -23,14 +20,12 @@ public interface RfnLcrDataSimulatorService {
      * Starts the RFN LCR data simulator.
      * @param settings Defines the parameters of the simulation, particularly the device serial number ranges.
      */
-    void startSimulator(SimulatorSettings settings);
+    void sendMessagesByRange(SimulatorSettings settings);
 
     /**
      * Stops the RFN LCR data simulator.
      */
-    void stopSimulator();
-
-    boolean isRunning();
+    void stopRangeSimulator();
 
     /**
      * Get the current settings if the simulator has been running. Otherwise, null is returned. If the
@@ -42,25 +37,20 @@ public interface RfnLcrDataSimulatorService {
     /**
      * Get the LCR data simulator status if the simulator has been running.
      */
-    public RfnLcrDataSimulatorStatus getRfnLcrDataSimulatorStatus();
+    RfnLcrDataSimulatorStatus getStatusByRange();
     
     /**
      * Get the LCR data simulator status for existing devices if the simulator has been running.
      */
-    public RfnLcrDataSimulatorStatus getRfnLcrExistingDataSimulatorStatus();
+    RfnLcrDataSimulatorStatus getAllDevicesStatus();
 
     /**
      * Send message for LCR devices.
      */
-    void sendLcrDeviceMessages(List<RfnDevice> rfnLcrDeviceList);
+    void sendMessagesToAllDevices();
 
     /**
      * Stop sending message to LCR devices.
      */
-    void stopMessageSimulator();
-
-    /**
-     * Return the Sent messages count for a minute
-     */
-    public long getPerMinuteMsgCount();
+    void stopAllDeviceSimulator();
 }
