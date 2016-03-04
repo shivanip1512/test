@@ -11,7 +11,6 @@ public:
     CtiCCArea();
     CtiCCArea(StrategyManager * strategyManager);
     CtiCCArea(Cti::RowReader& rdr, StrategyManager * strategyManager);
-    CtiCCArea(const CtiCCArea& area);
 
     virtual ~CtiCCArea();
 
@@ -27,9 +26,6 @@ public:
     void checkAndUpdateChildVoltReductionFlags();
 
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
-    void setDynamicData(Cti::RowReader& rdr);
-
-    CtiCCArea& operator=(const CtiCCArea& right);
 
     CtiCCArea* replicate() const;
 
@@ -38,10 +34,11 @@ private:
     bool _reEnableAreaFlag;
     bool _childVoltReductionFlag;
 
-       //don't stream
-    bool _insertDynamicDataFlag;
-
     void restore(Cti::RowReader& rdr);
+    void setDynamicData(Cti::RowReader& rdr);
+
+    CtiCCArea(const CtiCCArea& area);
+    CtiCCArea& operator=(const CtiCCArea& right);
 };
 
 typedef CtiCCArea* CtiCCAreaPtr;

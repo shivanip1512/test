@@ -25,7 +25,8 @@ CtiCCAreaBase::CtiCCAreaBase()
       _estPfactor(0),
       _ovUvDisabledFlag(false),
       _dirty(false),
-      _areaUpdatedFlag(false)
+      _areaUpdatedFlag(false),
+      _insertDynamicDataFlag(true)
 {
 }
 
@@ -37,7 +38,8 @@ CtiCCAreaBase::CtiCCAreaBase(StrategyManager * strategyManager)
       _estPfactor(0),
       _ovUvDisabledFlag(false),
       _dirty(false),
-      _areaUpdatedFlag(false)
+      _areaUpdatedFlag(false),
+      _insertDynamicDataFlag(true)
 {
 }
 
@@ -49,7 +51,8 @@ CtiCCAreaBase::CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyMana
         _estPfactor(-1),
         _ovUvDisabledFlag(false),
         _dirty(false),
-        _areaUpdatedFlag(false)
+        _areaUpdatedFlag(false),
+        _insertDynamicDataFlag(true)
 {
     restore(rdr);
 
@@ -91,10 +94,10 @@ CtiCCAreaBase& CtiCCAreaBase::operator=(const CtiCCAreaBase& right)
 
         _voltReductionControlPointId = right._voltReductionControlPointId;
         _voltReductionControlValue = right._voltReductionControlValue;
-        _additionalFlags = right._additionalFlags;
 
         _subStationIds = right._subStationIds;
 
+        _insertDynamicDataFlag = right._insertDynamicDataFlag;
         _dirty = right._dirty;
         _areaUpdatedFlag = right._areaUpdatedFlag;
     }
@@ -109,21 +112,22 @@ CtiCCAreaBase& CtiCCAreaBase::operator=(const CtiCCAreaBase& right)
 ---------------------------------------------------------------------------*/
 void CtiCCAreaBase::restore(Cti::RowReader& rdr)
 {
-    rdr["voltreductionpointid"] >> _voltReductionControlPointId;
+    rdr["VoltReductionPointID"] >> _voltReductionControlPointId;
 }
 
 void CtiCCAreaBase::setDynamicData(Cti::RowReader& rdr)
 {
-    rdr["additionalflags"] >> _additionalFlags;
-    std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
+    std::string flags;
 
-    _ovUvDisabledFlag = (_additionalFlags[0]=='y');
+    rdr["additionalflags"] >> flags;
+
+    _ovUvDisabledFlag = deserializeFlag( flags, 0 );
 
     if ( _voltReductionControlPointId > 0 )
     {
         long controlValue;
 
-        rdr["controlvalue"] >> controlValue;
+        rdr["ControlValue"] >> controlValue;
 
         _voltReductionControlValue = controlValue;
     }
@@ -132,11 +136,6 @@ void CtiCCAreaBase::setDynamicData(Cti::RowReader& rdr)
 void CtiCCAreaBase::setDirty(bool flag)
 {
     _dirty = flag;
-}
-
-std::string CtiCCAreaBase::getAdditionalFlags() const
-{
-    return _additionalFlags;
 }
 
 /*---------------------------------------------------------------------------

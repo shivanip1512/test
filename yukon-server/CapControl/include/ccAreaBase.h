@@ -17,14 +17,12 @@ public:
     CtiCCAreaBase();
     CtiCCAreaBase(StrategyManager * strategyManager);
     CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyManager);
-    CtiCCAreaBase(const CtiCCAreaBase& area);
 
     virtual ~CtiCCAreaBase();
 
     long getVoltReductionControlPointId() const;
     bool getVoltReductionControlValue() const;
     bool getOvUvDisabledFlag() const;
-    std::string getAdditionalFlags() const;
 
     Cti::CapControl::PaoIdVector getSubstationIds() const {return _subStationIds;}
     void addSubstationId(long subId);
@@ -40,12 +38,6 @@ public:
     bool isDirty() {return _dirty;}
     virtual bool isSpecial() {return false;}
 
-
-    void setDynamicData(Cti::RowReader& rdr);
-    void restore(Cti::RowReader& rdr);
-
-    CtiCCAreaBase& operator=(const CtiCCAreaBase& right);
-
     void setAreaUpdatedFlag(bool flag);
     bool getAreaUpdatedFlag() const;
 
@@ -60,13 +52,22 @@ private:
     bool _voltReductionControlValue;
     double _pfactor;
     double _estPfactor;
-    std::string _additionalFlags;
     bool _ovUvDisabledFlag;
-
-    bool _dirty;
     bool _areaUpdatedFlag;
 
+    bool _dirty;
+
     Cti::CapControl::PaoIdVector _subStationIds;
+
+    void restore(Cti::RowReader& rdr);
+    void setDynamicData(Cti::RowReader& rdr);
+
+protected:
+
+    bool _insertDynamicDataFlag;
+
+    CtiCCAreaBase(const CtiCCAreaBase& area);
+    CtiCCAreaBase& operator=(const CtiCCAreaBase& right);
 };
 
 typedef CtiCCAreaBase* CtiCCAreaBasePtr;

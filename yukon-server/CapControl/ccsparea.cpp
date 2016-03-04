@@ -16,14 +16,12 @@ DEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCSpecial::CtiCCSpecial()
-    : CtiCCAreaBase(0),
-      _insertDynamicDataFlag(false)
+    : CtiCCAreaBase(0)
 {
 }
 
 CtiCCSpecial::CtiCCSpecial(StrategyManager * strategyManager)
-    : CtiCCAreaBase(strategyManager),
-      _insertDynamicDataFlag(false)
+    : CtiCCAreaBase(strategyManager)
 {
 }
 
@@ -61,7 +59,6 @@ CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
 
     if( this != &right )
     {
-       _insertDynamicDataFlag = right._insertDynamicDataFlag;
     }
     return *this;
 }

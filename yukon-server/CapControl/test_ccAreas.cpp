@@ -120,7 +120,6 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
     BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );  // no dynamic data -- default = false
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );           // no dynamic data -- default = false
-    BOOST_CHECK_EQUAL(                       "", areas[  2 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );            // no dynamic data -- default = false
@@ -157,7 +156,6 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
     BOOST_CHECK_EQUAL(                        0, areas[ 22 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getVoltReductionControlValue() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getOvUvDisabledFlag() );
-    BOOST_CHECK_EQUAL(                       "", areas[ 22 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].isDirty() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getAreaUpdatedFlag() );
@@ -194,7 +192,6 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
     BOOST_CHECK_EQUAL(                        0, areas[ 42 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getVoltReductionControlValue() );  // dynamic data == 1 but since pointID == 0 -- false
     BOOST_CHECK_EQUAL(                     true, areas[ 42 ].getOvUvDisabledFlag() );           // additionalflags[ 0 ] == 'y' -- true
-    BOOST_CHECK_EQUAL(   "ynynnnnnnnnnnnnnnnnn", areas[ 42 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[ 42 ].isDirty() );
     BOOST_CHECK_EQUAL(                    false, areas[ 42 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getAreaUpdatedFlag() );            // additionalflags[ 3 ] == 'n' -- false
@@ -231,7 +228,6 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
     BOOST_CHECK_EQUAL(                      651, areas[ 52 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                     true, areas[ 52 ].getVoltReductionControlValue() );  // dynamic data == 1 with pointID > 0 -- true
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].getOvUvDisabledFlag() );
-    BOOST_CHECK_EQUAL(   "nynynnnnnnnnnnnnnnnn", areas[ 52 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].isDirty() );
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].isSpecial() );
     BOOST_CHECK_EQUAL(                     true, areas[ 52 ].getAreaUpdatedFlag() );
@@ -361,7 +357,6 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
-    BOOST_CHECK_EQUAL(                       "", areas[  2 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );               // why true? shouldn't be - we were just created
     BOOST_CHECK_EQUAL(                     true, areas[  2 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
@@ -396,7 +391,6 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                        0, areas[ 22 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getVoltReductionControlValue() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getOvUvDisabledFlag() );
-    BOOST_CHECK_EQUAL(                       "", areas[ 22 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                     true, areas[ 22 ].isDirty() );               // why true? shouldn't be - we were just created
     BOOST_CHECK_EQUAL(                     true, areas[ 22 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getAreaUpdatedFlag() );
@@ -431,7 +425,6 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                        0, areas[ 42 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getVoltReductionControlValue() );
     BOOST_CHECK_EQUAL(                     true, areas[ 42 ].getOvUvDisabledFlag() );
-    BOOST_CHECK_EQUAL(   "ynynnnnnnnnnnnnnnnnn", areas[ 42 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[ 42 ].isDirty() );
     BOOST_CHECK_EQUAL(                     true, areas[ 42 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[ 42 ].getAreaUpdatedFlag() );
@@ -466,7 +459,6 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                      651, areas[ 52 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                     true, areas[ 52 ].getVoltReductionControlValue() );
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].getOvUvDisabledFlag() );
-    BOOST_CHECK_EQUAL(   "nynynnnnnnnnnnnnnnnn", areas[ 52 ].getAdditionalFlags() );
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].isDirty() );
     BOOST_CHECK_EQUAL(                     true, areas[ 52 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].getAreaUpdatedFlag() );    // additionalflags[ 3 ] == 'y' is unserialized -- false

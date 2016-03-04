@@ -10,6 +10,7 @@ using std::string;
 
 extern unsigned long _CC_DEBUG;
 
+using namespace Cti::CapControl;
 using Cti::CapControl::PaoIdVector;
 
 DEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
@@ -20,16 +21,14 @@ DEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
 CtiCCArea::CtiCCArea()
     : CtiCCAreaBase(0),
       _reEnableAreaFlag(false),
-      _childVoltReductionFlag(false),
-      _insertDynamicDataFlag(false)
+      _childVoltReductionFlag(false)
 {
 }
 
 CtiCCArea::CtiCCArea(StrategyManager * strategyManager)
     : CtiCCAreaBase(strategyManager),
       _reEnableAreaFlag(false),
-      _childVoltReductionFlag(false),
-      _insertDynamicDataFlag(false)
+      _childVoltReductionFlag(false)
 {
 }
 
@@ -69,8 +68,6 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
     {
         _childVoltReductionFlag = right._childVoltReductionFlag;
         _reEnableAreaFlag = right._reEnableAreaFlag;
-        _insertDynamicDataFlag = right._insertDynamicDataFlag;
-
     }
     return *this;
 }
@@ -153,9 +150,13 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
 
 void CtiCCArea::setDynamicData(Cti::RowReader& rdr)
 {
-    _reEnableAreaFlag = (getAdditionalFlags()[1]=='y');
-    _childVoltReductionFlag = (getAdditionalFlags()[2]=='y');
-    setAreaUpdatedFlag(getAdditionalFlags()[3]=='y');
+    std::string flags;
+
+    rdr["additionalflags"] >> flags;
+
+    _reEnableAreaFlag       = deserializeFlag( flags, 1 );
+    _childVoltReductionFlag = deserializeFlag( flags, 2 );
+    setAreaUpdatedFlag(       deserializeFlag( flags, 3 ) );
 
     _insertDynamicDataFlag = false;
     setDirty(false);
@@ -200,31 +201,28 @@ void CtiCCArea::setChildVoltReductionFlag(bool flag)
 void CtiCCArea::setReEnableAreaFlag(bool flag)
 {
     if(_reEnableAreaFlag != flag)
+    {
         setDirty(true);
+    }
     _reEnableAreaFlag = flag;
 }
-
-
 
 void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-
-    CtiCCSubstationPtr currentSubstation = NULL;
-
-    for each (long paoId in getSubstationIds())
+    for ( long paoId : getSubstationIds() )
     {
-        currentSubstation = store->findSubstationByPAObjectID(paoId);
-        if (currentSubstation != NULL  &&
-            (getDisableFlag() || currentSubstation->getDisableFlag()))
+        CtiCCSubstationPtr currentSubstation = store->findSubstationByPAObjectID(paoId);
+
+        if (currentSubstation &&
+            ( getDisableFlag() || currentSubstation->getDisableFlag() ) )
         {
             currentSubstation->checkForAndStopVerificationOnChildSubBuses(capMessages);
         }
     }
 }
-
 
 void CtiCCArea::checkAndUpdateChildVoltReductionFlags()
 {
@@ -233,7 +231,7 @@ void CtiCCArea::checkAndUpdateChildVoltReductionFlags()
 
     bool isChildSubstationReducing = false;
 
-    for each (const long paoId in getSubstationIds())
+    for ( const long paoId : getSubstationIds() )
     {
         CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(paoId);
 

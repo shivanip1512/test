@@ -257,6 +257,15 @@ double calculatePowerFactor( const double kvar, const double kwatt )
     return pf;
 }
 
+bool deserializeFlag( const std::string & flags, const unsigned index )
+{
+
+    return ( index < flags.size() &&
+                ( flags[ index ] == 'Y' ||
+                  flags[ index ] == 'y' ||
+                  flags[ index ] == '1' ) );
+}
+
 const std::string SystemUser = "cap control";
 
 }
