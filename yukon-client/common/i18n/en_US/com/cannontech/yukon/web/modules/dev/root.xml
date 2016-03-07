@@ -149,6 +149,9 @@
     <entry key="yukon.web.modules.dev.bulkPointInjection.archive">Archive</entry>
     <entry key="yukon.web.modules.dev.highSpeedBulkPointInjection.pageName">High Speed Bulk Point Injection</entry>
     
+    <!-- Bulk Import File Generator -->
+    <entry key="yukon.web.modules.dev.bulkImportFileGenerator.pageName">Bulk Import File Generator</entry>
+
     <!-- Setup Database -->
     <entry key="yukon.web.modules.dev.setupDatabase.pageName">Setup Development Database</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>
