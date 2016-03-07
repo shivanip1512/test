@@ -344,6 +344,9 @@
     <ClCompile Include="test_ccAreas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DynamicData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CapControlDispatchConnection.h">
@@ -653,6 +656,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\IgnoredControlReason.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DynamicData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

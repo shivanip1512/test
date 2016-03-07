@@ -417,6 +417,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="DynamicCommandExecutor.cpp">
     </ClCompile>
+    <ClCompile Include="DynamicData.cpp" />
     <ClCompile Include="ExecChangeOpState.cpp">
     </ClCompile>
     <ClCompile Include="ExecutorFactory.cpp">
@@ -572,6 +573,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\DatabaseDaoFactory.h" />
     <ClInclude Include="include\DynamicCommand.h" />
     <ClInclude Include="include\DynamicCommandExecutor.h" />
+    <ClInclude Include="include\DynamicData.h" />
     <ClInclude Include="include\EventLogEntry.h" />
     <ClInclude Include="include\EventTypes.h" />
     <ClInclude Include="include\ExecChangeOpState.h" />

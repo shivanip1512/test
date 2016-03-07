@@ -239,6 +239,254 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
     // CtiCCArea          
     BOOST_CHECK_EQUAL(                     true, areas[ 52 ].getReEnableAreaFlag() );
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].getChildVoltReductionFlag() );
+
+// Test dirty and updated flags behavior via toggling the setters for each data member
+
+    // CtiCCAreaBase contained data members
+
+    BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlPointId( 551 );
+
+    BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlPointId( 552 );
+
+    BOOST_CHECK_EQUAL(                      552, areas[  2 ].getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlPointId( 551 );
+
+    BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    //
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlValue( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlValue( true );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlValue( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    //
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setOvUvDisabledFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setOvUvDisabledFlag( true );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setOvUvDisabledFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    //
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setPFactor( -1 );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setPFactor( 128 );
+
+    BOOST_CHECK_EQUAL(                      128, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                      128, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setPFactor( -1 );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    //
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setEstPFactor( -1 );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setEstPFactor( 128 );
+
+    BOOST_CHECK_EQUAL(                      128, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                      128, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setEstPFactor( -1 );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    // CtiCCArea specific data members
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getReEnableAreaFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setReEnableAreaFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getReEnableAreaFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setReEnableAreaFlag( true );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getReEnableAreaFlag() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getReEnableAreaFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setReEnableAreaFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getReEnableAreaFlag() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getReEnableAreaFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    //
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getChildVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setChildVoltReductionFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getChildVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setChildVoltReductionFlag( true );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getChildVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getChildVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setChildVoltReductionFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getChildVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getChildVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
 }
 
 BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
@@ -468,6 +716,184 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                        0, areas[ 52 ].getSubstationIds().size() );
                           
     // CtiCCSpecial                                         
+
+// Test dirty and updated flags behavior via toggling the setters for each data member
+
+    areas[  2 ].setDirty( false );  // initialize because the object starts in the 'wrong' state
+
+    // CtiCCAreaBase contained data members
+
+    BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlPointId( 551 );
+
+    BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlPointId( 552 );
+
+    BOOST_CHECK_EQUAL(                      552, areas[  2 ].getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlPointId( 551 );
+
+    BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    //
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlValue( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlValue( true );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setVoltReductionControlValue( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    //
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setOvUvDisabledFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setOvUvDisabledFlag( true );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setOvUvDisabledFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setDirty( false );
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    //
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setPFactor( -1 );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setPFactor( 128 );
+
+    BOOST_CHECK_EQUAL(                      128, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                      128, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setPFactor( -1 );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    //
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setEstPFactor( -1 );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setEstPFactor( 128 );
+
+    BOOST_CHECK_EQUAL(                      128, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                      128, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setEstPFactor( -1 );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                     true, areas[  2 ].getAreaUpdatedFlag() );
+
+    areas[  2 ].setAreaUpdatedFlag( false );
+
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+    // CtiCCSpecial specific data members
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -158,7 +158,8 @@ LoadOnlyScanPolicy.obj \
 StandardScanPolicy.obj \
 RegulatorEvents.obj \
 LastControlReason.obj \
-IgnoredControlReason.obj
+IgnoredControlReason.obj \
+DynamicData.obj
 
 
 
