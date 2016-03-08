@@ -253,7 +253,7 @@ public class DeveloperController {
             serialNumberStart, program.getProgramName(), loadGroup, appCat.getName(), deviceTypes);
         return null;
     }
-
+    
     @RequestMapping("/download-account-file")
     public String createAccountFile(HttpServletResponse response, int numberOfAccounts, int accountNumberStart,
             String usergroup) throws IOException {
@@ -264,6 +264,11 @@ public class DeveloperController {
         ImportFileCreater.writeAccountFile(writer, numberOfAccounts, accountNumberStart, usergroup);
 
         return null;
+    }
+    
+    @RequestMapping("/viewDeviceGroupSimulator")
+    public String viewDeviceGroupSimulator() {
+        return "deviceGroupSimulator.jsp";
     }
 
     @InitBinder

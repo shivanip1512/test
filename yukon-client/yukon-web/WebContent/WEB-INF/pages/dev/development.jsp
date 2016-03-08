@@ -31,6 +31,7 @@
                     <li><a href="<cti:url value="/dev/uber-log"/>">Uber Log</a></li>
                     <li><a href="<cti:url value="/dev/bulkPointInjection/rphSimulator"/>">High Speed Bulk Point Injection</a></li>
                     <li><a href="<cti:url value="/dev/bulkImportFileGenerator/home"/>">Bulk Import File Generator</a></li>
+                    <li><a href="<cti:url value="/dev/viewDeviceGroupSimulator"/>">Device Group Generator</a></li>
                 </ul>
             </tags:sectionContainer>
         </div>
