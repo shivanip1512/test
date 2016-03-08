@@ -4,6 +4,7 @@ import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,13 +64,18 @@ import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnMeterSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
-import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyGatewaySimulatorRequest;
+import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStartRequest;
+import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStopRequest;
+import com.cannontech.simulators.message.request.RfnLcrSimulatorByRangeStartRequest;
+import com.cannontech.simulators.message.request.RfnLcrSimulatorByRangeStopRequest;
+import com.cannontech.simulators.message.request.RfnLcrSimulatorStatusRequest;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
+import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -93,7 +99,6 @@ public class NmIntegrationController {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private RfnEventTestingService rfnEventTestingService;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
-    @Autowired private RfnLcrDataSimulatorService dataSimulator;
     @Autowired private YsmJmxQueryService jmxQueryService;
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
@@ -579,15 +584,35 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("viewLcrDataSimulator")
-    public String viewLcrDataSimulator(ModelMap model, YukonUserContext userContext) {
-        SimulatorSettings currentSettings = dataSimulator.getCurrentSettings();
-        if (currentSettings == null) {
-            currentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 10);
-        }
+    public String viewLcrDataSimulator(ModelMap model) {
+        
+        SimulatorSettings currentSettings  = new SimulatorSettings(100000, 200000, 300000, 320000, 10);
         model.addAttribute("currentSettings", currentSettings);
-        model.addAttribute("dataSimulatorStatus", dataSimulatorStatus(userContext));
-        model.addAttribute("existingDataSimulatorStatus", existingDataSimulatorStatus(userContext));
+        
+        Map<String, Object> json = new HashMap<>();
+        RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse(json);
+        if(response == null){
+            return "redirect:viewBase";
+        }
+        if (response.getStatusByRange().isRunning().get()) {
+            model.addAttribute("currentSettings", response.getSettings());
+        }
+        
+        model.addAttribute("dataSimulatorStatus", buildSimulatorStatusJson(response.getStatusByRange(), new HashMap<>(json)));
+        model.addAttribute("existingDataSimulatorStatus", buildSimulatorStatusJson(response.getAllDevicesStatus(), new HashMap<>(json)));
         return "rfn/dataSimulator.jsp";
+    }
+    
+    private RfnLcrSimulatorStatusResponse getRfnLcrSimulatorStatusResponse(Map<String, Object> json) {
+        try {
+            return simulatorsCommunicationService.sendRequest(new RfnLcrSimulatorStatusRequest(),
+                RfnLcrSimulatorStatusResponse.class);
+        } catch (Exception e) {
+            log.error(e);
+            json.put("hasError", true);
+            json.put("errorMessage",  "Unable to send message to Simulator Service: " + e.getMessage());
+            return null;
+        }
     }
 
     @RequestMapping("viewRfnMeterSimulator")
@@ -602,44 +627,71 @@ public class NmIntegrationController {
 
     @RequestMapping(value = "startDataSimulator")
     @ResponseBody
-    public void startDataSimulator(SimulatorSettings settings) {
-        dataSimulator.sendMessagesByRange(settings);
+    public void startDataSimulator(SimulatorSettings settings, FlashScope flash) {
+        try {
+            simulatorsCommunicationService.sendRequest(new RfnLcrSimulatorByRangeStartRequest(settings),
+                SimulatorResponseBase.class);
+        } catch (Exception e) {
+            log.error(e);
+            flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                "Unable to send message to Simulator Service: " + e.getMessage()));
+        }
     }
 
     @RequestMapping(value = "stopDataSimulator")
-    public void stopDataSimulator() {
-        dataSimulator.stopRangeSimulator();
+    public void stopDataSimulator(FlashScope flash) {
+        try {
+            simulatorsCommunicationService.sendRequest(new RfnLcrSimulatorByRangeStopRequest(),
+                SimulatorResponseBase.class);
+        } catch (Exception e) {
+            log.error(e);
+            flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                "Unable to send message to Simulator Service: " + e.getMessage()));
+        }
     }
 
     @RequestMapping(value = "sendLcrDeviceMessages")
     @ResponseBody
-    public void sendLcrDeviceMessages(SimulatorSettings settings) {
-        dataSimulator.sendMessagesToAllDevices(settings);
+    public void sendLcrDeviceMessages(SimulatorSettings settings, FlashScope flash) {
+        try {
+            simulatorsCommunicationService.sendRequest(new RfnLcrAllDeviceSimulatorStartRequest(settings),
+                SimulatorResponseBase.class);
+        } catch (Exception e) {
+            log.error(e);
+            flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                "Unable to send message to Simulator Service: " + e.getMessage()));
+        }
     }
 
     @RequestMapping(value = "stopSendingLcrDeviceMessages", method = RequestMethod.GET)
-    public String stopSendLcrDeviceMessages() {
-        dataSimulator.stopAllDeviceSimulator();
-        return "redirect:viewLcrDataSimulator";
+    public void stopSendLcrDeviceMessages(FlashScope flash) {
+        try {
+            simulatorsCommunicationService.sendRequest(new RfnLcrAllDeviceSimulatorStopRequest(),
+                SimulatorResponseBase.class);
+        } catch (Exception e) {
+            log.error(e);
+            flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                "Unable to send message to Simulator Service: " + e.getMessage()));
+        }
     }
 
     @RequestMapping("datasimulator-status")
     @ResponseBody
-    public Map<String, Object> dataSimulatorStatus(YukonUserContext userContext) {
-        RfnLcrDataSimulatorStatus status = dataSimulator.getStatusByRange();
-        return buildSimulatorStatusJson(status);
+    public Map<String, Object> dataSimulatorStatus() {
+        Map<String, Object> json = new HashMap<>();
+        RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse(json);
+        return buildSimulatorStatusJson(response.getStatusByRange(), json);
     }
 
     @RequestMapping("existing-datasimulator-status")
     @ResponseBody
-    public Map<String, Object> existingDataSimulatorStatus(YukonUserContext userContext) {
-        RfnLcrDataSimulatorStatus status = dataSimulator.getAllDevicesStatus();      
-        return buildSimulatorStatusJson(status);
+    public Map<String, Object> existingDataSimulatorStatus() {
+        Map<String, Object> json = new HashMap<>();
+        RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse(json);
+        return buildSimulatorStatusJson(response.getAllDevicesStatus(), json);
     }
     
-    private Map<String, Object> buildSimulatorStatusJson(RfnLcrDataSimulatorStatus status) {
-        Map<String, Object> json = Maps.newHashMapWithExpectedSize(6);
-
+    private Map<String, Object> buildSimulatorStatusJson(RfnLcrDataSimulatorStatus status, Map<String, Object> json) {
         if (status.getStartTime() == null) {
             json.put("startTime", "");
         } else {

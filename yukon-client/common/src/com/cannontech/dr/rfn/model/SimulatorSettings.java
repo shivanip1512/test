@@ -1,6 +1,8 @@
 package com.cannontech.dr.rfn.model;
 
-public class SimulatorSettings {
+import java.io.Serializable;
+
+public class SimulatorSettings implements Serializable{
     private int lcr6200serialFrom;
     private int lcr6200serialTo;
     private int lcr6600serialFrom;

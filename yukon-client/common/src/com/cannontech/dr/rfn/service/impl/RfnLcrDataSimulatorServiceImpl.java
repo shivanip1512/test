@@ -146,7 +146,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             }
             for (RfnLcrReadSimulatorDeviceParameters device : devices) {
                 simulateLcrReadRequest(device, status);
-                if (settings.getPrecentOfDuplicates() > 0 && needsDuplicate()) {
+                if (needsDuplicate()) {
                     log.debug("Sending duplicate read request for " + device.getRfnIdentifier());
                     simulateLcrReadRequest(device, status);
                 }
@@ -163,8 +163,8 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         int minuteOfTheDay = Integer.parseInt(rfnIdentifier.getSensorSerialNumber()) % MINUTES_IN_A_DAY;
         
         // debug - inject the data next minute
-        // DateTime now = new DateTime();
-        // int minuteOfTheDay = now.getMinuteOfDay() + 1;
+       //DateTime now = new DateTime();
+       //int minuteOfTheDay = now.getMinuteOfDay() + 1;
         
         RfnLcrReadSimulatorDeviceParameters parameters =
                 new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60);
@@ -522,8 +522,12 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * If true is returned a duplicate read archive request will be generated.
      */
     private boolean needsDuplicate() {
+        //settings can be null if cancel was called right before this method
+        if (settings == null || settings.getPrecentOfDuplicates() < 1) {
+            return false;
+        }
         int number = generateRandomNumber(RANDOM_MIN, RANDOM_MAX);
-        if(number > settings.getPrecentOfDuplicates()){
+        if (number > settings.getPrecentOfDuplicates()) {
             return false;
         }
         return true;

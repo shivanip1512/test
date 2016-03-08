@@ -12,6 +12,7 @@
     <!-- Message handlers for simulator messaging -->
     <bean class="com.cannontech.simulators.handler.GatewaySimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.AmrCreationSimulatorMessageHandler"/>
+    <bean class="com.cannontech.simulators.handler.RfnLcrDataSimulatorMessageHandler"/>
     
     <!-- TODO: system metrics? Might be nice to have -->
     

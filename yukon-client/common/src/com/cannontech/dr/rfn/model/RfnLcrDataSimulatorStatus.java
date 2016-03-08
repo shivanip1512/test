@@ -1,11 +1,12 @@
 package com.cannontech.dr.rfn.model;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.joda.time.Instant;
 
-public class RfnLcrDataSimulatorStatus {
+public class RfnLcrDataSimulatorStatus implements Serializable{
     
     private volatile Instant startTime;
     private volatile Instant stopTime;

@@ -4,7 +4,8 @@ package com.cannontech.simulators;
  * Types of simulators run in the Yukon simulator service.
  */
 public enum SimulatorType {
-    GATEWAY,
-    AMR_CREATION
+    AMR_CREATION, 
+    GATEWAY, 
+    RFN_LCR
     ;
 }

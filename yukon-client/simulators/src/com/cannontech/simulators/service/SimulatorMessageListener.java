@@ -45,7 +45,7 @@ public class SimulatorMessageListener {
                     try {
                         Object message = jmsTemplate.receive(SimulatorUtils.SIMULATORS_REQUEST_QUEUE);
                         if (message != null && message instanceof ObjectMessage) {
-                            log.info("Processing simulator request message");
+                            log.debug("Processing simulator request message");
                             ObjectMessage request = (ObjectMessage) message;
                             SimulatorRequest simulatorRequest = (SimulatorRequest) request.getObject();
                             log.debug(simulatorRequest);
