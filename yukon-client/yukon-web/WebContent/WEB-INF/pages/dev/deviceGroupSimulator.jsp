@@ -12,7 +12,8 @@ function generateDeviceGroup(){
 
     <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
     <cti:dataGridCell> 
-    <form id='deviceGroupGeneratorForm' action="generateDeviceGroups">
+    <form id='deviceGroupGeneratorForm' action="generateDeviceGroups" method="post">
+      <cti:csrfToken />
         <tags:sectionContainer title="Generate Device Groups">
         <c:if test="${not empty errorMsg}">
             <div class="error stacked">${errorMsg}</div>

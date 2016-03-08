@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
@@ -65,7 +66,7 @@ public class DeviceGroupSimulatorController {
      * @param request
      * @return
      */
-    @RequestMapping("/generateDeviceGroups")
+    @RequestMapping(value="/generateDeviceGroups", method=RequestMethod.POST)
     public String generateDeviceGroups(FlashScope flashScope, HttpServletRequest request) {
         String noOfGroups = ServletRequestUtils.getStringParameter(request, "noOfGroups", "1").trim();
         String noOfDevicesPerGroup = ServletRequestUtils.getStringParameter(request, "noOfDevices", "1").trim();
