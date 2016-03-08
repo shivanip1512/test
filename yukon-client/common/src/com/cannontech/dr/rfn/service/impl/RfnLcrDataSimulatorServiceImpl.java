@@ -159,7 +159,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      *
      * @param devices - minute of the day to send a request at/list of devices to send a read request to
      */
-    private void addDevices(RfnIdentifier rfnIdentifier, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices){
+    private void addDevice(RfnIdentifier rfnIdentifier, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices){
         int minuteOfTheDay = Integer.parseInt(rfnIdentifier.getSensorSerialNumber()) % MINUTES_IN_A_DAY;
         
         // debug - inject the data next minute
@@ -183,7 +183,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             }
             List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfLcrTypes());
             for (RfnDevice device : devices) {
-                addDevices(device.getRfnIdentifier(), allDevices);
+                addDevice(device.getRfnIdentifier(), allDevices);
             }
             //check if execution was canceled
             if (!allDevices.isEmpty() && allDevicesStatus.isRunning().get()) {
@@ -220,11 +220,11 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     }
 
     private void createDevicesByRange(int from, int to, RfnManufacturerModel model) {
-        while (from < to) {
+        while (from <= to) {
             RfnIdentifier rfnIdentifier =
                 new RfnIdentifier(String.valueOf(from), model.getManufacturer(), model.getModel());
             log.debug("createDevicesByRange="+rfnIdentifier);
-            addDevices(rfnIdentifier, rangeDevices);
+            addDevice(rfnIdentifier, rangeDevices);
             from++;
         }
     }
