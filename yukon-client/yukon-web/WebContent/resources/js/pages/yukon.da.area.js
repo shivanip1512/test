@@ -81,6 +81,11 @@ yukon.da.area = (function () {
                 }
             });
             
+            /** User confirmed intent to delete feeder. */
+            $(document).on('yukon:da:area:delete', function () {
+                $('#delete-area').submit();
+            });
+            
 
             
             

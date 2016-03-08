@@ -648,10 +648,13 @@
       <page name="areas" type="BASIC">
         <link>/capcontrol/tier/areas</link>
         <pages>
-          <page name="area" type="DETAIL">
+          <page name="area.VIEW" type="DETAIL">
             <link>/capcontrol/areas/${areaId}</link>
             <labelArgument>${areaName}</labelArgument>
             <pages>
+              <page name="area.EDIT" type="DETAIL">
+                 <labelArgument>${areaName}</labelArgument>
+              </page>
               <page name="substation" type="DETAIL">
                 <link>/capcontrol/tier/feeders?substationId=${substationId}</link>
                 <labelArgument>${substationName}</labelArgument>
@@ -773,6 +776,7 @@
               </page>
             </pages>
           </page>
+          <page name="area.CREATE" type="BASIC"/>
           <page name="cbc.CREATE" type="BASIC"/>
           <page name="feeder.CREATE" type="BASIC"/>
           <page name="bus.CREATE" type="BASIC"/>

@@ -316,9 +316,15 @@
     <entry key="yukon.web.modules.capcontrol.areas.stationCount">{0} {0,choice,0#Substations|1#Substation|1&lt;Substations}</entry>
     
     <!-- area.jsp -->
-    <entry key="yukon.web.modules.capcontrol.area.pageTitle">Area {0}</entry>
-    <entry key="yukon.web.modules.capcontrol.area.pageHeading">Area {0}</entry>
-    <entry key="yukon.web.modules.capcontrol.area.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.CREATE.pageTitle">Create Area</entry>
+    <entry key="yukon.web.modules.capcontrol.area.CREATE.pageHeading">Create Area</entry>
+    <entry key="yukon.web.modules.capcontrol.area.CREATE.crumbTitle">Create Area</entry>
+    <entry key="yukon.web.modules.capcontrol.area.VIEW.pageTitle">Area: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.EDIT.pageTitle">Area: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.area.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.EDIT.crumbTitle">Edit</entry>
     <entry key="yukon.web.modules.capcontrol.area.infoContainer.title">Info</entry>
     <entry key="yukon.web.modules.capcontrol.area.pointsContainer.title">Points</entry>
     <entry key="yukon.web.modules.capcontrol.area.statsContainer.title">Statistics</entry>

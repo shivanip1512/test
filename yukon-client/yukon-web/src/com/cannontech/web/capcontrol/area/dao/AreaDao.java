@@ -18,8 +18,9 @@ public interface AreaDao {
      * Inserts or updates an area. An insert is attempted if the id is null.
      * Works for normal and special areas.
      * DbChange message is sent when successful. 
+     * Returns the area id
      */
-    void save(Area area);
+    int save(Area area);
     
     /** 
      * Deletes an area.  Works for normal and special areas.

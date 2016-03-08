@@ -78,10 +78,7 @@
                                 </c:otherwise>
                             </c:choose>
                             
-                            <cti:url var="editUrl" value="/editor/cbcBase.jsf">
-                                <cti:param name="type" value="2" />
-                                <cti:param name="itemid" value="${areaId}" />
-                            </cti:url>
+                            <cti:url var="editUrl" value="/capcontrol/areas/${areaId}"/>
                             <cm:dropdownOption key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
 
                             <c:if test="${showAnalysis}">

@@ -89,7 +89,7 @@ public class AreaDaoImpl implements AreaDao {
     
     @Override
     @Transactional
-    public void save(Area area) {
+    public int save(Area area) {
         
         String table = area.getType() == PaoType.CAP_CONTROL_AREA ? "CapControlArea" : "CapControlSpecialArea";
         
@@ -140,6 +140,8 @@ public class AreaDaoImpl implements AreaDao {
         }
         
         dbChangeManager.processPaoDbChange(PaoIdentifier.of(area.getId(), area.getType()), change);
+        
+        return area.getId();
     }
     
     @Override
