@@ -146,7 +146,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             }
             for (RfnLcrReadSimulatorDeviceParameters device : devices) {
                 simulateLcrReadRequest(device, status);
-                if (settings.getPrecentOfDuplicates() > 0 && sendDuplicate()) {
+                if (settings.getPrecentOfDuplicates() > 0 && needsDuplicate()) {
                     log.debug("Sending duplicate read request for " + device.getRfnIdentifier());
                     simulateLcrReadRequest(device, status);
                 }
@@ -521,7 +521,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * If the number is less then 10 or equals to 10 returns true.
      * If true is returned a duplicate read archive request will be generated.
      */
-    private boolean sendDuplicate() {
+    private boolean needsDuplicate() {
         int number = generateRandomNumber(RANDOM_MIN, RANDOM_MAX);
         if(number > settings.getPrecentOfDuplicates()){
             return false;
