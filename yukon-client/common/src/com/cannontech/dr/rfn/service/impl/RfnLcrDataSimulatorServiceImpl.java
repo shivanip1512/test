@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -72,12 +73,16 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     
     private RfnLcrDataSimulatorStatus rangeDevicesStatus = new RfnLcrDataSimulatorStatus();
     private RfnLcrDataSimulatorStatus allDevicesStatus = new RfnLcrDataSimulatorStatus();
-    
+        
     private boolean isScheduled = false;
     private SimulatorSettings settings;
     private JmsTemplate jmsTemplate;
     
     private static final int MINUTES_IN_A_DAY = 1440;
+    
+    private final Random randomizer = new Random();
+    private static final int RANDOM_MIN = 1;
+    private static final int RANDOM_MAX = 100;
     
     @PostConstruct
     public void initialize() {
@@ -140,11 +145,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                 status.setLastInjectionTime(new Instant());
             }
             for (RfnLcrReadSimulatorDeviceParameters device : devices) {
-                boolean success = simulateLcrReadRequest(device);
-                if (success) {
-                    status.getSuccess().incrementAndGet();
-                } else {
-                    status.getFailure().incrementAndGet();
+                simulateLcrReadRequest(device, status);
+                if (settings.getPrecentOfDuplicates() > 0 && sendDuplicate()) {
+                    log.debug("Sending duplicate read request for " + device.getRfnIdentifier());
+                    simulateLcrReadRequest(device, status);
                 }
             }
         }
@@ -168,12 +172,15 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     }
     
     @Override
-    public synchronized void sendMessagesToAllDevices() {
+    public synchronized void sendMessagesToAllDevices(SimulatorSettings settings) {
         log.debug("sendMessagesToAllDevices");
         if (!allDevicesStatus.isRunning().get()) {
             allDevicesStatus = new RfnLcrDataSimulatorStatus();
             allDevicesStatus.setRunning(new AtomicBoolean(true));
             allDevicesStatus.setStartTime(new Instant());
+            if(this.settings == null){
+                this.settings = settings;
+            }
             List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfLcrTypes());
             for (RfnDevice device : devices) {
                 addDevices(device.getRfnIdentifier(), allDevices);
@@ -195,6 +202,9 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             rangeDevicesStatus = new RfnLcrDataSimulatorStatus();
             rangeDevicesStatus.setRunning(new AtomicBoolean(true));
             rangeDevicesStatus.setStartTime(new Instant());
+            if(this.settings == null){
+                this.settings = settings;
+            }
             createDevicesByRange(settings.getLcr6200serialFrom(), settings.getLcr6200serialTo(),
                 RfnManufacturerModel.RFN_LCR_6200);
             createDevicesByRange(settings.getLcr6600serialFrom(), settings.getLcr6600serialTo(),
@@ -223,7 +233,6 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     @PreDestroy
     public synchronized void stopRangeSimulator() {
         log.info("RFN LCR data simulator shutting down...");
-        settings = null;
         stopSimulator(rangeDevicesStatus, rangeDevices);
     }
 
@@ -237,7 +246,10 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     private void stopSimulator(RfnLcrDataSimulatorStatus status, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices){
         status.setStopTime(new Instant());
         status.setRunning(new AtomicBoolean(false));
-        devices.clear();    
+        devices.clear();  
+        if(!rangeDevicesStatus.isRunning().get() && !allDevicesStatus.isRunning().get()){
+            settings = null;
+        }
     }
     
     @Override
@@ -274,24 +286,21 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * This method creates an RFN LCR read archive request and places it into the appropriate messaging queue.
      * 
      * @param deviceParameters Specifies the parameters of the device that generated the request.
-     * @return true is successful
+     * @param status - tracks success and failure
      */
-    private boolean simulateLcrReadRequest(RfnLcrReadSimulatorDeviceParameters deviceParameters) {
-        RfnLcrReadingArchiveRequest readArchiveRequest;
-        boolean success = false;
+    private void simulateLcrReadRequest(RfnLcrReadSimulatorDeviceParameters deviceParameters, RfnLcrDataSimulatorStatus status) {
         try {
-            readArchiveRequest = createReadArchiveRequest(deviceParameters);
+            RfnLcrReadingArchiveRequest readArchiveRequest = createReadArchiveRequest(deviceParameters);
             jmsTemplate.convertAndSend(lcrReadingArchiveRequestQueueName, readArchiveRequest);
-            success = true;
-            return success;
+            status.getSuccess().incrementAndGet();
             
         } catch (RfnLcrSimulatorException | IOException e) {
             log.warn("There was a problem creating an RFN LCR archive read request for device: "
                 + deviceParameters.getRfnIdentifier().getSensorManufacturer() + "/"
                 + deviceParameters.getRfnIdentifier().getSensorModel() + "/"
                 + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
+            status.getFailure().incrementAndGet();
         } 
-        return success;
     }
 
     /**
@@ -503,5 +512,29 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         relay.setAmpType((short) 0);
         relay.getIntervalData().add(intervalData);
         return relay;
+    }
+    
+    /**
+     * Example:
+     * Existing devices see approximately 10% duplicates.
+     * Generate random number between 1 and 100.
+     * If the number is less then 10 or equals to 10 returns true.
+     * If true is returned a duplicate read archive request will be generated.
+     */
+    private boolean sendDuplicate() {
+        int number = generateRandomNumber(RANDOM_MIN, RANDOM_MAX);
+        if(number > settings.getPrecentOfDuplicates()){
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Generates random number for range.
+     */
+    public int generateRandomNumber(int min, int max) {
+        // nextInt excludes the top value so we have to add 1 to include the top value
+        int randomNum = randomizer.nextInt((max - min) + 1) + min;
+        return randomNum;
     }
 }

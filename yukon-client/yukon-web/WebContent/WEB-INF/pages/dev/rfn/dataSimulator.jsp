@@ -39,18 +39,19 @@
         },
         
         _sendMessageButtonClick = function(event) {
-            
+            var formData = $('#dataSimulatorForm').serialize();
             if($(this).attr('id') === 'send-message') {
-                $.ajax({
+                    $.ajax({
                     url: yukon.url('/dev/rfn/sendLcrDeviceMessages'),
-                    type: 'GET'
-                    }).done(function(data) {
-                        _checkExistingDeviceStatus(true);
-                    }).fail(function(data) {
-                        yukon.ui.alertError("send-message failed to run LCR Data Simulator on existing devices. Try again.");
-                    });
+                    type: 'post',
+                    data: formData 
+                }).done(function(data) {
+                    _checkStatus(true);
+                }).fail(function(data) {
+                    yukon.ui.alertError("Failed to run LCR Data Simulator. Try again.");
+                });
             };
-              
+                
             if($(this).attr('id') === 'stop-send-message') {
                 $.ajax({
                     url: yukon.url('/dev/rfn/stopSendingLcrDeviceMessages'),
@@ -174,6 +175,9 @@
         <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6600">
             <input id="lcr6600serialFrom" name="Lcr6600serialFrom" type="text" value=${currentSettings.lcr6600serialFrom}> <i:inline key="yukon.common.to"/> 
             <input id="lcr6600serialTo" name="lcr6600serialTo" type="text" value=${currentSettings.lcr6600serialTo}>
+        </tags:nameValue2>
+        <tags:nameValue2 nameKey=".lcrDataSimulator.duplicates">
+            <input id="precentOfDuplicates" name="precentOfDuplicates" type="text" value=${currentSettings.precentOfDuplicates} maxlength="3" size="3"> %
         </tags:nameValue2>
     </tags:nameValueContainer2>
     </div>

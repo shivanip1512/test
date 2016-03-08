@@ -582,7 +582,7 @@ public class NmIntegrationController {
     public String viewLcrDataSimulator(ModelMap model, YukonUserContext userContext) {
         SimulatorSettings currentSettings = dataSimulator.getCurrentSettings();
         if (currentSettings == null) {
-            currentSettings = new SimulatorSettings(100000, 200000, 300000, 320000);
+            currentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 10);
         }
         model.addAttribute("currentSettings", currentSettings);
         model.addAttribute("dataSimulatorStatus", dataSimulatorStatus(userContext));
@@ -602,7 +602,7 @@ public class NmIntegrationController {
 
     @RequestMapping(value = "startDataSimulator")
     @ResponseBody
-    public void startDataSimulator(final SimulatorSettings settings) {
+    public void startDataSimulator(SimulatorSettings settings) {
         dataSimulator.sendMessagesByRange(settings);
     }
 
@@ -611,10 +611,10 @@ public class NmIntegrationController {
         dataSimulator.stopRangeSimulator();
     }
 
-    @RequestMapping(value = "sendLcrDeviceMessages", method = RequestMethod.GET)
+    @RequestMapping(value = "sendLcrDeviceMessages")
     @ResponseBody
-    public void sendLcrDeviceMessages() {
-        dataSimulator.sendMessagesToAllDevices();
+    public void sendLcrDeviceMessages(SimulatorSettings settings) {
+        dataSimulator.sendMessagesToAllDevices(settings);
     }
 
     @RequestMapping(value = "stopSendingLcrDeviceMessages", method = RequestMethod.GET)

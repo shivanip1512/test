@@ -47,7 +47,7 @@ public interface RfnLcrDataSimulatorService {
     /**
      * Send message for LCR devices.
      */
-    void sendMessagesToAllDevices();
+    void sendMessagesToAllDevices(SimulatorSettings settings);
 
     /**
      * Stop sending message to LCR devices.
