@@ -200,11 +200,10 @@ public class TierController {
                     parentAreaId = cache.getParentAreaId(bus.getCcId());
                 }
                 StreamableCapObject streamable = cache.getStreamableArea(parentAreaId);
+                
+                String areaLinkHtml = "<a href='/yukon/capcontrol/areas/" + streamable.getCcId() + "'>" + streamable.getCcName() + "</a>";
+                String subBusLinkHtml = "<a href='/yukon/capcontrol/buses/" + bus.getCcId() + "'>" + bus.getCcName() + "</a>";
 
-                String areaLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(request,
-                    streamable.getCcId());
-                String subBusLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(request,
-                    bus.getCcId());
                 areaLinkHtml = "<strong>" + areaLinkHtml + "</strong>";
                 subBusLinkHtml = "<strong>" + subBusLinkHtml + "</strong>";
                 WebMessageSourceResolvable noStrategyMessage =

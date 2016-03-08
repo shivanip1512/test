@@ -55,275 +55,281 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </cti:tab>
-                <%@ include file="strategyTab.jsp" %>
-                <cti:msg2 var="schedulesTab" key=".schedulesTab"/>
-                <cti:tab title="${schedulesTab}">
-                    <table class="full-width stacked">
-                        <thead>
-                            <tr>
-                                <th><i:inline key=".schedules.schedule"/></th>
-                                <th><i:inline key=".schedules.command"/></th>
-                                <th><i:inline key=".schedules.ovuv"/></th>
-                            </tr>
-                        </thead>
-                        <tfoot></tfoot>
-                        <tbody>
-                            <c:forEach var="schedule" items="${bus.schedules}" varStatus="status">
-                            <c:set var="idx" value="${status.index}" />
-                            <tr>
-                                <td>
-                                    <c:forEach var="scheduleOption" items="${allSchedules}">
-                                        <c:if test="${schedule.scheduleID == scheduleOption.id}">
-                                            ${fn:escapeXml(scheduleOption.name)}                                            
-                                        </c:if>                              
-                                    </c:forEach>
-                                </td>
-                                <td>
-                                    ${fn:escapeXml(schedule.command)}                                            
-                                </td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${schedule.disableOvUvBoolean}">
-                                            <span class="success">On</span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="error">Off</span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                            </tr>
-                            </c:forEach>
-                        </tbody>
-                        </table>
-                        <c:if test="${canEdit}">
-                            <div class="action-area">
-                                <cti:button nameKey="edit" icon="icon-pencil" data-popup=".js-edit-sched-popup"
-                                    data-popup-toggle="" />
-                            </div>
-                        </c:if>
-                </cti:tab>
+                <cti:displayForPageEditModes modes="EDIT,VIEW">
+                    <%@ include file="strategyTab.jsp" %>
+                    <cti:msg2 var="schedulesTab" key=".schedulesTab"/>
+                    <cti:tab title="${schedulesTab}">
+                        <table class="full-width stacked">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".schedules.schedule"/></th>
+                                    <th><i:inline key=".schedules.command"/></th>
+                                    <th><i:inline key=".schedules.ovuv"/></th>
+                                </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                                <c:forEach var="schedule" items="${bus.schedules}" varStatus="status">
+                                <c:set var="idx" value="${status.index}" />
+                                <tr>
+                                    <td>
+                                        <c:forEach var="scheduleOption" items="${allSchedules}">
+                                            <c:if test="${schedule.scheduleID == scheduleOption.id}">
+                                                ${fn:escapeXml(scheduleOption.name)}                                            
+                                            </c:if>                              
+                                        </c:forEach>
+                                    </td>
+                                    <td>
+                                        ${fn:escapeXml(schedule.command)}                                            
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${schedule.disableOvUvBoolean}">
+                                                <span class="success">On</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="error">Off</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                </tr>
+                                </c:forEach>
+                            </tbody>
+                            </table>
+                            <c:if test="${canEdit}">
+                                <div class="action-area">
+                                    <cti:button nameKey="edit" icon="icon-pencil" data-popup=".js-edit-sched-popup"
+                                        data-popup-toggle="" />
+                                </div>
+                            </c:if>
+                    </cti:tab>
+                </cti:displayForPageEditModes>
             </cti:tabs>
         </div>
-        <div class="column two nogutter">
-            <cti:tabs>
-                <cti:msg2 var="controlPointsTab" key=".controlPointsTab"/>
-                <cti:tab title="${controlPointsTab}">
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".points.voltReduction">
-                            <form:hidden id="volt-reduction-bus-point-input" path="capControlSubstationBus.voltReductionPointId"/>
-                            <tags:pickerDialog
-                                id="voltReductionPointPicker"
-                                type="pointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="volt-reduction-bus-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty bus.capControlSubstationBus.voltReductionPointId}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".points.substationBusDisable">
-                            <%-- Point Picker --%>
-                            <form:hidden id="disable-bus-point-input" path="capControlSubstationBus.disableBusPointId"/>
-                            <tags:pickerDialog
-                                id="disableBusPointPicker"
-                                type="pointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="disable-bus-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty bus.capControlSubstationBus.disableBusPointId}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-
-                        <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
-                            <tags:switchButton path="capControlSubstationBus.usePhaseDataBoolean" 
-                                toggleGroup="perPhase" toggleAction="hide"/>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
-                            <tags:switchButton path="capControlSubstationBus.controlFlagBoolean"/>
-                        </tags:nameValue2>
-
-                        <%-- Var point when not per phase --%>
-                        <%-- Phase A when not per phase --%>
-                        <tags:nameValue2 nameKey=".points.varPhaseA">
-                            <form:hidden id="var-point-input" path="capControlSubstationBus.currentVarLoadPointID"/>
-                            <tags:pickerDialog
-                                id="varPointPicker"
-                                type="pointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="var-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty bus.capControlSubstationBus.currentVarLoadPointID}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".points.phaseB" data-toggle-group="perPhase">
-                            <form:hidden id="phase-b-point-input" path="capControlSubstationBus.phaseB"/>
-                            <tags:pickerDialog
-                                id="phaseBPointPicker"
-                                type="pointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="phase-b-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty bus.capControlSubstationBus.phaseB}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".points.phaseC" data-toggle-group="perPhase">
-                            <form:hidden id="phase-c-point-input" path="capControlSubstationBus.phaseC"/>
-                            <tags:pickerDialog
-                                id="phaseCPointPicker"
-                                type="pointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="phase-c-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty bus.capControlSubstationBus.phaseC}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-
-                        <tags:nameValue2 nameKey=".points.watt">
-                            <form:hidden id="watt-point-input" path="capControlSubstationBus.currentWattLoadPointID"/>
-                            <tags:pickerDialog
-                                id="wattPointPicker"
-                                type="pointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="watt-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty bus.capControlSubstationBus.currentWattLoadPointID}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-
-                        <tags:nameValue2 nameKey=".points.volt">
-                            <form:hidden id="volt-point-input" path="capControlSubstationBus.currentVoltLoadPointID"/>
-                            <tags:pickerDialog
-                                id="voltPointPicker"
-                                type="pointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="volt-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty bus.capControlSubstationBus.currentVoltLoadPointID}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </cti:tab>
-                <cti:msg2 var="attachedPointsTab" key=".attachedPointsTab"/>
-                <cti:tab title="${attachedPointsTab}">
-                    <div class="scroll-md">
-                        <%@ include file="pointsTable.jsp" %>
-                    </div>
-                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                        <div class="action-area">
-                            <tags:pointCreation paoId="${bus.id}" />
+        <cti:displayForPageEditModes modes="EDIT,VIEW">
+            <div class="column two nogutter">
+                <cti:tabs>
+                    <cti:msg2 var="controlPointsTab" key=".controlPointsTab"/>
+                    <cti:tab title="${controlPointsTab}">
+                        <tags:nameValueContainer2>
+                            <tags:nameValue2 nameKey=".points.voltReduction">
+                                <form:hidden id="volt-reduction-bus-point-input" path="capControlSubstationBus.voltReductionPointId"/>
+                                <tags:pickerDialog
+                                    id="voltReductionPointPicker"
+                                    type="pointPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoPoint"
+                                    destinationFieldId="volt-reduction-bus-point-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty bus.capControlSubstationBus.voltReductionPointId}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".points.substationBusDisable">
+                                <%-- Point Picker --%>
+                                <form:hidden id="disable-bus-point-input" path="capControlSubstationBus.disableBusPointId"/>
+                                <tags:pickerDialog
+                                    id="disableBusPointPicker"
+                                    type="pointPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoPoint"
+                                    destinationFieldId="disable-bus-point-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty bus.capControlSubstationBus.disableBusPointId}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+    
+                            <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
+                                <tags:switchButton path="capControlSubstationBus.usePhaseDataBoolean" 
+                                    toggleGroup="perPhase" toggleAction="hide"/>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
+                                <tags:switchButton path="capControlSubstationBus.controlFlagBoolean"/>
+                            </tags:nameValue2>
+    
+                            <%-- Var point when not per phase --%>
+                            <%-- Phase A when not per phase --%>
+                            <tags:nameValue2 nameKey=".points.varPhaseA">
+                                <form:hidden id="var-point-input" path="capControlSubstationBus.currentVarLoadPointID"/>
+                                <tags:pickerDialog
+                                    id="varPointPicker"
+                                    type="pointPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoPoint"
+                                    destinationFieldId="var-point-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty bus.capControlSubstationBus.currentVarLoadPointID}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".points.phaseB" data-toggle-group="perPhase">
+                                <form:hidden id="phase-b-point-input" path="capControlSubstationBus.phaseB"/>
+                                <tags:pickerDialog
+                                    id="phaseBPointPicker"
+                                    type="pointPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoPoint"
+                                    destinationFieldId="phase-b-point-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty bus.capControlSubstationBus.phaseB}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".points.phaseC" data-toggle-group="perPhase">
+                                <form:hidden id="phase-c-point-input" path="capControlSubstationBus.phaseC"/>
+                                <tags:pickerDialog
+                                    id="phaseCPointPicker"
+                                    type="pointPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoPoint"
+                                    destinationFieldId="phase-c-point-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty bus.capControlSubstationBus.phaseC}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+    
+                            <tags:nameValue2 nameKey=".points.watt">
+                                <form:hidden id="watt-point-input" path="capControlSubstationBus.currentWattLoadPointID"/>
+                                <tags:pickerDialog
+                                    id="wattPointPicker"
+                                    type="pointPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoPoint"
+                                    destinationFieldId="watt-point-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty bus.capControlSubstationBus.currentWattLoadPointID}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+    
+                            <tags:nameValue2 nameKey=".points.volt">
+                                <form:hidden id="volt-point-input" path="capControlSubstationBus.currentVoltLoadPointID"/>
+                                <tags:pickerDialog
+                                    id="voltPointPicker"
+                                    type="pointPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoPoint"
+                                    destinationFieldId="volt-point-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty bus.capControlSubstationBus.currentVoltLoadPointID}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+                        </tags:nameValueContainer2>
+                    </cti:tab>
+                    <cti:msg2 var="attachedPointsTab" key=".attachedPointsTab"/>
+                    <cti:tab title="${attachedPointsTab}">
+                        <div class="scroll-md">
+                            <%@ include file="pointsTable.jsp" %>
                         </div>
-                    </cti:checkRolesAndProperties>
-                </cti:tab>
-                <cti:msg2 var="dualBusTab" key=".dualBusTab"/>
-                <cti:tab title="${dualBusTab}">
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".bus.enableDualBus">
-                            <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean" toggleGroup="dualBus" toggleAction="hide"/>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".bus.alternateBus" data-toggle-group="dualBus">
-                            <form:hidden id="switch-alt-bus-input" path="capControlSubstationBus.altSubPAOId"/>
-                            <tags:pickerDialog
-                                id="altBusPicker"
-                                type="capControlSubstationBusPicker"
-                                linkType="selection"
-                                selectionProperty="paoName"
-                                destinationFieldId="switch-alt-bus-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty bus.capControlSubstationBus.altSubPAOId}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".switchPoint">
-                            <form:hidden id="switch-point-input" path="capControlSubstationBus.switchPointID"/>
-                            <tags:pickerDialog
-                                id="switchPointPicker"
-                                type="pointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="switch-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty bus.capControlSubstationBus.switchPointID}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </cti:tab>
-            </cti:tabs>
-        </div>
+                        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                            <div class="action-area">
+                                <tags:pointCreation paoId="${bus.id}" />
+                            </div>
+                        </cti:checkRolesAndProperties>
+                    </cti:tab>
+                    <cti:msg2 var="dualBusTab" key=".dualBusTab"/>
+                    <cti:tab title="${dualBusTab}">
+                        <tags:nameValueContainer2>
+                            <tags:nameValue2 nameKey=".bus.enableDualBus">
+                                <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean" toggleGroup="dualBus" toggleAction="hide"/>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".bus.alternateBus" data-toggle-group="dualBus">
+                                <form:hidden id="switch-alt-bus-input" path="capControlSubstationBus.altSubPAOId"/>
+                                <tags:pickerDialog
+                                    id="altBusPicker"
+                                    type="capControlSubstationBusPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoName"
+                                    destinationFieldId="switch-alt-bus-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty bus.capControlSubstationBus.altSubPAOId}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".switchPoint">
+                                <form:hidden id="switch-point-input" path="capControlSubstationBus.switchPointID"/>
+                                <tags:pickerDialog
+                                    id="switchPointPicker"
+                                    type="pointPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoPoint"
+                                    destinationFieldId="switch-point-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty bus.capControlSubstationBus.switchPointID}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+                        </tags:nameValueContainer2>
+                    </cti:tab>
+                </cti:tabs>
+            </div>
+        </cti:displayForPageEditModes>
     </div>
     <cti:csrfToken/>
     
-    <cti:msg2 var="feedersSection" key=".feedersSection"/>
-    <tags:sectionContainer title="${feedersSection}" styleClass="clear">
-        <c:if test="${empty feederList}">
-            <span class="empty-list"><i:inline key=".bus.noAssignedFeeders"/></span>
-        </c:if>
-        <c:if test="${not empty feederList}">
-            <c:if test="${not orphan}">
-                <cti:msgScope paths=",yukon.web.modules.capcontrol.substation">
-                    <%@ include file="tier/feederTable.jsp" %>
-                </cti:msgScope>
+    <cti:displayForPageEditModes modes="EDIT,VIEW">
+        <cti:msg2 var="feedersSection" key=".feedersSection"/>
+        <tags:sectionContainer title="${feedersSection}" styleClass="clear">
+            <c:if test="${empty feederList}">
+                <span class="empty-list"><i:inline key=".bus.noAssignedFeeders"/></span>
             </c:if>
-            <c:if test="${orphan}">
-                <ul class="striped-list simple-list">
-                    <c:forEach var="feeder" items="${feederList}">
-                    <li>
-                         <cti:url var="feederUrl" value="/capcontrol/feeders/${feeder.ccId}" />
-                            <a href="${feederUrl}">
-                                ${fn:escapeXml(feeder.ccName)}
-                            </a> 
-                    </li>
-                    </c:forEach>
-                </ul>
+            <c:if test="${not empty feederList}">
+                <c:if test="${not orphan}">
+                    <cti:msgScope paths=",yukon.web.modules.capcontrol.substation">
+                        <%@ include file="tier/feederTable.jsp" %>
+                    </cti:msgScope>
+                </c:if>
+                <c:if test="${orphan}">
+                    <ul class="striped-list simple-list">
+                        <c:forEach var="feeder" items="${feederList}">
+                        <li>
+                             <cti:url var="feederUrl" value="/capcontrol/feeders/${feeder.ccId}" />
+                                <a href="${feederUrl}">
+                                    ${fn:escapeXml(feeder.ccName)}
+                                </a> 
+                        </li>
+                        </c:forEach>
+                    </ul>
+                </c:if>
             </c:if>
-        </c:if>
-        <c:if test="${canEdit}">
-            <div class="action-area">
-                <cti:button nameKey="edit" icon="icon-pencil"
-                    data-popup=".js-edit-feeders-popup" data-popup-toggle=""/>
-            </div>
-        </c:if>
-    </tags:sectionContainer>
+            <c:if test="${canEdit}">
+                <div class="action-area">
+                    <cti:button nameKey="edit" icon="icon-pencil"
+                        data-popup=".js-edit-feeders-popup" data-popup-toggle=""/>
+                </div>
+            </c:if>
+        </tags:sectionContainer>
+    </cti:displayForPageEditModes>
 
 
     <div class="page-action-area">

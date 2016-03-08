@@ -52,7 +52,6 @@ import com.cannontech.web.capcontrol.service.FeederService;
 import com.cannontech.web.capcontrol.service.StrategyService;
 import com.cannontech.web.capcontrol.validators.FeederValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -64,7 +63,6 @@ public class FeederController {
     @Autowired private CapControlCache ccCache;
     @Autowired private HolidayScheduleDao hoidayScheduleDao;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SeasonScheduleDao seasonScheduleDao;
     @Autowired private StrategyDao strategyDao;
@@ -181,7 +179,8 @@ public class FeederController {
     public String save(
             @ModelAttribute("feeder") CapControlFeeder feeder,
             BindingResult result,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            FlashScope flash) {
         
         validator.validate(feeder, result);
 
@@ -199,7 +198,9 @@ public class FeederController {
             log.error("Error saving feeder:", e);
             return bindAndForward(feeder, result, redirectAttributes);
         }
-
+        
+        // Success
+        flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".updated"));
         return "redirect:/capcontrol/feeders/" + id;
     }
 
@@ -218,20 +219,22 @@ public class FeederController {
     @RequestMapping(value="feeders/{id}", method=RequestMethod.DELETE)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String delete(@PathVariable int id, FlashScope flash) {
-        feederService.get(id);
-        Integer parentId = feederDao.getParentSubBusID(id);
-        feederService.delete(id);
-
-        if (parentId <= 0) {
-            return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__";
-        }
-
-        LiteYukonPAObject parent = dbCache.getAllPaosMap().get(parentId);
-        String parentUrl = paoDetailUrlHelper.getUrlForPaoDetailPage(parent);
+        CapControlFeeder feeder = feederService.get(id);
         
-        flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success"));
+        try {
+            Integer parentId = feederDao.getParentSubBusID(id);
+            feederService.delete(id);
+            flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success", feeder.getName()));
 
-        return "redirect:" + parentUrl;
+            if (parentId != null && parentId > 0) {
+                return "redirect:/capcontrol/buses/" + parentId;
+            }
+        }catch( EmptyResultDataAccessException e ){
+            feederService.delete(id);
+            //do nothing and return to orphan page
+        }
+        
+        return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__";
     }
 
     @RequestMapping("feeders/{feederId}/capbanks/edit")

@@ -53,6 +53,11 @@ yukon.da.bus = (function () {
                     }
                 });
             });
+            
+            /** User confirmed intent to delete bus. */
+            $(document).on('yukon:da:bus:delete', function () {
+                $('#delete-bus').submit();
+            });
         }
     };
 

@@ -191,7 +191,8 @@ public class BusController {
     public String save(
             @ModelAttribute("bus") CapControlSubBus bus,
             BindingResult result,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            FlashScope flash) {
 
         validator.validate(bus, result);
 
@@ -208,6 +209,8 @@ public class BusController {
             return bindAndForward(bus, result, redirectAttributes);
         }
 
+        // Success
+        flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".updated"));
         return "redirect:/capcontrol/buses/" + id;
     }
 
@@ -225,15 +228,16 @@ public class BusController {
 
     @RequestMapping(value="buses/{id}", method=RequestMethod.DELETE)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String delete(@PathVariable int id) {
+    public String delete(@PathVariable int id, FlashScope flash) {
 
-        busService.get(id);
+        CapControlSubBus bus = busService.get(id);
 
         Integer parentId = busDao.getParent(id);
 
         busService.delete(id);
+        flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".delete.success", bus.getName()));
 
-        if (parentId <= 0) {
+        if (parentId == null || parentId <= 0) {
             return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__";
         }
 

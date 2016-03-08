@@ -50,157 +50,162 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </cti:tab>
-                <%@ include file="strategyTab.jsp" %>
-                </cti:tabs>
-               </div>
-
-            <div class="column two nogutter">
-            <cti:tabs>
-                <cti:msg2 var="controlPointsTab" key=".controlPointsTab"/>
-                <cti:tab title="${controlPointsTab}">
-                    <tags:nameValueContainer2>
-
-                        <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
-                            <tags:switchButton path="capControlFeeder.usePhaseDataBoolean" toggleGroup="perPhase" toggleAction="hide"/>
-                        </tags:nameValue2>
-                        <%-- Only when per phase --%>
-                        <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
-                            <tags:switchButton path="capControlFeeder.controlFlagBoolean"/>
-                        </tags:nameValue2>
-                
-                            <tags:nameValue2 nameKey=".points.varPhaseA">
-                                <form:hidden id="var-point-input" path="capControlFeeder.currentVarLoadPointID" />
-                                <tags:pickerDialog
-                                    id="varPointPicker"
-                                    type="varPointPicker"
-                                    linkType="selection"
-                                    selectionProperty="paoPoint"
-                                    destinationFieldId="var-point-input"
-                                    viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
-                                <cti:displayForPageEditModes modes="VIEW">
-                                    <c:if test="${empty feeder.capControlFeeder.currentVarLoadPointID || feeder.capControlFeeder.currentVarLoadPointID == 0}">
-                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                    </c:if>
-                                </cti:displayForPageEditModes>
-                            </tags:nameValue2>
-                            
-                        <%-- Var point when not per phase --%>
-                        <%-- Phase A when per phase --%>
-                            <%-- Only when per phase --%>
-                            <tags:nameValue2 nameKey=".points.phaseB" data-toggle-group="perPhase">
-                                <form:hidden id="phase-b-point-input" path="capControlFeeder.phaseB"/>
-                                <tags:pickerDialog
-                                    id="phaseBPointPicker"
-                                    type="varPointPicker"
-                                    linkType="selection"
-                                    selectionProperty="paoPoint"
-                                    destinationFieldId="phase-b-point-input"
-                                    viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
-                                <cti:displayForPageEditModes modes="VIEW">
-                                    <c:if test="${empty feeder.capControlFeeder.phaseB || feeder.capControlFeeder.phaseB == 0}">
-                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                    </c:if>
-                                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="EDIT,VIEW">
+                    <%@ include file="strategyTab.jsp" %>
+                </cti:displayForPageEditModes>
+             </cti:tabs>
+           </div>
+            <cti:displayForPageEditModes modes="EDIT,VIEW">
+                <div class="column two nogutter">
+                <cti:tabs>
+                    <cti:msg2 var="controlPointsTab" key=".controlPointsTab"/>
+                    <cti:tab title="${controlPointsTab}">
+                        <tags:nameValueContainer2>
+    
+                            <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
+                                <tags:switchButton path="capControlFeeder.usePhaseDataBoolean" toggleGroup="perPhase" toggleAction="hide"/>
                             </tags:nameValue2>
                             <%-- Only when per phase --%>
-                            <tags:nameValue2 nameKey=".points.phaseC" data-toggle-group="perPhase">
-                                <form:hidden id="phase-c-point-input" path="capControlFeeder.phaseC"/>
+                            <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
+                                <tags:switchButton path="capControlFeeder.controlFlagBoolean"/>
+                            </tags:nameValue2>
+                    
+                                <tags:nameValue2 nameKey=".points.varPhaseA">
+                                    <form:hidden id="var-point-input" path="capControlFeeder.currentVarLoadPointID" />
+                                    <tags:pickerDialog
+                                        id="varPointPicker"
+                                        type="varPointPicker"
+                                        linkType="selection"
+                                        selectionProperty="paoPoint"
+                                        destinationFieldId="var-point-input"
+                                        viewOnlyMode="${mode == 'VIEW'}"
+                                        allowEmptySelection="${true}"/>
+                                    <cti:displayForPageEditModes modes="VIEW">
+                                        <c:if test="${empty feeder.capControlFeeder.currentVarLoadPointID || feeder.capControlFeeder.currentVarLoadPointID == 0}">
+                                            <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                        </c:if>
+                                    </cti:displayForPageEditModes>
+                                </tags:nameValue2>
+                                
+                            <%-- Var point when not per phase --%>
+                            <%-- Phase A when per phase --%>
+                                <%-- Only when per phase --%>
+                                <tags:nameValue2 nameKey=".points.phaseB" data-toggle-group="perPhase">
+                                    <form:hidden id="phase-b-point-input" path="capControlFeeder.phaseB"/>
+                                    <tags:pickerDialog
+                                        id="phaseBPointPicker"
+                                        type="varPointPicker"
+                                        linkType="selection"
+                                        selectionProperty="paoPoint"
+                                        destinationFieldId="phase-b-point-input"
+                                        viewOnlyMode="${mode == 'VIEW'}"
+                                        allowEmptySelection="${true}"/>
+                                    <cti:displayForPageEditModes modes="VIEW">
+                                        <c:if test="${empty feeder.capControlFeeder.phaseB || feeder.capControlFeeder.phaseB == 0}">
+                                            <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                        </c:if>
+                                    </cti:displayForPageEditModes>
+                                </tags:nameValue2>
+                                <%-- Only when per phase --%>
+                                <tags:nameValue2 nameKey=".points.phaseC" data-toggle-group="perPhase">
+                                    <form:hidden id="phase-c-point-input" path="capControlFeeder.phaseC"/>
+                                    <tags:pickerDialog
+                                        id="phaseCPointPicker"
+                                        type="varPointPicker"
+                                        linkType="selection"
+                                        selectionProperty="paoPoint"
+                                        destinationFieldId="phase-c-point-input"
+                                        viewOnlyMode="${mode == 'VIEW'}"
+                                        allowEmptySelection="${true}"/>
+                                    <cti:displayForPageEditModes modes="VIEW">
+                                        <c:if test="${empty feeder.capControlFeeder.phaseC || feeder.capControlFeeder.phaseC == 0}">
+                                            <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                        </c:if>
+                                    </cti:displayForPageEditModes>
+                                </tags:nameValue2>
+    
+                            <tags:nameValue2 nameKey=".points.watt">
+                                <form:hidden id="watt-point-input" path="capControlFeeder.currentWattLoadPointID"/>
                                 <tags:pickerDialog
-                                    id="phaseCPointPicker"
-                                    type="varPointPicker"
+                                    id="wattPointPicker"
+                                    type="wattPointPicker"
                                     linkType="selection"
                                     selectionProperty="paoPoint"
-                                    destinationFieldId="phase-c-point-input"
+                                    destinationFieldId="watt-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
                                     allowEmptySelection="${true}"/>
                                 <cti:displayForPageEditModes modes="VIEW">
-                                    <c:if test="${empty feeder.capControlFeeder.phaseC || feeder.capControlFeeder.phaseC == 0}">
+                                    <c:if test="${empty feeder.capControlFeeder.currentWattLoadPointID || feeder.capControlFeeder.currentWattLoadPointID == 0}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                     </c:if>
                                 </cti:displayForPageEditModes>
                             </tags:nameValue2>
-
-                        <tags:nameValue2 nameKey=".points.watt">
-                            <form:hidden id="watt-point-input" path="capControlFeeder.currentWattLoadPointID"/>
-                            <tags:pickerDialog
-                                id="wattPointPicker"
-                                type="wattPointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="watt-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty feeder.capControlFeeder.currentWattLoadPointID || feeder.capControlFeeder.currentWattLoadPointID == 0}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-
-                        <tags:nameValue2 nameKey=".points.volt">
-                            <form:hidden id="volt-point-input" path="capControlFeeder.currentVoltLoadPointID"/>
-                            <tags:pickerDialog
-                                id="voltPointPicker"
-                                type="voltPointPicker"
-                                linkType="selection"
-                                selectionProperty="paoPoint"
-                                destinationFieldId="volt-point-input"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:if test="${empty feeder.capControlFeeder.currentVoltLoadPointID || feeder.capControlFeeder.currentVoltLoadPointID == 0}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                </c:if>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </cti:tab>
-                    <cti:msg2 var="attachedPointsTab" key=".attachedPointsTab"/>
-                    <cti:tab title="${attachedPointsTab}">
-                        <div class="scroll-md">
-                            <%@ include file="pointsTable.jsp" %>
-                        </div>
-                        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                            <div class="action-area">
-                                <tags:pointCreation paoId="${feeder.id}" />
-                            </div>
-                        </cti:checkRolesAndProperties>
+    
+                            <tags:nameValue2 nameKey=".points.volt">
+                                <form:hidden id="volt-point-input" path="capControlFeeder.currentVoltLoadPointID"/>
+                                <tags:pickerDialog
+                                    id="voltPointPicker"
+                                    type="voltPointPicker"
+                                    linkType="selection"
+                                    selectionProperty="paoPoint"
+                                    destinationFieldId="volt-point-input"
+                                    viewOnlyMode="${mode == 'VIEW'}"
+                                    allowEmptySelection="${true}"/>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:if test="${empty feeder.capControlFeeder.currentVoltLoadPointID || feeder.capControlFeeder.currentVoltLoadPointID == 0}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                    </c:if>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+                        </tags:nameValueContainer2>
                     </cti:tab>
-                </cti:tabs>
-             </div>
+                        <cti:msg2 var="attachedPointsTab" key=".attachedPointsTab"/>
+                        <cti:tab title="${attachedPointsTab}">
+                            <div class="scroll-md">
+                                <%@ include file="pointsTable.jsp" %>
+                            </div>
+                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                                <div class="action-area">
+                                    <tags:pointCreation paoId="${feeder.id}" />
+                                </div>
+                            </cti:checkRolesAndProperties>
+                        </cti:tab>
+                    </cti:tabs>
+                 </div>
+             </cti:displayForPageEditModes>
           </div>
                 
-    <cti:msg2 var="capBanksSection" key=".capBanksSection"/>
-    <tags:sectionContainer title="${capBanksSection}" styleClass="clear">
-        <c:if test="${empty capBankList}">
-            <span class="empty-list"><i:inline key=".feeder.noAssignedCapBanks"/></span>
-        </c:if>
-        <c:if test="${not empty capBankList}">
-            <c:if test="${not orphan}">
-                <cti:msgScope paths=",yukon.web.modules.capcontrol.substation">
-                    <%@ include file="tier/capBankTable.jsp" %>
-                </cti:msgScope>
+     <cti:displayForPageEditModes modes="EDIT,VIEW">   
+        <cti:msg2 var="capBanksSection" key=".capBanksSection"/>
+        <tags:sectionContainer title="${capBanksSection}" styleClass="clear">
+            <c:if test="${empty capBankList}">
+                <span class="empty-list"><i:inline key=".feeder.noAssignedCapBanks"/></span>
             </c:if>
-            <c:if test="${orphan}">
-                <ul class="striped-list simple-list">
-                    <c:forEach var="capBank" items="${capBankList}">
-                    <li>
-                        <cti:url var="capBankUrl" value="/capcontrol/cbc/${capBank.ccId}"/>
-                        <a href="${capBankUrl}">${capBank.ccName}</a>
-                    </li>
-                    </c:forEach>
-                </ul>
+            <c:if test="${not empty capBankList}">
+                <c:if test="${not orphan}">
+                    <cti:msgScope paths=",yukon.web.modules.capcontrol.substation">
+                        <%@ include file="tier/capBankTable.jsp" %>
+                    </cti:msgScope>
+                </c:if>
+                <c:if test="${orphan}">
+                    <ul class="striped-list simple-list">
+                        <c:forEach var="capBank" items="${capBankList}">
+                        <li>
+                            <cti:url var="capBankUrl" value="/capcontrol/cbc/${capBank.ccId}"/>
+                            <a href="${capBankUrl}">${capBank.ccName}</a>
+                        </li>
+                        </c:forEach>
+                    </ul>
+                </c:if>
             </c:if>
-        </c:if>
-        <c:if test="${canEdit}">
-            <div class="action-area">
-                <cti:button nameKey="edit" icon="icon-pencil"
-                    data-popup=".js-edit-capbanks-popup" data-popup-toggle=""/>
-            </div>
-        </c:if>
-    </tags:sectionContainer>
+            <c:if test="${canEdit}">
+                <div class="action-area">
+                    <cti:button nameKey="edit" icon="icon-pencil"
+                        data-popup=".js-edit-capbanks-popup" data-popup-toggle=""/>
+                </div>
+            </c:if>
+        </tags:sectionContainer>
+    </cti:displayForPageEditModes>
         <div class="page-action-area">
 
         <cti:displayForPageEditModes modes="VIEW">
