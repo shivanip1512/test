@@ -614,6 +614,9 @@
     <ClInclude Include="include\connectionHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\concurrentSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc">

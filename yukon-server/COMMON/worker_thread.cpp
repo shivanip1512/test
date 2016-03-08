@@ -3,10 +3,12 @@
 #include "utility.h"
 #include "logger.h"
 #include "worker_thread.h"
+#include "win_helper.h"
 
 
 namespace Cti {
 
+ConcurrentSet<boost::thread::id> WorkerThread::_failed_terminations;
 
 /**
  * class constructor
@@ -44,6 +46,14 @@ bool WorkerThread::isRunning()
 }
 
 /**
+ * Check to see if this thread was unsuccessfully terminated
+ */
+bool WorkerThread::isFailedTermination()
+{
+    return _failed_terminations.contains(boost::this_thread::get_id());
+}
+
+/**
  * start the worker thread if the thread is not currently running
  * thread can be started multiple times
  */
@@ -54,6 +64,8 @@ void WorkerThread::start()
 
     // create and start the thread (boost:thread uses boost::bind implicitly)
     _thread = boost::thread( &WorkerThread::executeWrapper, this );
+
+    _failed_terminations.erase(_thread.get_id());
 }
 
 /**
@@ -117,6 +129,11 @@ void WorkerThread::tryJoinOrTerminateFor( const Timing::Chrono &duration )
  */
 void WorkerThread::interruptionPoint()
 {
+    if( isFailedTermination() )
+    {
+        throw boost::thread_interrupted();
+    }
+
     boost::this_thread::interruption_point();
 }
 
@@ -127,7 +144,12 @@ void WorkerThread::interruptionPoint()
  */
 void WorkerThread::sleepFor( const Timing::Chrono &duration )
 {
-    boost::this_thread::sleep_for( boost::chrono::milliseconds( duration.milliseconds() ));
+    if( isFailedTermination() )
+    {
+        throw boost::thread_interrupted();
+    }
+
+    boost::this_thread::sleep_for(boost::chrono::milliseconds(duration.milliseconds()));
 }
 
 /**
@@ -145,11 +167,7 @@ void WorkerThread::executeWrapper()
         SetThreadName( -1, _function._name.c_str() );
     }
 
-    // verbose is enable by default
-    if( _function._verbose )
-    {
-        CTILOG_INFO(dout, "Thread starting : " << _function._name);
-    }
+    CTILOG_INFO(dout, "Thread starting : " << _function._name);
 
     try
     {
@@ -157,21 +175,14 @@ void WorkerThread::executeWrapper()
     }
     catch( const Interrupted& )
     {
-        // verbose is enable by default
-        if( _function._verbose )
-        {
-            CTILOG_WARN(dout, _function._name <<"Thread interrupted: "<< _function._name);
-        }
+        CTILOG_WARN(dout, _function._name <<"Thread interrupted: "<< _function._name);
     }
     catch( ... )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread aborting due to unhandled exception: "<< _function._name);
     }
 
-    if( _function._verbose )
-    {
-        CTILOG_INFO(dout, "Thread exiting: "<< _function._name);
-    }
+    CTILOG_INFO(dout, "Thread exiting: "<< _function._name);
 }
 
 } // namespace Cti

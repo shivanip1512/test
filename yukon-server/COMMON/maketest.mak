@@ -147,6 +147,8 @@ cmdparse.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		critical_section.h pointdefs.h std_helper.h
 cmdparsetestgenerator.obj:	cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h test_cmdparse_input.h
+connectionhandle.obj:	precompiled.h connectionHandle.h dlldefs.h \
+		loggable.h
 counter.obj:	precompiled.h counter.h guard.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h constants.h numstr.h module_util.h version.h \
@@ -170,8 +172,9 @@ cticalls.obj:	precompiled.h cticalls.h yukon.h types.h ctidbgmem.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h constants.h numstr.h \
 		module_util.h version.h win_helper.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h
+		connectionHandle.h streamConnection.h netports.h \
+		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h
 ctidate.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h queues.h cticalls.h yukon.h types.h \
@@ -232,13 +235,14 @@ debug_timer.obj:	precompiled.h debug_timer.h dlldefs.h logger.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h
 desolvers.obj:	precompiled.h desolvers.h dlldefs.h pointtypes.h dsm2.h \
-		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
-		timing_util.h loggable.h immutable.h critical_section.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		constants.h numstr.h module_util.h version.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		resolvers.h db_entry_defines.h devicetypes.h std_helper.h
+		connectionHandle.h loggable.h streamConnection.h yukon.h \
+		types.h ctidbgmem.h netports.h timing_util.h immutable.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h constants.h numstr.h module_util.h \
+		version.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h resolvers.h db_entry_defines.h \
+		devicetypes.h std_helper.h
 deviceattributelookup.obj:	precompiled.h DeviceAttributeLookup.h \
 		devicetypes.h pointtypes.h PointAttribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h
@@ -247,25 +251,26 @@ deviceconfigdescription.obj:	precompiled.h DeviceConfigDescription.h \
 		ctidbgmem.h dlldefs.h std_helper.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h streamBuffer.h loggable.h
-dllbase.obj:	precompiled.h dsm2.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h dbaccess.h dllbase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		encryption.h json.h xml.h devicetypes.h pointtypes.h \
-		resource_helper.h PointAttribute.h DeviceConfigDescription.h \
-		thread_monitor.h smartmap.h readers_writer_lock.h cparms.h \
-		queue.h thread.h thread_register_data.h boost_time.h
+dllbase.obj:	precompiled.h dsm2.h connectionHandle.h dlldefs.h \
+		loggable.h streamConnection.h yukon.h types.h ctidbgmem.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		dbaccess.h dllbase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h encryption.h json.h xml.h devicetypes.h \
+		pointtypes.h resource_helper.h PointAttribute.h \
+		DeviceConfigDescription.h thread_monitor.h smartmap.h \
+		readers_writer_lock.h cparms.h queue.h thread.h \
+		thread_register_data.h boost_time.h
 elog_cli.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
-		yukon.h ctidbgmem.h dsm2.h streamConnection.h netports.h \
-		timing_util.h loggable.h immutable.h critical_section.h \
-		guard.h utility.h ctitime.h queues.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h elogger.h
+		yukon.h ctidbgmem.h dsm2.h connectionHandle.h loggable.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h elogger.h
 encryption.obj:	precompiled.h encryption.h dlldefs.h string_util.h \
 		streamBuffer.h loggable.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
@@ -278,11 +283,11 @@ error.obj:	precompiled.h dsm2err.h dlldefs.h yukon.h types.h \
 exception_helper.obj:	precompiled.h streamBuffer.h dlldefs.h \
 		loggable.h exception_helper.h
 fileint.obj:	precompiled.h fileint.h dlldefs.h critical_section.h \
-		worker_thread.h timing_util.h loggable.h dllbase.h os2_2w32.h \
-		types.h cticalls.h yukon.h ctidbgmem.h ctitime.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		utility.h queues.h constants.h numstr.h module_util.h \
-		version.h guard.h
+		worker_thread.h timing_util.h loggable.h concurrentSet.h \
+		dllbase.h os2_2w32.h types.h cticalls.h yukon.h ctidbgmem.h \
+		ctitime.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h utility.h queues.h constants.h \
+		numstr.h module_util.h version.h guard.h
 globalsettings.obj:	precompiled.h GlobalSettings.h dlldefs.h \
 		critical_section.h utility.h ctitime.h queues.h cticalls.h \
 		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
@@ -328,11 +333,11 @@ logmanager.obj:	precompiled.h logLayout.h dlldefs.h logManager.h \
 macro_offset.obj:	precompiled.h macro_offset.h dlldefs.h
 master.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h cti_asmc.h queues.h constants.h dsm2.h \
-		streamConnection.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		numstr.h module_util.h version.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h master.h
+		connectionHandle.h loggable.h streamConnection.h netports.h \
+		timing_util.h immutable.h critical_section.h guard.h \
+		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h master.h
 metricidlookup.obj:	precompiled.h MetricIdLookup.h PointAttribute.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h
 millisecond_timer.obj:	precompiled.h millisecond_timer.h dlldefs.h
@@ -374,14 +379,15 @@ regression.obj:	precompiled.h cparms.h dlldefs.h logger.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h regression.h
 repeaterrole.obj:	precompiled.h repeaterrole.h dlldefs.h
-resolvers.obj:	precompiled.h dsm2.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h resolvers.h pointtypes.h \
-		db_entry_defines.h devicetypes.h std_helper.h
+resolvers.obj:	precompiled.h dsm2.h connectionHandle.h dlldefs.h \
+		loggable.h streamConnection.h yukon.h types.h ctidbgmem.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		resolvers.h pointtypes.h db_entry_defines.h devicetypes.h \
+		std_helper.h
 resource_helper.obj:	precompiled.h resource_helper.h dlldefs.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
@@ -401,8 +407,8 @@ streamlocalconnection.obj:	precompiled.h logger.h dlldefs.h \
 		module_util.h version.h critical_section.h \
 		millisecond_timer.h win_helper.h streamLocalConnection.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		guard.h dsm2.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h
+		guard.h dsm2.h connectionHandle.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h
 streamsocketconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
@@ -459,13 +465,13 @@ test_multiset.obj:	utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h
 test_numstr.obj:	numstr.h dlldefs.h
-test_old_queues.obj:	dsm2.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h
+test_old_queues.obj:	dsm2.h connectionHandle.h dlldefs.h loggable.h \
+		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
+		timing_util.h immutable.h critical_section.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h
 test_pointattribute.obj:	PointAttribute.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h
 test_queue.obj:	queue.h cparms.h dlldefs.h logger.h streamBuffer.h \
@@ -478,15 +484,15 @@ test_readers_writer_lock.obj:	readers_writer_lock.h dlldefs.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
 		numstr.h module_util.h version.h logger.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h
-test_resolvers.obj:	dsm2.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h resolvers.h pointtypes.h \
-		db_entry_defines.h devicetypes.h boost_test_helpers.h \
-		millisecond_timer.h ctidate.h
+test_resolvers.obj:	dsm2.h connectionHandle.h dlldefs.h loggable.h \
+		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
+		timing_util.h immutable.h critical_section.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		resolvers.h pointtypes.h db_entry_defines.h devicetypes.h \
+		boost_test_helpers.h millisecond_timer.h ctidate.h
 test_std_helper.obj:	std_helper.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h module_util.h version.h streamBuffer.h \
@@ -498,11 +504,12 @@ test_string_util.obj:	string_util.h dlldefs.h streamBuffer.h \
 test_timeperiod.obj:	timeperiod.h dlldefs.h ctitime.h ctidate.h
 test_utility.obj:	utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h ctidate.h dsm2.h streamConnection.h \
-		netports.h timing_util.h loggable.h immutable.h \
-		critical_section.h guard.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h devicetypes.h
+		module_util.h version.h ctidate.h dsm2.h connectionHandle.h \
+		loggable.h streamConnection.h netports.h timing_util.h \
+		immutable.h critical_section.h guard.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		devicetypes.h
 test_words.obj:	boost_test_helpers.h millisecond_timer.h dlldefs.h \
 		ctitime.h ctidate.h
 thread.obj:	precompiled.h dllbase.h os2_2w32.h dlldefs.h types.h \
@@ -544,11 +551,12 @@ truncatingconsoleappender.obj:	precompiled.h \
 		loggable.h streamBuffer.h
 ucttime.obj:	precompiled.h dllbase.h os2_2w32.h dlldefs.h types.h \
 		cticalls.h yukon.h ctidbgmem.h critical_section.h dsm2.h \
-		streamConnection.h netports.h timing_util.h loggable.h \
-		immutable.h guard.h utility.h ctitime.h queues.h constants.h \
-		numstr.h module_util.h version.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h elogger.h
+		connectionHandle.h loggable.h streamConnection.h netports.h \
+		timing_util.h immutable.h guard.h utility.h ctitime.h \
+		queues.h constants.h numstr.h module_util.h version.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h elogger.h
 utility.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h yukon.h ctidbgmem.h critical_section.h \
 		database_reader.h database_connection.h guard.h utility.h \
@@ -557,17 +565,17 @@ utility.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h dlldefs.h \
 		exception_helper.h boostutil.h row_reader.h \
 		database_transaction.h database_writer.h row_writer.h \
 		database_util.h pointdefs.h ctidate.h devicetypes.h \
-		desolvers.h pointtypes.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h
+		desolvers.h pointtypes.h dsm2.h connectionHandle.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h
 verification_objects.obj:	precompiled.h verification_objects.h \
-		dlldefs.h boost_time.h dsm2.h streamConnection.h yukon.h \
-		types.h ctidbgmem.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h
+		dlldefs.h boost_time.h dsm2.h connectionHandle.h loggable.h \
+		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
+		timing_util.h immutable.h critical_section.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h
 win_helper.obj:	precompiled.h win_helper.h numstr.h dlldefs.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
@@ -582,7 +590,8 @@ worker_thread.obj:	precompiled.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h critical_section.h worker_thread.h timing_util.h
+		boostutil.h critical_section.h worker_thread.h timing_util.h \
+		concurrentSet.h win_helper.h
 xfer.obj:	precompiled.h xfer.h dlldefs.h yukon.h types.h ctidbgmem.h
 xml.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h utility.h \

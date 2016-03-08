@@ -39,6 +39,11 @@ void CalcWorkerThread::resume()
 
 void CalcWorkerThread::waitForResume()
 {
+    if( isFailedTermination() )
+    {
+        throw WorkerThread::Interrupted();
+    }
+
     boost::unique_lock<boost::mutex> lock( _pauseMutex );
 
     while ( _isPaused )
@@ -49,6 +54,11 @@ void CalcWorkerThread::waitForResume()
 
 void CalcWorkerThread::setPausedState( const bool isPaused )
 {
+    if( isFailedTermination() )
+    {
+        throw WorkerThread::Interrupted();
+    }
+
     {
         boost::unique_lock<boost::mutex> lock( _pauseMutex );
 

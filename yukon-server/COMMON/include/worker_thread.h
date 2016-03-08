@@ -1,13 +1,16 @@
 #pragma once
 
-#include <string>
+#include "dlldefs.h"
+#include "timing_util.h"
+
+#include "concurrentSet.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/thread.hpp>
 #include <boost/optional.hpp>
 
-#include "dlldefs.h"
-#include "timing_util.h"
+#include <string>
+#include <atomic>
 
 namespace Cti {
 
@@ -20,7 +23,6 @@ public:
         void init()
         {
             assert( _function );
-            _verbose = true;
         }
 
     public:
@@ -53,7 +55,6 @@ public:
         // optional parameters
         std::string                  _name;
         boost::optional<int>         _priority;
-        bool                         _verbose;
 
         Function& name( const std::string &name )
         {
@@ -64,12 +65,6 @@ public:
         Function& priority( int priority )
         {
             _priority = priority;
-            return *this;
-        }
-
-        Function& verbose( bool verbose )
-        {
-            _verbose = verbose;
             return *this;
         }
     };
@@ -90,11 +85,17 @@ public:
 
     static void interruptionPoint();
     static void sleepFor( const Timing::Chrono &duration );
-    
+
+protected:
+
+    static bool isFailedTermination();
+
 private:
 
     mutable boost::thread       _thread;
     Function                    _function;
+
+    static ConcurrentSet<boost::thread::id> _failed_terminations;
 
     void executeWrapper();
 };
