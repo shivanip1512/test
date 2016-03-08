@@ -16,10 +16,28 @@ using std::string;
 
 DatabaseConnection::DatabaseConnection()
 {
-    connection = getNewConnection();
-    if( connection != NULL )
+    if( connection = getNewConnection() )
     {
         connection->setAutoCommit(SA_AutoCommitOn);
+    }
+}
+
+DatabaseConnection::DatabaseConnection(QueryTimeout t)
+    : DatabaseConnection()
+{
+    if( connection )
+    {
+        static const std::map<QueryTimeout, const char *> timeouts {
+            { QueryTimeout::Fifteen_seconds, "15" } };
+
+        if( auto timeoutString = mapFind(timeouts, t) )
+        {
+            connection->setOption("SQL_ATTR_QUERY_TIMEOUT") = *timeoutString;
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Unhandled QueryTimeout value " << static_cast<unsigned>(t) << ", cannot set query timeout");
+        }
     }
 }
 

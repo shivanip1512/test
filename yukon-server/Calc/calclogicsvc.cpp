@@ -32,6 +32,8 @@ using namespace std;
 #define CHECK_RATE_SECONDS  30     // 30 second check for db change, on a change some re-loading is done, this slows the max rate down.
 
 using Cti::ThreadStatusKeeper;
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 BOOL UserQuit = FALSE;
 bool _shutdownOnThreadTimeout = false;
@@ -846,8 +848,8 @@ bool CtiCalcLogicService::isDatabaseCalcPointID(const long aPointID)
                                   "FROM CALCBASE CB "
                                   "WHERE CB.POINTID = ?";
 
-    Cti::Database::DatabaseConnection connection;
-    Cti::Database::DatabaseReader rdr(connection, sqlCore);
+    DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+    DatabaseReader rdr { connection, sqlCore };
 
     rdr << aPointID;
 
@@ -870,10 +872,8 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
         static const string sqlBase =   "SELECT CB.POINTID, CB.UPDATETYPE, CB.PERIODICRATE, CB.QUALITYFLAG "
                                         "FROM CALCBASE CB";
 
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
-        rdr.setCommandText(sqlBase);
+        DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+        DatabaseReader rdr { connection, sqlBase };
 
         rdr.execute();
 
@@ -1214,8 +1214,8 @@ void CtiCalcLogicService::reloadPointAttributes(long pointID)
                                        "FROM POINTUNIT PTU "
                                        "WHERE PTU.POINTID = ?";
 
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader unitRdr(connection, sqlCore);
+        DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+        DatabaseReader unitRdr { connection, sqlCore };
 
         unitRdr << pointID;
 

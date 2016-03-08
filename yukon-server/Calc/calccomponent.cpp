@@ -18,6 +18,9 @@ extern bool _ignoreTimeValidTag;
 // square root of 3 for power factor calculations
 #define SQRT3               1.7320508075688772935274463415059
 
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
+
 CtiCalcComponent::CtiCalcComponent( const string &componentType, long componentPointId,
                                     const string &operationType,
                                     double constantValue, const string &functionName ) :
@@ -1044,10 +1047,8 @@ void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &po
                                           "FROM RAWPOINTHISTORY RPH "
                                           "WHERE RPH.POINTID = ? ORDER BY TIMESTAMP DESC";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            rdr.setCommandText(sqlCore);
+            DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+            DatabaseReader rdr { connection, sqlCore };
 
             rdr << regressionPt;
 
