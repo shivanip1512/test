@@ -252,27 +252,27 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		critical_section.h DeviceMemoryManager.h BehaviorCollection.h \
 		MctBehavior.h Behavior.h random_generator.h ScopedLogger.h \
 		dev_mct410.h dev_mct4xx.h dev_mct.h dev_carrier.h \
-		dev_dlcbase.h dev_single.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h guard.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h dev_base.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		tbl_paoexclusion.h row_reader.h config_device.h dllbase.h \
-		rte_base.h dbmemobject.h message.h collectable.h \
-		tbl_pao_lite.h tbl_rtcomm.h dbaccess.h resolvers.h \
-		pointtypes.h db_entry_defines.h msg_signal.h \
+		dev_dlcbase.h dev_single.h dsm2.h connectionHandle.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h tbl_paoexclusion.h row_reader.h \
+		config_device.h dllbase.h rte_base.h dbmemobject.h message.h \
+		collectable.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
+		resolvers.h pointtypes.h db_entry_defines.h msg_signal.h \
 		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
 		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h pointdefs.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h readers_writer_lock.h connection_base.h \
-		worker_thread.h xfer.h config_exceptions.h exceptions.h \
-		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
-		cmd_device.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
-		da_load_profile.h tbl_dv_mctiedport.h pt_numeric.h \
-		tbl_pt_unit.h tbl_unitmeasure.h config_data_mct.h \
-		cmd_mct4xx.h ctidate.h dev_mct410_commands.h \
-		cmd_mct410_hourlyRead.h cmd_mct410.h \
+		worker_thread.h concurrentSet.h xfer.h config_exceptions.h \
+		exceptions.h tbl_route.h tbl_carrier.h prot_emetcon.h \
+		cmd_dlc.h cmd_device.h tbl_metergrp.h vcomdefs.h \
+		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
+		config_data_mct.h cmd_mct4xx.h ctidate.h \
+		dev_mct410_commands.h cmd_mct410_hourlyRead.h cmd_mct410.h \
 		cmd_mct410_disconnectConfiguration.h \
 		FrozenReadParityBehavior.h FrozenPeakTimestampBehavior.h \
 		RandomConsumptionBehavior.h InvalidUsageReadingBehavior.h

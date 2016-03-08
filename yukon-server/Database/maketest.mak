@@ -108,10 +108,10 @@ dllyukon.obj:	precompiled.h tbl_route.h dllbase.h os2_2w32.h dlldefs.h \
 		exception_helper.h boostutil.h utility.h queues.h constants.h \
 		numstr.h module_util.h version.h tbl_rtcomm.h tbl_rtmacro.h \
 		tbl_rtrepeater.h tbl_rtversacom.h msg_pcrequest.h message.h \
-		collectable.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h pt_base.h tbl_pt_base.h pointdefs.h \
-		tbl_state_grp.h tbl_state.h
+		collectable.h connectionHandle.h dsm2.h streamConnection.h \
+		netports.h timing_util.h immutable.h guard.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h pt_base.h \
+		tbl_pt_base.h pointdefs.h tbl_state_grp.h tbl_state.h
 invalidreaderexception.obj:	precompiled.h InvalidReaderException.h \
 		dlldefs.h database_reader.h database_connection.h dbaccess.h \
 		dllbase.h os2_2w32.h types.h cticalls.h yukon.h ctidbgmem.h \

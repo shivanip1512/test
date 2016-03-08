@@ -169,18 +169,19 @@ deps:
 test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
 		ctidate.h lmprogrambase.h dbmemobject.h msg_multi.h \
 		collectable.h msg_pdata.h yukon.h types.h ctidbgmem.h \
-		pointdefs.h pointtypes.h message.h loggable.h lmgroupbase.h \
-		boostutil.h utility.h queues.h cticalls.h os2_2w32.h \
-		constants.h numstr.h module_util.h version.h msg_pcrequest.h \
-		dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h critical_section.h guard.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
-		row_reader.h database_connection.h dbaccess.h dllbase.h \
+		pointdefs.h pointtypes.h message.h loggable.h \
+		connectionHandle.h lmgroupbase.h boostutil.h utility.h \
+		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		module_util.h version.h msg_pcrequest.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		critical_section.h guard.h logger.h streamBuffer.h \
+		string_util.h exception_helper.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h msg_cmd.h row_reader.h \
+		database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h readers_writer_lock.h \
-		connection_base.h worker_thread.h test_reader.h \
-		lmgroupecobee.h GroupControlInterface.h \
+		connection_base.h worker_thread.h concurrentSet.h \
+		test_reader.h lmgroupecobee.h GroupControlInterface.h \
 		ecobeeControlInterface.h ecobeeCycleGear.h lmprogramdirect.h \
 		lmprogramdirectgear.h tbl_lmprogramhistory.h smartgearbase.h
 test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
@@ -188,15 +189,16 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		os2_2w32.h constants.h numstr.h module_util.h version.h \
 		lmprogrambase.h dbmemobject.h msg_multi.h collectable.h \
 		msg_pdata.h pointdefs.h pointtypes.h message.h loggable.h \
-		lmgroupbase.h msg_pcrequest.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h critical_section.h \
-		guard.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h msg_cmd.h row_reader.h database_connection.h \
-		dbaccess.h dllbase.h lmcontrolareatrigger.h ctidate.h \
-		lmprogramdirectgear.h lmcontrolarea.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h readers_writer_lock.h \
-		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
+		connectionHandle.h lmgroupbase.h msg_pcrequest.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		critical_section.h guard.h logger.h streamBuffer.h \
+		string_util.h exception_helper.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h msg_cmd.h row_reader.h \
+		database_connection.h dbaccess.h dllbase.h \
+		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
+		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h readers_writer_lock.h connection_base.h \
+		worker_thread.h concurrentSet.h tbl_lmprogramhistory.h \
 		lmprogramcontrolwindow.h lmutility.h lmconstraint.h \
 		lmmessage.h ConstraintViolation.h executor.h msg_server_req.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
@@ -206,18 +208,18 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 test_lmthermostatgear.obj:	lmutility.h CtiTime.h dlldefs.h ctidate.h \
 		lmprogrambase.h dbmemobject.h msg_multi.h collectable.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h \
-		pointtypes.h message.h loggable.h lmgroupbase.h boostutil.h \
-		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		critical_section.h guard.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h msg_cmd.h row_reader.h \
-		database_connection.h dbaccess.h dllbase.h \
+		pointtypes.h message.h loggable.h connectionHandle.h \
+		lmgroupbase.h boostutil.h utility.h queues.h cticalls.h \
+		os2_2w32.h constants.h numstr.h module_util.h version.h \
+		msg_pcrequest.h dsm2.h streamConnection.h netports.h \
+		timing_util.h immutable.h critical_section.h guard.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
+		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h readers_writer_lock.h \
-		connection_base.h worker_thread.h test_reader.h \
-		lmProgramThermostatGear.h lmprogramdirectgear.h \
+		connection_base.h worker_thread.h concurrentSet.h \
+		test_reader.h lmProgramThermostatGear.h lmprogramdirectgear.h \
 		lmGroupExpresscom.h BeatThePeakControlInterface.h \
 		BeatThePeakAlertLevel.h
 test_lm_constraintviolations.obj:	ConstraintViolation.h ctitime.h \

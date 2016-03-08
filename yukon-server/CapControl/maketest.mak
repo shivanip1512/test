@@ -259,10 +259,11 @@ test_capcontroller.obj:	capcontroller.h dbaccess.h dllbase.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
 		queues.h constants.h numstr.h module_util.h version.h \
 		readers_writer_lock.h guard.h connection_base.h \
-		worker_thread.h timing_util.h DispatchConnection.h \
-		MessageListener.h CapControlDispatchConnection.h msg_cmd.h \
-		msg_dbchg.h ccsubstationbusstore.h ccarea.h ccAreaBase.h \
-		Controllable.h CapControlPao.h cctypes.h ccOperationStats.h \
+		worker_thread.h timing_util.h concurrentSet.h \
+		DispatchConnection.h MessageListener.h \
+		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
+		ccsubstationbusstore.h ccarea.h ccAreaBase.h Controllable.h \
+		CapControlPao.h cctypes.h ccOperationStats.h \
 		ccConfirmationStats.h StrategyManager.h ControlStrategy.h \
 		ccsparea.h ccid.h ccstate.h ccmessage.h \
 		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
@@ -295,6 +296,15 @@ test_capcontroller.obj:	capcontroller.h dbaccess.h dllbase.h \
 		PointDataRequestFactory.h kvarstrategy.h \
 		pfactorkwkvarstrategy.h msg_pcreturn.h \
 		capcontrol_test_helpers.h mgr_config.h config_device.h
+test_ccareas.obj:	test_reader.h row_reader.h ctitime.h dlldefs.h \
+		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
+		os2_2w32.h constants.h numstr.h module_util.h version.h \
+		ccarea.h ccAreaBase.h Controllable.h CapControlPao.h \
+		cctypes.h ccOperationStats.h message.h collectable.h \
+		loggable.h connectionHandle.h ccConfirmationStats.h \
+		StrategyManager.h readers_writer_lock.h critical_section.h \
+		guard.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h ControlStrategy.h ccsparea.h
 test_ccexecutor.obj:	capcontroller.h dbaccess.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h yukon.h ctidbgmem.h \
 		critical_section.h connection_client.h connection.h message.h \
@@ -304,10 +314,11 @@ test_ccexecutor.obj:	capcontroller.h dbaccess.h dllbase.h os2_2w32.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
 		queues.h constants.h numstr.h module_util.h version.h \
 		readers_writer_lock.h guard.h connection_base.h \
-		worker_thread.h timing_util.h DispatchConnection.h \
-		MessageListener.h CapControlDispatchConnection.h msg_cmd.h \
-		msg_dbchg.h ccsubstationbusstore.h ccarea.h ccAreaBase.h \
-		Controllable.h CapControlPao.h cctypes.h ccOperationStats.h \
+		worker_thread.h timing_util.h concurrentSet.h \
+		DispatchConnection.h MessageListener.h \
+		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
+		ccsubstationbusstore.h ccarea.h ccAreaBase.h Controllable.h \
+		CapControlPao.h cctypes.h ccOperationStats.h \
 		ccConfirmationStats.h StrategyManager.h ControlStrategy.h \
 		ccsparea.h ccid.h ccstate.h ccmessage.h \
 		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
@@ -379,11 +390,12 @@ test_ccfeeder.obj:	ccfeeder.h Controllable.h CapControlPao.h yukon.h \
 		database_reader.h row_reader.h database_writer.h row_writer.h \
 		ccUnitTestUtil.h capcontroller.h connection_client.h \
 		connection.h msg_multi.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h worker_thread.h DispatchConnection.h \
+		cparms.h worker_thread.h concurrentSet.h DispatchConnection.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
 		ccexecutor.h ctdpcptrq.h CtiPCPtrQueue.h PointDataRequest.h \
 		PointDataRequestFactory.h kvarstrategy.h \
 		pfactorkwkvarstrategy.h
+test_ccstatistics.obj:	CCStatsObject.h
 test_ccsubstationbus.obj:	ccsubstationbus.h Controllable.h \
 		CapControlPao.h yukon.h types.h ctidbgmem.h cctypes.h \
 		ccOperationStats.h message.h ctitime.h dlldefs.h \
@@ -423,7 +435,7 @@ test_ccsubstationbus.obj:	ccsubstationbus.h Controllable.h \
 		database_reader.h row_reader.h database_writer.h row_writer.h \
 		ccUnitTestUtil.h capcontroller.h connection_client.h \
 		connection.h msg_multi.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h worker_thread.h DispatchConnection.h \
+		cparms.h worker_thread.h concurrentSet.h DispatchConnection.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
 		ccexecutor.h ctdpcptrq.h CtiPCPtrQueue.h PointDataRequest.h \
 		PointDataRequestFactory.h kvarstrategy.h \
@@ -463,20 +475,20 @@ test_controlstrategies.obj:	ControlStrategy.h NoStrategy.h \
 		PointDataRequest.h PointDataRequestFactory.h \
 		DispatchConnection.h connection_client.h connection.h \
 		msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		worker_thread.h MessageListener.h ZoneManager.h Zone.h \
-		VoltageRegulatorManager.h VoltageRegulator.h UpdatablePao.h \
-		AttributeService.h ccid.h EventTypes.h ControlPolicy.h \
-		Policy.h msg_signal.h KeepAlivePolicy.h ScanPolicy.h \
-		RegulatorEvents.h CapControlPointDataHandler.h \
-		PointDataHandler.h PointDataListener.h ccmessage.h \
-		MsgCapControlCommand.h ccsubstation.h ccarea.h ccAreaBase.h \
-		ccsparea.h ccstate.h MsgItemCommand.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
-		MsgCapBankStates.h MsgAreas.h MsgSpecialAreas.h \
-		MsgSubstations.h MsgVoltageRegulator.h MsgDeleteItem.h \
-		MsgSystemStatus.h MsgCapControlServerResponse.h \
-		MsgCapControlShutdown.h StrategyLoader.h test_reader.h \
-		row_reader.h
+		worker_thread.h concurrentSet.h MessageListener.h \
+		ZoneManager.h Zone.h VoltageRegulatorManager.h \
+		VoltageRegulator.h UpdatablePao.h AttributeService.h ccid.h \
+		EventTypes.h ControlPolicy.h Policy.h msg_signal.h \
+		KeepAlivePolicy.h ScanPolicy.h RegulatorEvents.h \
+		CapControlPointDataHandler.h PointDataHandler.h \
+		PointDataListener.h ccmessage.h MsgCapControlCommand.h \
+		ccsubstation.h ccarea.h ccAreaBase.h ccsparea.h ccstate.h \
+		MsgItemCommand.h MsgBankMove.h MsgObjectMove.h \
+		MsgCapControlMessage.h MsgSubstationBus.h MsgCapBankStates.h \
+		MsgAreas.h MsgSpecialAreas.h MsgSubstations.h \
+		MsgVoltageRegulator.h MsgDeleteItem.h MsgSystemStatus.h \
+		MsgCapControlServerResponse.h MsgCapControlShutdown.h \
+		StrategyLoader.h test_reader.h row_reader.h
 test_gangoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h yukon.h \
 		ctidbgmem.h critical_section.h connection_client.h \
@@ -487,7 +499,7 @@ test_gangoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		boostutil.h utility.h queues.h constants.h numstr.h \
 		module_util.h version.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
-		DispatchConnection.h MessageListener.h \
+		concurrentSet.h DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
 		ccsubstationbusstore.h ccarea.h ccAreaBase.h Controllable.h \
 		CapControlPao.h cctypes.h ccOperationStats.h \
@@ -560,9 +572,10 @@ test_ivvcalgorithm.obj:	ccUnitTestUtil.h ccsubstationbusstore.h \
 		database_reader.h row_reader.h database_writer.h row_writer.h \
 		capcontroller.h connection_client.h connection.h msg_multi.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h worker_thread.h \
-		DispatchConnection.h CapControlDispatchConnection.h msg_cmd.h \
-		msg_dbchg.h ccexecutor.h ctdpcptrq.h CtiPCPtrQueue.h \
-		PointDataRequest.h PointDataRequestFactory.h kvarstrategy.h \
+		concurrentSet.h DispatchConnection.h \
+		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
+		ccexecutor.h ctdpcptrq.h CtiPCPtrQueue.h PointDataRequest.h \
+		PointDataRequestFactory.h kvarstrategy.h \
 		pfactorkwkvarstrategy.h IVVCStrategy.h IVVCAlgorithm.h \
 		IVVCState.h GangOperatedVoltageRegulator.h mgr_config.h \
 		config_device.h capcontrol_test_helpers.h
@@ -605,9 +618,10 @@ test_likedaycontrol.obj:	ccfeeder.h Controllable.h CapControlPao.h \
 		database_reader.h row_reader.h database_writer.h row_writer.h \
 		capcontroller.h connection_client.h connection.h msg_multi.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h worker_thread.h \
-		DispatchConnection.h CapControlDispatchConnection.h msg_cmd.h \
-		msg_dbchg.h ccexecutor.h ctdpcptrq.h CtiPCPtrQueue.h \
-		PointDataRequest.h PointDataRequestFactory.h kvarstrategy.h \
+		concurrentSet.h DispatchConnection.h \
+		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
+		ccexecutor.h ctdpcptrq.h CtiPCPtrQueue.h PointDataRequest.h \
+		PointDataRequestFactory.h kvarstrategy.h \
 		pfactorkwkvarstrategy.h VoltStrategy.h
 test_main.obj:	amq_connection.h thread.h mutex.h dlldefs.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
@@ -625,7 +639,7 @@ test_phaseoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		boostutil.h utility.h queues.h constants.h numstr.h \
 		module_util.h version.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
-		DispatchConnection.h MessageListener.h \
+		concurrentSet.h DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
 		ccsubstationbusstore.h ccarea.h ccAreaBase.h Controllable.h \
 		CapControlPao.h cctypes.h ccOperationStats.h \
@@ -701,7 +715,7 @@ test_strategymanager.obj:	StrategyManager.h readers_writer_lock.h \
 		PointResponseDatabaseDao.h database_reader.h row_reader.h \
 		database_writer.h row_writer.h capcontroller.h \
 		connection_client.h connection.h msg_multi.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h worker_thread.h \
+		msg_reg.h queue.h cparms.h worker_thread.h concurrentSet.h \
 		DispatchConnection.h CapControlDispatchConnection.h msg_cmd.h \
 		msg_dbchg.h ccexecutor.h ctdpcptrq.h CtiPCPtrQueue.h \
 		PointDataRequest.h PointDataRequestFactory.h

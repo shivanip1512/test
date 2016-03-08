@@ -134,15 +134,16 @@ control_history_association.obj:	precompiled.h \
 		exception_helper.h boostutil.h
 con_mgr_vg.obj:	precompiled.h con_mgr_vg.h message.h ctitime.h \
 		dlldefs.h ctidbgmem.h collectable.h loggable.h \
-		vgexe_factory.h executorfactory.h exe_cmd.h executor.h \
-		yukon.h types.h msg_cmd.h con_mgr.h connection_server.h \
-		connection.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h critical_section.h \
-		readers_writer_lock.h guard.h connection_base.h \
-		worker_thread.h timing_util.h connection_listener.h dllbase.h
+		connectionHandle.h vgexe_factory.h executorfactory.h \
+		exe_cmd.h executor.h yukon.h types.h msg_cmd.h con_mgr.h \
+		connection_server.h connection.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h mutex.h \
+		queue.h cparms.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
+		os2_2w32.h constants.h numstr.h module_util.h version.h \
+		critical_section.h readers_writer_lock.h guard.h \
+		connection_base.h worker_thread.h timing_util.h \
+		concurrentSet.h connection_listener.h dllbase.h
 ctivangogh.obj:	precompiled.h collectable.h counter.h guard.h \
 		utility.h ctitime.h dlldefs.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
@@ -150,18 +151,18 @@ ctivangogh.obj:	precompiled.h collectable.h counter.h guard.h \
 		string_util.h exception_helper.h boostutil.h \
 		critical_section.h mutex.h cparms.h netports.h queue.h \
 		con_mgr.h connection_server.h connection.h message.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h readers_writer_lock.h connection_base.h \
-		worker_thread.h timing_util.h connection_listener.h dllbase.h \
-		msg_cmd.h msg_pcrequest.h dsm2.h streamConnection.h \
-		immutable.h dsm2err.h words.h optional.h macro_offset.h \
-		msg_signal.h msg_notif_alarm.h msg_server_req.h \
-		msg_server_resp.h ctivangogh.h con_mgr_vg.h vgexe_factory.h \
-		executorfactory.h exe_cmd.h executor.h server_b.h smartmap.h \
-		dev_base_lite.h dbmemobject.h msg_dbchg.h msg_multiwrap.h \
-		msg_pcreturn.h msg_lmcontrolhistory.h msg_tag.h \
-		pendingopthread.h pendable.h pending_info.h \
-		tbl_lm_controlhist.h row_reader.h dbaccess.h \
+		connectionHandle.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h readers_writer_lock.h \
+		connection_base.h worker_thread.h timing_util.h \
+		concurrentSet.h connection_listener.h dllbase.h msg_cmd.h \
+		msg_pcrequest.h dsm2.h streamConnection.h immutable.h \
+		dsm2err.h words.h optional.h macro_offset.h msg_signal.h \
+		msg_notif_alarm.h msg_server_req.h msg_server_resp.h \
+		ctivangogh.h con_mgr_vg.h vgexe_factory.h executorfactory.h \
+		exe_cmd.h executor.h server_b.h smartmap.h dev_base_lite.h \
+		dbmemobject.h msg_dbchg.h msg_multiwrap.h msg_pcreturn.h \
+		msg_lmcontrolhistory.h msg_tag.h pendingopthread.h pendable.h \
+		pending_info.h tbl_lm_controlhist.h row_reader.h dbaccess.h \
 		database_connection.h pt_numeric.h pt_base.h tbl_pt_base.h \
 		resolvers.h db_entry_defines.h tbl_pt_unit.h \
 		tbl_unitmeasure.h thread.h signalmanager.h pt_dyn_dispatch.h \
@@ -196,22 +197,23 @@ dllvg.obj:	precompiled.h dllbase.h os2_2w32.h dlldefs.h types.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
 		constants.h numstr.h module_util.h version.h cparms.h
 exe_ptchg.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
-		collectable.h loggable.h con_mgr_vg.h vgexe_factory.h \
-		executorfactory.h exe_cmd.h executor.h yukon.h types.h \
-		msg_cmd.h con_mgr.h connection_server.h connection.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h mutex.h queue.h cparms.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h utility.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		collectable.h loggable.h connectionHandle.h con_mgr_vg.h \
+		vgexe_factory.h executorfactory.h exe_cmd.h executor.h \
+		yukon.h types.h msg_cmd.h con_mgr.h connection_server.h \
+		connection.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
+		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
-		worker_thread.h timing_util.h connection_listener.h dllbase.h \
-		ctivangogh.h server_b.h smartmap.h dev_base_lite.h \
-		dbmemobject.h msg_dbchg.h msg_multiwrap.h msg_pcreturn.h \
-		dsm2.h streamConnection.h netports.h immutable.h dsm2err.h \
-		words.h optional.h macro_offset.h msg_lmcontrolhistory.h \
-		msg_tag.h pendingopthread.h pendable.h pending_info.h \
-		msg_signal.h tbl_lm_controlhist.h row_reader.h dbaccess.h \
+		worker_thread.h timing_util.h concurrentSet.h \
+		connection_listener.h dllbase.h ctivangogh.h server_b.h \
+		smartmap.h dev_base_lite.h dbmemobject.h msg_dbchg.h \
+		msg_multiwrap.h msg_pcreturn.h dsm2.h streamConnection.h \
+		netports.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h msg_lmcontrolhistory.h msg_tag.h \
+		pendingopthread.h pendable.h pending_info.h msg_signal.h \
+		tbl_lm_controlhist.h row_reader.h dbaccess.h \
 		database_connection.h pt_numeric.h pt_base.h tbl_pt_base.h \
 		resolvers.h db_entry_defines.h tbl_pt_unit.h \
 		tbl_unitmeasure.h thread.h signalmanager.h pt_dyn_dispatch.h \
@@ -223,22 +225,23 @@ exe_ptchg.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		tbl_contact_notification.h rtdb.h connection_client.h \
 		exe_ptchg.h
 exe_signal.obj:	precompiled.h message.h ctitime.h dlldefs.h \
-		ctidbgmem.h collectable.h loggable.h con_mgr_vg.h \
-		vgexe_factory.h executorfactory.h exe_cmd.h executor.h \
-		yukon.h types.h msg_cmd.h con_mgr.h connection_server.h \
-		connection.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h critical_section.h \
-		readers_writer_lock.h guard.h connection_base.h \
-		worker_thread.h timing_util.h connection_listener.h dllbase.h \
-		ctivangogh.h server_b.h smartmap.h dev_base_lite.h \
-		dbmemobject.h msg_dbchg.h msg_multiwrap.h msg_pcreturn.h \
-		dsm2.h streamConnection.h netports.h immutable.h dsm2err.h \
-		words.h optional.h macro_offset.h msg_lmcontrolhistory.h \
-		msg_tag.h pendingopthread.h pendable.h pending_info.h \
-		msg_signal.h tbl_lm_controlhist.h row_reader.h dbaccess.h \
+		ctidbgmem.h collectable.h loggable.h connectionHandle.h \
+		con_mgr_vg.h vgexe_factory.h executorfactory.h exe_cmd.h \
+		executor.h yukon.h types.h msg_cmd.h con_mgr.h \
+		connection_server.h connection.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h mutex.h \
+		queue.h cparms.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
+		os2_2w32.h constants.h numstr.h module_util.h version.h \
+		critical_section.h readers_writer_lock.h guard.h \
+		connection_base.h worker_thread.h timing_util.h \
+		concurrentSet.h connection_listener.h dllbase.h ctivangogh.h \
+		server_b.h smartmap.h dev_base_lite.h dbmemobject.h \
+		msg_dbchg.h msg_multiwrap.h msg_pcreturn.h dsm2.h \
+		streamConnection.h netports.h immutable.h dsm2err.h words.h \
+		optional.h macro_offset.h msg_lmcontrolhistory.h msg_tag.h \
+		pendingopthread.h pendable.h pending_info.h msg_signal.h \
+		tbl_lm_controlhist.h row_reader.h dbaccess.h \
 		database_connection.h pt_numeric.h pt_base.h tbl_pt_base.h \
 		resolvers.h db_entry_defines.h tbl_pt_unit.h \
 		tbl_unitmeasure.h thread.h signalmanager.h pt_dyn_dispatch.h \
@@ -262,22 +265,23 @@ mgr_ptclients.obj:	precompiled.h dllvg.h dlldefs.h pt_base.h \
 		utility.h queues.h constants.h numstr.h module_util.h \
 		version.h mgr_ptclients.h mgr_point.h smartmap.h \
 		readers_writer_lock.h guard.h msg_pdata.h message.h \
-		collectable.h ptconnect.h con_mgr.h connection_server.h \
-		connection.h msg_multi.h msg_ptreg.h msg_reg.h mutex.h \
-		queue.h cparms.h connection_base.h worker_thread.h \
-		timing_util.h connection_listener.h server_b.h \
-		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
-		database_connection.h tbl_pt_limit.h rtdb.h \
-		tbl_rawpthistory.h row_writer.h tbl_pt_property.h \
-		database_reader.h database_transaction.h devicetypes.h \
-		msg_pcreturn.h dsm2.h streamConnection.h netports.h \
-		immutable.h dsm2err.h words.h optional.h macro_offset.h \
-		msg_signal.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
-		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h tbl_pt_status_control.h debug_timer.h \
-		con_mgr_vg.h vgexe_factory.h executorfactory.h exe_cmd.h \
-		executor.h msg_cmd.h desolvers.h
+		collectable.h connectionHandle.h ptconnect.h con_mgr.h \
+		connection_server.h connection.h msg_multi.h msg_ptreg.h \
+		msg_reg.h mutex.h queue.h cparms.h connection_base.h \
+		worker_thread.h timing_util.h concurrentSet.h \
+		connection_listener.h server_b.h pt_dyn_dispatch.h \
+		tbl_pt_alarm.h tbl_ptdispatch.h database_connection.h \
+		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h row_writer.h \
+		tbl_pt_property.h database_reader.h database_transaction.h \
+		devicetypes.h msg_pcreturn.h dsm2.h streamConnection.h \
+		netports.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h msg_signal.h pt_analog.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
+		tbl_pt_control.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
+		tbl_pt_status_control.h debug_timer.h con_mgr_vg.h \
+		vgexe_factory.h executorfactory.h exe_cmd.h executor.h \
+		msg_cmd.h desolvers.h
 pendingopthread.obj:	precompiled.h counter.h guard.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h yukon.h types.h \
 		ctidbgmem.h os2_2w32.h constants.h numstr.h module_util.h \
@@ -287,15 +291,16 @@ pendingopthread.obj:	precompiled.h counter.h guard.h utility.h \
 		dbmemobject.h tbl_pt_base.h row_reader.h dllbase.h dbaccess.h \
 		resolvers.h pointtypes.h db_entry_defines.h pointdefs.h \
 		smartmap.h readers_writer_lock.h msg_pdata.h message.h \
-		collectable.h ptconnect.h con_mgr.h connection_server.h \
-		connection.h msg_multi.h msg_ptreg.h msg_reg.h queue.h \
-		connection_base.h worker_thread.h timing_util.h \
-		connection_listener.h server_b.h pt_dyn_dispatch.h \
-		tbl_pt_alarm.h tbl_ptdispatch.h database_connection.h \
-		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h row_writer.h \
-		tbl_pt_property.h msg_cmd.h pendingopthread.h pendable.h \
-		pending_info.h msg_signal.h tbl_lm_controlhist.h pt_numeric.h \
-		tbl_pt_unit.h tbl_unitmeasure.h thread.h signalmanager.h \
+		collectable.h connectionHandle.h ptconnect.h con_mgr.h \
+		connection_server.h connection.h msg_multi.h msg_ptreg.h \
+		msg_reg.h queue.h connection_base.h worker_thread.h \
+		timing_util.h concurrentSet.h connection_listener.h \
+		server_b.h pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
+		database_connection.h tbl_pt_limit.h rtdb.h \
+		tbl_rawpthistory.h row_writer.h tbl_pt_property.h msg_cmd.h \
+		pendingopthread.h pendable.h pending_info.h msg_signal.h \
+		tbl_lm_controlhist.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h thread.h signalmanager.h \
 		millisecond_timer.h database_reader.h database_transaction.h \
 		control_history_association.h amq_connection.h \
 		StreamableMessage.h ControlHistoryAssociationResponse.h \
@@ -305,20 +310,21 @@ pending_info.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
 		ctidbgmem.h os2_2w32.h constants.h numstr.h module_util.h \
 		version.h critical_section.h pending_info.h msg_pdata.h \
-		pointdefs.h pointtypes.h message.h collectable.h msg_signal.h \
-		tbl_lm_controlhist.h row_reader.h dbmemobject.h dbaccess.h \
-		dllbase.h database_connection.h guard.h
+		pointdefs.h pointtypes.h message.h collectable.h \
+		connectionHandle.h msg_signal.h tbl_lm_controlhist.h \
+		row_reader.h dbmemobject.h dbaccess.h dllbase.h \
+		database_connection.h guard.h
 porterpoker.obj:	precompiled.h queue.h cparms.h dlldefs.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h netports.h \
-		message.h collectable.h msg_cmd.h msg_reg.h msg_dbchg.h \
-		connection_client.h connection.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h mutex.h \
-		readers_writer_lock.h guard.h connection_base.h \
-		worker_thread.h timing_util.h counter.h pt_accum.h \
-		pt_numeric.h row_reader.h pt_base.h dbmemobject.h \
+		message.h collectable.h connectionHandle.h msg_cmd.h \
+		msg_reg.h msg_dbchg.h connection_client.h connection.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		mutex.h readers_writer_lock.h guard.h connection_base.h \
+		worker_thread.h timing_util.h concurrentSet.h counter.h \
+		pt_accum.h pt_numeric.h row_reader.h pt_base.h dbmemobject.h \
 		tbl_pt_base.h dllbase.h dbaccess.h resolvers.h \
 		db_entry_defines.h tbl_pt_unit.h tbl_unitmeasure.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h amq_constants.h \
@@ -329,13 +335,14 @@ ptconnect.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h dlldefs.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
 		constants.h numstr.h module_util.h version.h msg_pcreturn.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
-		pointtypes.h message.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h pt_base.h dbmemobject.h \
-		tbl_pt_base.h row_reader.h resolvers.h db_entry_defines.h \
-		ptconnect.h con_mgr.h connection_server.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h readers_writer_lock.h \
-		connection_base.h worker_thread.h connection_listener.h \
+		pointtypes.h message.h connectionHandle.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		pt_base.h dbmemobject.h tbl_pt_base.h row_reader.h \
+		resolvers.h db_entry_defines.h ptconnect.h con_mgr.h \
+		connection_server.h connection.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h readers_writer_lock.h connection_base.h \
+		worker_thread.h concurrentSet.h connection_listener.h \
 		server_b.h smartmap.h
 signalmanager.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h yukon.h ctidbgmem.h \
@@ -343,33 +350,35 @@ signalmanager.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
 		ctitime.h queues.h constants.h numstr.h module_util.h \
 		version.h guard.h pointdefs.h sema.h signalmanager.h \
-		msg_signal.h message.h collectable.h msg_multi.h msg_pdata.h \
-		pointtypes.h mutex.h tbl_dyn_ptalarming.h dbmemobject.h \
-		row_reader.h database_connection.h tbl_pt_alarm.h resolvers.h \
+		msg_signal.h message.h collectable.h connectionHandle.h \
+		msg_multi.h msg_pdata.h pointtypes.h mutex.h \
+		tbl_dyn_ptalarming.h dbmemobject.h row_reader.h \
+		database_connection.h tbl_pt_alarm.h resolvers.h \
 		db_entry_defines.h database_transaction.h
 sigsrctest.obj:	precompiled.h queue.h cparms.h dlldefs.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h netports.h \
-		message.h collectable.h msg_cmd.h msg_reg.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h dsm2.h \
-		streamConnection.h timing_util.h immutable.h guard.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h msg_signal.h \
-		msg_ptreg.h connection_client.h connection.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		amq_constants.h
+		message.h collectable.h connectionHandle.h msg_cmd.h \
+		msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h dsm2.h streamConnection.h timing_util.h \
+		immutable.h guard.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h msg_signal.h msg_ptreg.h connection_client.h \
+		connection.h readers_writer_lock.h connection_base.h \
+		worker_thread.h concurrentSet.h amq_constants.h
 sigtest.obj:	precompiled.h queue.h cparms.h dlldefs.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h netports.h \
-		message.h collectable.h msg_cmd.h msg_reg.h msg_signal.h \
-		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_pcreturn.h msg_multi.h dsm2.h streamConnection.h \
-		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h connection_client.h connection.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
+		message.h collectable.h connectionHandle.h msg_cmd.h \
+		msg_reg.h msg_signal.h msg_pdata.h pointdefs.h pointtypes.h \
+		msg_ptreg.h msg_pcreturn.h msg_multi.h dsm2.h \
+		streamConnection.h timing_util.h immutable.h guard.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h \
+		connection_client.h connection.h readers_writer_lock.h \
+		connection_base.h worker_thread.h concurrentSet.h \
 		amq_constants.h
 tagmanager.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h yukon.h ctidbgmem.h \
@@ -377,10 +386,11 @@ tagmanager.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
 		ctitime.h queues.h constants.h numstr.h module_util.h \
 		version.h guard.h pointdefs.h sema.h tagmanager.h msg_tag.h \
-		message.h collectable.h msg_multi.h msg_pdata.h pointtypes.h \
-		mutex.h queue.h cparms.h thread.h tbl_dyn_pttag.h \
-		dbmemobject.h row_reader.h database_connection.h tbl_tag.h \
-		tbl_taglog.h database_reader.h database_transaction.h
+		message.h collectable.h connectionHandle.h msg_multi.h \
+		msg_pdata.h pointtypes.h mutex.h queue.h cparms.h thread.h \
+		tbl_dyn_pttag.h dbmemobject.h row_reader.h \
+		database_connection.h tbl_tag.h tbl_taglog.h \
+		database_reader.h database_transaction.h
 test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		pt_base.h dbmemobject.h tbl_pt_base.h row_reader.h ctitime.h \
 		dllbase.h os2_2w32.h types.h cticalls.h yukon.h ctidbgmem.h \
@@ -389,11 +399,12 @@ test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		utility.h queues.h constants.h numstr.h module_util.h \
 		version.h readers_writer_lock.h guard.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		msg_pdata.h message.h collectable.h ptconnect.h con_mgr.h \
-		connection_server.h connection.h msg_multi.h msg_ptreg.h \
-		msg_reg.h mutex.h queue.h cparms.h connection_base.h \
-		worker_thread.h timing_util.h connection_listener.h \
-		server_b.h pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
+		msg_pdata.h message.h collectable.h connectionHandle.h \
+		ptconnect.h con_mgr.h connection_server.h connection.h \
+		msg_multi.h msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h \
+		connection_base.h worker_thread.h timing_util.h \
+		concurrentSet.h connection_listener.h server_b.h \
+		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
 		database_connection.h tbl_pt_limit.h rtdb.h \
 		tbl_rawpthistory.h row_writer.h tbl_pt_property.h pt_status.h \
 		tbl_pt_status.h tbl_pt_status_control.h tbl_pt_control.h \
@@ -414,25 +425,27 @@ test_signalmanager.obj:	tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h yukon.h ctidbgmem.h critical_section.h \
 		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
 		db_entry_defines.h row_reader.h ctitime.h signalmanager.h \
-		msg_signal.h message.h collectable.h loggable.h msg_multi.h \
-		msg_pdata.h pointdefs.h mutex.h
+		msg_signal.h message.h collectable.h loggable.h \
+		connectionHandle.h msg_multi.h msg_pdata.h pointdefs.h \
+		mutex.h
 test_vangogh.obj:	ctivangogh.h con_mgr.h connection_server.h \
 		connection.h dlldefs.h message.h ctitime.h ctidbgmem.h \
-		collectable.h loggable.h msg_multi.h msg_pdata.h yukon.h \
-		types.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
-		mutex.h queue.h cparms.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h utility.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		collectable.h loggable.h connectionHandle.h msg_multi.h \
+		msg_pdata.h yukon.h types.h pointdefs.h pointtypes.h \
+		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
-		worker_thread.h timing_util.h connection_listener.h dllbase.h \
-		con_mgr_vg.h vgexe_factory.h executorfactory.h exe_cmd.h \
-		executor.h msg_cmd.h server_b.h smartmap.h dev_base_lite.h \
-		dbmemobject.h msg_dbchg.h msg_multiwrap.h msg_pcreturn.h \
-		dsm2.h streamConnection.h netports.h immutable.h dsm2err.h \
-		words.h optional.h macro_offset.h msg_lmcontrolhistory.h \
-		msg_tag.h pendingopthread.h pendable.h pending_info.h \
-		msg_signal.h tbl_lm_controlhist.h row_reader.h dbaccess.h \
+		worker_thread.h timing_util.h concurrentSet.h \
+		connection_listener.h dllbase.h con_mgr_vg.h vgexe_factory.h \
+		executorfactory.h exe_cmd.h executor.h msg_cmd.h server_b.h \
+		smartmap.h dev_base_lite.h dbmemobject.h msg_dbchg.h \
+		msg_multiwrap.h msg_pcreturn.h dsm2.h streamConnection.h \
+		netports.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h msg_lmcontrolhistory.h msg_tag.h \
+		pendingopthread.h pendable.h pending_info.h msg_signal.h \
+		tbl_lm_controlhist.h row_reader.h dbaccess.h \
 		database_connection.h pt_numeric.h pt_base.h tbl_pt_base.h \
 		resolvers.h db_entry_defines.h tbl_pt_unit.h \
 		tbl_unitmeasure.h thread.h signalmanager.h pt_dyn_dispatch.h \
@@ -445,21 +458,22 @@ test_vangogh.obj:	ctivangogh.h con_mgr.h connection_server.h \
 		ctidate.h
 vangogh.obj:	precompiled.h cparms.h dlldefs.h ctivangogh.h con_mgr.h \
 		connection_server.h connection.h message.h ctitime.h \
-		ctidbgmem.h collectable.h loggable.h msg_multi.h msg_pdata.h \
-		yukon.h types.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h mutex.h queue.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h utility.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		ctidbgmem.h collectable.h loggable.h connectionHandle.h \
+		msg_multi.h msg_pdata.h yukon.h types.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h mutex.h queue.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
-		worker_thread.h timing_util.h connection_listener.h dllbase.h \
-		con_mgr_vg.h vgexe_factory.h executorfactory.h exe_cmd.h \
-		executor.h msg_cmd.h server_b.h smartmap.h dev_base_lite.h \
-		dbmemobject.h msg_dbchg.h msg_multiwrap.h msg_pcreturn.h \
-		dsm2.h streamConnection.h netports.h immutable.h dsm2err.h \
-		words.h optional.h macro_offset.h msg_lmcontrolhistory.h \
-		msg_tag.h pendingopthread.h pendable.h pending_info.h \
-		msg_signal.h tbl_lm_controlhist.h row_reader.h dbaccess.h \
+		worker_thread.h timing_util.h concurrentSet.h \
+		connection_listener.h dllbase.h con_mgr_vg.h vgexe_factory.h \
+		executorfactory.h exe_cmd.h executor.h msg_cmd.h server_b.h \
+		smartmap.h dev_base_lite.h dbmemobject.h msg_dbchg.h \
+		msg_multiwrap.h msg_pcreturn.h dsm2.h streamConnection.h \
+		netports.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h msg_lmcontrolhistory.h msg_tag.h \
+		pendingopthread.h pendable.h pending_info.h msg_signal.h \
+		tbl_lm_controlhist.h row_reader.h dbaccess.h \
 		database_connection.h pt_numeric.h pt_base.h tbl_pt_base.h \
 		resolvers.h db_entry_defines.h tbl_pt_unit.h \
 		tbl_unitmeasure.h thread.h signalmanager.h pt_dyn_dispatch.h \
@@ -472,10 +486,11 @@ vangogh.obj:	precompiled.h cparms.h dlldefs.h ctivangogh.h con_mgr.h \
 		stdexcepthdlr.h
 vgexe_factory.obj:	precompiled.h vgexe_factory.h executorfactory.h \
 		dlldefs.h message.h ctitime.h ctidbgmem.h collectable.h \
-		loggable.h executor.h yukon.h types.h exe_ptchg.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h critical_section.h
+		loggable.h connectionHandle.h executor.h yukon.h types.h \
+		exe_ptchg.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
+		os2_2w32.h constants.h numstr.h module_util.h version.h \
+		critical_section.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

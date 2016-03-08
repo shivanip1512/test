@@ -123,17 +123,18 @@ copy:
 test_dnp_application.obj:	dnp_application.h dnp_objects.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h yukon.h ctidbgmem.h \
 		critical_section.h msg_pdata.h pointdefs.h pointtypes.h \
-		message.h ctitime.h collectable.h loggable.h prot_base.h \
-		xfer.h dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_configuration.h boost_test_helpers.h millisecond_timer.h \
-		ctidate.h
+		message.h ctitime.h collectable.h loggable.h \
+		connectionHandle.h prot_base.h xfer.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
+		boost_test_helpers.h millisecond_timer.h ctidate.h
 test_dnp_datalink.obj:	dnp_datalink_packet.h dlldefs.h \
 		boost_test_helpers.h millisecond_timer.h ctitime.h ctidate.h
 test_dnp_objects.obj:	dnp_object_internalindications.h dnp_objects.h \
 		dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h yukon.h \
 		ctidbgmem.h critical_section.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h ctitime.h collectable.h loggable.h \
-		prot_base.h xfer.h dnp_object_analoginput.h dnp_object_time.h \
+		connectionHandle.h prot_base.h xfer.h \
+		dnp_object_analoginput.h dnp_object_time.h \
 		dnp_object_analogoutput.h dnp_object_binaryinput.h \
 		dnp_object_binaryoutput.h dnp_object_counter.h
 test_dnp_transport.obj:	dnp_transport.h dnp_datalink.h xfer.h \
@@ -142,10 +143,10 @@ test_dnp_transport.obj:	dnp_transport.h dnp_datalink.h xfer.h \
 		os2_2w32.h constants.h numstr.h module_util.h version.h
 test_prot_dnp.obj:	prot_dnp.h dlldefs.h pointtypes.h prot_base.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h message.h \
-		ctitime.h collectable.h loggable.h xfer.h packet_finder.h \
-		dnp_application.h dnp_objects.h dllbase.h os2_2w32.h \
-		cticalls.h critical_section.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_configuration.h \
+		ctitime.h collectable.h loggable.h connectionHandle.h xfer.h \
+		packet_finder.h dnp_application.h dnp_objects.h dllbase.h \
+		os2_2w32.h cticalls.h critical_section.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h utility.h queues.h constants.h \
 		numstr.h module_util.h version.h boost_test_helpers.h \
 		millisecond_timer.h ctidate.h
@@ -157,20 +158,22 @@ test_prot_expresscom.obj:	expresscom.h cmdparse.h ctitokenizer.h \
 test_prot_klondike.obj:	prot_klondike.h prot_wrap.h prot_base.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h dlldefs.h pointdefs.h \
 		pointtypes.h message.h ctitime.h collectable.h loggable.h \
-		xfer.h prot_idlc.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h critical_section.h guard.h \
-		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h boost_test_helpers.h \
-		millisecond_timer.h ctidate.h
+		connectionHandle.h xfer.h prot_idlc.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		critical_section.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h constants.h numstr.h module_util.h version.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h boost_test_helpers.h millisecond_timer.h \
+		ctidate.h
 test_prot_sa305.obj:	prot_sa305.h cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h dllbase.h os2_2w32.h types.h cticalls.h yukon.h \
-		ctidbgmem.h critical_section.h dsm2.h streamConnection.h \
-		netports.h timing_util.h loggable.h immutable.h guard.h \
-		utility.h ctitime.h queues.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h pointtypes.h devicetypes.h
+		ctidbgmem.h critical_section.h dsm2.h connectionHandle.h \
+		loggable.h streamConnection.h netports.h timing_util.h \
+		immutable.h guard.h utility.h ctitime.h queues.h constants.h \
+		numstr.h module_util.h version.h logger.h streamBuffer.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h pointtypes.h \
+		devicetypes.h
 #ENDUPDATE#
 
