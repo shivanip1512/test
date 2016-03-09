@@ -27,6 +27,7 @@ public enum DbChangeCategory {
     CC_MONITOR_BANK_LIST,
     GLOBAL_SETTING("GlobalSetting"),
     ENERGY_COMPANY_SETTING("EnergyCompanySetting"),
+    WEB_SCHEDULE("WebSchedule"),
     
 //  WORK_ORDER("WorkOrder"),
 //  CBC_ADDINFO("CB Additional Info"),
@@ -87,6 +88,10 @@ public enum DbChangeCategory {
     
     public static DbChangeCategory findForStringRepresentation(String stringRepresentation) {
         return categoryLookup.get(stringRepresentation);
+    }
+
+    public static int getIntValue() {
+        return 1;
     }
 
 }
