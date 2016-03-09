@@ -90,8 +90,4 @@ public enum DbChangeCategory {
         return categoryLookup.get(stringRepresentation);
     }
 
-    public static int getIntValue() {
-        return 1;
-    }
-
 }
