@@ -41,7 +41,7 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".parent">
                             <c:if test="${empty parent }">
-                                <span class="empty-list">No Parent</span>
+                                <span class="empty-list"><i:inline key="yukon.common.none"/></span>
                             </c:if>
                             <c:if test="${not empty parent}">
                                 <cti:url var="editParent" value="/capcontrol/buses/${parent.liteID}"/>
