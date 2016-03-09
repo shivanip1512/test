@@ -65,7 +65,6 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.area.dao.AreaDao;
 import com.cannontech.web.capcontrol.area.model.Area;
 import com.cannontech.web.capcontrol.models.Assignment;
-import com.cannontech.web.capcontrol.models.PaoModel;
 import com.cannontech.web.capcontrol.service.StrategyService;
 import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -96,33 +95,34 @@ public class AreaController {
     private final static String areaKey = "yukon.web.modules.capcontrol.area.";
     private static final String areaUrl = "/capcontrol/tier/areas";
     
-    private final Validator validator = new SimpleValidator<PaoModel>(PaoModel.class) {
+    private final Validator validator = new SimpleValidator<Area>(Area.class) {
         
         private final static String key = "yukon.common.pao.info.error.";
         
         @Override
-        protected void doValidation(PaoModel pao, Errors errors) {
+        protected void doValidation(Area area, Errors errors) {
             
             // Device Name
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", key + "name.required");
             if (!errors.hasFieldErrors("name")) {
-                YukonValidationUtils.checkExceedsMaxLength(errors, "name", pao.getName(), 60);
+                YukonValidationUtils.checkExceedsMaxLength(errors, "name", area.getName(), 60);
             }
             if (!errors.hasFieldErrors("name")) {
-                LiteYukonPAObject unique = paoDao.findUnique(pao.getName(), pao.getType());
+                LiteYukonPAObject unique = paoDao.findUnique(area.getName(), area.getType());
                 if (unique != null) {
-                    if (unique.getPaoIdentifier().getPaoId() != pao.getId()) {
+                    if (area.getId() == null || unique.getPaoIdentifier().getPaoId() != area.getId()) {
                         errors.rejectValue("name", key + "name.unique");
                     }
                 }
             }
             
-            YukonValidationUtils.checkExceedsMaxLength(errors, "description", pao.getDescription(), 60);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "description", area.getDescription(), 60);
         }
     };
     
     /** CREATE */
     @RequestMapping("areas/create")
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String create(ModelMap model, LiteYukonUser user) {
         Area area = new Area();
         area.setType(PaoType.CAP_CONTROL_AREA);
@@ -132,6 +132,7 @@ public class AreaController {
     
     /** CREATE SPECIAL AREA*/
     @RequestMapping("areas/special/create")
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String createSpecial(ModelMap model, LiteYukonUser user) {
         Area area = new Area();
         area.setType(PaoType.CAP_CONTROL_SPECIAL_AREA);
@@ -156,6 +157,10 @@ public class AreaController {
             startPage = Instant.now();
         }
         
+        Object modelArea = model.get("area");
+        if (modelArea instanceof Area) {
+            area = (Area) modelArea;
+        }
         model.addAttribute("area", area);
         model.addAttribute("areaName", area.getName());
         model.addAttribute("description", area.getDescription());
@@ -250,6 +255,7 @@ public class AreaController {
     
     /** SAVE INFO */
     @RequestMapping(value="areas", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveArea(HttpServletResponse resp, 
             @ModelAttribute("area") Area area, BindingResult result, 
             RedirectAttributes redirectAttributes,
@@ -260,7 +266,7 @@ public class AreaController {
         if (result.hasErrors()) {
             // Failure
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            return "areas/area.jsp";
+            return bindAndForward(area, result, redirectAttributes);
         }
         
         int id = 0;
@@ -280,9 +286,12 @@ public class AreaController {
     private String bindAndForward(Area area, BindingResult result, RedirectAttributes attrs) {
 
         attrs.addFlashAttribute("area", area);
-        attrs.addFlashAttribute("org.springframework.validation.BindingResult.bus", result);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.area", result);
 
         if (area.getId() == null) {
+            if(area.getType().equals(PaoType.CAP_CONTROL_SPECIAL_AREA)){
+                return "redirect:areas/special/create";
+            }
             return "redirect:areas/create";
         }
 
@@ -291,6 +300,7 @@ public class AreaController {
     
     /** EDIT INFO POPUP */
     @RequestMapping("areas/{areaId}/info/edit")
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String editInfoPopup(ModelMap model, @PathVariable int areaId) {
         
         Area area = areaDao.getArea(areaId);
@@ -300,7 +310,8 @@ public class AreaController {
     }
     
     /** SAVE INFO */
-    @RequestMapping(value="areas/{areaId}/info", method=RequestMethod.PUT)
+    @RequestMapping(value="areas/{areaId}/info", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String saveInfo(HttpServletResponse resp, 
             @ModelAttribute("area") Area area, BindingResult result, 
             FlashScope flash) {
@@ -324,6 +335,7 @@ public class AreaController {
      * Method deletes the Capcontrol Substation area / Special area
      */
     @RequestMapping(value = "areas/{areaId}", method = RequestMethod.DELETE)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String deleteArea(HttpServletResponse resp, @PathVariable int areaId, FlashScope flash) {
         Area area = areaDao.getArea(areaId);
         areaDao.delete(area.getPaoIdentifier());

@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.capcontrol, modules.capcontrol.area">
 
 <cti:url var="url" value="/capcontrol/areas/${area.id}/info"/>
-<form:form commandName="area" action="${url}" method="put">
+<form:form commandName="area" action="${url}" method="post">
     
     <cti:csrfToken/>
     <form:hidden path="id"/>

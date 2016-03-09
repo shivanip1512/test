@@ -68,8 +68,8 @@
 <div class="column-12-12 clearfix">
     <div class="column one">
         <cti:tabs>
-            <cti:msg2 var="infoTitle" key=".infoContainer.title"/>
-            <cti:tab title="${infoTitle}" selected="true" tabId="info-tab">
+                <cti:msg2 var="infoTab" key=".infoTab"/>
+                <cti:tab title="${infoTab}">
                  <cti:displayForPageEditModes modes="EDIT,VIEW">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name" valueClass="wbba">
@@ -146,9 +146,9 @@
     </div>
     <cti:displayForPageEditModes modes="EDIT,VIEW">
         <div class="column two nogutter">
-            <cti:tabs containerName="yukon:da:area:stats-v-points:tab">
-                <cti:msg2 var="statsTitle" key=".statsContainer.title"/>
-                <cti:tab title="${statsTitle}" tabId="stats-tab" classes="scroll-lg">
+            <cti:tabs>
+                <cti:msg2 var="statisticsTab" key=".statisticsTab"/>
+                <cti:tab title="${statisticsTab}">
                     <div class="column-12-12">
                         <div class="column one">
                             <tags:nameValueContainer2 tableClass="name-collapse">

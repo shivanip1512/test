@@ -13,6 +13,7 @@ import org.joda.time.Interval;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.updater.capcontrol.exception.CacheManagementException;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -58,7 +59,12 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
                         updaterType = updaterType.substring(lastIndex > 0 ? lastIndex + 1 : 0 );
                         start = Instant.now();
                     }
-                    UpdateValue updateValue = getValue(back, identifier, afterDate, userContext, true);
+                    UpdateValue updateValue = null;
+                    try {
+                        updateValue = getValue(back, identifier, afterDate, userContext, true);
+                    } catch (CacheManagementException e) {
+                        log.debug("Unable to get the identifierValue");
+                    }
                     if (log.isDebugEnabled()) {
                         long time = new Interval(start, Instant.now()).toDurationMillis();
                         Long timeForUpdater = timesMap.get(updaterType);
