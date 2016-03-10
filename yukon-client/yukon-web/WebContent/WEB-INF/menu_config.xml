@@ -81,7 +81,7 @@
         <permissions>
           <role name="CI_CURTAILMENT" />
         </permissions>
-        <link>/cc/ciSetup.jsf</link>
+        <link>/dr/cc/home</link>
       </option>
       <option name="reports" section="true">
         <permissions>

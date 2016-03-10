@@ -71,7 +71,7 @@
 
   <!-- root logger will be inherited by all loggers -->
   <root>
-    <level value ="info"/>
+    <level value = "info"/>
     <appender-ref ref="consoleAppender" />
   </root>  
 </log4j:configuration>

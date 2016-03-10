@@ -34,10 +34,7 @@
     <context-param>
         <param-name>javax.faces.CONFIG_FILES</param-name>
         <param-value>
-            /WEB-INF/faces-custom-config.xml,
-            /WEB-INF/faces-commercialcurtailment-config.xml,
             /WEB-INF/faces-capcontrol-config.xml,
-            /WEB-INF/faces-customer-config.xml
         </param-value>
     </context-param>
 

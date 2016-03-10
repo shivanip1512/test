@@ -93,6 +93,7 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -118,10 +119,12 @@ import com.cannontech.web.dr.cc.service.CiCustomerVerificationService;
 import com.cannontech.web.dr.cc.service.CiEventCreationService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
 
 //TODO JAVA 8 - Replace Filters and Functions with lambdas
 @Controller
+@CheckRoleProperty(YukonRoleProperty.CURTAILMENT_ROLE_EXISTS)
 public class CcHomeController {
     private static Logger log = YukonLogManager.getLogger(CcHomeController.class);
     private static String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";

@@ -787,23 +787,6 @@
     </pages>
   </module>
 
-  <module name="commercialcurtailment">
-    <skin name="STANDARD" />
-    <css file="/cc/base.css" />
-    <pages>
-        <page name="home" type="BASIC">
-        </page>
-    </pages>
-  </module>
-
-  <module name="commercialcurtailment_user">
-    <skin name="STANDARD" />
-    <css file="/cc/base.css" />
-    <pages>
-      <page name="programEvents" type="BASIC"/>
-    </pages>
-  </module>
-
   <module name="reporting">
     <skin name="STANDARD" />
   </module>
