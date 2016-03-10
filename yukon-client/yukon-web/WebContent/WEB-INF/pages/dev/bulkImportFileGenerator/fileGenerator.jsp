@@ -4,14 +4,21 @@
 
 <cti:standardPage module="dev" page="bulkImportFileGenerator">
 
+    <script>
+    $(function() {
+        $("input[type='text']").keypress(function () {
+            $('.user-message').remove();
+        });
+    });
+    </script>
+
     <form id="bulkImportFileGenerator" action="<cti:url value="/dev/bulkImportFileGenerator/fileGenerator"/>" method="post">
         <cti:csrfToken/>
             <tags:nameValueContainer>
                 <tags:nameValue id="deviceGroups" name="Device Group" nameColumnWidth="250px">
                         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
                         <tags:deviceGroupNameSelector fieldName="deviceGroupName"
-                            dataJson="${groupDataJson}" submitCallback="yukon.dev.bulkImportFileGenerator.updateDeviceGroup" 
-                            showSelectedDevicesIcon="false"/>
+                            dataJson="${groupDataJson}" showSelectedDevicesIcon="false"/>
                 </tags:nameValue>
                 <tags:nameValue name="Append Text to Meter Name/Number" nameColumnWidth="250px">
                     <input type="text" name="appendedText">
