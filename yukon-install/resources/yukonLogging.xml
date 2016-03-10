@@ -20,13 +20,6 @@
     </layout>
   </appender>
   
-  <!-- Custom appender to output all RFN device communications to the /Comm log subdirectory -->
-  <appender name="rfnCommsFileAppender" class="com.cannontech.clientutils.YukonFileAppender">
-    <param name="subdirectory" value="Comm/" />
-    <param name="filenamePrefix" value="RfnDeviceLog" />
-    <param name="maxFileSizeString" value="1G"/>
-  </appender>
-  
   <!-- package level loggers -->
   <!-- Adjust the following logger levels to fine-tune logging output -->
   <!-- To turn of logging for any package use: level value="off"  -->
@@ -51,27 +44,11 @@
   <logger name="org.springframework.ws.soap.server.endpoint.interceptor">
     <level value="DEBUG"/>
   </logger>
-  
-  <!-- RFN device comms logger -->
-  <logger name="rfnCommsLogger">
-    <level value="INFO"/>
-    <appender-ref ref="rfnCommsFileAppender" />
-  </logger>
 
-  <!-- all package level loggers will inherit these two loggers -->  
-  <logger name="com">
-    <level value="INFO"/>
-    <appender-ref ref="yukonFileAppender" />
-  </logger>
-
-  <logger name="org">
-    <level value="INFO"/>
-    <appender-ref ref="yukonFileAppender" />
-  </logger>
-
-  <!-- root logger will be inherited by all loggers -->
+  <!-- root logger will be inherited by all loggers-->
   <root>
-    <level value = "info"/>
-    <appender-ref ref="consoleAppender" />
+    <level value="info"/>
+    <appender-ref ref="yukonFileAppender"/>
+    <appender-ref ref="consoleAppender"/>
   </root>  
 </log4j:configuration>

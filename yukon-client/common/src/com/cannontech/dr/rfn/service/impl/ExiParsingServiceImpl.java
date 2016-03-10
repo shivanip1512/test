@@ -44,7 +44,6 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     
     @Autowired ResourceLoader loader;
     private final static Logger log = YukonLogManager.getLogger(ExiParsingServiceImpl.class);
-    private static final Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
 
     private Map<Schema, EXISchema> schemas = new HashMap<Schema, EXISchema>();
     
@@ -110,8 +109,8 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         }
        
         final String reconstitutedString = xmlWriter.getBuffer().toString();
-        if (rfnCommsLog.isDebugEnabled()) {
-            rfnCommsLog.debug("    device: " + rfnId + " payload: " + reconstitutedString);
+        if (YukonLogManager.getRfnCommsLogger().isDebugEnabled()) {
+            YukonLogManager.getRfnCommsLogger().debug("    device: " + rfnId + " payload: " + reconstitutedString);
         }
         
         // Convert transformed output to SimpleXPathTemplate.

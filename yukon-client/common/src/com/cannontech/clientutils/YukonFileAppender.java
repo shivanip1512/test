@@ -41,8 +41,6 @@ public class YukonFileAppender extends AppenderSkeleton {
      */
     private String maxFileSizeString;
     private String logRetentionDaysString;
-    private String subdirectory;
-    private String filenamePrefix;
 
     private int maxFileOpenRetries = DatedFileAppender.MAX_FILE_OPEN_RETRIES;
     private int retryDelayInMs = DatedFileAppender.RETRY_DELAY_IN_MS;
@@ -60,7 +58,7 @@ public class YukonFileAppender extends AppenderSkeleton {
      * the log level left justified, the logger name which is usually the fq-class name,
      * log message and newline]
      */
-    private String conversionPattern = "%d{MM/dd/yyyy HH:mm:ss,SSS z} [%t] %-5p %c - %m%n";
+    private static String conversionPattern = "%d{MM/dd/yyyy HH:mm:ss,SSS z} [%t] %-5p %c - %m%n";
 
     /**
      *  The appender that YukonFileAppender delegates its work
@@ -80,21 +78,17 @@ public class YukonFileAppender extends AppenderSkeleton {
     public void activateOptions() {
         super.activateOptions();
 
+        //initialize dailyRollingFileAppender
         //get the name of the application running this appender
-        String nameOfApp;
-        if (filenamePrefix == null) {
-            nameOfApp = BootstrapUtils.getApplicationName();
-        } else {
-            nameOfApp = filenamePrefix;
-        }
-        
-        //determine the directory the file should be placed in.  a subdirectory can be added in the configuration xml.
-        String directory = BootstrapUtils.getServerLogDir() + ((subdirectory == null) ? "" : subdirectory);
+
+        String nameOfApp = BootstrapUtils.getApplicationName();
+        String directory = BootstrapUtils.getServerLogDir();
+        String fileName = directory + nameOfApp + ".log";
 
         //create a DatedFileAppender to take over the actual appending, rollover, and timing issues
         dailyRollingFileAppender = new DatedFileAppender(directory, nameOfApp + "_", ".log");
         dailyRollingFileAppender.setName("dailyRollingFileAppender");
-        dailyRollingFileAppender.setFile(directory + nameOfApp + ".log");
+        dailyRollingFileAppender.setFile(fileName);
         dailyRollingFileAppender.setSystemInfoString(CtiUtilities.getSystemInfoString());
         dailyRollingFileAppender.setMaxFileSize(maxFileSize);
 
@@ -258,7 +252,7 @@ public class YukonFileAppender extends AppenderSkeleton {
      * @return the conversion pattern for logging
      * default conversionPattern = "%d [%t] %-5p %c - %m%n"
      */
-    public String getConversionPattern() {
+    public static String getConversionPattern() {
         return conversionPattern;
     }
 
@@ -270,13 +264,5 @@ public class YukonFileAppender extends AppenderSkeleton {
      */
     public void setConversionPattern(String conversionPattern) {
         this.conversionPattern = conversionPattern;
-    }
-
-    public void setSubdirectory(String subdirectory) {
-        this.subdirectory = subdirectory;
-    }
-
-    public void setFilenamePrefix(String filenamePrefix) {
-        this.filenamePrefix = filenamePrefix;
     }
 }

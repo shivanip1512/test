@@ -69,7 +69,6 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
-    private static final Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
     
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
     private List<Worker> workers;
@@ -114,9 +113,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 
                 byte[] payload = reading.getData().getPayload();
                 try {
-                    if (log.isTraceEnabled()) {
-                        log.trace(rfnDevice + " payload: 0x" + DatatypeConverter.printHexBinary(payload));
-                    } else if (log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("decoding: " + rfnDevice);
                     }
                     decodedPayload = exiParsingService.parseRfLcrReading(rfnDevice.getRfnIdentifier(), payload);

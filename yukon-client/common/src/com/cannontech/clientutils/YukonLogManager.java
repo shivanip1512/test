@@ -8,12 +8,15 @@ import java.net.URL;
 import javax.xml.parsers.FactoryConfigurationError;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import com.cannontech.common.config.RemoteLoginSession;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 
 
@@ -35,6 +38,8 @@ public class YukonLogManager {
     
     private static final String YUKON_LOGGING_XML = "yukonLogging.xml";
 
+    private static Logger rfnCommsLogger;
+    
     //Constructor never gets used, YukonLogManager has only static methods
     private YukonLogManager() {
         super();
@@ -153,7 +158,53 @@ public class YukonLogManager {
         return  tempLogger;	
     }
     
+    /**
+     * Gets the logger that is used specifically for logging communications to and from Network Manager.
+     * Note: Classes should not store a reference to the logger locally, this method should be called each time
+     * a logging statement is made.
+     * <br><br>
+     * This is because each time yukonLogging.xml is reloaded, all of the appenders are discarded and reloaded from
+     * the xml configuration file.  This appender is added programmatically and so it needs to be re-created any 
+     * time the xml file changes.  That happens in this method.
+     * <br><br>
+     * (There are ways to avoid this in later versions of log4j, like log4j2.  However we currently use log4j 1.2
+     * which does not support them.)
+     * @return
+     */
     public static Logger getRfnCommsLogger() {
-        return getLogger("rfnCommsLogger");
+        if (rfnCommsLogger == null) {
+            rfnCommsLogger = getLogger("rfnCommsLogger");
+            if (rfnCommsLogger.getLevel() == null) {
+                rfnCommsLogger.setLevel(Level.INFO);  // set to INFO by default if not defined in yukonLogging.xml
+            }
+        }
+        
+        // re-associate the appender with the rfnCommsLogger if it was removed during reload of yukonLogging.xml
+        if (rfnCommsLogger.getAppender("rfnCommsFileAppender") == null) {
+            // set up rfnFileAppender
+            DatedFileAppender rfnAppender;
+            String directory = BootstrapUtils.getServerLogDir() + "\\Comm";
+            String logName = "RfnCommsLog";
+            
+            //create a DatedFileAppender to take over the actual appending, rollover, and timing issues
+            rfnAppender = new DatedFileAppender(directory, logName + "_", ".log");
+            rfnAppender.setName("rfnCommsFileAppender");
+            rfnAppender.setFile(directory + logName + ".log");
+            rfnAppender.setSystemInfoString(CtiUtilities.getSystemInfoString());
+            rfnAppender.setMaxFileSize(YukonFileAppender.getMaxFileSize());    // same max as other logs, as 
+                                                                               // defined in yukonLogging.xml
+            rfnAppender.setMaxFileOpenRetries(DatedFileAppender.MAX_FILE_OPEN_RETRIES);
+            rfnAppender.setRetryDelayInMillis(DatedFileAppender.RETRY_DELAY_IN_MS);
+            rfnAppender.setLogRetentionDays(DatedFileAppender.LOG_RETENTION_DAYS);
+            
+            //The layout for the log file:
+            Layout layout = new PatternLayout(YukonFileAppender.getConversionPattern());
+            rfnAppender.setLayout(layout);
+            
+            //Inherited from AppenderSkeleton. Calls once options are set
+            rfnAppender.activateOptions();
+            rfnCommsLogger.addAppender(rfnAppender);
+        }
+        return rfnCommsLogger;
     }
 }

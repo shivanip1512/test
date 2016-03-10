@@ -33,7 +33,6 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage> {
     
     private static final Logger log = YukonLogManager.getLogger(ArchiveRequestListenerBase.class);
-    private static final Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
 
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired protected RfnChannelDataConverter pointDataProducer;
@@ -80,12 +79,12 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
             while (true) {
                 try {
                     T request = inQueue.take();
+                    doCommsLogging(request);
                     processRequest(request);
                     if (log.isDebugEnabled()) {
                         log.debug("Processed Archive Request for " + request.getRfnIdentifier() + " on " + getName()
                                 + ", queue size is: " + inQueue.size());
                     }
-                    doCommsLogging(request);
                 } catch (InterruptedException e) {
                     log.warn("received shutdown signal, queue size: " + inQueue.size());
                     break;
@@ -101,6 +100,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
          * @param request The RFN archive request sent from network manager.
          */
         private void doCommsLogging(T request) {
+            Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
             Level logLevel = rfnCommsLog.getLevel();
             if (request instanceof RfnMeterReadingArchiveRequest) {
                 if (Level.DEBUG.isGreaterOrEqual(logLevel)) {
