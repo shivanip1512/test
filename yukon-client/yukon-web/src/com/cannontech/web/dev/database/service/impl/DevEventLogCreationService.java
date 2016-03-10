@@ -43,7 +43,6 @@ import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.events.loggers.ValidationEventLogService;
-import com.cannontech.common.events.loggers.VeeReviewEventLogService;
 import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.BadAuthenticationException.Type;
@@ -87,7 +86,6 @@ public class DevEventLogCreationService {
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private ValidationEventLogService validationEventLogService;
-    @Autowired private VeeReviewEventLogService veeReviewEventLogService;
     @Autowired private ZigbeeEventLogService zigbeeEventLogService;
 
     private Map<LogType, DevEventLogExecutable> eventLogExecutables;
@@ -785,31 +783,15 @@ public class DevEventLogCreationService {
                 validationEventLogService.validationEnginePartialReset(validationResetDate, user);
                 validationEventLogService.deletedAllTaggedRows(tagSet, user);
                 validationEventLogService.acceptedAllTaggedRows(tagSet, user);
-            }
-        });
-        executables.put(LogType.VEE_REVIEW, new DevEventLogExecutable() {
-            @Override
-            public void execute(DevEventLog devEventLog) {
-                LiteYukonUser user = new LiteYukonUser(0, devEventLog.getUsername());
-
-                int changeId = 18;
-                int pointId = 12;
-                int pointOffset = 14;
-
+            
                 double value = 55.5;
-
                 Date timestamp = new Date();
 
-                PointType pointType = PointType.Analog;
-                PaoType paoType = PaoType.ALPHA_A1;
-
-                String paoName = devEventLog.getIndicatorString() + "PaoName";
-
-                veeReviewEventLogService.deletePointValue(changeId, value, timestamp, paoName,
+                validationEventLogService.deletePointValue(changeId, value, timestamp, paoName,
                     paoType, pointId, pointType, pointOffset, user);
-                veeReviewEventLogService.acceptPointValue(changeId, value, timestamp, paoName,
+                validationEventLogService.acceptPointValue(changeId, value, timestamp, paoName,
                     paoType, pointId, pointType, pointOffset, user);
-                veeReviewEventLogService.updateQuestionableQuality(changeId, value, timestamp,
+                validationEventLogService.updateQuestionableQuality(changeId, value, timestamp,
                     paoName, paoType, pointId, pointType, pointOffset, user);
             }
         });
@@ -896,8 +878,7 @@ public class DevEventLogCreationService {
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 19),
         TOOLS(ToolsEventLogService.class, 19),
-        VALIDATION(ValidationEventLogService.class, 7),
-        VEE_REVIEW(VeeReviewEventLogService.class, 3),
+        VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
         ;
 

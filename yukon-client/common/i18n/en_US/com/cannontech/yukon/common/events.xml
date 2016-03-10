@@ -14,6 +14,7 @@
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
+    <entry key="yukon.common.events.changeId">ChangeId</entry>
     <entry key="yukon.common.events.commandRequestExecutionContextId">CommandReqExecContextId</entry>
     <entry key="yukon.common.events.commandRequestExecutionId">CommandReqExecId</entry>
     <entry key="yukon.common.events.commandRequestExecutionType">CommandReqExecType</entry>
@@ -445,7 +446,7 @@
     <entry key="yukon.common.events.system.rphValidation.helper.acceptPointValue">Accepted point value: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}.</entry>
     <entry key="yukon.common.events.system.rphValidation.helper.updateQuestionableQuality">Updated point quality from Questionable to Normal: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}.</entry>
     
-    <entry key="yukon.common.events.system.rphValidation.validator.unreasonableValueCausedReRead">Meter read submitted due to unreadable usage value: paoId={7} paoName={1} paoType={2} pointId={8} pointType={3} pointOffset={9}.</entry>
+    <entry key="yukon.common.events.system.rphValidation.validator.unreasonableValueCausedReRead">Meter read submitted due to unreasonable usage value: paoId={7} paoName={1} paoType={2} pointId={8} pointType={3} pointOffset={9}.</entry>
     <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup">Validation engine startup: lastChangeIdProcessed={7} tagsCleared={8}.</entry>
     <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup.7">Last ChangeId Processed</entry>
     <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup.8">Tags Cleared</entry>

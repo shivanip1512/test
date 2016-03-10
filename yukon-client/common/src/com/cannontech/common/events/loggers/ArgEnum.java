@@ -3,7 +3,8 @@ package com.cannontech.common.events.loggers;
 public enum ArgEnum {
     accountNumber,
     applianceCategoryName,
-    applianceType, 
+    applianceType,
+    changeId,
     commandRequestExecutionContextId, 
     commandRequestExecutionId, 
     commandRequestExecutionType,

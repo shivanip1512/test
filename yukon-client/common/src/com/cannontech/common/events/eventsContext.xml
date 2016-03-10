@@ -46,10 +46,6 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService"/>
     </bean>
     
-    <bean id="veeReviewEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
-        <property name="serviceInterface" value="com.cannontech.common.events.loggers.VeeReviewEventLogService"/>
-    </bean>
-    
     <bean id="starsEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.StarsEventLogService"/>
     </bean>
