@@ -42,6 +42,7 @@ import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.CommandDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -124,18 +125,23 @@ public class CommanderController {
                 // Device or load group
                 Integer paoId = webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null, JsonUtils.INT_TYPE);
                 if (paoId != null) {
-                    model.addAttribute("paoId", paoId);
-                    // Add route info if available
-                    LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
-                    PaoType type = pao.getPaoType();
-                    model.addAttribute("routable", type.isRoutable());
-                    model.addAttribute("meter", type.isMeter());
-                    if (type.isRoutable()) {
-                        LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
-                        model.addAttribute("route", route);
-                    }
-                    if(rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user)){
-                        model.addAttribute("changeRoute", true);
+                    try {
+                        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+                        model.addAttribute("paoId", paoId);
+                        // Add route info if available
+                        PaoType type = pao.getPaoType();
+                        model.addAttribute("routable", type.isRoutable());
+                        model.addAttribute("meter", type.isMeter());
+                        if (type.isRoutable()) {
+                            LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
+                            model.addAttribute("route", route);
+                        }
+                        if(rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user)){
+                            model.addAttribute("changeRoute", true);
+                        }
+                    } catch (NotFoundException nfe) {
+                        // the lastPaoId may have been deleted since it was last used
+                        paoId = null;
                     }
                 }
             } else {
@@ -162,20 +168,24 @@ public class CommanderController {
     /** A device was chosen, get the details to setup the actions button. */
     @RequestMapping("/commander/{paoId}/data")
     public @ResponseBody Map<String, Object> data(LiteYukonUser user, HttpServletResponse resp, @PathVariable int paoId) {
-        
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+
         Map<String, Object> data = new HashMap<>();
-        data.put("pao", pao);
-        
-        PaoType type = pao.getPaoType();
-        data.put("isMeter", type.isMeter());
-        data.put("isRoutable", type.isRoutable());
-        if (type.isRoutable()) {
-            LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
-            data.put("route", route);
-        }
-        if(rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user)){
-            data.put("changeRoute", true);
+        try {
+            LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+            data.put("pao", pao);
+            
+            PaoType type = pao.getPaoType();
+            data.put("isMeter", type.isMeter());
+            data.put("isRoutable", type.isRoutable());
+            if (type.isRoutable()) {
+                LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
+                data.put("route", route);
+            }
+            if(rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user)){
+                data.put("changeRoute", true);
+            }
+        } catch (NotFoundException nfe) {
+            // paoId may have been deleted
         }
         return data;
     }
@@ -350,10 +360,14 @@ public class CommanderController {
     @RequestMapping("/commander/commands")
     public @ResponseBody List<LiteCommand> commands(LiteYukonUser user, int paoId) {
         
-        YukonPao pao = paoDao.getYukonPao(paoId);
-        String type = pao.getPaoIdentifier().getPaoType().getDbString();
-        List<LiteCommand> commands = commands(type, user);
-        
+        List<LiteCommand> commands = new ArrayList<>(); 
+        try {
+            YukonPao pao = paoDao.getYukonPao(paoId);
+            String type = pao.getPaoIdentifier().getPaoType().getDbString();
+            commands = commands(type, user);
+        } catch (NotFoundException nfe){
+            // paoId may have already been deleted
+        }
         return commands;
     }
     

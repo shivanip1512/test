@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
@@ -30,6 +29,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.ClientConnection;
@@ -72,6 +72,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthService;
     @Autowired private LMCommandAuthorizationService lmCommandAuthService;
+    @Autowired private ServerDatabaseCache cache;
     
     @Override
     public List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params) throws CommandRequestException {
@@ -331,9 +332,11 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         CommandTarget type = params.getTarget();
         List<LiteDeviceTypeCommand> commands = new ArrayList<>();
         if (type == CommandTarget.DEVICE || type == CommandTarget.LOAD_GROUP) {
-            YukonPao pao = paoDao.getYukonPao(params.getPaoId());
-            String deviceType = pao.getPaoIdentifier().getPaoType().getDbString();
-            commands = commandDao.getAllDevTypeCommands(deviceType);
+            LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
+            if (pao != null) {  //may have been deleted already
+                String deviceType = pao.getPaoIdentifier().getPaoType().getDbString();
+                commands = commandDao.getAllDevTypeCommands(deviceType);
+            }
         } else {
             if (type == CommandTarget.EXPRESSCOM) {
                 commands = commandDao.getAllDevTypeCommands(CommandCategory.EXPRESSCOM_SERIAL.getDbString());
