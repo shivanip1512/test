@@ -27,6 +27,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DeviceDao;
@@ -39,12 +40,13 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("massDelete/*")
 public class MassDeleteController {
 
-    @Autowired private DeviceDao deviceDao;
-    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private PaoPersistenceService paoPersistenceService;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;    
     
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     @Resource(name="resubmittingBulkProcessor") private BulkProcessor bulkProcessor;
@@ -105,6 +107,14 @@ public class MassDeleteController {
     private void processDeviceDelete(SimpleDevice device) {
         try {
             deviceDao.removeDevice(device);
+        } catch (IllegalArgumentException iae) { // could be thrown by unknown PaoType for DBPersistent (see DeviceFactory)
+
+            try {
+                paoPersistenceService.deletePao(device);
+            } catch (Exception e) {
+                throw new ProcessingException("Could not delete device: " + paoLoadingService.getDisplayablePao(device).getName() + " (id=" + device.getDeviceId() + ")", e);
+            }
+
         } catch (DataRetrievalFailureException e) {
             throw new ProcessingException("Could not find device: " + paoLoadingService.getDisplayablePao(device).getName() + " (id=" + device.getDeviceId() + ")", e);
         } catch (Exception e) {
