@@ -8,14 +8,14 @@ public class SimulatorSettings implements Serializable{
     private int lcr6600serialFrom;
     private int lcr6600serialTo;
     //% of duplicates to generate
-    private int precentOfDuplicates;
+    private int percentOfDuplicates;
     
-    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int precentOfDuplicates) {
+    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int percentOfDuplicates) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
         this.lcr6600serialFrom = lcr6600serialFrom;
         this.lcr6600serialTo = lcr6600serialTo;
-        this.precentOfDuplicates =  precentOfDuplicates;
+        this.percentOfDuplicates =  percentOfDuplicates;
     }
     
     public SimulatorSettings() {
@@ -44,10 +44,10 @@ public class SimulatorSettings implements Serializable{
     public void setLcr6600serialTo(int lcr6600serialTo) {
         this.lcr6600serialTo = lcr6600serialTo;
     }
-    public int getPrecentOfDuplicates() {
-        return precentOfDuplicates;
+    public int getPercentOfDuplicates() {
+        return percentOfDuplicates;
     }
-    public void setPrecentOfDuplicates(int precentOfDuplicates) {
-        this.precentOfDuplicates = precentOfDuplicates;
+    public void setPercentOfDuplicates(int percentOfDuplicates) {
+        this.percentOfDuplicates = percentOfDuplicates;
     }
 }

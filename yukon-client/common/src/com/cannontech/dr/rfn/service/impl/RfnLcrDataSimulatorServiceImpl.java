@@ -141,7 +141,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     private void sendReadRequests(Set<RfnLcrReadSimulatorDeviceParameters> devices, RfnLcrDataSimulatorStatus status) {
         if (status.isRunning().get()) {
             if (!devices.isEmpty()) {
-                log.debug("Sending read request to " + devices.size());
+                log.debug("Sending read request to " + devices.size() +" devices.");
                 status.setLastInjectionTime(new Instant());
             }
             for (RfnLcrReadSimulatorDeviceParameters device : devices) {
@@ -523,11 +523,11 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      */
     private boolean needsDuplicate() {
         //settings can be null if cancel was called right before this method
-        if (settings == null || settings.getPrecentOfDuplicates() < 1) {
+        if (settings == null || settings.getPercentOfDuplicates() < 1) {
             return false;
         }
         int number = generateRandomNumber(RANDOM_MIN, RANDOM_MAX);
-        if (number > settings.getPrecentOfDuplicates()) {
+        if (number > settings.getPercentOfDuplicates()) {
             return false;
         }
         return true;
@@ -536,7 +536,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     /**
      * Generates random number for range.
      */
-    public int generateRandomNumber(int min, int max) {
+    private int generateRandomNumber(int min, int max) {
         // nextInt excludes the top value so we have to add 1 to include the top value
         int randomNum = randomizer.nextInt((max - min) + 1) + min;
         return randomNum;

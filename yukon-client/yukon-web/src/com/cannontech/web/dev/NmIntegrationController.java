@@ -592,14 +592,14 @@ public class NmIntegrationController {
         Map<String, Object> json = new HashMap<>();
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse(json);
         if(response == null){
-            return "redirect:viewBase";
+            return "rfn/dataSimulator.jsp";
         }
         if (response.getStatusByRange().isRunning().get()) {
             model.addAttribute("currentSettings", response.getSettings());
         }
         
-        model.addAttribute("dataSimulatorStatus", buildSimulatorStatusJson(response.getStatusByRange(), new HashMap<>(json)));
-        model.addAttribute("existingDataSimulatorStatus", buildSimulatorStatusJson(response.getAllDevicesStatus(), new HashMap<>(json)));
+        model.addAttribute("dataSimulatorStatus", buildSimulatorStatusJson(response.getStatusByRange()));
+        model.addAttribute("existingDataSimulatorStatus", buildSimulatorStatusJson(response.getAllDevicesStatus()));
         return "rfn/dataSimulator.jsp";
     }
     
@@ -680,7 +680,10 @@ public class NmIntegrationController {
     public Map<String, Object> dataSimulatorStatus() {
         Map<String, Object> json = new HashMap<>();
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse(json);
-        return buildSimulatorStatusJson(response.getStatusByRange(), json);
+        if(response == null){
+            return json;
+        }
+        return buildSimulatorStatusJson(response.getStatusByRange());
     }
 
     @RequestMapping("existing-datasimulator-status")
@@ -688,10 +691,14 @@ public class NmIntegrationController {
     public Map<String, Object> existingDataSimulatorStatus() {
         Map<String, Object> json = new HashMap<>();
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse(json);
-        return buildSimulatorStatusJson(response.getAllDevicesStatus(), json);
+        if(response == null){
+            return json;
+        }
+        return buildSimulatorStatusJson(response.getAllDevicesStatus());
     }
     
-    private Map<String, Object> buildSimulatorStatusJson(RfnLcrDataSimulatorStatus status, Map<String, Object> json) {
+    private Map<String, Object> buildSimulatorStatusJson(RfnLcrDataSimulatorStatus status) {
+        Map<String, Object> json = new HashMap<>();
         if (status.getStartTime() == null) {
             json.put("startTime", "");
         } else {

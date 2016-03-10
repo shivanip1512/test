@@ -15,14 +15,23 @@
         _startButtonClick = function(event) {
             var formData = $('#dataSimulatorForm').serialize();
             if($(this).attr('id') === 'start-simulator') {
+                $(this).attr("disabled", "disabled");
                     $.ajax({
                     url: yukon.url('/dev/rfn/startDataSimulator'),
                     type: 'post',
                     data: formData 
                 }).done(function(data) {
+                    $('#stop-simulator').show();
+                    $('#start-simulator').hide();
+                    $('#start-simulator').removeAttr("disabled");
                     _checkStatus(true);
                 }).fail(function(data) {
-                    yukon.ui.alertError("Failed to run LCR Data Simulator. Try again.");
+                    $('#start-simulator').removeAttr("disabled");
+                    if (data.hasError) {
+                        $('#taskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
+                    } else {
+                        $('#taskStatusMessage').hide();
+                    }
                 });
             };
             
@@ -32,23 +41,33 @@
                     type: 'GET'
                     });
                 _checkStatus(true);
+                $(this).hide();
+                $(this).siblings('button').show();
             };
-            $(this).hide();
-            $(this).siblings('button').show();
+
         
         },
         
         _sendMessageButtonClick = function(event) {
             var formData = $('#dataSimulatorForm').serialize();
             if($(this).attr('id') === 'send-message') {
+                $(this).attr("disabled", "disabled");
                     $.ajax({
                     url: yukon.url('/dev/rfn/sendLcrDeviceMessages'),
                     type: 'post',
                     data: formData 
                 }).done(function(data) {
+                    $('#stop-send-message').show();
+                    $('#send-message').hide();
+                    $('#send-message').removeAttr("disabled");
                     _checkStatus(true);
                 }).fail(function(data) {
-                    yukon.ui.alertError("Failed to run LCR Data Simulator. Try again.");
+                    $('#send-message').removeAttr("disabled");
+                    if (data.hasError) {
+                        $('#existingDeviceTaskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
+                    } else {
+                        $('#existingDeviceTaskStatusMessage').hide();
+                    }
                 });
             };
                 
@@ -58,9 +77,9 @@
                     type: 'GET'
                     });
                 _checkExistingDeviceStatus(true);
+                $(this).hide();
+                $(this).siblings('button').show();
             };
-            $(this).hide();
-            $(this).siblings('button').show();
         },
 
         _checkStatus = function(extraCheck) {
@@ -101,8 +120,11 @@
                     if (!extraCheck) {
                         setTimeout(_checkStatus, _checkStatusTime);
                     }
-                    var errorMsg = 'Failed trying to receive the data simulation status. Trying again in five seconds.';
-                    $('#taskStatusMessage').addMessage({message:errorMsg, messageClass:'error'}).show();
+                    if (data.hasError) {
+                        $('#taskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
+                    } else {
+                        $('#taskStatusMessage').hide();
+                    }
                 });
               }
         },
@@ -138,8 +160,11 @@
                     if (!extraCheck) setTimeout(_checkExistingDeviceStatus, _checkStatusTime);
                 }).fail(function(data) {
                     if (!extraCheck) setTimeout(_checkExistingDeviceStatus, _checkStatusTime);
-                    var errorMsg = 'Failed trying to receive the data simulation status. Trying again in five seconds.';
-                    $('#existingDeviceTaskStatusMessage').addMessage({message:errorMsg, messageClass:'error'}).show();
+                    if (data.hasError) {
+                        $('#existingDeviceTaskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
+                    } else {
+                        $('#existingDeviceTaskStatusMessage').hide();
+                    }
                 });
             }
           },
@@ -177,7 +202,7 @@
             <input id="lcr6600serialTo" name="lcr6600serialTo" type="text" value=${currentSettings.lcr6600serialTo}>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".lcrDataSimulator.duplicates">
-            <input id="precentOfDuplicates" name="precentOfDuplicates" type="text" value=${currentSettings.precentOfDuplicates} maxlength="3" size="3"> %
+            <input id="percentOfDuplicates" name="percentOfDuplicates" type="text" value=${currentSettings.percentOfDuplicates} maxlength="3" size="3"> %
         </tags:nameValue2>
     </tags:nameValueContainer2>
     </div>
