@@ -20,12 +20,17 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
     
     @Override
     public void updateField(SimpleDevice device, YukonDeviceDto value) throws ProcessingException {
-        if (value.getLatitude() == null) {
-            throw new ProcessingException("Latitude not specified for device with paoId " + device.getPaoIdentifier());
+        if (value.getLatitude() == null || ((value.getLatitude() < -90.0) || (value.getLatitude() > 90.0))) {
+            throw new ProcessingException(
+                "Valid Latitude (Must be between -90 and 90) not specified for device with paoId "
+                    + device.getPaoIdentifier());
         }
-        if (value.getLongitude() == null) {
-            throw new ProcessingException("Longitude not specified for device with paoId " + device.getPaoIdentifier());
+        if (value.getLongitude() == null || ((value.getLongitude() < -180.0) || (value.getLongitude() > 180.0))) {
+            throw new ProcessingException(
+                "Valid Longitude (Must be between -180 and 180) not specified for device with paoId "
+                    + device.getPaoIdentifier());
         }
+        
         try {
             PaoLocation location =
                 new PaoLocation(device.getPaoIdentifier(), value.getLatitude(), value.getLongitude(),
