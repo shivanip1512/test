@@ -25,12 +25,15 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 
 public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportFormatDao{
 
     public static final String TABLE_NAME = "ArchiveValuesExportFormat";
-   
+	@Autowired DbChangeManager dbChangeManager;
     private final YukonRowMapper<ExportFormat> rowMapper = new YukonRowMapper<ExportFormat>() {
         @Override
         public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
@@ -85,7 +88,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         
         yukonJdbcTemplate.update(sql);
         createAttributesAndFields(format);
-        
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.DATA_EXPORT_FORMAT, format.getFormatId());
         return format;
     }
     
@@ -108,7 +111,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         
         yukonJdbcTemplate.update(sql);
         createAttributesAndFields(format);
-        
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.DATA_EXPORT_FORMAT, format.getFormatId());
         return format;
     }
     
@@ -123,7 +126,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         sql.append("DELETE FROM");
         sql.append(TABLE_NAME);
         sql.append("WHERE FormatID").eq(formatId);
-        
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.DATA_EXPORT_FORMAT, formatId);
         yukonJdbcTemplate.update(sql);
     }
     

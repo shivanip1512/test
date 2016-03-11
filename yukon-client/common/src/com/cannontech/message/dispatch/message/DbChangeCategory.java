@@ -28,6 +28,7 @@ public enum DbChangeCategory {
     GLOBAL_SETTING("GlobalSetting"),
     ENERGY_COMPANY_SETTING("EnergyCompanySetting"),
     WEB_SCHEDULE("WebSchedule"),
+    DATA_EXPORT_FORMAT("DataExportFormat"),
     
 //  WORK_ORDER("WorkOrder"),
 //  CBC_ADDINFO("CB Additional Info"),
