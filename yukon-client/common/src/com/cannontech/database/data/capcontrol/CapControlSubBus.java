@@ -221,7 +221,7 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
 
         Integer varPoint = innerBus.getCurrentVarLoadPointID();
         completeBus.setCurrentVarLoadPointId(varPoint != null ? varPoint : 0);
-        Integer voltPoint = innerBus.getVoltReductionPointId();
+        Integer voltPoint = innerBus.getCurrentVoltLoadPointID();
         completeBus.setCurrentVoltLoadPointId(voltPoint != null ? voltPoint : 0);
         Integer wattPoint = innerBus.getCurrentWattLoadPointID();
         completeBus.setCurrentWattLoadPointId(wattPoint != null ? wattPoint : 0);
