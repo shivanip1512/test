@@ -73,6 +73,7 @@
     <bean class="com.cannontech.web.search.lucene.index.site.InventoryPageIndexBuilder"/>
     <bean class="com.cannontech.web.search.lucene.index.site.PaoPageIndexBuilder"/>
     <bean class="com.cannontech.web.search.lucene.index.site.WebSchedulePageIndexBuilder"/>
+    <bean class="com.cannontech.web.search.lucene.index.site.MonitorPageIndexBuilder"/>
     <bean class="com.cannontech.web.search.lucene.index.site.MeterPaoTypeHandler"/>
     <bean class="com.cannontech.web.search.lucene.index.site.DrPaoTypeHandler"/>
     <bean class="com.cannontech.web.search.lucene.index.site.CapControlPaoTypeHandler"/>

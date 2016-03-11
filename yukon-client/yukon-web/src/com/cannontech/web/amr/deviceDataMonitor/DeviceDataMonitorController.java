@@ -64,6 +64,9 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -100,6 +103,7 @@ public class DeviceDataMonitorController {
     private final int MESSAGE_MAGIC_NUMBER_LIMITED_QUERY= -2;
     
     private static final String baseKey = "yukon.web.modules.amr.deviceDataMonitor";
+    @Autowired private DbChangeManager dbChangeManager;
     
     private Validator validator = new SimpleValidator<DeviceDataMonitor>(DeviceDataMonitor.class) {
         @Override
@@ -177,7 +181,7 @@ public class DeviceDataMonitorController {
         MessageSourceResolvable createMessage = new YukonMessageSourceResolvable(baseKey + ".created");
         flash.setConfirm(Collections.singletonList(createMessage));
         model.addAttribute("monitorId", monitor.getId());
-        
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR, monitor.getId());
         return "redirect:/amr/deviceDataMonitor/editPage";
     }
     
@@ -222,7 +226,7 @@ public class DeviceDataMonitorController {
         MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable(baseKey + ".updated", monitor.getName());
         flash.setConfirm(Collections.singletonList(updateMessage));
         model.addAttribute("monitorId", monitor.getId());
-        
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, monitor.getId());
         return "redirect:/amr/deviceDataMonitor/view";
     }
     
@@ -231,7 +235,7 @@ public class DeviceDataMonitorController {
         
         DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
         deviceDataMonitorDao.deleteMonitor(monitorId);
-        
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, monitor.getId());
         MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable(baseKey + ".deleted", monitor.getName());
         flash.setConfirm(deleteMessage);
         return "redirect:/meter/start";

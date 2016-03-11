@@ -26,6 +26,9 @@ import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -38,6 +41,7 @@ public class TamperFlagEditorController {
 	private DeviceGroupEditorDao deviceGroupEditorDao;
 	private TamperFlagMonitorService tamperFlagMonitorService;
 	@Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DbChangeManager dbChangeManager;
 	
 	private Logger log = YukonLogManager.getLogger(TamperFlagEditorController.class);
 
@@ -173,7 +177,7 @@ public class TamperFlagEditorController {
     		log.debug("Saving tamperFlagMonitor: isNewMonitor=" + isNewMonitor + ", tamperFlagMonitor=" + tamperFlagMonitor.toString());
     		tamperFlagMonitorDao.saveOrUpdate(tamperFlagMonitor);
     		tamperFlagMonitorId = tamperFlagMonitor.getTamperFlagMonitorId();
-        	
+            dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, tamperFlagMonitorId);
     		// redirect to edit page with processor
     		return "redirect:/meter/start";
         }
@@ -191,7 +195,7 @@ public class TamperFlagEditorController {
         	model.addAttribute("editError", e.getMessage());
         	return "redirect:edit"; 
         }
-        
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, deleteTamperFlagMonitorId);
         return "redirect:/meter/start";
 	}
 	

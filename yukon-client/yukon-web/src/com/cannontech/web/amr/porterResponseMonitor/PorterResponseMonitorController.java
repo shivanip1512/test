@@ -57,6 +57,9 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -82,6 +85,7 @@ public class PorterResponseMonitorController {
     @Autowired private PointService pointService;
     @Autowired private StateDao stateDao;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DbChangeManager dbChangeManager;
     
     private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitor";
     private final Logger log = YukonLogManager.getLogger(PorterResponseMonitorController.class);
@@ -201,7 +205,7 @@ public class PorterResponseMonitorController {
                                                            monitor.getStateGroup().toString(), 
                                                            monitor.getEvaluatorStatus().getDescription(),
                                                            userContext.getYukonUser());
-
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR, monitor.getMonitorId());
         return "redirect:editPage";
     }
 
@@ -249,7 +253,7 @@ public class PorterResponseMonitorController {
                 monitorDto.getStateGroup().toString(), 
                 monitorDto.getEvaluatorStatus().getDescription(),
                 userContext.getYukonUser());
-
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, monitor.getMonitorId());
         return "redirect:viewPage";
     }
 
@@ -268,7 +272,7 @@ public class PorterResponseMonitorController {
                                                            monitorDto.getStateGroup().toString(),
                                                            monitorDto.getEvaluatorStatus().getDescription(),
                                                            user);
-
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, monitorDto.getMonitorId());
         return "redirect:/meter/start";
     }
 

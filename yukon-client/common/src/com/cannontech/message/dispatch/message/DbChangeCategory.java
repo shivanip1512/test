@@ -29,6 +29,7 @@ public enum DbChangeCategory {
     ENERGY_COMPANY_SETTING("EnergyCompanySetting"),
     WEB_SCHEDULE("WebSchedule"),
     DATA_EXPORT_FORMAT("DataExportFormat"),
+    MONITOR("Monitor"),
     
 //  WORK_ORDER("WorkOrder"),
 //  CBC_ADDINFO("CB Additional Info"),
