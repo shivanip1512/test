@@ -43,11 +43,12 @@ protected:
     static void throwDatabaseException(const SAConnection *conn, const SAException &x);
 
 public:
-    
+
     enum class QueryTimeout : unsigned char {
-        Fifteen_seconds
+        Fifteen_seconds,
+        None
     };
-    
+
     DatabaseConnection();
     DatabaseConnection(QueryTimeout t);
 

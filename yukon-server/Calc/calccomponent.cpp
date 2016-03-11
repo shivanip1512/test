@@ -21,6 +21,8 @@ extern bool _ignoreTimeValidTag;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 
+extern DatabaseConnection::QueryTimeout getCalcQueryTimeout();
+
 CtiCalcComponent::CtiCalcComponent( const string &componentType, long componentPointId,
                                     const string &operationType,
                                     double constantValue, const string &functionName ) :
@@ -1047,7 +1049,7 @@ void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &po
                                           "FROM RAWPOINTHISTORY RPH "
                                           "WHERE RPH.POINTID = ? ORDER BY TIMESTAMP DESC";
 
-            DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+            DatabaseConnection connection { getCalcQueryTimeout() };
             DatabaseReader rdr { connection, sqlCore };
 
             rdr << regressionPt;

@@ -28,6 +28,8 @@ using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 using Cti::Database::DatabaseWriter;
 
+extern DatabaseConnection::QueryTimeout getCalcQueryTimeout();
+
 extern ULONG _CALC_DEBUG;
 extern BOOL  UserQuit;
 extern bool _shutdownOnThreadTimeout;
@@ -1544,7 +1546,7 @@ void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMa
         static const string sql = "SELECT DCH.POINTID, DCH.LASTUPDATE "
                                   "FROM DYNAMICCALCHISTORICAL DCH";
 
-        DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+        DatabaseConnection connection { getCalcQueryTimeout() };
         DatabaseReader rdr { connection };
 
         rdr.setCommandText(sql);
@@ -1591,7 +1593,7 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc *calcPoint, CtiTime &las
                                      "FROM RAWPOINTHISTORY RPH "
                                      "WHERE RPH.TIMESTAMP > ?";
 
-        DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+        DatabaseConnection connection { getCalcQueryTimeout() };
         DatabaseReader rdr { connection };
 
         std::stringstream ss;
@@ -1662,7 +1664,7 @@ void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTi
                                            "WHERE RPH.TIMESTAMP > ? AND RPH.POINTID = ? "
                                            "ORDER BY RPH.TIMESTAMP DESC";
 
-            DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+            DatabaseConnection connection { getCalcQueryTimeout() };
             DatabaseReader rdr { connection, sqlCore };
 
             rdr << lastTime
@@ -1710,7 +1712,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
     try
     {
         static const string insertSql = "insert into DYNAMICCALCHISTORICAL values (?, ?)";
-        DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+        DatabaseConnection connection { getCalcQueryTimeout() };
         DatabaseWriter writer { connection, insertSql };
 
         for( iter = unlistedPoints.begin(); iter != unlistedPoints.end(); iter++ )
@@ -1750,7 +1752,7 @@ void CtiCalculateThread::getCalcBaselineMap(PointBaselineMap &pointBaselineMap)
         static const string sql = "SELECT CPB.POINTID, CPB.BASELINEID "
                                   "FROM CALCPOINTBASELINE CPB";
 
-        DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+        DatabaseConnection connection { getCalcQueryTimeout() };
         DatabaseReader rdr { connection };
 
         rdr.setCommandText(sql);
@@ -1787,7 +1789,7 @@ void CtiCalculateThread::getBaselineMap(BaselineMap &baselineMap)
                                      "BL.HOLIDAYSCHEDULEID "
                                    "FROM BASELINE BL";
 
-        DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+        DatabaseConnection connection { getCalcQueryTimeout() };
         DatabaseReader rdr { connection };
 
         rdr.setCommandText(sql);
@@ -1831,7 +1833,7 @@ void CtiCalculateThread::getCurtailedDates(DatesSet &curtailedDates, long pointI
                                      "DCL.DEVICEID = PT.PAOBJECTID AND CR.ACCEPTSTATUS= 'Accepted' AND "
                                      "PT.POINTID = ? AND PO.OFFERDATE > ?";
 
-        DatabaseConnection connection { DatabaseConnection::QueryTimeout::Fifteen_seconds };
+        DatabaseConnection connection { getCalcQueryTimeout() };
         DatabaseReader rdr { connection, sql };
 
         rdr << pointID

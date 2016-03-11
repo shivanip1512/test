@@ -25,7 +25,7 @@ DatabaseConnection::DatabaseConnection()
 DatabaseConnection::DatabaseConnection(QueryTimeout t)
     : DatabaseConnection()
 {
-    if( connection )
+    if( connection && t != QueryTimeout::None )
     {
         static const std::map<QueryTimeout, const char *> timeouts {
             { QueryTimeout::Fifteen_seconds, "15" } };
