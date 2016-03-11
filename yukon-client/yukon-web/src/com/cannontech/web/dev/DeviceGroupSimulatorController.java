@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
@@ -36,10 +36,9 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.MeterSearchUtils;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -57,26 +56,22 @@ public class DeviceGroupSimulatorController {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    private static final String baseKey = "yukon.web.modules.dev.generateDeviceGroups";
+    private static final String baseKey = "yukon.web.modules.dev.deviceGroupSimulator";
 
     /**
-     * Method generates given no of device groups and assigns given no devices to each group equaly
-     * 
-     * @param model
-     * @param request
-     * @return
+     * Method generates given no of device groups and assigns given no devices to each group equally
      */
-    @RequestMapping(value="/generateDeviceGroups", method=RequestMethod.POST)
-    public String generateDeviceGroups(FlashScope flashScope, HttpServletRequest request) {
-        String noOfGroups = ServletRequestUtils.getStringParameter(request, "noOfGroups", "1").trim();
-        String noOfDevicesPerGroup = ServletRequestUtils.getStringParameter(request, "noOfDevices", "1").trim();
-        String useNestedGroups = ServletRequestUtils.getStringParameter(request, "useNestedGroups", "No").trim();
-        String deviceType = ServletRequestUtils.getStringParameter(request, "deviceType", "MCT").trim();
+    @RequestMapping(value = "/generateDeviceGroups", method = RequestMethod.POST)
+    public String generateDeviceGroups(FlashScope flashScope, LiteYukonUser user,
+            @RequestParam(defaultValue = "1") int noOfGroups,
+            @RequestParam(defaultValue = "1") int noOfDevicesPerGroup,
+            @RequestParam(defaultValue = "false") boolean useNestedGroups,
+            @RequestParam(defaultValue = "MCT") String deviceType, HttpServletRequest request) {
         List<YukonMeter> meters = null;
         List<RfnDevice> rfnLcrDeviceList = null;
         List<DisplayablePao> paoList = null;
         List<String> childGroupNames = new ArrayList<String>();
-        int totalNoOfDevicesToBeAssigned = Integer.parseInt(noOfGroups) * Integer.parseInt(noOfDevicesPerGroup);
+        int totalNoOfDevicesToBeAssigned = noOfGroups * noOfDevicesPerGroup;
 
         if (deviceType.equalsIgnoreCase("MCT")) {
             meters = getMctDevices(request, totalNoOfDevicesToBeAssigned);
@@ -86,25 +81,24 @@ public class DeviceGroupSimulatorController {
             paoList = new ArrayList<DisplayablePao>(rfnLcrDeviceList);
         }
         if (paoList == null || paoList.size() < totalNoOfDevicesToBeAssigned) {
-            flashScope.setMessage(new YukonMessageSourceResolvable(baseKey + ".insufficientDevices"),
-                FlashScopeMessageType.ERROR);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".insufficientDevices"));
             return "redirect:viewDeviceGroupSimulator";
         }
 
-        for (int i = 1; i <= Integer.parseInt(noOfGroups); i++) {
+        for (int i = 1; i <= noOfGroups; i++) {
             String childGrpName = RandomStringUtils.randomAlphanumeric(10);
             childGroupNames.add(childGrpName);
         }
 
         // create groups
         List<StoredDeviceGroup> newGroupsCreated = null;
-        if (useNestedGroups.equalsIgnoreCase("No")) {
-            newGroupsCreated = createBasicGroups(request, childGroupNames);
-        } else if (useNestedGroups.equalsIgnoreCase("Yes")) {
-            newGroupsCreated = createNestedGroups(request, childGroupNames);
+        if (useNestedGroups) {
+            newGroupsCreated = createNestedGroups(user, childGroupNames);
+        } else {
+            newGroupsCreated = createBasicGroups(user, childGroupNames);
         }
 
-        assignDevicesToGroups(Integer.parseInt(noOfDevicesPerGroup), newGroupsCreated, paoList);
+        assignDevicesToGroups(noOfDevicesPerGroup, newGroupsCreated, paoList);
         flashScope.setMessage(new YukonMessageSourceResolvable(baseKey + ".success"), FlashScopeMessageType.SUCCESS);
         return "redirect:viewDeviceGroupSimulator";
     }
@@ -137,10 +131,9 @@ public class DeviceGroupSimulatorController {
         return mctMeters;
     }
 
-    private List<StoredDeviceGroup> createBasicGroups(HttpServletRequest request, List<String> childGroupNames) {
+    private List<StoredDeviceGroup> createBasicGroups(LiteYukonUser user, List<String> childGroupNames) {
         List<StoredDeviceGroup> newGroups = new ArrayList<StoredDeviceGroup>();
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, user);
 
         String groupName = "/";
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
@@ -158,55 +151,51 @@ public class DeviceGroupSimulatorController {
         return newGroups;
     }
 
-    private List<StoredDeviceGroup> createNestedGroups(HttpServletRequest request, List<String> childGroupNames) {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
+    private List<StoredDeviceGroup> createNestedGroups(LiteYukonUser user, List<String> childGroupNames) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, user);
         List<StoredDeviceGroup> newGroups = new ArrayList<StoredDeviceGroup>();
 
-        List<DeviceGroupNode> parentNodeList = new ArrayList<DeviceGroupNode>();
-        for (int i = 0; i < childGroupNames.size(); i++) {
-            if (i == 0) {
-                // First Device group will have root group as the parent with name "/"
-                DeviceGroupNode node = new DeviceGroupNode("1", "0", "0", "/", "/" + childGroupNames.get(i));
-                parentNodeList.add(node);
-                StoredDeviceGroup newGroup = createNestedDeviceGroup("/", childGroupNames.get(i));
-                newGroups.add(newGroup);
-            } else {
-                DeviceGroupNode node = null;
-                for (int j = 0; j < parentNodeList.size(); j++) {
-                    if (node == null) {
-                        DeviceGroupNode deviceGroupNode = parentNodeList.get(j);
-                        String left = deviceGroupNode.getLeftChild();
-                        String right = deviceGroupNode.getRightChild();
-                        if (left.equals("0")) {
-                            // attach the child group to the left of the parent node
-                            node =
-                                new DeviceGroupNode((i + 1) + "", "0", "0", deviceGroupNode.getId(),
-                                    deviceGroupNode.getRootName() + "/" + childGroupNames.get(i));
+        List<DeviceGroupNode> parentNodeList = new ArrayList<>();
+        if (childGroupNames.size() > 0) {
+            // First Device group will have root group as the parent with name "/"
+            DeviceGroupNode firstNode = new DeviceGroupNode("1", "/", "/" + childGroupNames.get(0));
+            parentNodeList.add(firstNode);
+            StoredDeviceGroup firstGroup = createNestedDeviceGroup("/", childGroupNames.get(0));
+            newGroups.add(firstGroup);
+        }
 
-                            deviceGroupNode.setLeftChild("1");
-                            String parent = deviceGroupNode.getRootName();
-                            parentNodeList.add(node);
-                            StoredDeviceGroup newGroup = createNestedDeviceGroup(parent, childGroupNames.get(i));
-                            newGroups.add(newGroup);
-                        } else if (right.equals("0")) {
-                            // attach the child group to the right of the parent node
-                            node =
-                                new DeviceGroupNode((i + 1) + "", "0", "0", deviceGroupNode.getId(),
-                                    deviceGroupNode.getRootName() + "/" + childGroupNames.get(i));
-
-                            deviceGroupNode.setRightChild("1");
-                            String parent = deviceGroupNode.getRootName();
-                            parentNodeList.add(node);
-                            StoredDeviceGroup newGroup = createNestedDeviceGroup(parent, childGroupNames.get(i));
-                            newGroups.add(newGroup);
-                        }
-                    }
+        for (int i = 1; i < childGroupNames.size(); i++) {
+            for (int j = 0; j < parentNodeList.size(); j++) {
+                // if (node == null) {
+                DeviceGroupNode parentGroupNode = parentNodeList.get(j);
+                if (!parentGroupNode.hasLeftChild()) {
+                    // attach the child group to the left of the parent node
+                    attachChildGroup(true, i + 1, parentGroupNode, childGroupNames.get(i), parentNodeList, newGroups);
+                    break;
+                } else if (!parentGroupNode.hasRightChild()) {
+                    // attach the child group to the right of the parent node
+                    attachChildGroup(false, i + 1, parentGroupNode, childGroupNames.get(i), parentNodeList, newGroups);
+                    break;
                 }
+                // }
             }
-
         }
         return newGroups;
+    }
+
+    private void attachChildGroup(boolean isLeft, Integer id, DeviceGroupNode parentNode, String childGroupName,
+            List<DeviceGroupNode> parentNodeList, List<StoredDeviceGroup> newGroups) {
+        DeviceGroupNode node =
+            new DeviceGroupNode(id.toString(), parentNode.getId(), parentNode.getRootName() + "/" + childGroupName);
+        if (isLeft) {
+            parentNode.setLeftChild();
+        } else {
+            parentNode.setRightChild();
+        }
+        String parent = parentNode.getRootName();
+        parentNodeList.add(node);
+        StoredDeviceGroup newGroup = createNestedDeviceGroup(parent, childGroupName);
+        newGroups.add(newGroup);
     }
 
     private StoredDeviceGroup createNestedDeviceGroup(String parent, String childGroupName) {

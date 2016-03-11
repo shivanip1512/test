@@ -209,10 +209,6 @@
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.accountExists">Account already exists: {0}</entry>
     
     <!-- Generate Device Groups -->
-    <entry key="yukon.web.modules.dev.generateDeviceGroups.noOfGroups">No Of Groups</entry>
-    <entry key="yukon.web.modules.dev.generateDeviceGroups.noOfDevices">No Of Devices in each group</entry>
-    <entry key="yukon.web.modules.dev.generateDeviceGroups.useNestedGroups">Use Nested Groups</entry>
-    <entry key="yukon.web.modules.dev.generateDeviceGroups.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.dev.generateDeviceGroups.success">Device Groups with given devices created successfully</entry>
     <entry key="yukon.web.modules.dev.generateDeviceGroups.insufficientDevices">Sufficient No of devices does not exist</entry>
     
