@@ -50,4 +50,9 @@ public interface PaoPersistenceDao {
      * @param paoIdentifier the {@link PaoIdentifier} containing the paoId of the PAO to be deleted.
      */
     void deletePao(YukonPao pao);
+
+    /**
+     * Returns true if pao is supported by PaoPersistence table mappings
+     */
+    public boolean supports(YukonPao pao);
 }

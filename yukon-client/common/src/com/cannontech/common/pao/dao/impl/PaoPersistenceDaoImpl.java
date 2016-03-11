@@ -208,6 +208,10 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
         userPageDao.deletePagesForPao(pao);
     }
 
+    @Override
+    public boolean supports(YukonPao pao) {
+        return paoTypeToTableMapping.keySet().contains(pao.getPaoIdentifier().getPaoType());
+    }
     /**
      * Insert or update the given PAO into the database.
      * 
