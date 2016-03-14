@@ -6,8 +6,10 @@ import java.sql.SQLException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlFragmentSource;
@@ -95,7 +97,6 @@ public class MonitorPageIndexBuilder extends DbPageIndexBuilder {
         }
 
         builder.pageArgs(monitorname);
-        builder.summaryArgs(monitorname);
 
         return builder.build();
     }
@@ -107,14 +108,72 @@ public class MonitorPageIndexBuilder extends DbPageIndexBuilder {
 
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
-        if (!rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_DATA_MONITORING, user)
-            || !rolePropertyDao.checkProperty(YukonRoleProperty.OUTAGE_PROCESSING, user)
-            || !rolePropertyDao.checkProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING, user)
-            || !rolePropertyDao.checkProperty(YukonRoleProperty.STATUS_POINT_MONITORING, user)
-            || !rolePropertyDao.checkProperty(YukonRoleProperty.PORTER_RESPONSE_MONITORING, user)
-            || !rolePropertyDao.checkProperty(YukonRoleProperty.VALIDATION_ENGINE, user)) {
-            return new PrefixQuery(new Term("pageKey", getPageKeyBase()));
+        BooleanQuery.Builder deviceMonitorQuery = null;
+        if (!rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_DATA_MONITORING, user)) {
+            deviceMonitorQuery = new BooleanQuery.Builder();
+            deviceMonitorQuery.add(new TermQuery(new Term("module", "amr")), Occur.MUST);
+            deviceMonitorQuery.add(new TermQuery(new Term("pageName", "deviceDataMonitor.VIEW")), Occur.MUST);
         }
+
+        BooleanQuery.Builder outageQuery = null;
+        if (!rolePropertyDao.checkProperty(YukonRoleProperty.OUTAGE_PROCESSING, user)) {
+            outageQuery = new BooleanQuery.Builder();
+            outageQuery.add(new TermQuery(new Term("module", "amr")), Occur.MUST);
+            outageQuery.add(new TermQuery(new Term("pageName", "outageMonitorConfig.EDIT")), Occur.MUST);
+        }
+
+        BooleanQuery.Builder statusPointQuery = null;
+        if (!rolePropertyDao.checkProperty(YukonRoleProperty.STATUS_POINT_MONITORING, user)) {
+            statusPointQuery = new BooleanQuery.Builder();
+            statusPointQuery.add(new TermQuery(new Term("module", "amr")), Occur.MUST);
+            statusPointQuery.add(new TermQuery(new Term("pageName", "statusPointMonitorView")), Occur.MUST);
+        }
+
+        BooleanQuery.Builder tamperQuery = null;
+        if (!rolePropertyDao.checkProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING, user)) {
+            tamperQuery = new BooleanQuery.Builder();
+            tamperQuery.add(new TermQuery(new Term("module", "amr")), Occur.MUST);
+            tamperQuery.add(new TermQuery(new Term("pageName", "tamperFlagEditor.EDIT")), Occur.MUST);
+        }
+
+        BooleanQuery.Builder validationQuery = null;
+        if (!rolePropertyDao.checkProperty(YukonRoleProperty.VALIDATION_ENGINE, user)) {
+            validationQuery = new BooleanQuery.Builder();
+            validationQuery.add(new TermQuery(new Term("module", "amr")), Occur.MUST);
+            validationQuery.add(new TermQuery(new Term("pageName", "validationEditor.EDIT")), Occur.MUST);
+        }
+
+        BooleanQuery.Builder porterResponseQuery = null;
+        if (!rolePropertyDao.checkProperty(YukonRoleProperty.PORTER_RESPONSE_MONITORING, user)) {
+            porterResponseQuery = new BooleanQuery.Builder();
+            porterResponseQuery.add(new TermQuery(new Term("module", "amr")), Occur.MUST);
+            porterResponseQuery.add(new TermQuery(new Term("pageName", "porterResponseMonitor.VIEW")), Occur.MUST);
+        }
+
+        if (deviceMonitorQuery != null && outageQuery != null && statusPointQuery != null && tamperQuery != null
+            && validationQuery != null && porterResponseQuery != null) {
+            BooleanQuery.Builder limitingQuery = new BooleanQuery.Builder();
+            limitingQuery.add(deviceMonitorQuery.build(), Occur.SHOULD);
+            limitingQuery.add(outageQuery.build(), Occur.SHOULD);
+            limitingQuery.add(statusPointQuery.build(), Occur.SHOULD);
+            limitingQuery.add(tamperQuery.build(), Occur.SHOULD);
+            limitingQuery.add(validationQuery.build(), Occur.SHOULD);
+            limitingQuery.add(porterResponseQuery.build(), Occur.SHOULD);
+            return limitingQuery.build();
+        } else if (deviceMonitorQuery != null) {
+            return deviceMonitorQuery.build();
+        } else if (outageQuery != null) {
+            return outageQuery.build();
+        } else if (statusPointQuery != null) {
+            return statusPointQuery.build();
+        } else if (tamperQuery != null) {
+            return tamperQuery.build();
+        } else if (validationQuery != null) {
+            return validationQuery.build();
+        } else if (porterResponseQuery != null) {
+            return porterResponseQuery.build();
+        }
+
         return null;
     }
 
