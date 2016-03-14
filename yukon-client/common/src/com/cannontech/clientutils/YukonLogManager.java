@@ -210,7 +210,7 @@ public class YukonLogManager {
         }
         
         public boolean isInfoEnabled() {
-            return setupRfnCommsLogger().isDebugEnabled();
+            return setupRfnCommsLogger().isInfoEnabled();
         }
         
         public boolean isDebugEnabled() {
