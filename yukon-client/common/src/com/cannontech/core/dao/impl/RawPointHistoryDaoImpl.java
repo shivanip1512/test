@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
@@ -214,12 +215,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     @Override
     public void queuePointData(int pointId, Range<Instant> instantRange, Order order,
-            BlockingQueue<PointValueHolder> queue) {
+            BlockingQueue<PointValueHolder> queue, AtomicBoolean isCompleted) {
         SqlFragmentSource sql = buildSql(instantRange, Collections.singleton(pointId), order, true);
-        executeQueryToQueue(sql, queue);
+        executeQueryToQueue(sql, queue, isCompleted);
     }
 
-    private void executeQueryToQueue(SqlFragmentSource sql, BlockingQueue<PointValueHolder> q) {
+    private void executeQueryToQueue(SqlFragmentSource sql, BlockingQueue<PointValueHolder> q,AtomicBoolean isCompleted) {
         yukonTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
@@ -235,6 +236,9 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
             }
         });
+        if(q.isEmpty()) {
+            isCompleted.set(true);
+        }
     }
     
     @Override

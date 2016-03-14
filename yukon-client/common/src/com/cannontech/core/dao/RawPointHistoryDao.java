@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
@@ -357,5 +358,5 @@ public interface RawPointHistoryDao {
     */
    
    void queuePointData(int pointId, Range<Instant> instantRange, Order order,
-        BlockingQueue<PointValueHolder> queue);
+        BlockingQueue<PointValueHolder> queue, AtomicBoolean isCompleted);
 }

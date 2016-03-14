@@ -14,6 +14,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -143,9 +144,16 @@ public class HistoricalReadingsController {
         String[] headerRow = new String[2];
         headerRow[0] = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
         headerRow[1] = accessor.getMessage(baseKey + "tableHeader.value.linkText");
+        AtomicBoolean isCompleted = new AtomicBoolean(false);
 
         String fileName = "HistoryReadings.csv";
-        queueLimitedPointData(period, context, Order.REVERSE, OrderBy.TIMESTAMP, pointId, queue);
+        queueLimitedPointData(period,
+                              context,
+                              Order.REVERSE,
+                              OrderBy.TIMESTAMP,
+                              pointId,
+                              queue,
+                              isCompleted);
         response.setContentType("text/csv");
         response.setHeader("Content-Type", "application/force-download");
         fileName = ServletUtil.makeWindowsSafeFileName(fileName);
@@ -156,21 +164,27 @@ public class HistoricalReadingsController {
             csvWriter.writeNext(headerRow);
 
             while (true) {
-                PointValueHolder pointValueHolder = queue.take();
+                if (!isCompleted.compareAndSet(true, false)) {
+                    if (!queue.isEmpty()) {
+                        PointValueHolder pointValueHolder = queue.take();
+                        if (pointValueHolder != null) {
+                            List<String> row = Lists.newArrayList();
+                            row.add(pointFormattingService.getValueString(pointValueHolder,
+                                                                          Format.DATE,
+                                                                          context));
+                            row.add(pointFormattingService.getValueString(pointValueHolder,
+                                                                          Format.SHORT,
+                                                                          context));
 
-                List<String> row = Lists.newArrayList();
-                row.add(pointFormattingService.getValueString(pointValueHolder,
-                                                              Format.DATE,
-                                                              context));
-                row.add(pointFormattingService.getValueString(pointValueHolder,
-                                                              Format.SHORT,
-                                                              context));
-
-                String[] dataRows = new String[row.size()];
-                dataRows = (String[]) row.toArray(dataRows);
-                csvWriter.writeNext(dataRows);
-
-                if (queue.size() == 0) {
+                            String[] dataRows = new String[row.size()];
+                            dataRows = (String[]) row.toArray(dataRows);
+                            csvWriter.writeNext(dataRows);
+                        }
+                        if (queue.size() == 0) {
+                            break;
+                        }
+                    }
+                } else {
                     break;
                 }
             }
@@ -264,7 +278,7 @@ public class HistoricalReadingsController {
      * Create a thread to queue point data.
      */
     private void queueLimitedPointData(String period, final YukonUserContext userContext,
-            Order order, OrderBy orderBy, int pointId, BlockingQueue<PointValueHolder> queue) {
+            Order order, OrderBy orderBy, int pointId, BlockingQueue<PointValueHolder> queue, AtomicBoolean isCompleted) {
         ExecutorService executorService = Executors.newFixedThreadPool(1);
 
         Range<Date> dateRange = null;
@@ -279,7 +293,7 @@ public class HistoricalReadingsController {
             Instant startDate = new Instant(0);
             dateRange = new Range<Date>(startDate.toDate(), true, null, true);
         }
-        executorService.submit(new DataQueuer(queue, pointId, dateRange, order));
+        executorService.submit(new DataQueuer(queue, pointId, dateRange, order, isCompleted));
     }
     
     /**
@@ -290,20 +304,22 @@ public class HistoricalReadingsController {
         int pointId;
         Range<Date> dateRange;
         Order order;
+        AtomicBoolean isCompleted;
 
         DataQueuer(BlockingQueue<PointValueHolder> queue, int pointId, Range<Date> dateRange,
-                Order order) {
+                Order order, AtomicBoolean isCompleted) {
             this.queue = queue;
             this.pointId = pointId;
             this.dateRange = dateRange;
             this.order = order;
+            this.isCompleted = isCompleted;
         }
 
         public void run() {
             rawPointHistoryDao.queuePointData(pointId,
                                               dateRange.translate(CtiUtilities.INSTANT_FROM_DATE),
                                               order,
-                                              queue);
+                                              queue, isCompleted);
         }
     }
     
