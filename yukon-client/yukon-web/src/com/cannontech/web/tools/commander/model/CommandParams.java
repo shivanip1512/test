@@ -7,7 +7,25 @@ public class CommandParams {
     private Integer routeId;
     private String serialNumber;
     private String command;
+    private int commandPriority;
+    private boolean queueCommand;
     
+    public boolean isQueueCommand() {
+        return queueCommand;
+    }
+
+    public void setQueueCommand(boolean queueCommand) {
+        this.queueCommand = queueCommand;
+    }
+
+    public int getPriority() {
+        return commandPriority;
+    }
+
+    public void setPriority(int priority) {
+        this.commandPriority = priority;
+    }
+
     public CommandTarget getTarget() {
         return target;
     }
@@ -55,7 +73,8 @@ public class CommandParams {
         params.setRouteId(routeId);
         params.setSerialNumber(serialNumber);
         params.setTarget(target);
-        
+        params.setPriority(commandPriority);
+        params.setQueueCommand(queueCommand);
         return params;
     }
     

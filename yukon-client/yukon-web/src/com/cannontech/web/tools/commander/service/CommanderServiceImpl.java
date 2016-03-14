@@ -59,7 +59,6 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     private static final Logger log = YukonLogManager.getLogger(CommanderServiceImpl.class);
     private static final Random requestIds = new Random(System.currentTimeMillis());
     private static final Random responseIds = new Random(System.currentTimeMillis());
-    private static final int priority = 14;
     private static final char separator = '&';
     
     // User id to message id to request
@@ -187,8 +186,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
             int deviceId = type.isPao() ? params.getPaoId() : Device.SYSTEM_DEVICE_ID;
             
             Request request = new Request(deviceId, params.getCommand(), command.getId());
-            
-            request.setPriority(priority);
+            request.setPriority(params.getPriority());
             if (type.isRoute()) {
                 request.setRouteID(params.getRouteId());
             }
@@ -220,9 +218,11 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
                 copy.setCommand(copy.getCommand() + " update");
             }
             
-            // Add 'noqueue'
-            if (!copy.getCommand().contains("noqueue")) {
-                copy.setCommand(copy.getCommand() + " noqueue");
+            //If queue command is not opted, add 'noqueue'
+            if(copy.isQueueCommand()){
+                if (!copy.getCommand().contains("noqueue")) {
+                    copy.setCommand(copy.getCommand() + " noqueue");
+                }
             }
             
             // Add Serial Number

@@ -349,11 +349,36 @@ yukon.tools.commander = (function () {
         }
     },
     
+    _persistFields = function () {
+        _saveFields();
+    },
+    
+    _saveFields = function () {
+        var priority = $('#commandPriority').val();
+        if(priority=="" || priority > 14){
+            priority = 14;
+        }else if(priority <= 0){
+            priority = 1;
+        }
+        yukon.cookie.set('commander','priority',priority);	
+        $('#commandPriority').val(priority);
+        
+        var queueCommandChecked = $('#queueCommand').prop('checked');
+        if(queueCommandChecked){
+            $('#queueCommand').val("true");
+        }else{
+            $('#queueCommand').val("false");
+        }
+        var queueCommand = $('#queueCommand').val();
+        yukon.cookie.set('commander','queueCommand',queueCommand);
+    },
+    
     /** 
      * User clicked the execute button or hit enter in the command textfield.
      * Send the command request to the server.
      */
     _execute = function () {
+    	_saveFields();
         var
         picker,
         valid = true,
@@ -373,6 +398,9 @@ yukon.tools.commander = (function () {
             params.serialNumber = $('#serial-number').val();
             params.routeId = $('#route-id').val();
         }
+        params.priority = $('#commandPriority').val();
+        params.queueCommand = $('#queueCommand').val();
+        
         
         // Do some validation before we fire a request
         if (!params.command) {
@@ -634,6 +662,8 @@ yukon.tools.commander = (function () {
             
             /** User clicked the execute button. */
             $('#cmd-execute-btn').click(function (ev) { _execute(); });
+            
+            $('#saveFieldsBtn').click(function (ev) { _persistFields(); });
             
             /** User hit enter in the command textfield. */
             $('#command-text').on('keyup', function (ev) {

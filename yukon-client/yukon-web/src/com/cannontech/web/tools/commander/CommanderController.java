@@ -97,6 +97,8 @@ public class CommanderController {
     private static final String keyBase = "yukon.web.modules.tools.commander";
     private static final String json = MediaType.APPLICATION_JSON_VALUE;
     private static final Random unAuthorizedcommandIds = new Random(System.currentTimeMillis());
+    private static final int commandPriority = 14;
+    private static final boolean queueCommand = false;
     private static final Comparator<CommandRequest> onTimestamp = new Comparator<CommandRequest>() {
         @Override
         public int compare(CommandRequest o1, CommandRequest o2) {
@@ -116,6 +118,16 @@ public class CommanderController {
         
         // Check cookie for last target of command execution
         String lastTarget = webUtil.getYukonCookieValue(req, "commander", "lastTarget", null, JsonUtils.STRING_TYPE);
+        Integer priority = webUtil.getYukonCookieValue(req, "commander", "priority", null, JsonUtils.INT_TYPE);
+        if (priority == null) {
+            priority = commandPriority;
+        }
+        model.addAttribute("priority", priority);
+        Boolean queueCmd = webUtil.getYukonCookieValue(req, "commander", "queueCommand", null, JsonUtils.BOOLEAN_TYPE);
+        if (queueCmd == null) {
+            queueCmd = queueCommand;
+        }
+        model.addAttribute("queueCommand", queueCmd);
         if (lastTarget != null) {
             
             CommandTarget target = CommandTarget.valueOf(lastTarget);
@@ -282,7 +294,7 @@ public class CommanderController {
     @RequestMapping("/commander/execute")
     public @ResponseBody Map<String, Object> execute(HttpServletResponse resp,
             YukonUserContext userContext, @ModelAttribute CommandParams params) {
-
+     
         Map<String, Object> result = new HashMap<>();
 
         List<CommandRequest> commands = null;

@@ -56,6 +56,7 @@
     <tags:nameValue2 nameKey=".device" rowId="device-row" rowClass="${clazz}">
     
         <input id="pao-id" type="hidden" name="paoId" value="${deviceChosen ? paoId : ''}">
+        
         <tags:pickerDialog type="commanderDevicePicker" id="commanderDevicePicker"
             buttonStyleClass="js-device-picker"
             linkType="selection"
@@ -142,7 +143,36 @@
     
 </tags:nameValueContainer2>
 
-<div id="commander-console" class="console lite-container stacked code">
+    <cti:dataGrid cols="2"
+        tableClasses="collectionActionAlignment collectionActionCellPadding">
+    <cti:dataGridCell>
+            <tags:sectionContainer title="Other Options">
+                <tags:nameValueContainer2>
+                    <tags:nameValue2
+                        nameKey=".priority">
+                        <input type="text" id="commandPriority" name="commandPriority"
+                            value="${priority}" />
+                    </tags:nameValue2> 
+                    <tags:nameValue2 nameKey=".queue_commands">
+                        <c:if test="${queueCommand}">
+                            <input id="queueCommand" type="checkbox" name="queueCommand" value="${queueCommand}" checked="checked">
+                        </c:if>
+
+                        <c:if test="${!queueCommand}">
+                            <input id="queueCommand" type="checkbox" name="queueCommand" value="${queueCommand}">
+                        </c:if>
+
+                        <div class="page-action-area">
+                            <cti:button id="saveFieldsBtn" nameKey="saveFields" classes="primary action fn vat"/>
+                        </div>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+
+            </tags:sectionContainer>
+        </cti:dataGridCell>
+    </cti:dataGrid>
+
+	<div id="commander-console" class="console lite-container stacked code">
     <div class="title-bar clearfix">
         <h2 class="title"><i:inline key="yukon.common.console"/></h2>
         <cti:button id="scroll-lock-btn" icon="icon-lock" renderMode="buttonImage" classes="M0"/>

@@ -21,6 +21,7 @@ public class JsonUtils {
     public static final TypeReference<String> STRING_TYPE = new TypeReference<String>() {};
     public static final TypeReference<Integer> INT_TYPE = new TypeReference<Integer>() {};
     public static final TypeReference<Long> LONG_TYPE = new TypeReference<Long>() {};
+    public static final TypeReference<Boolean> BOOLEAN_TYPE = new TypeReference<Boolean>() {};
     
     private static final ObjectReader reader;
     private static final ObjectWriter writer;

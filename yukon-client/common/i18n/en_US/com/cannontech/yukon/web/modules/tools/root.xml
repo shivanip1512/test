@@ -43,6 +43,11 @@
     <entry key="yukon.web.modules.tools.commander.currentRoute">Current Route</entry>
     <entry key="yukon.web.modules.tools.commander.newRoute">New Route</entry>
     <entry key="yukon.web.modules.tools.commander.availableCommands">Common Commands</entry>
+    <entry key="yukon.web.modules.tools.commander.priority">Command Priority (1-14)</entry>
+    <entry key="yukon.web.modules.tools.commander.queue_commands">Queue Commands</entry>
+    <entry key="yukon.web.modules.tools.commander.fields.save">Save</entry>
+    <entry key="yukon.web.modules.tools.commander.fields.save.jabel">Save</entry>
+  
     <entry key="yukon.web.modules.tools.commander.availableCommands.select">Select a Command</entry>
     <entry key="yukon.web.modules.tools.commander.request.text.DEVICE">Device: {0} Command: ''{1}''</entry>
     <entry key="yukon.web.modules.tools.commander.request.text.LOAD_GROUP">Load Group: {0} Command: ''{1}''</entry>
