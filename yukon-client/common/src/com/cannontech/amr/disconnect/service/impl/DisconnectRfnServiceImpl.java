@@ -25,6 +25,7 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -42,7 +43,8 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired @Qualifier("longRunning") private Executor executor;
     
-    private final Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
+    private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
     
     @Override
     public void cancel(DisconnectResult result, YukonUserContext userContext) {
@@ -63,8 +65,8 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                     if (disconnectCallback.isCanceled()) {
                         callback.cancel();
                     } else {
-                        if (YukonLogManager.getRfnCommsLogger().isDebugEnabled()) {
-                            YukonLogManager.getRfnCommsLogger().debug("<<< Sent disconnect command: " + command.getRfnMeterDisconnectStatusType() + " to " + ((RfnMeter) meter).getRfnIdentifier());
+                        if (rfnLogger.isDebugEnabled()) {
+                            rfnLogger.debug("<<< Sent disconnect command: " + command.getRfnMeterDisconnectStatusType() + " to " + ((RfnMeter) meter).getRfnIdentifier());
                         }
                         rfnMeterDisconnectService.send((RfnMeter) meter, command.getRfnMeterDisconnectStatusType(), callback);
                     }
@@ -105,8 +107,8 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         }
         
         public void cancel() {
-            if (YukonLogManager.getRfnCommsLogger().isInfoEnabled()) {
-                YukonLogManager.getRfnCommsLogger().info("RFN send canceled:" + meter);
+            if (rfnLogger.isInfoEnabled()) {
+                rfnLogger.info("RFN send canceled:" + meter);
             }
             callback.canceled(meter);
             complete();
@@ -147,8 +149,8 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
 
        
         private void proccessResult(RfnMeterDisconnectState state, PointValueQualityHolder pointData, MessageSourceResolvable message) {
-            if (YukonLogManager.getRfnCommsLogger().isInfoEnabled()) {
-                YukonLogManager.getRfnCommsLogger().info("RFN proccessState:" + meter + " state:" + state);
+            if (rfnLogger.isInfoEnabled()) {
+                rfnLogger.info("RFN proccessState:" + meter + " state:" + state);
             }
             /*
              * message is null if the state == UNKNOWN

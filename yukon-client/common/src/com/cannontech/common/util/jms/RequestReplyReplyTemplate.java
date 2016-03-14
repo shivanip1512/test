@@ -15,10 +15,13 @@ import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.config.ConfigurationSource;
 
 public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Serializable>
     extends RequestReplyTemplateBase<JmsReplyReplyHandler<R1, R2>> {
+    
+    private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
     
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
             ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
@@ -42,8 +45,8 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         if (log.isTraceEnabled()) {
             log.trace("Sending requestMessage to producer " + requestMessage.toString());
         }
-        if (YukonLogManager.getRfnCommsLogger().isInfoEnabled()) {
-            YukonLogManager.getRfnCommsLogger().info("<<< " + requestPayload.toString());
+        if (rfnLogger.isInfoEnabled()) {
+            rfnLogger.info("<<< " + requestPayload.toString());
         }
         producer.send(requestMessage);
         

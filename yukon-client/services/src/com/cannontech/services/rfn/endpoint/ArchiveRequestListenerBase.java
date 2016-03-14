@@ -17,6 +17,7 @@ import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.service.RfnChannelDataConverter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
@@ -100,7 +101,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
          * @param request The RFN archive request sent from network manager.
          */
         private void doCommsLogging(T request) {
-            Logger rfnCommsLog = YukonLogManager.getRfnCommsLogger();
+            RfnLogger rfnCommsLog = YukonLogManager.getRfnLogger();
             Level logLevel = rfnCommsLog.getLevel();
             if (request instanceof RfnMeterReadingArchiveRequest) {
                 if (Level.DEBUG.isGreaterOrEqual(logLevel)) {

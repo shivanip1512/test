@@ -33,6 +33,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -43,7 +44,8 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     private final static byte expresscomPayloadHeader = (byte) 0xE2;
     
     @Autowired ResourceLoader loader;
-    private final static Logger log = YukonLogManager.getLogger(ExiParsingServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(ExiParsingServiceImpl.class);
+    private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
 
     private Map<Schema, EXISchema> schemas = new HashMap<Schema, EXISchema>();
     
@@ -109,8 +111,8 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         }
        
         final String reconstitutedString = xmlWriter.getBuffer().toString();
-        if (YukonLogManager.getRfnCommsLogger().isDebugEnabled()) {
-            YukonLogManager.getRfnCommsLogger().debug("    device: " + rfnId + " payload: " + reconstitutedString);
+        if (rfnLogger.isDebugEnabled()) {
+            rfnLogger.debug("    device: " + rfnId + " payload: " + reconstitutedString);
         }
         
         // Convert transformed output to SimpleXPathTemplate.

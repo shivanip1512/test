@@ -38,7 +38,9 @@ public class YukonLogManager {
     
     private static final String YUKON_LOGGING_XML = "yukonLogging.xml";
 
-    private static Logger rfnCommsLogger;
+
+    private static Logger rfnCommsLogger = setupRfnCommsLogger();
+    private static final RfnLogger rfnLogger = new RfnLogger();
     
     //Constructor never gets used, YukonLogManager has only static methods
     private YukonLogManager() {
@@ -158,20 +160,85 @@ public class YukonLogManager {
         return  tempLogger;	
     }
     
+    /** 
+     * This class serves as a wrapper for the rfnCommsLogger Logger.
+     * Any classes that want to make use of RFN comms logging should obtain a reference
+     * to this class by calling getRfnLogger(). 
+     * 
+     * This class guarantees that setupRfnCommsLogger() is called before each logging statement, 
+     * which needs to be done in order to ensure that the proper appenders are attached to the logger. 
+     */
+    public static final class RfnLogger {
+        public void warn(Object message) {
+            setupRfnCommsLogger().warn(message);
+        }
+        
+        public void warn(Object message, Throwable t) {
+            setupRfnCommsLogger().warn(message, t);
+        }
+        
+        public void error(Object message) {
+            setupRfnCommsLogger().error(message);
+        }
+        
+        public void error(Object message, Throwable t) {
+            setupRfnCommsLogger().error(message, t);
+        }
+        
+        public void info(Object message) {
+            setupRfnCommsLogger().info(message);
+        }
+        
+        public void info(Object message, Throwable t) {
+            setupRfnCommsLogger().info(message, t);
+        }
+        
+        public void debug(Object message) {
+            setupRfnCommsLogger().debug(message);
+        }
+        
+        public void debug(Object message, Throwable t) {
+            setupRfnCommsLogger().debug(message, t);
+        }
+        
+        public void trace(Object message) {
+            setupRfnCommsLogger().trace(message);
+        }
+        
+        public void trace(Object message, Throwable t) {
+            setupRfnCommsLogger().trace(message, t);
+        }
+        
+        public boolean isInfoEnabled() {
+            return setupRfnCommsLogger().isDebugEnabled();
+        }
+        
+        public boolean isDebugEnabled() {
+            return setupRfnCommsLogger().isDebugEnabled();
+        }
+        
+        public Level getLevel() {
+            return setupRfnCommsLogger().getLevel();
+        }
+    }
+    
+    public static RfnLogger getRfnLogger() {
+        return rfnLogger;
+    }
+    
+    
     /**
-     * Gets the logger that is used specifically for logging communications to and from Network Manager.
-     * Note: Classes should not store a reference to the logger locally, this method should be called each time
-     * a logging statement is made.
+     * Sets up the Logger and appender that are used for logging communications to and from Network Manager.
      * <br><br>
-     * This is because each time yukonLogging.xml is reloaded, all of the appenders are discarded and reloaded from
-     * the xml configuration file.  This appender is added programmatically and so it needs to be re-created any 
-     * time the xml file changes.  That happens in this method.
+     * This method needs to be called each time a logging statement is made because when yukonLogging.xml is edited, 
+     * all open appenders are closed and everything is reloaded from the xml configuration, but this one is not.
+     * This appender is added programmatically outside of the xml configuration and so it needs to be 
+     * re-created and attached to the logger.
      * <br><br>
-     * (There are ways to avoid this in later versions of log4j, like log4j2.  However we currently use log4j 1.2
-     * which does not support them.)
+     * (There are ways to avoid this in later versions of log4j, like log4j2.  We currently use log4j 1.2)
      * @return
      */
-    public static Logger getRfnCommsLogger() {
+    private static Logger setupRfnCommsLogger() {
         if (rfnCommsLogger == null) {
             rfnCommsLogger = getLogger("rfnCommsLogger");
             if (rfnCommsLogger.getLevel() == null) {
