@@ -181,6 +181,23 @@ function enableDates (value) {
     dateFields.prop('disabled', !value);
 }
 
+function toggle (value) {
+    var dateFields = $('#DropDownId');
+    if(value)
+    dateFields.prop('disabled', false);
+    else
+        dateFields.prop('disabled', true); 
+        var periodValue = document.getElementById("DropDownId").value;
+        document.getElementById("period").value =  periodValue;
+} 
+
+function change () {
+    var dateFields = $('#DropDownId');
+    dateFields.prop('size', 0);
+    var periodValue = document.getElementById("DropDownId").value;
+    document.getElementById("Period").value =  periodValue;
+} 
+
 function checkDates () {
     var startDate = $('#startCal').datetimepicker('getDate'),
         stopDate = $('#stopCal').datetimepicker('getDate');

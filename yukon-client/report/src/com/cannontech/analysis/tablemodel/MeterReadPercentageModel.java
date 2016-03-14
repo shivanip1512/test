@@ -44,8 +44,12 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
                                      
     public enum MeterReadPercentagePeriod {
 
-        TWO_DAYS("2 days", 35),
-        SEVEN_DAYS("7 days", 52),
+        TWO_DAYS("2", 35),
+        THREE_DAYS("3", 35),
+        FOUR_DAYS("4", 35),
+        FIVE_DAYS("5", 35),
+        SIX_DAYS("6", 35),
+        SEVEN_DAYS("7 Days", 52),
         MONTHLY("Monthly", 12);
 
         private String displayName;
@@ -281,6 +285,42 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
             for (int i = 0; i < period.getTotal() - 1; i++) {
                 startDate = startDate.minusDays(1);
                 stopDate = stopDate.minusDays(1);
+                ranges.add(new DateRange(startDate, stopDate));
+            }
+            break;
+        case THREE_DAYS:
+            startDate = stopDate.minusDays(2);
+            ranges.add(new DateRange(startDate, stopDate));
+            for (int i = 0; i < period.getTotal() - 1; i++) {
+                startDate = startDate.minusDays(3);
+                stopDate = stopDate.minusDays(3);
+                ranges.add(new DateRange(startDate, stopDate));
+            }
+            break;
+        case FOUR_DAYS:
+            startDate = stopDate.minusDays(3);
+            ranges.add(new DateRange(startDate, stopDate));
+            for (int i = 0; i < period.getTotal() - 1; i++) {
+                startDate = startDate.minusDays(4);
+                stopDate = stopDate.minusDays(4);
+                ranges.add(new DateRange(startDate, stopDate));
+            }
+            break;
+        case FIVE_DAYS:
+            startDate = stopDate.minusDays(4);
+            ranges.add(new DateRange(startDate, stopDate));
+            for (int i = 0; i < period.getTotal() - 1; i++) {
+                startDate = startDate.minusDays(5);
+                stopDate = stopDate.minusDays(5);
+                ranges.add(new DateRange(startDate, stopDate));
+            }
+            break;
+        case SIX_DAYS:
+            startDate = stopDate.minusDays(5);
+            ranges.add(new DateRange(startDate, stopDate));
+            for (int i = 0; i < period.getTotal() - 1; i++) {
+                startDate = startDate.minusDays(6);
+                stopDate = stopDate.minusDays(6);
                 ranges.add(new DateRange(startDate, stopDate));
             }
             break;
