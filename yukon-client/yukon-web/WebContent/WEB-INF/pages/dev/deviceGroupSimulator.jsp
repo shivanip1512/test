@@ -21,7 +21,7 @@ function generateDeviceGroup(){
                 </tags:nameValue>
                 
                 <tags:nameValue name="No Of Devices in each group">
-                   <input id="noOfDevices" name="noOfDevices" type="text" value="1"/>
+                   <input id="noOfDevicesPerGroup" name="noOfDevicesPerGroup" type="text" value="1"/>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Use Nested Groups">
