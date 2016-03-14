@@ -527,6 +527,8 @@ void CtiCalculateThread::historicalThread( void )
 
             PointTimeMap dbTimeMap;
             getCalcHistoricalLastUpdatedTime(dbTimeMap);
+            Cti::WorkerThread::interruptionPoint();
+
             PointTimeMap::iterator dbTimeMapIter;
             long pointID;
             long componentCount;
@@ -562,6 +564,8 @@ void CtiCalculateThread::historicalThread( void )
                 }
 
                 getHistoricalTableData(calcPoint, lastTime, data);
+                Cti::WorkerThread::interruptionPoint();
+
                 componentCount = calcPoint->getComponentCount();
 
                 DynamicTableDataIter iter;
@@ -621,6 +625,7 @@ void CtiCalculateThread::historicalThread( void )
             }
 
             updateCalcHistoricalLastUpdatedTime(unlistedPoints, updatedPoints);//Write these back out to the database
+            Cti::WorkerThread::interruptionPoint();
 
             updatedPoints.clear();//Next time through these need to be clear.
             unlistedPoints.clear();
@@ -731,6 +736,8 @@ void CtiCalculateThread::baselineThread( void )
             getBaselineMap(baselineMap);
             CtiHolidayManager& holidayManager = CtiHolidayManager::getInstance();
             holidayManager.refresh();
+            Cti::WorkerThread::interruptionPoint();
+
             PointTimeMap::iterator dbTimeMapIter;
             long pointID, baselinePercentID, baselineID;
             double newPointValue;
@@ -812,6 +819,8 @@ void CtiCalculateThread::baselineThread( void )
                 getHistoricalTableSinglePointData(baselineID, searchTime, data);
                 getHistoricalTableSinglePointData(baselinePercentID, searchTime, percentData);
                 getCurtailedDates(curtailedDates, pointID, searchTime);
+
+                Cti::WorkerThread::interruptionPoint();
 
                 CtiTime curCalculatedTime;
                 for( ; ; )//Until we break!
