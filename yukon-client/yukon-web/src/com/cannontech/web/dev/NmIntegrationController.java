@@ -589,8 +589,7 @@ public class NmIntegrationController {
         SimulatorSettings currentSettings  = new SimulatorSettings(100000, 200000, 300000, 320000, 10);
         model.addAttribute("currentSettings", currentSettings);
         
-        Map<String, Object> json = new HashMap<>();
-        RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse(json);
+        RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse().response;
         if(response == null){
             return "rfn/dataSimulator.jsp";
         }
@@ -602,16 +601,18 @@ public class NmIntegrationController {
         model.addAttribute("existingDataSimulatorStatus", buildSimulatorStatusJson(response.getAllDevicesStatus()));
         return "rfn/dataSimulator.jsp";
     }
-    
-    private RfnLcrSimulatorStatusResponse getRfnLcrSimulatorStatusResponse(Map<String, Object> json) {
+
+    private LcrSimStatusResponseOrError getRfnLcrSimulatorStatusResponse() {
         try {
-            return simulatorsCommunicationService.sendRequest(new RfnLcrSimulatorStatusRequest(),
-                RfnLcrSimulatorStatusResponse.class);
+            RfnLcrSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
+                new RfnLcrSimulatorStatusRequest(), RfnLcrSimulatorStatusResponse.class);
+            return new LcrSimStatusResponseOrError(response);
         } catch (Exception e) {
             log.error(e);
+            Map<String, Object> json = new HashMap<>();
             json.put("hasError", true);
-            json.put("errorMessage",  "Unable to send message to Simulator Service: " + e.getMessage());
-            return null;
+            json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage());
+            return new LcrSimStatusResponseOrError(json);
         }
     }
 
@@ -678,25 +679,23 @@ public class NmIntegrationController {
     @RequestMapping("datasimulator-status")
     @ResponseBody
     public Map<String, Object> dataSimulatorStatus() {
-        Map<String, Object> json = new HashMap<>();
-        RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse(json);
-        if(response == null){
-            return json;
+        LcrSimStatusResponseOrError status = getRfnLcrSimulatorStatusResponse();
+        if (status.response == null) {
+            return status.errorJson;
         }
-        return buildSimulatorStatusJson(response.getStatusByRange());
+        return buildSimulatorStatusJson(status.response.getStatusByRange());
     }
 
     @RequestMapping("existing-datasimulator-status")
     @ResponseBody
     public Map<String, Object> existingDataSimulatorStatus() {
-        Map<String, Object> json = new HashMap<>();
-        RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse(json);
-        if(response == null){
-            return json;
+        LcrSimStatusResponseOrError status = getRfnLcrSimulatorStatusResponse();
+        if (status.response == null) {
+            return status.errorJson;
         }
-        return buildSimulatorStatusJson(response.getAllDevicesStatus());
+        return buildSimulatorStatusJson(status.response.getAllDevicesStatus());
     }
-    
+
     private Map<String, Object> buildSimulatorStatusJson(RfnLcrDataSimulatorStatus status) {
         Map<String, Object> json = new HashMap<>();
         if (status.getStartTime() == null) {
@@ -1095,6 +1094,21 @@ public class NmIntegrationController {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
+    }
+    
+    private static class LcrSimStatusResponseOrError {
+        public final RfnLcrSimulatorStatusResponse response;
+        public final Map<String, Object> errorJson;
+
+        public LcrSimStatusResponseOrError(RfnLcrSimulatorStatusResponse response) {
+            this.response = response;
+            errorJson = null;
+        }
+
+        public LcrSimStatusResponseOrError(Map<String, Object> errorJson) {
+            response = null;
+            this.errorJson = errorJson;
+        }
     }
     
 }
