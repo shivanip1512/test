@@ -68,7 +68,7 @@ public class DataExportFormatPageIndexBuilder extends DbPageIndexBuilder {
 
         builder.pageKey(createPageKey(formatId));
         builder.module("tools");
-        builder.pageName("bulk.archivedValueExporter.VIEW");
+        builder.pageName("bulk.archivedValueExporter.EDIT");
         builder.path("/tools/data-exporter/format/" + formatId);
 
         builder.pageArgs(rs.getString("FormatId"));
