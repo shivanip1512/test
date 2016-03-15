@@ -520,7 +520,7 @@ public class DeviceConfigurationCategoryController {
             } else {
                 DeviceConfiguration config = deviceConfigurationDao.getDeviceConfiguration(configId);
                 // Returns true if the two specified collections have no elements in common.
-                isEnabled = !Collections.disjoint(config.getSupportedDeviceTypes(), disconnectDisplayDisabledTypes);
+                isEnabled = !Collections.disjoint(config.getSupportedDeviceTypes(), validTypes);
             }
         }
         return isEnabled;
