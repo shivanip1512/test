@@ -71,8 +71,7 @@ public class DataExportFormatPageIndexBuilder extends DbPageIndexBuilder {
         builder.pageName("bulk.archivedValueExporter.EDIT");
         builder.path("/tools/data-exporter/format/" + formatId);
 
-        builder.pageArgs(rs.getString("FormatId"));
-        builder.summaryArgs(rs.getString("FormatName"));
+        builder.pageArgs(rs.getString("FormatName"));
 
         return builder.build();
     }
