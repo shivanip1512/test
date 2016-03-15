@@ -181,6 +181,15 @@ or in a popup.
     Only valid when <span class="label label-attr">linkType</span> is <strong>selection</strong>.  Causes picker 
     trigger component to be unclickable text.
     </tags:nameValue>
+    <tags:nameValue name="buttonRenderMode">
+    Passes the render mode to the cti:button tag.  Only usable 'linkType' is 'button'.  See cti:button 'renderMode' attribute.
+    </tags:nameValue>
+    <tags:nameValue name="includeRemoveButton">
+    Adds a red x next to the picker to clear out the selected item
+    </tags:nameValue>
+    <tags:nameValue name="removeValue">
+    Value to set the item to when cleared.  Default will be blank.  Used with includeRemoveButton.
+    </tags:nameValue>
 </tags:nameValueContainer>
 
 <form id="picker-select-form" action="<cti:url value="/dev/styleguide/pickers"/>" class="clearfix">

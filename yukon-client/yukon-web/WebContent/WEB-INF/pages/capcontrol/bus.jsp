@@ -121,7 +121,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="volt-reduction-bus-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty bus.capControlSubstationBus.voltReductionPointId}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -138,7 +140,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="disable-bus-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty bus.capControlSubstationBus.disableBusPointId}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -148,7 +152,7 @@
     
                             <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
                                 <tags:switchButton path="capControlSubstationBus.usePhaseDataBoolean" 
-                                    toggleGroup="perPhase" toggleAction="hide"/>
+                                    toggleGroup="perPhase" toggleAction="hide" classes="js-per-phase"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
                                 <tags:switchButton path="capControlSubstationBus.controlFlagBoolean"/>
@@ -165,7 +169,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="var-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty bus.capControlSubstationBus.currentVarLoadPointID}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -181,7 +187,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="phase-b-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty bus.capControlSubstationBus.phaseB}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -197,7 +205,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="phase-c-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty bus.capControlSubstationBus.phaseC}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -214,7 +224,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="watt-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty bus.capControlSubstationBus.currentWattLoadPointID}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -231,7 +243,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="volt-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty bus.capControlSubstationBus.currentVoltLoadPointID}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -255,7 +269,7 @@
                     <cti:tab title="${dualBusTab}">
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".bus.enableDualBus">
-                                <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean" toggleGroup="dualBus" toggleAction="hide"/>
+                                <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean" toggleGroup="dualBus" toggleAction="hide" classes="js-dual-bus"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".bus.alternateBus" data-toggle-group="dualBus">
                                 <form:hidden id="switch-alt-bus-input" path="capControlSubstationBus.altSubPAOId"/>
@@ -266,7 +280,9 @@
                                     selectionProperty="paoName"
                                     destinationFieldId="switch-alt-bus-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty bus.capControlSubstationBus.altSubPAOId}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -282,7 +298,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="switch-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty bus.capControlSubstationBus.switchPointID}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>

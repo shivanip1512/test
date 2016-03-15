@@ -45,6 +45,7 @@
     <entry key="yukon.web.components.image.selectionPicker.hoverText">Select items</entry>
     <entry key="yukon.web.components.image.selectionPicker.label">(none selected)</entry>
     <entry key="yukon.web.components.image.zoom.hoverText">View all currently selected items.</entry>
+    <entry key="yukon.web.components.image.remove.hoverText">Remove selected item.</entry>
 
     <entry key="yukon.web.components.picker.nothingSelected">Nothing has been selected.</entry>
     <entry key="yukon.web.components.picker.selectedItemsDialogTitle">Selected Items</entry>

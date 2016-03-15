@@ -21,7 +21,7 @@
 <cti:url var="action" value="/capcontrol/feeders"/>
 <form:form commandName="feeder" action="${action}" method="POST">
     <cti:csrfToken/>
-    <div class="column-14-10">
+    <div class="column-12-12">
         <div class="column one">
             <cti:tabs>
                 <cti:msg2 var="infoTab" key=".infoTab"/>
@@ -63,7 +63,7 @@
                         <tags:nameValueContainer2>
     
                             <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
-                                <tags:switchButton path="capControlFeeder.usePhaseDataBoolean" toggleGroup="perPhase" toggleAction="hide"/>
+                                <tags:switchButton path="capControlFeeder.usePhaseDataBoolean" toggleGroup="perPhase" toggleAction="hide" classes="js-per-phase"/>
                             </tags:nameValue2>
                             <%-- Only when per phase --%>
                             <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
@@ -79,7 +79,9 @@
                                         selectionProperty="paoPoint"
                                         destinationFieldId="var-point-input"
                                         viewOnlyMode="${mode == 'VIEW'}"
-                                        allowEmptySelection="${true}"/>
+                                        allowEmptySelection="${true}"
+                                        includeRemoveButton="${true}"
+                                        removeValue="0" />
                                     <cti:displayForPageEditModes modes="VIEW">
                                         <c:if test="${empty feeder.capControlFeeder.currentVarLoadPointID || feeder.capControlFeeder.currentVarLoadPointID == 0}">
                                             <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -99,7 +101,9 @@
                                         selectionProperty="paoPoint"
                                         destinationFieldId="phase-b-point-input"
                                         viewOnlyMode="${mode == 'VIEW'}"
-                                        allowEmptySelection="${true}"/>
+                                        allowEmptySelection="${true}"
+                                        includeRemoveButton="${true}"
+                                        removeValue="0" />
                                     <cti:displayForPageEditModes modes="VIEW">
                                         <c:if test="${empty feeder.capControlFeeder.phaseB || feeder.capControlFeeder.phaseB == 0}">
                                             <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -116,7 +120,9 @@
                                         selectionProperty="paoPoint"
                                         destinationFieldId="phase-c-point-input"
                                         viewOnlyMode="${mode == 'VIEW'}"
-                                        allowEmptySelection="${true}"/>
+                                        allowEmptySelection="${true}"
+                                        includeRemoveButton="${true}"
+                                        removeValue="0" />
                                     <cti:displayForPageEditModes modes="VIEW">
                                         <c:if test="${empty feeder.capControlFeeder.phaseC || feeder.capControlFeeder.phaseC == 0}">
                                             <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -133,7 +139,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="watt-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty feeder.capControlFeeder.currentWattLoadPointID || feeder.capControlFeeder.currentWattLoadPointID == 0}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -150,7 +158,9 @@
                                     selectionProperty="paoPoint"
                                     destinationFieldId="volt-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
-                                    allowEmptySelection="${true}"/>
+                                    allowEmptySelection="${true}"
+                                    includeRemoveButton="${true}"
+                                    removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:if test="${empty feeder.capControlFeeder.currentVoltLoadPointID || feeder.capControlFeeder.currentVoltLoadPointID == 0}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>

@@ -40,6 +40,8 @@
 <%@ attribute name="container" description="The id of the container element. Used for placing a picker inline on the page rather than shown in a dialog." %>
 <%@ attribute name="viewOnlyMode" type="java.lang.Boolean" description="Causes picker component to display the value but not be clickable.  Only usable with when linkType is 'selection'." %>
 <%@ attribute name="buttonRenderMode" description="Passes the render mode to the cti:button tag.  Only usable 'linkType' is 'button'.  See cti:button 'renderMode' attribute." %>
+<%@ attribute name="includeRemoveButton" description="Adds a red x next to the picker to clear out the selected item" %>
+<%@ attribute name="removeValue" description="Value to set the item to when cleared.  Default will be blank" %>
 
 <cti:default var="linkType" value="normal"/>
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
@@ -130,15 +132,26 @@
                     <a href="javascript:${id}.show.call(${id})"${anchorAttributes}><jsp:doBody/></a>
                 </c:otherwise>
             </c:choose>
+                <c:if test="${includeRemoveButton}">
+
+                    <cti:icon id="picker-${id}-remove-selected-icon" 
+                              href="javascript:${id}.removeEvent()" 
+                              nameKey="remove" 
+                              classes="js-remove-point dn"
+                              icon="icon-cross"/>
+                              
+               </c:if>
         </span>
     </c:if>
-</c:if>
+
+</c:if>                   
 
 <c:set var="hasEndAction" value="${not empty endAction}"/>
 
 <script type="text/javascript">
+
 (function () {
-    
+
     // Only create picker if not already created.  This tag gets called more than
     // once if it's used inside a widget and the widget is updated.  Since the user
     // isn't navigating off the page, we want to keep the same picker.
@@ -166,6 +179,7 @@
             picker = new Picker('${okText}', '${cancelText}', '${noneSelectedText}', '${type}', 
                     '${pageScope.destinationFieldName}', '${id}', 
                     '${pageScope.extraDestinationFields}', container);
+            picker.id = '${id}';
             picker.idFieldName = field;
             picker.outputColumns = columns;
             picker.endEvent = endEvent;
@@ -209,6 +223,15 @@
             picker.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
         }
         
+        if ('${pageScope.includeRemoveButton}' === 'true') {
+            var removeEvent = function() {
+                picker.clearSelected('${removeValue}');
+                picker.clearEntireSelection();
+            }
+            
+            picker.removeEvent = removeEvent;
+        };
+        
     } catch (pickerEx) {
         debug.log('Could not create Picker: ' + pickerEx);
     }
@@ -225,6 +248,8 @@
     
     if (excluedIds !== '') {
         picker.excludeIds = JSON.parse(excluedIds);
-    }
+    };
+    
+
 })();
 </script>

@@ -441,6 +441,7 @@ yukon.protoPicker = function (okText,
             if (hit === null) {
                 this.selectionLabel.innerHTML = this.noneSelectedText;
                 $(this.selectionLabel).addClass('noSelectionPickerLabel');
+                $(this.removeIcon).addClass("dn");
             } else {
                 var linkText = hit[this.selectionProperty];
                 if (this.selectionProperty === 'paoPoint') {
@@ -454,6 +455,7 @@ yukon.protoPicker = function (okText,
                 }
                 this.selectionLabel.innerHTML = labelMsg;
                 $(this.selectionLabel).removeClass('noSelectionPickerLabel');
+                $(this.removeIcon).removeClass("dn");
             }
         }
         
@@ -695,6 +697,7 @@ yukon.protoPicker = function (okText,
     };
     
     yukon.protoPicker.prototype.select = function (hit) {
+        console.log("Selected");
         selectThisItem.call(this, hit);
     };
     
@@ -842,15 +845,27 @@ yukon.protoPicker = function (okText,
     };
     
     yukon.protoPicker.prototype.clearSelected = function () {
+        yukon.protoPicker.prototype.clearSelected('');
+    };
+    
+    yukon.protoPicker.prototype.clearSelected = function (setValue) {
         if (this.destinationFieldId) {
-            $(document.getElementById(this.destinationFieldId)).val('');
+            $(document.getElementById(this.destinationFieldId)).val(setValue);
         } else {
             this.inputAreaDiv.innerHTML = '';
         }
         if (this.selectionProperty) {
             this.selectionLabel.innerHTML = this.originalSelectionLabel;
             $(this.selectionLabel).addClass('noSelectionPickerLabel');
+            $(this.removeIcon).addClass("dn");
+
         }
+    };
+    
+    yukon.protoPicker.prototype.hasSelectedValue = function () {
+        var values = getSelected();
+        if(values)
+            return true;
     };
     
     /**
@@ -893,6 +908,7 @@ yukon.protoPicker = function (okText,
         }
         if (this.selectionProperty) {
             this.selectionLabel = $('span', $(document.getElementById('picker-' + this.pickerId + '-btn')))[0];
+            this.removeIcon = document.getElementById('picker-' + this.pickerId + '-remove-selected-icon');
             this.originalSelectionLabel = this.selectionLabel.innerHTML;
         }
         

@@ -58,6 +58,36 @@ yukon.da.bus = (function () {
             $(document).on('yukon:da:bus:delete', function () {
                 $('#delete-bus').submit();
             });
+            
+            /** User clicked Enable Dual Bus toggle button; clear out selected alternate sub bus. */
+            $(document).on('click', '.js-dual-bus', function () {
+                
+                var toggle = $(this),
+                    enableDualBusRow = toggle.closest('tr'),
+                    active = enableDualBusRow.find('.switch-btn-checkbox').prop('checked'),
+                    alternateBusRow = enableDualBusRow.next('tr'),
+                    removeBtn = alternateBusRow.find('.js-remove-point');
+
+                if (!active)
+                    removeBtn.click();
+
+            });
+            
+            /** User clicked User Per Phase; clear out phase b and phase c points. */
+            $(document).on('click', '.js-per-phase', function () {
+                
+                var toggle = $(this),
+                    perPhaseRow = toggle.closest('tr'),
+                    active = perPhaseRow.find('.switch-btn-checkbox').prop('checked'),
+                    removePhaseBBtn = $('#picker-phaseBPointPicker-remove-selected-icon'),
+                    removePhaseCBtn = $('#picker-phaseCPointPicker-remove-selected-icon');
+
+                if (!active) {
+                    removePhaseBBtn.click();
+                    removePhaseCBtn.click();
+                }
+
+            });
         }
     };
 

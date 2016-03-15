@@ -122,6 +122,22 @@ yukon.da.feeder = (function () {
             $(document).on('yukon:da:feeder:delete', function () {
                 $('#delete-feeder').submit();
             });
+            
+            /** User clicked User Per Phase; clear out phase b and phase c points. */
+            $(document).on('click', '.js-per-phase', function () {
+                
+                var toggle = $(this),
+                    perPhaseRow = toggle.closest('tr'),
+                    active = perPhaseRow.find('.switch-btn-checkbox').prop('checked'),
+                    removePhaseBBtn = $('#picker-phaseBPointPicker-remove-selected-icon'),
+                    removePhaseCBtn = $('#picker-phaseCPointPicker-remove-selected-icon');
+
+                if (!active) {
+                    removePhaseBBtn.click();
+                    removePhaseCBtn.click();
+                }
+
+            });
 
         }
     };
