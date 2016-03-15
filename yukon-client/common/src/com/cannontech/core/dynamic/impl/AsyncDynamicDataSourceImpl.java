@@ -501,5 +501,14 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
         return pointData;
     }
+    
+    @Override
+    public void logListenerInfo(int pointId){
+       Set<PointDataListener> listeners = pointIdPointDataListeners.get(pointId);
+       log.info("Listeners listening for the point="+pointId);
+       for (PointDataListener listener : listeners) {
+           log.info("..."+listener);
+       }
+    }
 
 }

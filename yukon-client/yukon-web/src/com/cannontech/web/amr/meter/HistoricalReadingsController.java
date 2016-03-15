@@ -53,6 +53,7 @@ import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.updater.point.CachedPointDataCorrelationService;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -69,6 +70,7 @@ public class HistoricalReadingsController {
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private CachedPointDataCorrelationService cachedPointDataCorrelationService;
     
     private static String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
     private Logger log = YukonLogManager.getLogger(HistoricalReadingsController.class);
@@ -110,6 +112,8 @@ public class HistoricalReadingsController {
         model.addAttribute("title", title);
         model.addAttribute("allUrl", getDownloadUrl(ALL, pointId));
         model.addAttribute("oneMonthUrl", getDownloadUrl(ONE_MONTH, pointId));
+        
+        cachedPointDataCorrelationService.correlateAndLog(pointId);
         
         return "historicalReadings/view.jsp";
     }
@@ -177,7 +181,7 @@ public class HistoricalReadingsController {
                                                                           context));
 
                             String[] dataRows = new String[row.size()];
-                            dataRows = (String[]) row.toArray(dataRows);
+                            dataRows = row.toArray(dataRows);
                             csvWriter.writeNext(dataRows);
                         }
                         if (queue.size() == 0) {
@@ -315,6 +319,7 @@ public class HistoricalReadingsController {
             this.isCompleted = isCompleted;
         }
 
+        @Override
         public void run() {
             rawPointHistoryDao.queuePointData(pointId,
                                               dateRange.translate(CtiUtilities.INSTANT_FROM_DATE),

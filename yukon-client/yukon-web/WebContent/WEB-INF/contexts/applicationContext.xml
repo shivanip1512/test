@@ -1279,4 +1279,6 @@
         <property name="memoryAttribute" value="WEB_SERVICE_MEMORY_UTILIZATION" />
     </bean>
     
+    <bean class="com.cannontech.web.updater.point.CachedPointDataCorrelationServiceImpl"/>
+    
 </beans>

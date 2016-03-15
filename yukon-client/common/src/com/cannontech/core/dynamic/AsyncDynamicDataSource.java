@@ -147,4 +147,9 @@ public interface AsyncDynamicDataSource {
     Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds);
 
     Set<Signal> getSignalsByCategory(int alarmCategoryId);
+
+    /**
+     * This method is used for debugging
+     */
+    void logListenerInfo(int pointId);
 }

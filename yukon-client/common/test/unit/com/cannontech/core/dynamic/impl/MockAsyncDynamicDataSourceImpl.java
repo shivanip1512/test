@@ -209,4 +209,9 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
     public Set<Signal> getSignalsByCategory(int alarmCategoryId) {
         throw new MethodNotImplementedException(); 
     }
+
+    @Override
+    public void logListenerInfo(int pointId) {
+        throw new MethodNotImplementedException(); 
+    }
 }

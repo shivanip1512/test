@@ -3,6 +3,7 @@ package com.cannontech.web.updater;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.user.YukonUserContext;
 
 public interface BulkUpdateBackingService {
@@ -15,4 +16,6 @@ public interface BulkUpdateBackingService {
      */
     Map<UpdateIdentifier, String> getLatestValues(List<UpdateIdentifier> identifiers, long afterDate,
             YukonUserContext userContext, boolean canWait);
+
+    PointValueQualityHolder getCachedValue(int pointId);
 }

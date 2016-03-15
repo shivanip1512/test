@@ -1053,4 +1053,25 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     	yukonTemplate.update(sql);
     }
+    
+    @Override
+    public List<PointValueQualityHolder> getMostRecentValues(int pointId, int rows){
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT");
+        sql.append("pointId,");
+        sql.append("timestamp,");
+        sql.append("value,");
+        sql.append("quality,");
+        sql.append("pointtype");
+        sql.append("FROM (");
+        sql.append("  SELECT ROW_NUMBER() OVER (ORDER BY Timestamp DESC) as rowNumber, rph.*, p.pointtype");
+        sql.append("  FROM RawPointHistory rph");
+        sql.append("  JOIN Point p ON (rph.pointId = p.pointId)");
+        sql.append("  WHERE rph.pointId").eq(pointId);
+        sql.append(") T");
+        sql.append("WHERE T.rowNumber").lte(rows);
+
+        return yukonTemplate.query(sql, new LiteRPHQualityRowMapper());
+    }
 }

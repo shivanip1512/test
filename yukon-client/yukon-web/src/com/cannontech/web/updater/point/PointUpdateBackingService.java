@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -202,5 +203,15 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, Poin
     @PostConstruct
     private void init(){
         alwaysRegisterForPoints = configSource.getBoolean(MasterConfigBoolean.POINT_UPDATE_REGISTRATION, true);
+    }
+    
+    @Override
+    public PointValueQualityHolder getCachedValue(int pointId) {
+        log.info("PointUpdateBackingService alwaysRegisterForPoints=" + alwaysRegisterForPoints);
+        log.info("PointUpdateBackingService Internal cache size=" + cache.size());
+        DatedPointValue value = cache.getIfPresent(pointId);
+        log.info("PointUpdateBackingService recieved point data for id=" + pointId + " on "
+            + new DateTime(value.receivedTime).toString("MM-dd-yyyy HH:mm:ss"));
+        return value.value;
     }
 }
