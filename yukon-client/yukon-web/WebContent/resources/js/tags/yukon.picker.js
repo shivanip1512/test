@@ -697,7 +697,6 @@ yukon.protoPicker = function (okText,
     };
     
     yukon.protoPicker.prototype.select = function (hit) {
-        console.log("Selected");
         selectThisItem.call(this, hit);
     };
     
@@ -860,12 +859,6 @@ yukon.protoPicker = function (okText,
             $(this.removeIcon).addClass("dn");
 
         }
-    };
-    
-    yukon.protoPicker.prototype.hasSelectedValue = function () {
-        var values = getSelected();
-        if(values)
-            return true;
     };
     
     /**
