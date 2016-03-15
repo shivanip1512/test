@@ -3469,20 +3469,19 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 currentCapBank->setUDPPort(twoWayPts.getPointValueByAttribute(PointAttribute::UDPPortNumber));
                             }
-                            else if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredReason) == pointID &&
-                                     timestamp > currentCapBank->getIgnoreIndicatorTimeUpdated() )
+                            else if ( currentCapBank->getPointIdByAttribute( PointAttribute::IgnoredReason ) == pointID )
                             {
-                                currentCapBank->setIgnoreIndicatorTimeUpdated(timestamp);
                                 currentCapBank->setIgnoredReason(value);
                                 currentSubstationBus->setBusUpdatedFlag(true);
 
-                                if ( ! twoWayPts.isControlAccepted() )  // stuff it on the list unless it is a CBC-8000 'Control Accepted' (19) response
+                                if ( ( tags & TAG_POINT_DATA_TIMESTAMP_VALID ) &&   // it's ba DNP event (class 123), not DNP static data (class 0)  AND
+                                     currentCapBank->isPendingStatus() &&           // our bank is pending  AND
+                                     ! twoWayPts.isControlAccepted() )              // it is a CBC-8000 'Control Accepted' (19) response
                                 {
-                                    store->insertRejectedCapBankList(currentCapBank);
+                                    store->insertRejectedCapBankList(currentCapBank);   // stuff it on the rejected list
                                 }
                             }
-
-                            if ( currentCapBank->getPointIdByAttribute( PointAttribute::LastControlReason ) == pointID )
+                            else if ( currentCapBank->getPointIdByAttribute( PointAttribute::LastControlReason ) == pointID )
                             {
                                 if ( value == LastControlReasonCbc802x::EmergencyVoltage ||
                                      value == LastControlReasonCbc802x::OvUvControl )
