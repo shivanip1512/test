@@ -73,6 +73,7 @@ public:
         AnalogOutput = 220,              // Vector contains pointid and value.
         ControlStatusVerification,       // Internal Message used by Dispatch, value does not matter.
         InitiateScan = 250,               //Vector contains token, paoid, ...
+        PointDataDebug = 260,
 
         LastCommand = 10000              //this is to be the last entry in the enum, so add new entries above here, otay
     };

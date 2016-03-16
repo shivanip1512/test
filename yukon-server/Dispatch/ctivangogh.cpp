@@ -65,6 +65,7 @@
 #include "amq_constants.h"
 #include "module_util.h"
 #include "logger.h"
+#include "desolvers.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -1029,6 +1030,54 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     << *Cmd);
 
             // bGCtrlC = TRUE;
+            return;
+        }
+    case (CtiCommandMsg::PointDataDebug):
+        {
+            Cti::FormattedList l;
+
+            l.add("Java debug") << Cmd->getOpString();
+
+            auto opArgs = Cmd->getOpArgList();
+
+            if( opArgs.empty() )
+            {
+                l.add("Point ID list empty");
+            }
+            else
+            {
+                auto pointId = opArgs[0];
+
+                l.add("Point ID") << pointId;
+
+                if( auto pt = PointMgr.getCachedPoint(pointId) )
+                {
+                    l.add("Point name") << pt->getName();
+                    l.add("Point offset") << pt->getPointOffset();
+                    l.add("Point type") << desolvePointType(pt->getType());
+                    l.add("Device ID") << pt->getDeviceID();
+
+                    if( auto dyn = PointMgr.getDynamic(*pt) )
+                    {
+                        l.add("Dynamic timestamp") << dyn->getTimeStamp() << "." << CtiNumStr(dyn->getTimeStampMillis()).zpad(3);
+                        l.add("Dynamic value") << dyn->getValue();
+                        l.add("Dynamic quality") << dyn->getQuality();
+                        l.add("Dynamic tags") << std::hex << dyn->getDispatch().getTags();
+                        l.add("Dynamic updated") << !!dyn->getDispatch().getUpdatedFlag();
+                    }
+                    else
+                    {
+                        l.add("Point has no dynamic record");
+                    }
+                }
+                else
+                {
+                    l.add("Point not in cache");
+                }
+            }
+
+            CTILOG_INFO(dout, "PointDataDebug request from " << Cmd->getConnectionHandle() << l);
+
             return;
         }
     case (CtiCommandMsg::PointDataRequest):

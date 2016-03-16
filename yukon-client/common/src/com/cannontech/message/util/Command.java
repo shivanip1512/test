@@ -29,6 +29,8 @@ public class Command extends Message {
     public static final int ALARM_CATEGORY_REQUEST = 210; // List of category ids - point ids in these alarm categories will be reported
     public static final int ANALOG_OUTPUT_REQUEST = 220; // point id, value
     
+    public static final int POINT_DATA_DEBUG = 260; // point id for Dispatch to report on
+    
     private static final int LAST_COMMAND = 10000; //Make this big
     
     // ABLEMTENT_TOGGLE used variables

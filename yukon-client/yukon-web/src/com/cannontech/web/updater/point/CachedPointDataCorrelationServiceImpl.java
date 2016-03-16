@@ -38,14 +38,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         if (isErrorReportingEnabled) {
             try {
                 log.info("correlateAndLog pointId=" + pointId);
-                if (!logAndMatch(pointId)) {
-                    log.info(
-                        "Cached values do not match historical values. Notifying dispatch to start logging information for point id="
-                            + pointId);
-                    notifyDisptach(pointId);
-                } else {
-                    log.info("Cached values matched historical values");
-                }
+                logAndMatch(pointId);
             } catch (Exception e) {
                 log.error(e);
             }
@@ -54,24 +47,34 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
 
     /**
      * Logs cached and historical values
-     * @return if all cached and historical match
      */
-    private boolean logAndMatch(int pointId) {        
+    private void logAndMatch(int pointId) {        
         PointValueQualityHolder pointUpdateBackingServiceCachedValue =
             pointUpdateBackingService.getCachedValue(pointId);
         List<PointValueQualityHolder> historicalValues = rawPointHistoryDao.getMostRecentValues(pointId, 2);
         PointValueQualityHolder asyncDataSourceValue = asyncDataSource.getPointValue(pointId);
         asyncDataSource.logListenerInfo(pointId);
-        log.info("Values from RAWPOINTHISTORY");
-        for(PointValueQualityHolder historicalValue: historicalValues){
-            log(historicalValue);
-        }
         log.info("Value from PointUpdateBackingService cache");
         log(pointUpdateBackingServiceCachedValue);
         log.info("Value from AsyncDynamicDataSource cache");
         log(asyncDataSourceValue);
 
-        return isMatched(historicalValues.get(0), pointUpdateBackingServiceCachedValue, asyncDataSourceValue);
+        log.info("Values from RAWPOINTHISTORY");
+        if (historicalValues.isEmpty()) {
+            log.info("none");
+        } else {
+            for(PointValueQualityHolder historicalValue: historicalValues){
+                log(historicalValue);
+            }
+            
+            if (isMatched(historicalValues.get(0), pointUpdateBackingServiceCachedValue, asyncDataSourceValue)) {
+                log.info("Cached values matched historical values");
+            } else {
+                log.info("Cached values do not match historical values. Notifying Dispatch to log information for point id="
+                                 + pointId);
+                notifyDispatch(pointId, historicalValues.toString() + "," + pointUpdateBackingServiceCachedValue + "," + asyncDataSourceValue);
+            }
+        }
     }
 
     /**
@@ -106,15 +109,15 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         return valueString;
     }
     
-    private void notifyDisptach(int pointId) {
+    private void notifyDispatch(int pointId, String javaDebug) {
         final List<Integer> data = new ArrayList<Integer>(1);
         data.add(pointId);
 
         Command command = new Command();
         command.setUserName(YukonUserContext.system.getYukonUser().getUsername());
-        command.setOperation(Command.TRACE_ROUTE);
+        command.setOpString(javaDebug);
+        command.setOperation(Command.POINT_DATA_DEBUG);
         command.setOpArgList(data);
-        command.setTimeStamp(new Date());
 
         dispatch.queue(command);
     }
