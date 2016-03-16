@@ -44,7 +44,12 @@
   <logger name="org.springframework.ws.soap.server.endpoint.interceptor">
     <level value="DEBUG"/>
   </logger>
-
+  
+  <!-- Controls rfn comms logging to the Server\Log\Comms directory -->
+  <logger name="rfnCommsLogger">
+    <level value="INFO"/>
+  </logger>
+  
   <!-- root logger will be inherited by all loggers-->
   <root>
     <level value="info"/>
