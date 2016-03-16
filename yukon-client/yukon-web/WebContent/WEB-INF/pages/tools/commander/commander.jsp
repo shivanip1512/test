@@ -31,6 +31,13 @@
 .cmd-pending { margin-top: 4px; }
 </style>
 
+<%-- Commander Settings POPUP --%>
+<div class="dn js-settings-popup"
+    data-dialog
+    data-title="Settings"
+    data-url="<cti:url value="editSettingsPopup"/>"
+    data-event="yukon:tools:commander:popup"></div>
+    
 <tags:nameValueContainer2 tableClass="with-form-controls stacked">
     
     <tags:nameValue2 nameKey=".target" rowId="target-row">
@@ -139,38 +146,10 @@
             <input id="command-text" type="text" size="60" tabindex="0">
         </c:if>  
         <cti:button id="cmd-execute-btn" nameKey="execute" classes="primary action fn vat"/>
+        <cti:button id="settings-btn" nameKey="settings" classes="fn" data-popup=".js-settings-popup" data-popup-toggle=""/>
     </tags:nameValue2>
     
 </tags:nameValueContainer2>
-
-    <cti:dataGrid cols="2"
-        tableClasses="collectionActionAlignment collectionActionCellPadding">
-    <cti:dataGridCell>
-            <tags:sectionContainer title="Other Options">
-                <tags:nameValueContainer2>
-                    <tags:nameValue2
-                        nameKey=".priority">
-                        <input type="text" id="commandPriority" name="commandPriority"
-                            value="${priority}" />
-                    </tags:nameValue2> 
-                    <tags:nameValue2 nameKey=".queue_commands">
-                        <c:if test="${queueCommand}">
-                            <input id="queueCommand" type="checkbox" name="queueCommand" value="${queueCommand}" checked="checked">
-                        </c:if>
-
-                        <c:if test="${!queueCommand}">
-                            <input id="queueCommand" type="checkbox" name="queueCommand" value="${queueCommand}">
-                        </c:if>
-
-                        <div class="page-action-area">
-                            <cti:button id="saveFieldsBtn" nameKey="saveFields" classes="primary action fn vat"/>
-                        </div>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-
-            </tags:sectionContainer>
-        </cti:dataGridCell>
-    </cti:dataGrid>
 
 	<div id="commander-console" class="console lite-container stacked code">
     <div class="title-bar clearfix">

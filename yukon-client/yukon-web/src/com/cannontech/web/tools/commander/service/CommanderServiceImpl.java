@@ -219,7 +219,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
             }
             
             //If queue command is not opted, add 'noqueue'
-            if(copy.isQueueCommand()){
+            if(!copy.isQueueCommand()){
                 if (!copy.getCommand().contains("noqueue")) {
                     copy.setCommand(copy.getCommand() + " noqueue");
                 }

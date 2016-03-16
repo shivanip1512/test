@@ -118,16 +118,6 @@ public class CommanderController {
         
         // Check cookie for last target of command execution
         String lastTarget = webUtil.getYukonCookieValue(req, "commander", "lastTarget", null, JsonUtils.STRING_TYPE);
-        Integer priority = webUtil.getYukonCookieValue(req, "commander", "priority", null, JsonUtils.INT_TYPE);
-        if (priority == null) {
-            priority = commandPriority;
-        }
-        model.addAttribute("priority", priority);
-        Boolean queueCmd = webUtil.getYukonCookieValue(req, "commander", "queueCommand", null, JsonUtils.BOOLEAN_TYPE);
-        if (queueCmd == null) {
-            queueCmd = queueCommand;
-        }
-        model.addAttribute("queueCommand", queueCmd);
         if (lastTarget != null) {
             
             CommandTarget target = CommandTarget.valueOf(lastTarget);
@@ -283,7 +273,25 @@ public class CommanderController {
         
         return desired;
     }
-    
+
+    @RequestMapping("editSettingsPopup")
+    public String editSettingsPopup(ModelMap model, HttpServletRequest req) throws IOException {
+        Integer priority = webUtil.getYukonCookieValue(req, "commander", "priority", null, JsonUtils.INT_TYPE);
+        if (priority == null) {
+            priority = commandPriority;
+        }
+        model.addAttribute("priority", priority);
+        Boolean queueCmd = webUtil.getYukonCookieValue(req, "commander", "queueCommand", null, JsonUtils.BOOLEAN_TYPE);
+        if (queueCmd == null) {
+            queueCmd = queueCommand;
+        }
+        model.addAttribute("queueCommand", queueCmd);
+        CommandParams commandParams = new CommandParams();
+        commandParams.setQueueCommand(queueCmd);
+        model.addAttribute("commandParams", commandParams);
+        return "commander/commanderSettings.jsp";
+    }
+
     /** Refresh the console. */
     @RequestMapping(value = "/commander/refresh", method = RequestMethod.POST, produces = json, consumes = json)
     public @ResponseBody List<CommandRequest> requests(LiteYukonUser user) {

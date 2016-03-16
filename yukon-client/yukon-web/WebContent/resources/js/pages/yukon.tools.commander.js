@@ -355,22 +355,11 @@ yukon.tools.commander = (function () {
     
     _saveFields = function () {
         var priority = $('#commandPriority').val();
-        if(priority=="" || priority > 14){
-            priority = 14;
-        }else if(priority <= 0){
-            priority = 1;
-        }
         yukon.cookie.set('commander','priority',priority);	
-        $('#commandPriority').val(priority);
-        
-        var queueCommandChecked = $('#queueCommand').prop('checked');
-        if(queueCommandChecked){
-            $('#queueCommand').val("true");
-        }else{
-            $('#queueCommand').val("false");
-        }
-        var queueCommand = $('#queueCommand').val();
-        yukon.cookie.set('commander','queueCommand',queueCommand);
+        var enabled = $('.js-queueCmd').is(':checked');
+
+        $('#queueCommand').val(enabled);
+        yukon.cookie.set('commander','queueCommand',enabled);
     },
     
     /** 
@@ -724,6 +713,12 @@ yukon.tools.commander = (function () {
                 });
             });
             
+            /** User clicked ok on commander settings dialog. */
+            $(document).on('yukon:tools:commander:popup', function (ev) {
+            	_saveFields();
+            	var dialog = $('.js-settings-popup');
+                dialog.dialog('close');
+            });
             /** User has supplied input for command, use it and check if more is needed. */
             $('#prompt-dialog').on('yukon.tools.commander.user.input keyup', function (ev) {
                 
