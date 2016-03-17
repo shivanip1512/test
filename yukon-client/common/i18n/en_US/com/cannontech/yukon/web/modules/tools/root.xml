@@ -45,8 +45,6 @@
     <entry key="yukon.web.modules.tools.commander.availableCommands">Common Commands</entry>
     <entry key="yukon.web.modules.tools.commander.priority">Command Priority</entry>
     <entry key="yukon.web.modules.tools.commander.queue_commands">Queue Commands</entry>
-  	<entry key="yukon.web.modules.tools.commander.queue_command_yes">Yes</entry>
-  	<entry key="yukon.web.modules.tools.commander.queue_command_no">No</entry>
     <entry key="yukon.web.modules.tools.commander.availableCommands.select">Select a Command</entry>
     <entry key="yukon.web.modules.tools.commander.request.text.DEVICE">Device: {0} Command: ''{1}''</entry>
     <entry key="yukon.web.modules.tools.commander.request.text.LOAD_GROUP">Load Group: {0} Command: ''{1}''</entry>
