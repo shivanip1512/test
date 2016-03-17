@@ -64,12 +64,10 @@ yukon.da.bus = (function () {
                 
                 var toggle = $(this),
                     enableDualBusRow = toggle.closest('tr'),
-                    active = enableDualBusRow.find('.switch-btn-checkbox').prop('checked'),
-                    alternateBusRow = enableDualBusRow.next('tr'),
-                    removeBtn = alternateBusRow.find('.js-remove-point');
+                    active = enableDualBusRow.find('.switch-btn-checkbox').prop('checked');
 
                 if (!active)
-                    removeBtn.click();
+                    yukon.pickers['altBusPicker'].removeEvent();
 
             });
             
