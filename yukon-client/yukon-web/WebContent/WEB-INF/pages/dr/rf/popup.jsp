@@ -9,7 +9,7 @@
 <cti:msgScope paths="modules.dr.rf.details">
     <input type="hidden" class="js-title" value="${fn:escapeXml(title)}">
     
-    <c:if test="${unknown}">
+    <c:if test="${unreported}">
         <div class="column-12-12 clearfix stacked">
             <div class="column one">
                 <tags:nameValueContainer2>

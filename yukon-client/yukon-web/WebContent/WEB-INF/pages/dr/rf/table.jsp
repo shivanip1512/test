@@ -13,7 +13,7 @@
                 <th><i:inline key="yukon.common.deviceName"/></th>
                 <th><i:inline key="yukon.common.deviceType"/></th>
                 <th><i:inline key=".accountNo"/></th>
-                <c:if test="${unknown}"><th><i:inline key=".unknownType"/></th></c:if>
+                <c:if test="${unreported}"><th><i:inline key=".unknownType"/></th></c:if>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -36,7 +36,7 @@
                         </c:if>
                         <c:if test="${row.accountId == 0}">${fn:escapeXml(row.accountNo)}</c:if>
                     </td>
-                    <c:if test="${unknown}">
+                    <c:if test="${unreported}">
                         <td><i:inline key="${unknowns[row.deviceId].unknownStatus}"/></td>
                     </c:if>
                 </tr>

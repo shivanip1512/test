@@ -249,8 +249,8 @@ public class RfPerformanceController {
         List<PaoIdentifier> paos = new ArrayList<>();
         PerformanceVerificationMessageStatus status;
         int totalCount = 0;
-        if (type.equals("unknown")) {
-            model.addAttribute("unknown", true);
+        if (type.equals("unreported")) {
+            model.addAttribute("unreported", true);
             UnknownDevices devices = 
                     rfPerformanceDao.getDevicesWithUnknownStatus(test, pagingParameters);
             totalCount = devices.getNumTotalBeforePaging();
@@ -303,7 +303,7 @@ public class RfPerformanceController {
             paos = rfPerformanceDao.getDevicesWithStatus(test, status, pagingParameters);
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else {
-            model.addAttribute("unknown", true);
+            model.addAttribute("unreported", true);
             status = PerformanceVerificationMessageStatus.UNKNOWN;
             UnknownDevices devices = 
                     rfPerformanceDao.getDevicesWithUnknownStatus(test, pagingParameters);
@@ -357,11 +357,11 @@ public class RfPerformanceController {
     public void download(HttpServletResponse response, YukonUserContext userContext, @PathVariable String type, @PathVariable long test) throws IOException {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
-        boolean isUnknown = type.equalsIgnoreCase("unknown");
+        boolean isUnreported = type.equalsIgnoreCase("unreported");
         List<PaoIdentifier> paos = new ArrayList<>();
         Map<Integer, UnknownDevice> deviceMap = new HashMap<>();
         
-        if (isUnknown) {
+        if (isUnreported) {
             UnknownDevices unknownDevices = rfPerformanceDao.getAllDevicesWithUnknownStatus(test);
             for (UnknownDevice device : unknownDevices.getUnknownDevices()) {
                 deviceMap.put(device.getPao().getPaoIdentifier().getPaoId(), device);
@@ -377,12 +377,12 @@ public class RfPerformanceController {
         
         List<LiteLmHardware> hardwares = inventoryDao.getLiteLmHardwareByPaos(paos);
         
-        String[] headerRow = new String[isUnknown ? 4 : 3];
+        String[] headerRow = new String[isUnreported ? 4 : 3];
         
         headerRow[0] = "SERIAL_NUMBER";
         headerRow[1] = "DEVICE_TYPE";
         headerRow[2] = "ACCOUNT_NUMBER";
-        if (isUnknown) {
+        if (isUnreported) {
             headerRow[3] = "UNKNOWN_STATUS";
         }
         
@@ -392,7 +392,7 @@ public class RfPerformanceController {
             dataRow[0] = hardware.getSerialNumber();
             dataRow[1] = accessor.getMessage(hardware.getInventoryIdentifier().getHardwareType());
             dataRow[2] = hardware.getAccountNo();
-            if (isUnknown) {
+            if (isUnreported) {
                 dataRow[3] = accessor.getMessage(deviceMap.get(hardware.getDeviceId()).getUnknownStatus());
             }
             dataRows.add(dataRow);
@@ -407,7 +407,7 @@ public class RfPerformanceController {
         
         List<? extends YukonPao> paos;
         
-        if (type.equalsIgnoreCase("unknown")) {
+        if (type.equalsIgnoreCase("unreported")) {
             paos = rfPerformanceDao.getAllDevicesWithUnknownStatus(test).getUnknownDevices();
         } else if (type.equalsIgnoreCase("failed")) {
             paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
@@ -432,7 +432,7 @@ public class RfPerformanceController {
         
         List<? extends YukonPao> paos;
         
-        if (type.equalsIgnoreCase("unknown")) {
+        if (type.equalsIgnoreCase("unreported")) {
             paos = rfPerformanceDao.getAllDevicesWithUnknownStatus(test).getUnknownDevices();
         } else if (type.equalsIgnoreCase("failed")) {
             paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
