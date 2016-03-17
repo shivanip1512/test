@@ -78,13 +78,11 @@ yukon.da.bus = (function () {
                 
                 var toggle = $(this),
                     perPhaseRow = toggle.closest('tr'),
-                    active = perPhaseRow.find('.switch-btn-checkbox').prop('checked'),
-                    removePhaseBBtn = $('#picker-phaseBPointPicker-remove-selected-icon'),
-                    removePhaseCBtn = $('#picker-phaseCPointPicker-remove-selected-icon');
+                    active = perPhaseRow.find('.switch-btn-checkbox').prop('checked');
 
                 if (!active) {
-                    removePhaseBBtn.click();
-                    removePhaseCBtn.click();
+                    yukon.pickers['phaseBPointPicker'].removeEvent();
+                    yukon.pickers['phaseCPointPicker'].removeEvent();
                 }
 
             });
