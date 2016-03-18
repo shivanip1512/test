@@ -354,6 +354,7 @@ public interface RawPointHistoryDao {
     * @param instantRange - time period, also defines clusivity
     * @param order - controls ordering by timestamp and changeid
     * @param queue - Queue in which data has to be added
+    * @param isCompleted - Flag indicating queuing completion.
     * @return List of values for the point
     */
    
