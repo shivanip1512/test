@@ -3,17 +3,14 @@
 #include "CalcWorkerThread.h"
 #include "logger.h"
 
-
-
-namespace Cti
-{
-namespace CalcLogic
-{
+namespace Cti {
+namespace CalcLogic {
 
 CalcWorkerThread::CalcWorkerThread( const Function & function )
     :   WorkerThread( function ),
         _name( function._name ),
-        _isPaused( false )
+        _isPaused( false ),
+        _pauseCount{ 0 }
 {
     // empty
 }
@@ -52,6 +49,11 @@ void CalcWorkerThread::waitForResume()
     }
 }
 
+size_t CalcWorkerThread::getPauseCount() const
+{
+    return _pauseCount;
+}
+
 void CalcWorkerThread::setPausedState( const bool isPaused )
 {
     if( isFailedTermination() )
@@ -61,6 +63,11 @@ void CalcWorkerThread::setPausedState( const bool isPaused )
 
     {
         boost::unique_lock<boost::mutex> lock( _pauseMutex );
+
+        if( isPaused )
+        {
+            ++_pauseCount;
+        }
 
         _isPaused = isPaused;
     }

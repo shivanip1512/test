@@ -41,6 +41,7 @@ IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter(const Cti::compileinfo_t &info
 
 struct CallSite
 {
+    const char *func;
     const char *file;
     const unsigned line;
 };
@@ -49,7 +50,8 @@ struct CallSite
 
 //IM_EX_CTIBASE StreamBufferSink &operator<<(StreamBufferSink  &o, const ::Cti::CallSite &cs);
 
-#define CALLSITE (::Cti::CallSite{__FILE__, __LINE__})
+//  update __FUNCTION__ to __func__ in VS2015
+#define CALLSITE (::Cti::CallSite{__FUNCTION__, __FILE__, __LINE__})
 
 } // namespace Cti
 

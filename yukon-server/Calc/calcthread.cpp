@@ -455,6 +455,27 @@ void CtiCalculateThread::onUpdateThread( void )
     }
 }
 
+bool wasPausedOrInterrupted(Cti::CalcLogic::CalcWorkerThread &thread, const size_t previousPauseCount, const Cti::CallSite cs)
+{
+    //  This will throw if we've been interrupted or terminated.
+    Cti::WorkerThread::interruptionPoint();
+
+    const auto currentPauseCount = thread.getPauseCount();
+
+    if( previousPauseCount < currentPauseCount )
+    {
+        CTILOG_WARN(dout, "Called from " << cs.func << ":" << cs.file << ":" << cs.line << " - "
+            << "Thread was paused since calculation began"
+            " (previousPauseCount < currentPauseCount; "
+            << previousPauseCount << " < " << currentPauseCount << ")"
+            ", aborting calculation");
+
+        return true;
+    }
+
+    return false;
+}
+
 void CtiCalculateThread::historicalThread( void )
 {
     try
@@ -518,6 +539,8 @@ void CtiCalculateThread::historicalThread( void )
 
             _historicalThreadFunc.waitForResume();
 
+            const auto pauseCount = _historicalThreadFunc.getPauseCount();
+
             CTILOG_INFO(dout, "Historical Calculation beginning.");
 
             start = start.now();
@@ -527,7 +550,12 @@ void CtiCalculateThread::historicalThread( void )
 
             PointTimeMap dbTimeMap;
             getCalcHistoricalLastUpdatedTime(dbTimeMap);
-            Cti::WorkerThread::interruptionPoint();
+
+            //  Check for any outside interference that may have occurred during the DB load
+            if( wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, CALLSITE) )
+            {
+                continue;
+            }
 
             PointTimeMap::iterator dbTimeMapIter;
             long pointID;
@@ -538,9 +566,9 @@ void CtiCalculateThread::historicalThread( void )
 
             reloaded = false;
 
-            for( historicIter = _historicalPoints.begin(); (historicIter != _historicalPoints.end()) && !reloaded ;  historicIter++ )
+            for( historicIter = _historicalPoints.begin(); !reloaded && (historicIter != _historicalPoints.end()); )
             {
-                calcPoint = (*historicIter).second;
+                calcPoint = (*historicIter++).second;
                 if( calcPoint==NULL || !calcPoint->ready( ) )
                 {
                     continue;  // for
@@ -564,7 +592,14 @@ void CtiCalculateThread::historicalThread( void )
                 }
 
                 getHistoricalTableData(calcPoint, lastTime, data);
-                Cti::WorkerThread::interruptionPoint();
+
+                //  Check for any outside interference that may have occurred during the DB load
+                if( wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, CALLSITE) )
+                {
+                    reloaded = true;
+
+                    continue;
+                }
 
                 componentCount = calcPoint->getComponentCount();
 
@@ -625,6 +660,8 @@ void CtiCalculateThread::historicalThread( void )
             }
 
             updateCalcHistoricalLastUpdatedTime(unlistedPoints, updatedPoints);//Write these back out to the database
+
+            //  Check for any outside interference that may have occurred during the DB write
             Cti::WorkerThread::interruptionPoint();
 
             updatedPoints.clear();//Next time through these need to be clear.
@@ -721,6 +758,8 @@ void CtiCalculateThread::baselineThread( void )
 
             _baselineThreadFunc.waitForResume();
 
+            const auto pauseCount = _baselineThreadFunc.getPauseCount();
+
             CTILOG_INFO(dout, "Baseline Calculation beginning.");
 
             start = start.now();
@@ -736,7 +775,12 @@ void CtiCalculateThread::baselineThread( void )
             getBaselineMap(baselineMap);
             CtiHolidayManager& holidayManager = CtiHolidayManager::getInstance();
             holidayManager.refresh();
-            Cti::WorkerThread::interruptionPoint();
+
+            //  Check for any outside interference that may have occurred during the DB load
+            if( wasPausedOrInterrupted(_baselineThreadFunc, pauseCount, CALLSITE) )
+            {
+                continue;
+            }
 
             PointTimeMap::iterator dbTimeMapIter;
             long pointID, baselinePercentID, baselineID;
@@ -746,9 +790,9 @@ void CtiCalculateThread::baselineThread( void )
 
             reloaded = false;
 
-            for( historicIter = _historicalPoints.begin() ; (historicIter != _historicalPoints.end()) && !reloaded ; historicIter++ )
+            for( historicIter = _historicalPoints.begin(); !reloaded && (historicIter != _historicalPoints.end()); )
             {
-                calcPoint = (*historicIter).second;
+                calcPoint = (*historicIter++).second;
                 if( calcPoint==NULL || !calcPoint->ready( ) )
                 {
                     continue;  // for
@@ -820,7 +864,13 @@ void CtiCalculateThread::baselineThread( void )
                 getHistoricalTableSinglePointData(baselinePercentID, searchTime, percentData);
                 getCurtailedDates(curtailedDates, pointID, searchTime);
 
-                Cti::WorkerThread::interruptionPoint();
+                //  Check for any outside interference that may have occurred during the DB load
+                if( wasPausedOrInterrupted(_baselineThreadFunc, pauseCount, CALLSITE) )
+                {
+                    reloaded = true;
+
+                    continue;
+                }
 
                 CtiTime curCalculatedTime;
                 for( ; ; )//Until we break!
@@ -981,6 +1031,9 @@ void CtiCalculateThread::baselineThread( void )
 
             updateCalcHistoricalLastUpdatedTime(unlistedPoints, updatedPoints);//Write these back out to the database
 
+            //  Check for any outside interference that may have occurred during the DB write
+            Cti::WorkerThread::interruptionPoint();
+
             updatedPoints.clear();//Next time through these need to be clear.
             unlistedPoints.clear();
 
@@ -993,7 +1046,7 @@ void CtiCalculateThread::baselineThread( void )
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
-                    CTILOG_DEBUG(dout, "historical posting a message");
+                    CTILOG_DEBUG(dout, "baseline posting a message");
                 }
             }
             else
@@ -1007,7 +1060,7 @@ void CtiCalculateThread::baselineThread( void )
     }
     catch( Cti::WorkerThread::Interrupted & )
     {
-        CTILOG_INFO(dout, "historical interrupted.");
+        CTILOG_INFO(dout, "baseline interrupted.");
     }
     catch(...)
     {

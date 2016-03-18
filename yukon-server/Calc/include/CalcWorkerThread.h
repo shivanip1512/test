@@ -2,12 +2,8 @@
 
 #include "worker_thread.h"
 
-
-
-namespace Cti
-{
-namespace CalcLogic
-{
+namespace Cti {
+namespace CalcLogic {
 
 class CalcWorkerThread : public WorkerThread
 {
@@ -21,6 +17,8 @@ public:
     void resume();
     void waitForResume();
 
+    size_t getPauseCount() const;
+
 private:
 
     void setPausedState( const bool isPaused );
@@ -28,6 +26,7 @@ private:
     bool                        _isPaused;
     boost::mutex                _pauseMutex;
     boost::condition_variable   _pauseCond;
+    std::atomic<size_t>         _pauseCount;
 
     std::string                 _name;
 };

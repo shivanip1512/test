@@ -503,7 +503,7 @@ YukonError_t CtiConnection::WriteConnQue( CtiMessage *QEnt, ::Cti::CallSite cs, 
 {
     if(QEnt == nullptr)
     {
-        CTILOG_ERROR(dout, who() << "WriteConnQue: Caller passed in null pointer from " << cs.file << ":" << cs.line);
+        CTILOG_ERROR(dout, who() << "WriteConnQue: Caller passed in null pointer from " << cs.func << ":" << cs.file << ":" << cs.line);
     }
 
     // take ownership of the message
