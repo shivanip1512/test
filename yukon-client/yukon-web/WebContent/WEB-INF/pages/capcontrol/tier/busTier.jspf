@@ -9,18 +9,33 @@
 
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
-<c:if test="${hasSubBusControl}">
+<c:if test="${hasSubBusControl && not empty subBusList}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="subbusState"]');
     </script>
 </c:if>
 
+<c:set var="styleClass" value=""/>
 <c:if test="${fn:length(subBusList) > 1}">
     <c:set var="styleClass" value="with-footer"/>
 </c:if>
 
 <tags:boxContainer2 nameKey="busContainer" hideEnabled="true" showInitially="true" styleClass="clear ${styleClass}">
-
+    <c:if test="${orphan}">
+        <table id="subBusTable" class="compact-results-table has-alerts-multi has-actions row-highlighting">
+            <c:forEach var="bus" items="${subBusList}">
+                <c:set var="subbusId" value="${bus.ccId}"/>
+                    <tr id="tr_sub_${subbusId}" data-pao-id="${subbusId}" data-bus-id="${subbusId}">
+                        <td>
+                            <cti:url var="busUrl" value="/capcontrol/buses/${bus.ccId}" />
+                            <a href="${busUrl}">${fn:escapeXml(bus.ccName)}</a> 
+                        </td>
+                    </tr>
+            </c:forEach>
+       </table>
+   </c:if>
+                
+   <c:if test="${!orphan}">
     <table id="subBusTable" class="compact-results-table has-alerts-multi has-actions row-highlighting">
         <thead>
             <tr>
@@ -42,8 +57,7 @@
             <cti:url value="/capcontrol/ivvc/bus/detail" var="ivvcLink" htmlEscape="true">
                 <cti:param name="subBusId" value="${subbusId}"/>
             </cti:url>
-            <cti:url value="/capcontrol/tier/feeders" var="dualBusLink" htmlEscape="true">
-                <cti:param name="substationId" value="${viewableSubBus.alternateStationId}"/>
+            <cti:url value="/capcontrol/substations/${viewableSubBus.alternateStationId}" var="dualBusLink" htmlEscape="true">
                 <cti:param name="areaId" value="${viewableSubBus.alternateAreaId}"/>
             </cti:url>
             <cti:url value="/capcontrol/capbank/capBankLocations" var="locationLink" htmlEscape="true">
@@ -171,15 +185,30 @@
             </tr>
         </c:forEach>
     </table>
+    </c:if>
+    
+    <c:if test="${canEdit && fn:length(subBusList) < 2}">
+        <span class="fr">
+            <cti:button nameKey="edit" icon="icon-pencil" 
+                data-popup=".js-edit-buses-popup" data-popup-toggle=""/>
+        </span>
+    </c:if>
 </tags:boxContainer2>
-<c:if test="${fn:length(subBusList) > 1}">
-    <tags:boxContainerFooter>
-        <cti:icon icon="icon-filter" classes="fn vatt"/>
-        <select id='subBusFilter' class="js-bus-filter">
-            <option value="0"><cti:msg2 key=".allBuses"/></option>
-            <c:forEach var="sub" items="${subBusList}" >
-               <option value="${sub.ccId}">${fn:escapeXml(sub.ccName)}</option>
-            </c:forEach>
-        </select>
-    </tags:boxContainerFooter>
-</c:if>
+    <c:if test="${fn:length(subBusList) > 1}"> 
+        <tags:boxContainerFooter>
+            <cti:icon icon="icon-filter" classes="fn vatt"/>
+            <select id='subBusFilter' class="js-bus-filter">
+                <option value="0"><cti:msg2 key=".allBuses"/></option>
+                <c:forEach var="sub" items="${subBusList}" >
+                   <option value="${sub.ccId}">${fn:escapeXml(sub.ccName)}</option>
+                </c:forEach>
+            </select>
+            <c:if test="${canEdit}">
+                <span class="fr">
+                    <cti:button nameKey="edit" icon="icon-pencil" 
+                        data-popup=".js-edit-buses-popup" data-popup-toggle=""/>
+                </span>
+            </c:if>
+        </tags:boxContainerFooter>
+    </c:if> 
+    

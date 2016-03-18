@@ -54,9 +54,8 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
             viewable.setShowTargetTooltip(showToolTipAlgorithms.contains(subBus.getAlgorithm()));
             
             if (subBus.getAlternateBusId() > 0) {
-                SubBus linkedSub = capControlCache.getSubBus(subBus.getAlternateBusId());
-                
                 try {
+                    SubBus linkedSub = capControlCache.getSubBus(subBus.getAlternateBusId());
                     SubStation linkedStation = capControlCache.getSubstation(linkedSub.getParentID());
                     viewable.setAlternateStationId(linkedStation.getCcId());
                     viewable.setAlternateAreaId(linkedStation.getParentID());

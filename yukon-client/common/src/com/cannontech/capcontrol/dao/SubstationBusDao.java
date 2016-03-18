@@ -110,5 +110,10 @@ public interface SubstationBusDao {
      * then attaches the given feederIds with consecutive increasing displayOrders.
      */
     void assignFeeders(int busId, Iterable<Integer> feederIds);
+    /**
+     * Removes existing assignments from the substation with the given id,
+     * then attaches the given busIds with consecutive increasing displayOrders.
+     */
+    void assignBuses(int substationId, Iterable<Integer> busIds);
 
 }

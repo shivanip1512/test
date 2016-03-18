@@ -10,7 +10,22 @@
     <c:set var="styleClass" value="with-footer"/>
 </c:if>
 <tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true" styleClass="${styleClass}">
-    <%@ include file="feederTable.jsp" %>
+    <c:if test="${orphan}">
+        <table id="fdrTable" class="compact-results-table has-alerts-multi has-actions">
+            <c:forEach var="feeder" items="${feederList}">
+                <c:set var="feederId" value="${feeder.ccId}"/>
+                <tr data-feeder-id="${feederId}" data-parent-id="${feeder.parentId}" data-pao-id="${feederId}">
+                    <td>
+                        <cti:url var="feederUrl" value="/capcontrol/feeders/${feeder.ccId}" />
+                        <a href="${feederUrl}">${fn:escapeXml(feeder.ccName)}</a> 
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </c:if>
+    <c:if test="${!orphan}">
+        <%@ include file="feederTable.jsp" %>
+    </c:if>
 </tags:boxContainer2>
 
 <c:if test="${fn:length(feederList) > 1}">

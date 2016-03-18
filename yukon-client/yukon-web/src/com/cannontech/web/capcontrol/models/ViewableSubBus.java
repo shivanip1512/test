@@ -23,6 +23,14 @@ public class ViewableSubBus {
         busControlled = controlMethod != null ? controlMethod.isBusControlled() : false;
         ivvcControlled = bus.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR;
     }
+    
+    public void setCcId(int ccId) {
+        this.ccId = ccId;
+    }
+
+    public void setCcName(String ccName) {
+        this.ccName = ccName;
+    }
 
     public final int getCcId() {
         return ccId;

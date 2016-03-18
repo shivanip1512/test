@@ -26,7 +26,7 @@ import com.cannontech.util.ServletUtil;
 public class CapControlUrlService {
     
     public static final String ORPH_STRING = "---";
-    private static final String FEEDER_URL = "/capcontrol/tier/feeders";
+    private static final String FEEDER_URL = "/capcontrol/substations";
     private static final String AREA_URL = "/capcontrol/tier/areas";
     private static final String ZONE_DETAIL_URL = "/capcontrol/ivvc/zone/detail";
     
@@ -194,7 +194,7 @@ public class CapControlUrlService {
         String safeUrl = "";
         final StringBuilder sb = new StringBuilder();
         if (url.equalsIgnoreCase(FEEDER_URL)) {
-            safeUrl = url + "?substationId=" + paoId + "&areaId=" + areaId;
+            safeUrl = url + "/" + paoId;
         }else {
             safeUrl = ServletUtil.createSafeUrl(request, url);
         }

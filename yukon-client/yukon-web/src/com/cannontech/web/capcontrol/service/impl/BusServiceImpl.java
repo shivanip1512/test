@@ -16,8 +16,10 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
 import com.cannontech.common.pao.service.PaoPersistenceService;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.schedule.dao.PaoScheduleDao;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
@@ -42,6 +44,7 @@ public class BusServiceImpl implements BusService {
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private PaoScheduleDao paoScheduleDao;
     @Autowired private SubstationBusDao busDao;
+    @Autowired private DBPersistentDao dbPersistentDao;
 
     @Override
     public CapControlSubBus get(int id) {
@@ -118,12 +121,8 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public void delete(int busId) {
-
-        CompleteCapControlSubstationBus completeBus = new CompleteCapControlSubstationBus();
-        completeBus.setPaoIdentifier(PaoIdentifier.of(busId, PaoType.CAP_CONTROL_SUBBUS));
-        completeBus = paoPersistenceService.retreivePao(completeBus, CompleteCapControlSubstationBus.class);
-
-        paoPersistenceService.deletePao(completeBus);
+        CapControlSubBus bus = get(busId);
+        dbPersistentDao.performDBChange(bus, TransactionType.DELETE);
     }
     
     @Override

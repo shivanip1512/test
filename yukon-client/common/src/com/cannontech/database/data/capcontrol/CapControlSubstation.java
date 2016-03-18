@@ -7,19 +7,33 @@ import java.util.List;
 
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.spring.YukonSpringHook;
 
 public class CapControlSubstation extends CapControlYukonPAOBase implements EditorPanel {
-    private com.cannontech.database.db.capcontrol.CapControlSubstation CapControlSubstation;
+    private com.cannontech.database.db.capcontrol.CapControlSubstation capControlSubstation = new com.cannontech.database.db.capcontrol.CapControlSubstation();
     private List<CCSubstationSubBusList> substationSubBuses;
 
-    @SuppressWarnings("static-access")
+    public String getName() {
+        return getPAOName();
+    }
+
+    public void setName(String name) {
+        setPAOName(name);
+    }
+    
+    public Integer getId() {
+        return capControlSubstation.getSubstationID();
+    }
+
+    public void setId(Integer id) {
+        setPAObjectID(id);
+        capControlSubstation.setSubstationID(id);
+    }
+
     public CapControlSubstation() {
         super(PaoType.CAP_CONTROL_SUBSTATION);
     }
@@ -65,10 +79,10 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
     }
 
     public com.cannontech.database.db.capcontrol.CapControlSubstation getCapControlSubstation() {
-        if (CapControlSubstation == null) {
-            CapControlSubstation = new com.cannontech.database.db.capcontrol.CapControlSubstation();
+        if (capControlSubstation == null) {
+            capControlSubstation = new com.cannontech.database.db.capcontrol.CapControlSubstation();
         }
-        return CapControlSubstation;
+        return capControlSubstation;
     }
 
     @Override
@@ -102,21 +116,13 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
     }
 
     public void setCapControlSubstation( com.cannontech.database.db.capcontrol.CapControlSubstation CapControlSubstation) {
-        this.CapControlSubstation = CapControlSubstation;
+        this.capControlSubstation = CapControlSubstation;
     }
 
     @Override
     public void update() throws java.sql.SQLException {
         super.update();
         getCapControlSubstation().update();
-        CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getCapControlPAOID(), null, getDbConnection());
-        Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-        for (int i = 0; i < getChildList().size(); i++) {
-        	CCSubstationSubBusList substationSubBusList = getChildList().get(i);
-        	substationSubBusList.setDbConnection(connection );
-        	substationSubBusList.add();
-        }
-        connection.close();
     }
 
 }

@@ -329,14 +329,17 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     
     @Override
     public synchronized List<SubBus> getSubBusesBySubStation(SubStation substation) {
-        int[] busIds = substation.getSubBusIds();
-        List<SubBus> buses = new ArrayList<SubBus>(busIds.length);
-
-        for (final int id : busIds) {
-            try {
-                SubBus subBus = getSubBus(id);
-                buses.add(subBus);
-            } catch (NotFoundException ignore) {} 
+        List<SubBus> buses = new ArrayList<SubBus>();
+        if(substation != null) {
+            int[] busIds = substation.getSubBusIds();
+            buses = new ArrayList<SubBus>(busIds.length);
+    
+            for (final int id : busIds) {
+                try {
+                    SubBus subBus = getSubBus(id);
+                    buses.add(subBus);
+                } catch (NotFoundException ignore) {} 
+            }
         }
         
         return buses;

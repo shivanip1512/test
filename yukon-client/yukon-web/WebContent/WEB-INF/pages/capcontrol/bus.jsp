@@ -45,12 +45,12 @@
                             <tags:input path="capControlSubstationBus.mapLocationID"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".parent">
-                            <c:if test="${empty parentName}">
+                            <c:if test="${empty parent }">
                                 <span class="empty-list"><i:inline key="yukon.common.none"/></span>
                             </c:if>
-                            <c:if test="${not empty parentName}">
-                                <cti:url var="parentLink" value="${parentLink}" />
-                                <a href="${parentLink}">${parentName}</a>
+                            <c:if test="${not empty parent}">
+                                <cti:url var="editParent" value="/capcontrol/substations/${parent.liteID}"/>
+                                    <a href="${editParent}">${parent.paoName}</a>
                             </c:if>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
@@ -384,7 +384,7 @@
     <cti:csrfToken/>
 </form:form>
 
-<%-- EDIT SUBSTATIONS POPUP --%>
+<%-- EDIT FEEDERS POPUP --%>
 <div class="dn js-edit-feeders-popup"
     data-dialog
     data-parent-id="${bus.id}"

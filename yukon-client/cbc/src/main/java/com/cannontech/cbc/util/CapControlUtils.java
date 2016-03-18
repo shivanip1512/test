@@ -529,14 +529,17 @@ public final class CapControlUtils {
         } else {
             parentAreaId = ccCache.getParentAreaId(subBus.getCcId());
         }
-        StreamableCapObject area = ccCache.getStreamableArea(parentAreaId);
-        Map<Season, Integer> areaSeasonSchedule = seasonScheduleDao.getSeasonStrategyAssignments(area.getCcId());
-        if (!isSeasonStrategyAssigned(areaSeasonSchedule)) {
-            Map<Season, Integer> subBusSeasonSchedule = seasonScheduleDao.getSeasonStrategyAssignments(subBus.getCcId());
-            if (!isSeasonStrategyAssigned(subBusSeasonSchedule)) {
-                return false;
+        if(parentAreaId > 0){
+            StreamableCapObject area = ccCache.getStreamableArea(parentAreaId);
+            Map<Season, Integer> areaSeasonSchedule = seasonScheduleDao.getSeasonStrategyAssignments(area.getCcId());
+            if (!isSeasonStrategyAssigned(areaSeasonSchedule)) {
+                Map<Season, Integer> subBusSeasonSchedule = seasonScheduleDao.getSeasonStrategyAssignments(subBus.getCcId());
+                if (!isSeasonStrategyAssigned(subBusSeasonSchedule)) {
+                    return false;
+                }
             }
         }
+
         return true;
     }
 

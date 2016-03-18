@@ -223,9 +223,7 @@
             <c:forEach var="station" items="${subStations}">
             
                 <c:set var="substationId" value="${station.id}"/>
-                <cti:url value="/capcontrol/tier/feeders" var="feederLink">
-                    <cti:param name="substationId" value="${substationId}"/>
-                </cti:url>
+                <cti:url value="/capcontrol/substations/${substationId}" var="substationLink" />
                 
                 <tr data-pao-id="${substationId}">
                     <%-- ROW ICON --%>
@@ -234,7 +232,7 @@
                     </td>
                     <%-- SUB NAME --%>
                     <td>
-                        <a href="${feederLink}" id="anc_${substationId}">
+                        <a href="${substationLink}" id="anc_${substationId}">
                             ${fn:escapeXml(station.name)}
                         </a>
                         <div class="error">

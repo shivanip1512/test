@@ -66,8 +66,7 @@ public class VoltVarRedirectController {
         
         int substationId = cache.getParentSubStationId(id);
         
-        model.addAttribute("substationId", substationId);
-        return "redirect:/capcontrol/tier/feeders";
+        return "redirect:/capcontrol/substations/" + substationId;
     }
 
 
@@ -75,6 +74,14 @@ public class VoltVarRedirectController {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
         if (pao.getPaoType().isCbc()) {
             return "redirect:/capcontrol/cbc/" + id;
+        } else if (pao.getPaoType() == PaoType.CAP_CONTROL_FEEDER){
+            return "redirect:/capcontrol/feeders/" + id;
+        } else if (pao.getPaoType() == PaoType.CAP_CONTROL_SUBBUS){
+            return "redirect:/capcontrol/buses/" + id;
+        } else if (pao.getPaoType() == PaoType.CAP_CONTROL_AREA || pao.getPaoType() == PaoType.CAP_CONTROL_SPECIAL_AREA){
+            return "redirect:/capcontrol/areas/" + id;
+        } else if (pao.getPaoType() == PaoType.CAP_CONTROL_SUBSTATION){
+            return "redirect:/capcontrol/substations/" + id;
         }
 
         return "redirect:/editor/cbcBase.jsf?type=2&itemid="+ id;

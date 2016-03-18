@@ -228,8 +228,10 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     @Override
     public SubBus getSubBus(int subID) {
         int id = cache.getParentAreaId(subID);
-        StreamableCapObject area = cache.getStreamableArea(id);
-        if (filter.valid(area)) return cache.getSubBus(subID);
+        if (id != 0) {
+            StreamableCapObject area = cache.getStreamableArea(id);
+            if (filter.valid(area)) return cache.getSubBus(subID);
+        }
         return null;
     }
     
@@ -267,8 +269,13 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     @Override
     public SubStation getSubstation(int subId) {
         int id = cache.getParentAreaId(subId);
-        StreamableCapObject area = cache.getStreamableArea(id);
-        if (filter.valid(area)) return cache.getSubstation(subId);
+        try {
+            StreamableCapObject area = cache.getStreamableArea(id);
+            if (filter.valid(area)) return cache.getSubstation(subId);
+            return cache.getSubstation(subId);
+        } catch (NotFoundException e){
+            //orphan 
+        }
         return null;
     }
 

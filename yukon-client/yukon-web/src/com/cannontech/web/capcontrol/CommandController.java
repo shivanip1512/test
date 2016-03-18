@@ -245,7 +245,7 @@ public class CommandController {
         
         if (bankMoveBean.getNewFeederId() == 0) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.noFeederSelected", bank.getCcName()));
-            return "redirect:/capcontrol/tier/feeders";
+            return "redirect:/capcontrol/substations/" + substationId;
         }
         
         Feeder newFeeder = cache.getFeeder(bankMoveBean.getNewFeederId());
@@ -284,7 +284,7 @@ public class CommandController {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveSuccess", bank.getCcName(), newFeeder.getCcName()));
         }
         
-        return "redirect:/capcontrol/tier/feeders";
+        return "redirect:/capcontrol/substations/" + substationId;
     }
 
     @CheckRoleProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS)

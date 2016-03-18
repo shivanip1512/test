@@ -9,7 +9,7 @@
         <div class="column one">
             <div class="stacked"><a href="<cti:url value="/capcontrol/areas/create"/>"><i:inline key=".type.AREA"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/areas/special/create"/>"><i:inline key=".type.SPECIAL_AREA"/></a></div>
-            <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=4004"/>"><i:inline key=".type.SUBSTATION"/></a></div>
+            <div class="stacked"><a href="<cti:url value="/capcontrol/substations/create"/>"><i:inline key=".type.SUBSTATION"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/buses/create"/>"><i:inline key=".type.SUBBUS"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/feeders/create"/>"><i:inline key=".type.FEEDER"/></a></div>
         </div>

@@ -11,5 +11,21 @@
 
 
 <tags:boxContainer2 nameKey="banksContainer" hideEnabled="true" showInitially="true">
-    <%@ include file="capBankTable.jsp" %>
+    <c:if test="${orphan}">
+        <table id="capBankTable" class="compact-results-table has-alerts has-actions row-highlighting" ${hasControlAttr}>
+            <c:forEach var="bank" items="${capBankList}">
+                <c:set var="bankId" value="${bank.ccId}"/>
+                <c:set var="parentId" value="${bank.parentId}"/>
+                <tr class="bank" data-bank-id="${bankId}" data-parent-id="${parentId}" id="tr_cap_${bankId}_parent_${parentId}">
+                    <td>
+                        <cti:url var="bankUrl" value="/capcontrol/cbc/${bank.ccId}" />
+                        <a href="${bankUrl}">${fn:escapeXml(bank.ccName)}</a> 
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </c:if>
+    <c:if test="${!orphan}">
+        <%@ include file="capBankTable.jsp" %>
+    </c:if>
 </tags:boxContainer2>

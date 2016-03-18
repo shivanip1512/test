@@ -299,6 +299,38 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 
         template.update(generator, feederIds);
     }
+    
+    @Override
+    @Transactional
+    public void assignBuses(int substationId, Iterable<Integer> busIds) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CCSUBSTATIONSUBBUSLIST");
+        sql.append("WHERE SubStationID").eq(substationId);
+
+        jdbcTemplate.update(sql);
+
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        template.setChunkSize(ChunkingSqlTemplate.DEFAULT_SIZE / 3);
+
+        SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
+
+            private Integer displayOrder = 1;
+
+            @Override
+            public SqlFragmentSource generate(List<Integer> busList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                for (Integer busId : busList) {
+                    sql.append("INSERT INTO CCSUBSTATIONSUBBUSLIST");
+                    sql.values(substationId, busId, displayOrder);
+                    displayOrder++;
+                }
+                return sql;
+            }
+        };
+
+        template.update(generator, busIds);
+    }
 
     @Override
     public List<Integer> getFeederIds(int busId) {

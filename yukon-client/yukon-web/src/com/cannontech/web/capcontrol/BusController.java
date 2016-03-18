@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -123,8 +122,7 @@ public class BusController {
             Integer parentId = busDao.getParent(bus.getId());
             if (parentId != null) {
                 LiteYukonPAObject parent = dbCache.getAllPaosMap().get(parentId);
-                model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
-                model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
+                model.addAttribute("parent", parent);
             }
 
             SeasonSchedule scheduleSchedule = seasonScheduleDao.getScheduleForPao(bus.getId());

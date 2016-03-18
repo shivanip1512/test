@@ -63,6 +63,7 @@ public class ResultsController {
         CBC,
         FEEDER,
         BUS,
+        SUBSTATION,
         CAPCONTROL,
         GENERAL,
         ;
@@ -88,7 +89,7 @@ public class ResultsController {
         SearchType searchType = null;
 
         if( CBCWebUtils.TYPE_ORPH_SUBSTATIONS.equals(srchCriteria) ) {
-            searchType = SearchType.CAPCONTROL;
+            searchType = SearchType.SUBSTATION;
             ccObjects = substationDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedSubs.pageName");
             model.addAttribute("pageName", "orphanedSubs");
@@ -179,6 +180,10 @@ public class ResultsController {
             String returnValue = ccType.getDisplayValue();
             return returnValue;
         } else if (searchType == SearchType.BUS) {
+            CapControlType ccType = CapControlType.getCapControlType(dbType);
+            String returnValue = ccType.getDisplayValue();
+            return returnValue;
+        } else if (searchType == SearchType.SUBSTATION) {
             CapControlType ccType = CapControlType.getCapControlType(dbType);
             String returnValue = ccType.getDisplayValue();
             return returnValue;

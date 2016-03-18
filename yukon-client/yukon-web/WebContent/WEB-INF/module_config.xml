@@ -655,10 +655,13 @@
               <page name="area.EDIT" type="DETAIL">
                  <labelArgument>${areaName}</labelArgument>
               </page>
-              <page name="substation" type="DETAIL">
-                <link>/capcontrol/tier/feeders?substationId=${substationId}</link>
+              <page name="substation.VIEW" type="DETAIL">
+                <link>/capcontrol/substations/${substationId}</link>
                 <labelArgument>${substationName}</labelArgument>
                 <pages>
+                  <page name="substation.EDIT" type="BASIC" hideFavorite="true">
+                    <labelArgument>${substationName}</labelArgument>
+                  </page>
                   <page name="bus.VIEW" type="BASIC">
                     <link>/capcontrol/buses/${busId}</link>
                     <labelArgument>${busName}</labelArgument>
@@ -742,6 +745,16 @@
           <page name="search.orphanedBanks" type="BASIC"/>
           <page name="search.orphanedCbcs" type="BASIC"/>
           <page name="search.orphanedRegulators" type="BASIC"/>
+          <page name="substation.orphan.CREATE" type="BASIC" />
+          <page name="substation.orphan.VIEW" type="BASIC">
+            <link>/capcontrol/substations/${substationId}</link>
+            <labelArgument>${substationName}</labelArgument>
+            <pages>
+              <page name="substation.orphan.EDIT" type="BASIC" hideFavorite="true">
+                <labelArgument>${substationName}</labelArgument>
+              </page>
+            </pages>
+          </page>
           <page name="bus.orphan.CREATE" type="BASIC" />
           <page name="bus.orphan.VIEW" type="BASIC">
             <link>/capcontrol/buses/${busId}</link>
@@ -777,6 +790,7 @@
             </pages>
           </page>
           <page name="area.CREATE" type="BASIC"/>
+          <page name="substation.CREATE" type="BASIC"/>
           <page name="cbc.CREATE" type="BASIC"/>
           <page name="feeder.CREATE" type="BASIC"/>
           <page name="bus.CREATE" type="BASIC"/>

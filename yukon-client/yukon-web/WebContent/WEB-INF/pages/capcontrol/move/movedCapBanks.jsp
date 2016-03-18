@@ -30,15 +30,11 @@
                         <tr data-bank-id="${movedCapbank.ccId}">
                             <td>${fn:escapeXml(movedCapbank.ccName)}</td>
                             <td>
-                                <cti:url var="originalSubUrl" value="/capcontrol/tier/feeders">
-                                    <cti:param name="substationId" value="${movedCapbank.originalSubstationId}" />
-                                </cti:url>
+                                <cti:url var="originalSubUrl" value="/capcontrol/substations/${movedCapbank.originalSubstationId}" />
                                 <a href="${originalSubUrl}">${fn:escapeXml(movedCapbank.originalFeederName)}</a>
                             </td>
                             <td>
-                                <cti:url var="currentSubUrl" value="/capcontrol/tier/feeders">
-                                    <cti:param name="substationId" value="${movedCapbank.currentSubstationId}" />
-                                </cti:url>
+                                <cti:url var="currentSubUrl" value="/capcontrol/substations/${movedCapbank.currentSubstationId}" />
                                 <a href="${currentSubUrl}">${fn:escapeXml(movedCapbank.currentFeederName)}</a>
                             </td>
                             <td>
