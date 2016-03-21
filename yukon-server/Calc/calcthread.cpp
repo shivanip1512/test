@@ -537,9 +537,7 @@ void CtiCalculateThread::historicalThread( void )
             }
             while( now < nextCalcTime );
 
-            _historicalThreadFunc.waitForResume();
-
-            const auto pauseCount = _historicalThreadFunc.getPauseCount();
+            const auto pauseCount = _historicalThreadFunc.waitForResume();
 
             CTILOG_INFO(dout, "Historical Calculation beginning.");
 
@@ -756,9 +754,7 @@ void CtiCalculateThread::baselineThread( void )
             }
             while( !(now >= nextCalcTime) );
 
-            _baselineThreadFunc.waitForResume();
-
-            const auto pauseCount = _baselineThreadFunc.getPauseCount();
+            const auto pauseCount = _baselineThreadFunc.waitForResume();
 
             CTILOG_INFO(dout, "Baseline Calculation beginning.");
 

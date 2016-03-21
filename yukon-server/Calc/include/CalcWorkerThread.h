@@ -15,7 +15,7 @@ public:
 
     void pause();
     void resume();
-    void waitForResume();
+    size_t waitForResume();  //  returns pause count
 
     size_t getPauseCount() const;
 

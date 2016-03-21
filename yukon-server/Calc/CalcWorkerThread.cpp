@@ -34,7 +34,7 @@ void CalcWorkerThread::resume()
     setPausedState( false );
 }
 
-void CalcWorkerThread::waitForResume()
+size_t CalcWorkerThread::waitForResume()
 {
     if( isFailedTermination() )
     {
@@ -47,6 +47,8 @@ void CalcWorkerThread::waitForResume()
     {
         _pauseCond.wait( lock );
     }
+
+    return getPauseCount();
 }
 
 size_t CalcWorkerThread::getPauseCount() const
