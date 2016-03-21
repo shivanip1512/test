@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -64,6 +65,11 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
     private int hourlyCounter = 0;
     private int perDayCounter = 0;
     private int minsCounter = 0;
+    
+    private final int SecondsPerHour = 3600;
+    private final int SecondsPerDay = 86400;
+    private final int SecondsPerYear = 31556926;
+    private final static long epoch;
     private RfnMeterSimulatorStatus rfnMeterSimulatorStatus = new RfnMeterSimulatorStatus();
     
     private JmsTemplate jmsTemplate;
@@ -76,6 +82,10 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
         jmsTemplate.setPubSubDomain(false);
     }
 
+    static {
+        epoch = (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005"))/1000;
+    }
+    
     public RfnMeterSimulatorStatus getExistingRfnMeterSimulatorStatus() {
         return rfnMeterSimulatorStatus;        
     }
@@ -354,21 +364,23 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
         
         if (storedDevice != null) {
             storedTimestampValue = storedDevice.get(attribute);
-            if (storedTimestampValue != null) {
-                if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getGenerationType() == GenerationType.HOURLY) {
+
+            if (storedTimestampValue != null
+                && RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).valueType != GeneratedValueType.INCREASING) {
+                if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds() == SecondsPerHour) {
                     if (storedTimestampValue.getTimestamp().isAfter((DateTime.now().minusHours(1)))) {
                         return storedTimestampValue;
                     }
-                } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getGenerationType() == GenerationType.DAILY) {
+                } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds() == SecondsPerDay) {
                     if (storedTimestampValue.getTimestamp().isAfter((DateTime.now().minusDays(1)))) {
                         return storedTimestampValue;
                     }
-                    generateValue = generateValue(attribute, storedTimestampValue.getValue());
+                    generateValue = generateValue(device, attribute, storedTimestampValue.getValue());
                 } else {
-                    generateValue = generateValue(attribute, storedTimestampValue.getValue());
+                    generateValue = generateValue(device, attribute, storedTimestampValue.getValue());
                 }
             } else {
-                generateValue = generateValue(attribute, 0.0);
+                generateValue = generateValue(device, attribute, 0.0);
             }
             TimestampValue timestampValue = new TimestampValue(DateTime.now(), generateValue);
             Map<Attribute, TimestampValue> obj = storedValue.get(device);
@@ -377,7 +389,7 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
 
         } else {
             // If device does not exists, add in map
-            generateValue = generateValue(attribute, 0.0);
+            generateValue = generateValue(device, attribute, 0.0);
             TimestampValue timestampValue = new TimestampValue(DateTime.now(), generateValue);
             Map<Attribute, TimestampValue> timestampValueMap = new HashMap<>();
             timestampValueMap.put(attribute, timestampValue);
@@ -389,7 +401,7 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
     /**
      * Generate value based on the last value and incrementor value
      */
-    private Double generateValue(Attribute attribute, Double lastValue) {
+    private Double generateValue(RfnDevice device, Attribute attribute, Double lastValue) {
 
         Double maxValue;
         Double minValue = lastValue;
@@ -404,10 +416,21 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
         }
 
         if (valueType == GeneratedValueType.INCREASING) {
-            maxValue = minValue + RfnMeterSimulatorConfiguration.valueOf(attribute.toString())
-                                                        .getChangeBy();
-            random = new Random().nextDouble();
-            result = minValue + (random * (maxValue - minValue));
+
+            long intervalSeconds = RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds();
+            long nowSeconds = Instant.now().getMillis() / 1000;
+
+            if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.USAGE
+                || RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.DEMAND) {
+                long beginningOfLastInterval = nowSeconds - (nowSeconds % intervalSeconds) - intervalSeconds;
+                result = getHectoWattHours(device.getPaoIdentifier().getPaoId(), beginningOfLastInterval);
+                return result;
+            } else {
+                maxValue = minValue + RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getChangeBy();
+                random = new Random().nextDouble();
+                result = minValue + (random * (maxValue - minValue));
+            }
+
         } else if (valueType == GeneratedValueType.DECREASING) {
             if (minValue > minValue - RfnMeterSimulatorConfiguration.valueOf(attribute.toString())
                                                             .getChangeBy()) {
@@ -472,4 +495,97 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
                                                               .getCombinedIdentifier() + " on queue " + queueName);
         jmsTemplate.convertAndSend(queueName, archiveRequest);
     }
+
+    private double getHectoWattHours(int address, long CurrentTimeInSeconds) {
+        long duration = CurrentTimeInSeconds - epoch;
+        double consumptionWs = makeValueConsumption(address, epoch, duration);
+        double consumptionWh = consumptionWs / SecondsPerHour;
+
+        /*
+         * Introduced an offset value to be added to the value of the curve
+         * based on the value of the address passed in to the function. This
+         * offset allows for a range of 0-7350 to be added to the kWh reading
+         * that is returned to the device, thus providing a better way of
+         * distinguishing meter readings whose addresses are similar or near
+         * each other in value. Meters whose addresses are within one of each
+         * other will now have a 7.35 kWh difference between them for easier
+         * distinguishing.
+         */
+        double offset = (address % 1000) * 7350;
+
+        double reading = consumptionWh + (offset * getConsumptionMultiplier(address));
+
+        // Mod the hWh by 10000000 to reduce the range from 0 to 9999999,
+        // since the MCT Device reads hWh this corresponds to 999,999.9 kWh
+        // which is the desired changeover point.
+        return (reading / 100) % 10000000;
+    }
+
+    /**
+     * The consumption value is constructed using the current time and meter address.
+     */
+    private double makeValueConsumption(int address, long consumptionTimeInSeconds, long duration) {
+        if (duration == 0)
+            return 0;
+
+        double consumptionMultiplier = getConsumptionMultiplier(address);
+
+        long beginSeconds = consumptionTimeInSeconds;
+        long endSeconds = consumptionTimeInSeconds + duration;
+
+        double yearPeriod = 2.0 * Math.PI / SecondsPerYear;
+        double dayPeriod = 2.0 * Math.PI / SecondsPerDay;
+
+        double yearPeriodReciprocal = 1.0 / yearPeriod;
+        double dayPeriodReciprocal = 1.0 / dayPeriod;
+
+        /*
+         * These multipliers affect the amplification of the curve for the
+         * consumption. amp year being set at 700.0 gives a normalized
+         * curve for the meter which results in a 1x Consumption Multiplier
+         * calculating to about 775-875 kWh per month, as desired.
+         */
+
+        double ampYear = 700.0;
+        double ampDay = 500.0;
+
+        return (ampYear
+            * (duration + yearPeriodReciprocal
+                * (Math.sin(beginSeconds * yearPeriod) - Math.sin(endSeconds * yearPeriod))) + ampDay
+            * (duration + dayPeriodReciprocal * (Math.sin(beginSeconds * dayPeriod) - Math.sin(endSeconds * dayPeriod))))
+            * consumptionMultiplier;
+    }
+
+    /**
+     * This section of if-statements is used to determine the multiplier of the consumption used by a
+     * household based on the address of the meter. The following scale shows how these multipliers are
+     * determined:
+     * Address % 1000:
+     * Range 000-399: 1x Consumption Multiplier - 40% of Households
+     * Range 400-599: 2x Consumption Multiplier - 20% of Households
+     * Range 600-799: 3x Consumption Multiplier - 20% of Households
+     * Range 800-949: 5x Consumption Multiplier - 15% of Households
+     * Range 950-994: 10x Consumption Multiplier - 4.5% of Households
+     * Range 995-999: 20x Consumption Multiplier - 0.5% of Households
+     * This scale was made in order to represent more real-world readings and model the fact that some
+     * households consume drastically more than other households do.
+     */
+    private double getConsumptionMultiplier(int address) {
+        int addressRange = address % 1000;
+
+        if (addressRange < 400) {
+            return 1.0;
+        } else if (addressRange < 600) {
+            return 2.0;
+        } else if (addressRange < 800) {
+            return 3.0;
+        } else if (addressRange < 950) {
+            return 5.0;
+        } else if (addressRange < 995) {
+            return 10.0;
+        } else {
+            return 20.0;
+        }
+    }
+
 }
