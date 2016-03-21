@@ -15,6 +15,7 @@ public class PaoData {
         METER_NUMBER,
         CARRIER_ADDRESS,
         ROUTE_NAME,
+        TYPE,
         /**
          * A field which will be the address for PLC devices or the serial number for RFN devices.
          */
@@ -28,6 +29,7 @@ public class PaoData {
 
     private PaoIdentifier paoIdentifier;
     private String name;
+    private String type;
     private boolean enabled;
     private String meterNumber;
     private Integer carrierAddress;
@@ -61,6 +63,17 @@ public class PaoData {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public String getType() {
+        if (responseFields.contains(OptionalField.TYPE)) {
+            return type;
+        }
+        throw new UnsupportedOperationException("name not populated for this object");
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public boolean isEnabled() {

@@ -414,7 +414,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 return getTimestamp(exportField, pointValueQualityHolder, userContext, tzFormat);
             case POINT_QUALITY:
                 return getQuality(exportField, pointValueQualityHolder);
-                
+            case DEVICE_TYPE:
+                return StringUtils.isEmpty(paoData.getPaoIdentifier().getPaoType().getPaoTypeName()) ? ""
+                : paoData.getPaoIdentifier().getPaoType().getPaoTypeName();
             case ATTRIBUTE:
                 switch (exportField.getAttributeField()) {
                     case UNIT_OF_MEASURE:

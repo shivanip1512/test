@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableSet;
 public enum FieldType implements Displayable{
     METER_NUMBER("Meter Number", OptionalField.METER_NUMBER),
     DEVICE_NAME("Device Name", OptionalField.NAME),
+    DEVICE_TYPE("Device Type", OptionalField.TYPE),
     ADDRESS("Address/Serial Number", OptionalField.ADDRESS_OR_SERIAL_NUMBER),
     ROUTE("Route", OptionalField.ROUTE_NAME),
     PLAIN_TEXT("Plain Text"),
@@ -32,9 +33,9 @@ public enum FieldType implements Displayable{
      */
     
     public static final Set<FieldType> FIXED_ATTRIBUTE_FIELD_TYPES = 
-            ImmutableSet.of(ADDRESS, ATTRIBUTE, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, ROUTE); 
+            ImmutableSet.of(ADDRESS, ATTRIBUTE, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, ROUTE, DEVICE_TYPE); 
     public static final Set<FieldType> DYNAMIC_ATTRIBUTE_FIELD_TYPES = 
-            ImmutableSet.of(ADDRESS, ATTRIBUTE_NAME, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, POINT_NAME, ROUTE, POINT_TIMESTAMP, UNIT_OF_MEASURE, POINT_VALUE, POINT_QUALITY); 
+            ImmutableSet.of(ADDRESS, ATTRIBUTE_NAME, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, POINT_NAME, ROUTE, POINT_TIMESTAMP, UNIT_OF_MEASURE, POINT_VALUE, POINT_QUALITY, DEVICE_TYPE); 
     
     private final static String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.";
     

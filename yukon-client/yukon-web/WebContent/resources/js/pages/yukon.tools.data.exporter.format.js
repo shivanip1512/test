@@ -375,10 +375,14 @@ yukon.tools.dataExporterFormat = (function () {
                 otherOptions = $('#other-options');
                 
                 if (type !== 'PLAIN_TEXT') {
-                    otherOptions.show();
                     fieldSize.show();
                     padding.show();
                     plainText.hide();
+                    if (type == 'DEVICE_TYPE') {
+                        otherOptions.hide();
+                    } else {
+                        otherOptions.show();
+                    }
                 }
                 
                 // show hide reading/timestamp patterns

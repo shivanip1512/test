@@ -45,6 +45,10 @@ public class Field implements Displayable {
         return type == FieldType.PLAIN_TEXT;
     }
     
+    public boolean isDeviceType() {
+        return type == FieldType.DEVICE_TYPE;
+    }
+
     @JsonIgnore
     @Override
     public MessageSourceResolvable getMessage() {
