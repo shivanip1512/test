@@ -251,7 +251,8 @@ public class OperatorHardwareConfigController {
         model.addAttribute("isZigbee", inventory.getHardwareType().isZigbee());
         int deviceId = inventoryDao.getDeviceId(inventoryId);
         
-        boolean supportsAddressReporting = inventory.getHardwareType().isRf() || inventory.getHardwareType().isZigbee();
+        boolean supportsAddressReporting = inventory.getHardwareType().isRf() || inventory.getHardwareType().isZigbee() 
+        									|| inventory.getHardwareType().isLmHardware();
         boolean supportsServiceStatusReporting = inventory.getHardwareType().isRf();
         
         if (!supportsServiceStatusReporting) {
