@@ -8,6 +8,8 @@
 using std::endl;
 using std::string;
 
+using Cti::CapControl::serializeFlag;
+
 extern unsigned long _CC_DEBUG;
 
 DEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
@@ -28,11 +30,11 @@ CtiCCSpecial::CtiCCSpecial(StrategyManager * strategyManager)
 CtiCCSpecial::CtiCCSpecial(Cti::RowReader& rdr, StrategyManager * strategyManager)
     : CtiCCAreaBase(rdr, strategyManager)
 {
-    restore(rdr);
+    restoreStaticData(rdr);
 
-    if ( !rdr["additionalflags"].isNull() )
+    if ( hasDynamicData( rdr["additionalflags"] ) )
     {
-        setDynamicData( rdr );
+        restoreDynamicData( rdr );
     }
 }
 
@@ -78,10 +80,14 @@ CtiCCSpecial* CtiCCSpecial::replicate() const
 
     Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCSpecial::restore(Cti::RowReader& rdr)
+void CtiCCSpecial::restoreStaticData(Cti::RowReader& rdr)
 {
-    setDirty(true);
-    _insertDynamicDataFlag = true;
+    // nothing to restore at this level -- see base class
+}
+
+void CtiCCSpecial::restoreDynamicData(Cti::RowReader& rdr)
+{
+    // nothing to restore at this level -- see base class
 }
 
 /*---------------------------------------------------------------------------
@@ -91,49 +97,57 @@ void CtiCCSpecial::restore(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if( isDirty() )
-    {
-        if( !_insertDynamicDataFlag )
-        {
-            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
-            addFlags[0] = (getOvUvDisabledFlag()?'Y':'N');
-            string additionalFlags = string(char2string(*addFlags));
-            additionalFlags.append("NNNNNNNNNNNNNNNNNNN");
-
-            static const string updaterSql = "update dynamicccspecialarea set additionalflags = ?, controlvalue = ? "
-                                             " where areaid = ?";
-            Cti::Database::DatabaseWriter updater(conn, updaterSql);
-
-            updater << additionalFlags << getVoltReductionControlValue() << getPaoId();
-
-            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
-            {
-                setDirty(false); // No error occured!
-            }
-        }
-        else
-        {
-            CTILOG_INFO(dout, "Inserted area into dynamicCCSpecialArea: " << getPaoName());
-            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
-
-            static const string inserterSql = "insert into dynamicccspecialarea values (?, ?, ?)";
-            Cti::Database::DatabaseWriter inserter(conn, inserterSql);
-
-            inserter << getPaoId() << addFlags << getVoltReductionControlValue();
-
-            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
-            {
-                _insertDynamicDataFlag = false;
-                setDirty(false); // No error occured!
-            }
-        }
-    }
+    writeDynamicData( conn,currentDateTime );
 
     getOperationStats().dumpDynamicData(conn, currentDateTime);
 }
 
-void CtiCCSpecial::setDynamicData(Cti::RowReader& rdr)
+std::string CtiCCSpecial::formatFlags() const
 {
-    _insertDynamicDataFlag = false;
-    setDirty(false);
+    std::string flags( 20, 'N' );
+
+    flags[ 0 ] = serializeFlag( getOvUvDisabledFlag() );
+    flags[ 3 ] = serializeFlag( getAreaUpdatedFlag() );
+
+    return flags;
 }
+
+bool CtiCCSpecial::updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "UPDATE "
+            "DYNAMICCCSPECIALAREA "
+        "SET "
+            "additionalflags = ?, "
+            "ControlValue = ? "
+        "WHERE "
+            "AreaID = ?";
+
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer
+        << formatFlags()
+        << getVoltReductionControlValue()
+        << getPaoId();
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+}
+
+bool CtiCCSpecial::insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "INSERT INTO "
+            "DYNAMICCCSPECIALAREA "
+        "VALUES "
+            "(?, ?, ?)";
+
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer
+        << getPaoId()
+        << formatFlags()
+        << getVoltReductionControlValue();
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
+}
+

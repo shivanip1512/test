@@ -10,7 +10,8 @@ using std::string;
 
 extern unsigned long _CC_DEBUG;
 
-using namespace Cti::CapControl;
+using Cti::CapControl::deserializeFlag;
+using Cti::CapControl::serializeFlag;
 using Cti::CapControl::PaoIdVector;
 
 DEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
@@ -33,13 +34,15 @@ CtiCCArea::CtiCCArea(StrategyManager * strategyManager)
 }
 
 CtiCCArea::CtiCCArea(Cti::RowReader& rdr, StrategyManager * strategyManager)
-    : CtiCCAreaBase(rdr, strategyManager)
+    :   CtiCCAreaBase( rdr, strategyManager ),
+        _reEnableAreaFlag( false ),
+        _childVoltReductionFlag( false )
 {
-    restore(rdr);
+    restoreStaticData(rdr);
 
-    if ( !rdr["additionalflags"].isNull() )
+    if ( hasDynamicData( rdr["additionalflags"] ) )
     {
-        setDynamicData( rdr );
+        restoreDynamicData( rdr );
     }
 }
 
@@ -87,13 +90,19 @@ CtiCCArea* CtiCCArea::replicate() const
 
     Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCArea::restore(Cti::RowReader& rdr)
+void CtiCCArea::restoreStaticData(Cti::RowReader& rdr)
 {
-    _reEnableAreaFlag = false;
-    _childVoltReductionFlag = false;
+    // nothing to restore at this level -- see base class
+}
 
-    _insertDynamicDataFlag = true;
-    setDirty(false);
+void CtiCCArea::restoreDynamicData(Cti::RowReader& rdr)
+{
+    std::string flags;
+
+    rdr["additionalflags"] >> flags;
+
+    _reEnableAreaFlag       = deserializeFlag( flags, 1 );
+    _childVoltReductionFlag = deserializeFlag( flags, 2 );
 }
 
 /*---------------------------------------------------------------------------
@@ -103,63 +112,60 @@ void CtiCCArea::restore(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if( isDirty() )
-    {
-        if( !_insertDynamicDataFlag )
-        {
-            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
-            addFlags[0] = (getOvUvDisabledFlag()?'Y':'N');
-            addFlags[1] = (_reEnableAreaFlag?'Y':'N');
-            addFlags[2] = (_childVoltReductionFlag?'Y':'N');
-            addFlags[3] = (getAreaUpdatedFlag()?'Y':'N');
-            string additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) +
-                                char2string(*(addFlags+3)));
-            additionalFlags.append("NNNNNNNNNNNNNNNN");
-
-            static const string updateSql = "update dynamicccarea set additionalflags = ?, controlvalue = ?"
-                                            " where areaid = ?";
-            Cti::Database::DatabaseWriter updater(conn, updateSql);
-
-            updater << additionalFlags << getVoltReductionControlValue() << getPaoId();
-
-            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
-            {
-                setDirty(false); // No error occured!
-            }
-        }
-        else
-        {
-            CTILOG_INFO(dout, "Inserted area into dynamicCCArea: " << getPaoName());
-            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
-
-            static const string insertSql = "insert into dynamicccarea values (?, ?, ?)";
-            Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
-
-            dbInserter << getPaoId() << addFlags <<  getVoltReductionControlValue();
-
-            if( Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
-            {
-                _insertDynamicDataFlag = false;
-                setDirty(false); // No error occured!
-            }
-        }
-    }
+    writeDynamicData( conn, currentDateTime );
 
     getOperationStats().dumpDynamicData(conn, currentDateTime);
 }
 
-void CtiCCArea::setDynamicData(Cti::RowReader& rdr)
+std::string CtiCCArea::formatFlags() const
 {
-    std::string flags;
+    std::string flags( 20, 'N' );
 
-    rdr["additionalflags"] >> flags;
+    flags[ 0 ] = serializeFlag( getOvUvDisabledFlag() );
+    flags[ 1 ] = serializeFlag( _reEnableAreaFlag );
+    flags[ 2 ] = serializeFlag( _childVoltReductionFlag );
+    flags[ 3 ] = serializeFlag( getAreaUpdatedFlag() );
 
-    _reEnableAreaFlag       = deserializeFlag( flags, 1 );
-    _childVoltReductionFlag = deserializeFlag( flags, 2 );
-    setAreaUpdatedFlag(       deserializeFlag( flags, 3 ) );
+    return flags;
+}
 
-    _insertDynamicDataFlag = false;
-    setDirty(false);
+bool CtiCCArea::updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "UPDATE "
+            "DYNAMICCCAREA "
+        "SET "
+            "additionalflags = ?, "
+            "ControlValue = ? "
+        "WHERE "
+            "AreaID = ?";
+
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer
+        << formatFlags()
+        << getVoltReductionControlValue()
+        << getPaoId();
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+}
+
+bool CtiCCArea::insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "INSERT INTO "
+            "DYNAMICCCAREA "
+        "VALUES "
+            "(?, ?, ?)";
+
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer
+        << getPaoId()
+        << formatFlags()
+        << getVoltReductionControlValue();
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
 
 /*---------------------------------------------------------------------------
@@ -184,12 +190,10 @@ bool CtiCCArea::getChildVoltReductionFlag() const
 ---------------------------------------------------------------------------*/
 void CtiCCArea::setChildVoltReductionFlag(bool flag)
 {
-    if(_childVoltReductionFlag != flag)
+    if ( updateDynamicValue( _childVoltReductionFlag, flag ) )
     {
-        setAreaUpdatedFlag(true);
-        setDirty(true);
+        setAreaUpdatedFlag( true );
     }
-    _childVoltReductionFlag = flag;
 }
 
 
@@ -200,11 +204,7 @@ void CtiCCArea::setChildVoltReductionFlag(bool flag)
 ---------------------------------------------------------------------------*/
 void CtiCCArea::setReEnableAreaFlag(bool flag)
 {
-    if(_reEnableAreaFlag != flag)
-    {
-        setDirty(true);
-    }
-    _reEnableAreaFlag = flag;
+    updateDynamicValue( _reEnableAreaFlag, flag );
 }
 
 void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)

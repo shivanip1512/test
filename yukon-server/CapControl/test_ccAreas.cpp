@@ -487,15 +487,105 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getChildVoltReductionFlag() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+
+// Test and document our object copying behavior via replicate
+
+    boost::scoped_ptr<CtiCCArea>    newArea( areas[ 2 ].replicate() );
+
+    // Our new object is identical to the one it was replicated from.
+
+    BOOST_CHECK_EQUAL(                        2, newArea->getPaoId() );
+    BOOST_CHECK_EQUAL(             "CAPCONTROL", newArea->getPaoCategory() );
+    BOOST_CHECK_EQUAL(             "CAPCONTROL", newArea->getPaoClass() );
+    BOOST_CHECK_EQUAL(                "Area 51", newArea->getPaoName() );
+    BOOST_CHECK_EQUAL(                 "CCAREA", newArea->getPaoType() );
+    BOOST_CHECK_EQUAL(             "Top Secret", newArea->getPaoDescription() );
+    BOOST_CHECK_EQUAL(                    false, newArea->getDisableFlag() );
+    BOOST_CHECK_EQUAL(                        0, newArea->getDisabledStatePointId() );
+    BOOST_CHECK_EQUAL(                        0, newArea->getPointIds()->size() );
+    BOOST_CHECK_EQUAL(                        2, newArea->getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(                        2, newArea->getConfirmationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(                       -1, newArea->getStrategyId() );
+    BOOST_CHECK_EQUAL(                      551, newArea->getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, newArea->getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, newArea->getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, newArea->isDirty() );
+    BOOST_CHECK_EQUAL(                    false, newArea->isSpecial() );
+    BOOST_CHECK_EQUAL(                    false, newArea->getAreaUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                       -1, newArea->getPFactor() );
+    BOOST_CHECK_EQUAL(                       -1, newArea->getEstPFactor() );
+    BOOST_CHECK_EQUAL(                        0, newArea->getSubstationIds().size() );
+    BOOST_CHECK_EQUAL(                    false, newArea->getReEnableAreaFlag() );
+    BOOST_CHECK_EQUAL(                    false, newArea->getChildVoltReductionFlag() );
+
+    // Mess with it -- make sure it is independent from its source
+
+    newArea->setPaoName( "Mongo Fett" );
+    newArea->setPaoDescription( "Failed Clone" );
+    newArea->setDisableFlag( true );
+    newArea->setDisabledStatePointId( 1234 );
+    newArea->setVoltReductionControlPointId( 2345 );
+    newArea->setOvUvDisabledFlag( true );   // sets 'dirty' and 'updated' as well
+    newArea->setPFactor( 0.5 );
+    newArea->setEstPFactor( 0.25 );
+    newArea->setReEnableAreaFlag( true );
+    newArea->setChildVoltReductionFlag( true );
+
+    // validate our changes
+
+    BOOST_CHECK_EQUAL(                        2, newArea->getPaoId() );
+    BOOST_CHECK_EQUAL(             "CAPCONTROL", newArea->getPaoCategory() );
+    BOOST_CHECK_EQUAL(             "CAPCONTROL", newArea->getPaoClass() );
+    BOOST_CHECK_EQUAL(             "Mongo Fett", newArea->getPaoName() );
+    BOOST_CHECK_EQUAL(                 "CCAREA", newArea->getPaoType() );
+    BOOST_CHECK_EQUAL(           "Failed Clone", newArea->getPaoDescription() );
+    BOOST_CHECK_EQUAL(                     true, newArea->getDisableFlag() );
+    BOOST_CHECK_EQUAL(                     1234, newArea->getDisabledStatePointId() );
+    BOOST_CHECK_EQUAL(                        0, newArea->getPointIds()->size() );
+    BOOST_CHECK_EQUAL(                        2, newArea->getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(                        2, newArea->getConfirmationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(                       -1, newArea->getStrategyId() );
+    BOOST_CHECK_EQUAL(                     2345, newArea->getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, newArea->getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                     true, newArea->getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                     true, newArea->isDirty() );
+    BOOST_CHECK_EQUAL(                    false, newArea->isSpecial() );
+    BOOST_CHECK_EQUAL(                     true, newArea->getAreaUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                      0.5, newArea->getPFactor() );
+    BOOST_CHECK_EQUAL(                     0.25, newArea->getEstPFactor() );
+    BOOST_CHECK_EQUAL(                        0, newArea->getSubstationIds().size() );
+    BOOST_CHECK_EQUAL(                     true, newArea->getReEnableAreaFlag() );
+    BOOST_CHECK_EQUAL(                     true, newArea->getChildVoltReductionFlag() );
+
+    // Verify our original object we replicated from is unchanged
+
+    BOOST_CHECK_EQUAL(                        2, areas[  2 ].getPaoId() );
+    BOOST_CHECK_EQUAL(             "CAPCONTROL", areas[  2 ].getPaoCategory() );
+    BOOST_CHECK_EQUAL(             "CAPCONTROL", areas[  2 ].getPaoClass() );
+    BOOST_CHECK_EQUAL(                "Area 51", areas[  2 ].getPaoName() );
+    BOOST_CHECK_EQUAL(                 "CCAREA", areas[  2 ].getPaoType() );
+    BOOST_CHECK_EQUAL(             "Top Secret", areas[  2 ].getPaoDescription() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getDisableFlag() );
+    BOOST_CHECK_EQUAL(                        0, areas[  2 ].getDisabledStatePointId() );
+    BOOST_CHECK_EQUAL(                        0, areas[  2 ].getPointIds()->size() );
+    BOOST_CHECK_EQUAL(                        2, areas[  2 ].getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(                        2, areas[  2 ].getConfirmationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getStrategyId() );
+    BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isSpecial() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                        0, areas[  2 ].getSubstationIds().size() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getReEnableAreaFlag() );
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].getChildVoltReductionFlag() );
 }
 
 BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
 {
-/*
-    Bugs or general weirdness
-        Objects are marked as 'dirty' on completion if they don't have dynamic data.
-        We aren't serializing the areaUpdated flag like we do for CtiCCArea
-*/
     boost::ptr_map< long, CtiCCSpecial >    areas;
 
     {   // Core area object initialization
@@ -605,7 +695,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                      551, areas[  2 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getVoltReductionControlValue() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getOvUvDisabledFlag() );
-    BOOST_CHECK_EQUAL(                     true, areas[  2 ].isDirty() );               // why true? shouldn't be - we were just created
+    BOOST_CHECK_EQUAL(                    false, areas[  2 ].isDirty() );
     BOOST_CHECK_EQUAL(                     true, areas[  2 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[  2 ].getAreaUpdatedFlag() );
     BOOST_CHECK_EQUAL(                       -1, areas[  2 ].getPFactor() );
@@ -639,7 +729,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                        0, areas[ 22 ].getVoltReductionControlPointId() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getVoltReductionControlValue() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getOvUvDisabledFlag() );
-    BOOST_CHECK_EQUAL(                     true, areas[ 22 ].isDirty() );               // why true? shouldn't be - we were just created
+    BOOST_CHECK_EQUAL(                    false, areas[ 22 ].isDirty() );
     BOOST_CHECK_EQUAL(                     true, areas[ 22 ].isSpecial() );
     BOOST_CHECK_EQUAL(                    false, areas[ 22 ].getAreaUpdatedFlag() );
     BOOST_CHECK_EQUAL(                       -1, areas[ 22 ].getPFactor() );
@@ -709,7 +799,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].getOvUvDisabledFlag() );
     BOOST_CHECK_EQUAL(                    false, areas[ 52 ].isDirty() );
     BOOST_CHECK_EQUAL(                     true, areas[ 52 ].isSpecial() );
-    BOOST_CHECK_EQUAL(                    false, areas[ 52 ].getAreaUpdatedFlag() );    // additionalflags[ 3 ] == 'y' is unserialized -- false
+    BOOST_CHECK_EQUAL(                     true, areas[ 52 ].getAreaUpdatedFlag() );
     BOOST_CHECK_EQUAL(                       -1, areas[ 52 ].getPFactor() );
     BOOST_CHECK_EQUAL(                       -1, areas[ 52 ].getEstPFactor() );
                           
@@ -718,8 +808,6 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
     // CtiCCSpecial                                         
 
 // Test dirty and updated flags behavior via toggling the setters for each data member
-
-    areas[  2 ].setDirty( false );  // initialize because the object starts in the 'wrong' state
 
     // CtiCCAreaBase contained data members
 

@@ -16,14 +16,16 @@ public:
 
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
-    virtual bool isSpecial() {return true;};
-
     CtiCCSpecial* replicate() const;
 
 private:
 
-    void restore(Cti::RowReader& rdr);
-    void setDynamicData(Cti::RowReader& rdr);
+    void restoreStaticData(Cti::RowReader& rdr);
+    void restoreDynamicData(Cti::RowReader& rdr);
+
+    std::string formatFlags() const;
+    bool updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
+    bool insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
 
     CtiCCSpecial(const CtiCCSpecial& area);
     CtiCCSpecial& operator=(const CtiCCSpecial& right);

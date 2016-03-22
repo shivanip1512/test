@@ -17,8 +17,6 @@ public:
     bool getReEnableAreaFlag() const;
     bool getChildVoltReductionFlag() const;
 
-    void deleteCCSubs(long subId);
-
     void setReEnableAreaFlag(bool flag);
     void setChildVoltReductionFlag(bool flag);
 
@@ -34,8 +32,12 @@ private:
     bool _reEnableAreaFlag;
     bool _childVoltReductionFlag;
 
-    void restore(Cti::RowReader& rdr);
-    void setDynamicData(Cti::RowReader& rdr);
+    void restoreStaticData(Cti::RowReader& rdr);
+    void restoreDynamicData(Cti::RowReader& rdr);
+
+    std::string formatFlags() const;
+    bool updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
+    bool insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
 
     CtiCCArea(const CtiCCArea& area);
     CtiCCArea& operator=(const CtiCCArea& right);

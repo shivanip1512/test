@@ -7,8 +7,9 @@
 #include "ccsubstationbusstore.h"
 #include "ccsubstation.h"
 
-using std::endl;
-using namespace Cti::CapControl;
+using Cti::CapControl::deserializeFlag;
+using Cti::CapControl::calculatePowerFactor;
+
 
 extern unsigned long _CC_DEBUG;
 
@@ -24,9 +25,7 @@ CtiCCAreaBase::CtiCCAreaBase()
       _pfactor(0),
       _estPfactor(0),
       _ovUvDisabledFlag(false),
-      _dirty(false),
-      _areaUpdatedFlag(false),
-      _insertDynamicDataFlag(true)
+      _areaUpdatedFlag(false)
 {
 }
 
@@ -37,9 +36,7 @@ CtiCCAreaBase::CtiCCAreaBase(StrategyManager * strategyManager)
       _pfactor(0),
       _estPfactor(0),
       _ovUvDisabledFlag(false),
-      _dirty(false),
-      _areaUpdatedFlag(false),
-      _insertDynamicDataFlag(true)
+      _areaUpdatedFlag(false)
 {
 }
 
@@ -50,15 +47,13 @@ CtiCCAreaBase::CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyMana
         _pfactor(-1),
         _estPfactor(-1),
         _ovUvDisabledFlag(false),
-        _dirty(false),
-        _areaUpdatedFlag(false),
-        _insertDynamicDataFlag(true)
+        _areaUpdatedFlag(false)
 {
-    restore(rdr);
+    restoreStaticData(rdr);
 
-    if ( !rdr["additionalflags"].isNull() )
+    if ( hasDynamicData( rdr["additionalflags"] ) )
     {
-        setDynamicData( rdr );
+        restoreDynamicData( rdr );
     }
 }
 
@@ -97,8 +92,6 @@ CtiCCAreaBase& CtiCCAreaBase::operator=(const CtiCCAreaBase& right)
 
         _subStationIds = right._subStationIds;
 
-        _insertDynamicDataFlag = right._insertDynamicDataFlag;
-        _dirty = right._dirty;
         _areaUpdatedFlag = right._areaUpdatedFlag;
     }
     return *this;
@@ -110,18 +103,19 @@ CtiCCAreaBase& CtiCCAreaBase::operator=(const CtiCCAreaBase& right)
 
     Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCAreaBase::restore(Cti::RowReader& rdr)
+void CtiCCAreaBase::restoreStaticData(Cti::RowReader& rdr)
 {
     rdr["VoltReductionPointID"] >> _voltReductionControlPointId;
 }
 
-void CtiCCAreaBase::setDynamicData(Cti::RowReader& rdr)
+void CtiCCAreaBase::restoreDynamicData(Cti::RowReader& rdr)
 {
     std::string flags;
 
     rdr["additionalflags"] >> flags;
 
     _ovUvDisabledFlag = deserializeFlag( flags, 0 );
+    _areaUpdatedFlag  = deserializeFlag( flags, 3 );
 
     if ( _voltReductionControlPointId > 0 )
     {
@@ -131,11 +125,6 @@ void CtiCCAreaBase::setDynamicData(Cti::RowReader& rdr)
 
         _voltReductionControlValue = controlValue;
     }
-}
-
-void CtiCCAreaBase::setDirty(bool flag)
-{
-    _dirty = flag;
 }
 
 /*---------------------------------------------------------------------------
@@ -157,8 +146,6 @@ bool CtiCCAreaBase::getVoltReductionControlValue() const
 {
     return _voltReductionControlValue;
 }
-
-
 
 /*---------------------------------------------------------------------------
     getOvUvDisabledFlag
@@ -205,12 +192,8 @@ void CtiCCAreaBase::setVoltReductionControlPointId(long pointId)
 ---------------------------------------------------------------------------*/
 void CtiCCAreaBase::setVoltReductionControlValue(bool flag)
 {
-    const bool hasChanged = setVariableIfDifferent(_voltReductionControlValue, flag);
-
-    _dirty |= hasChanged;
-    _areaUpdatedFlag |= hasChanged;
+    _areaUpdatedFlag |= updateDynamicValue( _voltReductionControlValue, flag );
 }
-
 
 /*---------------------------------------------------------------------------
     setOvUvDisabledFlag
@@ -219,10 +202,7 @@ void CtiCCAreaBase::setVoltReductionControlValue(bool flag)
 ---------------------------------------------------------------------------*/
 void CtiCCAreaBase::setOvUvDisabledFlag(bool flag)
 {
-    const bool hasChanged = setVariableIfDifferent(_ovUvDisabledFlag, flag);
-
-    _dirty |= hasChanged;
-    _areaUpdatedFlag |= hasChanged;
+    _areaUpdatedFlag |= updateDynamicValue( _ovUvDisabledFlag, flag );
 }
 
 /*---------------------------------------------------------------------------
@@ -232,7 +212,7 @@ void CtiCCAreaBase::setOvUvDisabledFlag(bool flag)
 ---------------------------------------------------------------------------*/
 void CtiCCAreaBase::setPFactor(double pfactor)
 {
-    _areaUpdatedFlag |= setVariableIfDifferent(_pfactor, pfactor);
+    _areaUpdatedFlag |= updateStaticValue( _pfactor, pfactor );
 }
 /*---------------------------------------------------------------------------
     setEstPFactor
@@ -241,7 +221,7 @@ void CtiCCAreaBase::setPFactor(double pfactor)
 ---------------------------------------------------------------------------*/
 void CtiCCAreaBase::setEstPFactor(double estpfactor)
 {
-    _areaUpdatedFlag |= setVariableIfDifferent(_estPfactor, estpfactor);
+    _areaUpdatedFlag |= updateStaticValue( _estPfactor, estpfactor );
 }
 
 /*---------------------------------------------------------------------------
@@ -263,6 +243,14 @@ void CtiCCAreaBase::setAreaUpdatedFlag(bool flag)
 {
     _areaUpdatedFlag = flag;
 }
+
+
+bool CtiCCAreaBase::isSpecial() const
+{
+    return getPaoType() == "CCSPECIALAREA";
+}
+
+
 
 void CtiCCAreaBase::addSubstationId(long subId)
 {

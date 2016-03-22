@@ -25,13 +25,6 @@ void DynamicData::setDirty( const bool flag )
     _dirty = flag;
 }
 
-bool DynamicData::taint( const bool flag )
-{
-    _dirty |= flag;
-
-    return flag;
-}
-
 bool DynamicData::hasDynamicData( Cti::RowReader & columnValue )
 {
     if ( ! columnValue.isNull() )

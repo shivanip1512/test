@@ -24,7 +24,29 @@ public:
     bool isDirty() const;
 
     void setDirty( const bool flag );
-    bool taint( const bool flag );
+
+    template<class T>
+    bool updateStaticValue( T & currentValue, const T & newValue )
+    {
+        const bool hasChanged = currentValue != newValue;
+
+        if ( hasChanged )
+        {
+            currentValue = newValue;
+        }
+
+        return hasChanged;
+    }
+
+    template<class T>
+    bool updateDynamicValue( T & currentValue, const T & newValue )
+    {
+        const bool hasChanged = updateStaticValue( currentValue, newValue );
+
+        _dirty |= hasChanged;
+
+        return hasChanged;
+    }
 
     bool hasDynamicData( Cti::RowReader & columnValue );
 

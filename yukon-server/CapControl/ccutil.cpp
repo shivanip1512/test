@@ -257,9 +257,13 @@ double calculatePowerFactor( const double kvar, const double kwatt )
     return pf;
 }
 
+char serializeFlag( const bool flag )
+{
+    return flag ? 'Y' : 'N';
+}
+
 bool deserializeFlag( const std::string & flags, const unsigned index )
 {
-
     return ( index < flags.size() &&
                 ( flags[ index ] == 'Y' ||
                   flags[ index ] == 'y' ||
