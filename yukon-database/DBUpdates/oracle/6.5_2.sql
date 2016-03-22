@@ -2,7 +2,11 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-/* No Updates */
+/* Start YUK-15182 */
+INSERT INTO State VALUES(-20, 14, 'N/A', 9, 6, 0);
+INSERT INTO State VALUES(-20, 15, 'N/A', 9, 6, 0);
+INSERT INTO State VALUES(-20, 16, 'N/A', 9, 6, 0);
+/* End YUK-15182 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

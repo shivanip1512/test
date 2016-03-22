@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/1/2016 5:32:42 PM                          */
+/* Created on:     3/21/2016 3:22:50 PM                         */
 /*==============================================================*/
 
 
@@ -7916,6 +7916,9 @@ INSERT INTO State VALUES(-20, 10, 'Ia', 2, 6, 0);
 INSERT INTO State VALUES(-20, 11, 'Ib', 3, 6, 0);
 INSERT INTO State VALUES(-20, 12, 'Ic', 4, 6, 0);
 INSERT INTO State VALUES(-20, 13, 'Temp', 5, 6, 0);
+INSERT INTO State VALUES(-20, 14, 'N/A', 9, 6, 0);
+INSERT INTO State VALUES(-20, 15, 'N/A', 9, 6, 0);
+INSERT INTO State VALUES(-20, 16, 'N/A', 9, 6, 0);
 INSERT INTO State VALUES(-20, 17, 'Bad Active Relay', 8, 6, 0);
 INSERT INTO State VALUES(-20, 18, 'NC Lockout', 9, 6, 0);
 INSERT INTO State VALUES(-20, 19, 'Control Accepted', 7, 6, 0);
