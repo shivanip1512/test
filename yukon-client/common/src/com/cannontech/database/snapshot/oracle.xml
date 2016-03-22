@@ -7483,6 +7483,15 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_DUALSTAGE_STNENTRY</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>STAGEONETONNAGEID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_DUALSTAGE_STGTWONTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>STAGETWOTONNAGEID</i__columnName>
@@ -7495,15 +7504,6 @@
             <i__foreignKeyName>FK_DUALSTAGE_TYPENTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>TYPEID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DUALSTAGE_STNENTRY</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>STAGEONETONNAGEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7537,18 +7537,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_INVENTOR_REF_CSTLS_YUKONLIS</i__foreignKeyName>
+            <i__foreignKeyName>FK_INVB_YKLSTEVLT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>CATEGORYID</i__columnName>
+            <i__columnName>VOLTAGEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_INVB_YKLSTEVLT</i__foreignKeyName>
+            <i__foreignKeyName>FK_INVENTOR_REF_CSTLS_YUKONLIS</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>VOLTAGEID</i__columnName>
+            <i__columnName>CATEGORYID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7744,18 +7744,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPDUF_YKLST1</i__foreignKeyName>
+            <i__foreignKeyName>FK_APPDUF_YKLST2</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>SECONDARYENERGYSOURCEID</i__columnName>
+            <i__columnName>SWITCHOVERTYPEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPDUF_YKLST2</i__foreignKeyName>
+            <i__foreignKeyName>FK_APPDUF_YKLST1</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>SWITCHOVERTYPEID</i__columnName>
+            <i__columnName>SECONDARYENERGYSOURCEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
