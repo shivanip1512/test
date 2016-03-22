@@ -18,6 +18,7 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
@@ -66,13 +67,15 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
     private int perDayCounter = 0;
     private int minsCounter = 0;
     
-    private final int SecondsPerHour = 3600;
-    private final int SecondsPerDay = 86400;
-    private final int SecondsPerYear = 31556926;
+    private final static int secondsPerYear = 31556926;
     private final static long epoch;
     private RfnMeterSimulatorStatus rfnMeterSimulatorStatus = new RfnMeterSimulatorStatus();
     
     private JmsTemplate jmsTemplate;
+    
+    static {
+        epoch = (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005"))/1000;
+    }
     
     @PostConstruct
     public void init() {
@@ -82,10 +85,6 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
         jmsTemplate.setPubSubDomain(false);
     }
 
-    static {
-        epoch = (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005"))/1000;
-    }
-    
     public RfnMeterSimulatorStatus getExistingRfnMeterSimulatorStatus() {
         return rfnMeterSimulatorStatus;        
     }
@@ -367,11 +366,11 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
 
             if (storedTimestampValue != null
                 && RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).valueType != GeneratedValueType.INCREASING) {
-                if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds() == SecondsPerHour) {
+                if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds() == DateTimeConstants.SECONDS_PER_HOUR) {
                     if (storedTimestampValue.getTimestamp().isAfter((DateTime.now().minusHours(1)))) {
                         return storedTimestampValue;
                     }
-                } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds() == SecondsPerDay) {
+                } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds() == DateTimeConstants.SECONDS_PER_DAY) {
                     if (storedTimestampValue.getTimestamp().isAfter((DateTime.now().minusDays(1)))) {
                         return storedTimestampValue;
                     }
@@ -499,7 +498,7 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
     private double getHectoWattHours(int address, long CurrentTimeInSeconds) {
         long duration = CurrentTimeInSeconds - epoch;
         double consumptionWs = makeValueConsumption(address, epoch, duration);
-        double consumptionWh = consumptionWs / SecondsPerHour;
+        double consumptionWh = consumptionWs / DateTimeConstants.SECONDS_PER_HOUR;
 
         /*
          * Introduced an offset value to be added to the value of the curve
@@ -533,8 +532,8 @@ public class RfnMeterDataSimulatorServiceImpl implements RfnMeterDataSimulatorSe
         long beginSeconds = consumptionTimeInSeconds;
         long endSeconds = consumptionTimeInSeconds + duration;
 
-        double yearPeriod = 2.0 * Math.PI / SecondsPerYear;
-        double dayPeriod = 2.0 * Math.PI / SecondsPerDay;
+        double yearPeriod = 2.0 * Math.PI / secondsPerYear;
+        double dayPeriod = 2.0 * Math.PI / DateTimeConstants.SECONDS_PER_DAY;
 
         double yearPeriodReciprocal = 1.0 / yearPeriod;
         double dayPeriodReciprocal = 1.0 / dayPeriod;
