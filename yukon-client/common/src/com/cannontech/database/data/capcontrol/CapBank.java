@@ -9,6 +9,7 @@ import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
+import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.spring.YukonSpringHook;
 
 public class CapBank extends CapControlDeviceBase {
@@ -44,11 +45,29 @@ public class CapBank extends CapControlDeviceBase {
     public static final String ENABLE_OVUV_OPSTATE = "capOVUVEnabled";
     public static final String DISABLE_OVUV_OPSTATE = "capOVUVDisabled";
 
-    private com.cannontech.database.db.capcontrol.CapBank capBank = null;
+    private com.cannontech.database.db.capcontrol.CapBank capBank = new com.cannontech.database.db.capcontrol.CapBank();
     private List<CCMonitorBankList> ccMonitorBankList = new ArrayList<CCMonitorBankList>();
+    private CapBankAdditional capbankAdditionalInfo = new CapBankAdditional();
 
     public CapBank() {
         super(PaoType.CAPBANK);
+    }
+    
+    public String getName() {
+        return getPAOName();
+    }
+
+    public void setName(String name) {
+        setPAOName(name);
+    }
+  
+    public Integer getId() {
+        return capBank.getDeviceID();
+    }
+
+    public void setId(Integer id) {
+        setPAObjectID(id);
+        capBank.setDeviceID(id);
     }
 
     @Override
@@ -176,6 +195,14 @@ public class CapBank extends CapControlDeviceBase {
             }
         }
         return false;
+    }
+
+    public CapBankAdditional getCapbankAdditionalInfo() {
+        return capbankAdditionalInfo;
+    }
+
+    public void setCapbankAdditionalInfo(CapBankAdditional capbankAdditionalInfo) {
+        this.capbankAdditionalInfo = capbankAdditionalInfo;
     }
 
 }

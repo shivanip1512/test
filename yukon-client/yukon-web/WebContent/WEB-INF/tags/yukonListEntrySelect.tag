@@ -14,10 +14,16 @@
 <%@ attribute name="path" required="true" %>
 <%@ attribute name="onchange" %>
 <%@ attribute name="classes" description="CSS class names applied to the select." %>
+<%@ attribute name="useTextAsValue" description="Use the text (label) as the value" %>
 
 <cti:yukonListEntryList var="entryList" listName="${listName}" energyCompanyId="${energyCompanyId}"/>
 
-<tags:selectWithItems id="${pageScope.id}" path="${path}" items="${entryList}" itemValue="entryID" itemLabel="entryText" 
+<c:set var="valuePath" value="entryID"/>
+<c:if test="${useTextAsValue}">
+    <c:set var="valuePath" value="entryText"/>
+</c:if>
+
+<tags:selectWithItems id="${pageScope.id}" path="${path}" items="${entryList}" itemValue="${valuePath}" itemLabel="entryText" 
                       defaultItemValue="${pageScope.defaultItemValue}" 
                       defaultItemLabel="${pageScope.defaultItemLabel}"
                       onchange="${pageScope.onchange}"

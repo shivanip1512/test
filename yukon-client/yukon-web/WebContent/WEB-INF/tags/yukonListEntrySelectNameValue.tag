@@ -13,6 +13,8 @@
 <%@ attribute name="nameClass" %>
 <%@ attribute name="valueClass" %>
 <%@ attribute name="inputClass" description="CSS class names applied to the select." %>
+<%@ attribute name="useTextAsValue" description="Use the text (label) as the value" %>
+
 
 <tags:nameValue2 nameKey="${nameKey}" valueClass="${pageScope.valueClass}" nameClass="${pageScope.nameClass}">
     <tags:yukonListEntrySelect id="${pageScope.id}"
@@ -22,5 +24,6 @@
                                defaultItemValue="${pageScope.defaultItemValue}"
                                defaultItemLabel="${pageScope.defaultItemLabel}"
                                onchange="${pageScope.onchange}"
-                               classes="${pageScope.inputClass}"/>
+                               classes="${pageScope.inputClass}"
+                               useTextAsValue="${useTextAsValue}"/>
 </tags:nameValue2>

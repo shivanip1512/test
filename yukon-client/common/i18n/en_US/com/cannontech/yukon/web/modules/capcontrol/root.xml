@@ -141,6 +141,65 @@
     <entry key="yukon.web.modules.capcontrol.bankMove.selectedFeeder.title">{0} Banks</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.path">{0} > {1} > {2} > {3}</entry>
     
+        
+    <!-- capBank.jsp -->
+    <entry key="yukon.web.modules.capcontrol.capbank.CREATE.pageTitle">Create CapBank</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.CREATE.pageHeading">Create CapBank</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.CREATE.crumbTitle">Create CapBank</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.VIEW.pageTitle">CapBank: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.EDIT.pageTitle">CapBank: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.orphan.VIEW.pageTitle">CapBank: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.orphan.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.orphan.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.orphan.EDIT.pageTitle">CapBank: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.orphan.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.orphan.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.orphan.CREATE.pageTitle">Create CapBank</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.orphan.CREATE.pageHeading">Create CapBank</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.orphan.CREATE.crumbTitle">Create</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.address">Address</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.switchManufacturer">Switch Manufacturer</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.controllerType">Controller Type</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.switchType">Type of Switch</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.additionalInfoTab">Additional Info</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.updated">CapBank was updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.delete.success">CapBank {0} deleted successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.maintenanceSection.title">Maintenance</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.communicationSection.title">Communication</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.locationSection.title">Location</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.configurationSection.title">Configuration</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.custom">Custom</entry>
+    
+    
+    <!-- Cap Bank Configs -->
+    <entry key="yukon.web.modules.capcontrol.capbank.config.NONE">None</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.config.WYE">Wye</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.config.DELTA">Delta</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.config.SERIAL">Serial</entry>
+    <!-- Cap Bank Potential Transformers -->
+    <entry key="yukon.web.modules.capcontrol.capbank.potentialTransformer.NONE">None</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.potentialTransformer.DEDICATED">Dedicated</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.potentialTransformer.DEDICATED_A">Dedicated-A</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.potentialTransformer.DEDICATED_B">Dedicated-B</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.potentialTransformer.DEDICATED_C">Dedicated-C</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.potentialTransformer.SHARED">Shared</entry>
+    <!-- Cap Bank Communication Medium -->
+    <entry key="yukon.web.modules.capcontrol.capbank.communicationMedium.NONE">None</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.communicationMedium.PAGING">Paging</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.communicationMedium.DLC">DLC</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.communicationMedium.VHF">VHF</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.communicationMedium.ONEXRTT">1XRTT</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.communicationMedium.GPRS">GPRS</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.communicationMedium.SSRADIO">SSRadio</entry>
+    <!-- Cap Bank Antenna Types -->
+    <entry key="yukon.web.modules.capcontrol.capbank.antennaType.NONE">None</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.antennaType.YAGI">Yagi</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.antennaType.OMNI">Omni</entry>
+    
     <!-- capBankAddInfoPopup.jsp -->
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.setting">Setting</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.value">Value</entry>
@@ -149,16 +208,23 @@
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.latitude">Latitude</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.longitude">Longitude</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.cbConfig">Cap Bank Configuration</entry> 
+    <entry key="yukon.web.modules.capcontrol.cbAddInfo.config">Config</entry> 
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.commMedium">Communication Medium</entry>
+    <entry key="yukon.web.modules.capcontrol.cbAddInfo.medium">Medium</entry>
+    <entry key="yukon.web.modules.capcontrol.cbAddInfo.commStrength">Strength</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.externalAntenna">External Antenna</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.antennaType">Antenna Type</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.lastMaintVisit">Last Maintenance Visit</entry> 
+    <entry key="yukon.web.modules.capcontrol.cbAddInfo.lastVisit">Last Visit</entry> 
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.lastInspection">Last Inspection</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.opCountResetDate">Op Count Reset Date</entry> 
+    <entry key="yukon.web.modules.capcontrol.cbAddInfo.lastOpCountReset">Last Op Count Reset</entry> 
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.potentialTransformer">Potential Transformer</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.maintRequestPending">Maintenance Request Pending</entry> 
+    <entry key="yukon.web.modules.capcontrol.cbAddInfo.requestPending">Request Pending</entry> 
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.otherComments">Other Comments</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.opteamComments">Opteam Comments</entry>
+    <entry key="yukon.web.modules.capcontrol.cbAddInfo.opTeamComments">Op Team Comments</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.cbcInstallDate">CBC Install Date</entry> 
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.cbMapAddress">Cap Bank Map Address</entry> 
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.drivingDirections">Driving Directions</entry>

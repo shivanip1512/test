@@ -17,7 +17,7 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange {
     private static final Integer INT_ZERO = new Integer(0);
     private static final Double DBL_ZERO = new Double(0.0);
 
-    private static final String STR_NONE = "(none)";
+    public static final String STR_NONE = "(none)";
 
     private Integer deviceID;
     private Integer maintAreaID = INT_ZERO;
@@ -41,6 +41,8 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange {
 
     private Boolean extAnt = Boolean.TRUE;
     private Boolean reqPend = Boolean.TRUE;
+    private Boolean customCommMedium = Boolean.TRUE;
+    private String commMediumCustom = STR_NONE;
 
     public String[] CONSTRAINT_COLUMNS = { "DeviceID" };
     public String[] SETTER_COLUMNS = { "MaintenanceAreaID", "PoleNumber",
@@ -280,8 +282,6 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange {
     public Boolean getExtAnt() {
         if (getExtAntenna().equalsIgnoreCase(STR_N)) {
             extAnt = Boolean.FALSE;
-            setAntennaType(STR_NONE);
-
         }
         return extAnt;
     }
@@ -323,5 +323,21 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange {
                         dbChangeType);
 
         return dbChange;
+    }
+
+    public Boolean getCustomCommMedium() {
+        return customCommMedium;
+    }
+
+    public void setCustomCommMedium(Boolean customCommMedium) {
+        this.customCommMedium = customCommMedium;
+    }
+
+    public String getCommMediumCustom() {
+        return commMediumCustom;
+    }
+
+    public void setCommMediumCustom(String commMediumCustom) {
+        this.commMediumCustom = commMediumCustom;
     }
 }

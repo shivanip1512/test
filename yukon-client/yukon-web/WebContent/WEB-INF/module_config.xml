@@ -676,6 +676,15 @@
                       <page name="feeder.EDIT" type="BASIC" hideFavorite="true">
                         <labelArgument>${feederName}</labelArgument>
                       </page>
+                        <page name="capbank.VIEW" type="BASIC">
+                        <link>/capcontrol/capbanks/${capbankId}</link>
+                        <labelArgument>${capbankName}</labelArgument>
+                        <pages>
+                          <page name="capbank.EDIT" type="BASIC" hideFavorite="true">
+                            <labelArgument>${capbankName}</labelArgument>
+                          </page>
+                        </pages>
+                      </page>
                     </pages>
                   </page>
                     </pages>
@@ -772,6 +781,16 @@
             <pages>
               <page name="feeder.orphan.EDIT" type="BASIC" hideFavorite="true">
                 <labelArgument>${feederName}</labelArgument>
+              </page>
+            </pages>
+          </page>
+          <page name="capbank.orphan.CREATE" type="BASIC" />
+          <page name="capbank.orphan.VIEW" type="BASIC">
+            <link>/capcontrol/capbanks/${capbankId}</link>
+            <labelArgument>${capbankName}</labelArgument>
+            <pages>
+              <page name="capbank.orphan.EDIT" type="BASIC" hideFavorite="true">
+                <labelArgument>${capbankName}</labelArgument>
               </page>
             </pages>
           </page>
