@@ -17,9 +17,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 
 public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroupRequestExecutionService {
@@ -28,8 +25,6 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
     private DeviceGroupService deviceGroupService;
     private Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionServiceImpl.class);
-    
-    @Autowired private DbChangeManager dbChangeManager;
     
     // SCHEDULE - COMMAND
 	@Override
@@ -66,9 +61,6 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
         YukonJob job =
             jobManager.scheduleJob(scheduledGroupRequestExecutionJobDefinition, task, cronExpression, userContext);
 
-        dbChangeManager.processDbChange(DbChangeType.ADD,
-                                        DbChangeCategory.WEB_SCHEDULE,
-                                        job.getId());
 
         log.info("Job scheduled. jobId=" + job.getId() + ", groupName=" + groupName + ", attributes=" + attributes
             + ", command=" + command + ", cronExpression=" + cronExpression + ", user="
@@ -88,10 +80,6 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
         YukonJob job =
             jobManager.replaceScheduledJob(existingJobId, scheduledGroupRequestExecutionJobDefinition, task,
                 cronExpression, userContext);
-
-        dbChangeManager.processDbChange(DbChangeType.UPDATE,
-                                        DbChangeCategory.WEB_SCHEDULE,
-                                        job.getId());
 
         log.info("Job scheduled. jobId=" + job.getId() + ", groupName=" + groupName + ", attributes=" + attributes
             + ", command=" + command + ", cronExpression=" + cronExpression + ", user="

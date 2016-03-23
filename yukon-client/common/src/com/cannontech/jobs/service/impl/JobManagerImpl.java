@@ -43,6 +43,9 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
@@ -58,6 +61,7 @@ public class JobManagerImpl implements JobManager {
     private ScheduledExecutor scheduledExecutor;
     private TransactionTemplate transactionTemplate;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DbChangeManager dbChangeManager;
     
     private ConcurrentMap<YukonJob, YukonTask> currentlyRunning =
             new ConcurrentHashMap<YukonJob, YukonTask>(10, .75f, 2);
@@ -225,6 +229,9 @@ public class JobManagerImpl implements JobManager {
                                         Map<String, String> jobProperties) {
         YukonJob job = getJob(jobId);
         deleteJob(job);
+        dbChangeManager.processDbChange(DbChangeType.DELETE,
+                                        DbChangeCategory.SCHEDULE,
+                                        jobId);
         YukonJob scheduledJob =
             scheduleJob(jobDefinition, task, cronExpression, userContext, jobProperties, job.getJobGroupId());
         return scheduledJob;
@@ -254,6 +261,11 @@ public class JobManagerImpl implements JobManager {
 
         repeatingJob.setCronString(cronExpression);
         scheduledRepeatingJobDao.save(repeatingJob);
+        dbChangeManager.processDbChange(DbChangeType.ADD,
+                                        DbChangeCategory.SCHEDULE,
+                                        repeatingJob.getId());
+        
+        
 
         doScheduleScheduledJob(repeatingJob, null);
 
