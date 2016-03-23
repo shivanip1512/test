@@ -39,6 +39,10 @@
         <property name="name" value="userGroupToYukonGroupMappingTableCsvSource"/>
     </bean>
     
+    <bean class="com.cannontech.support.service.impl.SupportBundleStoredProcedureLogTableWriter">
+        <property name="name" value="storedProcedureLogTableCsvSource"/>
+    </bean>
+    
     <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
         <property name="zipDirectory" value="MACSscripts"/>
         <property name="fileOrDirName" value="/Server/MACSscripts/"/>

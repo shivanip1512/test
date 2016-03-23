@@ -164,6 +164,7 @@
     <entry key="yukon.web.modules.support.supportBundle.writerName.themeDirectory">Theme Directory</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupToYukonGroupMappingTableCsvSource">UserGroup to YukonGroup Mapping</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupTableCsvSource">UserGroup Table</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.storedProcedureLogTableCsvSource">Stored Procedure Log</entry>
 
     <entry key="yukon.web.startOver.testMessage">Test "startOver"</entry>
 
