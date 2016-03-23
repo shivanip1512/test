@@ -39,6 +39,7 @@ public:
     CtiSignalMsg* setAlarmAcknowledged(long pointid, int alarm_condition, bool acked = true);
     CtiSignalMsg* clearAlarms(long pointid);
 
+    bool isAlarmedOrConditionActive(long pointid, int alarm_condition) const;// The manager has an active "condition" on this point, it may or may not have an active alarm.
     bool isAlarmed(long pointid, int alarm_condition) const;                // The manager has an active and/or unacknowledged alarm on this condition for this point.
     bool isAlarmActive(long pointid, int alarm_condition) const;            // The manager has an active alarm on this condition for this point.  It could be acknowledged or otherwise
     bool isAlarmUnacknowledged(long pointid, int alarm_condition) const;    // The manager has an unacknowledged alarm on this condition for this point.  It could be active or otherwise

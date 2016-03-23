@@ -99,7 +99,7 @@ private:
     void checkStatusCommandFail(int alarm, const CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
     void checkStatusState(int alarm, const CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
     void tagSignalAsAlarm(const CtiPointBase &point, CtiSignalMsg *&pSig, int alarm, const CtiPointDataMsg *pData);
-    void updateDynTagsForSignalMsg( const CtiPointBase &point, CtiSignalMsg *&pSig, int alarm_condition, bool condition_active );
+    void updateDynTagsForSignalMsg( const CtiPointBase &point, CtiSignalMsg *&pSig );
 
     bool ablementDevice(Cti::DeviceBaseLite &dLite, UINT setmask, UINT tagmask);
     bool ablementPoint(const CtiPointBase &point, bool &devicedifferent, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &Multi);

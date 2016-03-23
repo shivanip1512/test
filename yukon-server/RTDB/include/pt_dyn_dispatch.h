@@ -14,8 +14,6 @@ class IM_EX_PNTDB CtiDynamicPointDispatch : boost::noncopyable
    bool _inDelayedData;
    bool _wasArchived;
 
-   unsigned _conditionActive;     // These are the point conditions (alarmable conditions) active for this point.
-
 public:
 
    CtiDynamicPointDispatch(LONG id,  double initialValue = 0.0, INT qual = UnintializedQuality);
@@ -43,9 +41,6 @@ public:
 
    bool inDelayedData() const;
    void setInDelayedData(bool delayed);
-
-   void setConditionActive(int alarm_condition, bool active);
-   bool isConditionActive(int alarm_condition) const;
 };
 
 typedef boost::shared_ptr< CtiDynamicPointDispatch > CtiDynamicPointDispatchSPtr;

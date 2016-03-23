@@ -4,7 +4,6 @@
 
 
 CtiDynamicPointDispatch::CtiDynamicPointDispatch(LONG id, double initialValue, INT qual) :
-_conditionActive(0),
 _inDelayedData(false),
 _archivePending(false),
 _wasArchived(false),
@@ -99,20 +98,3 @@ void CtiDynamicPointDispatch::setInDelayedData(const bool delayed)
 {
     _inDelayedData = delayed;
 }
-
-void CtiDynamicPointDispatch::setConditionActive(int alarm_condition, bool active)
-{
-    if(active)
-    {
-        _conditionActive |= (0x00000001 << alarm_condition);
-    }
-    else
-    {
-        _conditionActive &= ~(0x00000001 << alarm_condition);
-    }
-}
-bool CtiDynamicPointDispatch::isConditionActive(int alarm_condition) const
-{
-    return _conditionActive & (0x00000001 << alarm_condition);
-}
-

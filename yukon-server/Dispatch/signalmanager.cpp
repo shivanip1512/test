@@ -190,6 +190,7 @@ CtiSignalMsg * CtiSignalManager::clearAlarms(long pointid)
 
 }
 
+
 // This is now based on the TAG_ACTIVE_CONDITION more than the TAG_ACTIVE_ALARM
 // This may not set the alarm to active even though the active parameter is true!!
 // If getSignalCategory() == SignalEvent then the alarm is active.
@@ -348,6 +349,19 @@ bool CtiSignalManager::isAlarmed(long pointid, int alarm_condition) const       
 
     return ((getConditionTags(pointid,alarm_condition) & MASK_ANY_ALARM ) != 0x00000000);
 }
+
+bool CtiSignalManager::isAlarmedOrConditionActive(long pointid, int alarm_condition) const
+{
+    CtiLockGuard< CtiMutex > tlg(_mux, 5000);
+    while(!tlg.isAcquired())
+    {
+        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
+        tlg.tryAcquire(5000);
+    }
+
+    return ((getConditionTags(pointid,alarm_condition)& SIGNAL_MANAGER_MASK)!= 0x00000000); 
+}
+
 
 bool CtiSignalManager::isAlarmActive(long pointid, int alarm_condition) const             // The manager has an active alarm on this condition for this point.  It could be acknowledged or otherwise
 {
