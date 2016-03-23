@@ -252,7 +252,7 @@ public class OperatorHardwareConfigController {
         int deviceId = inventoryDao.getDeviceId(inventoryId);
         
         boolean supportsAddressReporting = inventory.getHardwareType().isRf() || inventory.getHardwareType().isZigbee() 
-        									|| inventory.getHardwareType().isLmHardware();
+        									|| inventory.getHardwareType().isTwoWayPlcLcr();
         boolean supportsServiceStatusReporting = inventory.getHardwareType().isRf();
         
         if (!supportsServiceStatusReporting) {
