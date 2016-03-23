@@ -13,37 +13,50 @@ namespace Cti
 class CtiCCAreaBase : public Controllable, public DynamicData
 {
 public:
+
     DECLARE_COLLECTABLE( CtiCCAreaBase );
 
-    CtiCCAreaBase();
-    CtiCCAreaBase(StrategyManager * strategyManager);
+    CtiCCAreaBase(StrategyManager * strategyManager = nullptr);
     CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyManager);
 
-    virtual ~CtiCCAreaBase();
+    virtual ~CtiCCAreaBase() = default;
 
     long getVoltReductionControlPointId() const;
     bool getVoltReductionControlValue() const;
     bool getOvUvDisabledFlag() const;
+    bool getAreaUpdatedFlag() const;
+    double getPFactor() const;
+    double getEstPFactor() const;
 
-    Cti::CapControl::PaoIdVector getSubstationIds() const {return _subStationIds;}
-    void addSubstationId(long subId);
-    void removeSubstationId(long subId);
-
-    void setVoltReductionControlPointId(long pointId);
-    void setVoltReductionControlValue(bool flag);
-    void setOvUvDisabledFlag(bool flag);
-
-    void updatePowerFactorData();
+    void setVoltReductionControlPointId(const long pointId);
+    void setVoltReductionControlValue(const bool flag);
+    void setOvUvDisabledFlag(const bool flag);
+    void setAreaUpdatedFlag(const bool flag);
+    void setPFactor(const double pfactor);
+    void setEstPFactor(const double estPfactor);
 
     bool isSpecial() const;
 
-    void setAreaUpdatedFlag(bool flag);
-    bool getAreaUpdatedFlag() const;
+    Cti::CapControl::PaoIdVector getSubstationIds() const;
+    void addSubstationId(const long subId);
+    void removeSubstationId(const long subId);
 
-    double getPFactor() const;
-    double getEstPFactor() const;
-    void setPFactor(double pfactor);
-    void setEstPFactor(double estPfactor);
+    void updatePowerFactorData();
+
+protected:
+
+    CtiCCAreaBase(const CtiCCAreaBase& area) = default;
+    CtiCCAreaBase& operator=(const CtiCCAreaBase& right) = delete;
+
+    enum DynamicFlagInfo
+    {
+        Index_OvUvDisabled,
+        Index_ReEnableArea,
+        Index_ChildVReduction,
+        Index_AreaUpdated,
+
+        Length_DynamicFlags = 20
+    };
 
 private:
 
@@ -58,11 +71,6 @@ private:
 
     void restoreStaticData(Cti::RowReader& rdr);
     void restoreDynamicData(Cti::RowReader& rdr);
-
-protected:
-
-    CtiCCAreaBase(const CtiCCAreaBase& area);
-    CtiCCAreaBase& operator=(const CtiCCAreaBase& right);
 };
 
 typedef CtiCCAreaBase* CtiCCAreaBasePtr;

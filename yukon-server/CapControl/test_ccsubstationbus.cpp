@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(test_parallel_bus)
     StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
     _strategyManager.reloadAll();
 
-    CtiCCArea *area = create_object<CtiCCArea>(1, "Area-1");
+    CtiCCAreaPtr area = create_object<CtiCCArea>(1, "Area-1");
     CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
 
 
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
     Cti::CapControl::EventLogEntries ccEvents;
 
-    CtiCCArea *area = create_object<CtiCCArea>(1, "Area-1");
+    CtiCCAreaPtr area = create_object<CtiCCArea>(1, "Area-1");
     CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
 
     CtiCCSubstationBus *bus1 = create_object<CtiCCSubstationBus>(3, "SubBus-A1");

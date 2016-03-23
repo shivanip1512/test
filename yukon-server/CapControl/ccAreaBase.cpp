@@ -9,34 +9,21 @@
 
 using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::calculatePowerFactor;
-
-
-extern unsigned long _CC_DEBUG;
+using Cti::CapControl::PaoIdVector;
 
 DEFINE_COLLECTABLE( CtiCCAreaBase, CTICCAREABASE_ID )
 
-/*---------------------------------------------------------------------------
+/*
     Constructors
----------------------------------------------------------------------------*/
-CtiCCAreaBase::CtiCCAreaBase()
-    : Controllable(0),
-      _voltReductionControlPointId(0),
-      _voltReductionControlValue(0),
-      _pfactor(0),
-      _estPfactor(0),
-      _ovUvDisabledFlag(false),
-      _areaUpdatedFlag(false)
-{
-}
-
+*/
 CtiCCAreaBase::CtiCCAreaBase(StrategyManager * strategyManager)
-    : Controllable(strategyManager),
-      _voltReductionControlPointId(0),
-      _voltReductionControlValue(0),
-      _pfactor(0),
-      _estPfactor(0),
-      _ovUvDisabledFlag(false),
-      _areaUpdatedFlag(false)
+    :   Controllable(strategyManager),
+        _voltReductionControlPointId(0),
+        _voltReductionControlValue(false),
+        _pfactor(0),
+        _estPfactor(0),
+        _ovUvDisabledFlag(false),
+        _areaUpdatedFlag(false)
 {
 }
 
@@ -49,73 +36,32 @@ CtiCCAreaBase::CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyMana
         _ovUvDisabledFlag(false),
         _areaUpdatedFlag(false)
 {
-    restoreStaticData(rdr);
-
+    restoreStaticData( rdr );
     if ( hasDynamicData( rdr["additionalflags"] ) )
     {
         restoreDynamicData( rdr );
     }
 }
 
-CtiCCAreaBase::CtiCCAreaBase(const CtiCCAreaBase& base)
-    : Controllable(base)
-{
-    operator=(base);
-}
-
-/*---------------------------------------------------------------------------
-    Destructor
----------------------------------------------------------------------------*/
-CtiCCAreaBase::~CtiCCAreaBase()
-{
-    if (!_subStationIds.empty())
-    {
-        _subStationIds.clear();
-    }
-}
-
-/*---------------------------------------------------------------------------
-    operator=
----------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::operator=(const CtiCCAreaBase& right)
-{
-    Controllable::operator=(right);
-
-    if( this != &right )
-    {
-        _ovUvDisabledFlag = right._ovUvDisabledFlag;
-        _pfactor = right._pfactor;
-        _estPfactor = right._estPfactor;
-
-        _voltReductionControlPointId = right._voltReductionControlPointId;
-        _voltReductionControlValue = right._voltReductionControlValue;
-
-        _subStationIds = right._subStationIds;
-
-        _areaUpdatedFlag = right._areaUpdatedFlag;
-    }
-    return *this;
-}
-
-
-/*---------------------------------------------------------------------------
-    restore
-
-    Restores given a Reader
----------------------------------------------------------------------------*/
+/*
+    Restores the static data portion of the area from the given Reader
+*/
 void CtiCCAreaBase::restoreStaticData(Cti::RowReader& rdr)
 {
     rdr["VoltReductionPointID"] >> _voltReductionControlPointId;
 }
 
+/*
+    Restores the dynamic data portion of the area from the given Reader
+*/
 void CtiCCAreaBase::restoreDynamicData(Cti::RowReader& rdr)
 {
     std::string flags;
 
     rdr["additionalflags"] >> flags;
 
-    _ovUvDisabledFlag = deserializeFlag( flags, 0 );
-    _areaUpdatedFlag  = deserializeFlag( flags, 3 );
+    _ovUvDisabledFlag = deserializeFlag( flags, Index_OvUvDisabled );
+    _areaUpdatedFlag  = deserializeFlag( flags, Index_AreaUpdated );
 
     if ( _voltReductionControlPointId > 0 )
     {
@@ -127,142 +73,109 @@ void CtiCCAreaBase::restoreDynamicData(Cti::RowReader& rdr)
     }
 }
 
-/*---------------------------------------------------------------------------
-    getControlPointId
-
-    Returns the controlPoint Id of the area
----------------------------------------------------------------------------*/
+/*
+    Accessors
+*/
 long CtiCCAreaBase::getVoltReductionControlPointId() const
 {
     return _voltReductionControlPointId;
 }
 
-/*---------------------------------------------------------------------------
-    getControlValue
-
-    Returns the ControlValue flag of the area
----------------------------------------------------------------------------*/
 bool CtiCCAreaBase::getVoltReductionControlValue() const
 {
     return _voltReductionControlValue;
 }
 
-/*---------------------------------------------------------------------------
-    getOvUvDisabledFlag
-
-    Returns the ovuv disable flag of the area
----------------------------------------------------------------------------*/
 bool CtiCCAreaBase::getOvUvDisabledFlag() const
 {
     return _ovUvDisabledFlag;
 }
 
-/*---------------------------------------------------------------------------
-    getPFactor
-
-    Returns the getPFactor of the area
----------------------------------------------------------------------------*/
-double CtiCCAreaBase::getPFactor() const
-{
-    return _pfactor;
-}
-/*---------------------------------------------------------------------------
-    getEstPFactor
-
-    Returns the getEstPFactor of the area
----------------------------------------------------------------------------*/
-double CtiCCAreaBase::getEstPFactor() const
-{
-    return _estPfactor;
-}
-
-/*---------------------------------------------------------------------------
-    setControlPointId
-
-    Sets the ControlPointId of the area
----------------------------------------------------------------------------*/
-void CtiCCAreaBase::setVoltReductionControlPointId(long pointId)
-{
-    _voltReductionControlPointId = pointId;
-}
-/*---------------------------------------------------------------------------
-    setControlValue
-
-    Sets the ControlValue flag of the area
----------------------------------------------------------------------------*/
-void CtiCCAreaBase::setVoltReductionControlValue(bool flag)
-{
-    _areaUpdatedFlag |= updateDynamicValue( _voltReductionControlValue, flag );
-}
-
-/*---------------------------------------------------------------------------
-    setOvUvDisabledFlag
-
-    Sets the ovuv disable flag of the area
----------------------------------------------------------------------------*/
-void CtiCCAreaBase::setOvUvDisabledFlag(bool flag)
-{
-    _areaUpdatedFlag |= updateDynamicValue( _ovUvDisabledFlag, flag );
-}
-
-/*---------------------------------------------------------------------------
-    setPFactor
-
-    Sets the PFactor of the area
----------------------------------------------------------------------------*/
-void CtiCCAreaBase::setPFactor(double pfactor)
-{
-    _areaUpdatedFlag |= updateStaticValue( _pfactor, pfactor );
-}
-/*---------------------------------------------------------------------------
-    setEstPFactor
-
-    Sets the estPFactor of the area
----------------------------------------------------------------------------*/
-void CtiCCAreaBase::setEstPFactor(double estpfactor)
-{
-    _areaUpdatedFlag |= updateStaticValue( _estPfactor, estpfactor );
-}
-
-/*---------------------------------------------------------------------------
-    getAreaUpdatedFlag()
-
-    Returns the getAreaUpdatedFlag() of the area
----------------------------------------------------------------------------*/
 bool CtiCCAreaBase::getAreaUpdatedFlag() const
 {
     return _areaUpdatedFlag;
 }
 
-/*---------------------------------------------------------------------------
-    setAreaUpdatedFlag
-
-    Sets the AreaUpdated flag of the area
----------------------------------------------------------------------------*/
-void CtiCCAreaBase::setAreaUpdatedFlag(bool flag)
+double CtiCCAreaBase::getPFactor() const
 {
-    _areaUpdatedFlag = flag;
+    return _pfactor;
 }
 
+double CtiCCAreaBase::getEstPFactor() const
+{
+    return _estPfactor;
+}
 
+/*
+    Mutators
+        * static data should be updated through updateStaticValue().
+        * dynamic data should be updated through updateDynamicValue() to maintain the state of the _dirty
+            flag ensuring proper DB serialization.
+        * anything that changes a value on the web display should set _areaUpdatedFlag to make sure the
+            area message is sent to the UI.
+*/
+
+void CtiCCAreaBase::setVoltReductionControlPointId(const long pointId)
+{
+    updateStaticValue( _voltReductionControlPointId, pointId );
+}
+
+void CtiCCAreaBase::setVoltReductionControlValue(const bool flag)
+{
+    _areaUpdatedFlag |= updateDynamicValue( _voltReductionControlValue, flag );
+}
+
+void CtiCCAreaBase::setOvUvDisabledFlag(const bool flag)
+{
+    _areaUpdatedFlag |= updateDynamicValue( _ovUvDisabledFlag, flag );
+}
+
+void CtiCCAreaBase::setAreaUpdatedFlag(const bool flag)
+{
+    updateStaticValue( _areaUpdatedFlag, flag );
+}
+
+void CtiCCAreaBase::setPFactor(const double pfactor)
+{
+    _areaUpdatedFlag |= updateStaticValue( _pfactor, pfactor );
+}
+
+void CtiCCAreaBase::setEstPFactor(const double estpfactor)
+{
+    _areaUpdatedFlag |= updateStaticValue( _estPfactor, estpfactor );
+}
+
+/*
+    Area sub-type determiner...
+*/
 bool CtiCCAreaBase::isSpecial() const
 {
     return getPaoType() == "CCSPECIALAREA";
 }
 
-
-
-void CtiCCAreaBase::addSubstationId(long subId)
+/*
+    Maintain the collection of paoIDs of the areas attached substations
+*/
+void CtiCCAreaBase::addSubstationId(const long subId)
 {
     _subStationIds.push_back(subId);
 }
 
-void CtiCCAreaBase::removeSubstationId(long subId)
+void CtiCCAreaBase::removeSubstationId(const long subId)
 {
-    _subStationIds.erase(remove(_subStationIds.begin(), _subStationIds.end(), subId), _subStationIds.end());
+    _subStationIds.erase( std::remove( _subStationIds.begin(), _subStationIds.end(), subId ),
+                          _subStationIds.end() );
 }
-            
 
+PaoIdVector CtiCCAreaBase::getSubstationIds() const
+{
+    return _subStationIds;
+}
+          
+/*
+    The power factor values for the area are computed via the aggregate watt and var values for
+        each attached substation.
+*/
 void CtiCCAreaBase::updatePowerFactorData()
 {
     double  totalWatts         = 0.0,
@@ -272,7 +185,7 @@ void CtiCCAreaBase::updatePowerFactorData()
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
-    for each ( long stationID in getSubstationIds() )
+    for ( long stationID : getSubstationIds() )
     {
         if ( CtiCCSubstationPtr station = store->findSubstationByPAObjectID( stationID ) )
         {

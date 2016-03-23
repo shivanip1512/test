@@ -5,23 +5,15 @@
 #include "database_util.h"
 #include "ccsubstationbusstore.h"
 
-using std::endl;
-using std::string;
-
 using Cti::CapControl::serializeFlag;
 
 extern unsigned long _CC_DEBUG;
 
 DEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
 
-/*---------------------------------------------------------------------------
+/*
     Constructors
----------------------------------------------------------------------------*/
-CtiCCSpecial::CtiCCSpecial()
-    : CtiCCAreaBase(0)
-{
-}
-
+*/
 CtiCCSpecial::CtiCCSpecial(StrategyManager * strategyManager)
     : CtiCCAreaBase(strategyManager)
 {
@@ -30,71 +22,20 @@ CtiCCSpecial::CtiCCSpecial(StrategyManager * strategyManager)
 CtiCCSpecial::CtiCCSpecial(Cti::RowReader& rdr, StrategyManager * strategyManager)
     : CtiCCAreaBase(rdr, strategyManager)
 {
-    restoreStaticData(rdr);
-
-    if ( hasDynamicData( rdr["additionalflags"] ) )
-    {
-        restoreDynamicData( rdr );
-    }
+    // no static or dynamic data to restore here
 }
 
-CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)
-    : CtiCCAreaBase(special)
-{
-    operator=(special);
-}
-
-/*---------------------------------------------------------------------------
-    Destructor
----------------------------------------------------------------------------*/
-CtiCCSpecial::~CtiCCSpecial()
-{
-
-}
-
-/*---------------------------------------------------------------------------
-    operator=
----------------------------------------------------------------------------*/
-CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
-{
-    CtiCCAreaBase::operator=(right);
-
-    if( this != &right )
-    {
-    }
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    replicate
-
-    Restores self's operation fields
----------------------------------------------------------------------------*/
+/* 
+    Clone the object via default defined copy constructor 
+*/
 CtiCCSpecial* CtiCCSpecial::replicate() const
 {
-    return(new CtiCCSpecial(*this));
+    return new CtiCCSpecial( *this );
 }
 
-/*---------------------------------------------------------------------------
-    restore
-
-    Restores given a Reader
----------------------------------------------------------------------------*/
-void CtiCCSpecial::restoreStaticData(Cti::RowReader& rdr)
-{
-    // nothing to restore at this level -- see base class
-}
-
-void CtiCCSpecial::restoreDynamicData(Cti::RowReader& rdr)
-{
-    // nothing to restore at this level -- see base class
-}
-
-/*---------------------------------------------------------------------------
-    dumpDynamicData
-
-    Writes out the dynamic information for this substation bus.
----------------------------------------------------------------------------*/
+/*
+    Writes out the dynamic information for this area.
+*/
 void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     writeDynamicData( conn,currentDateTime );
@@ -102,12 +43,15 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
     getOperationStats().dumpDynamicData(conn, currentDateTime);
 }
 
+/*
+    Generate the additionalflags string for the dynamic data
+*/
 std::string CtiCCSpecial::formatFlags() const
 {
-    std::string flags( 20, 'N' );
+    std::string flags( Length_DynamicFlags, serializeFlag( false ) );
 
-    flags[ 0 ] = serializeFlag( getOvUvDisabledFlag() );
-    flags[ 3 ] = serializeFlag( getAreaUpdatedFlag() );
+    flags[ Index_OvUvDisabled ] = serializeFlag( getOvUvDisabledFlag() );
+    flags[ Index_AreaUpdated ]  = serializeFlag( getAreaUpdatedFlag() );
 
     return flags;
 }
@@ -140,6 +84,8 @@ bool CtiCCSpecial::insertDynamicData( Cti::Database::DatabaseConnection & conn, 
             "DYNAMICCCSPECIALAREA "
         "VALUES "
             "(?, ?, ?)";
+
+    CTILOG_INFO( dout, "Inserting special area into DYNAMICCCSPECIALAREA: " << getPaoName() );
 
     Cti::Database::DatabaseWriter writer( conn, sql );
 

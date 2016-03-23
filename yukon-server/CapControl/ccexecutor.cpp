@@ -2539,7 +2539,7 @@ void CtiCCCommandExecutor::EnableArea()
     }
     else
     {
-        CtiCCSpecial* currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
+        CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
         if (currentSpArea != NULL)
         {
             //CHECK ALL SUBSTATIONS ASSIGNED TO SPECIAL AREA FIRST,
@@ -2555,7 +2555,7 @@ void CtiCCCommandExecutor::EnableArea()
                     if (currentSubstation->getSaEnabledFlag())
                     {
                         refusalFlag = true;
-                        CtiCCSpecial* enabledSpArea = store->findSpecialAreaByPAObjectID(currentSubstation->getSaEnabledId());
+                        CtiCCSpecialPtr enabledSpArea = store->findSpecialAreaByPAObjectID(currentSubstation->getSaEnabledId());
                         if (enabledSpArea != NULL)
                         {
                             refusalText +=  "  Special Area: " + enabledSpArea->getPaoName() + " with Sub: " + currentSubstation->getPaoName() + " is already ENABLED";
@@ -2657,7 +2657,7 @@ void CtiCCCommandExecutor::DisableArea()
     {
         CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas(CtiTime().seconds());
 
-        CtiCCSpecial* currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
+        CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
         if (currentSpArea != NULL)
         {
             string text1 = string("Manual Disable Special Area");
@@ -2935,7 +2935,7 @@ void CtiCCCommandExecutor::EnableSystem()
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
     for(long i=0;i<ccAreas.size();i++)
     {
-        CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
+        CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
         if (currentArea != NULL)
         {
             if (currentArea->getReEnableAreaFlag())
@@ -2989,7 +2989,7 @@ void CtiCCCommandExecutor::DisableSystem()
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
     for(long i=0;i<ccAreas.size();i++)
     {
-        CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
+        CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
         if (currentArea != NULL)
         {
             if (!currentArea->getDisableFlag())
@@ -3839,7 +3839,7 @@ void CtiCCCommandExecutor::ConfirmArea()
     }
     else
     {
-        CtiCCSpecial* currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
+        CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
         if (currentSpArea != NULL)
         {
             //Make sure this special area is enabled, or kick back an error to the clients.
@@ -5214,7 +5214,7 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
 
     for (int i = 0; i <ccAreas.size(); i++ )
     {
-        CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
+        CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
         if ( currentArea != NULL && ! currentArea->getDisableFlag())
         {
             for each (long stationId in currentArea->getSubstationIds())

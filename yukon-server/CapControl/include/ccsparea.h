@@ -6,13 +6,13 @@
 class CtiCCSpecial : public CtiCCAreaBase
 {
 public:
+
     DECLARE_COLLECTABLE( CtiCCSpecial );
 
-    CtiCCSpecial();
-    CtiCCSpecial(StrategyManager * strategyManager);
+    CtiCCSpecial(StrategyManager * strategyManager = nullptr);
     CtiCCSpecial(Cti::RowReader& rdr, StrategyManager * strategyManager);
 
-    virtual ~CtiCCSpecial();
+    virtual ~CtiCCSpecial() = default;
 
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
@@ -20,17 +20,15 @@ public:
 
 private:
 
-    void restoreStaticData(Cti::RowReader& rdr);
-    void restoreDynamicData(Cti::RowReader& rdr);
-
     std::string formatFlags() const;
     bool updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
     bool insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
 
-    CtiCCSpecial(const CtiCCSpecial& area);
-    CtiCCSpecial& operator=(const CtiCCSpecial& right);
+    CtiCCSpecial(const CtiCCSpecial& area) = default;
+    CtiCCSpecial& operator=(const CtiCCSpecial& right) = delete;
 };
 
 typedef CtiCCSpecial* CtiCCSpecialPtr;
 typedef std::set<CtiCCSpecialPtr> CtiCCSpArea_set;
 typedef std::vector<CtiCCSpecialPtr> CtiCCSpArea_vec;
+

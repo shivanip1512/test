@@ -1,8 +1,5 @@
 #include "precompiled.h"
 
-//#include "ctitime.h"
-//#include "database_connection.h"
-
 #include "DynamicData.h"
 #include "database_reader.h"
 

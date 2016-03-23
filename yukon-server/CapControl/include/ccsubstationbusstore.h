@@ -328,7 +328,7 @@ public:
                                           CCStatsObject & weekly,
                                           CCStatsObject & monthly );
 
-    void cascadeAreaStrategySettings(CtiCCAreaBase* object);
+    void cascadeAreaStrategySettings(CtiCCAreaBasePtr object);
     void locateOrphans(Cti::CapControl::PaoIdVector *orphanCaps, Cti::CapControl::PaoIdVector *orphanFeeders, PaoIdToCapBankMap paobject_capbank_map,
                        PaoIdToFeederMap paobject_feeder_map, ChildToParentMap capbank_feeder_map, ChildToParentMap feeder_subbus_map);
     bool isCapBankOrphan(long capBankId);
@@ -420,7 +420,7 @@ public:
 
     void resetAllOpStats();
     void createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
-                                  CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea);
+                                  CtiCCSubstation* station, CtiCCAreaPtr area, CtiCCSpecialPtr spArea);
     void createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
     void setControlStatusAndIncrementFailCount(CtiMultiMsg_vec& pointChanges, long status, CtiCCCapBank* cap);

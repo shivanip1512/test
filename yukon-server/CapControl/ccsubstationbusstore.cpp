@@ -1007,24 +1007,15 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                 return;
             }
 
-            if(_ccGeoAreas->size() > 0 )
+            for ( CtiCCAreaPtr currentCCArea : *_ccGeoAreas )
             {
-                for(long i=0;i<_ccGeoAreas->size();i++)
-                {
-                    CtiCCArea* currentCCArea = (CtiCCArea*)(*_ccGeoAreas)[i];
-                    currentCCArea->dumpDynamicData(conn,currentDateTime);
-                    currentCCArea->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                }
+                currentCCArea->dumpDynamicData( conn, currentDateTime );
             }
-            if(_ccSpecialAreas->size() > 0 )
+            for ( CtiCCSpecialPtr currentSpecial : *_ccSpecialAreas )
             {
-                for(long i=0;i<_ccSpecialAreas->size();i++)
-                {
-                    CtiCCSpecial* currentSpecial = (CtiCCSpecial*)(*_ccSpecialAreas)[i];
-                    currentSpecial->dumpDynamicData(conn,currentDateTime);
-                    currentSpecial->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                }
+                currentSpecial->dumpDynamicData( conn, currentDateTime );
             }
+
             if( _ccSubstations->size() > 0 )
             {
                 for(long i=0;i<_ccSubstations->size();i++)
@@ -1349,15 +1340,13 @@ void CtiCCSubstationBusStore::reset()
         CtiCCExecutorFactory::createExecutor(new SystemStatus(systemEnabled))->execute();
 
         long i=0;
-        for(i = 0; i< _ccSpecialAreas->size();i++)
+        for ( CtiCCSpecialPtr spArea : *_ccSpecialAreas )
         {
-             CtiCCSpecialPtr spArea =  (CtiCCSpecialPtr)(*_ccSpecialAreas).at(i);
              cascadeAreaStrategySettings(spArea);
         }
 
-        for(i=0;i< _ccGeoAreas->size();i++)
+        for ( CtiCCAreaPtr area : *_ccGeoAreas )
         {
-            CtiCCAreaPtr area =  (CtiCCAreaPtr)(*_ccGeoAreas).at(i);
             cascadeAreaStrategySettings(area);
 
             //disables verification on a subbus if the parent area or substation have been disabled.
@@ -7191,7 +7180,7 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
                     area->removeSubstationId(substationId);
                 }
             }
-            for each ( CtiCCSpecialPtr spArea in *_ccSpecialAreas )
+            for ( CtiCCSpecialPtr spArea : *_ccSpecialAreas )
             {
                 if ( spArea )
                 {
@@ -7305,7 +7294,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                 CtiCCArea_vec::iterator itr = _ccGeoAreas->begin();
                 while ( itr != _ccGeoAreas->end() )
                 {
-                    CtiCCArea *area = *itr;
+                    CtiCCAreaPtr area = *itr;
                     if (area->getPaoId() == areaId)
                     {
                         itr = _ccGeoAreas->erase(itr);
@@ -7397,7 +7386,7 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                 CtiCCSpArea_vec::iterator itr = _ccSpecialAreas->begin();
                 while ( itr != _ccSpecialAreas->end() )
                 {
-                    CtiCCSpecial *area = *itr;
+                    CtiCCSpecialPtr area = *itr;
                     if (area->getPaoId() == areaId)
                     {
                         itr = _ccSpecialAreas->erase(itr);
@@ -8007,17 +7996,16 @@ void CtiCCSubstationBusStore::handleStrategyDBChange(long reloadId, BYTE reloadA
         reloadStrategyFromDatabase(reloadId);
 
         long i=0;
-        for(i=0;i<_ccSpecialAreas->size();i++)
+
+        for ( CtiCCSpecialPtr spArea : *_ccSpecialAreas )
         {
-            CtiCCSpecialPtr spArea = (CtiCCSpecialPtr)(*_ccSpecialAreas)[i];
             if (!spArea->getDisableFlag() && spArea->getStrategy()->getStrategyId() == reloadId)
             {
                 addVectorIdsToSet(spArea->getSubstationIds(), modifiedStationIdsSet);
             }
         }
-        for(i=0;i<_ccGeoAreas->size();i++)
+        for ( CtiCCAreaPtr area : *_ccGeoAreas )
         {
-            CtiCCArea* area = (CtiCCAreaPtr)(*_ccGeoAreas)[i];
             if (!area->getDisableFlag() && area->getStrategy()->getStrategyId() == reloadId)
             {
                 addVectorIdsToSet(area->getSubstationIds(), modifiedStationIdsSet);
@@ -8380,7 +8368,7 @@ void CtiCCSubstationBusStore::checkAndUpdateVoltReductionFlagsByBus(CtiCCSubstat
     if (currentStation != NULL)
     {
         currentStation->checkAndUpdateChildVoltReductionFlags();
-        CtiCCArea* currentArea = findAreaByPAObjectID(currentStation->getParentId());
+        CtiCCAreaPtr currentArea = findAreaByPAObjectID(currentStation->getParentId());
         if (currentArea != NULL)
         {
             currentArea->checkAndUpdateChildVoltReductionFlags();
@@ -9584,9 +9572,8 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
     long i=0;
     try
     {
-        for(i=0;i<_ccGeoAreas->size();i++)
+        for ( CtiCCAreaPtr currentArea : *_ccGeoAreas )
         {
-            CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
             currentArea->getOperationStats().createPointDataMsgs(pointChanges);
             currentArea->getConfirmationStats().createPointDataMsgs(pointChanges);
         }
@@ -9598,9 +9585,8 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
 
     try
     {
-        for(i=0;i<_ccSpecialAreas->size();i++)
+        for ( CtiCCSpecialPtr currentSpArea : *_ccSpecialAreas )
         {
-            CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
             currentSpArea->getOperationStats().createPointDataMsgs(pointChanges);
             currentSpArea->getConfirmationStats().createPointDataMsgs(pointChanges);
 
@@ -9683,7 +9669,7 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
 
 
 void CtiCCSubstationBusStore::createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
-                                                       CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea)
+                                                       CtiCCSubstation* station, CtiCCAreaPtr area, CtiCCSpecialPtr spArea)
 {
     if (cap != NULL)
         cap->getOperationStats().createPointDataMsgs(pointChanges);
@@ -9704,7 +9690,7 @@ void CtiCCSubstationBusStore::createOperationStatPointDataMsgs(CtiMultiMsg_vec& 
         spArea->getOperationStats().createPointDataMsgs(pointChanges);
 }
 
-void CtiCCSubstationBusStore::cascadeAreaStrategySettings(CtiCCAreaBase* object)
+void CtiCCSubstationBusStore::cascadeAreaStrategySettings(CtiCCAreaBasePtr object)
 {
     if (object == NULL || object->getStrategy()->getUnitType() == ControlStrategy::None)
         return;

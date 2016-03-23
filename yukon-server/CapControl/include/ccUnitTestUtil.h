@@ -130,13 +130,13 @@ T *create_object(long objectid, std::string name)
     return object;
 }
 
-void initialize_area(Test_CtiCCSubstationBusStore* store, CtiCCArea* area)
+void initialize_area(Test_CtiCCSubstationBusStore* store, CtiCCAreaPtr area)
 {
     store->addAreaToPaoMap(area);
     area->setDisableFlag(false);
 }
 
-void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCArea* parentArea)
+void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCAreaPtr parentArea)
 {
     station->setSaEnabledFlag(false);
     station->setParentId(parentArea->getPaoId());

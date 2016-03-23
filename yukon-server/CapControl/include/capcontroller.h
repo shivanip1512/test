@@ -64,7 +64,7 @@ class CtiCapController : public MessageListener
         void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges,
                                        CtiCCArea_vec& areaChanges, long broadCastMask);
         void readClientMsgQueue();
-        void checkBusForNeededControl(CtiCCArea* currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
+        void checkBusForNeededControl(CtiCCAreaPtr currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                                 CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
 
         DispatchConnectionPtr getDispatchConnection();

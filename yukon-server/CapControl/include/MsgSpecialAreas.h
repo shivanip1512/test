@@ -15,7 +15,6 @@ class CtiCCSpecialAreasMsg : public CapControlMessage
 
         CtiCCSpecialAreasMsg(CtiCCSpArea_vec& areaList);
         CtiCCSpecialAreasMsg(CtiCCSpArea_set& areaList);
-        CtiCCSpecialAreasMsg(CtiCCSpecial* ccArea);
         CtiCCSpecialAreasMsg(const CtiCCSpecialAreasMsg& ccSpecialAreas);
 
         virtual ~CtiCCSpecialAreasMsg();

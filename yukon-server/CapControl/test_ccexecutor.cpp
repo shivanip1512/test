@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
     store->setStrategyManager(std::move(manager));
 
-    CtiCCArea           *area       = create_object<CtiCCArea>           (1, "test area");
+    CtiCCAreaPtr         area       = create_object<CtiCCArea>           (1, "test area");
     CtiCCSubstation     *substation = create_object<CtiCCSubstation>     (2, "test substation");
     CtiCCSubstationBus  *bus        = create_object<CtiCCSubstationBus>  (3, "test bus");
     CtiCCFeeder         *feeder     = create_object<CtiCCFeeder>         (4, "test feeder");

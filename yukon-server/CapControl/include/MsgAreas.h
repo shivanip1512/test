@@ -14,7 +14,6 @@ class CtiCCGeoAreasMsg : public CapControlMessage
     public:
         CtiCCGeoAreasMsg(CtiCCArea_vec& areaList, unsigned long bitMask = 1);
         CtiCCGeoAreasMsg(CtiCCArea_set& areaList, unsigned long bitMask = 1);
-        CtiCCGeoAreasMsg(CtiCCArea* ccArea);
         CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreas);
 
         virtual ~CtiCCGeoAreasMsg();
