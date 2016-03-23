@@ -1,7 +1,6 @@
 package com.cannontech.web.updater.point;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -48,42 +47,53 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
     /**
      * Logs cached and historical values
      */
-    private void logAndMatch(int pointId) {        
+    private void logAndMatch(int pointId) {
         PointValueQualityHolder pointUpdateBackingServiceCachedValue =
             pointUpdateBackingService.getCachedValue(pointId);
         List<PointValueQualityHolder> historicalValues = rawPointHistoryDao.getMostRecentValues(pointId, 2);
         PointValueQualityHolder asyncDataSourceValue = asyncDataSource.getPointValue(pointId);
-        asyncDataSource.logListenerInfo(pointId);
-        log.info("Value from PointUpdateBackingService cache");
-        log(pointUpdateBackingServiceCachedValue);
-        log.info("Value from AsyncDynamicDataSource cache");
-        log(asyncDataSourceValue);
 
-        log.info("Values from RAWPOINTHISTORY");
-        if (historicalValues.isEmpty()) {
-            log.info("none");
-        } else {
-            for(PointValueQualityHolder historicalValue: historicalValues){
-                log(historicalValue);
-            }
-            
-            if (isMatched(historicalValues.get(0), pointUpdateBackingServiceCachedValue, asyncDataSourceValue)) {
-                log.info("Cached values matched historical values");
+        if (!isMatched(historicalValues.get(0), pointUpdateBackingServiceCachedValue, asyncDataSourceValue)) {
+            log.info("correlateAndLog pointId=" + pointId);
+            asyncDataSource.logListenerInfo(pointId);
+            log.info("Value from PointUpdateBackingService cache");
+            log(pointUpdateBackingServiceCachedValue);
+            log.info("Value from AsyncDynamicDataSource cache");
+            log(asyncDataSourceValue);
+
+            log.info("Values from RAWPOINTHISTORY");
+            if (historicalValues.isEmpty()) {
+                log.info("none");
             } else {
-                log.info("Cached values do not match historical values. Notifying Dispatch to log information for point id="
-                                 + pointId);
-                notifyDispatch(pointId, historicalValues.toString() + "," + pointUpdateBackingServiceCachedValue + "," + asyncDataSourceValue);
+                for (PointValueQualityHolder historicalValue : historicalValues) {
+                    log(historicalValue);
+                }
+                log.info(
+                    "Cached values do not match historical values. Notifying Dispatch to log information for point id="
+                        + pointId);
+                notifyDispatch(pointId, historicalValues.toString() + "," + pointUpdateBackingServiceCachedValue + ","
+                    + asyncDataSourceValue);
             }
+        } else {
+            log.info("Cached values match historical values");
         }
     }
 
     /**
      * Returns true if cached values match historical values.
      */
-    boolean isMatched(PointValueQualityHolder value1, PointValueQualityHolder value2, PointValueQualityHolder value3) {
-        boolean matchedByValue = value1.getValue() == value2.getValue() && value2.getValue() == value3.getValue();
-        boolean matchedByDate = value1.getPointDataTimeStamp().getTime() == value2.getPointDataTimeStamp().getTime()
-            && value2.getPointDataTimeStamp().getTime() == value3.getPointDataTimeStamp().getTime();
+    boolean isMatched(PointValueQualityHolder historicalValue,
+            PointValueQualityHolder pointUpdateBackingServiceCachedValue,
+            PointValueQualityHolder asyncDataSourceValue) {
+        if (historicalValue.getPointDataTimeStamp().getTime() < pointUpdateBackingServiceCachedValue.getPointDataTimeStamp().getTime()) {
+            log.info("Historical values haven't been written to RPH yet");
+            return true;
+        }
+        boolean matchedByValue = historicalValue.getValue() == pointUpdateBackingServiceCachedValue.getValue()
+            && pointUpdateBackingServiceCachedValue.getValue() == asyncDataSourceValue.getValue();
+        boolean matchedByDate =
+            historicalValue.getPointDataTimeStamp().getTime() == pointUpdateBackingServiceCachedValue.getPointDataTimeStamp().getTime()
+                && pointUpdateBackingServiceCachedValue.getPointDataTimeStamp().getTime() == asyncDataSourceValue.getPointDataTimeStamp().getTime();
         return matchedByValue && matchedByDate;
     }
 
