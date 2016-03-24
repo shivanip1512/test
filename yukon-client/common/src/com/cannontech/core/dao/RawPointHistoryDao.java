@@ -361,10 +361,12 @@ public interface RawPointHistoryDao {
    void queuePointData(int pointId, Range<Instant> instantRange, Order order,
         BlockingQueue<PointValueHolder> queue, AtomicBoolean isCompleted);
 
-   /**
-    * Returns recent values
-    * @param pointId
-    * @param rows - number of values to return
-    */
+    /**
+     * Returns recent values. This method shouldn't be used it will be removed in the future.
+     * 
+     * @param pointId
+     * @param rows - number of values to return
+     */
+    @Deprecated
     List<PointValueQualityHolder> getMostRecentValues(int pointId, int rows);
 }
