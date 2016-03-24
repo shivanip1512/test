@@ -53,18 +53,19 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         List<PointValueQualityHolder> historicalValues = rawPointHistoryDao.getMostRecentValues(pointId, 2);
         PointValueQualityHolder asyncDataSourceValue = asyncDataSource.getPointValue(pointId);
 
-        if (!isMatched(historicalValues.get(0), pointUpdateBackingServiceCachedValue, asyncDataSourceValue)) {
-            log.info("correlateAndLog pointId=" + pointId);
-            asyncDataSource.logListenerInfo(pointId);
-            log.info("Value from PointUpdateBackingService cache");
-            log(pointUpdateBackingServiceCachedValue);
-            log.info("Value from AsyncDynamicDataSource cache");
-            log(asyncDataSourceValue);
+        if (historicalValues.isEmpty()) {
+            log.info("No historical values to match");
+        } else {
+            if (!isMatched(historicalValues.get(0), pointUpdateBackingServiceCachedValue, asyncDataSourceValue)) {
+                log.info("correlateAndLog pointId=" + pointId);
+                asyncDataSource.logListenerInfo(pointId);
+                log.info("Value from PointUpdateBackingService cache");
+                log(pointUpdateBackingServiceCachedValue);
+                log.info("Value from AsyncDynamicDataSource cache");
+                log(asyncDataSourceValue);
 
-            log.info("Values from RAWPOINTHISTORY");
-            if (historicalValues.isEmpty()) {
-                log.info("none");
-            } else {
+                log.info("Values from RAWPOINTHISTORY");
+
                 for (PointValueQualityHolder historicalValue : historicalValues) {
                     log(historicalValue);
                 }
@@ -73,9 +74,9 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
                         + pointId);
                 notifyDispatch(pointId, historicalValues.toString() + "," + pointUpdateBackingServiceCachedValue + ","
                     + asyncDataSourceValue);
+            } else {
+                log.info("Cached values match historical values");
             }
-        } else {
-            log.info("Cached values match historical values");
         }
     }
 
@@ -89,6 +90,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             log.info("Historical values haven't been written to RPH yet");
             return true;
         }
+        
         boolean matchedByValue = historicalValue.getValue() == pointUpdateBackingServiceCachedValue.getValue()
             && pointUpdateBackingServiceCachedValue.getValue() == asyncDataSourceValue.getValue();
         boolean matchedByDate =
