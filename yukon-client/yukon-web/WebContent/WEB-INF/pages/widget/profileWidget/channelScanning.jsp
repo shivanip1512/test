@@ -139,7 +139,7 @@
                      <td>
                           <span><strong class="error"><i:inline key="yukon.common.off"/></strong></span>
                      </td>
-                     <td><a id='toggle-state' class="js-toggle-profile-on"><cti:msg2 key="yukon.common.start"/></a></td>
+                     <td><a href="" id='toggle-state' class="js-toggle-profile-on"><cti:msg2 key="yukon.common.start"/></a></td>
                  </c:if>
         </tr>
         </c:if>

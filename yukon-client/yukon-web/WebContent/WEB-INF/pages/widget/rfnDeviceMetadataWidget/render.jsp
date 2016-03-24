@@ -31,7 +31,7 @@
 
 <div class="action-area">
     <c:if test="${showAll}">
-        <a class="showAll fl" id="showAll"><i:inline key=".showAll.label"/></a>
+        <a href="" class="showAll fl" id="showAll"><i:inline key=".showAll.label"/></a>
     </c:if>
     <tags:widgetActionRefresh method="render" nameKey="refresh" icon="icon-arrow-refresh"/>
 </div>
