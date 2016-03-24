@@ -338,56 +338,35 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
     return pSig;
 }
 
-bool CtiSignalManager::isAlarmed(long pointid, int alarm_condition) const                 // The manager has an active and/or unacknowledged alarm on this condition for this point.
+// The manager has an active and/or unacknowledged alarm on this condition for this point.
+bool CtiSignalManager::isAlarmed(long pointid, int alarm_condition) const
 {
-    CtiLockGuard< CtiMutex > tlg(_mux, 5000);
-    while(!tlg.isAcquired())
-    {
-        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
-        tlg.tryAcquire(5000);
-    }
-
-    return ((getConditionTags(pointid,alarm_condition) & MASK_ANY_ALARM ) != 0x00000000);
+    return (getConditionTags(pointid,alarm_condition) & MASK_ANY_ALARM );
 }
 
+// The manager has an active alarm, active condition, or unacknowledged alarm for this condition for this point
 bool CtiSignalManager::isAlarmedOrConditionActive(long pointid, int alarm_condition) const
 {
-    CtiLockGuard< CtiMutex > tlg(_mux, 5000);
-    while(!tlg.isAcquired())
-    {
-        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
-        tlg.tryAcquire(5000);
-    }
-
-    return ((getConditionTags(pointid,alarm_condition)& SIGNAL_MANAGER_MASK)!= 0x00000000); 
+    return getConditionTags(pointid,alarm_condition); 
 }
 
-
-bool CtiSignalManager::isAlarmActive(long pointid, int alarm_condition) const             // The manager has an active alarm on this condition for this point.  It could be acknowledged or otherwise
+// The manager has an active alarm on this condition for this point.  It could be acknowledged or otherwise
+bool CtiSignalManager::isAlarmActive(long pointid, int alarm_condition) const
 {
-    CtiLockGuard< CtiMutex > tlg(_mux, 5000);
-    while(!tlg.isAcquired())
-    {
-        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
-        tlg.tryAcquire(5000);
-    }
-
-    return ((getConditionTags(pointid,alarm_condition) & TAG_ACTIVE_ALARM ) == TAG_ACTIVE_ALARM);
+    return (getConditionTags(pointid,alarm_condition) & TAG_ACTIVE_ALARM );
 }
 
-bool CtiSignalManager::isAlarmUnacknowledged(long pointid, int alarm_condition) const      // The manager has an unacknowledged alarm on this condition for this point.  It could be active or otherwise
+// The manager has an unacknowledged alarm on this condition for this point.  It could be active or otherwise
+bool CtiSignalManager::isAlarmUnacknowledged(long pointid, int alarm_condition) const
 {
-    CtiLockGuard< CtiMutex > tlg(_mux, 5000);
-    while(!tlg.isAcquired())
-    {
-        CTILOG_WARN(dout, "Unable to acquire exclusion lock. Will retry");
-        tlg.tryAcquire(5000);
-    }
-
-    return ((getConditionTags(pointid,alarm_condition) & TAG_UNACKNOWLEDGED_ALARM ) == TAG_UNACKNOWLEDGED_ALARM);
+    return (getConditionTags(pointid,alarm_condition) & TAG_UNACKNOWLEDGED_ALARM);
 }
 
-UINT CtiSignalManager::getConditionTags(long pointid, int alarm_condition) const      // The manager has an unacknowledged alarm on this condition for this point.  It could be active or otherwise
+// Returns the current tags for a point and alarm condition. A non 0 value is returned if any of the below are true:
+//   The point has an active alarm (Acknowledged or not) for this condition
+//   The point has an unacknowledged but not active alarm for this condition
+//   There is an active condition for this condition (no alarm configured but still in this state)
+UINT CtiSignalManager::getConditionTags(long pointid, int alarm_condition) const
 {
     UINT tags = 0x00000000;
 
