@@ -21,7 +21,7 @@ public class MeterReadPercentageController extends ReportControllerBase{
     
     private ReportFilter[] filterModelTypes = new ReportFilter[] {ReportFilter.GROUPS};
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private static final String PERIOD = "Period";
+    private static final String PERIOD = "period";
    
     public MeterReadPercentageController() {
         super();
@@ -74,22 +74,18 @@ public class MeterReadPercentageController extends ReportControllerBase{
         sb.append("          <td class='title-header' align='center'>&nbsp;Period</td>");
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("<td><input type='radio' id=\"Period\" name='Period' value='' onclick='toggle (true)'> Days <br>");
-        sb.append("<td><select  id=\"DropDownId\" disabled name='Period' onchange='change()' >" + LINE_SEPARATOR);
+        sb.append("<td><input type='radio' id=\"period\" name='period' onclick='toggle (false)'> Days <br>");
+        sb.append("<td><select  id=\"daysId\" name='period' disabled onchange='change()' >" + LINE_SEPARATOR);
         for (MeterReadPercentagePeriod period : MeterReadPercentagePeriod.values()) {
-                if((period != MeterReadPercentagePeriod.SEVEN_DAYS) && (period != MeterReadPercentagePeriod.MONTHLY))
-                sb.append("<option name='"+ PERIOD +"' value='" + period + "' " +  
-                (meterReadPercentageModel.getPeriod() == period ? "checked" : "") + ">" + period.getDisplayName() + LINE_SEPARATOR);
+                if((period != MeterReadPercentagePeriod.MONTHLY))
+                sb.append("<option name='"+ PERIOD +"' value='" + period + "' >" + period.getDisplayName() + LINE_SEPARATOR);
             }
         sb.append("</select>" + LINE_SEPARATOR );
         sb.append("          </td>" + LINE_SEPARATOR);
         sb.append("          </td>" + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("<td><input type='radio' name='Period' value='" + MeterReadPercentagePeriod.SEVEN_DAYS + "' checked onclick='toggle (false)' >" + MeterReadPercentagePeriod.SEVEN_DAYS.getDisplayName() + LINE_SEPARATOR);
-        sb.append("        </tr>" + LINE_SEPARATOR);
-        sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("<td><input type='radio' name='Period' value='" + MeterReadPercentagePeriod.MONTHLY + "' onclick='toggle (false)' >" + MeterReadPercentagePeriod.MONTHLY.getDisplayName() + LINE_SEPARATOR);
+        sb.append("<td><input type='radio' name='period' value='" + MeterReadPercentagePeriod.MONTHLY + "' checked onclick='toggle (true)' >" + MeterReadPercentagePeriod.MONTHLY.getDisplayName() + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);        
         sb.append("</table>" + LINE_SEPARATOR);
         return sb.toString();

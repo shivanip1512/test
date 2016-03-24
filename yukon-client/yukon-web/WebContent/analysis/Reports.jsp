@@ -182,20 +182,21 @@ function enableDates (value) {
 }
 
 function toggle (value) {
-    var dateFields = $('#DropDownId');
-    if(value)
-    dateFields.prop('disabled', false);
-    else
-        dateFields.prop('disabled', true); 
-        var periodValue = document.getElementById("DropDownId").value;
-        document.getElementById("period").value =  periodValue;
+    var dateFields = $('#daysId');
+    if(value){
+    dateFields.prop('disabled',true);
+    } else {
+        dateFields.prop('disabled',false); 
+        var periodValue = document.getElementById("daysId").value;
+        document.getElementById("period").value = periodValue;
+    }
 } 
 
 function change () {
-    var dateFields = $('#DropDownId');
+    var dateFields = $('#daysId');
     dateFields.prop('size', 0);
-    var periodValue = document.getElementById("DropDownId").value;
-    document.getElementById("Period").value =  periodValue;
+    var periodValue = document.getElementById("daysId").value;
+    document.getElementById("period").value = periodValue;
 } 
 
 function checkDates () {

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.activemq.openwire.v2.IntegerResponseMarshaller;
 import org.apache.log4j.Logger;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -49,7 +50,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
         FOUR_DAYS("4", 35),
         FIVE_DAYS("5", 35),
         SIX_DAYS("6", 35),
-        SEVEN_DAYS("7 Days", 52),
+        SEVEN_DAYS("7", 52),
         MONTHLY("Monthly", 12);
 
         private String displayName;
@@ -111,7 +112,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
     @Autowired private PaoDao paoDao;
     private List<String> groupNames;
     private YukonUserContext context;
-    private MeterReadPercentagePeriod period = MeterReadPercentagePeriod.SEVEN_DAYS;
+    private MeterReadPercentagePeriod period;
     protected List<ModelRow> data = new ArrayList<ModelRow>();
     private final static Set<? extends Attribute> usageAttributes =
             ImmutableSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.USAGE_WATER);
@@ -278,62 +279,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
         DateMidnight stopDate = new DateMidnight(context.getJodaTimeZone()).minusDays(1);
         DateMidnight startDate = null;
 
-        switch (period) {
-        case TWO_DAYS:
-            startDate = stopDate.minusDays(1);
-            ranges.add(new DateRange(startDate, stopDate));
-            for (int i = 0; i < period.getTotal() - 1; i++) {
-                startDate = startDate.minusDays(1);
-                stopDate = stopDate.minusDays(1);
-                ranges.add(new DateRange(startDate, stopDate));
-            }
-            break;
-        case THREE_DAYS:
-            startDate = stopDate.minusDays(2);
-            ranges.add(new DateRange(startDate, stopDate));
-            for (int i = 0; i < period.getTotal() - 1; i++) {
-                startDate = startDate.minusDays(3);
-                stopDate = stopDate.minusDays(3);
-                ranges.add(new DateRange(startDate, stopDate));
-            }
-            break;
-        case FOUR_DAYS:
-            startDate = stopDate.minusDays(3);
-            ranges.add(new DateRange(startDate, stopDate));
-            for (int i = 0; i < period.getTotal() - 1; i++) {
-                startDate = startDate.minusDays(4);
-                stopDate = stopDate.minusDays(4);
-                ranges.add(new DateRange(startDate, stopDate));
-            }
-            break;
-        case FIVE_DAYS:
-            startDate = stopDate.minusDays(4);
-            ranges.add(new DateRange(startDate, stopDate));
-            for (int i = 0; i < period.getTotal() - 1; i++) {
-                startDate = startDate.minusDays(5);
-                stopDate = stopDate.minusDays(5);
-                ranges.add(new DateRange(startDate, stopDate));
-            }
-            break;
-        case SIX_DAYS:
-            startDate = stopDate.minusDays(5);
-            ranges.add(new DateRange(startDate, stopDate));
-            for (int i = 0; i < period.getTotal() - 1; i++) {
-                startDate = startDate.minusDays(6);
-                stopDate = stopDate.minusDays(6);
-                ranges.add(new DateRange(startDate, stopDate));
-            }
-            break;
-        case SEVEN_DAYS:
-            startDate = stopDate.minusDays(6);
-            ranges.add(new DateRange(startDate, stopDate));
-            for (int i = 0; i < period.getTotal() - 1; i++) {
-                startDate = startDate.minusDays(7);
-                stopDate = stopDate.minusDays(7);
-                ranges.add(new DateRange(startDate, stopDate));
-            }
-            break;
-        case MONTHLY:
+        if (period == MeterReadPercentagePeriod.MONTHLY) {
             startDate = stopDate.dayOfMonth().withMinimumValue();
             ranges.add(new DateRange(startDate, stopDate));
             for (int i = 0; i < period.getTotal() - 1; i++) {
@@ -341,9 +287,17 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
                 stopDate = startDate.dayOfMonth().withMaximumValue();
                 ranges.add(new DateRange(startDate, stopDate));
             }
-            break;
+        } else {
+            Integer numDays = Integer.valueOf(period.getDisplayName());
+            startDate = (stopDate.minusDays(numDays));
+            ranges.add(new DateRange(startDate, stopDate));
+            for (int i = 0; i < period.getTotal() - 1; i++) {
+                stopDate = startDate;
+                startDate = startDate.minusDays(numDays);
+                ranges.add(new DateRange(startDate, stopDate));
+            }
         }
-        DatedModelAttributes datedModel = this;
+		DatedModelAttributes datedModel = this;
         // date range for the report header
         datedModel.setStartDate(startDate.toDate());
         datedModel.setStopDate(new DateTime(new DateMidnight(context.getJodaTimeZone())).minusSeconds(1).toDate());
