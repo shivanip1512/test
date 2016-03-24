@@ -398,7 +398,7 @@ void CtiCalcLogicService::Run( )
                 continue;
             }
 
-            Cti::WorkerThread calcThreadFunc(Cti::WorkerThread::Function(&CtiCalculateThread::calcThread, calcThread.get()));
+            Cti::WorkerThread calcThreadFunc(Cti::WorkerThread::Function([&]{ calcThread->calcThread(); }).name("Calc thread"));
 
             //  Up until this point, nothing has needed a mutex.  Now I'm spawning threads, and the
             //    commonly-accessed resources will be the calcThread's pointStore object and message
@@ -510,7 +510,7 @@ void CtiCalcLogicService::Run( )
 
                 calcThreadFunc.interrupt();
 
-                if( ! calcThreadFunc.tryJoinFor(Cti::Timing::Chrono::seconds(30)) )
+                if( ! calcThreadFunc.tryJoinFor(Cti::Timing::Chrono::seconds(45)) )
                 {
                     CTILOG_ERROR(dout, "CalcLogicSvc main did not shutdown gracefully.  Will attempt a forceful shutdown.");
                     calcThreadFunc.terminateThread();

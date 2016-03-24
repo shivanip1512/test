@@ -2,6 +2,7 @@
 
 #include "dlldefs.h"
 #include "timing_util.h"
+#include "ctitime.h"
 
 #include "concurrentSet.h"
 
@@ -58,7 +59,7 @@ public:
 
         Function& name( const std::string &name )
         {
-            _name = name;
+            _name = name + " (" + CtiTime{}.asString() + ")";
             return *this;
         }
 

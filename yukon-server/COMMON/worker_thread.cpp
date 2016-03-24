@@ -81,7 +81,17 @@ void WorkerThread::interrupt()
  */
 void WorkerThread::terminateThread()
 {
-    TerminateThread( _thread.native_handle(), EXIT_SUCCESS );
+    if( TerminateThread(_thread.native_handle(), EXIT_SUCCESS) )
+    {
+        CTILOG_INFO(dout, "Successfully terminated thread " << _function._name);
+    }
+    else
+    {
+        const auto errorCode = GetLastError();
+
+        CTILOG_ERROR(dout, "TerminateThread failed to terminate thread " << _function._name <<
+                           ", error " << errorCode << ": " << getSystemErrorMessage(errorCode));
+    }
 }
 
 /**
@@ -131,6 +141,8 @@ void WorkerThread::interruptionPoint()
 {
     if( isFailedTermination() )
     {
+        CTILOG_ERROR(dout, "Current thread is a failed termination, interrupting!");
+
         throw boost::thread_interrupted();
     }
 
@@ -146,6 +158,8 @@ void WorkerThread::sleepFor( const Timing::Chrono &duration )
 {
     if( isFailedTermination() )
     {
+        CTILOG_ERROR(dout, "Current thread is a failed termination, interrupting!");
+
         throw boost::thread_interrupted();
     }
 
@@ -162,12 +176,15 @@ void WorkerThread::executeWrapper()
         SetThreadPriority( GetCurrentThread(), *_function._priority );
     }
 
+    //  Grab a copy in case the WorkerThread is destroyed while were're executing
+    auto functionName = _function._name;
+
     if( !_function._name.empty() )
     {
         SetThreadName( -1, _function._name.c_str() );
     }
 
-    CTILOG_INFO(dout, "Thread starting : " << _function._name);
+    CTILOG_INFO(dout, "Thread starting : " << functionName);
 
     try
     {
@@ -175,14 +192,14 @@ void WorkerThread::executeWrapper()
     }
     catch( const Interrupted& )
     {
-        CTILOG_WARN(dout, _function._name <<"Thread interrupted: "<< _function._name);
+        CTILOG_WARN(dout, "Thread interrupted: " << functionName);
     }
     catch( ... )
     {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread aborting due to unhandled exception: "<< _function._name);
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread aborting due to unhandled exception: " << functionName);
     }
 
-    CTILOG_INFO(dout, "Thread exiting: "<< _function._name);
+    CTILOG_INFO(dout, "Thread exiting: " << functionName);
 }
 
 } // namespace Cti

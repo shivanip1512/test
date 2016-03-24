@@ -20,6 +20,7 @@ CalcWorkerThread::~CalcWorkerThread()
     // empty
 }
 
+//  Called by parent thread
 void CalcWorkerThread::pause()
 {
     CTILOG_DEBUG( dout, "Pausing thread: " << _name );
@@ -27,6 +28,7 @@ void CalcWorkerThread::pause()
     setPausedState( true );
 }
 
+//  Called by parent thread
 void CalcWorkerThread::resume()
 {
     CTILOG_DEBUG( dout, "Resuming thread: " << _name );
@@ -38,6 +40,8 @@ size_t CalcWorkerThread::waitForResume()
 {
     if( isFailedTermination() )
     {
+        CTILOG_ERROR(dout, "Current thread is a failed termination, interrupting!");
+
         throw WorkerThread::Interrupted();
     }
 
@@ -56,13 +60,9 @@ size_t CalcWorkerThread::getPauseCount() const
     return _pauseCount;
 }
 
-void CalcWorkerThread::setPausedState( const bool isPaused )
+//  Called by parent thread via pause/resume
+void CalcWorkerThread::setPausedState(const bool isPaused)
 {
-    if( isFailedTermination() )
-    {
-        throw WorkerThread::Interrupted();
-    }
-
     {
         boost::unique_lock<boost::mutex> lock( _pauseMutex );
 
