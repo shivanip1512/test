@@ -588,6 +588,14 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     }
     
     /**
+     * Returns a set of anlog event types.
+     * Most often, this method will be used to get a set of events to _exclude_ from some other set.
+     */
+    public static Set<BuiltInAttribute> getRfnEventAnalogTypes() {
+        return rfnEventAnalogTypes;
+    }
+    
+    /**
      * All status and event types (excluding analog events)
      * 
      * @return Map<AttributeGroup, Set<BuiltInAttribute>>
