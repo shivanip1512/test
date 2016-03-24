@@ -24,6 +24,8 @@ BaseConnection::BaseConnection()
 
 BaseConnection::~BaseConnection()
 {
+    CTILOG_DEBUG( dout, "BaseConnection::~BaseConnection()" );
+
     CtiLockGuard<CtiMutex> guard(g_mux);
 
     g_connections.erase(this);

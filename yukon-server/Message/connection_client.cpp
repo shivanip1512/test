@@ -63,6 +63,8 @@ CtiClientConnection::CtiClientConnection( const string &serverQueueName,
  */
 CtiClientConnection::~CtiClientConnection()
 {
+    CTILOG_DEBUG( dout, who() << "CtiClientConnection::~CtiClientConnection()" );
+
     try
     {
         cleanConnection();

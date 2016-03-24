@@ -49,6 +49,7 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
 
 CtiConnection::~CtiConnection()
 {
+    CTILOG_DEBUG( dout, who() << "CtiConnection::~CtiConnection()" );
 }
 
 long CtiConnection::getConnectionId() const

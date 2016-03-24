@@ -43,6 +43,8 @@ CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerC
  */
 CtiServerConnection::~CtiServerConnection()
 {
+    CTILOG_DEBUG( dout, who() << "CtiServerConnection::~CtiServerConnection()" );
+
     try
     {
         cleanConnection();

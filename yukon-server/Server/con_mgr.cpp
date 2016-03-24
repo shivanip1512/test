@@ -20,6 +20,8 @@ CtiConnectionManager::CtiConnectionManager( CtiListenerConnection& listenerConn,
 
 CtiConnectionManager::~CtiConnectionManager()
 {
+    CTILOG_DEBUG( dout, who() << "CtiConnectionManager::~CtiConnectionManager()" );
+
    // We better just do the normal stuff one at a time... Make sure this is virtual
    // so base destructor gets called in all cases.
 

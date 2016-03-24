@@ -400,6 +400,8 @@ MainQueue_()
 
 CtiServer::~CtiServer()
 {
+    CTILOG_DEBUG( dout, "CtiServer::~CtiServer()" );
+
     shutdown();
 }
 
