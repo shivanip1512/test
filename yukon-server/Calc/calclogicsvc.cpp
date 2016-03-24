@@ -510,7 +510,8 @@ void CtiCalcLogicService::Run( )
 
                 calcThreadFunc.interrupt();
 
-                if( ! calcThreadFunc.tryJoinFor(Cti::Timing::Chrono::seconds(45)) )
+                //  Allow 30 seconds for Historical termination and 30 seconds for Baseline termination
+                if( ! calcThreadFunc.tryJoinFor(Cti::Timing::Chrono::seconds(65)) )
                 {
                     CTILOG_ERROR(dout, "CalcLogicSvc main did not shutdown gracefully.  Will attempt a forceful shutdown.");
                     calcThreadFunc.terminateThread();
