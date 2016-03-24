@@ -130,6 +130,7 @@
         </tags:sectionContainer2>
         
         <c:set var="classes" value="${exportField.field.plainTextType ? 'dn' : ''}"/>
+        <c:set var="classes" value="${exportField.field.deviceType ? 'dn' : ''}"/>
         <tags:sectionContainer2 id="other-options" nameKey="otherOptions" styleClass="${classes}">
         
             <tags:nameValueContainer2 tableClass="with-form-controls">
