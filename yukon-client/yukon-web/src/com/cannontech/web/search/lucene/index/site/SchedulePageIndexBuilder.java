@@ -128,57 +128,43 @@ public class SchedulePageIndexBuilder extends DbPageIndexBuilder {
 
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
-        
+
+        BooleanQuery.Builder limitingQuery = new BooleanQuery.Builder();
+
         PrefixQuery fileExportQuery = null;
         if (!rolePropertyDao.checkProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORT, user)) {
             fileExportQuery = new PrefixQuery(new Term("pageName", "bulk.archivedValueExporter"));
-            
+            limitingQuery.add(fileExportQuery, Occur.SHOULD);
         }
-        
+
         PrefixQuery billingFileExportQuery = null;
         if (!rolePropertyDao.checkRole(YukonRole.APPLICATION_BILLING, user)) {
             billingFileExportQuery = new PrefixQuery(new Term("pageName", "billing"));
+            limitingQuery.add(billingFileExportQuery, Occur.SHOULD);
         }
-        
-        PrefixQuery waterLeakExportQuery = null;
-        if (!rolePropertyDao.checkRole(YukonRole.REPORTING, user) && !rolePropertyDao.checkRole(YukonRole.METERING, user)) {
-            waterLeakExportQuery = new PrefixQuery(new Term("pageName", "waterLeakReport.report"));
 
+        PrefixQuery waterLeakExportQuery = null;
+        if (!rolePropertyDao.checkRole(YukonRole.REPORTING, user) || !rolePropertyDao.checkRole(YukonRole.METERING,
+                                                                                                user)) {
+            waterLeakExportQuery = new PrefixQuery(new Term("pageName", "waterLeakReport.report"));
+            limitingQuery.add(waterLeakExportQuery, Occur.SHOULD);
         }
-        
+
         PrefixQuery meterEventsExportQuery = null;
         if (!rolePropertyDao.checkProperty(YukonRoleProperty.METER_EVENTS, user)) {
-            meterEventsExportQuery = new PrefixQuery(new Term("pageName", "meterEventsReport.report"));
- 
+            meterEventsExportQuery = new PrefixQuery(new Term("pageName",
+                                                              "meterEventsReport.report"));
+            limitingQuery.add(meterEventsExportQuery, Occur.SHOULD);
         }
-        
+
         PrefixQuery scheduleGroupExecutionResultQuery = null;
         if (!rolePropertyDao.checkRole(YukonRole.SCHEDULER, user)) {
-            scheduleGroupExecutionResultQuery = new PrefixQuery(new Term("pageName", "schedules.VIEW"));
+            scheduleGroupExecutionResultQuery = new PrefixQuery(new Term("pageName",
+                                                                         "schedules.VIEW"));
+            limitingQuery.add(scheduleGroupExecutionResultQuery, Occur.SHOULD);
         }
-        
-        if (fileExportQuery != null && billingFileExportQuery != null && waterLeakExportQuery != null && meterEventsExportQuery != null
-                && scheduleGroupExecutionResultQuery != null) {
-                BooleanQuery.Builder limitingQuery = new BooleanQuery.Builder();
-                limitingQuery.add(fileExportQuery, Occur.SHOULD);
-                limitingQuery.add(billingFileExportQuery, Occur.SHOULD);
-                limitingQuery.add(waterLeakExportQuery, Occur.SHOULD);
-                limitingQuery.add(meterEventsExportQuery, Occur.SHOULD);
-                limitingQuery.add(scheduleGroupExecutionResultQuery, Occur.SHOULD);
-                return limitingQuery.build();
-            } else if (fileExportQuery != null) {
-                return fileExportQuery;
-            } else if (billingFileExportQuery != null) {
-                return billingFileExportQuery;
-            } else if (waterLeakExportQuery != null) {
-                return waterLeakExportQuery;
-            } else if (meterEventsExportQuery != null) {
-                return meterEventsExportQuery;
-            } else if (scheduleGroupExecutionResultQuery != null) {
-                return scheduleGroupExecutionResultQuery;
-            }
-        
-        return null;
+
+        return limitingQuery.build();
     }
 
     @Override
