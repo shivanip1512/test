@@ -1,10 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
@@ -56,8 +54,20 @@
                             <tags:yukonListEntrySelectNameValue nameKey=".switchType" path="CapBank.typeOfSwitch" energyCompanyId="${energyCompanyId}" listName="TYPE_OF_SWITCH" useTextAsValue="${true}"/>
                         </tags:nameValueContainer2>
                     </cti:tab>
+                    <cti:msg2 var="setupTab" key=".setupTab"/>
+                    <cti:tab title="${setupTab}">
+                        <!--TODO:  Implement these fields -->
+                        <form:hidden path="CapBank.operationalState" />
+                        <form:hidden path="CapBank.bankSize" />
+                        <form:hidden path="CapBank.recloseDelay" />
+                        <form:hidden path="CapBank.controlDeviceID" />
+                        <form:hidden path="CapBank.controlPointID" />
+                        <form:hidden path="CapBank.maxDailyOps" />
+                        <form:hidden path="CapBank.maxOpDisable" />
+                    </cti:tab>
                     <cti:msg2 var="addInfoTab" key=".additionalInfoTab"/>
                     <cti:tab title="${addInfoTab}">
+                        <form:hidden path="capbankAdditionalInfo.deviceID" />
                         <tags:sectionContainer2 nameKey="configurationSection">
                             <tags:nameValueContainer2 tableClass="natural-width">
                                 <tags:nameValue2 nameKey=".cbAddInfo.maintAreaId">
@@ -157,6 +167,62 @@
               </cti:displayForPageEditModes>
          </div>
 
+        <div class="column-12-12 clearfix">
+            <tags:sectionContainer2 nameKey="assignedPointsSection">
+            <table class="compact-results-table row-highlighting">
+                <tr>
+                    <th><i:inline key=".assignedPoints.point"/></th>
+                    <th><i:inline key=".assignedPoints.adaptiveCount"/></th>
+                    <th><i:inline key=".assignedPoints.phase"/></th>
+                    <th><i:inline key=".assignedPoints.initiateScan"/></th>
+                    <th><i:inline key=".assignedPoints.overrideFeederLimits"/></th>
+                    <th><i:inline key=".assignedPoints.upperBandwidth"/></th>
+                    <th><i:inline key=".assignedPoints.lowerBandwidth"/></th>
+                    <th></th>
+                </tr>
+                    <c:forEach var="point" items="${capbank.ccMonitorBankList}" varStatus="status">
+                    <c:set var="idx" value="${status.index}" />
+                    <tr>
+                        <td>${point.name}</td>
+                        <td>
+                            <tags:input path="ccMonitorBankList[${idx}].NINAvg" size="10"/>
+                        </td>
+                        <td>
+                            <tags:selectWithItems path="ccMonitorBankList[${idx}].phase" items="${pointPhaseList}"/>
+                        </td>
+                        <td>
+                            <tags:switchButton path="ccMonitorBankList[${idx}].scannableBoolean" offNameKey=".no.label" onNameKey=".yes.label"/>
+                        </td>
+                        <td>
+                            <tags:switchButton path="ccMonitorBankList[${idx}].overrideStrategySettings" offNameKey=".no.label" onNameKey=".yes.label" toggleGroup="overrideFeederLimits_${idx}" toggleAction="disabled"/>
+                        </td>
+
+                        <td>
+                            <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].upperBandwidth" size="10" /></span>
+                        </td>
+                        <td>
+                            <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].lowerBandwidth" size="10" /></span>
+                        </td>
+                        <td>
+                            <c:if test="${canEdit}">
+                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-point"/>
+                            </c:if>
+                        </td>
+                        <form:hidden path="ccMonitorBankList[${idx}].deviceId" />
+                        <form:hidden path="ccMonitorBankList[${idx}].pointId" />
+                        <form:hidden path="ccMonitorBankList[${idx}].displayOrder" />
+                    </tr>
+                    </c:forEach>
+            </table>        
+            <c:if test="${canEdit}">
+                <div class="action-area">
+                    <cti:button nameKey="edit" icon="icon-pencil"
+                        data-popup=".js-edit-points-popup" data-popup-toggle=""/>
+                </div>
+            </c:if>
+            </tags:sectionContainer2>    
+        </div>
+
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action" />
@@ -179,4 +245,15 @@
         <cti:csrfToken/>
     </form:form>
     <cti:includeScript link="/resources/js/pages/yukon.da.capbank.js" />
+    
+    <%-- EDIT POINTS POPUP --%>
+<div class="dn js-edit-points-popup"
+    data-dialog
+    data-parent-id="${capbank.id}"
+    data-title="<cti:msg2 key=".edit.points"/>"
+    data-ok-text="<cti:msg2 key="yukon.common.save"/>"
+    data-url="<cti:url value="/capcontrol/capbanks/${capbank.id}/points/edit"/>"
+    data-event="yukon:vv:children:save"
+    data-height="300"
+    data-width="750"></div>
 </cti:standardPage>

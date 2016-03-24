@@ -3,7 +3,10 @@ package com.cannontech.web.capcontrol;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -11,11 +14,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.CapBankAntennaType;
 import com.cannontech.capcontrol.CapBankCommunicationMedium;
 import com.cannontech.capcontrol.CapBankConfig;
+import com.cannontech.capcontrol.CapBankPointPhase;
 import com.cannontech.capcontrol.CapBankPotentialTransformer;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.core.dao.NotFoundException;
@@ -26,6 +31,7 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.Feeder;
@@ -54,7 +60,6 @@ public class CapBankController {
     @Autowired private CapBankValidator capBankValidator;
 
     private static final String baseKey = "yukon.web.modules.capcontrol.capbank";
-
 
     @RequestMapping(value = "capbanks/{id}", method = RequestMethod.GET)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
@@ -183,17 +188,49 @@ public class CapBankController {
         model.addAttribute("potentialTransformerList", CapBankPotentialTransformer.values());
         model.addAttribute("communicationMediumList", CapBankCommunicationMedium.values());
         model.addAttribute("antennaTypeList", CapBankAntennaType.values());
+        model.addAttribute("pointPhaseList", CapBankPointPhase.values());
         
         EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         int ecId = energyCompany.getId();
         model.addAttribute("energyCompanyId", ecId);
+        
+        capbankService.setAssignedPoints(capbank);
+        model.addAttribute("unassignedPoints", capbankService.getUnassignedPoints(capbank));
+        
+        model.addAttribute("canEdit", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser()));
 
         return "capBank.jsp";
     }
     
+    @RequestMapping("capbanks/{capbankId}/points/edit")
+    public String editPoints(ModelMap model, @PathVariable int capbankId) {
+
+        CapBank capbank = capbankService.getCapBank(capbankId);
+        
+        List<CCMonitorBankList> unassigned = capbankService.getUnassignedPoints(capbank);
+        
+        capbankService.setAssignedPoints(capbank);
+        List<CCMonitorBankList> assigned = capbank.getCcMonitorBankList();
+    
+        model.addAttribute("assigned", assigned);
+        model.addAttribute("unassigned", unassigned);
+
+        return "assignment-popup.jsp";
+    }
+    
+    @RequestMapping(value="capbanks/{capbankId}/points", method=RequestMethod.POST)
+    public void savePoints(HttpServletResponse resp, @PathVariable int capbankId, FlashScope flash,
+            @RequestParam(value="children[]", required=false, defaultValue="") Integer[] pointIds) {
+        capbankService.savePoints(capbankId, pointIds);
+        
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".points.updated"));
+
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
+    }
+    
     private String bindAndForward(CapBank capbank, BindingResult result, RedirectAttributes attrs) {
 
-        attrs.addFlashAttribute("capBank", capbank);
+        attrs.addFlashAttribute("capbank", capbank);
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.capbank", result);
 
         if (capbank.getId() == null) {
@@ -202,5 +239,6 @@ public class CapBankController {
 
         return "redirect:capbanks/" + capbank.getId();
     }
+
 
 }

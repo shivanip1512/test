@@ -2,23 +2,36 @@ package com.cannontech.web.capcontrol.service.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import com.cannontech.capcontrol.CapBankCommunicationMedium;
+import com.cannontech.capcontrol.dao.CapbankDao;
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.capcontrol.CapBankAdditional;
+import com.cannontech.database.db.capcontrol.CCMonitorBankList;
+import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.web.capcontrol.service.CapBankService;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -27,6 +40,11 @@ public class CapBankServiceImpl implements CapBankService {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private CapControlCache ccCache;
+    @Autowired private PointDao pointDao;
+    @Autowired private CapbankDao capbankDao;
+    
+    private Logger log = YukonLogManager.getLogger(getClass());
 
 
     @Override
@@ -40,67 +58,85 @@ public class CapBankServiceImpl implements CapBankService {
         if(deviceBase  instanceof CapBank) {
             capbank = (CapBank) deviceBase;
         }
-
-        CapBankAdditional additionalInfo = new CapBankAdditional();
-        Connection connection = PoolManager.getInstance()
-                                           .getConnection(CtiUtilities.getDatabaseAlias());
-        additionalInfo.setDbConnection(connection);
-        additionalInfo.setDeviceID(id);
-        try {
-            additionalInfo.retrieve();
-        } catch (SQLException e) {
-            CTILogger.error(e);
-        }
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                CTILogger.error(e);
-            }
-        }
         
-        //check for custom communication medium
-        additionalInfo.setCommMediumCustom(additionalInfo.getCommMedium());
-        String commMedium = additionalInfo.getCommMedium();
-        if(commMedium != null) {
-            if(commMedium.equals(CapBankAdditional.STR_NONE)) {
-                additionalInfo.setCustomCommMedium(false);
-            } else {
-                CapBankCommunicationMedium[] commMediums = CapBankCommunicationMedium.values();
-                for (CapBankCommunicationMedium med : commMediums) {
-                    if(med.getDisplayName().equals(commMedium)) {
-                        additionalInfo.setCustomCommMedium(false);
-                        break;
+        return capbank;
+    }
+    
+    
+    @Override
+    public List<CCMonitorBankList> getUnassignedPoints(CapBank capBank) {
+            List<CCMonitorBankList> unassignedPoints = new ArrayList<CCMonitorBankList>();
+            int controlDeviceId = capBank.getCapBank().getControlDeviceID().intValue();
+            if (controlDeviceId > 0) {
+                List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(controlDeviceId);
+                for (int i = 0; i < allPoints.size(); i++) {
+                    LitePoint point = allPoints.get(i);
+                    
+                    if (UnitOfMeasure.getForId(point.getUofmID()) == UnitOfMeasure.VOLTS) {
+                        CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams();
+                        monitorPoint.setPointId(point.getLiteID());
+                        monitorPoint.setDeviceId(controlDeviceId);
+                        monitorPoint.setPointName(point.getPointName());
+                        // set the feeder limits by default
+                        setDefaultFeederLimits(capBank, monitorPoint);
+                        
+                        CCMonitorBankList monitorListPoint = new CCMonitorBankList(monitorPoint);
+
+                        //check if already assigned
+                        boolean alreadyAssigned = false;
+                        for(CCMonitorBankList bankPoint : capBank.getCcMonitorBankList()) {
+                            if(bankPoint.getPointId().equals(monitorPoint.getPointId())){
+                                alreadyAssigned = true;
+                                break;
+                            }
+                        }
+                        if (!alreadyAssigned) {
+                            unassignedPoints.add(monitorListPoint);
+                        }
                     }
                 }
             }
+            
+        return unassignedPoints;
+    }
+    
+
+    @Override
+    public void setAssignedPoints(CapBank capbank) {
+        List<CCMonitorBankList> bankList = capbank.getCcMonitorBankList();
+        for (CCMonitorBankList point : bankList) {
+            LitePoint lPoint = pointDao.getLitePoint(point.getPointId());
+            point.setName(lPoint.getPointName());
         }
         
-        capbank.setCapbankAdditionalInfo(additionalInfo);
-        
-        return capbank;
+        Collections.sort(bankList, DISPLAY_ORDER_COMPARATOR);
+        capbank.setCcMonitorBankList(bankList);
 
+    }
+    
+    private void setDefaultFeederLimits(CapBank capBank, CapBankMonitorPointParams monitorPoint) {
+        int fdrId = 0;
+        try {
+            fdrId = capbankDao.getParentFeederIdentifier(capBank.getPAObjectID().intValue()).getPaoId();
+        }
+        catch( EmptyResultDataAccessException e) {
+            CTILogger.debug("Feeder " + capBank.getPAObjectID().intValue() + " not found. Capbank may be orphaned.");
+        }
+        
+        if (fdrId != 0) {
+            Feeder feeder = ccCache.getFeeder(fdrId);
+            monitorPoint.setLowerBandwidth((float)feeder.getPeakLag());
+            monitorPoint.setUpperBandwidth((float)feeder.getPeakLead());
+        }
     }
 
     @Override
     public int save(CapBank capbank) {
         if (capbank.getId() == null) {
             dbPersistentDao.performDBChange(capbank, TransactionType.INSERT);
-            CapBankAdditional addInfo = capbank.getCapbankAdditionalInfo();
-            addInfo.setDeviceID(capbank.getId());
-            if(!addInfo.getCommMediumCustom().isEmpty()){
-                addInfo.setCommMedium(addInfo.getCommMediumCustom());
-            }
-            dbPersistentDao.performDBChange(addInfo, TransactionType.INSERT);
         } else {
             assertCapBankExists(capbank.getId());
             dbPersistentDao.performDBChange(capbank,  TransactionType.UPDATE);
-            CapBankAdditional addInfo = capbank.getCapbankAdditionalInfo();
-            addInfo.setDeviceID(capbank.getId());
-            if(!addInfo.getCommMediumCustom().isEmpty()){
-                addInfo.setCommMedium(addInfo.getCommMediumCustom());
-            }
-            dbPersistentDao.performDBChange(addInfo, TransactionType.UPDATE);
         }
 
         return capbank.getId();
@@ -123,4 +159,75 @@ public class CapBankServiceImpl implements CapBankService {
             throw new NotFoundException("No capbank with id " + id + " found.");
         }
     }
+    
+    
+    private static final Comparator<CCMonitorBankList> DISPLAY_ORDER_COMPARATOR = new Comparator<CCMonitorBankList>() {
+        @Override
+        public int compare(CCMonitorBankList o1, CCMonitorBankList o2) {
+            Integer order1 = o1.getDisplayOrder();
+            Integer order2 = o2.getDisplayOrder();
+            int result = order1.compareTo(order2);
+            if (result == 0) {
+                result = new Integer(o1.getId()).compareTo(new Integer(o2.getId()));
+            }
+
+            return result;
+        }
+    };
+
+
+    @Override
+    public void savePoints(int capbankId, Integer[] pointIds) {
+        CapBank capbank = getCapBank(capbankId);
+        List<CCMonitorBankList> existingList = capbank.getCcMonitorBankList();
+        int displayOrder = 1;
+        Connection connection = PoolManager.getInstance()
+                .getConnection(CtiUtilities.getDatabaseAlias());
+        for (int pointId : pointIds) {
+            boolean update = false;
+            CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams();
+            monitorPoint.setDeviceId(capbank.getCapBank().getDeviceID());
+            monitorPoint.setPointId(pointId);
+            CCMonitorBankList monitorListPoint = new CCMonitorBankList(monitorPoint);
+            for (CCMonitorBankList existingMonitor : existingList) {
+                if (existingMonitor.getPointId().equals(pointId)){
+                    monitorListPoint = existingMonitor;
+                    update = true;
+                }
+            }
+            monitorListPoint.setDisplayOrder(displayOrder);
+            monitorListPoint.setDbConnection(connection);
+
+            try {
+                if (update) {
+                    monitorListPoint.update();
+                } else {
+                    monitorListPoint.add();
+                }
+            } catch (SQLException e) {
+                log.warn("caught exception in savePoints", e);
+            }
+            displayOrder++;
+        }
+        
+        //delete any that were removed
+        for (CCMonitorBankList existingMonitor : existingList) {
+            boolean delete = true;
+            for (int pointId : pointIds) {
+                if(existingMonitor.getPointId().equals(pointId)) {
+                    delete = false;
+                }
+            }
+            if (delete) {
+                try {
+                    existingMonitor.setDbConnection(connection);
+                    existingMonitor.delete();
+                } catch (SQLException e) {
+                    log.warn("caught exception in savePoints", e);
+                }
+            }
+        }   
+    }
+
+
 }

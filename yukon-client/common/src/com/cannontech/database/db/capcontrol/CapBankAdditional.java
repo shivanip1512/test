@@ -42,7 +42,7 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange {
     private Boolean extAnt = Boolean.TRUE;
     private Boolean reqPend = Boolean.TRUE;
     private Boolean customCommMedium = Boolean.TRUE;
-    private String commMediumCustom = STR_NONE;
+    private String commMediumCustom = "";
 
     public String[] CONSTRAINT_COLUMNS = { "DeviceID" };
     public String[] SETTER_COLUMNS = { "MaintenanceAreaID", "PoleNumber",
@@ -160,6 +160,9 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange {
     }
 
     public String getCommMedium() {
+        if(!commMediumCustom.isEmpty()){
+            commMedium = commMediumCustom;
+        }
         return commMedium;
     }
 

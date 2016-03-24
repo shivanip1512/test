@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.cannontech.capcontrol.BankOpState;
+import com.cannontech.capcontrol.CapBankCommunicationMedium;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
@@ -79,6 +80,7 @@ public class CapBank extends CapControlDeviceBase {
             CCMonitorBankList item = iter.next();
             item.add();
         }
+        capbankAdditionalInfo.add();
     }
 
     @Override
@@ -124,6 +126,27 @@ public class CapBank extends CapControlDeviceBase {
         getCapBank().retrieve();
         // init the cap bank points list
         ccMonitorBankList = CCMonitorBankList.getMonitorPointsOnCapBankList(getCapBank().getDeviceID());
+        
+        //retrieve capbank additional info
+        capbankAdditionalInfo.setDeviceID(getCapBank().getDeviceID());
+        capbankAdditionalInfo.retrieve();
+        
+        //check for custom communication medium
+        capbankAdditionalInfo.setCommMediumCustom(capbankAdditionalInfo.getCommMedium());
+        String commMedium = capbankAdditionalInfo.getCommMedium();
+        if(commMedium != null) {
+            if(commMedium.equals(CapBankAdditional.STR_NONE)) {
+                capbankAdditionalInfo.setCustomCommMedium(false);
+            } else {
+                CapBankCommunicationMedium[] commMediums = CapBankCommunicationMedium.values();
+                for (CapBankCommunicationMedium med : commMediums) {
+                    if(med.getDisplayName().equals(commMedium)) {
+                        capbankAdditionalInfo.setCustomCommMedium(false);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     public void setCapBank(
@@ -140,6 +163,7 @@ public class CapBank extends CapControlDeviceBase {
             CCMonitorBankList item = iter.next();
             item.setDbConnection(conn);
         }
+        capbankAdditionalInfo.setDbConnection(conn);
     }
 
     @Override
@@ -159,8 +183,10 @@ public class CapBank extends CapControlDeviceBase {
         CCMonitorBankList.deleteMonitorPointsOnCapBankList(getCapBank().getDeviceID());
         for (Iterator<CCMonitorBankList> iter = ccMonitorBankList.iterator(); iter.hasNext();) {
             CCMonitorBankList item = iter.next();
-            item.add();
+            if (item.getMonitorPoint() != null)
+                item.add();
         }
+        capbankAdditionalInfo.update();
     }
 
     public List<CCMonitorBankList> getCcMonitorBankList() {

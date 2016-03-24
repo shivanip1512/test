@@ -26,6 +26,11 @@ public class CCMonitorBankList extends DBPersistent {
 	private Float lowerBandwidth = new Float(0);
 	private Character phase;
 	private Boolean overrideStrategySettings = Boolean.FALSE;
+	private Boolean scannableBoolean = Boolean.FALSE;
+	
+	private Integer id;
+	private String name;
+
 	
 	private CapBankMonitorPointParams monitorPoint = null;
 
@@ -201,6 +206,10 @@ public class CCMonitorBankList extends DBPersistent {
         return ynBoolean.getDatabaseRepresentation();
     }
     
+    public Boolean getOverrideStrategySettings() {
+        return overrideStrategySettings;
+    }
+    
     public void setOverrideStrategySettings(Boolean overrideStrategySettings) {
         this.overrideStrategySettings = overrideStrategySettings;
     }
@@ -249,5 +258,30 @@ public class CCMonitorBankList extends DBPersistent {
         
         yukonTemplate.update(sqlStmt, new Object[] {deviceId});
 
+    }
+
+    public Boolean getScannableBoolean() {
+        return scannable == 'Y' ? true : false;
+    }
+
+    public void setScannableBoolean(Boolean scannableBoolean) {
+        this.scannableBoolean = scannableBoolean;
+        this.scannable = this.scannableBoolean ? 'Y' : 'N';
+    }
+
+    public Integer getId() {
+        return this.getPointId();
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return this.monitorPoint.getPointName();
+    }
+
+    public void setName(String name) {
+        this.monitorPoint.setPointName(name);
     }
 }

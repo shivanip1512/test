@@ -166,14 +166,26 @@
     <entry key="yukon.web.modules.capcontrol.capbank.controllerType">Controller Type</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.switchType">Type of Switch</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.additionalInfoTab">Additional Info</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.setupTab">Setup</entry> 
     <entry key="yukon.web.modules.capcontrol.capbank.updated">CapBank was updated successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.delete.success">CapBank {0} deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.maintenanceSection.title">Maintenance</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.communicationSection.title">Communication</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.locationSection.title">Location</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.configurationSection.title">Configuration</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.assignedPointsSection.title">Assigned Points</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.custom">Custom</entry>
     
+    <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.point">Point</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.adaptiveCount">Adaptive Count</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.initiateScan">Initiate Scan</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.overrideFeederLimits">Override Feeder Limits</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.phase">Phase</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.upperBandwidth">Upper Bandwidth</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.lowerBandwidth">Lower Bandwidth</entry>
+    
+    <entry key="yukon.web.modules.capcontrol.capbank.edit.points">Add/Remove Points</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.points.updated">Points successfully updated.</entry>
     
     <!-- Cap Bank Configs -->
     <entry key="yukon.web.modules.capcontrol.capbank.config.NONE">None</entry>
@@ -199,6 +211,10 @@
     <entry key="yukon.web.modules.capcontrol.capbank.antennaType.NONE">None</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.antennaType.YAGI">Yagi</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.antennaType.OMNI">Omni</entry>
+    <!-- Cap Bank Point Phases -->
+    <entry key="yukon.web.modules.capcontrol.capbank.pointPhase.A">A</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.pointPhase.B">B</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.pointPhase.C">C</entry>
     
     <!-- capBankAddInfoPopup.jsp -->
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.setting">Setting</entry>

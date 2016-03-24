@@ -1164,6 +1164,7 @@ yukon.ui = (function () {
             } else {
                 inputs.each(function (idx, input) {
                     $(input).prop('disabled', !enable);
+                    $(input).find('*').attr('disabled', !enable);
                 });
             }
                 

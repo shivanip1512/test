@@ -52,6 +52,36 @@ yukon.da.capbank = (function () {
                 setCustomCommunicationMedium(true);
             });
             
+            /** User clicked on Remove Point button */
+            $(document).on('click', '.js-remove-point', function () {
+                var button = $(this),
+                    pointRow = button.closest("tr");
+                
+                pointRow.remove();
+
+            });
+            
+            /** User clicked save on point assignment dialog. */
+            $(document).on('yukon:vv:children:save', function (ev) {
+
+                var container = $(ev.target),
+                    parentId = container.data('parentId'),
+                    children = [];
+
+                container.find('.select-box-selected .select-box-item').each(function (idx, item) {
+                    children.push($(item).data('id'));
+                });
+
+                $.ajax({
+                    url: yukon.url('/capcontrol/capbanks/' + parentId + '/points'),
+                    method: 'post',
+                    data: { children: children}
+                }).done(function () {
+                    window.location.reload();
+                });
+
+            });
+            
             initialized = true;
 
         }
