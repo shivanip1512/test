@@ -88,7 +88,7 @@ public class RfPerformanceController {
     @Autowired private DeviceMemoryCollectionProducer deviceMemoryCollectionProducer;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DateFormattingService dateFormattingService;
-    
+    public static final String UNREPORTED = "unreported";
     @Autowired @Qualifier("rfnPerformanceVerification")
         private YukonJobDefinition<RfnPerformanceVerificationTask> rfnVerificationJobDef;
     @Autowired @Qualifier("rfnPerformanceVerificationEmail")
@@ -249,8 +249,8 @@ public class RfPerformanceController {
         List<PaoIdentifier> paos = new ArrayList<>();
         PerformanceVerificationMessageStatus status;
         int totalCount = 0;
-        if (type.equals("unreported")) {
-            model.addAttribute("unreported", true);
+        if (type.equals(UNREPORTED)) {
+            model.addAttribute(UNREPORTED, true);
             UnknownDevices devices = 
                     rfPerformanceDao.getDevicesWithUnknownStatus(test, pagingParameters);
             totalCount = devices.getNumTotalBeforePaging();
@@ -303,7 +303,7 @@ public class RfPerformanceController {
             paos = rfPerformanceDao.getDevicesWithStatus(test, status, pagingParameters);
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else {
-            model.addAttribute("unreported", true);
+            model.addAttribute(UNREPORTED, true);
             status = PerformanceVerificationMessageStatus.UNKNOWN;
             UnknownDevices devices = 
                     rfPerformanceDao.getDevicesWithUnknownStatus(test, pagingParameters);
@@ -357,7 +357,7 @@ public class RfPerformanceController {
     public void download(HttpServletResponse response, YukonUserContext userContext, @PathVariable String type, @PathVariable long test) throws IOException {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
-        boolean isUnreported = type.equalsIgnoreCase("unreported");
+        boolean isUnreported = type.equalsIgnoreCase(UNREPORTED);
         List<PaoIdentifier> paos = new ArrayList<>();
         Map<Integer, UnknownDevice> deviceMap = new HashMap<>();
         
@@ -407,7 +407,7 @@ public class RfPerformanceController {
         
         List<? extends YukonPao> paos;
         
-        if (type.equalsIgnoreCase("unreported")) {
+        if (type.equalsIgnoreCase(UNREPORTED)) {
             paos = rfPerformanceDao.getAllDevicesWithUnknownStatus(test).getUnknownDevices();
         } else if (type.equalsIgnoreCase("failed")) {
             paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
@@ -432,7 +432,7 @@ public class RfPerformanceController {
         
         List<? extends YukonPao> paos;
         
-        if (type.equalsIgnoreCase("unreported")) {
+        if (type.equalsIgnoreCase(UNREPORTED)) {
             paos = rfPerformanceDao.getAllDevicesWithUnknownStatus(test).getUnknownDevices();
         } else if (type.equalsIgnoreCase("failed")) {
             paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
