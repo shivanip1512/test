@@ -319,7 +319,7 @@ public:
     static const Attribute  SumPeakkVArRateA;
     static const Attribute  SumPeakkVArRateB;
     static const Attribute  SumPeakkVArRateC;
-    static const Attribute  SumPeakkVArRateA;
+    static const Attribute  SumPeakkVArRateD;
     static const Attribute  PeakkVArh;
     static const Attribute  PeakkVArhCoincidental;
     static const Attribute  Phase;
