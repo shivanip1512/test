@@ -27,7 +27,7 @@ public enum DbChangeCategory {
     CC_MONITOR_BANK_LIST,
     GLOBAL_SETTING("GlobalSetting"),
     ENERGY_COMPANY_SETTING("EnergyCompanySetting"),
-    SCHEDULE("Schedule"),
+    REPEATING_JOB("RepeatingJob"),
     DATA_EXPORT_FORMAT("DataExportFormat"),
     MONITOR("Monitor"),
     

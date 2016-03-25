@@ -229,9 +229,7 @@ public class JobManagerImpl implements JobManager {
                                         Map<String, String> jobProperties) {
         YukonJob job = getJob(jobId);
         deleteJob(job);
-        dbChangeManager.processDbChange(DbChangeType.DELETE,
-                                        DbChangeCategory.SCHEDULE,
-                                        jobId);
+        
         YukonJob scheduledJob =
             scheduleJob(jobDefinition, task, cronExpression, userContext, jobProperties, job.getJobGroupId());
         return scheduledJob;
@@ -262,7 +260,7 @@ public class JobManagerImpl implements JobManager {
         repeatingJob.setCronString(cronExpression);
         scheduledRepeatingJobDao.save(repeatingJob);
         dbChangeManager.processDbChange(DbChangeType.ADD,
-                                        DbChangeCategory.SCHEDULE,
+                                        DbChangeCategory.REPEATING_JOB,
                                         repeatingJob.getId());
         
         
@@ -396,6 +394,9 @@ public class JobManagerImpl implements JobManager {
         log.info("deleting job: " + job);
         job.setDeleted(true);
         yukonJobDao.update(job);
+        dbChangeManager.processDbChange(DbChangeType.DELETE,
+                                        DbChangeCategory.REPEATING_JOB,
+                                        job.getId());
     }
 
     @Override

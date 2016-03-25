@@ -1,6 +1,6 @@
 package com.cannontech.web.search.lucene.index.site;
 
-import static com.cannontech.message.dispatch.message.DbChangeCategory.SCHEDULE;
+import static com.cannontech.message.dispatch.message.DbChangeCategory.REPEATING_JOB;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -54,13 +55,13 @@ public class SchedulePageIndexBuilder extends DbPageIndexBuilder {
         
         sql = new SqlStatementBuilder();
         sql.append("name").eq("name");
-        sql.append("AND disabled").neq("D");
+        sql.append("AND disabled").neq(JobDisabledStatus.D);
         sql.append("AND beanName").in(scheduleType);
         allWhereClause = new SqlStatementBuilder("name").eq("name");
     }
 
     protected SchedulePageIndexBuilder() {
-        super("jobs", DBChangeMsg.USES_NEW_CATEGORY_ENUM - SCHEDULE.ordinal(), "Schedule");
+        super("jobs", DBChangeMsg.USES_NEW_CATEGORY_ENUM - REPEATING_JOB.ordinal(), "RepeatingJob");
     }
 
     @Override
@@ -122,7 +123,7 @@ public class SchedulePageIndexBuilder extends DbPageIndexBuilder {
     public SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("job.jobid").eq(id);
-        sql.append("AND disabled").neq("D");
+        sql.append("AND disabled").neq(JobDisabledStatus.D);
         return sql;
     }
 
