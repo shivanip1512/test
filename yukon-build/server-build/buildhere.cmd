@@ -289,3 +289,7 @@ rem -- Return a real exit code without closing the shell.
 
 exit /b %_ERRORLEVEL%
 
+rem For some strange reason, the for parser leaves a trailing space on the parameter.  This strips it off.
+:trim
+set %2=%1
+goto :EOF
