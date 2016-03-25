@@ -4332,7 +4332,7 @@ bool CtiVanGogh::ablementPoint(const CtiPointBase &point, bool &devicedifferent,
                 pTagSig->setPointValue(pDyn->getDispatch().getValue());
                 pTagSig->setMessagePriority(15);
                 pTagSig->setUser(user);
-                pTagSig->setTags( pDyn->getDispatch().getTags());
+                pTagSig->setTags( pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK );
                 postMessageToClients(pTagSig);
                 delete pTagSig;
             }
