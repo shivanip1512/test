@@ -780,13 +780,13 @@ void CtiPointClientManager::writeRecordsToDB(const DynamicPointDispatchList& upd
 
     for( auto& pDyn : updateList )
     {
-        CtiTablePointDispatch& dispatch = pDyn->getDispatch();
+        CtiTablePointDispatch& dynamicPointData = pDyn->getDispatch();
 
-        const auto pointId = dispatch.getPointID();
+        const auto pointId = dynamicPointData.getPointID();
 
-        if( ! dispatch.writeToDB(conn) )
+        if( ! dynamicPointData.writeToDB(conn) )
         {
-            if( dispatch.isPointIdInvalid() )
+            if( dynamicPointData.isPointIdInvalid() )
             {
                 CTILOG_WARN(dout, "Removing record for invalid point ID " << pointId);
 
