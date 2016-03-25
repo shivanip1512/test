@@ -728,24 +728,23 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, boost::ptr_vecto
     }
 }
 
-void CtiPointClientManager::getDirtyRecordList(list<CtiDynamicPointDispatchSPtr> &updateList)
+auto CtiPointClientManager::getDirtyRecordList() -> DynamicPointDispatchList
 {
-    ptr_type pPt;
-    coll_type::writer_lock_guard_t guard(getLock());
-    DynamicPointDispatchIterator itr = _dynamic.begin();
-    DynamicPointDispatchIterator listEnd = _dynamic.end();
+    DynamicPointDispatchList updateList;
 
-    for( ;itr != listEnd; itr++)
+    coll_type::writer_lock_guard_t guard(getLock());
+
+    for( auto& kv : _dynamic )
     {
         try
         {
-            CtiDynamicPointDispatchSPtr pDyn = itr->second;
+            auto& pDyn = kv.second;
 
             if(pDyn && (pDyn->getDispatch().isDirty() || !pDyn->getDispatch().getUpdatedFlag()) )
             {
                 UINT statictags = pDyn->getDispatch().getTags();
                 pDyn->getDispatch().resetTags();                    // clear them all!
-                if( (pPt = getCachedPoint(itr->first)) )
+                if( auto pPt = getCachedPoint(kv.first) )
                 {
                     pDyn->getDispatch().setTags(pPt->adjustStaticTags(statictags));   // make the static tags match...
                 }
@@ -758,94 +757,91 @@ void CtiPointClientManager::getDirtyRecordList(list<CtiDynamicPointDispatchSPtr>
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
+
+    return updateList;
 }
 
-void CtiPointClientManager::writeRecordsToDB(list<CtiDynamicPointDispatchSPtr> &updateList)
+std::vector<long> CtiPointClientManager::writeRecordsToDB(const DynamicPointDispatchList& updateList)
 {
     Cti::Database::DatabaseConnection   conn;
 
     if ( ! conn.isValid() )
     {
         CTILOG_ERROR(dout, "Invalid Connection to Database");
-        return;
+
+        return {};
     }
 
-    const int total = updateList.size();
+    const auto total = updateList.size();
 
     CTILOG_INFO(dout, "WRITING "<< total <<" dynamic dispatch records");
 
-    int listCount = 0;
+    size_t listCount = 0;
 
-    for each( CtiDynamicPointDispatchSPtr pdyn in updateList )
+    std::vector<long> successes;
+
+    for( auto& dpd : updateList )
     {
-        CtiTablePointDispatch& dispatch = pdyn->getDispatch();
+        CtiTablePointDispatch& dispatch = dpd->getDispatch();
+
+        const auto pointId = dispatch.getPointID();
 
         if( ! dispatch.writeToDB(conn) )
         {
             if( dispatch.isPointIdInvalid() )
             {
-                CTILOG_WARN(dout, "Removing record for invalid point ID "<< dispatch.getPointID());
+                CTILOG_WARN(dout, "Removing record for invalid point ID " << pointId);
 
-                erase( dispatch.getPointID() );
+                erase(pointId);
             }
         }
-        else if(++listCount % 1000 == 0)
+        else
         {
-            CTILOG_INFO(dout, "WRITING dynamic dispatch records to DB, "<< listCount <<" of "<< total <<" records written");
+            successes.emplace_back(pointId);
+
+            if( ++listCount % 1000 == 0 )
+            {
+                CTILOG_INFO(dout, "WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written");
+            }
         }
     }
+
+    return successes;
 }
 
-void CtiPointClientManager::removeOldDynamicData()
+void CtiPointClientManager::removeOldDynamicData(const std::vector<long>& pointIds)
 {
-    int recordCount = 0;
-    coll_type::writer_lock_guard_t guard(getLock());
-    DynamicPointDispatchIterator itr = _dynamic.begin();
-    DynamicPointDispatchIterator ptsEnd = _dynamic.end();
+    size_t purged = 0;
 
-    for( ;itr != ptsEnd;)
+    coll_type::writer_lock_guard_t guard(getLock());
+
+    for( const auto pointId : pointIds )
     {
-        try
+        if( ! getCachedPoint(pointId) )
         {
-            if(!isPointLoaded(itr->first))
-            {
-                itr = _dynamic.erase(itr);
-                recordCount ++;
-            }
-            else
-            {
-                itr++;
-            }
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-            break;
+            _dynamic.erase(pointId);
+            ++purged;
         }
     }
 
-    CTILOG_INFO(dout, "PURGED "<< recordCount <<" records from memory");
+    CTILOG_INFO(dout, "PURGED "<< purged <<" records from memory");
 }
 
 void CtiPointClientManager::storeDirtyRecords()
 {
-    int recordCount = 0;
-    list<CtiDynamicPointDispatchSPtr> updateList;
+    const auto updateList = getDirtyRecordList();
 
-    getDirtyRecordList(updateList);
-
-    recordCount = updateList.size();
-
-    writeRecordsToDB(updateList);
-
-    removeOldDynamicData();
-
-    if(recordCount > 0 && gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
+    if( ! updateList.empty() )
     {
-        CTILOG_DEBUG(dout, "Updated "<< recordCount <<" dynamic dispatch records");
-    }
+        const auto successes = writeRecordsToDB(updateList);
 
-    return;
+        removeOldDynamicData(successes);
+
+        if( gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE )
+        {
+            CTILOG_DEBUG(dout, "Updated " << updateList.size() << " dynamic dispatch records");
+        }
+    }
 }
 
 CtiPointClientManager::~CtiPointClientManager()
