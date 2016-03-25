@@ -322,6 +322,7 @@
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.METER_NUMBER">Meter Number</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.DEVICE_NAME">Device Name</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.DEVICE_TYPE">Device Type</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.ADDRESS">Address/Serial Number</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.RF_MANUFACTURER">RF Manufacturer</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.RF_MODEL">RF Model</entry>
