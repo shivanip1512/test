@@ -761,7 +761,7 @@ auto CtiPointClientManager::getDirtyRecordList() -> DynamicPointDispatchList
     return updateList;
 }
 
-std::vector<long> CtiPointClientManager::writeRecordsToDB(const DynamicPointDispatchList& updateList)
+void CtiPointClientManager::writeRecordsToDB(const DynamicPointDispatchList& updateList)
 {
     Cti::Database::DatabaseConnection   conn;
 
@@ -769,7 +769,7 @@ std::vector<long> CtiPointClientManager::writeRecordsToDB(const DynamicPointDisp
     {
         CTILOG_ERROR(dout, "Invalid Connection to Database");
 
-        return {};
+        return;
     }
 
     const auto total = updateList.size();
@@ -778,11 +778,9 @@ std::vector<long> CtiPointClientManager::writeRecordsToDB(const DynamicPointDisp
 
     size_t listCount = 0;
 
-    std::vector<long> successes;
-
-    for( auto& dpd : updateList )
+    for( auto& pDyn : updateList )
     {
-        CtiTablePointDispatch& dispatch = dpd->getDispatch();
+        CtiTablePointDispatch& dispatch = pDyn->getDispatch();
 
         const auto pointId = dispatch.getPointID();
 
@@ -795,32 +793,34 @@ std::vector<long> CtiPointClientManager::writeRecordsToDB(const DynamicPointDisp
                 erase(pointId);
             }
         }
-        else
+        else if( ++listCount % 1000 == 0 )
         {
-            successes.emplace_back(pointId);
-
-            if( ++listCount % 1000 == 0 )
-            {
-                CTILOG_INFO(dout, "WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written");
-            }
+            CTILOG_INFO(dout, "WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written");
         }
     }
-
-    return successes;
 }
 
-void CtiPointClientManager::removeOldDynamicData(const std::vector<long>& pointIds)
+void CtiPointClientManager::removeOldDynamicData()
 {
     size_t purged = 0;
 
     coll_type::writer_lock_guard_t guard(getLock());
 
-    for( const auto pointId : pointIds )
+    const auto end = _dynamic.end();
+
+    for( auto itr = _dynamic.begin(); itr != end; )
     {
-        if( ! getCachedPoint(pointId) )
+        const auto pointId = itr->first;
+        const auto& dynTable = itr->second->getDispatch();
+
+        if( ! getCachedPoint(itr->first) && ! dynTable.isDirty() && dynTable.getUpdatedFlag() )
         {
-            _dynamic.erase(pointId);
+            itr = _dynamic.erase(itr);
             ++purged;
+        }
+        else
+        {
+            ++itr;
         }
     }
 
@@ -833,15 +833,15 @@ void CtiPointClientManager::storeDirtyRecords()
 
     if( ! updateList.empty() )
     {
-        const auto successes = writeRecordsToDB(updateList);
-
-        removeOldDynamicData(successes);
+        writeRecordsToDB(updateList);
 
         if( gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE )
         {
             CTILOG_DEBUG(dout, "Updated " << updateList.size() << " dynamic dispatch records");
         }
     }
+
+    removeOldDynamicData();
 }
 
 CtiPointClientManager::~CtiPointClientManager()
@@ -1207,10 +1207,10 @@ void CtiPointClientManager::erase(long pid)
     auto pointConIter = _pointConnectionMap.find( pid );
     if( pointConIter != _pointConnectionMap.end() )
     {
-        /* 
-         * We get the connection manager collection out of pointConIter here because 
-         *   pointConIter may get invalidated in RemoveConnectionManager().  
-         *   connectionManagers is safe to iterate on, pointConIter is not. 
+        /*
+         * We get the connection manager collection out of pointConIter here because
+         *   pointConIter may get invalidated in RemoveConnectionManager().
+         *   connectionManagers is safe to iterate on, pointConIter is not.
          */
         CtiPointConnection::CollectionType connectionManagers = pointConIter->second.getManagerList();
         for( auto cm : connectionManagers )
