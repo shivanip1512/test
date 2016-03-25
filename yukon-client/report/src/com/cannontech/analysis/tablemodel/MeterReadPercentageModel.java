@@ -45,20 +45,21 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
                                      
     public enum MeterReadPercentagePeriod {
 
-        TWO_DAYS("2", 35),
-        THREE_DAYS("3", 35),
-        FOUR_DAYS("4", 35),
-        FIVE_DAYS("5", 35),
-        SIX_DAYS("6", 35),
-        SEVEN_DAYS("7", 52),
-        MONTHLY("Monthly", 12);
-
+        TWO_DAYS("2 days", 35, 2),
+        THREE_DAYS("3 days", 35, 3),
+        FOUR_DAYS("4 days", 35, 4),
+        FIVE_DAYS("5 days", 35, 5),
+        SIX_DAYS("6 days", 35, 6),
+        SEVEN_DAYS("7 days", 52, 7),
+        MONTHLY("Monthly", 12, 30); // Not using numDays (30) for MONTHLY anywhere. 
         private String displayName;
         private int rowsToDisplay;
+        private int numDays;
 
-        private MeterReadPercentagePeriod(String displayName, int rowsToDisplay) {
+        private MeterReadPercentagePeriod(String displayName, int rowsToDisplay ,int numDays) {
             this.displayName = displayName;
             this.rowsToDisplay = rowsToDisplay;
+            this.numDays = numDays;
         }
 
         public String getDisplayName() {
@@ -67,6 +68,10 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
 
         public int getTotal() {
             return rowsToDisplay;
+        }
+
+        public int getNumDays() {
+            return numDays;
         }
     }
 
@@ -112,7 +117,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
     @Autowired private PaoDao paoDao;
     private List<String> groupNames;
     private YukonUserContext context;
-    private MeterReadPercentagePeriod period;
+    private MeterReadPercentagePeriod period = MeterReadPercentagePeriod.SEVEN_DAYS;
     protected List<ModelRow> data = new ArrayList<ModelRow>();
     private final static Set<? extends Attribute> usageAttributes =
             ImmutableSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.USAGE_WATER);
@@ -288,12 +293,11 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
                 ranges.add(new DateRange(startDate, stopDate));
             }
         } else {
-            Integer numDays = Integer.valueOf(period.getDisplayName());
-            startDate = (stopDate.minusDays(numDays));
+            startDate = (stopDate.minusDays(period.getNumDays()));
             ranges.add(new DateRange(startDate, stopDate));
             for (int i = 0; i < period.getTotal() - 1; i++) {
                 stopDate = startDate;
-                startDate = startDate.minusDays(numDays);
+                startDate = startDate.minusDays(period.getNumDays());
                 ranges.add(new DateRange(startDate, stopDate));
             }
         }

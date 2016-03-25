@@ -181,24 +181,6 @@ function enableDates (value) {
     dateFields.prop('disabled', !value);
 }
 
-function toggle (value) {
-    var dateFields = $('#daysId');
-    if(value){
-    dateFields.prop('disabled',true);
-    } else {
-        dateFields.prop('disabled',false); 
-        var periodValue = document.getElementById("daysId").value;
-        document.getElementById("period").value = periodValue;
-    }
-} 
-
-function change () {
-    var dateFields = $('#daysId');
-    dateFields.prop('size', 0);
-    var periodValue = document.getElementById("daysId").value;
-    document.getElementById("period").value = periodValue;
-} 
-
 function checkDates () {
     var startDate = $('#startCal').datetimepicker('getDate'),
         stopDate = $('#stopCal').datetimepicker('getDate');
