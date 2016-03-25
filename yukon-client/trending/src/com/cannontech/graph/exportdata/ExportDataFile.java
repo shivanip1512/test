@@ -293,7 +293,8 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 			csvColumnLength = 0;
 			for( int i = 0; i < trendModel.getTrendSeries().length; i++)
 			{
-				if(GDSTypesFuncs.isGraphType( trendModel.getTrendSeries()[i].getTypeMask() ))
+                if (GDSTypesFuncs.isGraphType(trendModel.getTrendSeries()[i].getTypeMask())
+                    && !GDSTypesFuncs.isMarkerType(trendModel.getTrendSeries()[i].getTypeMask()))
 				{
 					csvColumnLength++;
 				}
@@ -337,7 +338,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 			{
 				TrendSerie serie = trendModel.getTrendSeries()[z];
 				Double prevValue = null;
-				if( GDSTypesFuncs.isGraphType(serie.getTypeMask()))
+                if (GDSTypesFuncs.isGraphType(serie.getTypeMask()) && !GDSTypesFuncs.isMarkerType(serie.getTypeMask()))
 				{
 					valueFormat.setMaximumFractionDigits(serie.getDecimalPlaces());
 					valueFormat.setMinimumFractionDigits(serie.getDecimalPlaces());
