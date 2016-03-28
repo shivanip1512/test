@@ -3,6 +3,8 @@
 #include "dnp_datalink.h"
 #include "xfer.h"
 
+#include <set>
+
 namespace Cti {
 namespace Protocols {
 namespace DNP {
