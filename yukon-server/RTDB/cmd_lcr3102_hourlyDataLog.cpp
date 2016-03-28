@@ -11,7 +11,7 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-Lcr3102HourlyDataLogCommand::Lcr3102HourlyDataLogCommand(int utcStartSeconds) :
+Lcr3102HourlyDataLogCommand::Lcr3102HourlyDataLogCommand(ctitime_t utcStartSeconds) :
     _utcSeconds(utcStartSeconds),
     _state(State_WriteStartTime),
     _function(Write_HourlyDataLogStartTime),

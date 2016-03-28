@@ -60,7 +60,7 @@ fdr.exe:    $(FDROBJS) makeexe.mak $(OBJ)\fdr.res
         @echo Compiling ..\$@
         @%cd $(OBJ)
         $(CC) /Fm $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
-        $(FDROBJS) -link $(BOOST_LIBS) $(FDRLIBS) fdr.res
+        $(FDROBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(FDRLIBS) fdr.res
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
 	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

@@ -47,7 +47,7 @@ dynpaoinfo.dll:   $(DYNPAOINFO_OBJS) Makefile $(OBJ)\dynpaoinfo.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(DYNPAOINFO_OBJS) -link $(BOOST_LIBS) $(DYNPAOINFO_LIBS) dynpaoinfo.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(DYNPAOINFO_OBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(DYNPAOINFO_LIBS) dynpaoinfo.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

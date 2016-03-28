@@ -49,7 +49,7 @@ ctiholidaydb.dll:   $(YUKONHOLIDAYDLLOBJS) Makefile $(OBJ)\ctiholidaydb.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONHOLIDAYDLLOBJS) id_devdll.obj -link $(BOOST_LIBS) $(HOLIDAYDBLIBS) ctiholidaydb.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONHOLIDAYDLLOBJS) id_devdll.obj -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(HOLIDAYDBLIBS) ctiholidaydb.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

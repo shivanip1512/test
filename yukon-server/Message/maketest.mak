@@ -62,7 +62,7 @@ test_message.exe:    $(MESSAGE_TEST_FULLBUILD) $(MESSAGE_TEST_OBJS)  Makefile
         @echo:
 	@%cd $(OBJ)
 	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(_TargetF) \
-        $(MESSAGE_TEST_OBJS) -link /subsystem:console $(LIBS) $(LINKFLAGS)
+        $(MESSAGE_TEST_OBJS) -link /LARGEADDRESSAWARE /subsystem:console $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -78,7 +78,7 @@ server_client_serialization_test.exe:    $(MESSAGE_TEST_FULLBUILD) server_client
         @echo:
 	@%cd $(OBJ)
 	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(_TargetF) \
-        server_client_serialization_test.obj -link /subsystem:console $(LIBS) $(LINKFLAGS)
+        server_client_serialization_test.obj -link /LARGEADDRESSAWARE /subsystem:console $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)

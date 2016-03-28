@@ -48,7 +48,7 @@ sigsend.exe:    $(BASEOBJS) $(OBJ)\sigsend.res
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(BOOST_LIBS) $(TABLETESTLIBS) sigsend.res
+$(BASEOBJS) -link /LARGEADDRESSAWARE $(LIBS) $(BOOST_LIBS) $(TABLETESTLIBS) sigsend.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)

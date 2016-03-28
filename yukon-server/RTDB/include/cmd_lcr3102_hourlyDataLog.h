@@ -22,7 +22,7 @@ private:
         State_ReadIntervalData
     };
 
-    int _utcSeconds;
+    ctitime_t _utcSeconds;
 
     int _retries;
 
@@ -71,7 +71,7 @@ private:
 
 public:
 
-    Lcr3102HourlyDataLogCommand(int utcStartSeconds);
+    Lcr3102HourlyDataLogCommand(ctitime_t utcStartSeconds);
 
     virtual emetcon_request_ptr executeCommand(const CtiTime now);
     virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points);

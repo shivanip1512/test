@@ -180,7 +180,7 @@ ctiprot.dll:   $(PROTOCOL_FULLBUILD) $(OBJS) Makefile $(OBJ)\ctiprot.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctiprot.obj -link $(PROTLIBS) $(BOOST_LIBS) ctiprot.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctiprot.obj -link /LARGEADDRESSAWARE $(PROTLIBS) $(BOOST_LIBS) ctiprot.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

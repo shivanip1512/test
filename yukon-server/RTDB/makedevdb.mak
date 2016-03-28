@@ -215,7 +215,7 @@ ctidevdb.dll:   $(RTDB_DEVDB_FULLBUILD) $(YUKONDEVDLLOBJS) Makefile $(OBJ)\ctide
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONDEVDLLOBJS) id_devdll.obj -link $(DEVDBLIBS) $(BOOST_LIBS) ctidevdb.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONDEVDLLOBJS) id_devdll.obj -link /LARGEADDRESSAWARE $(DEVDBLIBS) $(BOOST_LIBS) ctidevdb.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

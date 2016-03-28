@@ -87,7 +87,7 @@ test_simulator.exe:    $(SIMULATOR_TEST_FULLBUILD) $(SIMULATOR_TEST_OBJS) Makefi
         @echo:
 	@%cd $(OBJ)
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(CCOPTS)  /Fe..\$(BIN)\$(@B).exe \
-	$(SIMULATOR_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CCU_SIMULATOR_BASE_OBJS) $(BOOST_TEST_LIBS) $(LIBS) $(LINKFLAGS)
+	$(SIMULATOR_TEST_OBJS) -link /LARGEADDRESSAWARE /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CCU_SIMULATOR_BASE_OBJS) $(BOOST_TEST_LIBS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)

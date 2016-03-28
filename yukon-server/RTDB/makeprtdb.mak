@@ -77,7 +77,7 @@ ctiprtdb.dll:   $(RTDB_PRT_FULLBUILD) $(YUKONPORTDLLOBJS) Makefile $(OBJ)\ctiprt
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONPORTDLLOBJS) id_prtdll.obj -link $(BOOST_LIBS) $(PRTDBLIBS) ctiprtdb.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONPORTDLLOBJS) id_prtdll.obj -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(PRTDBLIBS) ctiprtdb.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

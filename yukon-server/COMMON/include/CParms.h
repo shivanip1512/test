@@ -55,7 +55,7 @@ public:
     {
         EnterCriticalSection(&_critical_section);
 
-        _threadID = (int) _critical_section.OwningThread;
+        _threadID = (unsigned long) _critical_section.OwningThread;
 
         return true;
     }
@@ -67,7 +67,7 @@ public:
         _threadID = 0;
     }
 
-    DWORD lastAcquiredByTID() const
+    unsigned long lastAcquiredByTID() const
     {
         return _threadID;
     }
@@ -75,7 +75,7 @@ public:
 private:
 
     CRITICAL_SECTION _critical_section;
-    DWORD  _threadID;
+    unsigned long  _threadID;
 };
 
 

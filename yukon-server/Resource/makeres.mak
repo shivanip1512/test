@@ -33,7 +33,7 @@ $(TARGET):  $(TARGET_OBJS) Makefile resource.res $(OBJ)\yukon-resource.res
         @echo:
         @echo Compiling $@
         @%cd $(OBJ)
-        $(CC) $(DLLFLAGS) -Fe..\$@ $(TARGET_OBJS) -link resource.res yukon-resource.res
+        $(CC) $(DLLFLAGS) -Fe..\$@ $(TARGET_OBJS) -link /LARGEADDRESSAWARE resource.res yukon-resource.res
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 	-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

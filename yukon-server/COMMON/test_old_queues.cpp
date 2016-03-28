@@ -26,7 +26,7 @@ BOOL findRequestIdBOOL(void *request_id, void *om)
 
 void setDeviceId(void *device_id, void *om)
 {
-     om && (((OUTMESS *)om)->DeviceID = (long)device_id);
+     om && (((OUTMESS *)om)->DeviceID = (unsigned long)device_id);
 }
 
 void noOp(void *, void *)

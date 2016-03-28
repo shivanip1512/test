@@ -82,7 +82,7 @@ scanner.exe:    $(SCANNER_EXE_FULLBUILD) $(BASEOBJS) makeexe.mak $(OBJ)\scanner.
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(CFLAGS) $(BASEOBJS) id_scanner.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(SCANNERLIBS) $(BOOST_LIBS) scanner.res
+                $(CC) $(CFLAGS) $(BASEOBJS) id_scanner.obj $(INCLPATHS) /Fe..\$@ -link /LARGEADDRESSAWARE $(LIBS) $(SCANNERLIBS) $(BOOST_LIBS) scanner.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -96,7 +96,7 @@ killscan.exe:   poker.obj makeexe.mak $(OBJ)\killscan.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(CFLAGS) poker.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(SCANNERLIBS) killscan.res
+                $(CC) $(CFLAGS) poker.obj $(INCLPATHS) /Fe..\$@ -link /LARGEADDRESSAWARE $(LIBS) $(SCANNERLIBS) killscan.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)

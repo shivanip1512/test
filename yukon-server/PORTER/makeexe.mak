@@ -133,7 +133,7 @@ porter.exe:     $(PORTER_EXE_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\porter.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(CC) $(CFLAGS) $(BASEOBJS) id_porter.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(PORTERLIBS) $(BOOST_LIBS) Ws2_32.lib porter.res
+                $(CC) $(CFLAGS) $(BASEOBJS) id_porter.obj $(INCLPATHS) /Fe..\$@ -link /LARGEADDRESSAWARE $(LIBS) $(PORTERLIBS) $(BOOST_LIBS) Ws2_32.lib porter.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -146,7 +146,7 @@ porter.exe:     $(PORTER_EXE_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\porter.res
 traceset.exe:   traceset.obj
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
-$(TRACESET_OBJS) -link $(LIBS) $(COMPILEBASE)\lib\portglob.lib
+$(TRACESET_OBJS) -link /LARGEADDRESSAWARE $(LIBS) $(COMPILEBASE)\lib\portglob.lib
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

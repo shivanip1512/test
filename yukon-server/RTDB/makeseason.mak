@@ -49,7 +49,7 @@ ctiseasondb.dll:   $(YUKONSEASONDLLOBJS) Makefile $(OBJ)\ctiseasondb.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONSEASONDLLOBJS) id_devdll.obj -link $(BOOST_LIBS) $(SEASONDBLIBS) ctiseasondb.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONSEASONDLLOBJS) id_devdll.obj -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(SEASONDBLIBS) ctiseasondb.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

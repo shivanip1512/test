@@ -66,7 +66,7 @@ rtpttest.exe:  $(RTPTTESTOBJS) makeexe.mak $(OBJ)\rtpttest.res
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
 $(RTPTTESTOBJS) \
--link $(COMPILEBASE)\lib\ctisvr.lib rtpttest.res
+-link /LARGEADDRESSAWARE $(COMPILEBASE)\lib\ctisvr.lib rtpttest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -81,7 +81,7 @@ memtest.exe:    $(MEMTESTOBJS) makeexe.mak $(OBJ)\memtest.res
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(MEMTESTOBJS) \
--link $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) memtest.res
+-link /LARGEADDRESSAWARE $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) memtest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -96,7 +96,7 @@ routetest.exe:   $(RTESTOBJS) makeexe.mak $(OBJ)\routetest.res
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(RTESTOBJS) \
--link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(BOOST_LIBS) routetest.res
+-link /LARGEADDRESSAWARE $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(BOOST_LIBS) routetest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -111,7 +111,7 @@ conntest.exe:   $(CONNTESTOBJS) makeexe.mak $(OBJ)\conntest.res
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(CONNTESTOBJS) \
--link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(BOOST_LIBS) conntest.res
+-link /LARGEADDRESSAWARE $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(BOOST_LIBS) conntest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -126,7 +126,7 @@ key_password_encryptor.exe:   $(KEYPSWDENCRYPTOROBJS) makeexe.mak $(OBJ)\key_pas
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(KEYPSWDENCRYPTOROBJS) \
-			-link $(COMPILEBASE)\lib\ctibase.lib \
+			-link /LARGEADDRESSAWARE $(COMPILEBASE)\lib\ctibase.lib \
 			$(COMPILEBASE)\lib\ctisvr.lib \
 			$(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(BOOST_LIBS) $(OPENSSL_LIBS) key_password_encryptor.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)

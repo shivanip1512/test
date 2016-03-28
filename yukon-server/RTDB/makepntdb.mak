@@ -73,7 +73,7 @@ ctipntdb.dll:   $(RTDB_PNT_FULLBUILD) $(YUKONPNTDLLOBJS) Makefile $(OBJ)\ctipntd
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONPNTDLLOBJS) id_pntdll.obj -link $(BOOST_LIBS) $(PNTDBLIBS) ctipntdb.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(YUKONPNTDLLOBJS) id_pntdll.obj -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(PNTDBLIBS) ctipntdb.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

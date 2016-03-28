@@ -118,7 +118,7 @@ loadmanagement.exe: $(LOADMANAGEMENT_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\load
               @echo:
               @echo Compiling $@
               @%cd $(OBJ)
-              $(CC) $(CFLAGS) -D_DEBUG_MEMORY $(INCLPATHS) /Fe..\$@ $(BASEOBJS) -link $(LIBS) $(BOOST_LIBS) loadmanagement.res
+              $(CC) $(CFLAGS) -D_DEBUG_MEMORY $(INCLPATHS) /Fe..\$@ $(BASEOBJS) -link /LARGEADDRESSAWARE $(LIBS) $(BOOST_LIBS) loadmanagement.res
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)

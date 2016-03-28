@@ -63,7 +63,7 @@ test_common.exe:    $(COMMON_TEST_FULLBUILD) $(COMMON_TEST_OBJS)  Makefile
         @echo:
 	@%cd $(OBJ)
 	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(_TargetF) \
-        $(COMMON_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(OPENSSL_LIBS) advapi32.lib
+        $(COMMON_TEST_OBJS) -link /LARGEADDRESSAWARE /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(OPENSSL_LIBS) advapi32.lib
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -78,7 +78,7 @@ cmdparsetestgenerator.exe: cmdparsetestgenerator.obj
         @echo Creating Executable $(BIN)\$(@B).exe
         @echo:
         $(CC) $(CFLAGS) $(INCLPATHS)  /Fe$(BIN)\$(@B).exe \
-        $(OBJ)\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(LINKFLAGS)
+        $(OBJ)\$(@B).obj -link /LARGEADDRESSAWARE /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(LINKFLAGS)
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         -copy $(BIN)\$(@B).exe $(YUKONOUTPUT)

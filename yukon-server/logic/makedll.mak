@@ -31,7 +31,7 @@ logic.dll:  $(INTERPOBJS) Makefile $(OBJ)\logic.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(BOOST_LIBS) $(CTILIBS) $(TCL_LIBS) advapi32.lib -link /def:$(DLLDEF) logic.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(CTILIBS) $(TCL_LIBS) advapi32.lib -link /def:$(DLLDEF) logic.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

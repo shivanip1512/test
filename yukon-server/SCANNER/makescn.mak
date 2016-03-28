@@ -22,7 +22,7 @@ ctiscn.dll:     $(SCNDLLOBJS) Makefile $(OBJ)\ctiscn.res
                 @echo:
                 @echo Compiling $@
                 $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe$@ \
-                $(SCNDLLOBJS) -link $(SCNLIBS) $(OBJ)\ctiscn.res
+                $(SCNDLLOBJS) -link /LARGEADDRESSAWARE $(SCNLIBS) $(OBJ)\ctiscn.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist $@ copy $@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

@@ -47,7 +47,7 @@ ctidbres.dll:  $(DLLOBJS) Makefile $(OBJ)\ctidbres.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(DLLOBJS) -link $(BOOST_LIBS) \
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(DLLOBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) \
 $(DBLIBS) ctidbres.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)

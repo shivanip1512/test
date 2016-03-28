@@ -27,9 +27,10 @@ int instance_counter::counter;
 
 struct test_element
 {
-    long value, insertOrder;
+    long value;
+    unsigned long insertOrder;
 
-    test_element(long value_, long insertOrder_) : value(value_), insertOrder(insertOrder_) { }
+    test_element(long value_, unsigned long insertOrder_) : value(value_), insertOrder(insertOrder_) { }
 
     bool operator>(const test_element& rhs) const  {  return value > rhs.value;  }
     bool operator<(const test_element& rhs) const  {  return value < rhs.value;  }
@@ -37,7 +38,7 @@ struct test_element
 
 void setInsertOrder(test_element *dataStruct, void* d)
 {
-    dataStruct->insertOrder = (int)d;
+    dataStruct->insertOrder = (unsigned long)d;
 }
 
 BOOST_AUTO_TEST_CASE(test_queue_sort)

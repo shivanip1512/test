@@ -166,7 +166,7 @@ capcontrol.exe: $(CAPCONTROL_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\capcontrol.r
               @echo:
               @echo Compiling $@
               @%cd $(OBJ)
-              $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(BASEOBJS) -link $(LIBS) $(BOOST_LIBS) capcontrol.res
+              $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(BASEOBJS) -link /LARGEADDRESSAWARE $(LIBS) $(BOOST_LIBS) capcontrol.res
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)

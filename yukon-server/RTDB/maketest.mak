@@ -133,7 +133,7 @@ test_rtdb.exe:	$(RTDB_TEST_FULLBUILD) $(RTDB_TEST_OBJS) Makefile
         @echo:
 	@%cd obj
 	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(@B).exe \
-	$(RTDB_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LIBS) $(LINKFLAGS)
+	$(RTDB_TEST_OBJS) -link /LARGEADDRESSAWARE /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)

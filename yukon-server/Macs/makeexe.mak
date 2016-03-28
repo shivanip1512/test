@@ -90,7 +90,7 @@ macs.exe:     $(MACS_EXE_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\macs.res
               @echo Compiling $@
               @%cd $(OBJ)
               $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(BOOST_LIBS) macs.res
+$(BASEOBJS) -link /LARGEADDRESSAWARE $(LIBS) $(BOOST_LIBS) macs.res
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)

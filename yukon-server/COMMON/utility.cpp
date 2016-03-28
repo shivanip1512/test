@@ -1771,7 +1771,7 @@ ULONG MilliTime (PULONG MilliSeconds)
 
 BOOL searchFuncForOutMessageUniqueID(void *pId, void* d)
 {
-    LONG Id = (LONG)pId;
+    unsigned long Id = (unsigned long) pId;
     OUTMESS *OutMessage = (OUTMESS *)d;
 
     return(OutMessage->Request.CheckSum == Id);

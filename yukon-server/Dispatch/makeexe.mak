@@ -87,7 +87,7 @@ dispatch.exe:   $(VGOBJS) makeexe.mak $(OBJ)\dispatch.res
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
-$(VGOBJS) id_vg.obj -link $(BOOST_LIBS) $(VGLIBS) dispatch.res
+$(VGOBJS) id_vg.obj -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(VGLIBS) dispatch.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -100,7 +100,7 @@ sigsinktest.exe: $(SIGTESTOBJS) makeexe.mak $(OBJ)\sigsinktest.res
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
-$(SIGTESTOBJS) -link $(BOOST_LIBS) $(TESTLIBS) sigsinktest.res
+$(SIGTESTOBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(TESTLIBS) sigsinktest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -112,7 +112,7 @@ poker.exe: $(PORTERPOKE) makeexe.mak $(OBJ)\poker.res
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
-$(PORTERPOKE) -link $(BOOST_LIBS) $(TESTLIBS) poker.res
+$(PORTERPOKE) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(TESTLIBS) poker.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -125,7 +125,7 @@ sigsrctest.exe: $(SIGSRCTESTOBJS) makeexe.mak $(OBJ)\sigsrctest.res
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
-$(SIGSRCTESTOBJS) -link $(BOOST_LIBS) $(TESTLIBS) sigsrctest.res
+$(SIGSRCTESTOBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(TESTLIBS) sigsrctest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
 	       -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

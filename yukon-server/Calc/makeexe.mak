@@ -112,7 +112,7 @@ calc_logic.exe:  $(CALC_FULLBUILD) $(CALCOBJS) makeexe.mak $(OBJ)\calc_logic.res
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(CC) /Fm $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(CALCOBJS) -link $(BOOST_LIBS) $(CALCLIBS) calc_logic.res
+        $(CC) /Fm $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(CALCOBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(CALCLIBS) calc_logic.res
 	   -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
 	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -123,7 +123,7 @@ lurk.exe:       $(LURKOBJS) makeexe.mak $(OBJ)\lurk.res
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(LURKOBJS) -link $(BOOST_LIBS) $(TESTLIBS) lurk.res
+        $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(LURKOBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(TESTLIBS) lurk.res
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
 	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -134,7 +134,7 @@ log.exe:        $(LOGOBJS) makeexe.mak $(OBJ)\log.res
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(LOGOBJS) -link $(BOOST_LIBS) $(TESTLIBS) log.res
+        $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(LOGOBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(TESTLIBS) log.res
 	   -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
 	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -145,7 +145,7 @@ newval.exe:     $(NEWVALOBJS) makeexe.mak $(OBJ)\newval.res
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(NEWVALOBJS) -link $(BOOST_LIBS) $(TESTLIBS) newval.res
+        $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(NEWVALOBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(TESTLIBS) newval.res
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
 	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
@@ -156,7 +156,7 @@ newvalrng.exe:     $(NEWVALRNGOBJS) makeexe.mak $(OBJ)\newvalrng.res
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(NEWVALRNGOBJS) -link $(BOOST_LIBS) $(TESTLIBS) newvalrng.res
+        $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(NEWVALRNGOBJS) -link /LARGEADDRESSAWARE $(BOOST_LIBS) $(TESTLIBS) newvalrng.res
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
 	   -@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

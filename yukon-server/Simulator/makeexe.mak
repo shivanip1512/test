@@ -96,7 +96,7 @@ ccu_simulator.exe:      $(SIMULATOR_FULLBUILD) $(CCU_SIMULATOR_OBJS) makeexe.mak
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(CCU_SIMULATOR_OBJS) -link $(CCU_SIMULATOR_LIBS) $(BOOST_LIBS) ccu_simulator.res
+                $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ $(CCU_SIMULATOR_OBJS) -link /LARGEADDRESSAWARE $(CCU_SIMULATOR_LIBS) $(BOOST_LIBS) ccu_simulator.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@copy ..\$@ $(YUKONOUTPUT)
 		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)

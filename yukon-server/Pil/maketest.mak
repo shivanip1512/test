@@ -65,7 +65,7 @@ test_pil.exe:    $(PIL_TEST_FULLBUILD) $(PIL_TEST_OBJS)  Makefile
         @echo:
 	@%cd $(OBJ)
 	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(_TargetF) \
-        $(PIL_TEST_OBJS) -link /subsystem:console $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LIBS) $(LINKFLAGS)
+        $(PIL_TEST_OBJS) -link /LARGEADDRESSAWARE /subsystem:console $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
