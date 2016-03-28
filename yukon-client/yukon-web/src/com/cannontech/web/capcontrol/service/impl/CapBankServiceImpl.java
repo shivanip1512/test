@@ -202,6 +202,9 @@ public class CapBankServiceImpl implements CapBankService {
                 if (update) {
                     monitorListPoint.update();
                 } else {
+                    setDefaultFeederLimits(capbank, monitorPoint);
+                    monitorListPoint.setUpperBandwidth((float)monitorPoint.getUpperBandwidth());
+                    monitorListPoint.setLowerBandwidth((float)monitorPoint.getLowerBandwidth());
                     monitorListPoint.add();
                 }
             } catch (SQLException e) {

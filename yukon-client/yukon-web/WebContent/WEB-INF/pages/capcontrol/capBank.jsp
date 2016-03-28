@@ -205,7 +205,7 @@
                         </td>
                         <td>
                             <c:if test="${canEdit}">
-                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-point"/>
+                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-point show-on-hover" />
                             </c:if>
                         </td>
                         <form:hidden path="ccMonitorBankList[${idx}].deviceId" />

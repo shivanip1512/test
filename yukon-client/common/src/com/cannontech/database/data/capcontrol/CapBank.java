@@ -183,7 +183,7 @@ public class CapBank extends CapControlDeviceBase {
         CCMonitorBankList.deleteMonitorPointsOnCapBankList(getCapBank().getDeviceID());
         for (Iterator<CCMonitorBankList> iter = ccMonitorBankList.iterator(); iter.hasNext();) {
             CCMonitorBankList item = iter.next();
-            if (item.getMonitorPoint() != null)
+            if (item.getMonitorPoint() != null && item.getMonitorPoint().getDeviceId() != 0 && item.getMonitorPoint().getPointId() != 0)
                 item.add();
         }
         capbankAdditionalInfo.update();

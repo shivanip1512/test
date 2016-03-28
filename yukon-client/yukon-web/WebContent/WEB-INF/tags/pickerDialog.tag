@@ -137,7 +137,7 @@
                     <cti:icon id="picker-${id}-remove-selected-icon" 
                               href="javascript:${id}.removeEvent()" 
                               nameKey="remove" 
-                              classes="js-remove-point dn"
+                              classes="js-remove-point dn show-on-hover"
                               icon="icon-cross"/>
                               
                </c:if>
