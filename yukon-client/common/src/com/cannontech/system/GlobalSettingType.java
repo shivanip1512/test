@@ -93,8 +93,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     NETWORK_MANAGER_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "http://127.0.0.1:8081/nmclient/"),
     SMTP_TLS_ENABLED(GlobalSettingSubCategory.YUKON_SERVICES, booleanType(), false),
     RFN_FIRMWARE_UPDATE_SERVER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "https://127.0.0.1:8443/updateserver/latest/"),
-    RFN_FIRMWARE_UPDATE_SERVER_USER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "admin"),
-    RFN_FIRMWARE_UPDATE_SERVER_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "admin"),
+    RFN_FIRMWARE_UPDATE_SERVER_USER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gateway"),
+    RFN_FIRMWARE_UPDATE_SERVER_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gwupdate"),
     
 
     // DR
