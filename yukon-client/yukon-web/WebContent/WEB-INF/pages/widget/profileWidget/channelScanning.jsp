@@ -127,7 +127,7 @@
                         <i:inline key=".scanning.stops" arguments="${formattedScheduleDate}"/>
                     </span>
                     </td>
-                     <td><a id='toggle-state' class="js-toggle-profile-off"><cti:msg2 key="yukon.common.stop"/></a></td>
+                     <td><a href="" id='toggle-state' class="js-toggle-profile-off"><cti:msg2 key="yukon.common.stop"/></a></td>
                  </c:if>
                   
                  <c:if test="${c.channelProfilingStatus eq 'DISABLED'}">
