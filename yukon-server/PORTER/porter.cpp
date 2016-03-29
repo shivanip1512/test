@@ -265,6 +265,8 @@ static void applyNewLoad(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
 
 static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
 {
+#define PORTSHARENEXUS 1930
+
     //  this is a one-time load, making this thread-safe (if the map is treated as a read-only collection).
     //  if/when we update this to allow real-time reloads of the port shares,
     //    we need to keep it thread-safe.

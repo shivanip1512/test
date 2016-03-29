@@ -437,9 +437,6 @@
     <ClInclude Include="include\mutex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\netports.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\numstr.h">
       <Filter>Header Files</Filter>
     </ClInclude>

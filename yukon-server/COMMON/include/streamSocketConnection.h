@@ -2,7 +2,6 @@
 
 #include "streamConnection.h"
 #include "dlldefs.h"
-#include "netports.h"
 #include "socket_helper.h"
 
 #include <vector>

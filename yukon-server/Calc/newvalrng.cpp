@@ -1,7 +1,6 @@
 #include "precompiled.h"
 
 #include "queue.h"
-#include "netports.h"
 #include "message.h"
 #include "msg_cmd.h"
 #include "msg_reg.h"

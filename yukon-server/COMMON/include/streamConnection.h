@@ -2,7 +2,6 @@
 
 #include "yukon.h"
 #include "dlldefs.h"
-#include "netports.h"
 #include "timing_util.h"
 #include "immutable.h"
 

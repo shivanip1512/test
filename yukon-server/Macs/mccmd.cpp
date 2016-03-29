@@ -18,7 +18,6 @@
 #include "cmdparse.h"
 
 #include "ctitokenizer.h"
-#include "netports.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 #include "msg_requestcancel.h"

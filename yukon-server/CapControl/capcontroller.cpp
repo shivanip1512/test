@@ -20,7 +20,6 @@
 #include "ccsubstationbusstore.h"
 #include "ccexecutor.h"
 #include "dllbase.h"
-#include "netports.h"
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "devicetypes.h"
