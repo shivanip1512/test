@@ -602,8 +602,8 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
     BOOST_CHECK(     *newArea != areas[ 2 ] );
 
     BOOST_CHECK_EQUAL(  4, newArea->getPaoId() );
-    BOOST_CHECK_EQUAL(  2, newArea->getOperationStats().getPAOId() );       // hmmm
-    BOOST_CHECK_EQUAL(  2, newArea->getConfirmationStats().getPAOId() );    //  these should both match above...
+    BOOST_CHECK_EQUAL(  4, newArea->getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(  4, newArea->getConfirmationStats().getPAOId() );
 
     BOOST_CHECK_EQUAL(  2, areas[  2 ].getPaoId() );
     BOOST_CHECK_EQUAL(  2, areas[  2 ].getOperationStats().getPAOId() );

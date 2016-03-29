@@ -18,6 +18,7 @@ public:
 
     CapControlPao();
     CapControlPao(Cti::RowReader& rdr);
+
     ~CapControlPao();
 
     int getPaoId() const;
@@ -41,22 +42,19 @@ public:
     bool getDisableFlag() const;
     void setDisableFlag(bool disableFlag, int priority = 7);
 
-    CapControlPao& operator=(const CapControlPao& right);
-
-    void restore(Cti::RowReader& rdr);
-
-    bool operator == (const CapControlPao& right) const;
-    bool operator != (const CapControlPao& right) const;
-
     void setDisabledStatePointId( const long newId, bool sendDisablePointMessage = false );
     long getDisabledStatePointId() const;
 
-    Cti::CapControl::PointIdVector* getPointIds() {return &_pointIds;}
-    void removePointId(long pId);
+    Cti::CapControl::PointIdVector* getPointIds();
+    void removePointId(const long pId);
     void addPointId(const long ID);
 
     CtiCCOperationStats &    getOperationStats();
     CtiCCConfirmationStats & getConfirmationStats();
+
+    void restore( Cti::RowReader& rdr );
+
+    CapControlPao& operator=(const CapControlPao& right);
 
 private:
 
@@ -74,4 +72,15 @@ private:
     CtiCCOperationStats     _operationStats;
     CtiCCConfirmationStats  _confirmationStats;
 };
+
+
+inline bool operator==( const CapControlPao & lhs, const CapControlPao & rhs )
+{
+    return lhs.getPaoId() == rhs.getPaoId();
+}
+
+inline bool operator!=( const CapControlPao & lhs, const CapControlPao & rhs )
+{
+    return ! ( lhs == rhs );
+}
 

@@ -2,22 +2,24 @@
 
 #include "CapControlPao.h"
 #include "capcontroller.h"
+#include "ccutil.h"
+
+using Cti::CapControl::PointIdVector;
+using Cti::CapControl::deserializeFlag;
 
 
-CapControlPao::CapControlPao() :
-    _paoId(0),
-    _disabledStatePointId(0),
-    _disableFlag(false)
+
+CapControlPao::CapControlPao()
+    :   _paoId( 0 ),
+        _disabledStatePointId( 0 ),
+        _disableFlag( false )
 {
-
 }
 
 CapControlPao::CapControlPao(Cti::RowReader& rdr)
+    :   _disabledStatePointId( 0 )
 {
     restore(rdr);
-
-    _operationStats.setPAOId(getPaoId());
-    _confirmationStats.setPAOId(getPaoId());
 }
 
 CapControlPao::~CapControlPao()
@@ -27,20 +29,21 @@ CapControlPao::~CapControlPao()
 
 void CapControlPao::restore(Cti::RowReader& rdr)
 {
-    std::string tempString;
+    long paoID;
 
-    rdr["paobjectid"] >> _paoId;
-    rdr["category"] >> _paoCategory;
-    rdr["paoclass"] >> _paoClass;
-    rdr["paoname"] >> _paoName;
-    rdr["type"] >> _paoType;
-    rdr["description"] >> _paoDescription;
-    rdr["disableflag"] >> tempString;
+    rdr["PAObjectID"] >> paoID;
+    setPaoId( paoID );
 
-    std::transform(tempString.begin(), tempString.end(), tempString.begin(), tolower);
-    _disableFlag = (tempString=="y");
+    rdr["Category"]    >> _paoCategory;
+    rdr["PAOClass"]    >> _paoClass;
+    rdr["PAOName"]     >> _paoName;
+    rdr["Type"]        >> _paoType;
+    rdr["Description"] >> _paoDescription;
 
-    _disabledStatePointId = 0;
+    std::string disableStr;
+
+    rdr["DisableFlag"] >> disableStr;
+    _disableFlag = deserializeFlag( disableStr );
 }
 
 int CapControlPao::getPaoId() const
@@ -51,6 +54,9 @@ int CapControlPao::getPaoId() const
 void CapControlPao::setPaoId(int paoId)
 {
     _paoId = paoId;
+
+    _operationStats.setPAOId( _paoId );
+    _confirmationStats.setPAOId( _paoId );
 }
 
 const std::string& CapControlPao::getPaoCategory() const
@@ -143,17 +149,6 @@ CapControlPao& CapControlPao::operator=(const CapControlPao& right)
     return *this;
 }
 
-bool CapControlPao::operator == (const CapControlPao& right) const
-{
-    return _paoId == right._paoId;
-}
-
-bool CapControlPao::operator != (const CapControlPao& right) const
-{
-    return _paoId != right._paoId;
-}
-
-
 void CapControlPao::setDisabledStatePointId( const long newId, bool sendDisablePointMessage )
 {
     _disabledStatePointId = newId;
@@ -170,13 +165,18 @@ long CapControlPao::getDisabledStatePointId() const
     return _disabledStatePointId;
 }
 
-
-void CapControlPao::removePointId(long pId)
+Cti::CapControl::PointIdVector* CapControlPao::getPointIds()
 {
-    _pointIds.erase(remove(_pointIds.begin(), _pointIds.end(), pId), _pointIds.end());
+    return &_pointIds;
 }
 
-void CapControlPao::addPointId(const long ID)
+void CapControlPao::removePointId( const long pId )
+{
+    _pointIds.erase( std::remove( _pointIds.begin(), _pointIds.end(), pId ),
+                     _pointIds.end() );
+}
+
+void CapControlPao::addPointId( const long ID )
 {
     _pointIds.push_back(ID);
 }
