@@ -9,7 +9,6 @@
 #include "guard.h"
 #include <list>
 
-#include "netports.h"
 #include "queue.h"
 #include "con_mgr.h"
 
