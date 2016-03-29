@@ -58,9 +58,13 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
@@ -83,10 +87,12 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ConfigurationSource configSource;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private StateDao stateDao;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
 
     private static String previewUOMValueKey = baseKey + "previewUOMValue";
+    private static String previewStateTextKey = baseKey + "previewStateText";
     private static String previewMeterNumberKey = baseKey + "previewMeterNumber";
     private static String previewMeterNameKey = baseKey + "previewMeterName";
     private static String previewMeterAddressKey = baseKey + "previewMeterAddress";
@@ -417,6 +423,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             case DEVICE_TYPE:
                 return StringUtils.isEmpty(paoData.getPaoIdentifier().getPaoType().getPaoTypeName()) ? ""
                 : paoData.getPaoIdentifier().getPaoType().getPaoTypeName();
+            case POINT_STATE:
+                return getStateText(userContext, pao, pointValueQualityHolder);
             case ATTRIBUTE:
                 switch (exportField.getAttributeField()) {
                     case UNIT_OF_MEASURE:
@@ -635,6 +643,32 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     }
 
     /**
+     * Gets the State Text. Returns "" if the quality was not found.
+     */
+    private String getStateText(YukonUserContext userContext, YukonPao pao,
+            PointValueQualityHolder pointValueQualityHolder) {
+        if (pointValueQualityHolder == null) {
+            return StringUtils.EMPTY;
+        }
+
+        if (pao.getPaoIdentifier().getPaoId() == fakePaoId) {
+            return getPreviewStateText(userContext);
+        }
+
+        if (pointValueQualityHolder.getPointType().isStatus()) {
+            LitePoint litePoint = pointDao.getLitePoint(pointValueQualityHolder.getId());
+            if (litePoint.getStateGroupID() != StateGroupUtils.SYSTEM_STATEGROUPID) {
+                LiteState liteState =
+                    stateDao.findLiteState(litePoint.getStateGroupID(), (int) pointValueQualityHolder.getValue());
+                if (liteState != null) {
+                    return liteState.getStateText();
+                }
+            }
+        }
+        return String.valueOf(pointValueQualityHolder.getValue());
+    }
+
+    /**
      * Gets the value. Returns "" if the value was not found.
      */
     private String getPointValue(ExportField field, PointValueQualityHolder pointValueQualityHolder) {
@@ -725,5 +759,14 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private String getDefaultUOMValue(YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         return messageSourceAccessor.getMessage(previewUOMValueKey);
+    }
+    
+    /**
+     * Gets default (preview) State Text
+     */
+
+    private String getPreviewStateText(YukonUserContext userContext) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        return messageSourceAccessor.getMessage(previewStateTextKey);
     }
 }
