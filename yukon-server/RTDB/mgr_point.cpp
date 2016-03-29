@@ -107,6 +107,7 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
 {
     ptr_type pTempCtiPoint;
     std::set<long> pointIdsFound;
+    bool errors = false;
 
     CtiTime start, stop;
 
@@ -167,7 +168,8 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                 CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
             }
 
-            refreshPoints(pointIdsFound, rdr);
+            errors |= refreshPoints(pointIdsFound, rdr);
+
             if(DebugLevel & 0x00010000)
             {
                 CTILOG_DEBUG(dout, "Done Looking for System Points");
@@ -225,7 +227,8 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                 CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
             }
 
-            refreshPoints(pointIdsFound, rdr);
+            errors |= refreshPoints(pointIdsFound, rdr);
+
             if(DebugLevel & 0x00010000)
             {
                 CTILOG_DEBUG(dout, "Done Looking for Status/Control");
@@ -284,7 +287,8 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                 CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
             }
 
-            refreshPoints(pointIdsFound, rdr);
+            errors |= refreshPoints(pointIdsFound, rdr);
+
             if(DebugLevel & 0x00010000)
             {
                 CTILOG_DEBUG(dout, "DONE Looking for Analogs");
@@ -329,12 +333,18 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
             }
 
             rdr.execute();
-            if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(rdr.isValid() ? 0 : 1))
+
+            if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: " << rdr.asString());
+            }
+            if( DebugLevel & 0x00010000 )
             {
                 CTILOG_DEBUG(dout, "DB read: "<< rdr.asString());
             }
 
-            refreshPoints(pointIdsFound, rdr);
+            errors |= refreshPoints(pointIdsFound, rdr);
+
             if(DebugLevel & 0x00010000)
             {
                 CTILOG_DEBUG(dout, "DONE Looking for Accum");
@@ -389,7 +399,8 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                 CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
             }
 
-            refreshPoints(pointIdsFound, rdr);
+            errors |= refreshPoints(pointIdsFound, rdr);
+
             if(DebugLevel & 0x00010000)
             {
                 CTILOG_DEBUG(dout, "DONE Looking for CALC");
@@ -399,13 +410,20 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                 CTILOG_INFO(dout, (stop.seconds() - start.seconds()) <<" seconds for Calc points");
             }
         }
+    }
 
+    //  No errors, so we can safely determine if points were loaded or deleted
+    if( ! errors )
+    {
         // Now I need to check for any Point removals based upon the
         // Updated Flag being NOT set
 
-        if(pntID == 0 && paoID == 0 && !pointIdsFound.empty())
+        if( pntID == 0 && paoID == 0 && !pointIdsFound.empty() )
         {
             coll_type::writer_lock_guard_t guard(getLock());
+
+            //  paoid == 0 and pntid == 0 means all points were loaded
+            _all_paoids_loaded = true;
 
             while( pTempCtiPoint = _smartMap.find(isPointNotUpdated, NULL) )
             {
@@ -414,20 +432,12 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                 erase(pTempCtiPoint->getPointID());
             }
         }
-    }   // Temporary results are destroyed to free the connection
+        else if( paoID )
+        {
+            coll_type::writer_lock_guard_t guard(getLock());
 
-    if( paoID )
-    {
-        coll_type::writer_lock_guard_t guard(getLock());
-
-        _paoids_loaded.insert((const long)paoID);
-    }
-    else if( !pntID )
-    {
-        coll_type::writer_lock_guard_t guard(getLock());
-
-        //  paoid == 0 and pntid == 0 means all points were loaded
-        _all_paoids_loaded = true;
+            _paoids_loaded.insert(paoID);
+        }
     }
 
     return pointIdsFound;
@@ -498,6 +508,8 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
     set<long>::const_iterator   id_itr = ids_to_load.begin(),
                                 id_end = ids_to_load.end();
 
+    bool errors = false;
+
     while( id_itr != id_end )
     {
         string in_list;
@@ -545,30 +557,30 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 
         rdr.setCommandText(ss_accum .str());
         rdr.execute();
-        refreshPoints(pointIdsFound, rdr);
+        errors |= refreshPoints(pointIdsFound, rdr);
 
         rdr.setCommandText(ss_analog.str());
         rdr.execute();
-        refreshPoints(pointIdsFound, rdr);
+        errors |= refreshPoints(pointIdsFound, rdr);
 
         rdr.setCommandText(ss_calc  .str());
         rdr.execute();
-        refreshPoints(pointIdsFound, rdr);
+        errors |= refreshPoints(pointIdsFound, rdr);
 
         rdr.setCommandText(ss_status.str());
         rdr.execute();
-        refreshPoints(pointIdsFound, rdr);
+        errors |= refreshPoints(pointIdsFound, rdr);
 
         rdr.setCommandText(ss_system.str());
         rdr.execute();
-        refreshPoints(pointIdsFound, rdr);
+        errors |= refreshPoints(pointIdsFound, rdr);
     }
 
-    if( paoids )
+    //  No errors, so note down which PAOs were fully loaded
+    if( paoids && ! errors )
     {
         coll_type::reader_lock_guard_t guard(_smartMap.getLock());
 
-        //  this is presumptive - we could run into trouble here with a select that went wrong
         copy(ids_to_load.begin(), ids_to_load.end(), inserter(_paoids_loaded, _paoids_loaded.begin()));
     }
 }
@@ -651,11 +663,13 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr)
     return Point;
 }
 
-void CtiPointManager::refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr)
+bool CtiPointManager::refreshPoints(std::set<long>& pointIdsFound, Cti::RowReader& rdr)
 {
+    bool valid = true;
+
     vector<CtiPointBase *> newPoints;
 
-    while( rdr() )
+    while( (valid = rdr.isValid()) && rdr() )
     {
         CtiPointBase *newPoint = PointFactory(rdr);    // Use the reader to get me an object of the proper type
         newPoint->DecodeDatabaseReader(rdr);       // Fills himself in from the reader
@@ -670,11 +684,13 @@ void CtiPointManager::refreshPoints(std::set<long> &pointIdsFound, Cti::RowReade
     {
         coll_type::writer_lock_guard_t guard(getLock());
 
-        for each(CtiPointBase *newPoint in newPoints )
+        for( auto newPoint : newPoints )
         {
             addPoint(newPoint);
         }
     }
+
+    return ! valid;
 }
 
 
@@ -740,21 +756,35 @@ void CtiPointManager::addPoint( CtiPointBase *point )
     }
 }
 
-CtiPointManager::ptr_type CtiPointManager::getPoint (LONG Pt, LONG pao)
-{
-    bool loadPAO = false;
 
-    if(pao != 0)
+void CtiPointManager::loadPao(const long paoId, const Cti::CallSite cs)
+{
+    if( ! paoId )
+    {
+        return;
+    }
+
     {
         coll_type::reader_lock_guard_t guard(getLock());
 
-        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
+        if( _all_paoids_loaded || _paoids_loaded.count(paoId) )
+        {
+            return;
+        }
     }
 
-    if( loadPAO )
+    if( DebugLevel & 0x00010000 )
     {
-        refreshList(0, pao);
+        CTILOG_DEBUG(dout, "Called from " << cs.func << ":" << cs.file << ":" << cs.line << " - refreshing points for paoid " << paoId);
     }
+
+    refreshList(0, paoId);
+}
+
+
+CtiPointManager::ptr_type CtiPointManager::getPoint (LONG Pt, LONG pao)
+{
+    loadPao(pao, CALLSITE);
 
     CtiPointManager::ptr_type retVal = _smartMap.find(Pt);
 
@@ -770,8 +800,6 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
 {
     ptr_type p, pRet;
 
-    bool loadPAO = false;
-
     std::transform(pname.begin(), pname.end(), pname.begin(), tolower);
 
     if(_smartMap.entries() == 0)
@@ -779,16 +807,7 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
         CTILOG_ERROR(dout, "There are no entries in the point manager list");
     }
 
-    {
-        coll_type::reader_lock_guard_t guard(getLock());
-
-        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
-    }
-
-    if( loadPAO )
-    {
-        refreshList(0, pao);
-    }
+    loadPao(pao, CALLSITE);
 
     {
         coll_type::reader_lock_guard_t guard(getLock());
@@ -824,21 +843,7 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
 
 void CtiPointManager::getEqualByPAO(long pao, vector<ptr_type> &points)
 {
-    ptr_type p;
-    ptr_type pRet;
-
-    bool loadPAO = false;
-
-    {
-        coll_type::reader_lock_guard_t guard(getLock());
-
-        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
-    }
-
-    if( loadPAO )
-    {
-        refreshList(0, pao);
-    }
+    loadPao(pao, CALLSITE);
 
     {
         coll_type::reader_lock_guard_t guard(getLock());
@@ -864,23 +869,7 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
     ptr_type p;
     ptr_type pRet;
 
-    bool loadPAO = false;
-
-    {
-        coll_type::reader_lock_guard_t guard(getLock());
-
-        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
-    }
-
-    if( loadPAO )
-    {
-        if( DebugLevel & 0x00010000 )
-        {
-            CTILOG_DEBUG(dout, "refreshing points for paoid "<< pao);
-        }
-
-        refreshList(0, pao);
-    }
+    loadPao(pao, CALLSITE);
 
     {
         coll_type::reader_lock_guard_t guard(getLock());
@@ -970,18 +959,7 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
     ptr_type p;
     ptr_type pRet;
 
-    bool loadPAO = false;
-
-    {
-        coll_type::reader_lock_guard_t guard(getLock());
-
-        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
-    }
-
-    if( loadPAO )
-    {
-        refreshList(0, pao);
-    }
+    loadPao(pao, CALLSITE);
 
     {
         coll_type::reader_lock_guard_t guard(getLock());
@@ -1214,7 +1192,7 @@ void CtiPointManager::erasePao(long paoId)
                     std::back_inserter(point_ids),
                     boost::bind(&std::multimap<long,long>::value_type::second,_1) ); // does a select2nd
 
-    for each( long pid in point_ids )
+    for( long pid : point_ids )
     {
         erase(pid);
     }

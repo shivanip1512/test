@@ -29,7 +29,8 @@ private:
     lru_timeslice_map     _lru_timeslices;
     pointid_timeslice_map _lru_points;
 
-    void refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr);
+    //  returns true if it encounters any reader errors occur during point loading
+    bool refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr);
 
     void updateAccess(long pointid);
 
@@ -54,6 +55,8 @@ private:
     std::set<long> _paoids_loaded;
 
     virtual void refreshListByIDs(const std::set<long> &ids, bool paoids);
+
+    void loadPao(const long paoId, const Cti::CallSite cs);
 
     void removePoint(ptr_type pTempCtiPoint);
 
