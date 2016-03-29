@@ -141,13 +141,13 @@ test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		config_device.h devicetypes.h mgr_dyn_paoinfo.h \
 		tbl_dyn_paoinfo.h desolvers.h pt_accum.h tbl_pt_accum.h \
 		tbl_pt_accumhistory.h dev_single.h dsm2.h streamConnection.h \
-		netports.h immutable.h dsm2err.h words.h optional.h \
-		macro_offset.h dev_base.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h tbl_paoexclusion.h rte_base.h \
-		tbl_pao_lite.h tbl_rtcomm.h msg_signal.h tbl_static_paoinfo.h \
-		encryption.h std_helper.h tbl_base.h tbl_scanrate.h \
-		msg_pcrequest.h msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		xfer.h config_exceptions.h exceptions.h test_reader.h \
+		immutable.h dsm2err.h words.h optional.h macro_offset.h \
+		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h tbl_paoexclusion.h rte_base.h tbl_pao_lite.h \
+		tbl_rtcomm.h msg_signal.h tbl_static_paoinfo.h encryption.h \
+		std_helper.h tbl_base.h tbl_scanrate.h msg_pcrequest.h \
+		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h xfer.h \
+		config_exceptions.h exceptions.h test_reader.h \
 		boost_test_helpers.h millisecond_timer.h ctidate.h
 test_signalmanager.obj:	tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h yukon.h ctidbgmem.h critical_section.h \
@@ -170,12 +170,11 @@ test_vangogh.obj:	ctivangogh.h con_mgr.h connection_server.h \
 		executorfactory.h exe_cmd.h executor.h msg_cmd.h server_b.h \
 		smartmap.h dev_base_lite.h dbmemobject.h msg_dbchg.h \
 		msg_multiwrap.h msg_pcreturn.h dsm2.h streamConnection.h \
-		netports.h immutable.h dsm2err.h words.h optional.h \
-		macro_offset.h msg_lmcontrolhistory.h msg_tag.h \
-		pendingopthread.h pendable.h pending_info.h msg_signal.h \
-		tbl_lm_controlhist.h row_reader.h dbaccess.h \
-		database_connection.h pt_numeric.h pt_base.h tbl_pt_base.h \
-		resolvers.h db_entry_defines.h tbl_pt_unit.h \
+		immutable.h dsm2err.h words.h optional.h macro_offset.h \
+		msg_lmcontrolhistory.h msg_tag.h pendingopthread.h pendable.h \
+		pending_info.h msg_signal.h tbl_lm_controlhist.h row_reader.h \
+		dbaccess.h database_connection.h pt_numeric.h pt_base.h \
+		tbl_pt_base.h resolvers.h db_entry_defines.h tbl_pt_unit.h \
 		tbl_unitmeasure.h thread.h signalmanager.h pt_dyn_dispatch.h \
 		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
 		tbl_pt_status_control.h tbl_pt_control.h tagmanager.h \

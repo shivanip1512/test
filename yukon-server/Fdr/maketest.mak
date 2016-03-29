@@ -170,8 +170,8 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		dnp_object_analogoutput.h dnp_object_binaryoutput.h \
 		random_generator.h AttributeService.h LitePoint.h \
 		PointAttribute.h desolvers.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h immutable.h dsm2err.h words.h \
-		optional.h macro_offset.h msg_pcreturn.h boost_test_helpers.h \
+		streamConnection.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h msg_pcreturn.h boost_test_helpers.h \
 		millisecond_timer.h ctidate.h
 test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		ctitime.h ctidbgmem.h collectable.h loggable.h \

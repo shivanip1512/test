@@ -139,10 +139,10 @@ bchbehavior.obj:	precompiled.h BchBehavior.h PlcBehavior.h Behavior.h \
 		critical_section.h SimulatorLogger.h
 ccu710.obj:	precompiled.h Ccu710.h PlcTransmitter.h CommInterface.h \
 		streamSocketConnection.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
+		ctidbgmem.h dlldefs.h timing_util.h loggable.h immutable.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h constants.h numstr.h module_util.h \
+		version.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h socket_helper.h win_helper.h \
 		BehaviorCollection.h SimulatorLogger.h CommsBehavior.h \
 		Behavior.h random_generator.h portlogger.h emetconwords.h \
@@ -151,36 +151,35 @@ ccu710.obj:	precompiled.h Ccu710.h PlcTransmitter.h CommInterface.h \
 		dllbase.h readers_writer_lock.h PlcBehavior.h
 ccu711.obj:	precompiled.h ccu711.h ccu710.h PlcTransmitter.h \
 		CommInterface.h streamSocketConnection.h streamConnection.h \
-		yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
-		timing_util.h loggable.h immutable.h critical_section.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		constants.h numstr.h module_util.h version.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		socket_helper.h win_helper.h BehaviorCollection.h \
-		SimulatorLogger.h CommsBehavior.h Behavior.h \
-		random_generator.h portlogger.h emetconwords.h CcuIDLC.h \
-		cti_asmc.h color.h ctidate.h simulator.h PlcInfrastructure.h \
-		Mct410.h DeviceMemoryManager.h MctBehavior.h ScopedLogger.h \
-		smartmap.h dllbase.h readers_writer_lock.h PlcBehavior.h
+		yukon.h types.h ctidbgmem.h dlldefs.h timing_util.h \
+		loggable.h immutable.h critical_section.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		module_util.h version.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h socket_helper.h win_helper.h \
+		BehaviorCollection.h SimulatorLogger.h CommsBehavior.h \
+		Behavior.h random_generator.h portlogger.h emetconwords.h \
+		CcuIDLC.h cti_asmc.h color.h ctidate.h simulator.h \
+		PlcInfrastructure.h Mct410.h DeviceMemoryManager.h \
+		MctBehavior.h ScopedLogger.h smartmap.h dllbase.h \
+		readers_writer_lock.h PlcBehavior.h
 ccu721.obj:	precompiled.h Ccu721.h CcuIDLC.h PlcTransmitter.h \
 		CommInterface.h streamSocketConnection.h streamConnection.h \
-		yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
-		timing_util.h loggable.h immutable.h critical_section.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		constants.h numstr.h module_util.h version.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		socket_helper.h win_helper.h BehaviorCollection.h \
-		SimulatorLogger.h CommsBehavior.h Behavior.h \
-		random_generator.h portlogger.h EmetconWords.h ctidate.h \
-		simulator.h PlcInfrastructure.h Mct410.h \
+		yukon.h types.h ctidbgmem.h dlldefs.h timing_util.h \
+		loggable.h immutable.h critical_section.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		module_util.h version.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h socket_helper.h win_helper.h \
+		BehaviorCollection.h SimulatorLogger.h CommsBehavior.h \
+		Behavior.h random_generator.h portlogger.h EmetconWords.h \
+		ctidate.h simulator.h PlcInfrastructure.h Mct410.h \
 		DeviceMemoryManager.h MctBehavior.h ScopedLogger.h smartmap.h \
 		dllbase.h readers_writer_lock.h PlcBehavior.h cti_asmc.h
 ccuidlc.obj:	precompiled.h CcuIDLC.h PlcTransmitter.h CommInterface.h \
 		streamSocketConnection.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
+		ctidbgmem.h dlldefs.h timing_util.h loggable.h immutable.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h constants.h numstr.h module_util.h \
+		version.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h socket_helper.h win_helper.h \
 		BehaviorCollection.h SimulatorLogger.h CommsBehavior.h \
 		Behavior.h random_generator.h portlogger.h
@@ -199,17 +198,17 @@ ccu_simulator.obj:	precompiled.h SimulatorUtils.h types.h Simulator.h \
 		smartmap.h dllbase.h readers_writer_lock.h guard.h \
 		PlcBehavior.h Ccu711.h ccu710.h PlcTransmitter.h \
 		CommInterface.h streamSocketConnection.h streamConnection.h \
-		netports.h timing_util.h immutable.h socket_helper.h \
-		win_helper.h CommsBehavior.h portlogger.h CcuIDLC.h Ccu721.h \
-		ctidate.h DelayBehavior.h BchBehavior.h NackBehavior.h \
-		cparms.h StreamSocketListener.h database_reader.h \
+		timing_util.h immutable.h socket_helper.h win_helper.h \
+		CommsBehavior.h portlogger.h CcuIDLC.h Ccu721.h ctidate.h \
+		DelayBehavior.h BchBehavior.h NackBehavior.h cparms.h \
+		StreamSocketListener.h database_reader.h \
 		database_connection.h dbaccess.h row_reader.h
 comminterface.obj:	precompiled.h CommInterface.h \
 		streamSocketConnection.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
+		ctidbgmem.h dlldefs.h timing_util.h loggable.h immutable.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h constants.h numstr.h module_util.h \
+		version.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h socket_helper.h win_helper.h \
 		BehaviorCollection.h SimulatorLogger.h CommsBehavior.h \
 		Behavior.h random_generator.h
@@ -253,13 +252,13 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		MctBehavior.h Behavior.h random_generator.h ScopedLogger.h \
 		dev_mct410.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h dev_single.h dsm2.h connectionHandle.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h tbl_paoexclusion.h row_reader.h \
-		config_device.h dllbase.h rte_base.h dbmemobject.h message.h \
-		collectable.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
-		resolvers.h pointtypes.h db_entry_defines.h msg_signal.h \
+		streamConnection.h timing_util.h immutable.h guard.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h dev_base.h \
+		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		tbl_paoexclusion.h row_reader.h config_device.h dllbase.h \
+		rte_base.h dbmemobject.h message.h collectable.h \
+		tbl_pao_lite.h tbl_rtcomm.h dbaccess.h resolvers.h \
+		pointtypes.h db_entry_defines.h msg_signal.h \
 		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
 		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h pointdefs.h msg_pcrequest.h \
@@ -293,10 +292,10 @@ plcinfrastructure.obj:	precompiled.h plcinfrastructure.h Mct410.h \
 		dllbase.h readers_writer_lock.h guard.h PlcBehavior.h
 plctransmitter.obj:	precompiled.h PlcTransmitter.h CommInterface.h \
 		streamSocketConnection.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h timing_util.h loggable.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
+		ctidbgmem.h dlldefs.h timing_util.h loggable.h immutable.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h constants.h numstr.h module_util.h \
+		version.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h socket_helper.h win_helper.h \
 		BehaviorCollection.h SimulatorLogger.h CommsBehavior.h \
 		Behavior.h random_generator.h portlogger.h
@@ -362,8 +361,8 @@ test_ccusim.obj:	EmetconWords.h types.h SimulatorUtils.h \
 		smartmap.h dllbase.h readers_writer_lock.h guard.h \
 		PlcBehavior.h Simulator.h Ccu710.h PlcTransmitter.h \
 		CommInterface.h streamSocketConnection.h streamConnection.h \
-		netports.h timing_util.h immutable.h socket_helper.h \
-		win_helper.h CommsBehavior.h portlogger.h
+		timing_util.h immutable.h socket_helper.h win_helper.h \
+		CommsBehavior.h portlogger.h
 test_delay_behavior.obj:	DelayBehavior.h CommsBehavior.h Behavior.h \
 		random_generator.h types.h logger.h dlldefs.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \

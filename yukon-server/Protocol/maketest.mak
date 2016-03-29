@@ -159,7 +159,7 @@ test_prot_klondike.obj:	prot_klondike.h prot_wrap.h prot_base.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h dlldefs.h pointdefs.h \
 		pointtypes.h message.h ctitime.h collectable.h loggable.h \
 		connectionHandle.h xfer.h prot_idlc.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
+		streamConnection.h timing_util.h immutable.h \
 		critical_section.h guard.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h module_util.h version.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
@@ -169,11 +169,10 @@ test_prot_klondike.obj:	prot_klondike.h prot_wrap.h prot_base.h \
 test_prot_sa305.obj:	prot_sa305.h cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h dllbase.h os2_2w32.h types.h cticalls.h yukon.h \
 		ctidbgmem.h critical_section.h dsm2.h connectionHandle.h \
-		loggable.h streamConnection.h netports.h timing_util.h \
-		immutable.h guard.h utility.h ctitime.h queues.h constants.h \
-		numstr.h module_util.h version.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h pointtypes.h \
-		devicetypes.h
+		loggable.h streamConnection.h timing_util.h immutable.h \
+		guard.h utility.h ctitime.h queues.h constants.h numstr.h \
+		module_util.h version.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h pointtypes.h devicetypes.h
 #ENDUPDATE#
 

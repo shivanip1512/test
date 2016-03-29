@@ -256,9 +256,9 @@ fdrdnpslave.obj:	precompiled.h fdrdnpslave.h dlldefs.h queues.h \
 		random_generator.h AttributeService.h LitePoint.h \
 		PointAttribute.h prot_dnp.h packet_finder.h amq_constants.h \
 		resolvers.h db_entry_defines.h desolvers.h msg_pcrequest.h \
-		dsm2.h streamConnection.h netports.h immutable.h dsm2err.h \
-		words.h optional.h macro_offset.h msg_pcreturn.h \
-		millisecond_timer.h std_helper.h
+		dsm2.h streamConnection.h immutable.h dsm2err.h words.h \
+		optional.h macro_offset.h msg_pcreturn.h millisecond_timer.h \
+		std_helper.h
 fdrdsm2filein.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h msg_cmd.h message.h ctidbgmem.h collectable.h \
 		loggable.h connectionHandle.h pointtypes.h dllbase.h \
@@ -319,8 +319,8 @@ fdrinet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		row_reader.h fdrdebuglevel.h fdrpointlist.h socket_helper.h \
 		win_helper.h fdrserverconnection.h fdrsocketlayer.h \
 		fdrsocketconnection.h fdrclientconnection.h dsm2.h \
-		streamConnection.h netports.h immutable.h dsm2err.h words.h \
-		optional.h macro_offset.h fdrutility.h fdrinet.h
+		streamConnection.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h fdrutility.h fdrinet.h
 fdrinterface.obj:	precompiled.h row_reader.h ctitime.h dlldefs.h \
 		cparms.h dbaccess.h dllbase.h os2_2w32.h types.h cticalls.h \
 		yukon.h ctidbgmem.h critical_section.h resolvers.h \
@@ -487,8 +487,8 @@ fdrrccs.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		row_reader.h fdrdebuglevel.h fdrpointlist.h socket_helper.h \
 		win_helper.h fdrserverconnection.h fdrsocketlayer.h \
 		fdrsocketconnection.h fdrclientconnection.h fdrinet.h dsm2.h \
-		streamConnection.h netports.h immutable.h dsm2err.h words.h \
-		optional.h macro_offset.h fdrrccs.h
+		streamConnection.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h fdrrccs.h
 fdrrdex.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		msg_multi.h collectable.h msg_pdata.h yukon.h types.h \
 		ctidbgmem.h pointdefs.h pointtypes.h message.h loggable.h \
@@ -527,7 +527,7 @@ fdrscadaserver.obj:	precompiled.h fdrscadaserver.h dlldefs.h \
 		ctidbgmem.h os2_2w32.h constants.h \
 		fdrclientserverconnection.h serverconnection.h loggable.h \
 		string_util.h streamBuffer.h worker_thread.h timing_util.h \
-		concurrentSet.h utility.h ctitime.h numstr.h module_util.h \
+		ctitime.h concurrentSet.h utility.h numstr.h module_util.h \
 		version.h fdrinterface.h message.h collectable.h \
 		connectionHandle.h msg_dbchg.h connection_client.h \
 		connection.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
@@ -889,8 +889,8 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		dnp_object_analogoutput.h dnp_object_binaryoutput.h \
 		random_generator.h AttributeService.h LitePoint.h \
 		PointAttribute.h desolvers.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h immutable.h dsm2err.h words.h \
-		optional.h macro_offset.h msg_pcreturn.h boost_test_helpers.h \
+		streamConnection.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h msg_pcreturn.h boost_test_helpers.h \
 		millisecond_timer.h ctidate.h
 test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		ctitime.h ctidbgmem.h collectable.h loggable.h \

@@ -191,31 +191,31 @@ id_porter.obj:    id_porter.cpp include\id_porter.h
 #UPDATE#
 disp_thd.obj:	precompiled.h pilserver.h dsm2.h connectionHandle.h \
 		dlldefs.h loggable.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h netports.h timing_util.h immutable.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h module_util.h \
-		version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h server_b.h con_mgr.h \
-		connection_server.h connection.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h readers_writer_lock.h \
-		connection_base.h worker_thread.h concurrentSet.h \
-		connection_listener.h dllbase.h smartmap.h msg_pcrequest.h \
-		mgr_device.h rtdb.h dev_base.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h tbl_paoexclusion.h row_reader.h \
-		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
-		tbl_rtcomm.h dbaccess.h resolvers.h db_entry_defines.h \
-		msg_signal.h tbl_static_paoinfo.h encryption.h std_helper.h \
-		tbl_base.h tbl_scanrate.h database_connection.h \
-		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h slctdev.h \
-		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
-		devicetypes.h amq_constants.h mgr_rfn_request.h \
-		prot_e2eDataTransfer.h dev_rfn.h rfn_identifier.h cmd_rfn.h \
-		cmd_device.h dev_single.h msg_pcreturn.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h xfer.h config_exceptions.h exceptions.h \
-		rfn_asid.h rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h \
-		RfnE2eMsg.h RfnE2eDataConfirmMsg.h NetworkManagerMessaging.h \
+		ctidbgmem.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		server_b.h con_mgr.h connection_server.h connection.h \
+		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		concurrentSet.h connection_listener.h dllbase.h smartmap.h \
+		msg_pcrequest.h mgr_device.h rtdb.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h \
+		tbl_paoexclusion.h row_reader.h config_device.h rte_base.h \
+		dbmemobject.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
+		resolvers.h db_entry_defines.h msg_signal.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
+		repeaterrole.h mgr_config.h devicetypes.h amq_constants.h \
+		mgr_rfn_request.h prot_e2eDataTransfer.h dev_rfn.h \
+		rfn_identifier.h cmd_rfn.h cmd_device.h dev_single.h \
+		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h xfer.h \
+		config_exceptions.h exceptions.h rfn_asid.h \
+		rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h RfnE2eMsg.h \
+		RfnE2eDataConfirmMsg.h NetworkManagerMessaging.h \
 		RfnE2eDataRequestMsg.h NetworkManagerRequest.h msg_dbchg.h \
 		msg_cmd.h mgr_port.h port_base.h logManager.h tbl_port_base.h \
 		connection_client.h thread_monitor.h thread.h \
@@ -226,7 +226,7 @@ disp_thd.obj:	precompiled.h pilserver.h dsm2.h connectionHandle.h \
 		PaoStatisticsRecord.h ThreadStatusKeeper.h
 dllmain.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h dsm2.h connectionHandle.h loggable.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
+		streamConnection.h timing_util.h immutable.h \
 		critical_section.h guard.h utility.h ctitime.h queues.h \
 		constants.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -243,10 +243,10 @@ encodingfilterfactory.obj:	precompiled.h EncodingFilterFactory.h \
 		dllbase.h resolvers.h pointtypes.h db_entry_defines.h \
 		row_reader.h tbl_pao_lite.h tbl_paoexclusion.h xfer.h \
 		dev_base.h dsm2.h connectionHandle.h streamConnection.h \
-		netports.h timing_util.h immutable.h guard.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h cmdparse.h \
-		ctitokenizer.h parsevalue.h dev_exclusion.h config_device.h \
-		rte_base.h message.h collectable.h tbl_rtcomm.h msg_signal.h \
+		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h cmdparse.h ctitokenizer.h \
+		parsevalue.h dev_exclusion.h config_device.h rte_base.h \
+		message.h collectable.h tbl_rtcomm.h msg_signal.h \
 		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
 		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h pointdefs.h devicetypes.h \
@@ -272,18 +272,18 @@ mgr_port.obj:	precompiled.h mgr_port.h dlldefs.h smartmap.h \
 		logManager.h tbl_port_base.h dbmemobject.h dbaccess.h \
 		resolvers.h pointtypes.h db_entry_defines.h row_reader.h \
 		tbl_pao_lite.h tbl_paoexclusion.h xfer.h dev_base.h dsm2.h \
-		connectionHandle.h streamConnection.h netports.h \
-		timing_util.h immutable.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h config_device.h rte_base.h \
-		message.h collectable.h tbl_rtcomm.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
-		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h pointdefs.h devicetypes.h \
-		port_direct.h port_serial.h tbl_port_settings.h \
-		tbl_port_timing.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h tbl_port_serial.h port_dialin.h \
-		port_dialout.h port_pool_out.h port_rf_da.h rfn_identifier.h \
+		connectionHandle.h streamConnection.h timing_util.h \
+		immutable.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h config_device.h rte_base.h message.h \
+		collectable.h tbl_rtcomm.h msg_signal.h tbl_static_paoinfo.h \
+		encryption.h std_helper.h tbl_base.h tbl_scanrate.h \
+		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h pointdefs.h devicetypes.h port_direct.h \
+		port_serial.h tbl_port_settings.h tbl_port_timing.h \
+		port_dialable.h port_modem.h tbl_port_dialup.h \
+		tbl_port_serial.h port_dialin.h port_dialout.h \
+		port_pool_out.h port_rf_da.h rfn_identifier.h \
 		port_tcpipdirect.h tbl_port_tcpip.h port_tcp.h port_udp.h \
 		database_reader.h database_util.h database_writer.h \
 		row_writer.h
@@ -305,7 +305,7 @@ paostatisticsrecord.obj:	precompiled.h PaoStatisticsRecord.h ctitime.h \
 		database_exceptions.h ctidate.h dsm2err.h
 phlidlc.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h queues.h constants.h dsm2.h \
-		connectionHandle.h loggable.h streamConnection.h netports.h \
+		connectionHandle.h loggable.h streamConnection.h \
 		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -327,7 +327,7 @@ phlidlc.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		trx_info.h
 plidlc.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h cti_asmc.h queues.h constants.h dsm2.h \
-		connectionHandle.h loggable.h streamConnection.h netports.h \
+		connectionHandle.h loggable.h streamConnection.h \
 		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -344,7 +344,7 @@ plidlc.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		pt_base.h tbl_pt_base.h pointdefs.h trx_info.h cparms.h
 portconf.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h cparms.h queues.h constants.h dsm2.h \
-		connectionHandle.h loggable.h streamConnection.h netports.h \
+		connectionHandle.h loggable.h streamConnection.h \
 		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -365,31 +365,30 @@ portconf.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		repeaterrole.h
 portdialback.obj:	precompiled.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h dlldefs.h cparms.h dsm2.h connectionHandle.h \
-		loggable.h streamConnection.h netports.h timing_util.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h constants.h numstr.h module_util.h version.h \
-		logger.h streamBuffer.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h connection_client.h connection.h message.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		concurrentSet.h mgr_device.h rtdb.h dllbase.h dev_base.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		tbl_paoexclusion.h row_reader.h config_device.h rte_base.h \
-		dbmemobject.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
-		resolvers.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
-		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h slctdev.h smartmap.h mgr_port.h \
-		port_base.h logManager.h tbl_port_base.h xfer.h devicetypes.h \
-		msg_cmd.h pilserver.h server_b.h con_mgr.h \
-		connection_server.h connection_listener.h msg_pcrequest.h \
-		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
-		amq_constants.h mgr_rfn_request.h prot_e2eDataTransfer.h \
-		dev_rfn.h rfn_identifier.h cmd_rfn.h cmd_device.h \
-		dev_single.h msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		config_exceptions.h exceptions.h rfn_asid.h \
+		loggable.h streamConnection.h timing_util.h immutable.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		connection_client.h connection.h message.h collectable.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		msg_reg.h queue.h readers_writer_lock.h connection_base.h \
+		worker_thread.h concurrentSet.h mgr_device.h rtdb.h dllbase.h \
+		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h tbl_paoexclusion.h row_reader.h \
+		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
+		tbl_rtcomm.h dbaccess.h resolvers.h db_entry_defines.h \
+		msg_signal.h tbl_static_paoinfo.h encryption.h std_helper.h \
+		tbl_base.h tbl_scanrate.h database_connection.h \
+		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h slctdev.h \
+		smartmap.h mgr_port.h port_base.h logManager.h \
+		tbl_port_base.h xfer.h devicetypes.h msg_cmd.h pilserver.h \
+		server_b.h con_mgr.h connection_server.h \
+		connection_listener.h msg_pcrequest.h mgr_point.h mgr_route.h \
+		repeaterrole.h mgr_config.h amq_constants.h mgr_rfn_request.h \
+		prot_e2eDataTransfer.h dev_rfn.h rfn_identifier.h cmd_rfn.h \
+		cmd_device.h dev_single.h msg_pcreturn.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h config_exceptions.h exceptions.h rfn_asid.h \
 		rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h RfnE2eMsg.h \
 		RfnE2eDataConfirmMsg.h NetworkManagerMessaging.h \
 		RfnE2eDataRequestMsg.h NetworkManagerRequest.h portglob.h \
@@ -405,44 +404,42 @@ portentry.obj:	precompiled.h connection_client.h connection.h \
 		module_util.h version.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
 		worker_thread.h timing_util.h concurrentSet.h dsm2.h \
-		streamConnection.h netports.h immutable.h dsm2err.h words.h \
-		optional.h macro_offset.h portdecl.h rte_base.h dbmemobject.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dllbase.h \
-		tbl_pao_lite.h row_reader.h tbl_rtcomm.h dbaccess.h \
-		resolvers.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h std_helper.h port_base.h \
-		logManager.h tbl_port_base.h tbl_paoexclusion.h xfer.h \
-		dev_base.h dev_exclusion.h config_device.h tbl_base.h \
-		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h devicetypes.h porter.h \
-		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
-		ThreadStatusKeeper.h thread_register_data.h boost_time.h \
-		thread_monitor.h smartmap.h thread.h portglob.h \
-		streamSocketListener.h socket_helper.h win_helper.h \
-		streamSocketConnection.h c_port_interface.h elogger.h \
-		mgr_port.h mgr_device.h rtdb.h slctdev.h \
-		streamLocalConnection.h msg_pcrequest.h msg_pcreturn.h \
-		prot_emetcon.h trx_711.h trx_info.h
-porter.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
-		yukon.h ctidbgmem.h color.h cparms.h queues.h constants.h \
-		dsm2.h connectionHandle.h loggable.h streamConnection.h \
-		netports.h timing_util.h immutable.h critical_section.h \
-		guard.h utility.h ctitime.h numstr.h module_util.h version.h \
-		logger.h streamBuffer.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h porter.h devicetypes.h portdecl.h rte_base.h \
-		dbmemobject.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dllbase.h message.h collectable.h tbl_pao_lite.h row_reader.h \
-		tbl_rtcomm.h dbaccess.h resolvers.h pointtypes.h \
+		streamConnection.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h portdecl.h rte_base.h dbmemobject.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dllbase.h tbl_pao_lite.h \
+		row_reader.h tbl_rtcomm.h dbaccess.h resolvers.h \
 		db_entry_defines.h msg_signal.h tbl_static_paoinfo.h \
 		encryption.h std_helper.h port_base.h logManager.h \
 		tbl_port_base.h tbl_paoexclusion.h xfer.h dev_base.h \
 		dev_exclusion.h config_device.h tbl_base.h tbl_scanrate.h \
 		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h pointdefs.h portverify.h queue.h thread.h \
-		verification_objects.h boost_time.h StatisticsThread.h \
-		master.h elogger.h thread_monitor.h smartmap.h \
-		readers_writer_lock.h thread_register_data.h \
+		tbl_pt_base.h devicetypes.h porter.h StatisticsManager.h \
+		PaoStatistics.h PaoStatisticsRecord.h ThreadStatusKeeper.h \
+		thread_register_data.h boost_time.h thread_monitor.h \
+		smartmap.h thread.h portglob.h streamSocketListener.h \
+		socket_helper.h win_helper.h streamSocketConnection.h \
+		c_port_interface.h elogger.h mgr_port.h mgr_device.h rtdb.h \
+		slctdev.h streamLocalConnection.h msg_pcrequest.h \
+		msg_pcreturn.h prot_emetcon.h trx_711.h trx_info.h
+porter.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		yukon.h ctidbgmem.h color.h cparms.h queues.h constants.h \
+		dsm2.h connectionHandle.h loggable.h streamConnection.h \
+		timing_util.h immutable.h critical_section.h guard.h \
+		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h porter.h \
+		devicetypes.h portdecl.h rte_base.h dbmemobject.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dllbase.h message.h collectable.h \
+		tbl_pao_lite.h row_reader.h tbl_rtcomm.h dbaccess.h \
+		resolvers.h pointtypes.h db_entry_defines.h msg_signal.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h port_base.h \
+		logManager.h tbl_port_base.h tbl_paoexclusion.h xfer.h \
+		dev_base.h dev_exclusion.h config_device.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h pointdefs.h portverify.h queue.h \
+		thread.h verification_objects.h boost_time.h \
+		StatisticsThread.h master.h elogger.h thread_monitor.h \
+		smartmap.h readers_writer_lock.h thread_register_data.h \
 		streamLocalConnection.h streamAmqConnection.h \
 		amq_connection.h StreamableMessage.h connection_base.h \
 		systemmsgthread.h connection.h msg_multi.h msg_pdata.h \
@@ -474,7 +471,7 @@ porter.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		porter_message_serialization.h PorterDynamicPaoInfoMsg.h
 portersu.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h color.h queues.h constants.h dsm2.h \
-		connectionHandle.h loggable.h streamConnection.h netports.h \
+		connectionHandle.h loggable.h streamConnection.h \
 		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -505,20 +502,20 @@ porter_message_serialization.obj:	precompiled.h \
 portfield.obj:	precompiled.h c_port_interface.h dlldefs.h elogger.h \
 		loggable.h StreamBuffer.h ctitime.h cti_asmc.h cticalls.h \
 		yukon.h types.h ctidbgmem.h os2_2w32.h dsm2.h \
-		connectionHandle.h streamConnection.h netports.h \
-		timing_util.h immutable.h critical_section.h guard.h \
-		utility.h queues.h constants.h numstr.h module_util.h \
-		version.h logger.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h master.h portdecl.h rte_base.h dbmemobject.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dllbase.h message.h \
-		collectable.h tbl_pao_lite.h row_reader.h tbl_rtcomm.h \
-		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
-		msg_signal.h tbl_static_paoinfo.h encryption.h std_helper.h \
-		port_base.h logManager.h tbl_port_base.h tbl_paoexclusion.h \
-		xfer.h dev_base.h dev_exclusion.h config_device.h tbl_base.h \
-		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h pointdefs.h devicetypes.h porter.h \
+		connectionHandle.h streamConnection.h timing_util.h \
+		immutable.h critical_section.h guard.h utility.h queues.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h master.h \
+		portdecl.h rte_base.h dbmemobject.h cmdparse.h ctitokenizer.h \
+		parsevalue.h dllbase.h message.h collectable.h tbl_pao_lite.h \
+		row_reader.h tbl_rtcomm.h dbaccess.h resolvers.h pointtypes.h \
+		db_entry_defines.h msg_signal.h tbl_static_paoinfo.h \
+		encryption.h std_helper.h port_base.h logManager.h \
+		tbl_port_base.h tbl_paoexclusion.h xfer.h dev_base.h \
+		dev_exclusion.h config_device.h tbl_base.h tbl_scanrate.h \
+		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h pointdefs.h devicetypes.h porter.h \
 		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
 		ThreadStatusKeeper.h thread_register_data.h boost_time.h \
 		thread_monitor.h smartmap.h readers_writer_lock.h cparms.h \
@@ -560,7 +557,7 @@ portfield.obj:	precompiled.h c_port_interface.h dlldefs.h elogger.h \
 		portfield.h connection_client.h desolvers.h
 portfill.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h cparms.h queues.h constants.h dsm2.h \
-		connectionHandle.h loggable.h streamConnection.h netports.h \
+		connectionHandle.h loggable.h streamConnection.h \
 		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -590,7 +587,7 @@ portfill.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		boost_time.h dev_wctp.h prot_versacom.h expresscom.h
 portglob.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h queues.h constants.h dsm2.h \
-		connectionHandle.h loggable.h streamConnection.h netports.h \
+		connectionHandle.h loggable.h streamConnection.h \
 		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -599,7 +596,7 @@ portglob.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		socket_helper.h win_helper.h streamSocketConnection.h
 portload.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h queues.h constants.h dsm2.h \
-		connectionHandle.h loggable.h streamConnection.h netports.h \
+		connectionHandle.h loggable.h streamConnection.h \
 		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -633,37 +630,37 @@ portmain.obj:	precompiled.h ctitime.h dlldefs.h portsvc.h cservice.h \
 		queues.h constants.h numstr.h module_util.h version.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h timing_util.h win_helper.h \
-		streamSocketConnection.h streamConnection.h netports.h \
-		immutable.h porter.h dsm2.h connectionHandle.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h devicetypes.h \
-		cparms.h logManager.h connection_base.h
+		streamSocketConnection.h streamConnection.h immutable.h \
+		porter.h dsm2.h connectionHandle.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h devicetypes.h cparms.h logManager.h \
+		connection_base.h
 portpil.obj:	precompiled.h pilserver.h dsm2.h connectionHandle.h \
 		dlldefs.h loggable.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h netports.h timing_util.h immutable.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h module_util.h \
-		version.h logger.h streamBuffer.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h server_b.h con_mgr.h \
-		connection_server.h connection.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h readers_writer_lock.h \
-		connection_base.h worker_thread.h concurrentSet.h \
-		connection_listener.h dllbase.h smartmap.h msg_pcrequest.h \
-		mgr_device.h rtdb.h dev_base.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h tbl_paoexclusion.h row_reader.h \
-		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
-		tbl_rtcomm.h dbaccess.h resolvers.h db_entry_defines.h \
-		msg_signal.h tbl_static_paoinfo.h encryption.h std_helper.h \
-		tbl_base.h tbl_scanrate.h database_connection.h \
-		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h slctdev.h \
-		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
-		devicetypes.h amq_constants.h mgr_rfn_request.h \
-		prot_e2eDataTransfer.h dev_rfn.h rfn_identifier.h cmd_rfn.h \
-		cmd_device.h dev_single.h msg_pcreturn.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h xfer.h config_exceptions.h exceptions.h \
-		rfn_asid.h rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h \
-		RfnE2eMsg.h RfnE2eDataConfirmMsg.h NetworkManagerMessaging.h \
+		ctidbgmem.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		server_b.h con_mgr.h connection_server.h connection.h \
+		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		concurrentSet.h connection_listener.h dllbase.h smartmap.h \
+		msg_pcrequest.h mgr_device.h rtdb.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h \
+		tbl_paoexclusion.h row_reader.h config_device.h rte_base.h \
+		dbmemobject.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
+		resolvers.h db_entry_defines.h msg_signal.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
+		repeaterrole.h mgr_config.h devicetypes.h amq_constants.h \
+		mgr_rfn_request.h prot_e2eDataTransfer.h dev_rfn.h \
+		rfn_identifier.h cmd_rfn.h cmd_device.h dev_single.h \
+		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h xfer.h \
+		config_exceptions.h exceptions.h rfn_asid.h \
+		rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h RfnE2eMsg.h \
+		RfnE2eDataConfirmMsg.h NetworkManagerMessaging.h \
 		RfnE2eDataRequestMsg.h NetworkManagerRequest.h \
 		thread_monitor.h thread.h thread_register_data.h boost_time.h \
 		ThreadStatusKeeper.h
@@ -677,8 +674,8 @@ portpool.obj:	precompiled.h connection_client.h connection.h dlldefs.h \
 		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		concurrentSet.h mgr_device.h rtdb.h dllbase.h dev_base.h \
-		dsm2.h streamConnection.h netports.h immutable.h dsm2err.h \
-		words.h optional.h macro_offset.h cmdparse.h ctitokenizer.h \
+		dsm2.h streamConnection.h immutable.h dsm2err.h words.h \
+		optional.h macro_offset.h cmdparse.h ctitokenizer.h \
 		parsevalue.h dev_exclusion.h tbl_paoexclusion.h row_reader.h \
 		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
 		tbl_rtcomm.h dbaccess.h resolvers.h db_entry_defines.h \
@@ -691,7 +688,7 @@ portpool.obj:	precompiled.h connection_client.h connection.h dlldefs.h \
 		socket_helper.h win_helper.h streamSocketConnection.h
 portque.obj:	precompiled.h cparms.h dlldefs.h queues.h cticalls.h \
 		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h dsm2.h \
-		connectionHandle.h loggable.h streamConnection.h netports.h \
+		connectionHandle.h loggable.h streamConnection.h \
 		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -728,12 +725,12 @@ portsvc.obj:	precompiled.h ctitime.h dlldefs.h portsvc.h cservice.h \
 		numstr.h module_util.h version.h logger.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		timing_util.h win_helper.h streamSocketConnection.h \
-		streamConnection.h netports.h immutable.h porter.h dsm2.h \
+		streamConnection.h immutable.h porter.h dsm2.h \
 		connectionHandle.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h devicetypes.h
 porttime.obj:	precompiled.h queues.h cticalls.h yukon.h types.h \
 		ctidbgmem.h os2_2w32.h dlldefs.h constants.h dsm2.h \
-		connectionHandle.h loggable.h streamConnection.h netports.h \
+		connectionHandle.h loggable.h streamConnection.h \
 		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
@@ -780,21 +777,21 @@ portverify.obj:	precompiled.h boost_time.h mgr_port.h dlldefs.h \
 		logManager.h tbl_port_base.h dbmemobject.h dbaccess.h \
 		resolvers.h pointtypes.h db_entry_defines.h row_reader.h \
 		tbl_pao_lite.h tbl_paoexclusion.h xfer.h dev_base.h dsm2.h \
-		connectionHandle.h streamConnection.h netports.h \
-		timing_util.h immutable.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h config_device.h rte_base.h \
-		message.h collectable.h tbl_rtcomm.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
-		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h pointdefs.h devicetypes.h cparms.h \
-		portverify.h queue.h thread.h verification_objects.h \
-		ctidate.h database_reader.h database_transaction.h \
-		database_writer.h row_writer.h
+		connectionHandle.h streamConnection.h timing_util.h \
+		immutable.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h config_device.h rte_base.h message.h \
+		collectable.h tbl_rtcomm.h msg_signal.h tbl_static_paoinfo.h \
+		encryption.h std_helper.h tbl_base.h tbl_scanrate.h \
+		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h pointdefs.h devicetypes.h cparms.h portverify.h \
+		queue.h thread.h verification_objects.h ctidate.h \
+		database_reader.h database_transaction.h database_writer.h \
+		row_writer.h
 port_shr.obj:	precompiled.h types.h dsm2.h connectionHandle.h \
 		dlldefs.h loggable.h streamConnection.h yukon.h ctidbgmem.h \
-		netports.h timing_util.h immutable.h critical_section.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		timing_util.h immutable.h critical_section.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h module_util.h version.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
@@ -811,23 +808,23 @@ port_shr.obj:	precompiled.h types.h dsm2.h connectionHandle.h \
 		devicetypes.h cparms.h streamSocketListener.h
 port_shr_ip.obj:	precompiled.h types.h cparms.h dlldefs.h cticalls.h \
 		yukon.h ctidbgmem.h os2_2w32.h dsm2.h connectionHandle.h \
-		loggable.h streamConnection.h netports.h timing_util.h \
-		immutable.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h constants.h numstr.h module_util.h version.h \
-		logger.h streamBuffer.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h port_shr_ip.h streamSocketConnection.h \
-		socket_helper.h win_helper.h port_shr.h thread.h port_base.h \
-		logManager.h tbl_port_base.h dbmemobject.h dbaccess.h \
-		dllbase.h resolvers.h pointtypes.h db_entry_defines.h \
-		row_reader.h tbl_pao_lite.h tbl_paoexclusion.h xfer.h \
-		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h config_device.h rte_base.h message.h \
-		collectable.h tbl_rtcomm.h msg_signal.h tbl_static_paoinfo.h \
-		encryption.h std_helper.h tbl_base.h tbl_scanrate.h \
-		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h pointdefs.h devicetypes.h prot_welco.h porter.h \
-		cti_asmc.h streamSocketListener.h
+		loggable.h streamConnection.h timing_util.h immutable.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		constants.h numstr.h module_util.h version.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		port_shr_ip.h streamSocketConnection.h socket_helper.h \
+		win_helper.h port_shr.h thread.h port_base.h logManager.h \
+		tbl_port_base.h dbmemobject.h dbaccess.h dllbase.h \
+		resolvers.h pointtypes.h db_entry_defines.h row_reader.h \
+		tbl_pao_lite.h tbl_paoexclusion.h xfer.h dev_base.h \
+		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		config_device.h rte_base.h message.h collectable.h \
+		tbl_rtcomm.h msg_signal.h tbl_static_paoinfo.h encryption.h \
+		std_helper.h tbl_base.h tbl_scanrate.h database_connection.h \
+		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h pointdefs.h \
+		devicetypes.h prot_welco.h porter.h cti_asmc.h \
+		streamSocketListener.h
 port_thread_rf_da.obj:	precompiled.h port_thread_rf_da.h yukon.h \
 		types.h ctidbgmem.h unsolicited_handler.h port_base.h \
 		logManager.h dlldefs.h module_util.h ctitime.h version.h \
@@ -837,20 +834,19 @@ port_thread_rf_da.obj:	precompiled.h port_thread_rf_da.h yukon.h \
 		tbl_port_base.h dbmemobject.h dbaccess.h dllbase.h \
 		resolvers.h pointtypes.h db_entry_defines.h row_reader.h \
 		tbl_pao_lite.h tbl_paoexclusion.h xfer.h dev_base.h dsm2.h \
-		connectionHandle.h streamConnection.h netports.h \
-		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h config_device.h rte_base.h \
-		message.h collectable.h tbl_rtcomm.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
-		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h pointdefs.h devicetypes.h \
-		mgr_device.h rtdb.h slctdev.h smartmap.h \
-		readers_writer_lock.h dev_single.h msg_pcrequest.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h connection_base.h worker_thread.h concurrentSet.h \
-		config_exceptions.h exceptions.h msg_dbchg.h \
+		connectionHandle.h streamConnection.h timing_util.h \
+		immutable.h guard.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h config_device.h rte_base.h message.h \
+		collectable.h tbl_rtcomm.h msg_signal.h tbl_static_paoinfo.h \
+		encryption.h std_helper.h tbl_base.h tbl_scanrate.h \
+		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h pointdefs.h devicetypes.h mgr_device.h rtdb.h \
+		slctdev.h smartmap.h readers_writer_lock.h dev_single.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h connection.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h connection_base.h worker_thread.h \
+		concurrentSet.h config_exceptions.h exceptions.h msg_dbchg.h \
 		millisecond_timer.h socket_helper.h win_helper.h port_rf_da.h \
 		rfn_identifier.h rfn_e2e_messenger.h rfn_asid.h \
 		RfnE2eDataIndicationMsg.h RfnE2eMsg.h RfnE2eDataConfirmMsg.h \
@@ -872,20 +868,19 @@ port_thread_tcp.obj:	precompiled.h port_thread_tcp.h \
 		tbl_port_base.h dbmemobject.h dbaccess.h dllbase.h \
 		resolvers.h pointtypes.h db_entry_defines.h row_reader.h \
 		tbl_pao_lite.h tbl_paoexclusion.h xfer.h dev_base.h dsm2.h \
-		connectionHandle.h streamConnection.h netports.h \
-		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h config_device.h rte_base.h \
-		message.h collectable.h tbl_rtcomm.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
-		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h pointdefs.h devicetypes.h \
-		mgr_device.h rtdb.h slctdev.h smartmap.h \
-		readers_writer_lock.h dev_single.h msg_pcrequest.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h connection_base.h worker_thread.h concurrentSet.h \
-		config_exceptions.h exceptions.h msg_dbchg.h \
+		connectionHandle.h streamConnection.h timing_util.h \
+		immutable.h guard.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h config_device.h rte_base.h message.h \
+		collectable.h tbl_rtcomm.h msg_signal.h tbl_static_paoinfo.h \
+		encryption.h std_helper.h tbl_base.h tbl_scanrate.h \
+		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h pointdefs.h devicetypes.h mgr_device.h rtdb.h \
+		slctdev.h smartmap.h readers_writer_lock.h dev_single.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h connection.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h connection_base.h worker_thread.h \
+		concurrentSet.h config_exceptions.h exceptions.h msg_dbchg.h \
 		millisecond_timer.h socket_helper.h win_helper.h \
 		packet_finder.h port_tcp.h port_serial.h tbl_port_settings.h \
 		tbl_port_timing.h tcp_connection_manager.h tcp_connection.h \
@@ -904,20 +899,19 @@ port_thread_udp.obj:	precompiled.h port_thread_udp.h yukon.h types.h \
 		dbmemobject.h dbaccess.h dllbase.h resolvers.h pointtypes.h \
 		db_entry_defines.h row_reader.h tbl_pao_lite.h \
 		tbl_paoexclusion.h xfer.h dev_base.h dsm2.h \
-		connectionHandle.h streamConnection.h netports.h \
-		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h config_device.h rte_base.h \
-		message.h collectable.h tbl_rtcomm.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
-		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h pointdefs.h devicetypes.h \
-		mgr_device.h rtdb.h slctdev.h smartmap.h \
-		readers_writer_lock.h dev_single.h msg_pcrequest.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h connection_base.h worker_thread.h concurrentSet.h \
-		config_exceptions.h exceptions.h msg_dbchg.h \
+		connectionHandle.h streamConnection.h timing_util.h \
+		immutable.h guard.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h config_device.h rte_base.h message.h \
+		collectable.h tbl_rtcomm.h msg_signal.h tbl_static_paoinfo.h \
+		encryption.h std_helper.h tbl_base.h tbl_scanrate.h \
+		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h pointdefs.h devicetypes.h mgr_device.h rtdb.h \
+		slctdev.h smartmap.h readers_writer_lock.h dev_single.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h connection.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h connection_base.h worker_thread.h \
+		concurrentSet.h config_exceptions.h exceptions.h msg_dbchg.h \
 		millisecond_timer.h socket_helper.h win_helper.h port_udp.h \
 		port_serial.h tbl_port_settings.h tbl_port_timing.h \
 		tbl_port_tcpip.h EncodingFilterFactory.h EncodingFilter.h \
@@ -940,14 +934,14 @@ ripple.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		module_util.h version.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
 		worker_thread.h timing_util.h concurrentSet.h dsm2.h \
-		streamConnection.h netports.h immutable.h dsm2err.h words.h \
-		optional.h macro_offset.h porter.h devicetypes.h portdecl.h \
-		rte_base.h dbmemobject.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dllbase.h tbl_pao_lite.h row_reader.h \
-		tbl_rtcomm.h dbaccess.h resolvers.h db_entry_defines.h \
-		msg_signal.h tbl_static_paoinfo.h encryption.h std_helper.h \
-		port_base.h logManager.h tbl_port_base.h tbl_paoexclusion.h \
-		xfer.h dev_base.h dev_exclusion.h config_device.h tbl_base.h \
+		streamConnection.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h porter.h devicetypes.h portdecl.h rte_base.h \
+		dbmemobject.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dllbase.h tbl_pao_lite.h row_reader.h tbl_rtcomm.h dbaccess.h \
+		resolvers.h db_entry_defines.h msg_signal.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h port_base.h \
+		logManager.h tbl_port_base.h tbl_paoexclusion.h xfer.h \
+		dev_base.h dev_exclusion.h config_device.h tbl_base.h \
 		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h master.h scanner.h elogger.h \
 		portglob.h streamSocketListener.h socket_helper.h \
@@ -970,16 +964,16 @@ statisticsmanager.obj:	precompiled.h StatisticsManager.h \
 		database_writer.h row_writer.h database_transaction.h \
 		InvalidReaderException.h ctidate.h debug_timer.h \
 		c_port_interface.h elogger.h mgr_device.h rtdb.h dev_base.h \
-		dsm2.h connectionHandle.h streamConnection.h netports.h \
-		timing_util.h immutable.h dsm2err.h words.h optional.h \
-		macro_offset.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h tbl_paoexclusion.h config_device.h rte_base.h \
-		dbmemobject.h message.h collectable.h tbl_pao_lite.h \
-		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
-		msg_signal.h tbl_static_paoinfo.h encryption.h std_helper.h \
-		tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h pointdefs.h slctdev.h mgr_port.h port_base.h \
-		logManager.h tbl_port_base.h xfer.h devicetypes.h
+		dsm2.h connectionHandle.h streamConnection.h timing_util.h \
+		immutable.h dsm2err.h words.h optional.h macro_offset.h \
+		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		tbl_paoexclusion.h config_device.h rte_base.h dbmemobject.h \
+		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
+		resolvers.h pointtypes.h db_entry_defines.h msg_signal.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		pointdefs.h slctdev.h mgr_port.h port_base.h logManager.h \
+		tbl_port_base.h xfer.h devicetypes.h
 statisticsthread.obj:	precompiled.h StatisticsManager.h \
 		PaoStatistics.h PaoStatisticsRecord.h ctitime.h dlldefs.h \
 		yukon.h types.h ctidbgmem.h ThreadStatusKeeper.h \
@@ -991,9 +985,9 @@ statisticsthread.obj:	precompiled.h StatisticsManager.h \
 		cparms.h queue.h thread.h mutex.h debug_timer.h \
 		millisecond_timer.h portglob.h streamSocketListener.h \
 		socket_helper.h timing_util.h win_helper.h \
-		streamSocketConnection.h streamConnection.h netports.h \
-		immutable.h porter.h dsm2.h connectionHandle.h dsm2err.h \
-		words.h optional.h macro_offset.h devicetypes.h
+		streamSocketConnection.h streamConnection.h immutable.h \
+		porter.h dsm2.h connectionHandle.h dsm2err.h words.h \
+		optional.h macro_offset.h devicetypes.h
 systemmsgthread.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h counter.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
@@ -1001,10 +995,10 @@ systemmsgthread.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		critical_section.h mutex.h cparms.h device_queue_interface.h \
 		msg_cmd.h message.h collectable.h connectionHandle.h \
-		msg_pcrequest.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h dsm2err.h words.h optional.h \
-		macro_offset.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_queuedata.h msg_requestcancel.h \
+		msg_pcrequest.h dsm2.h streamConnection.h timing_util.h \
+		immutable.h dsm2err.h words.h optional.h macro_offset.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_queuedata.h msg_requestcancel.h \
 		systemmsgthread.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		concurrentSet.h streamLocalConnection.h mgr_device.h rtdb.h \
@@ -1035,9 +1029,9 @@ test_gen_reply.obj:	trx_711.h trx_info.h logger.h dlldefs.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h porter.h dsm2.h \
-		connectionHandle.h streamConnection.h netports.h \
-		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h devicetypes.h portdecl.h rte_base.h \
+		connectionHandle.h streamConnection.h timing_util.h \
+		immutable.h guard.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h devicetypes.h portdecl.h rte_base.h \
 		dbmemobject.h cmdparse.h ctitokenizer.h parsevalue.h \
 		dllbase.h message.h collectable.h tbl_pao_lite.h row_reader.h \
 		tbl_rtcomm.h dbaccess.h resolvers.h pointtypes.h \
@@ -1060,10 +1054,10 @@ unsolicited_handler.obj:	precompiled.h boostutil.h utility.h ctitime.h \
 		dllbase.h resolvers.h pointtypes.h db_entry_defines.h \
 		row_reader.h tbl_pao_lite.h tbl_paoexclusion.h xfer.h \
 		dev_base.h dsm2.h connectionHandle.h streamConnection.h \
-		netports.h timing_util.h immutable.h guard.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h cmdparse.h \
-		ctitokenizer.h parsevalue.h dev_exclusion.h config_device.h \
-		rte_base.h message.h collectable.h tbl_rtcomm.h msg_signal.h \
+		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h cmdparse.h ctitokenizer.h \
+		parsevalue.h dev_exclusion.h config_device.h rte_base.h \
+		message.h collectable.h tbl_rtcomm.h msg_signal.h \
 		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
 		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h pointdefs.h devicetypes.h \

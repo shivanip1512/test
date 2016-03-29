@@ -181,12 +181,12 @@ interp_pool.obj:	precompiled.h interp_pool.h interp.h \
 mccmd.obj:	precompiled.h mccmd.h msg_pcrequest.h dlldefs.h message.h \
 		ctitime.h ctidbgmem.h collectable.h loggable.h \
 		connectionHandle.h dsm2.h streamConnection.h yukon.h types.h \
-		netports.h timing_util.h immutable.h critical_section.h \
-		guard.h utility.h queues.h cticalls.h os2_2w32.h constants.h \
-		numstr.h module_util.h version.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h ctdpcptrq.h \
+		timing_util.h immutable.h critical_section.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		module_util.h version.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h pointdefs.h pointtypes.h ctdpcptrq.h \
 		CtiPCPtrQueue.h dllBase.h tbl_meterreadlog.h row_reader.h \
 		database_connection.h dbaccess.h database_reader.h \
 		database_transaction.h connection_client.h connection.h \
@@ -207,9 +207,9 @@ mc_dbthr.obj:	precompiled.h mc_dbthr.h mc.h logger.h dlldefs.h \
 		tbl_mcsimpsched.h message.h collectable.h connectionHandle.h
 mc_fileint.obj:	precompiled.h mc_fileint.h fileint.h dlldefs.h \
 		critical_section.h worker_thread.h timing_util.h loggable.h \
-		concurrentSet.h queue.h cparms.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h utility.h \
-		ctitime.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
+		ctitime.h concurrentSet.h queue.h cparms.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h constants.h numstr.h module_util.h version.h \
 		mgr_mcsched.h mc.h rtdb.h dllbase.h mc_sched.h row_reader.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h mutex.h guard.h \
@@ -225,9 +225,9 @@ mc_main.obj:	precompiled.h ctitime.h dlldefs.h CServiceConfig.h \
 		queue.h interp.h interp_pool.h mgr_mcsched.h rtdb.h dllbase.h \
 		mc_sched.h row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h mc_dbthr.h mccmd.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		dsm2err.h words.h optional.h macro_offset.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h ctdpcptrq.h \
+		streamConnection.h timing_util.h immutable.h dsm2err.h \
+		words.h optional.h macro_offset.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h pointdefs.h pointtypes.h ctdpcptrq.h \
 		CtiPCPtrQueue.h tbl_meterreadlog.h database_connection.h \
 		dbaccess.h clistener.h connection_listener.h connection.h \
 		msg_ptreg.h msg_reg.h readers_writer_lock.h connection_base.h \
@@ -283,9 +283,9 @@ mc_server.obj:	precompiled.h mc_server.h mc.h logger.h dlldefs.h \
 		queue.h interp.h interp_pool.h mgr_mcsched.h rtdb.h dllbase.h \
 		mc_sched.h row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h mc_dbthr.h mccmd.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		dsm2err.h words.h optional.h macro_offset.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h ctdpcptrq.h \
+		streamConnection.h timing_util.h immutable.h dsm2err.h \
+		words.h optional.h macro_offset.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h pointdefs.h pointtypes.h ctdpcptrq.h \
 		CtiPCPtrQueue.h tbl_meterreadlog.h database_connection.h \
 		dbaccess.h clistener.h connection_listener.h connection.h \
 		msg_ptreg.h msg_reg.h readers_writer_lock.h connection_base.h \
@@ -304,17 +304,17 @@ mc_server_client_serialization_test.obj:	precompiled.h message.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h dllbase.h \
 		msg_notif_lmcontrol.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		msg_pcreturn.h msg_ptreg.h msg_queuedata.h Msg_reg.h \
-		msg_requestcancel.h msg_server_req.h msg_server_resp.h \
-		msg_signal.h msg_tag.h msg_trace.h mc_msg.h mc_sched.h \
-		row_reader.h mc.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
-		tbl_mcsimpsched.h mc_script.h test_mc_serialization.h \
-		test_serialization.h test_serialization_helper.h \
-		connection_server.h connection.h queue.h cparms.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		concurrentSet.h connection_listener.h logManager.h
+		streamConnection.h timing_util.h immutable.h guard.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h msg_pcreturn.h \
+		msg_ptreg.h msg_queuedata.h Msg_reg.h msg_requestcancel.h \
+		msg_server_req.h msg_server_resp.h msg_signal.h msg_tag.h \
+		msg_trace.h mc_msg.h mc_sched.h row_reader.h mc.h \
+		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
+		mc_script.h test_mc_serialization.h test_serialization.h \
+		test_serialization_helper.h connection_server.h connection.h \
+		queue.h cparms.h readers_writer_lock.h connection_base.h \
+		worker_thread.h concurrentSet.h connection_listener.h \
+		logManager.h
 mc_svc.obj:	precompiled.h mc_svc.h cservice.h dlldefs.h mc_server.h \
 		mc.h logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
@@ -325,12 +325,12 @@ mc_svc.obj:	precompiled.h mc_svc.h cservice.h dlldefs.h mc_server.h \
 		mgr_mcsched.h rtdb.h dllbase.h mc_sched.h row_reader.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
 		mc_dbthr.h mccmd.h msg_pcrequest.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h dsm2err.h words.h \
-		optional.h macro_offset.h msg_pcreturn.h msg_multi.h \
-		msg_pdata.h pointdefs.h pointtypes.h ctdpcptrq.h \
-		CtiPCPtrQueue.h tbl_meterreadlog.h database_connection.h \
-		dbaccess.h clistener.h connection_listener.h connection.h \
-		msg_ptreg.h msg_reg.h readers_writer_lock.h connection_base.h \
+		timing_util.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h ctdpcptrq.h CtiPCPtrQueue.h \
+		tbl_meterreadlog.h database_connection.h dbaccess.h \
+		clistener.h connection_listener.h connection.h msg_ptreg.h \
+		msg_reg.h readers_writer_lock.h connection_base.h \
 		worker_thread.h concurrentSet.h clientconn.h \
 		connection_server.h mc_msg.h mc_script.h mc_scheduler.h \
 		mgr_holiday.h ctidate.h mc_fileint.h fileint.h \
@@ -368,10 +368,10 @@ test_interp.obj:	interp.h critical_section.h dlldefs.h guard.h \
 		exception_helper.h boostutil.h thread.h mutex.h
 test_mccmd.obj:	mccmd.h msg_pcrequest.h dlldefs.h message.h ctitime.h \
 		ctidbgmem.h collectable.h loggable.h connectionHandle.h \
-		dsm2.h streamConnection.h yukon.h types.h netports.h \
-		timing_util.h immutable.h critical_section.h guard.h \
-		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h logger.h streamBuffer.h string_util.h \
+		dsm2.h streamConnection.h yukon.h types.h timing_util.h \
+		immutable.h critical_section.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h constants.h numstr.h module_util.h \
+		version.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
 		optional.h macro_offset.h msg_pcreturn.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h ctdpcptrq.h \
@@ -386,17 +386,16 @@ test_mc_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h critical_section.h dllbase.h \
 		msg_notif_lmcontrol.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		msg_pcreturn.h msg_ptreg.h msg_queuedata.h Msg_reg.h \
-		msg_requestcancel.h msg_server_req.h msg_server_resp.h \
-		msg_signal.h msg_tag.h msg_trace.h mc_msg.h mc_sched.h \
-		row_reader.h mc.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
-		tbl_mcsimpsched.h mc_script.h test_mc_serialization.h \
-		test_serialization.h test_serialization_helper.h \
-		connection_server.h connection.h queue.h cparms.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		concurrentSet.h connection_listener.h
+		streamConnection.h timing_util.h immutable.h guard.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h msg_pcreturn.h \
+		msg_ptreg.h msg_queuedata.h Msg_reg.h msg_requestcancel.h \
+		msg_server_req.h msg_server_resp.h msg_signal.h msg_tag.h \
+		msg_trace.h mc_msg.h mc_sched.h row_reader.h mc.h \
+		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
+		mc_script.h test_mc_serialization.h test_serialization.h \
+		test_serialization_helper.h connection_server.h connection.h \
+		queue.h cparms.h readers_writer_lock.h connection_base.h \
+		worker_thread.h concurrentSet.h connection_listener.h
 test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \

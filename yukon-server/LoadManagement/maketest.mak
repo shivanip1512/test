@@ -173,7 +173,7 @@ test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
 		connectionHandle.h lmgroupbase.h boostutil.h utility.h \
 		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		module_util.h version.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
+		streamConnection.h timing_util.h immutable.h \
 		critical_section.h guard.h logger.h streamBuffer.h \
 		string_util.h exception_helper.h mutex.h dsm2err.h words.h \
 		optional.h macro_offset.h msg_cmd.h row_reader.h \
@@ -190,7 +190,7 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		lmprogrambase.h dbmemobject.h msg_multi.h collectable.h \
 		msg_pdata.h pointdefs.h pointtypes.h message.h loggable.h \
 		connectionHandle.h lmgroupbase.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
+		streamConnection.h timing_util.h immutable.h \
 		critical_section.h guard.h logger.h streamBuffer.h \
 		string_util.h exception_helper.h mutex.h dsm2err.h words.h \
 		optional.h macro_offset.h msg_cmd.h row_reader.h \
@@ -211,8 +211,8 @@ test_lmthermostatgear.obj:	lmutility.h CtiTime.h dlldefs.h ctidate.h \
 		pointtypes.h message.h loggable.h connectionHandle.h \
 		lmgroupbase.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h module_util.h version.h \
-		msg_pcrequest.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h critical_section.h guard.h logger.h \
+		msg_pcrequest.h dsm2.h streamConnection.h timing_util.h \
+		immutable.h critical_section.h guard.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h mutex.h \
 		dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \

@@ -253,9 +253,9 @@ calcthread.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h \
 		database_writer.h database_connection.h row_writer.h \
 		database_reader.h database_util.h
 calcworkerthread.obj:	precompiled.h CalcWorkerThread.h worker_thread.h \
-		dlldefs.h timing_util.h loggable.h concurrentSet.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
+		dlldefs.h timing_util.h loggable.h ctitime.h concurrentSet.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
+		boostutil.h utility.h queues.h cticalls.h yukon.h types.h \
 		ctidbgmem.h os2_2w32.h constants.h numstr.h module_util.h \
 		version.h critical_section.h
 calc_logic.obj:	precompiled.h dbaccess.h dllbase.h os2_2w32.h \
@@ -299,9 +299,9 @@ newval.obj:	precompiled.h queue.h cparms.h dlldefs.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h critical_section.h netports.h \
-		message.h collectable.h connectionHandle.h msg_cmd.h \
-		msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		module_util.h version.h critical_section.h message.h \
+		collectable.h connectionHandle.h msg_cmd.h msg_reg.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h dsm2.h streamConnection.h timing_util.h \
 		immutable.h guard.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h msg_ptreg.h connection_client.h connection.h \
@@ -311,9 +311,9 @@ newvalrng.obj:	precompiled.h queue.h cparms.h dlldefs.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		module_util.h version.h critical_section.h netports.h \
-		message.h collectable.h connectionHandle.h msg_cmd.h \
-		msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		module_util.h version.h critical_section.h message.h \
+		collectable.h connectionHandle.h msg_cmd.h msg_reg.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h dsm2.h streamConnection.h timing_util.h \
 		immutable.h guard.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h msg_ptreg.h connection_client.h connection.h \
