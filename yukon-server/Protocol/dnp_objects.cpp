@@ -805,7 +805,6 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto,
                     if( arrival && !(pMsg->getTags() & TAG_POINT_DATA_TIMESTAMP_VALID) )
                     {
                         pMsg->setTime(CtiTime(arrival->getSeconds()));
-                        pMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
                     }
 
                     if( _unsolicited )
