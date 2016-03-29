@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
     Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     config.insertValue(Cti::Config::DNPStrings::internalRetries,         "3");
-    config.insertValue(Cti::Config::DNPStrings::useLocalTime,            "true");
+    config.insertValue(Cti::Config::DNPStrings::timeOffset,              "LOCAL");
     config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs,      "true");
     config.insertValue(Cti::Config::DNPStrings::omitTimeRequest,         "false");
     config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");

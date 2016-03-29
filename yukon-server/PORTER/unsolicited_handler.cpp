@@ -617,9 +617,9 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
 
                 _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
             }
-            catch( MissingConfigException &e )
+            catch( const std::exception& e )
             {
-                CTILOG_EXCEPTION_ERROR(dout, e, "DNP Device "<< dnp_device.getName() <<" is not assigned a DNP configuration. Unable to process inbound message.");
+                CTILOG_EXCEPTION_ERROR(dout, e, "DNP device " << dnp_device.getName() << " had a configuration failure, unable to process inbound message.");
             }
         }
         else if( isGpuffDevice(*dr->device) )

@@ -14,6 +14,7 @@
 
 #include "exceptions.h"
 #include "config_data_dnp.h"
+#include "config_helpers.h"
 
 #include "msg_cmd.h"
 #include "msg_lmcontrolhistory.h"
@@ -666,9 +667,9 @@ YukonError_t DnpDevice::recvCommRequest( OUTMESS *OutMessage )
             loadConfigData();
             _dnp.setCommand(_porter_info.protocol_command, _porter_info.protocol_parameter);
         }
-        catch (MissingConfigException &e)
+        catch( const std::exception& e )
         {
-            CTILOG_ERROR(dout, "Device "<< getName() <<" is not assigned a DNP configuration. Unable to process comm request");
+            CTILOG_EXCEPTION_ERROR(dout, e, "Device "<< getName() <<" had a configuration failure, unable to process comm request");
         }
     }
     else
@@ -689,15 +690,20 @@ void DnpDevice::loadConfigData()
         throw MissingConfigException();
     }
 
+    static const std::map<std::string, Protocols::DNP::TimeOffset> TimeOffsets {
+        { "UTC",            Protocols::DNP::TimeOffset::Utc },
+        { "LOCAL",          Protocols::DNP::TimeOffset::Local },
+        { "LOCAL_NO_DST",   Protocols::DNP::TimeOffset::LocalStandard }};
+
     const unsigned internalRetries = deviceConfig->getLongValueFromKey(DNPStrings::internalRetries);
-    const bool useLocalTime = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::useLocalTime));
+    const auto timeOffset = getConfigDataEnum(deviceConfig, DNPStrings::timeOffset, TimeOffsets);
     const bool enableDnpTimesyncs = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableDnpTimesyncs));
     const bool omitTimeRequest = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::omitTimeRequest));
     const bool enableUnsolicitedClass1 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass1));
     const bool enableUnsolicitedClass2 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass2));
     const bool enableUnsolicitedClass3 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass3));
 
-    _dnp.setConfigData(internalRetries, useLocalTime, enableDnpTimesyncs, omitTimeRequest,
+    _dnp.setConfigData(internalRetries, timeOffset, enableDnpTimesyncs, omitTimeRequest,
                        enableUnsolicitedClass1, enableUnsolicitedClass2, enableUnsolicitedClass3);
 }
 

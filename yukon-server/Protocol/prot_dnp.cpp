@@ -81,14 +81,14 @@ bool DnpProtocol::setCommand( Command command, output_point &point )
     return setCommand(command);
 }
 
-void DnpProtocol::setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs,
+void DnpProtocol::setConfigData( unsigned internalRetries, TimeOffset timeOffset, bool enableDnpTimesyncs,
                                   bool omitTimeRequest, bool enableUnsolicitedClass1,
                                   bool enableUnsolicitedClass2, bool enableUnsolicitedClass3 )
 {
     _config.reset(
        new DNP::config_data(
           internalRetries,
-          useLocalTime,
+          timeOffset,
           enableDnpTimesyncs,
           omitTimeRequest,
           enableUnsolicitedClass1,
@@ -106,19 +106,7 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
         {
             case Command_WriteTime:
             {
-                auto time_now = std::make_unique<DNP::Time>(Time::T_TimeAndDate);
-                const CtiTime now = CtiTime::now();
-
-                if( _config->useLocalTime )
-                {
-                    const unsigned utc_seconds = now.seconds();
-                    const unsigned local_seconds = convertUtcSecondsToLocalSeconds(utc_seconds);
-                    time_now->setSeconds(local_seconds);
-                }
-                else
-                {
-                    time_now->setSeconds(now.seconds());
-                }
+                auto time_now = convertToDeviceTimeOffset(CtiTime::now());
 
                 _app_layer.setCommand(ApplicationLayer::RequestWrite, ObjectBlock::makeQuantityBlock(std::move(time_now)));
 
@@ -584,16 +572,11 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
             {
                 cto.reset(CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object))));
 
-                if( _config->useLocalTime )
-                {
-                    const unsigned local_seconds = cto->getSeconds();
-                    const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
-                    cto->setSeconds(utc_seconds);
-                }
+                CtiTime t = convertFromDeviceTimeOffset(*cto);
 
-                CtiTime t(cto->getSeconds());
+                cto->setSeconds(t.seconds());
 
-                CTILOG_WARN(dout, "found CTO object in stream for device \""<< _name <<"\" ("<< t <<", "<< cto->getMilliseconds() <<"ms)");
+                CTILOG_WARN(dout, "found CTO object in stream for device \""<< _name <<"\" ("<< t <<"."<< cto->getMilliseconds() <<")");
             }
             else if( ob->getGroup()     == DNP::Time::Group &&
                      ob->getVariation() == DNP::Time::T_TimeAndDate )
@@ -604,25 +587,19 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                 {
                     time_sent.reset(CTIDBG_new Time(*(reinterpret_cast<const DNP::Time *>(od.object))));
 
-                    if( _config->useLocalTime )
-                    {
-                        const unsigned local_seconds = time_sent->getSeconds();
-                        const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
-                        time_sent->setSeconds(utc_seconds);
-                    }
+                    CtiTime t = convertFromDeviceTimeOffset(*time_sent);
 
-                    string s;
+                    time_sent->setSeconds(t.seconds());
 
-                    CtiTime t(time_sent->getSeconds());
-                    CtiTime now;
-
-                    s = "Device time: ";
+                    string s = "Device time: ";
                     s.append(t.asString());
                     s.append(".");
                     s.append(CtiNumStr((int)time_sent->getMilliseconds()).zpad(3));
 
                     const int TimeDifferential  =   60;
                     const int ComplaintInterval = 3600;
+
+                    CtiTime now;
 
                     if( _nextTimeComplaint <= now
                         && ((t - TimeDifferential) > now || (t + TimeDifferential) < now) )
@@ -960,15 +937,34 @@ std::string DnpProtocol::getControlResultString( unsigned char result_status )
 }
 
 
-unsigned DnpProtocol::convertLocalSecondsToUtcSeconds( const unsigned seconds )
+int timeZoneId(const int incoming, TimeOffset deviceUtcOffset)
 {
+    if( deviceUtcOffset == TimeOffset::LocalStandard && incoming == TIME_ZONE_ID_DAYLIGHT )
+    {
+        return TIME_ZONE_ID_STANDARD;
+    }
+    return incoming;
+}
+
+
+CtiTime DnpProtocol::convertFromDeviceTimeOffset( const DNP::Time &dnpTime ) const
+{
+    time_t seconds = dnpTime.getSeconds();
+
+    if( _config->timeOffset == TimeOffset::Utc )
+    {
+        return seconds;
+    }
+
     _TIME_ZONE_INFORMATION tzinfo;
 
-    switch( GetTimeZoneInformation(&tzinfo) )
+    auto tzId = timeZoneId(GetTimeZoneInformation(&tzinfo), _config->timeOffset);
+
+    switch( tzId )
     {
         //  Bias is in minutes - subtract the difference to convert the local time to UTC
-        case TIME_ZONE_ID_STANDARD:     return (seconds + (tzinfo.Bias + tzinfo.StandardBias) * 60);
         case TIME_ZONE_ID_DAYLIGHT:     return (seconds + (tzinfo.Bias + tzinfo.DaylightBias) * 60);
+        case TIME_ZONE_ID_STANDARD:     return (seconds + (tzinfo.Bias + tzinfo.StandardBias) * 60);
 
         case TIME_ZONE_ID_INVALID:
         case TIME_ZONE_ID_UNKNOWN:
@@ -977,21 +973,34 @@ unsigned DnpProtocol::convertLocalSecondsToUtcSeconds( const unsigned seconds )
     }
 }
 
-unsigned DnpProtocol::convertUtcSecondsToLocalSeconds( const unsigned seconds )
+std::unique_ptr<DNP::Time> DnpProtocol::convertToDeviceTimeOffset( const CtiTime utc ) const
 {
+    auto t = std::make_unique<DNP::Time>(Time::T_TimeAndDate);
+
+    if( _config->timeOffset == TimeOffset::Utc )
+    {
+        t->setSeconds(utc.seconds());
+
+        return t;
+    }
+
     _TIME_ZONE_INFORMATION tzinfo;
 
-    switch( GetTimeZoneInformation(&tzinfo) )
+    auto tzId = timeZoneId(GetTimeZoneInformation(&tzinfo), _config->timeOffset);
+
+    switch( tzId )
     {
         //  Bias is in minutes - add the difference to convert UTC to local time
-        case TIME_ZONE_ID_STANDARD:     return (seconds - (tzinfo.Bias + tzinfo.StandardBias) * 60);
-        case TIME_ZONE_ID_DAYLIGHT:     return (seconds - (tzinfo.Bias + tzinfo.DaylightBias) * 60);
+        case TIME_ZONE_ID_DAYLIGHT:     t->setSeconds(utc.seconds() - (tzinfo.Bias + tzinfo.DaylightBias) * 60);  break;
+        case TIME_ZONE_ID_STANDARD:     t->setSeconds(utc.seconds() - (tzinfo.Bias + tzinfo.StandardBias) * 60);  break;
 
         case TIME_ZONE_ID_INVALID:
         case TIME_ZONE_ID_UNKNOWN:
         default:
-            return seconds;
+            t->setSeconds(utc.seconds());
     }
+
+    return t;
 }
 
 

@@ -633,9 +633,15 @@ YukonError_t CtiDeviceSingle::decode( CtiXfer &xfer, YukonError_t status )
     }
     catch( MissingConfigException &e )
     {
-        CTILOG_ERROR( dout, "DNP configuration missing for DNP device \"" << getName() << "\"" );
+        CTILOG_ERROR(dout, "Device configuration missing for device \"" << getName() << "\"");
 
         retval = ClientErrors::MissingConfig;
+    }
+    catch( const Cti::Devices::InvalidConfigDataException& e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Invalid device configuration for device \"" << getName() << "\"");
+
+        retval = ClientErrors::InvalidConfigData;
     }
 
     return retval;

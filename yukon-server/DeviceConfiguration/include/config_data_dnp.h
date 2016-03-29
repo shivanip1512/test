@@ -16,7 +16,7 @@ public:
     static const std::string enableUnsolicitedClass2;
     static const std::string enableUnsolicitedClass3;
     static const std::string enableDnpTimesyncs;
-    static const std::string useLocalTime;
+    static const std::string timeOffset;
 };
 
 }

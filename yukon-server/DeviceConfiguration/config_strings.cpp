@@ -207,7 +207,7 @@ const string DNPStrings::enableUnsolicitedClass1 = "enableUnsolicitedMessagesCla
 const string DNPStrings::enableUnsolicitedClass2 = "enableUnsolicitedMessagesClass2";
 const string DNPStrings::enableUnsolicitedClass3 = "enableUnsolicitedMessagesClass3";
 const string DNPStrings::enableDnpTimesyncs = "enableDnpTimesyncs";
-const string DNPStrings::useLocalTime = "localTime";
+const string DNPStrings::timeOffset = "timeOffset";
 
 /* RFN */
 const string RfnStrings::displayItem01 = "displayItem1";

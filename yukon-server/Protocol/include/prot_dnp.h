@@ -51,8 +51,8 @@ class IM_EX_PROT DnpProtocol : public Interface
     std::string pointSummary(unsigned points);
     std::string pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points);
 
-    unsigned convertLocalSecondsToUtcSeconds( const unsigned seconds );
-    unsigned convertUtcSecondsToLocalSeconds( const unsigned seconds );
+    CtiTime convertFromDeviceTimeOffset(const DNP::Time &dnpTime) const;
+    std::unique_ptr<DNP::Time> convertToDeviceTimeOffset(const CtiTime utc) const;
 
 public:
 
@@ -65,7 +65,7 @@ public:
     bool setCommand( Command command );
     bool setCommand( Command command, output_point &point );
 
-    void setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs,
+    void setConfigData( unsigned internalRetries, DNP::TimeOffset timeOffset, bool enableDnpTimesyncs,
                         bool omitTimeRequest, bool enableUnsolicitedClass1,
                         bool enableUnsolicitedClass2, bool enableUnsolicitedClass3 );
 
