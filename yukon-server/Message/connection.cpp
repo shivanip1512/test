@@ -352,6 +352,14 @@ void CtiConnection::onMessage( const cms::Message* message )
  */
 void CtiConnection::onAdvisoryMessage( const cms::Message* message )
 {
+    /* YUK-15137: 
+     * If _closed is set, skip everything and don't attempt to get _advisoryMux.
+     */
+    if( _closed )
+    {
+        return;
+    }
+
     if( message->getCMSType() != "Advisory" )
     {
         CTILOG_ERROR(dout, who() << " - received unexpected message: \"" << message->getCMSType() << "\" is not \"Advisory\".");
