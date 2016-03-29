@@ -2,9 +2,10 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:includeScript link="/resources/js/pages/yukon.tools.commander.js"/>
-<cti:msgScope paths="modules.tools.commander,yukon.common">
+<cti:msgScope paths="modules.tools.commander,yukon.common,yukon.web.input.error">
 <script>
 $(function() {
     var spinner = $('#commandPriority').spinner();
@@ -31,10 +32,19 @@ $(function() {
     <cti:dataGridCell>
         <tags:nameValueContainer2>
             <tags:nameValue2
-                nameKey="modules.tools.commander.priority">
+                nameKey=".priority">
                 <input type="number" id="commandPriority" name="commandPriority"
                         value="${priority}" />
-                <div class="warning dn">Priority must be between 1 and 14.</div>
+                <cti:msg2 key=".priority" var="cmdPriority"/>
+                <cti:list var="arguments">
+                        <cti:item value="${cmdPriority}" />
+                        <cti:item value="${minCmdPriority}"/>
+                        <cti:item value="${maxCmdPriority}"/>
+                </cti:list>
+                             
+                <div class="warning dn">
+                <i:inline key=".outOfRangeInt" arguments="${arguments}"/>
+                   </div>
             </tags:nameValue2> 
             <tags:nameValue2 nameKey=".queue_commands">
                 <label>
