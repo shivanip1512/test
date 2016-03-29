@@ -14,63 +14,64 @@ class RowReader;
 
 class CapControlPao
 {
-    private:
-        int _paoId;
-        std::string _paoCategory;
-        std::string _paoClass;
-        std::string _paoName;
-        std::string _paoType;
-        std::string _paoDescription;
-        bool _disableFlag;
+public:
 
-        long    _disabledStatePointId;
-        Cti::CapControl::PointIdVector _pointIds;
+    CapControlPao();
+    CapControlPao(Cti::RowReader& rdr);
+    ~CapControlPao();
 
-        CtiCCOperationStats     _operationStats;
-        CtiCCConfirmationStats  _confirmationStats;
+    int getPaoId() const;
+    void setPaoId(int paoId);
 
-    public:
+    const std::string& getPaoCategory() const;
+    void setPaoCategory(const std::string& paoCategory);
 
-        CapControlPao();
-        CapControlPao(Cti::RowReader& rdr);
-        ~CapControlPao();
+    const std::string& getPaoClass() const;
+    void setPaoClass(const std::string& paoClass);
 
-        int getPaoId() const;
-        void setPaoId(int paoId);
+    const std::string getPaoName() const;
+    void setPaoName(const std::string& paoName);
 
-        const std::string& getPaoCategory() const;
-        void setPaoCategory(const std::string& paoCategory);
+    const std::string& getPaoType() const;
+    void setPaoType(const std::string& paoType);
 
-        const std::string& getPaoClass() const;
-        void setPaoClass(const std::string& paoClass);
+    const std::string& getPaoDescription() const;
+    void setPaoDescription(const std::string& description);
 
-        const std::string getPaoName() const;
-        void setPaoName(const std::string& paoName);
+    bool getDisableFlag() const;
+    void setDisableFlag(bool disableFlag, int priority = 7);
 
-        const std::string& getPaoType() const;
-        void setPaoType(const std::string& paoType);
+    CapControlPao& operator=(const CapControlPao& right);
 
-        const std::string& getPaoDescription() const;
-        void setPaoDescription(const std::string& description);
+    void restore(Cti::RowReader& rdr);
 
-        bool getDisableFlag() const;
-        void setDisableFlag(bool disableFlag, int priority = 7);
+    bool operator == (const CapControlPao& right) const;
+    bool operator != (const CapControlPao& right) const;
 
-        CapControlPao& operator=(const CapControlPao& right);
+    void setDisabledStatePointId( const long newId, bool sendDisablePointMessage = false );
+    long getDisabledStatePointId() const;
 
-        void restore(Cti::RowReader& rdr);
+    Cti::CapControl::PointIdVector* getPointIds() {return &_pointIds;}
+    void removePointId(long pId);
+    void addPointId(const long ID);
 
-        bool operator == (const CapControlPao& right) const;
-        bool operator != (const CapControlPao& right) const;
+    CtiCCOperationStats &    getOperationStats();
+    CtiCCConfirmationStats & getConfirmationStats();
 
-        void setDisabledStatePointId( const long newId, bool sendDisablePointMessage = false );
-        long getDisabledStatePointId() const;
+private:
 
-        Cti::CapControl::PointIdVector* getPointIds() {return &_pointIds;}
-        void removePointId(long pId);
-        void addPointId(const long ID);
+    int _paoId;
+    std::string _paoCategory;
+    std::string _paoClass;
+    std::string _paoName;
+    std::string _paoType;
+    std::string _paoDescription;
+    bool _disableFlag;
 
-        CtiCCOperationStats &    getOperationStats();
-        CtiCCConfirmationStats & getConfirmationStats();
+    long    _disabledStatePointId;
+    Cti::CapControl::PointIdVector _pointIds;
+
+    CtiCCOperationStats     _operationStats;
+    CtiCCConfirmationStats  _confirmationStats;
 };
 
