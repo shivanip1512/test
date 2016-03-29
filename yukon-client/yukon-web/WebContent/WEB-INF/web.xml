@@ -34,7 +34,7 @@
     <context-param>
         <param-name>javax.faces.CONFIG_FILES</param-name>
         <param-value>
-            /WEB-INF/faces-capcontrol-config.xml,
+            /WEB-INF/faces-capcontrol-config.xml
         </param-value>
     </context-param>
 

@@ -1695,8 +1695,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         FacesMessage fm = new FacesMessage();
         try {
             //go to the next page
-            int itemId = Integer.valueOf((String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-                .get("paoID"));
+            ExternalContext externalcontext = FacesContext.getCurrentInstance().getExternalContext();
+            int itemId = Integer.valueOf((String) externalcontext.getRequestParameterMap().get("paoID"));
             LiteYukonPAObject pao = dbCache.getAllPaosMap().get(itemId);
 
             String location;
@@ -1708,8 +1708,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);
-            FacesContext.getCurrentInstance().getExternalContext().redirect(location);            
+            CBCNavigationUtil.redirect(location,session);
+            FacesContext.getCurrentInstance().getExternalContext().redirect(
+                                                                            externalcontext.getRequestContextPath() + location);
             FacesContext.getCurrentInstance().responseComplete();            
         } catch (IOException e) {
             fm.setDetail("ERROR - Couldn't redirect. PointForm:paoClick. " + e.getMessage());
