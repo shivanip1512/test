@@ -174,7 +174,7 @@ CtiPointAccumulator *makeDemandAccumulatorPoint(long deviceid, long pointid, int
     return accum;
 }
 
-CtiPointAnalog *makeAnalogPoint(unsigned long deviceid, long pointid, int offset)
+CtiPointAnalog *makeAnalogPoint(long deviceid, long pointid, int offset)
 {
     typedef Cti::Test::StringRow<20> AnalogRow;
     typedef Cti::Test::TestReader<AnalogRow> AnalogReader;
@@ -239,7 +239,7 @@ CtiPointStatus *makeStatusPoint(long deviceid, long pointid, int offset)
     return status;
 }
 
-CtiPointStatus *makeControlPoint(unsigned long deviceid, long pointid, int offset, int controlOffset, CtiControlType_t controlType)
+CtiPointStatus *makeControlPoint(long deviceid, long pointid, int offset, int controlOffset, CtiControlType_t controlType)
 {
     typedef Cti::Test::StringRow<20> StatusRow;
     typedef Cti::Test::TestReader<StatusRow> StatusReader;
@@ -326,7 +326,7 @@ struct DevicePointHelper
             pointId += p.second.size();
         }
 
-        const unsigned long deviceId = reinterpret_cast<unsigned long>( &points );
+        const long deviceId = reinterpret_cast<unsigned long>( (&points) )/4;
 
         switch( type )
         {

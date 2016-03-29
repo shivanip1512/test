@@ -30,6 +30,10 @@ DlcCommand::emetcon_request_ptr Lcr3102HourlyDataLogCommand::makeRequest(const C
     {
         Bytes payload;
 
+        if( _utcSeconds > 2 ^ 32 )
+        {
+            CTILOG_WARN( dout, "request time exceeds protocol payload limits" );
+        }
         payload.push_back(_utcSeconds >> 24);
         payload.push_back(_utcSeconds >> 16);
         payload.push_back(_utcSeconds >> 8);
