@@ -3,10 +3,16 @@ package com.cannontech.dr.rfn.model;
 import java.io.Serializable;
 
 public class SimulatorSettings implements Serializable{
+    
+    //lcr data simulator
     private int lcr6200serialFrom;
     private int lcr6200serialTo;
     private int lcr6600serialFrom;
     private int lcr6600serialTo;
+    
+    //meter data simulator
+    private String paoType;
+    
     //% of duplicates to generate
     private int percentOfDuplicates;
     
@@ -18,8 +24,14 @@ public class SimulatorSettings implements Serializable{
         this.percentOfDuplicates =  percentOfDuplicates;
     }
     
+    public SimulatorSettings(String paoType, int percentOfDuplicates) {
+        this.paoType = paoType;
+        this.percentOfDuplicates =  percentOfDuplicates;
+    }
+    
     public SimulatorSettings() {
     }
+    
     public int getLcr6200serialFrom() {
         return lcr6200serialFrom;
     }
@@ -49,5 +61,13 @@ public class SimulatorSettings implements Serializable{
     }
     public void setPercentOfDuplicates(int percentOfDuplicates) {
         this.percentOfDuplicates = percentOfDuplicates;
+    }
+
+    public String getPaoType() {
+        return paoType;
+    }
+
+    public void setPaoType(String paoType) {
+        this.paoType = paoType;
     }
 }

@@ -1,16 +1,16 @@
 package com.cannontech.simulators.message.response;
 
-import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
+import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 
 public class RfnLcrSimulatorStatusResponse extends SimulatorResponseBase {
 
-    private RfnLcrDataSimulatorStatus allDevicesStatus;
-    private RfnLcrDataSimulatorStatus statusByRange;
+    private RfnDataSimulatorStatus allDevicesStatus;
+    private RfnDataSimulatorStatus statusByRange;
     private SimulatorSettings settings;
 
-    public RfnLcrSimulatorStatusResponse(RfnLcrDataSimulatorStatus allDevicesStatus,
-            RfnLcrDataSimulatorStatus statusByRange, SimulatorSettings settings) {
+    public RfnLcrSimulatorStatusResponse(RfnDataSimulatorStatus allDevicesStatus,
+            RfnDataSimulatorStatus statusByRange, SimulatorSettings settings) {
         this.statusByRange = statusByRange;
         this.allDevicesStatus = allDevicesStatus;
         this.settings = settings;
@@ -20,15 +20,15 @@ public class RfnLcrSimulatorStatusResponse extends SimulatorResponseBase {
         return settings;
     }
 
-    public RfnLcrDataSimulatorStatus getStatusByRange() {
+    public RfnDataSimulatorStatus getStatusByRange() {
         return statusByRange;
     }
 
-    public RfnLcrDataSimulatorStatus getAllDevicesStatus() {
+    public RfnDataSimulatorStatus getAllDevicesStatus() {
         return allDevicesStatus;
     }
 
-    public void setAllDevicesStatus(RfnLcrDataSimulatorStatus allDevicesStatus) {
+    public void setAllDevicesStatus(RfnDataSimulatorStatus allDevicesStatus) {
         this.allDevicesStatus = allDevicesStatus;
     }
 }

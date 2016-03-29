@@ -1,6 +1,6 @@
 package com.cannontech.dr.rfn.service;
 
-import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
+import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 
 /**
@@ -37,12 +37,12 @@ public interface RfnLcrDataSimulatorService {
     /**
      * Get the LCR data simulator status if the simulator has been running.
      */
-    RfnLcrDataSimulatorStatus getStatusByRange();
+    RfnDataSimulatorStatus getStatusByRange();
     
     /**
      * Get the LCR data simulator status for existing devices if the simulator has been running.
      */
-    RfnLcrDataSimulatorStatus getAllDevicesStatus();
+    RfnDataSimulatorStatus getAllDevicesStatus();
 
     /**
      * Send message for LCR devices.

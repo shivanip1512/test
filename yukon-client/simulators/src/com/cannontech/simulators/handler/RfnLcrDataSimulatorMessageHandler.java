@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
+import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.simulators.SimulatorType;
@@ -39,8 +39,8 @@ public class RfnLcrDataSimulatorMessageHandler extends SimulatorMessageHandler {
                 return new SimulatorResponseBase(true);
             } else if (simulatorRequest instanceof RfnLcrSimulatorStatusRequest) {
                 SimulatorSettings settings = rfnLcrDataSimulatorService.getCurrentSettings();
-                RfnLcrDataSimulatorStatus allDevicesStatus = rfnLcrDataSimulatorService.getAllDevicesStatus();
-                RfnLcrDataSimulatorStatus statusByRange = rfnLcrDataSimulatorService.getStatusByRange();
+                RfnDataSimulatorStatus allDevicesStatus = rfnLcrDataSimulatorService.getAllDevicesStatus();
+                RfnDataSimulatorStatus statusByRange = rfnLcrDataSimulatorService.getStatusByRange();
                 return new RfnLcrSimulatorStatusResponse(allDevicesStatus, statusByRange, settings);
             } else if (simulatorRequest instanceof RfnLcrAllDeviceSimulatorStartRequest) {
                 RfnLcrAllDeviceSimulatorStartRequest request = (RfnLcrAllDeviceSimulatorStartRequest) simulatorRequest;

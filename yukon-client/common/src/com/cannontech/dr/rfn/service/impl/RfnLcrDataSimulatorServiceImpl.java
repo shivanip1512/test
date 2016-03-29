@@ -4,14 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.jms.ConnectionFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -24,7 +20,6 @@ import org.openexi.proc.common.EXIOptionsException;
 import org.openexi.sax.TransmogrifierException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -36,7 +31,7 @@ import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
-import com.cannontech.dr.rfn.model.RfnLcrDataSimulatorStatus;
+import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnLcrReadSimulatorDeviceParameters;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.jaxb.DRReport;
@@ -55,14 +50,13 @@ import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
-public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorService {
+public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  implements RfnLcrDataSimulatorService {
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
 
     private final static String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService exiParsingService;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     
     private static final JAXBContext jaxbContext = initJaxbContext();
@@ -71,27 +65,9 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     private SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> rangeDevices = HashMultimap.create();
     private SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> allDevices = HashMultimap.create();
     
-    private RfnLcrDataSimulatorStatus rangeDevicesStatus = new RfnLcrDataSimulatorStatus();
-    private RfnLcrDataSimulatorStatus allDevicesStatus = new RfnLcrDataSimulatorStatus();
-        
-    private boolean isScheduled = false;
-    private SimulatorSettings settings;
-    private JmsTemplate jmsTemplate;
-    
-    private static final int MINUTES_IN_A_DAY = 1440;
-    
-    private final Random randomizer = new Random();
-    private static final int RANDOM_MIN = 1;
-    private static final int RANDOM_MAX = 100;
-    
-    @PostConstruct
-    public void initialize() {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(false);
-        jmsTemplate.setDeliveryPersistent(false);
-        jmsTemplate.setPubSubDomain(false);
-    }
-    
+    private RfnDataSimulatorStatus rangeDevicesStatus = new RfnDataSimulatorStatus();
+    private RfnDataSimulatorStatus allDevicesStatus = new RfnDataSimulatorStatus();
+            
     static JAXBContext initJaxbContext() {
         try {
             return JAXBContext.newInstance("com.cannontech.dr.rfn.model.jaxb");
@@ -99,46 +75,20 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             throw new Error(e);
         }
     }
-  
-    /**
-     * Setup a schedule to run every 1 minute.
-     * In a new thread send read request for this minute.
-     */
-    private void schedule() {
-        if (!isScheduled) {
-            isScheduled = true;
-            executor.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    // creating a new thread in case the sending read requests didn't complete in 1 minute, which probably
-                    // will not happen.
-                    Thread thread = new Thread() {
-                        @Override
-                        public void run() {
-                            try {
-                                DateTime now = new DateTime();
-                                int minuteOfTheDay = now.getMinuteOfDay();
-                                sendReadRequests(rangeDevices.get(minuteOfTheDay), rangeDevicesStatus);
-                                sendReadRequests(allDevices.get(minuteOfTheDay), allDevicesStatus);
-                            } catch (Exception e) {
-                                log.error("Error occurred during running of data simulator.", e);
-                            }
-                        }
-                    };
-                    executor.execute(thread);
-                }
-            }, 0, 1, TimeUnit.MINUTES);
-            log.info("Scheduled a task to send LCR read requests once a minute.");
-        }
+    
+    @Override
+    public void execute(int minuteOfTheDay) {
+        sendReadRequests(rangeDevices.get(minuteOfTheDay), rangeDevicesStatus);
+        sendReadRequests(allDevices.get(minuteOfTheDay), allDevicesStatus);
     }
-        
+     
     /**
      * Sends read requests.
      * 
      * @param devices to send the read request to
      * @param status to keep track of the result
      */
-    private void sendReadRequests(Set<RfnLcrReadSimulatorDeviceParameters> devices, RfnLcrDataSimulatorStatus status) {
+    private void sendReadRequests(Set<RfnLcrReadSimulatorDeviceParameters> devices, RfnDataSimulatorStatus status) {
         if (status.isRunning().get()) {
             if (!devices.isEmpty()) {
                 log.debug("Sending read request to " + devices.size() +" devices.");
@@ -160,12 +110,8 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * @param devices - minute of the day to send a request at/list of devices to send a read request to
      */
     private void addDevice(RfnIdentifier rfnIdentifier, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices){
-        int minuteOfTheDay = Integer.parseInt(rfnIdentifier.getSensorSerialNumber()) % MINUTES_IN_A_DAY;
-        
-        // debug - inject the data next minute
-       //DateTime now = new DateTime();
-       //int minuteOfTheDay = now.getMinuteOfDay() + 1;
-        
+        int minuteOfTheDay = getMinuteOfTheDay(rfnIdentifier.getSensorSerialNumber());
+                
         RfnLcrReadSimulatorDeviceParameters parameters =
                 new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60);
         devices.put(minuteOfTheDay,  parameters);
@@ -175,7 +121,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     public synchronized void sendMessagesToAllDevices(SimulatorSettings settings) {
         log.debug("sendMessagesToAllDevices");
         if (!allDevicesStatus.isRunning().get()) {
-            allDevicesStatus = new RfnLcrDataSimulatorStatus();
+            allDevicesStatus = new RfnDataSimulatorStatus();
             allDevicesStatus.setRunning(new AtomicBoolean(true));
             allDevicesStatus.setStartTime(new Instant());
             if(this.settings == null){
@@ -199,7 +145,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     public synchronized void sendMessagesByRange(SimulatorSettings settings) {
         log.debug("sendMessagesByRange");
         if (!rangeDevicesStatus.isRunning().get()) {
-            rangeDevicesStatus = new RfnLcrDataSimulatorStatus();
+            rangeDevicesStatus = new RfnDataSimulatorStatus();
             rangeDevicesStatus.setRunning(new AtomicBoolean(true));
             rangeDevicesStatus.setStartTime(new Instant());
             if(this.settings == null){
@@ -243,7 +189,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         stopSimulator(allDevicesStatus, allDevices);
     }
     
-    private void stopSimulator(RfnLcrDataSimulatorStatus status, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices){
+    private void stopSimulator(RfnDataSimulatorStatus status, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices){
         status.setStopTime(new Instant());
         status.setRunning(new AtomicBoolean(false));
         devices.clear();  
@@ -253,12 +199,12 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
     }
     
     @Override
-    public RfnLcrDataSimulatorStatus getStatusByRange() {
+    public RfnDataSimulatorStatus getStatusByRange() {
         return rangeDevicesStatus;
     }
 
     @Override
-    public RfnLcrDataSimulatorStatus getAllDevicesStatus() {
+    public RfnDataSimulatorStatus getAllDevicesStatus() {
         return allDevicesStatus;
     }
 
@@ -276,7 +222,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
             }
         }
     }
-
+    
     @Override
     public SimulatorSettings getCurrentSettings() {
         return settings;
@@ -288,7 +234,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
      * @param deviceParameters Specifies the parameters of the device that generated the request.
      * @param status - tracks success and failure
      */
-    private void simulateLcrReadRequest(RfnLcrReadSimulatorDeviceParameters deviceParameters, RfnLcrDataSimulatorStatus status) {
+    private void simulateLcrReadRequest(RfnLcrReadSimulatorDeviceParameters deviceParameters, RfnDataSimulatorStatus status) {
         try {
             RfnLcrReadingArchiveRequest readArchiveRequest = createReadArchiveRequest(deviceParameters);
             jmsTemplate.convertAndSend(lcrReadingArchiveRequestQueueName, readArchiveRequest);
@@ -512,33 +458,5 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         relay.setAmpType((short) 0);
         relay.getIntervalData().add(intervalData);
         return relay;
-    }
-    
-    /**
-     * Example:
-     * Existing devices see approximately 10% duplicates.
-     * Generate random number between 1 and 100.
-     * If the number is less then 10 or equals to 10 returns true.
-     * If true is returned a duplicate read archive request will be generated.
-     */
-    private boolean needsDuplicate() {
-        //settings can be null if cancel was called right before this method
-        if (settings == null || settings.getPercentOfDuplicates() < 1) {
-            return false;
-        }
-        int number = generateRandomNumber(RANDOM_MIN, RANDOM_MAX);
-        if (number > settings.getPercentOfDuplicates()) {
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * Generates random number for range.
-     */
-    private int generateRandomNumber(int min, int max) {
-        // nextInt excludes the top value so we have to add 1 to include the top value
-        int randomNum = randomizer.nextInt((max - min) + 1) + min;
-        return randomNum;
     }
 }

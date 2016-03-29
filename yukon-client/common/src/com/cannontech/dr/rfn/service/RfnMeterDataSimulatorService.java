@@ -1,11 +1,7 @@
 package com.cannontech.dr.rfn.service;
 
-import java.util.List;
-
-import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMapper.PointMapper;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.rfn.model.RfnDevice;
-import com.google.common.collect.Multimap;
+import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
+import com.cannontech.dr.rfn.model.SimulatorSettings;
 
 /**
  * This is a service that simulates a network of RFN Meters for use in
@@ -18,18 +14,25 @@ import com.google.common.collect.Multimap;
 public interface RfnMeterDataSimulatorService {
 
     /**
-     * Starts the RFN Meter data simulator.
-     * @param rfnDeviceList - List of RFN devices for which messages have to be
-     *            send.
-     * @param pointMapperMap - Point Mapping Map to identify the point Mapping
-     *            for a paoType.
-     */
-    void sendRfnMeterMessages(List<RfnDevice> rfnDeviceList,
-            Multimap<PaoType, PointMapper> pointMapperMap);
-
-    /**
      * Stops the RFN Meter data simulator.
      */
     void stopSimulator();
 
+    /**
+     * Starts the RFN Meter data simulator.
+     */
+    void startSimulator(SimulatorSettings settings);
+
+    /**
+     * Get the current settings if the simulator has been running. Otherwise, null is returned. If the
+     * simulator was previously run (since web server startup) but is not running, this will return the
+     * settings previously used.
+     */
+    SimulatorSettings getCurrentSettings();
+    
+    
+    /**
+     * Get data simulator status for existing devices if the simulator has been running.
+     */
+    RfnDataSimulatorStatus getStatus();
 }

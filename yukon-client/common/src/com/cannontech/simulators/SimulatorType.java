@@ -6,6 +6,7 @@ package com.cannontech.simulators;
 public enum SimulatorType {
     AMR_CREATION, 
     GATEWAY, 
-    RFN_LCR
+    RFN_LCR,
+    RFN_METER
     ;
 }

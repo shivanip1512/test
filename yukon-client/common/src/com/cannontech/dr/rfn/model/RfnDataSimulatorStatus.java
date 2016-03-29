@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.joda.time.Instant;
 
-public class RfnLcrDataSimulatorStatus implements Serializable{
+public class RfnDataSimulatorStatus implements Serializable{
     
     private volatile Instant startTime;
     private volatile Instant stopTime;
