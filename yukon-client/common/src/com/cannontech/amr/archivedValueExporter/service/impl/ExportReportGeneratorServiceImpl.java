@@ -92,7 +92,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
 
     private static String previewUOMValueKey = baseKey + "previewUOMValue";
-    private static String previewStateTextKey = baseKey + "previewStateText";
+    private static String previewPointStateKey = baseKey + "previewPointStateKey";
     private static String previewMeterNumberKey = baseKey + "previewMeterNumber";
     private static String previewMeterNameKey = baseKey + "previewMeterName";
     private static String previewMeterAddressKey = baseKey + "previewMeterAddress";
@@ -424,7 +424,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 return StringUtils.isEmpty(paoData.getPaoIdentifier().getPaoType().getPaoTypeName()) ? ""
                 : paoData.getPaoIdentifier().getPaoType().getPaoTypeName();
             case POINT_STATE:
-                return getStateText(userContext, pao, pointValueQualityHolder);
+                return getPointState(userContext, pao, pointValueQualityHolder);
             case ATTRIBUTE:
                 switch (exportField.getAttributeField()) {
                     case UNIT_OF_MEASURE:
@@ -643,16 +643,18 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     }
 
     /**
-     * Gets the State Text. Returns "" if the quality was not found.
+     * Gets the state associated with the point's value.
+     * Returns raw value if the point is not a status point, the state group is the System state group, OR if
+     * no state is found for the point's value.
      */
-    private String getStateText(YukonUserContext userContext, YukonPao pao,
+    private String getPointState(YukonUserContext userContext, YukonPao pao,
             PointValueQualityHolder pointValueQualityHolder) {
         if (pointValueQualityHolder == null) {
             return StringUtils.EMPTY;
         }
 
         if (pao.getPaoIdentifier().getPaoId() == fakePaoId) {
-            return getPreviewStateText(userContext);
+            return getPreviewPointState(userContext);
         }
 
         if (pointValueQualityHolder.getPointType().isStatus()) {
@@ -765,8 +767,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * Gets default (preview) State Text
      */
 
-    private String getPreviewStateText(YukonUserContext userContext) {
+    private String getPreviewPointState(YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        return messageSourceAccessor.getMessage(previewStateTextKey);
+        return messageSourceAccessor.getMessage(previewPointStateKey);
     }
 }
