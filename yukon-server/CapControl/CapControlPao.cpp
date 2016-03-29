@@ -3,6 +3,7 @@
 #include "CapControlPao.h"
 #include "capcontroller.h"
 #include "ccutil.h"
+#include "resolvers.h"
 
 using Cti::CapControl::PointIdVector;
 using Cti::CapControl::deserializeFlag;
@@ -122,10 +123,10 @@ void CapControlPao::setDisableFlag(bool disableFlag, int priority)
         
         if ( _disabledStatePointId != 0 )
         {
-            CtiPointDataMsg* pMsg = new CtiPointDataMsg(
-                                _disabledStatePointId, _disableFlag ? 1.0 : 0.0 ); // NormalQuality, StatusPointType
-            pMsg->setMessagePriority(priority);
-            CtiCapController::getInstance()->sendMessageToDispatch(pMsg, CALLSITE);
+            auto pMsg = std::make_unique<CtiPointDataMsg>( _disabledStatePointId, _disableFlag ? 1.0 : 0.0 );   // NormalQuality, StatusPointType
+            pMsg->setMessagePriority( priority );
+
+            CtiCapController::getInstance()->sendMessageToDispatch( pMsg.release(), CALLSITE );
         }
     }
 }
@@ -154,11 +155,11 @@ void CapControlPao::setDisabledStatePointId( const long newId, bool sendDisableP
     _disabledStatePointId = newId;
     if ( sendDisablePointMessage )
     {
-        CtiCapController::getInstance()->sendMessageToDispatch( 
-            new CtiPointDataMsg(_disabledStatePointId, _disableFlag ? 1.0 : 0.0), CALLSITE);
+        auto pMsg = std::make_unique<CtiPointDataMsg>( _disabledStatePointId, _disableFlag ? 1.0 : 0.0 );   // NormalQuality, StatusPointType
+
+        CtiCapController::getInstance()->sendMessageToDispatch( pMsg.release(), CALLSITE );
     }
 }
-
 
 long CapControlPao::getDisabledStatePointId() const
 {
@@ -189,5 +190,81 @@ CtiCCOperationStats & CapControlPao::getOperationStats()
 CtiCCConfirmationStats & CapControlPao::getConfirmationStats()
 {
     return _confirmationStats;
+}
+
+void CapControlPao::assignPoint( Cti::RowReader& rdr )
+{
+    long pointId,
+         pointOffset;
+
+    std::string pointTypeStr;
+
+    rdr["POINTID"]     >> pointId;
+    rdr["POINTOFFSET"] >> pointOffset;
+    rdr["POINTTYPE"]   >> pointTypeStr;
+
+    CtiPointType_t pointType = resolvePointType( pointTypeStr );
+
+    if ( ! ( assignCommonPoint( pointId, pointOffset, pointType ) ||
+             assignOtherPoint( pointId, pointOffset, pointType ) ) )
+    {
+        Cti::FormattedList  logMessage;
+
+        logMessage << "Undefined point for (" << getPaoType() << "): " << getPaoName();
+        logMessage.add("Type")   << pointTypeStr;
+        logMessage.add("Offset") << pointOffset;
+        logMessage.add("ID")     << pointId;
+
+        CTILOG_INFO( dout, logMessage );
+    }
+}
+
+bool CapControlPao::assignCommonPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType )
+{
+    const std::size_t initialSize = getPointIds()->size();
+
+    switch ( pointType )
+    {
+        case StatusPointType:
+        {
+            if ( pointOffset == -1 )
+            {
+                return true;        // tag point - ignore it
+            }
+            else if ( pointOffset == Cti::CapControl::Offset_PaoIsDisabled )
+            {
+                setDisabledStatePointId( pointID, _paoId );
+                addPointId( pointID );
+            }
+            break;
+        }
+        case AnalogPointType:
+        {
+            if ( pointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
+                 pointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
+            {
+                if ( getOperationStats().setSuccessPercentPointId( pointID, pointOffset ) )
+                {
+                    addPointId( pointID );
+                }
+            }
+            else if ( pointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
+                      pointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
+            {
+                if ( getConfirmationStats().setSuccessPercentPointId( pointID, pointOffset ) )
+                {
+                    addPointId( pointID );
+                }
+            }
+            break;
+        }
+    }
+
+    return getPointIds()->size() > initialSize;
+}
+
+bool CapControlPao::assignOtherPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType )
+{
+    return false;
 }
 

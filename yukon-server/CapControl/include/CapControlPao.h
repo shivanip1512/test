@@ -4,6 +4,7 @@
 #include "cctypes.h"
 #include "ccOperationStats.h"
 #include "ccConfirmationStats.h"
+#include "pointtypes.h"
 
 
 namespace Cti
@@ -52,11 +53,17 @@ public:
     CtiCCOperationStats &    getOperationStats();
     CtiCCConfirmationStats & getConfirmationStats();
 
+    void assignPoint( Cti::RowReader& rdr );
+
     void restore( Cti::RowReader& rdr );
 
     CapControlPao& operator=(const CapControlPao& right);
 
 private:
+
+    bool assignCommonPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
+
+    virtual bool assignOtherPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
 
     int _paoId;
     std::string _paoCategory;

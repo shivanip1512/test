@@ -4166,22 +4166,31 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
              }
         }
         {
-            static const string sqlNoID =  "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "
-                                           "FROM capcontrolarea CCA, point PT "
-                                           "WHERE CCA.areaid = PT.paobjectid";
+            static const std::string sql = 
+                "SELECT "
+                    "P.POINTID, "
+                    "P.POINTTYPE, "
+                    "P.PAObjectID, "
+                    "P.POINTOFFSET "
+                "FROM "
+                    "POINT P "
+                        "JOIN CAPCONTROLAREA A "
+                            "ON P.PAObjectID = A.AreaID";
+
+            static const std::string sqlID = sql +
+                " WHERE P.PAObjectID = ?";
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            Cti::Database::DatabaseReader     rdr( connection );
 
-            if( areaId > 0 )
+            if ( areaId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " AND CCA.areaId = ?");
-                rdr.setCommandText(sqlID);
+                rdr.setCommandText( sqlID );
                 rdr << areaId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
@@ -4195,18 +4204,14 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             {
                 long currentAreaId;
 
-                rdr["paobjectid"] >> currentAreaId;
-                CtiCCAreaPtr currentArea = findInMap(currentAreaId, paobject_area_map);
-                if (!currentArea)
-                {
-                    continue;
-                }
+                rdr["PAObjectID"] >> currentAreaId;
 
-                if ( !rdr["pointid"].isNull() )
+                if ( CtiCCAreaPtr currentArea = findInMap( currentAreaId, paobject_area_map ) )
                 {
                     long tempPointId = -1000;
                     long tempPointOffset = -1000;
                     string tempPointType = "(none)";
+
                     rdr["pointid"] >> tempPointId;
                     rdr["pointoffset"] >> tempPointOffset;
                     rdr["pointtype"] >> tempPointType;
