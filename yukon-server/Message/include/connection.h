@@ -52,6 +52,10 @@ protected:
     CtiConnection( const std::string& title, Que_t *inQ = NULL, int termSeconds = 3 );
     virtual ~CtiConnection();  //  definition in cpp file to isolate use of cms types
 
+    // atomic<bool> is not copyable, so make sure we don't try
+    CtiConnection( const CtiConnection& other ) = delete; // non construction-copyable
+    CtiConnection& operator=( const CtiConnection& ) = delete; // non copyable
+
     std::string _name;
     std::string _peerName;
     const std::string _title;
@@ -92,9 +96,10 @@ protected:
             UINT _dontReconnect      : 1;
             UINT _localQueueAlloc    : 1;
             UINT _bConnected         : 1;
-            UINT _closed             : 1;
         };
     };
+
+    std::atomic<bool> _closed;
 
     std::atomic<time_t> _sendStart { 0 };
 

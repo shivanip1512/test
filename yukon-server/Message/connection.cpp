@@ -31,6 +31,7 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     _inQueue(inQ),
     _termDuration( Chrono::seconds(termSeconds) ),
     _flag(0),
+    _closed(false),
     _title(title),
     _connectionId(++connectionId),
     _outthread( WorkerThread::Function([this]{ outThreadFunc(); })
