@@ -221,6 +221,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
     dnp.setName("Test DNP device");
     dnp.setCommand(DnpProtocol::Command_Class1230Read_WithTime);
 
+    dnp.setConfigData(2, false, false, false, false, false, false);
+
     CtiXfer xfer;
 
     {
@@ -258,7 +260,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
     {
         {
             const byte_str response(
-                    "05 64 27 44 01 00 d2 04 79 6f");
+                    "05 64 31 44 01 00 d2 04 61 7c");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -275,15 +277,14 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
 
-        BOOST_CHECK_EQUAL(40, xfer.getInCountExpected());
+        BOOST_CHECK_EQUAL(50, xfer.getInCountExpected());
     }
     {
         {
             const byte_str response(
-                    "c0 ca 81 0f 00 1e 01 18 01 00 "
-                    "03 00 3f 01 00 00 40 be 01 02 "
-                    "18 01 00 01 00 14 01 18 01 00 "
-                    "00 00 13 00 95 4f 00 00 ff ff");
+                    "c0 ca 81 0f 00 32 01 07 01 b8 ee 7d 3e 46 01 1e 72 34 "
+                    "01 18 01 00 03 00 3f 01 00 00 01 02 18 01 00 01 e0 a6 "
+                    "00 14 01 18 01 00 00 00 13 00 00 00 e1 c4");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -308,6 +309,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             BOOST_CHECK_EQUAL(pd->getType(), AnalogPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 4);
+
+            BOOST_CHECK_EQUAL(pd->getTags(), 0x100);
         }
 
         {
@@ -318,6 +321,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 2);
+
+            BOOST_CHECK_EQUAL(pd->getTags(), 0x4100);
         }
 
         {
@@ -328,6 +333,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 1);
+
+            BOOST_CHECK_EQUAL(pd->getTags(), 0x100);
         }
 
         {
@@ -338,19 +345,23 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
+
+            BOOST_CHECK_EQUAL(pd->getTags(), 0x4000);
         }
 
         auto string_list = dnp.getInboundStrings();
 
-        BOOST_CHECK_EQUAL(2, string_list.size());
+        BOOST_CHECK_EQUAL(3, string_list.size());
 
         BOOST_CHECK_EQUAL(string_list[0],
+            "Device time: 05/27/2014 11:22:59.000");
+        BOOST_CHECK_EQUAL(string_list[1],
             "Internal indications:\n"
             "Broadcast message received\n"
             "Class 1 data available\n"
             "Class 2 data available\n"
             "Class 3 data available\n");
-        BOOST_CHECK_EQUAL(string_list[1],
+        BOOST_CHECK_EQUAL(string_list[2],
             "Point data report:\n"
             "AI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; \n"
             "First/Last 5 points of each type returned:\n"
