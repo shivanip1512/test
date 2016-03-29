@@ -109,6 +109,10 @@
     <entry key="yukon.web.modules.tools.configs.enum.heartbeatMode.INCREMENT">Increment</entry>
     <entry key="yukon.web.modules.tools.configs.enum.heartbeatMode.COUNTDOWN">Countdown</entry>
 
+    <entry key="yukon.web.modules.tools.configs.enum.dnpTimeOffset.UTC">UTC</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.dnpTimeOffset.LOCAL">Local</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.dnpTimeOffset.LOCAL_NO_DST">Local (No DST)</entry>
+
     <!-- Configuration Category Messages -->
     <entry key="yukon.web.modules.tools.configs.category.timeZone.title">MCT Time Zone</entry>
     <entry key="yukon.web.modules.tools.configs.category.timeZone.definition">Time zone used for local time calculations, such as TOU and midnight kWh reads.</entry>
@@ -251,8 +255,8 @@
     <entry key="yukon.web.modules.tools.configs.category.dnp.definition">Behaviors used while communicating with DNP devices.</entry>
     <entry key="yukon.web.modules.tools.configs.category.dnp.internalRetries">Internal Retries</entry>
     <entry key="yukon.web.modules.tools.configs.category.dnp.internalRetries.description">The number of retries the DNP Application Layer will attempt before reporting an error out to the device. Default: 2.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.dnp.localTime">Use Local Time</entry>
-    <entry key="yukon.web.modules.tools.configs.category.dnp.localTime.description">When true, Yukon will interpret and send times as local, else UTC. Default: false.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.timeOffset">Time Offset</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.timeOffset.description">Device time will be interpreted and sent relative to this offset.</entry>
     <entry key="yukon.web.modules.tools.configs.category.dnp.enableDnpTimesyncs">Enable DNP Timesyncs</entry>
     <entry key="yukon.web.modules.tools.configs.category.dnp.enableDnpTimesyncs.description">When true, DNP timesyncs are enabled, else disabled. Default: false.</entry>
     <entry key="yukon.web.modules.tools.configs.category.dnp.omitTimeRequest">Omit Time Request</entry>

@@ -161,7 +161,7 @@
         
     <category type="dnp">
         <integer field="internalRetries" default="2"/>
-        <boolean field="localTime" default="false"/>
+        <enum field="timeOffset" type="DnpTimeOffset" default="UTC"/>
         <boolean field="enableDnpTimesyncs" default="false"/>
         <boolean field="omitTimeRequest" default="false"/>
         <boolean field="enableUnsolicitedMessagesClass1" default="true"/>

@@ -98,6 +98,7 @@
             <xs:enumeration value="HeartbeatMode"/>
             <xs:enumeration value="VoltageAveragingInterval"/>
             <xs:enumeration value="VoltageDataStreamingInterval"/>
+            <xs:enumeration value="DnpTimeOffset"/>
         </xs:restriction>
     </xs:simpleType>
 
