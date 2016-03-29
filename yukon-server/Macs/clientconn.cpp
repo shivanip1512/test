@@ -3,15 +3,6 @@
 
 
 /*---------------------------------------------------------------------------
-    Constructor (should not be use)
----------------------------------------------------------------------------*/
-CtiMCConnection::CtiMCConnection()
-    :   _valid(false),
-        _connection( CtiListenerConnection("") )
-{
-}
-
-/*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
 CtiMCConnection::CtiMCConnection( CtiListenerConnection& listenerConn, CtiConnection::Que_t *inQ )

@@ -650,6 +650,14 @@ struct TestCase<CtiServerRequestMsg> : public TestCase<CtiMessage>
         _tc_payload.Populate( (payload_t*)imsg._payload );
     }
 
+    ~TestCase()
+    {
+        if( ! _imsg.get() )
+        {
+            imsg_payload.release();
+        }
+    }
+
     void Compare()
     {
         TestCase<CtiMessage>::Compare();

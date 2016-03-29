@@ -23,8 +23,10 @@ CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerC
     CtiConnection( "Server Connection " + std::to_string(++serverConnectionCount), inQ, termSeconds ),
     _replyDest( listenerConnection.getClientReplyDest() )
 {
-
-    inQ->setName(listenerConnection.getServerQueueName());
+    if( inQ )
+    {
+        inQ->setName(listenerConnection.getServerQueueName());
+    }
 
     // use the same managed connection as the listener
     _connection = listenerConnection.getConnection();

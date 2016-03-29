@@ -9,8 +9,6 @@ class CtiMCConnection
 
     CtiServerConnection _connection;
 
-    CtiMCConnection();
-
 public:
 
     CtiMCConnection( CtiListenerConnection& listenerConn, CtiConnection::Que_t *inQ );
@@ -20,7 +18,7 @@ public:
     bool isValid();
 
     void start();
-    
+
     void write(CtiMessage* msg);
 
     bool hasConnection(const Cti::ConnectionHandle connectionHandle) const;
