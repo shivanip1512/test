@@ -368,7 +368,7 @@
 
     <!-- preview  -->
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.previewUOMValue">kWh</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.previewPointStateKey">Default State</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.previewPointState">Default State</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.previewMeterNumber">111111111</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.previewMeterName">Default Device</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.previewMeterAddress">123456789</entry>

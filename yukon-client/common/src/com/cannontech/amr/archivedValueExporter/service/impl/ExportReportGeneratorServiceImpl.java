@@ -92,7 +92,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
 
     private static String previewUOMValueKey = baseKey + "previewUOMValue";
-    private static String previewPointStateKey = baseKey + "previewPointStateKey";
+    private static String previewPointStateKey = baseKey + "previewPointState";
     private static String previewMeterNumberKey = baseKey + "previewMeterNumber";
     private static String previewMeterNameKey = baseKey + "previewMeterName";
     private static String previewMeterAddressKey = baseKey + "previewMeterAddress";
