@@ -86,7 +86,7 @@
                                         allowEmptySelection="${true}"
                                         includeRemoveButton="${true}"
                                         removeValue="0" 
-                                        extraArgs="${capbank.capBank.controlDeviceID}"/>
+                                        extraArgs="${capbank.capBank.controlDeviceID}" />
                                     <cti:displayForPageEditModes modes="VIEW">
                                         <c:if test="${empty capbank.capBank.controlDeviceID}">
                                             <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
@@ -325,7 +325,7 @@
                         </td>
                         <td>
                             <c:if test="${canEdit}">
-                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-point show-on-hover" />
+                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-capbank-point show-on-hover" />
                             </c:if>
                         </td>
                         <form:hidden path="ccMonitorBankList[${idx}].deviceId" />

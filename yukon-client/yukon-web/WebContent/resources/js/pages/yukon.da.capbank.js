@@ -81,7 +81,7 @@ yukon.da.capbank = (function () {
             });
             
             /** User clicked on Remove Point button */
-            $(document).on('click', '.js-remove-point', function () {
+            $(document).on('click', '.js-remove-capbank-point', function () {
                 var button = $(this),
                     pointRow = button.closest("tr");
                 
