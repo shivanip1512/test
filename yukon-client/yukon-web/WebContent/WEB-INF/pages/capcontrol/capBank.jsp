@@ -5,6 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <c:set var="pageName" value="capbank.${mode}"/>
 <c:if test="${orphan}">
@@ -21,7 +22,7 @@
     <form:form id="capbank-edit-form" commandName="capbank" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="id" />
-        <div class="column-12-12 clearfix">
+        <div class="column-14-10 clearfix">
             <div class="column one">
                 <cti:tabs>
                     <cti:msg2 var="infoTab" key=".infoTab"/>
@@ -46,7 +47,7 @@
                                 </c:if>
                                 <c:if test="${not empty parent}">
                                     <cti:url var="editParent" value="/capcontrol/feeders/${parent.liteID}"/>
-                                        <a href="${editParent}">${parent.paoName}</a>
+                                        <a href="${editParent}">${fn:escapeXml(parent.paoName)}</a>
                                 </c:if>
                             </tags:nameValue2>
                             <tags:yukonListEntrySelectNameValue nameKey=".switchManufacturer" path="CapBank.switchManufacture" energyCompanyId="${energyCompanyId}" listName="SWITCH_MANUFACTURER" useTextAsValue="${true}"/>
@@ -56,14 +57,133 @@
                     </cti:tab>
                     <cti:msg2 var="setupTab" key=".setupTab"/>
                     <cti:tab title="${setupTab}">
-                        <!--TODO:  Implement these fields -->
-                        <form:hidden path="CapBank.operationalState" />
-                        <form:hidden path="CapBank.bankSize" />
-                        <form:hidden path="CapBank.recloseDelay" />
-                        <form:hidden path="CapBank.controlDeviceID" />
-                        <form:hidden path="CapBank.controlPointID" />
-                        <form:hidden path="CapBank.maxDailyOps" />
-                        <form:hidden path="CapBank.maxOpDisable" />
+                        <tags:sectionContainer2 nameKey="configurationSection">
+                            <tags:nameValueContainer2 tableClass="natural-width">
+                                <tags:nameValue2 nameKey=".operationMethod">
+                                    <tags:selectWithItems path="CapBank.operationalState" 
+                                    items="${opMethods}" itemValue="dbString"/>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".bankSize">
+                                    <tags:selectWithItems id="bankSize" path="CapBank.bankSize" 
+                                    items="${bankSizes}" itemValue="displayValue"/>
+                                    <tags:input id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6" /> kVar
+                                    <i:inline key=".custom"/><input id="customSizeCheckbox" type="checkbox" class="js-custom-bankSize" <c:if test="${capbank.capBank.customBankSize}">checked="checked"</c:if>>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".recloseDelay" data-toggle-group="integrity">
+                                    <tags:intervalStepper path="CapBank.recloseDelay"
+                                        intervals="${timeIntervals}"
+                                        id="scan1" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".controlDevicePoint">
+                                    <form:hidden id="switch-control-point-input" path="CapBank.controlDeviceID"/>
+                                    <tags:pickerDialog
+                                        id="cbcOrphanPicker"
+                                        type="capControlCBCOrphanPicker"
+                                        linkType="selection"
+                                        selectionProperty="paoName"
+                                        destinationFieldId="switch-control-point-input"
+                                        viewOnlyMode="${mode == 'VIEW'}"
+                                        allowEmptySelection="${true}"
+                                        includeRemoveButton="${true}"
+                                        removeValue="0" 
+                                        extraArgs="${capbank.capBank.controlDeviceID}"/>
+                                    <cti:displayForPageEditModes modes="VIEW">
+                                        <c:if test="${empty capbank.capBank.controlDeviceID}">
+                                            <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                        </c:if>
+                                    </cti:displayForPageEditModes>
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>
+                        </tags:sectionContainer2>
+                        <tags:sectionContainer2 nameKey="operationsSection">
+                           <tags:nameValueContainer2 tableClass="natural-width">
+                                <tags:nameValue2 nameKey=".maxDailyOperations">
+                                    <tags:input path="CapBank.maxDailyOps" size="5"/>
+                                    <i:inline key=".unlimitedText"/>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".disableMaxOps">
+                                    <tags:switchButton path="CapBank.maxOperationDisabled" offNameKey=".no.label" onNameKey=".yes.label"/>
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>
+                        </tags:sectionContainer2>
+                        <tags:sectionContainer2 nameKey="controllerConfigurationSection">
+                            <tags:nameValueContainer2 tableClass="natural-width">
+                                <cti:default var="format" value="DHMS_REDUCED"/>
+                                <tags:nameValue2 nameKey=".cbcController">
+                                    <c:if test="${empty cbc}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none"/></span>
+                                    </c:if>
+                                    <c:if test="${not empty cbc}">
+                                        <cti:url var="editCBC" value="/capcontrol/cbc/${cbc.id}"/>
+                                            <a href="${editCBC}">${fn:escapeXml(cbc.name)}</a>
+                                    </c:if>
+                                </tags:nameValue2>
+                                <c:if test="${not empty cbc}">
+                                    <tags:nameValue2 nameKey=".cbc.serialNumber">
+                                        ${fn:escapeXml(cbc.deviceCBC.serialNumber)}
+                                    </tags:nameValue2>
+                                    <c:set var="twoWayClass" value="${cbc.twoWay? '' : 'dn'} js-two-way"/>
+                                    <c:set var="oneWayClass" value="${cbc.twoWay? 'dn' : ''} js-one-way"/>
+                                    <tags:nameValue2 nameKey=".cbc.controlRoute" rowClass="${oneWayClass}">
+                                        ${fn:escapeXml(controllerRouteName)}
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".cbc.masterAddr" rowClass="${twoWayClass}">
+                                        ${fn:escapeXml(cbc.deviceAddress.masterAddress)}
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".cbc.slaveAddr" rowClass="${twoWayClass}">
+                                        ${fn:escapeXml(cbc.deviceAddress.slaveAddress)}
+                                     </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".cbc.commChannel" rowClass="${twoWayClass}">
+                                        <c:forEach var="commChannel" items="${availablePorts}">
+                                            <c:if test="${cbc.deviceDirectCommSettings.portID == commChannel.liteID}">
+                                                ${fn:escapeXml(commChannel.paoName)}                                            
+                                            </c:if>                              
+                                        </c:forEach>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".cbc.postCommWait" rowClass="${twoWayClass}">
+                                        ${fn:escapeXml(cbc.deviceAddress.postCommWait)}
+                                    </tags:nameValue2>
+                                </c:if>
+                            </tags:nameValueContainer2>
+                            <c:if test="${not empty cbc}">
+                                <tags:nameValueContainer2 tableClass="fl">
+                                       <tags:nameValue2 nameKey=".cbc.integrityScanRate" rowClass="${twoWayClass}">
+                                            <tags:switchButton name="integ" toggleGroup="integrity" toggleAction="hide" checked="${cbc.editingIntegrity}" disabled="true" />
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".cbc.interval" data-toggle-group="integrity">
+                                             <cti:formatDuration type="${format}" value="${cbc.deviceScanRateMap['Integrity'].intervalRate * 1000}"/>
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".cbc.altInterval" data-toggle-group="integrity">
+                                             <cti:formatDuration type="${format}" value="${cbc.deviceScanRateMap['Integrity'].alternateRate * 1000}"/>
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".cbc.scanGroup" data-toggle-group="integrity">
+                                            <c:forEach var="scanGroup" items="${scanGroups}">
+                                                <c:if test="${cbc.deviceScanRateMap['Integrity'].scanGroup == scanGroup.dbValue}">
+                                                    <i:inline key=".cbc.scanGroup.${scanGroup}"/>                                       
+                                                </c:if>                              
+                                            </c:forEach>                                    
+                                       </tags:nameValue2>
+                                   </tags:nameValueContainer2>
+                                   <tags:nameValueContainer2 tableClass="fr">
+                                       <tags:nameValue2 nameKey=".cbc.exceptionScanRate" rowClass="${twoWayClass}">
+                                            <tags:switchButton name="excep" toggleGroup="exception" toggleAction="hide" checked="${cbc.editingException}" disabled="true" />
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".cbc.interval" data-toggle-group="exception">
+                                             <cti:formatDuration type="${format}" value="${cbc.deviceScanRateMap['Exception'].intervalRate * 1000}"/>
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".cbc.altInterval" data-toggle-group="exception">
+                                             <cti:formatDuration type="${format}" value="${cbc.deviceScanRateMap['Exception'].alternateRate * 1000}"/>
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".cbc.scanGroup" data-toggle-group="exception">
+                                            <c:forEach var="scanGroup" items="${scanGroups}">
+                                                <c:if test="${cbc.deviceScanRateMap['Exception'].scanGroup == scanGroup.dbValue}">
+                                                    <i:inline key=".cbc.scanGroup.${scanGroup}"/>                                       
+                                                </c:if>                              
+                                            </c:forEach>
+                                        </tags:nameValue2> 
+                                </tags:nameValueContainer2>  
+                            </c:if>
+                        </tags:sectionContainer2>
                     </cti:tab>
                     <cti:msg2 var="addInfoTab" key=".additionalInfoTab"/>
                     <cti:tab title="${addInfoTab}">

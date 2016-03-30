@@ -28,10 +28,6 @@ public class CCMonitorBankList extends DBPersistent {
 	private Boolean overrideStrategySettings = Boolean.FALSE;
 	private Boolean scannableBoolean = Boolean.FALSE;
 	
-	private Integer id;
-	private String name;
-
-	
 	private CapBankMonitorPointParams monitorPoint = null;
 
 	
@@ -271,10 +267,6 @@ public class CCMonitorBankList extends DBPersistent {
 
     public Integer getId() {
         return this.getPointId();
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {

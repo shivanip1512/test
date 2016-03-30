@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.CapBankCommunicationMedium;
+import com.cannontech.capcontrol.CapBankSize;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
@@ -144,6 +145,18 @@ public class CapBank extends CapControlDeviceBase {
                         capbankAdditionalInfo.setCustomCommMedium(false);
                         break;
                     }
+                }
+            }
+        }
+        //check for custom bankSize
+        capBank.setBankSizeCustom(capBank.getBankSize());
+        int bankSize = capBank.getBankSize();
+        if(bankSize != 0) {
+            CapBankSize[] bankSizes = CapBankSize.values();
+            for (CapBankSize size : bankSizes) {
+                if(size.getDisplayValue() == bankSize) {
+                    capBank.setCustomBankSize(false);
+                    break;
                 }
             }
         }

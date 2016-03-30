@@ -173,9 +173,21 @@
     <entry key="yukon.web.modules.capcontrol.capbank.communicationSection.title">Communication</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.locationSection.title">Location</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.configurationSection.title">Configuration</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.operationsSection.title">Operations</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.controllerConfigurationSection.title">Controller Configuration</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.cbcController">CBC Controller</entry>
+    
     <entry key="yukon.web.modules.capcontrol.capbank.assignedPointsSection.title">Assigned Points</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.custom">Custom</entry>
     
+    <entry key="yukon.web.modules.capcontrol.capbank.maxDailyOperations">Max Daily Operations</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.disableMaxOps">Disable upon reaching max operations</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.unlimitedText">(0 = unlimited)</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.recloseDelay">Reclose Delay</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.controlDevicePoint">Control Device/Point</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.operationMethod">Operation Method</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.bankSize">Bank Size</entry>
+  
     <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.point">Point</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.adaptiveCount">Adaptive Count</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.assignedPoints.initiateScan">Initiate Scan</entry>
@@ -215,6 +227,15 @@
     <entry key="yukon.web.modules.capcontrol.capbank.pointPhase.A">A</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.pointPhase.B">B</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.pointPhase.C">C</entry>
+    <!-- Cap Bank Sizes -->
+    <entry key="yukon.web.modules.capcontrol.capbank.bankSize.ONE_HUNDRED">100</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.bankSize.TWO_HUNDRED">200</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.bankSize.THREE_HUNDRED">300</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.bankSize.SIX_HUNDRED">600</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.bankSize.NINE_HUNDRED">900</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.bankSize.TWELVE_HUNDRED">1200</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.bankSize.EIGHTEEN_HUNDRED">1800</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.bankSize.TWENTYFOUR_HUNDRED">2400</entry>
     
     <!-- capBankAddInfoPopup.jsp -->
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.setting">Setting</entry>

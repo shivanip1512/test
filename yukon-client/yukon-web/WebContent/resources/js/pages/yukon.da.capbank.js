@@ -32,6 +32,28 @@ yukon.da.capbank = (function () {
                 commMedium.val("None");
         }
     };
+    
+    var setCustomBankSize = function () {
+        var toggle = $('#customSizeCheckbox'),
+            bankSize = $('#bankSize'),
+            customBankSize = $('#customBankSize'),
+            active = toggle.prop('checked');
+    
+        if (active) {
+            var commValue = bankSize.val();
+            bankSize.val(600);
+            bankSize.addClass("dn");
+            customBankSize.removeClass("dn");
+            if (initialized) 
+                customBankSize.val(commValue);
+        } else {
+            bankSize.removeClass("dn");
+            customBankSize.val(null);
+            customBankSize.addClass("dn");
+            if (initialized) 
+                bankSize.val(600);
+        }
+    };
 
     mod = {
 
@@ -41,6 +63,7 @@ yukon.da.capbank = (function () {
             if (initialized) return;
             
             setCustomCommunicationMedium();
+            setCustomBankSize();
                         
             /** User confirmed intent to delete capbank. */
             $(document).on('yukon:da:capbank:delete', function () {
@@ -50,6 +73,11 @@ yukon.da.capbank = (function () {
             /** User clicked Custom Communication Medium */
             $(document).on('click', '.js-custom-medium', function () {
                 setCustomCommunicationMedium(true);
+            });
+            
+            /** User clicked Custom Bank Size */
+            $(document).on('click', '.js-custom-bankSize', function () {
+                setCustomBankSize(true);
             });
             
             /** User clicked on Remove Point button */

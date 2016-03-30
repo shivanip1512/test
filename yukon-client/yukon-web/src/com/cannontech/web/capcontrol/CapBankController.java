@@ -17,13 +17,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.CapBankAntennaType;
 import com.cannontech.capcontrol.CapBankCommunicationMedium;
 import com.cannontech.capcontrol.CapBankConfig;
 import com.cannontech.capcontrol.CapBankPointPhase;
 import com.cannontech.capcontrol.CapBankPotentialTransformer;
+import com.cannontech.capcontrol.CapBankSize;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -42,8 +45,11 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.service.CapBankService;
+import com.cannontech.web.capcontrol.service.impl.CbcServiceImpl;
 import com.cannontech.web.capcontrol.validators.CapBankValidator;
+import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -58,6 +64,8 @@ public class CapBankController {
     @Autowired private CapControlCache ccCache;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private CapBankValidator capBankValidator;
+    @Autowired private CbcServiceImpl cbcService;
+    @Autowired private PaoDao paoDao;
 
     private static final String baseKey = "yukon.web.modules.capcontrol.capbank";
 
@@ -183,12 +191,24 @@ public class CapBankController {
 
         }
         
+        //CBC Controller
+        if(capbank.getCapBank().getControlDeviceID() != 0){
+            CapControlCBC cbc = cbcService.getCbc(capbank.getCapBank().getControlDeviceID());
+            model.addAttribute("cbc", cbc);
+            model.addAttribute("availablePorts", dbCache.getAllPorts());
+            model.addAttribute("controllerRouteName", paoDao.getYukonPAOName(cbc.getDeviceCBC().getRouteID()));
+            model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
+        }
+
         //Cap Bank Enums
         model.addAttribute("configList", CapBankConfig.values());
         model.addAttribute("potentialTransformerList", CapBankPotentialTransformer.values());
         model.addAttribute("communicationMediumList", CapBankCommunicationMedium.values());
         model.addAttribute("antennaTypeList", CapBankAntennaType.values());
         model.addAttribute("pointPhaseList", CapBankPointPhase.values());
+        model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
+        model.addAttribute("opMethods", BankOpState.values());
+        model.addAttribute("bankSizes", CapBankSize.values());
         
         EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         int ecId = energyCompany.getId();

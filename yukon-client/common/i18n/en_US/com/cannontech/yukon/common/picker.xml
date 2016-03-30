@@ -181,6 +181,7 @@
 <!-- Cap Control Substation Bus Picker -->
 <entry key="yukon.web.picker.capControlSubstationBusPicker.dialogTitle">Select Substation Bus</entry>
 
-
+<!-- Cap Control CBC Orphan Picker -->
+<entry key="yukon.web.picker.capControlCBCOrphanPicker.dialogTitle">Select Orphan CBC</entry>
 
 </properties>

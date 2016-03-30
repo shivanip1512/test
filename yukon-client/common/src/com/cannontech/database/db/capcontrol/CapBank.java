@@ -20,7 +20,10 @@ public class CapBank extends com.cannontech.database.db.DBPersistent
 	private Integer recloseDelay = new Integer(0);
 	private Integer maxDailyOps = new Integer(0);
 	private Character maxOpDisable = new Character('N');
-
+	
+    private Boolean customBankSize = Boolean.TRUE;
+    private Integer bankSizeCustom = new Integer(0);
+    
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"OperationalState", "ControllerType", "ControlDeviceID",
@@ -65,6 +68,9 @@ public void delete() throws java.sql.SQLException {
 	
 }
 public java.lang.Integer getBankSize() {
+    if(bankSizeCustom != null && bankSizeCustom != 0){
+        bankSize = bankSizeCustom;
+    }
 	return bankSize;
 }
 public Integer getControlDeviceID() {
@@ -220,5 +226,17 @@ public void update() throws java.sql.SQLException
 		setMaxOpDisable(
 			(val ? CtiUtilities.trueChar : CtiUtilities.falseChar) );
 	}
+    public Boolean getCustomBankSize() {
+        return customBankSize;
+    }
+    public void setCustomBankSize(Boolean customBankSize) {
+        this.customBankSize = customBankSize;
+    }
+    public Integer getBankSizeCustom() {
+        return bankSizeCustom;
+    }
+    public void setBankSizeCustom(Integer bankSizeCustom) {
+        this.bankSizeCustom = bankSizeCustom;
+    }
 
 }

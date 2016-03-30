@@ -28,6 +28,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
@@ -132,6 +133,11 @@ public class CapBankServiceImpl implements CapBankService {
 
     @Override
     public int save(CapBank capbank) {
+        if(capbank.getCapBank().getControlDeviceID() != 0) {
+            LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(capbank.getCapBank().getControlDeviceID(), 1, PointTypes.STATUS_POINT);
+            capbank.getCapBank().setControlPointID(point.getPointID());
+        }
+        
         if (capbank.getId() == null) {
             dbPersistentDao.performDBChange(capbank, TransactionType.INSERT);
         } else {
