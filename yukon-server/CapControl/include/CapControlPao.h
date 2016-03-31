@@ -60,6 +60,10 @@ public:
 
     CapControlPao& operator=(const CapControlPao& right);
 
+protected:
+
+    void insertPointRegistration( std::set<long> & registrationIDs, const long pointID ) const;
+
 private:
 
     bool assignCommonPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );

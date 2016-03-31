@@ -1433,13 +1433,13 @@ void CtiCapController::registerForPoints( const RegistrationMethod m )
     {
         std::set<long> registrationIds;
 
-        for ( const auto & mapEntry : *store->getPAOAreaMap() )
+        for ( const auto & mapEntry : store->getPAOAreaMap() )
         {
             CtiCCAreaPtr currentArea = mapEntry.second;
 
             currentArea->getPointRegistrationIds( registrationIds );
         }
-        for ( const auto & mapEntry : *store->getPAOSpecialAreaMap() )
+        for ( const auto & mapEntry : store->getPAOSpecialAreaMap() )
         {
             CtiCCSpecialPtr currentSpArea = mapEntry.second;
 

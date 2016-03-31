@@ -291,27 +291,12 @@ void CapControlPao::getPointRegistrationIds( std::set<long> & registrationIDs )
 {
     getSpecializedPointRegistrationIds( registrationIDs );
 
-    if ( getDisabledStatePointId() > 0 )
-    {
-        registrationIDs.insert( getDisabledStatePointId() );
-    }
+    insertPointRegistration( registrationIDs, getDisabledStatePointId() );
 
-    if ( getOperationStats().getUserDefOpSuccessPercentId() > 0 )
-    {
-        registrationIDs.insert( getOperationStats().getUserDefOpSuccessPercentId() );
-    }
-    if ( getOperationStats().getDailyOpSuccessPercentId() > 0 )
-    {
-        registrationIDs.insert( getOperationStats().getDailyOpSuccessPercentId() );
-    }
-    if ( getOperationStats().getWeeklyOpSuccessPercentId() > 0 )
-    {
-        registrationIDs.insert( getOperationStats().getWeeklyOpSuccessPercentId() );
-    }
-    if ( getOperationStats().getMonthlyOpSuccessPercentId() > 0 )
-    {
-        registrationIDs.insert( getOperationStats().getMonthlyOpSuccessPercentId() );
-    }
+    insertPointRegistration( registrationIDs, getOperationStats().getUserDefOpSuccessPercentId() );
+    insertPointRegistration( registrationIDs, getOperationStats().getDailyOpSuccessPercentId() );
+    insertPointRegistration( registrationIDs, getOperationStats().getWeeklyOpSuccessPercentId() );
+    insertPointRegistration( registrationIDs, getOperationStats().getMonthlyOpSuccessPercentId() );
 }
 
 /*
@@ -320,5 +305,13 @@ void CapControlPao::getPointRegistrationIds( std::set<long> & registrationIDs )
 void CapControlPao::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
 {
 
+}
+
+void CapControlPao::insertPointRegistration( std::set<long> & registrationIDs, const long pointID ) const
+{
+    if ( pointID > 0 )
+    {
+        registrationIDs.insert( pointID );
+    }
 }
 

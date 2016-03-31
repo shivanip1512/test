@@ -4027,7 +4027,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             {
                 CtiCCAreaPtr currentCCArea = CtiCCAreaPtr( new CtiCCArea( rdr, _strategyManager.get() ) );
 
-                paobject_area_map->insert( std::make_pair( currentCCArea->getPaoId(), currentCCArea) );
+                paobject_area_map->emplace( currentCCArea->getPaoId(), currentCCArea );
 
                 ccGeoAreas->push_back( currentCCArea );
 
@@ -4088,7 +4088,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             {
                 for ( const long pointID : *currentArea->getPointIds() )
                 {
-                    pointid_area_map->insert( std::make_pair( pointID, currentArea ) );
+                    pointid_area_map->emplace( pointID, currentArea );
                 }
             }
         }
@@ -4312,7 +4312,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
             {
                 CtiCCSpecialPtr currentCCSpArea = CtiCCSpecialPtr( new CtiCCSpecial(rdr, _strategyManager.get() ) );
 
-                paobject_specialarea_map->insert( std::make_pair( currentCCSpArea->getPaoId(), currentCCSpArea ) );
+                paobject_specialarea_map->emplace( currentCCSpArea->getPaoId(), currentCCSpArea );
 
                 ccSpecialAreas->push_back( currentCCSpArea );
 
@@ -4360,7 +4360,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
             {
                 for ( const long pointID : *currentSpArea->getPointIds() )
                 {
-                    pointid_specialarea_map->insert( std::make_pair( pointID, currentSpArea ) );
+                    pointid_specialarea_map->emplace( pointID, currentSpArea );
                 }
             }
         }
@@ -8725,17 +8725,17 @@ PaoIdToSubBusMap* CtiCCSubstationBusStore::getPAOSubMap()
     return &_paobject_subbus_map;
 }
 
-PaoIdToAreaMap* CtiCCSubstationBusStore::getPAOAreaMap()
+PaoIdToAreaMap & CtiCCSubstationBusStore::getPAOAreaMap()
 {
-    return &_paobject_area_map;
+    return _paobject_area_map;
 }
 PaoIdToSubstationMap* CtiCCSubstationBusStore::getPAOStationMap()
 {
     return &_paobject_substation_map;
 }
-PaoIdToSpecialAreaMap* CtiCCSubstationBusStore::getPAOSpecialAreaMap()
+PaoIdToSpecialAreaMap & CtiCCSubstationBusStore::getPAOSpecialAreaMap()
 {
-    return &_paobject_specialarea_map;
+    return _paobject_specialarea_map;
 }
 
 

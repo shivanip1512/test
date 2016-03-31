@@ -402,9 +402,9 @@ public:
     void  setLinkDropOutTime(const CtiTime& dropOutTime);
 
     PaoIdToSubBusMap* getPAOSubMap();
-    PaoIdToAreaMap* getPAOAreaMap();
+    PaoIdToAreaMap & getPAOAreaMap();
     PaoIdToSubstationMap* getPAOStationMap();
-    PaoIdToSpecialAreaMap* getPAOSpecialAreaMap();
+    PaoIdToSpecialAreaMap & getPAOSpecialAreaMap();
 
     static const std::string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const std::string CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE;

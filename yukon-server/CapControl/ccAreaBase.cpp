@@ -212,9 +212,6 @@ void CtiCCAreaBase::updatePowerFactorData()
 
 void CtiCCAreaBase::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
 {
-    if ( getVoltReductionControlPointId() > 0 )
-    {
-        registrationIDs.insert( getVoltReductionControlPointId() );
-    }
+    insertPointRegistration( registrationIDs, getVoltReductionControlPointId() );
 }
 
