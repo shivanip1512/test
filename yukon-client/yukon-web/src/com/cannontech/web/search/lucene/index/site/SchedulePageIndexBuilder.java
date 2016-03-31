@@ -57,7 +57,7 @@ public class SchedulePageIndexBuilder extends DbPageIndexBuilder {
         sql.append("name").eq("name");
         sql.append("AND disabled").neq(JobDisabledStatus.D);
         sql.append("AND beanName").in(scheduleType);
-        allWhereClause = new SqlStatementBuilder("name").eq("name");
+        allWhereClause = sql;
     }
 
     protected SchedulePageIndexBuilder() {
@@ -124,6 +124,7 @@ public class SchedulePageIndexBuilder extends DbPageIndexBuilder {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("job.jobid").eq(id);
         sql.append("AND disabled").neq(JobDisabledStatus.D);
+        sql.append("AND name").eq("name");
         return sql;
     }
 
