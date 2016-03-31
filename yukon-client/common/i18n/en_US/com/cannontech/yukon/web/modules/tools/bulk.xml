@@ -661,6 +661,7 @@
     <entry key="yukon.common.device.bulk.updateUpload.loadButton.busy">Loading...</entry>
     <entry key="yukon.common.device.bulk.updateUpload.instructions.title">Instructions:</entry>
     <entry key="yukon.common.device.bulk.updateUpload.instructions.description"><![CDATA[
+        <li>File format must be csv (comma separated value); Separate fields with <b>',</b> (comma), use <b>"</b> (double quote) to delimit text as needed.</li><br>
         <li>Files must contain a header row with valid column identifiers as listed in the table below.</li><br>
         <li>The first column is always the <i><b>Identifier Column</b></i>. <br>It will be used to determine which device is to be updated.</li><br>
         <li>One of the following column identifiers must be used in the <i><b>Identifier Column</b></i>: <br><b>ADDRESS</b>, <b>METER_NUMBER</b>, <b>NAME</b>, or <b>DEVICE_ID</b>.</li><br>
@@ -766,6 +767,7 @@
     </entry>
     <entry key="yukon.common.device.bulk.importUpload.importFileLabel">Import File</entry>
     <entry key="yukon.common.device.bulk.importUpload.instructions"><![CDATA[
+        <li>File format must be csv (comma separated value); Separate fields with <b>',</b> (comma), use <b>"</b> (double quote) to delimit text as needed.</li><br>
         <li>Files must contain a header row with valid columns as listed in the tables below.</li><br>
         <li>Devices may be imported using either by <i>Template</i> or by <i>Device Type</i>.<br>
         Each method requires that certain column values are included for each row.</li><br>

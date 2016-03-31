@@ -42,10 +42,11 @@
     In addition, the device will be removed from all other groups under <b>/Meters/Collection<b>.<br><br>
     ]]></entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.rules"><![CDATA[
+    <li>File format must be csv (comma separated value); Separate fields with <b>',</b> (comma), use <b>"</b> (double quote) to delimit text as needed.</li>
     <li>Files must contain a header row with valid column identifiers as listed in the table below.</li>
     <li>The first column is always the Identifier Column.  It will be used to determine which device is to be updated.</li>
     <li>One of the following column identifiers must be used in the Identifier Column:<br>
-        <span style="font-weight:bold;">ADDRESS, METER_NUMBER, NAME, or DEVICE_ID.</span>
+        <b>ADDRESS, METER_NUMBER, NAME, or DEVICE_ID.</b>
     </li>
     <li>All column headers (besides the Identifier column) should be of the form<br>
         <strong>DEVICE_GROUP_PREFIX:prefix=&lt;Group Name&gt;</strong> or <strong>DEVICE_GROUP_SET:group=&lt;Group Name&gt;</strong>
