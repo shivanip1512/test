@@ -55,7 +55,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     // minute of the day to send a request at/list of devices to send a read request to
     private SetMultimap<Integer, RfnDevice> meters = HashMultimap.create();
     private RfnDataSimulatorStatus status = new RfnDataSimulatorStatus();
-    private Multimap<PaoType, PointMapper> pointMapper;
+    private Multimap<PaoType, PointMapper> pointMappers;
 
     private Map<RfnDevice, Map<Attribute, TimestampValue>> storedValue = new HashMap<>();
     private final static int secondsPerYear = 31556926;
@@ -66,7 +66,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     @PostConstruct
     public void initialize() {
         super.initialize();
-        pointMapper = unitOfMeasureToPointMapper.getPointMapper();
+        pointMappers = unitOfMeasureToPointMapper.getPointMapper();
     }
     
     @Override
@@ -158,13 +158,21 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         List<RfnMeterReadingArchiveRequest> resultList = Lists.newArrayList();
 
         // Do Billing reading type if we have not reported since midnight today
-        if (time.minusHours(reportingIntervalHours).isBefore(time.withTimeAtStartOfDay())) {
+        
+        // NOTE the real device does midnight but does not follow DST, so this is compensating by
+        // getting midnight in local time, then removing DST compensation by finding the active offset
+        // and the normal offset and doing some awesome math.
+        DateTime todaysDeviceBillingGenerationTime = time.withTimeAtStartOfDay()
+                                                         .plusMillis(time.getZone().getOffset(time.withTimeAtStartOfDay()))
+                                                         .minusMillis (time.getZone().getStandardOffset(time.withTimeAtStartOfDay().getMillis()));
+        
+        if (time.minusHours(reportingIntervalHours).isBefore(todaysDeviceBillingGenerationTime)) {
             List<BuiltInAttribute> attributeToGenerateMessage =
                 RfnMeterSimulatorConfiguration.getValuesByMeterReadingType(RfnMeterReadingType.BILLING);
 
             RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
             message.setReadingType(RfnMeterReadingType.BILLING);
-            message.setData(createReadingForType(device, attributeToGenerateMessage, time));
+            message.setData(createReadingForType(device, attributeToGenerateMessage, todaysDeviceBillingGenerationTime));
             message.setDataPointId(1);
             resultList.add(message);
         }
@@ -199,29 +207,31 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         List<ChannelData> channelDataList = Lists.newArrayList();
         List<DatedChannelData> datedChannelDataList = Lists.newArrayList();
         int channelNo = 1;
-        for (PointMapper pointMapper : pointMapper.get(device.getPaoIdentifier().getPaoType())) {
-            DatedChannelData datedChannelData = new DatedChannelData();
+        for (PointMapper pointMapper : pointMappers.get(device.getPaoIdentifier().getPaoType())) {
+            ChannelData channelData = new ChannelData();
             String pointName = pointMapper.getName();
             Attribute attribute = getAttributeForPoint(device.getPaoIdentifier().getPaoType(), pointName);
             if (attributeToGenerateMessage.contains(attribute)) {
                 if (attribute != null && RfnMeterSimulatorConfiguration.attributeExists(attribute.toString())) {
                     TimestampValue timestampValue = getValueAndTimestampForPoint(device, attribute, time);
-                    datedChannelData.setChannelNumber(channelNo);
+                    channelData.setChannelNumber(channelNo);
                     channelNo++;
-                    datedChannelData.setStatus(ChannelDataStatus.OK);
-                    datedChannelData.setUnitOfMeasure(pointMapper.getUom());
-                    datedChannelData.setValue(timestampValue.getValue());
+                    channelData.setStatus(ChannelDataStatus.OK);
+                    channelData.setUnitOfMeasure(pointMapper.getUom());
+                    channelData.setValue(timestampValue.getValue());
 
                     Set<String> modifiers = null;
                     for (ModifiersMatcher match : pointMapper.getModifiersMatchers()) {
                         modifiers = match.getModifiers();
                     }
-                    datedChannelData.setUnitOfMeasureModifiers(modifiers);
+                    channelData.setUnitOfMeasureModifiers(modifiers);
 
                     if (!RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).isDated()) {
-                        channelDataList.add(datedChannelData);
+                        channelDataList.add(channelData);
                     } else {
-                        datedChannelData.setTimeStamp(DateTime.now().getMillis());
+                        DatedChannelData datedChannelData = new DatedChannelData();
+                        datedChannelData.setBaseChannelData(channelData);
+                        datedChannelData.setTimeStamp(timestampValue.getTimestamp().getMillis());
                         datedChannelDataList.add(datedChannelData);
                     }
                 }
@@ -316,10 +326,14 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             long intervalSeconds = RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds();
             long timeSeconds = time.getMillis() / 1000;
 
-            if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.USAGE
-                || RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.DEMAND) {
-                long beginningOfLastInterval = timeSeconds - (timeSeconds % intervalSeconds) - intervalSeconds;
-                result = getHectoWattHours(device.getPaoIdentifier().getPaoId(), beginningOfLastInterval);
+            if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.USAGE) {
+                return getWattHours(device.getPaoIdentifier().getPaoId(), timeSeconds);
+            } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.DEMAND) {
+                // I think this may still be wrong since intervalSeconds may not end up being on the "clock" hour exactly due to leap seconds. 
+                long endOfLastInterval = timeSeconds - (timeSeconds % intervalSeconds);
+                long beginningOfLastInterval = endOfLastInterval - intervalSeconds;
+                // If I used 1 kWh in 15 minutes, I would use 4kWh over an hour and my "demand" is 4 kW so we multiply Usage*<seconds in hour>/<Seconds in interval> thus  1kWh*3600/900=4kW.
+                result = getWattHours(device.getPaoIdentifier().getPaoId(), endOfLastInterval) - getWattHours(device.getPaoIdentifier().getPaoId(), beginningOfLastInterval) * (3600/intervalSeconds);
                 return result;
             } else {
                 maxValue = minValue + RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getChangeBy();
@@ -377,7 +391,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         status.getSuccess().incrementAndGet();
     }
 
-    private double getHectoWattHours(int address, long CurrentTimeInSeconds) {
+    private double getWattHours(int address, long CurrentTimeInSeconds) {
         long duration = CurrentTimeInSeconds - epoch;
         double consumptionWs = makeValueConsumption(address, epoch, duration);
         double consumptionWh = consumptionWs / DateTimeConstants.SECONDS_PER_HOUR;
@@ -399,7 +413,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         // Mod the hWh by 10000000 to reduce the range from 0 to 9999999,
         // since the MCT Device reads hWh this corresponds to 999,999.9 kWh
         // which is the desired changeover point.
-        return (reading / 100) % 10000000;
+        return (reading/10) % 1_000_000_000;
     }
 
     /**
