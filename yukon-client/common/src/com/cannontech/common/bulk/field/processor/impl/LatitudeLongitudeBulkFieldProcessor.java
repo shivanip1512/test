@@ -20,6 +20,18 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
     
     @Override
     public void updateField(SimpleDevice device, YukonDeviceDto value) throws ProcessingException {
+        // If both values are empty, remove the lat/long for the device.
+        if (value.getLatitude() == null && value.getLongitude() == null) {
+            try {
+                paoLocationDao.delete(device.getPaoIdentifier().getPaoId());
+                return;
+            } catch (DataAccessException e) {
+                throw new ProcessingException("Could not delete location of device with paoId " + device.getPaoIdentifier()
+                    + ": " + e.getMessage(), e);
+            }
+        }
+        
+        // Otherwise, check for valid values and update lat/long
         if (value.getLatitude() == null || ((value.getLatitude() < -90.0) || (value.getLatitude() > 90.0))) {
             throw new ProcessingException(
                 "Valid Latitude (Must be between -90 and 90) not specified for device with paoId "
