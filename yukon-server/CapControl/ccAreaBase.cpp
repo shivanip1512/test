@@ -49,6 +49,11 @@ CtiCCAreaBase::CtiCCAreaBase(Cti::RowReader& rdr, StrategyManager * strategyMana
 void CtiCCAreaBase::restoreStaticData(Cti::RowReader& rdr)
 {
     rdr["VoltReductionPointID"] >> _voltReductionControlPointId;
+
+    if ( _voltReductionControlPointId > 0 )
+    {
+        addPointId( _voltReductionControlPointId );
+    }
 }
 
 /*
@@ -203,5 +208,13 @@ void CtiCCAreaBase::updatePowerFactorData()
 
     setPFactor( calculatePowerFactor( totalVars, totalWatts ) );
     setEstPFactor( calculatePowerFactor( totalEstimatedVars, totalWatts ) );
+}
+
+void CtiCCAreaBase::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+{
+    if ( getVoltReductionControlPointId() > 0 )
+    {
+        registrationIDs.insert( getVoltReductionControlPointId() );
+    }
 }
 

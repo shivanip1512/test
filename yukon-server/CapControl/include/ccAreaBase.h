@@ -60,6 +60,8 @@ protected:
 
 private:
 
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+
     long _voltReductionControlPointId;
     bool _voltReductionControlValue;
     bool _ovUvDisabledFlag;

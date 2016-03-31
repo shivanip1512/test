@@ -192,6 +192,10 @@ CtiCCConfirmationStats & CapControlPao::getConfirmationStats()
     return _confirmationStats;
 }
 
+/*
+    Extracts the point information from the reader and tries to assign it to this object.  If it
+        fails to do so, it dumps the point information to the log.
+*/
 void CapControlPao::assignPoint( Cti::RowReader& rdr )
 {
     long pointId,
@@ -206,7 +210,7 @@ void CapControlPao::assignPoint( Cti::RowReader& rdr )
     CtiPointType_t pointType = resolvePointType( pointTypeStr );
 
     if ( ! ( assignCommonPoint( pointId, pointOffset, pointType ) ||
-             assignOtherPoint( pointId, pointOffset, pointType ) ) )
+             assignSpecializedPoint( pointId, pointOffset, pointType ) ) )
     {
         Cti::FormattedList  logMessage;
 
@@ -219,6 +223,12 @@ void CapControlPao::assignPoint( Cti::RowReader& rdr )
     }
 }
 
+/*
+    Helper function to assign the given point info to points that are available on every device that
+        derives from CapControlPao.
+ 
+    Returns true if the point is assigned in this function, false otherwise.
+*/
 bool CapControlPao::assignCommonPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType )
 {
     const std::size_t initialSize = getPointIds()->size();
@@ -263,8 +273,52 @@ bool CapControlPao::assignCommonPoint( const long pointID, const long pointOffse
     return getPointIds()->size() > initialSize;
 }
 
-bool CapControlPao::assignOtherPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType )
+/*
+    Virtual function to be overriden by child classes to assign points that are specific to
+        the child class.
+ 
+    Returns true if the point is assigned in this function, false otherwise.
+*/
+bool CapControlPao::assignSpecializedPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType )
 {
     return false;
+}
+
+/*
+    Insert the point IDs into the supplied set that this object needs to register with dispatch.
+*/
+void CapControlPao::getPointRegistrationIds( std::set<long> & registrationIDs )
+{
+    getSpecializedPointRegistrationIds( registrationIDs );
+
+    if ( getDisabledStatePointId() > 0 )
+    {
+        registrationIDs.insert( getDisabledStatePointId() );
+    }
+
+    if ( getOperationStats().getUserDefOpSuccessPercentId() > 0 )
+    {
+        registrationIDs.insert( getOperationStats().getUserDefOpSuccessPercentId() );
+    }
+    if ( getOperationStats().getDailyOpSuccessPercentId() > 0 )
+    {
+        registrationIDs.insert( getOperationStats().getDailyOpSuccessPercentId() );
+    }
+    if ( getOperationStats().getWeeklyOpSuccessPercentId() > 0 )
+    {
+        registrationIDs.insert( getOperationStats().getWeeklyOpSuccessPercentId() );
+    }
+    if ( getOperationStats().getMonthlyOpSuccessPercentId() > 0 )
+    {
+        registrationIDs.insert( getOperationStats().getMonthlyOpSuccessPercentId() );
+    }
+}
+
+/*
+    Virtual function to be overridden by child classes to supply additional point IDs to register with dispatch.
+*/
+void CapControlPao::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+{
+
 }
 

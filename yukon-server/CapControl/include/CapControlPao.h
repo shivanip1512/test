@@ -54,6 +54,7 @@ public:
     CtiCCConfirmationStats & getConfirmationStats();
 
     void assignPoint( Cti::RowReader& rdr );
+    void getPointRegistrationIds( std::set<long> & registrationIDs );
 
     void restore( Cti::RowReader& rdr );
 
@@ -63,7 +64,8 @@ private:
 
     bool assignCommonPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
 
-    virtual bool assignOtherPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
+    virtual bool assignSpecializedPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
+    virtual void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs );
 
     int _paoId;
     std::string _paoCategory;

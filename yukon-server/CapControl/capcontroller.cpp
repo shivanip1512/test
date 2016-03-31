@@ -1433,66 +1433,19 @@ void CtiCapController::registerForPoints( const RegistrationMethod m )
     {
         std::set<long> registrationIds;
 
-        PaoIdToAreaMap::iterator areaIter = store->getPAOAreaMap()->begin();
-        for ( ; areaIter != store->getPAOAreaMap()->end() ; areaIter++)
+        for ( const auto & mapEntry : *store->getPAOAreaMap() )
         {
-            CtiCCAreaPtr currentArea = areaIter->second;
+            CtiCCAreaPtr currentArea = mapEntry.second;
 
-            if( currentArea->getVoltReductionControlPointId() > 0 )
-            {
-                registrationIds.insert(currentArea->getVoltReductionControlPointId());
-            }
-            if( currentArea->getDisabledStatePointId() > 0 )
-            {
-                registrationIds.insert(currentArea->getDisabledStatePointId());
-            }
-            if (currentArea->getOperationStats().getUserDefOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentArea->getOperationStats().getUserDefOpSuccessPercentId());
-            }
-            if (currentArea->getOperationStats().getDailyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentArea->getOperationStats().getDailyOpSuccessPercentId());
-            }
-            if (currentArea->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentArea->getOperationStats().getWeeklyOpSuccessPercentId());
-            }
-            if (currentArea->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentArea->getOperationStats().getMonthlyOpSuccessPercentId());
-            }
+            currentArea->getPointRegistrationIds( registrationIds );
         }
-        PaoIdToSpecialAreaMap::iterator spAreaIter = store->getPAOSpecialAreaMap()->begin();
-        for ( ; spAreaIter != store->getPAOSpecialAreaMap()->end() ; spAreaIter++)
+        for ( const auto & mapEntry : *store->getPAOSpecialAreaMap() )
         {
-            CtiCCSpecialPtr currentSpArea = spAreaIter->second;
-            if( currentSpArea->getVoltReductionControlPointId() > 0 )
-            {
-                registrationIds.insert(currentSpArea->getVoltReductionControlPointId());
-            }
-            if( currentSpArea->getDisabledStatePointId() > 0 )
-            {
-                registrationIds.insert(currentSpArea->getDisabledStatePointId());
-            }
-            if (currentSpArea->getOperationStats().getUserDefOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentSpArea->getOperationStats().getUserDefOpSuccessPercentId());
-            }
-            if (currentSpArea->getOperationStats().getDailyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentSpArea->getOperationStats().getDailyOpSuccessPercentId());
-            }
-            if (currentSpArea->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentSpArea->getOperationStats().getWeeklyOpSuccessPercentId());
-            }
-            if (currentSpArea->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentSpArea->getOperationStats().getMonthlyOpSuccessPercentId());
-            }
+            CtiCCSpecialPtr currentSpArea = mapEntry.second;
 
+            currentSpArea->getPointRegistrationIds( registrationIds );
         }
+
         PaoIdToSubstationMap::iterator stationIter = store->getPAOStationMap()->begin();
         for ( ; stationIter != store->getPAOStationMap()->end() ; stationIter++)
         {

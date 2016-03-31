@@ -3975,8 +3975,10 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
     {
         if ( areaId > 0 )
         {
-            deleteArea(areaId);
+            deleteArea( areaId );
         }
+
+        std::set<long>  modifiedPaoIDs;
 
         {
             static const std::string sql = 
@@ -4018,25 +4020,79 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
             while ( rdr() )
             {
-                CtiCCAreaPtr currentCCArea = CtiCCAreaPtr(new CtiCCArea(rdr, _strategyManager.get()));
+                CtiCCAreaPtr currentCCArea = CtiCCAreaPtr( new CtiCCArea( rdr, _strategyManager.get() ) );
 
-                paobject_area_map->insert(make_pair(currentCCArea->getPaoId(),currentCCArea));
+                paobject_area_map->insert( std::make_pair( currentCCArea->getPaoId(), currentCCArea) );
 
                 ccGeoAreas->push_back( currentCCArea );
 
-                if (currentCCArea->getVoltReductionControlPointId() > 0 )
-                {
-                    pointid_area_map->insert(make_pair(currentCCArea->getVoltReductionControlPointId(), currentCCArea));
-                    currentCCArea->addPointId(currentCCArea->getVoltReductionControlPointId());
-                }
+                modifiedPaoIDs.insert( currentCCArea->getPaoId() );
+            }
+        }
+        {
+            static const std::string sql = 
+                "SELECT "
+                    "P.POINTID, "
+                    "P.POINTTYPE, "
+                    "P.PAObjectID, "
+                    "P.POINTOFFSET "
+                "FROM "
+                    "POINT P "
+                        "JOIN CAPCONTROLAREA A "
+                            "ON P.PAObjectID = A.AreaID";
+
+            static const std::string sqlID = sql +
+                " WHERE P.PAObjectID = ?";
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader     rdr( connection );
+
+            if ( areaId > 0 )
+            {
+                rdr.setCommandText( sqlID );
+                rdr << areaId;
+            }
+            else
+            {
+                rdr.setCommandText( sql );
             }
 
+            rdr.execute();
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                CTILOG_INFO( dout, rdr.asString() );
+            }
+
+            while ( rdr() )
+            {
+                long currentAreaId;
+
+                rdr["PAObjectID"] >> currentAreaId;
+
+                if ( CtiCCAreaPtr currentArea = findInMap( currentAreaId, paobject_area_map ) )
+                {
+                    currentArea->assignPoint( rdr );
+                }
+            }
         }
+
+        for ( const long paoID : modifiedPaoIDs )
+        {
+            if ( CtiCCAreaPtr currentArea = findInMap( paoID, paobject_area_map ) )
+            {
+                for ( const long pointID : *currentArea->getPointIds() )
+                {
+                    pointid_area_map->insert( std::make_pair( pointID, currentArea ) );
+                }
+            }
+        }
+
         {
              static const string sqlNoID =  "SELECT SA.paobjectid, SA.seasonscheduleid, SA.seasonname, "
                                                "SA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
@@ -4165,96 +4221,6 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                  }
              }
         }
-        {
-            static const std::string sql = 
-                "SELECT "
-                    "P.POINTID, "
-                    "P.POINTTYPE, "
-                    "P.PAObjectID, "
-                    "P.POINTOFFSET "
-                "FROM "
-                    "POINT P "
-                        "JOIN CAPCONTROLAREA A "
-                            "ON P.PAObjectID = A.AreaID";
-
-            static const std::string sqlID = sql +
-                " WHERE P.PAObjectID = ?";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader     rdr( connection );
-
-            if ( areaId > 0 )
-            {
-                rdr.setCommandText( sqlID );
-                rdr << areaId;
-            }
-            else
-            {
-                rdr.setCommandText( sql );
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentAreaId;
-
-                rdr["PAObjectID"] >> currentAreaId;
-
-                if ( CtiCCAreaPtr currentArea = findInMap( currentAreaId, paobject_area_map ) )
-                {
-                    long tempPointId = -1000;
-                    long tempPointOffset = -1000;
-                    string tempPointType = "(none)";
-
-                    rdr["pointid"] >> tempPointId;
-                    rdr["pointoffset"] >> tempPointOffset;
-                    rdr["pointtype"] >> tempPointType;
-
-                    if ( resolvePointType(tempPointType) == StatusPointType &&
-                         tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
-                    {
-                        currentArea->setDisabledStatePointId(tempPointId, areaId);
-                        pointid_area_map->insert(make_pair(tempPointId,currentArea));
-                        currentArea->addPointId(tempPointId);
-                    }
-                    else if ( resolvePointType(tempPointType) == AnalogPointType )
-                    {
-                        if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
-                             tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
-                        {
-                            if (currentArea->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
-                            {
-                                pointid_area_map->insert(make_pair(tempPointId,currentArea));
-                                currentArea->addPointId(tempPointId);
-                            }
-                        }
-                        else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
-                                  tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
-                        {
-                            if (currentArea->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
-                            {
-                                pointid_area_map->insert(make_pair(tempPointId,currentArea));
-                                currentArea->addPointId(tempPointId);
-                            }
-                        }
-                        else
-                        {//undefined area point
-                            CTILOG_INFO(dout, "Undefined Area point offset: " << tempPointOffset);
-                        }
-                    }
-                    else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
-                    {
-                        CTILOG_INFO(dout, "Undefined Area point type: " << tempPointType);
-                    }
-                }
-            }
-        }
         if (areaId > 0) // else, when reloading all, then the reload of subs will be called after areaReload and take care of it.
         {
             static const string sql = "SELECT SAA.substationbusid, SAA.areaid, SAA.displayorder "
@@ -4310,8 +4276,9 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
     {
-        {
+        std::set<long>  modifiedPaoIDs;
 
+        {
             static const std::string sql = 
                 "SELECT "
                     "Y.PAObjectID, "
@@ -4338,23 +4305,66 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
             while ( rdr() )
             {
-                CtiCCSpecialPtr currentCCSpArea = CtiCCSpecialPtr(new CtiCCSpecial(rdr, _strategyManager.get()));
+                CtiCCSpecialPtr currentCCSpArea = CtiCCSpecialPtr( new CtiCCSpecial(rdr, _strategyManager.get() ) );
 
-                paobject_specialarea_map->insert(make_pair(currentCCSpArea->getPaoId(),currentCCSpArea));
+                paobject_specialarea_map->insert( std::make_pair( currentCCSpArea->getPaoId(), currentCCSpArea ) );
 
                 ccSpecialAreas->push_back( currentCCSpArea );
-                if (currentCCSpArea->getVoltReductionControlPointId() > 0 )
+
+                modifiedPaoIDs.insert( currentCCSpArea->getPaoId() );
+            }
+        }
+        {
+            static const std::string sql = 
+                "SELECT "
+                    "P.POINTID, "
+                    "P.POINTTYPE, "
+                    "P.PAObjectID, "
+                    "P.POINTOFFSET "
+                "FROM "
+                    "POINT P "
+                        "JOIN CAPCONTROLSPECIALAREA A "
+                            "ON P.PAObjectID = A.AreaID";
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader     rdr( connection, sql );
+
+            rdr.execute();
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                CTILOG_INFO( dout, rdr.asString() );
+            }
+
+            while ( rdr() )
+            {
+                long currentAreaId;
+
+                rdr["PAObjectID"] >> currentAreaId;
+
+                if ( CtiCCSpecialPtr currentSpArea = findInMap( currentAreaId, paobject_specialarea_map ) )
                 {
-                    pointid_specialarea_map->insert(make_pair(currentCCSpArea->getVoltReductionControlPointId(), currentCCSpArea));
-                    currentCCSpArea->addPointId(currentCCSpArea->getVoltReductionControlPointId());
+                    currentSpArea->assignPoint( rdr );
                 }
             }
         }
+
+        for ( const long paoID : modifiedPaoIDs )
+        {
+            if ( CtiCCSpecialPtr currentSpArea = findInMap( paoID, paobject_specialarea_map ) )
+            {
+                for ( const long pointID : *currentSpArea->getPointIds() )
+                {
+                    pointid_specialarea_map->insert( std::make_pair( pointID, currentSpArea ) );
+                }
+            }
+        }
+
         {
              static const string sqlNoID =  "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
                                                "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
@@ -4452,81 +4462,6 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                  }
              }
         }
-        {
-            static const string sqlNoID =  "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "
-                                           "FROM capcontrolspecialarea CSA, point PT "
-                                           "WHERE CSA.areaid = PT.paobjectid";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            rdr.setCommandText(sqlNoID);
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentAreaId;
-
-                rdr["paobjectid"] >> currentAreaId;
-                CtiCCSpecialPtr currentSpArea = findInMap(currentAreaId, paobject_specialarea_map);
-                if ( currentSpArea == NULL)
-                {
-                    continue;
-                }
-
-                if ( !rdr["pointid"].isNull() )
-                {
-                    long tempPointId = -1000;
-                    long tempPointOffset = -1000;
-                    string tempPointType = "(none)";
-                    rdr["pointid"] >> tempPointId;
-                    rdr["pointoffset"] >> tempPointOffset;
-                    rdr["pointtype"] >> tempPointType;
-
-                    if ( resolvePointType(tempPointType) == StatusPointType &&
-                         tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
-                    {
-                        currentSpArea->setDisabledStatePointId(tempPointId, true);
-                        pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
-                        currentSpArea->addPointId(tempPointId);
-                    }
-                    else if ( resolvePointType(tempPointType) == AnalogPointType )
-                    {
-                        if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
-                             tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
-                        {
-                            if (currentSpArea->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
-                            {
-                                pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
-                                currentSpArea->addPointId(tempPointId);
-                            }
-                        }
-                        else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
-                                  tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
-                        {
-                            if (currentSpArea->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
-                            {
-                                pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
-                                currentSpArea->addPointId(tempPointId);
-                            }
-                        }
-                        else
-                        {//undefined area point
-                            CTILOG_INFO(dout, "Undefined Special Area point offset: " << tempPointOffset);
-                        }
-                    }
-                    else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
-                    {
-                        CTILOG_INFO(dout, "Undefined Special Area point type: " << tempPointType);
-                    }
-                }
-            }
-         }
     }
     catch(...)
     {
