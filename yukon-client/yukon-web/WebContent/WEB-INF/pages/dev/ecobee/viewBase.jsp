@@ -55,19 +55,18 @@
         	 
          });
      });
-	 
-	 
-	 
-
 	</script>
-	<cti:url var="updateRequestUrl" value="update" />
+	
+    <div class="user-message error">Warning: The ecobee simulator will only work if you remove your proxy settings!</div>
+    
+    <cti:url var="updateRequestUrl" value="update" />
 	<form id="ecobeeForm" action="${updateRequestUrl}" method="post">
 		<div class="column-8-8-8">
 			<div class="column one">
 				<tags:sectionContainer title="Endpoint">
 					<ul class="simple-list">
 						<li>
-						<label><input type="checkbox" id="registerDevice" name="registerDevice"><i:inline
+						<label> <input type="checkbox" id="registerDevice" name="registerDevice"> <i:inline
 									key=".registerDevice" /></label>
 						</li>
 						<li>

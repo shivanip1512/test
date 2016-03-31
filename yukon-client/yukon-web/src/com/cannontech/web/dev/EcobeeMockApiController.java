@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.AuthenticationResponse;
 import com.cannontech.dr.ecobee.message.BaseResponse;
@@ -20,6 +21,7 @@ import com.cannontech.dr.ecobee.message.DeviceRequest;
 import com.cannontech.dr.ecobee.message.DrRequest;
 import com.cannontech.dr.ecobee.message.DrResponse;
 import com.cannontech.dr.ecobee.message.HierarchyResponse;
+import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.partial.Status;
@@ -27,14 +29,20 @@ import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 
 @Controller
-@RequestMapping("/mockecobee")
+@RequestMapping("/mockecobee/*")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class EcobeeMockApiController {
     @Autowired private EcobeeMockApiService ecobeeMockApiService;
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
+    
+    @IgnoreCsrfCheck
     @RequestMapping(value = "runtimeReport", method = RequestMethod.GET)
     public @ResponseBody DeviceDataResponse runtimeReport(@RequestParam("body") String bodyJson) throws IOException {
-        return ecobeeMockApiService.getRuntimeReport();
+        RuntimeReportRequest request = JsonUtils.fromJson(bodyJson, RuntimeReportRequest.class);
+        
+        DeviceDataResponse response = ecobeeMockApiService.getRuntimeReport(request);
+        
+        return response;
     }
 
     @IgnoreCsrfCheck
@@ -84,9 +92,11 @@ public class EcobeeMockApiController {
     }
 
     @IgnoreCsrfCheck
-    @RequestMapping(value = "register", method = RequestMethod.POST)
+    @RequestMapping("register")
     public @ResponseBody AuthenticationResponse register(@RequestBody AuthenticationRequest request) {
-        return new AuthenticationResponse("TK1", new Status(ecobeeDataConfiguration.getAuthenticate(), "Authenticated!"));
+        Status status = new Status(ecobeeDataConfiguration.getAuthenticate(), "Authenticated!");
+        AuthenticationResponse response = new AuthenticationResponse("TK1", status);
+        return response;
     }
 
 }

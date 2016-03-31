@@ -1,6 +1,6 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeCommunicationService.YUKON_CYCLE_EVENT_NAME;
+import static com.cannontech.dr.ecobee.service.EcobeeCommunicationService.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,7 +34,9 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
-
+    
+    private static final Duration oneHour = Duration.standardHours(1);
+    
     @Override
     public Set<PointValueHolder> updatePointData(PaoIdentifier paoIdentifier, EcobeeDeviceReadings deviceReadings) {
         // indoor/outdoor data store first valid value in hour (archives on update)
@@ -90,7 +93,9 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
                 setPointValue(pointValues, paoIdentifier, BuiltInAttribute.INDOOR_TEMPERATURE, startDate, indoorTempToUpdate);
             }
             if (shouldUpdateRuntime) {
-                setPointValue(pointValues, paoIdentifier, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, startDate,
+                // Runtime is recorded "hour-ending" instead of "hour-starting", so runtime from 1-2pm is recorded as
+                // occurring at 2pm.
+                setPointValue(pointValues, paoIdentifier, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, startDate.plus(oneHour),
                     TimeUnit.SECONDS.toMinutes(runtime));
             }
         }

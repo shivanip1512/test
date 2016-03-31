@@ -38,7 +38,7 @@ public class EcobeeMockServiceTestController {
 
 	@IgnoreCsrfCheck
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public String executeRequest(Integer regDevice, Integer movDevice,
+	public String update(Integer regDevice, Integer movDevice,
 			Integer creatSet, Integer movSet, Integer remSet, Integer drSend,
 			Integer restoreSend, Integer listHierarchy, Integer authenticateOp,
 			Integer runtimeReportOp, Integer assignThermostatOp,
