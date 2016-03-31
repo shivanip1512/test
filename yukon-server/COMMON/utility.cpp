@@ -2262,8 +2262,9 @@ LONG WINAPI CreateMiniDumpExceptionHandler( const Cti::compileinfo_t &info, cons
 
 void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTERS &pExceptionPtrs )
 {
+    /* Great info at http://www.debuginfo.com/articles/effminidumps.html */
+
     ostringstream os;
-    struct _MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
 
     time_t now    =  time(0);
     tm     now_tm = *localtime(&now);
@@ -2281,21 +2282,42 @@ void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTE
         << setw(2) << now_tm.tm_sec
         << ".dmp";
 
-    HANDLE outfile = CreateFile(os.str().c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE outfile = CreateFile( os.str().c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, 
+        CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 
-    if( outfile == INVALID_HANDLE_VALUE )
+    if( ( outfile != NULL ) && ( outfile == INVALID_HANDLE_VALUE ) )
     {
         return;
     }
 
+    CONTEXT c;
+
+    memset( &c, 0, sizeof( c ) );
+
+    HANDLE hThread;
+    c.ContextFlags = CONTEXT_FULL;
+    hThread = OpenThread( THREAD_ALL_ACCESS, FALSE, GetCurrentThreadId() );
+
+    GetThreadContext( hThread, &c );
+
+    MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
+    memset( &dumpInfo, 0, sizeof( dumpInfo ) );
+
+    EXCEPTION_POINTERS ep;
+    memset( &ep, 0, sizeof( ep ) );
+
+    ep.ContextRecord = &c;
+    ep.ExceptionRecord = pExceptionPtrs->ExceptionRecord;
+
     if( pExceptionPtrs )
     {
         dumpInfo.ThreadId = GetCurrentThreadId();
-        dumpInfo.ExceptionPointers = pExceptionPtrs;
-        dumpInfo.ClientPointers = true;
+        dumpInfo.ExceptionPointers = &ep;
+        dumpInfo.ClientPointers = false;
     }
 
-    if( !MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), outfile, MiniDumpWithFullMemory, &dumpInfo, NULL, NULL ) )
+    if( !MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), outfile, 
+        MiniDumpWithFullMemory, ( pExceptionPtrs != 0 ) ? &dumpInfo : 0, NULL, NULL ) )
     {
         ostringstream os;
 
