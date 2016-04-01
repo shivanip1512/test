@@ -333,7 +333,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
                 long endOfLastInterval = timeSeconds - (timeSeconds % intervalSeconds);
                 long beginningOfLastInterval = endOfLastInterval - intervalSeconds;
                 // If I used 1 kWh in 15 minutes, I would use 4kWh over an hour and my "demand" is 4 kW so we multiply Usage*<seconds in hour>/<Seconds in interval> thus  1kWh*3600/900=4kW.
-                result = getWattHours(device.getPaoIdentifier().getPaoId(), endOfLastInterval) - getWattHours(device.getPaoIdentifier().getPaoId(), beginningOfLastInterval) * (3600/intervalSeconds);
+                result = (getWattHours(device.getPaoIdentifier().getPaoId(), endOfLastInterval) - getWattHours(device.getPaoIdentifier().getPaoId(), beginningOfLastInterval)) * (3600/intervalSeconds);
                 return result;
             } else {
                 maxValue = minValue + RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getChangeBy();
