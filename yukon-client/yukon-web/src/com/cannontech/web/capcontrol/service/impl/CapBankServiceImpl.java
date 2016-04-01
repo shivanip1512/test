@@ -251,7 +251,7 @@ public class CapBankServiceImpl implements CapBankService {
                     monitorListPoint.add();
                 }
             } catch (SQLException e) {
-                log.warn("caught exception in savePoints", e);
+                log.warn("Exception while updating/adding points for CapBank", e);
             }
             displayOrder++;
         }
@@ -269,7 +269,7 @@ public class CapBankServiceImpl implements CapBankService {
                     existingMonitor.setDbConnection(connection);
                     existingMonitor.delete();
                 } catch (SQLException e) {
-                    log.warn("caught exception in savePoints", e);
+                    log.warn("Exception while deleting points from CapBank", e);
                 }
             }
         }   
