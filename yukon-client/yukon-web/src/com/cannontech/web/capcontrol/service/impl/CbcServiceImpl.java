@@ -26,7 +26,6 @@ import com.cannontech.common.pao.model.CompleteOneWayCbc;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.core.dao.PersistenceException;
@@ -51,7 +50,6 @@ import com.cannontech.yukon.IDatabaseCache;
 @Service
 public class CbcServiceImpl implements CbcService {
 
-    @Autowired private DeviceDao deviceDao;
     @Autowired private PaoPropertyDao propertyDao;
     @Autowired private DeviceConfigurationDao configurationDao;
     @Autowired private DeviceConfigurationService deviceConfigService;
@@ -300,7 +298,7 @@ public class CbcServiceImpl implements CbcService {
         }
     }
 
-    private void create(CapControlCBC cbc) {
+    public int create(CapControlCBC cbc) {
         CompleteCbcBase completeCbc = null;
         if (cbc.isTwoWay()) {
             CompleteTwoWayCbc completeTwoWay = new CompleteTwoWayCbc();
@@ -314,5 +312,6 @@ public class CbcServiceImpl implements CbcService {
 
         paoPersistenceService.createPaoWithDefaultPoints(completeCbc, cbc.getPaoType());
         cbc.setId(completeCbc.getPaObjectId());
+        return cbc.getId();
     }
 }

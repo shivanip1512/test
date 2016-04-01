@@ -7,7 +7,13 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage module="capcontrol" page="cbc.${mode}">
+<c:set var="pageName" value="cbc.${mode}"/>
+<c:if test="${orphan}">
+    <c:set var="pageName" value="cbc.orphan.${mode}"/>
+</c:if>
+<cti:standardPage module="capcontrol" page="${pageName}">
+
+<%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
     <tags:setFormEditMode mode="${mode}" />
 
@@ -38,10 +44,7 @@
                                 <span class="empty-list">No Parent</span>
                             </c:if>
                             <c:if test="${not empty cbc.parent}">
-                                <cti:url var="editParent" value="/editor/cbcBase.jsf">
-                                    <cti:param name="itemid" value="${cbc.parent.liteID}" />
-                                    <cti:param name="type" value="2" />
-                                </cti:url>
+                                <cti:url var="editParent" value="/capcontrol/capbanks/${cbc.parent.liteID}"/>
                                 <a href="${editParent}">${fn:escapeXml(cbc.parent.paoName)}</a>
                             </c:if>
                         </tags:nameValue2>

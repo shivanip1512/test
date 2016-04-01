@@ -11,12 +11,15 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.model.CompleteCapBank;
+import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -32,8 +35,11 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.web.capcontrol.service.CapBankService;
+import com.cannontech.web.capcontrol.service.CbcService;
+import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Service
@@ -44,12 +50,17 @@ public class CapBankServiceImpl implements CapBankService {
     @Autowired private CapControlCache ccCache;
     @Autowired private PointDao pointDao;
     @Autowired private CapbankDao capbankDao;
+    @Autowired private CbcService cbcService;
+    @Autowired private PaoPersistenceService paoPersistenceService;
+
     
     private Logger log = YukonLogManager.getLogger(getClass());
 
 
     @Override
     public CapBank getCapBank(int id) {
+        
+        assertCapBankExists(id);
 
         CapBank capbank = new CapBank();
 
@@ -132,6 +143,7 @@ public class CapBankServiceImpl implements CapBankService {
     }
 
     @Override
+    @Transactional
     public int save(CapBank capbank) {
         if(capbank.getCapBank().getControlDeviceID() != 0) {
             LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(capbank.getCapBank().getControlDeviceID(), 1, PointTypes.STATUS_POINT);
@@ -139,12 +151,37 @@ public class CapBankServiceImpl implements CapBankService {
         }
         
         if (capbank.getId() == null) {
-            dbPersistentDao.performDBChange(capbank, TransactionType.INSERT);
+            if(!capbank.getCbcControllerName().isEmpty()){
+                CapControlCBC cbc = new CapControlCBC();
+                cbc.setName(capbank.getCbcControllerName());
+                cbc.setPaoType(capbank.getCbcType());
+                if(capbank.getCbcCommChannel() != null && capbank.getCbcCommChannel() != 0) {
+                    DeviceDirectCommSettings commSettings = new DeviceDirectCommSettings();
+                    commSettings.setPortID(capbank.getCbcCommChannel());
+                    cbc.setDeviceDirectCommSettings(commSettings);
+                }
+                int cbcId = cbcService.create(cbc);
+                capbank.getCapBank().setControlDeviceID(cbcId);
+                LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(capbank.getCapBank().getControlDeviceID(), 1, PointTypes.STATUS_POINT);
+                capbank.getCapBank().setControlPointID(point.getPointID());
+            }
+            create(capbank);
         } else {
             assertCapBankExists(capbank.getId());
             dbPersistentDao.performDBChange(capbank,  TransactionType.UPDATE);
         }
 
+        return capbank.getId();
+    }
+    
+    private int create(CapBank capbank) {
+        CompleteCapBank completeCapbank = new CompleteCapBank();
+        completeCapbank.setPaoName(capbank.getName());
+        completeCapbank.setDisabled(capbank.isDisabled());
+        completeCapbank.setControlDeviceId(capbank.getCapBank().getControlDeviceID());
+        completeCapbank.setControlPointId(capbank.getCapBank().getControlPointID());
+        paoPersistenceService.createPaoWithDefaultPoints(completeCapbank, capbank.getPaoType());
+        capbank.setId(completeCapbank.getPaObjectId());
         return capbank.getId();
     }
 

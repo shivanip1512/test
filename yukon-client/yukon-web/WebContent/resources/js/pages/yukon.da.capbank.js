@@ -11,6 +11,30 @@ yukon.da.capbank = (function () {
     'use strict';
     var initialized = false;
     
+    /**
+     * @type Array.string
+     *
+     * Filled out in yukon.da.capbank.init().
+     * Array of strings of paoTypes that represent 2 way cbcs
+     */
+    var twoWayTypes = [];
+
+    var updatePaoTypeFields = function () {
+        var paoTypeField = $('#pao-type');
+        
+        if(paoTypeField.is(":visible")) {
+            var paoType = paoTypeField.val();
+            var isTwoWay = twoWayTypes.indexOf(paoType) !== -1;
+
+            if (isTwoWay) {
+               $('#comm-port').removeAttr("disabled"); 
+            } else {
+                $('#comm-port').attr("disabled", true); 
+            }
+        }
+        
+    };
+    
     var setCustomCommunicationMedium = function () {
         var toggle = $('#customMediumCheckbox'),
             commMedium = $('#commMedium'),
@@ -62,8 +86,12 @@ yukon.da.capbank = (function () {
 
             if (initialized) return;
             
+            twoWayTypes = yukon.fromJson('#two-way-types');
+
             setCustomCommunicationMedium();
             setCustomBankSize();
+            
+            $('#pao-type').on('change', updatePaoTypeFields);
                         
             /** User confirmed intent to delete capbank. */
             $(document).on('yukon:da:capbank:delete', function () {

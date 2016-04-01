@@ -66,6 +66,7 @@ public class ResultsController {
         SUBSTATION,
         CAPCONTROL,
         GENERAL,
+        CAPBANK,
         ;
     }
 
@@ -107,7 +108,7 @@ public class ResultsController {
             model.addAttribute("pageName", "orphanedFeeders");
         }
         else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(srchCriteria) ) {
-            searchType = SearchType.CAPCONTROL;
+            searchType = SearchType.CAPBANK;
             ccObjects = capbankDao.getOrphans();
             label = accessor.getMessage("yukon.web.modules.capcontrol.search.orphanedBanks.pageName");
             model.addAttribute("pageName", "orphanedBanks");
@@ -184,6 +185,10 @@ public class ResultsController {
             String returnValue = ccType.getDisplayValue();
             return returnValue;
         } else if (searchType == SearchType.SUBSTATION) {
+            CapControlType ccType = CapControlType.getCapControlType(dbType);
+            String returnValue = ccType.getDisplayValue();
+            return returnValue;
+        } else if (searchType == SearchType.CAPBANK) {
             CapControlType ccType = CapControlType.getCapControlType(dbType);
             String returnValue = ccType.getDisplayValue();
             return returnValue;

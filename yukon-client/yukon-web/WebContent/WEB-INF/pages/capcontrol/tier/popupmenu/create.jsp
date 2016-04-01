@@ -14,7 +14,7 @@
             <div class="stacked"><a href="<cti:url value="/capcontrol/feeders/create"/>"><i:inline key=".type.FEEDER"/></a></div>
         </div>
         <div class="column two nogutter">
-            <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=1050"/>"><i:inline key=".type.CAPBANK"/></a></div>
+            <div class="stacked"><a href="<cti:url value="/capcontrol/capbanks/create"/>"><i:inline key=".type.CAPBANK"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/cbc/create"/>"><i:inline key=".type.CBC"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/regulators/create"/>"><i:inline key=".regulator"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/strategies/create"/>"><i:inline key=".type.STRATEGY"/></a></div>

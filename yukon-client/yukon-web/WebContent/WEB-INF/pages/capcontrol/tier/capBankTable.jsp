@@ -65,10 +65,7 @@
 
                 <%-- Bank Name --%>
                 <td>
-                    <cti:url var="editUrl" value="/editor/cbcBase.jsf">
-                        <cti:param name="type" value="2" />
-                        <cti:param name="itemid" value="${bankId}" />
-                    </cti:url>
+                    <cti:url var="editUrl" value="/capcontrol/capbanks/${bankId}" />
                     <a href="${editUrl}">
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_NAME"/>
                     </a>

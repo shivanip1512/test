@@ -50,6 +50,11 @@ public class CapBank extends CapControlDeviceBase {
     private com.cannontech.database.db.capcontrol.CapBank capBank = new com.cannontech.database.db.capcontrol.CapBank();
     private List<CCMonitorBankList> ccMonitorBankList = new ArrayList<CCMonitorBankList>();
     private CapBankAdditional capbankAdditionalInfo = new CapBankAdditional();
+    
+    private Boolean createCBC;
+    private String cbcControllerName;
+    private PaoType cbcType;
+    private Integer cbcCommChannel;
 
     public CapBank() {
         super(PaoType.CAPBANK);
@@ -81,7 +86,8 @@ public class CapBank extends CapControlDeviceBase {
             CCMonitorBankList item = iter.next();
             item.add();
         }
-        capbankAdditionalInfo.add();
+        capbankAdditionalInfo.setDeviceID(getId());
+        capbankAdditionalInfo.add();       
     }
 
     @Override
@@ -242,6 +248,38 @@ public class CapBank extends CapControlDeviceBase {
 
     public void setCapbankAdditionalInfo(CapBankAdditional capbankAdditionalInfo) {
         this.capbankAdditionalInfo = capbankAdditionalInfo;
+    }
+
+    public String getCbcControllerName() {
+        return cbcControllerName;
+    }
+
+    public void setCbcControllerName(String cbcControllerName) {
+        this.cbcControllerName = cbcControllerName;
+    }
+
+    public PaoType getCbcType() {
+        return cbcType;
+    }
+
+    public void setCbcType(PaoType cbcType) {
+        this.cbcType = cbcType;
+    }
+
+    public Integer getCbcCommChannel() {
+        return cbcCommChannel;
+    }
+
+    public void setCbcCommChannel(Integer cbcCommChannel) {
+        this.cbcCommChannel = cbcCommChannel;
+    }
+
+    public Boolean getCreateCBC() {
+        return createCBC;
+    }
+
+    public void setCreateCBC(Boolean createCBC) {
+        this.createCBC = createCBC;
     }
 
 }

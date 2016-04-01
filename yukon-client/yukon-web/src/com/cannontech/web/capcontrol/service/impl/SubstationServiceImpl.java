@@ -12,6 +12,8 @@ import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.model.CompleteCapControlSubstation;
+import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
@@ -43,6 +45,7 @@ public class SubstationServiceImpl implements SubstationService {
     @Autowired private CapControlWebUtilsService ccWebUtilsService;
     @Autowired private FeederService feederService;
     @Autowired private BusService busService;
+    @Autowired private PaoPersistenceService paoPersistenceService;
 
     @Override
     public CapControlSubstation get(int id) {
@@ -58,13 +61,25 @@ public class SubstationServiceImpl implements SubstationService {
     @Override
     public int save(CapControlSubstation sub) {
         if (sub.getId() == null) {
-            dbPersistentDao.performDBChange(sub, TransactionType.INSERT);
+            create(sub);
         } else {
             assertSubstationExists(sub.getId());
             dbPersistentDao.performDBChange(sub,  TransactionType.UPDATE);
         }
 
         return sub.getId();
+    }
+    
+    private int create(CapControlSubstation substation) {
+        CompleteCapControlSubstation completeSubstation = new CompleteCapControlSubstation();
+        completeSubstation.setPaoName(substation.getName());
+        completeSubstation.setDisabled(substation.isDisabled());
+        completeSubstation.setMapLocationId(substation.getCapControlSubstation().getMapLocationID());
+        completeSubstation.setDescription(substation.getGeoAreaName());
+        completeSubstation.setVoltReductionPointId(substation.getCapControlSubstation().getVoltReductionPointId());
+        paoPersistenceService.createPaoWithDefaultPoints(completeSubstation, substation.getPaoType());
+        substation.setId(completeSubstation.getPaObjectId());
+        return substation.getId();
     }
 
     @Override

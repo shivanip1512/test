@@ -40,4 +40,6 @@ public interface CbcService {
      * @return The full {@link DNPConfiguration} for the device. If none is assigned, the default is returned.
      */
     DNPConfiguration getDnpConfigForDevice(CapControlCBC cbc);
+
+    int create(CapControlCBC cbc);
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
@@ -29,6 +30,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -38,6 +40,10 @@ import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.service.CbcService;
@@ -62,6 +68,7 @@ public class CbcController {
     @Autowired private DeviceConfigurationDao deviceConfigDao;
     @Autowired private AttributeService attributeService;
     @Autowired private CapbankDao capbankDao;
+    @Autowired private CapControlCache ccCache;
 
 
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
@@ -159,6 +166,8 @@ public class CbcController {
             cbc = (CapControlCBC) modelCbc;
         }
         model.addAttribute("cbc", cbc);
+        model.addAttribute("cbcId", cbc.getId());
+        model.addAttribute("cbcName", cbc.getName());
 
         model.addAttribute("paoTypes", PaoType.getCbcTypes());
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
@@ -168,9 +177,44 @@ public class CbcController {
         if (cbc.getId() != null) {
             //parent may not be populated if validation errors were found and we are redirecting back to the page
             PaoIdentifier capbank = capbankDao.findCapBankByCbc(cbc.getId());
-            if (capbank != null) {
+            if(capbank == null) {
+                model.addAttribute("orphan", true);
+            } else {
                 LiteYukonPAObject parent = dbCache.getAllPaosMap().get(capbank.getPaoId());
                 cbc.setParent(parent);
+                int capbankId = parent.getLiteID();
+                model.addAttribute("orphan", false);
+                
+                model.addAttribute("capbankId", capbankId);
+                model.addAttribute("capbankName", parent.getPaoName());
+                
+                try {
+                    SubStation substation = ccCache.getParentSubstation(capbankId);
+                    model.addAttribute("substationId", substation.getCcId());
+                    model.addAttribute("substationName", substation.getCcName());
+
+                    int areaId = ccCache.getParentAreaId(capbankId);
+                    Area area = ccCache.getArea(areaId);
+
+                    model.addAttribute("areaId", area.getCcId());
+                    model.addAttribute("areaName", area.getCcName());
+                    
+                    int busId = ccCache.getParentSubBusId(capbankId);
+                    SubBus bus = ccCache.getSubBus(busId);
+
+                    model.addAttribute("busId", bus.getCcId());
+                    model.addAttribute("busName", bus.getCcName());
+                    
+                    int feederId = ccCache.getParentFeederId(capbankId);
+                    Feeder feeder = ccCache.getFeeder(feederId);
+
+                    model.addAttribute("feederId", feeder.getCcId());
+                    model.addAttribute("feederName", feeder.getCcName());
+
+                } catch (NotFoundException e) {
+                    model.addAttribute("orphan", true);
+                }
+
             }
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
             //check for special formats

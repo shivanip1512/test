@@ -2,6 +2,10 @@ package com.cannontech.web.capcontrol;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,6 +29,7 @@ import com.cannontech.capcontrol.CapBankPointPhase;
 import com.cannontech.capcontrol.CapBankPotentialTransformer;
 import com.cannontech.capcontrol.CapBankSize;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -195,7 +200,6 @@ public class CapBankController {
         if(capbank.getCapBank().getControlDeviceID() != 0){
             CapControlCBC cbc = cbcService.getCbc(capbank.getCapBank().getControlDeviceID());
             model.addAttribute("cbc", cbc);
-            model.addAttribute("availablePorts", dbCache.getAllPorts());
             model.addAttribute("controllerRouteName", paoDao.getYukonPAOName(cbc.getDeviceCBC().getRouteID()));
             model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
         }
@@ -209,6 +213,28 @@ public class CapBankController {
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
         model.addAttribute("opMethods", BankOpState.values());
         model.addAttribute("bankSizes", CapBankSize.values());
+        model.addAttribute("cbcTypes", PaoType.getCbcTypes());
+        model.addAttribute("availablePorts", dbCache.getAllPorts());
+        model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
+        
+        Set<Integer> tcpPorts = dbCache.getAllPorts().stream()
+                .filter(new Predicate<LiteYukonPAObject> () {
+
+                    @Override
+                    public boolean test(LiteYukonPAObject port) {
+                        return port.getPaoType() == PaoType.TCPPORT;
+                    }
+
+                }).map(new Function<LiteYukonPAObject, Integer>(){
+
+                    @Override
+                    public Integer apply(LiteYukonPAObject port) {
+                        return port.getLiteID();
+                    }
+
+                }).collect(Collectors.toSet());
+
+            model.addAttribute("tcpCommPorts", tcpPorts);
         
         EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
         int ecId = energyCompany.getId();

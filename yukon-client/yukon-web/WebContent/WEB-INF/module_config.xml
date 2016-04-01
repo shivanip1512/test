@@ -683,6 +683,15 @@
                           <page name="capbank.EDIT" type="BASIC" hideFavorite="true">
                             <labelArgument>${capbankName}</labelArgument>
                           </page>
+                          <page name="cbc.VIEW" type="BASIC">
+                            <link>/capcontrol/cbc/${cbcId}</link>
+                            <labelArgument>${cbcName}</labelArgument>
+                            <pages>
+                                <page name="cbc.EDIT" type="BASIC">
+                                    <labelArgument>${cbcName}</labelArgument>
+                                </page>
+                            </pages>
+                          </page>
                         </pages>
                       </page>
                     </pages>
@@ -736,14 +745,6 @@
               </page>
             </pages>
           </page>
-          <page name="cbc.VIEW" type="BASIC">
-            <labelArgument>${cbc.name}</labelArgument>
-            <pages>
-                <page name="cbc.EDIT" type="BASIC">
-                    <labelArgument>${cbc.name}</labelArgument>
-                </page>
-            </pages>
-          </page>
           <page name="movedCapBanks" type="BASIC">
             <link>/capcontrol/move/movedCapBanks</link>
           </page>
@@ -794,6 +795,16 @@
               </page>
             </pages>
           </page>
+          <page name="cbc.orphan.CREATE" type="BASIC" />
+          <page name="cbc.orphan.VIEW" type="BASIC">
+            <link>/capcontrol/cbc/${cbcId}</link>
+            <labelArgument>${cbcName}</labelArgument>
+            <pages>
+              <page name="cbc.orphan.EDIT" type="BASIC" hideFavorite="true">
+                <labelArgument>${cbcName}</labelArgument>
+              </page>
+            </pages>
+          </page>
           <page name="regulator" type="BASIC">
             <pages>
               <page name="regulator.CREATE" type="BASIC" />
@@ -811,6 +822,7 @@
           <page name="area.CREATE" type="BASIC"/>
           <page name="substation.CREATE" type="BASIC"/>
           <page name="cbc.CREATE" type="BASIC"/>
+          <page name="capbank.CREATE" type="BASIC"/>
           <page name="feeder.CREATE" type="BASIC"/>
           <page name="bus.CREATE" type="BASIC"/>
           <page name="recentEvents" type="DETAIL_CHILD"/>

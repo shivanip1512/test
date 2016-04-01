@@ -56,12 +56,22 @@ public class FeederServiceImpl implements FeederService {
     @Override
     public int save(CapControlFeeder feeder) {
         if (feeder.getId() == null) {
-            dbPersistentDao.performDBChange(feeder, TransactionType.INSERT);
+            create(feeder);
         } else {
             assertFeederExists(feeder.getId());
             dbPersistentDao.performDBChange(feeder,  TransactionType.UPDATE);
         }
 
+        return feeder.getId();
+    }
+    
+    private int create(CapControlFeeder feeder) {
+        CompleteCapControlFeeder completeFeeder = new CompleteCapControlFeeder();
+        completeFeeder.setPaoName(feeder.getName());
+        completeFeeder.setDisabled(feeder.isDisabled());
+        completeFeeder.setMapLocationId(feeder.getCapControlFeeder().getMapLocationID());
+        paoPersistenceService.createPaoWithDefaultPoints(completeFeeder, feeder.getPaoType());
+        feeder.setId(completeFeeder.getPaObjectId());
         return feeder.getId();
     }
 

@@ -56,10 +56,7 @@
 
 <c:if test="${hasEditingRole}">
     <div class="js-page-additional-actions dn">
-        <cti:url var="editUrl" value="/editor/cbcBase.jsf">
-            <cti:param name="type" value="2"/>
-            <cti:param name="itemid" value="${subBusId}"/>
-        </cti:url>
+        <cti:url var="editUrl" value="/capcontrol/buses/${subBusId}"/>
         <c:if test="${not dividerAdded}">
             <li class="divider">
             <c:set var="dividerAdded" value="true" />

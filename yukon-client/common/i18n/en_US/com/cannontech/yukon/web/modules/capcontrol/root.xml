@@ -176,6 +176,11 @@
     <entry key="yukon.web.modules.capcontrol.capbank.operationsSection.title">Operations</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.controllerConfigurationSection.title">Controller Configuration</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.cbcController">CBC Controller</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.createCBC">Create New CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.cbcControllerName">Controller Name</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.cbcType">CBC Type</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.cbcCommChannel">Comm. Channel</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.cbcControllerSection.title">Controller Type</entry>
     
     <entry key="yukon.web.modules.capcontrol.capbank.assignedPointsSection.title">Assigned Points</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.custom">Custom</entry>
@@ -1063,7 +1068,16 @@
     <entry key="yukon.web.modules.capcontrol.cbc.EDIT.pageTitle">CBC: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.VIEW.crumbTitle">{0}</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.VIEW.pageTitle">CBC: {0}</entry>
-    <entry key="yukon.web.modules.capcontrol.cbc.VIEW.pageHeading">H{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.orphan.VIEW.pageTitle">CBC: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.orphan.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.orphan.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.orphan.EDIT.pageTitle">CBC: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.orphan.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.orphan.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.orphan.CREATE.pageTitle">Create CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.orphan.CREATE.pageHeading">Create CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.orphan.CREATE.crumbTitle">Create</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.points.title">CBC Points</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.config.title">Configuration</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.dnpConfiguration.title">DNP Configuration</entry>
