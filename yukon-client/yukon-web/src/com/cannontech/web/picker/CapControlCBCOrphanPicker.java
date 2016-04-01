@@ -32,12 +32,13 @@ public class CapControlCBCOrphanPicker extends DatabasePaoPicker {
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
                 
+                SqlStatementBuilder controlDeviceInClause = new SqlStatementBuilder();
+                controlDeviceInClause.append("SELECT DISTINCT ControlDeviceId FROM CapBank");
+                
                 SqlStatementBuilder orphanClause = new SqlStatementBuilder();
-                orphanClause.append("( PAObjectId NOT IN (");
-                orphanClause.append("  SELECT ControlDeviceId");
-                orphanClause.append("  FROM CapBank )");
-                orphanClause.append(" OR PAObjectId = " + selectedCBCId);
-                orphanClause.append(" )");
+                orphanClause.append("( PAObjectId").notIn(controlDeviceInClause);
+                orphanClause.append("  OR PAObjectId").eq(selectedCBCId);
+                orphanClause.append(")");
                 return orphanClause;
                 
             }

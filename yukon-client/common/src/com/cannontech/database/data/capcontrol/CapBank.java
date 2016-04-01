@@ -141,13 +141,13 @@ public class CapBank extends CapControlDeviceBase {
         //check for custom communication medium
         capbankAdditionalInfo.setCommMediumCustom(capbankAdditionalInfo.getCommMedium());
         String commMedium = capbankAdditionalInfo.getCommMedium();
-        if(commMedium != null) {
-            if(commMedium.equals(CapBankAdditional.STR_NONE)) {
+        if (commMedium != null) {
+            if (commMedium.equals(CapBankAdditional.STR_NONE)) {
                 capbankAdditionalInfo.setCustomCommMedium(false);
             } else {
                 CapBankCommunicationMedium[] commMediums = CapBankCommunicationMedium.values();
                 for (CapBankCommunicationMedium med : commMediums) {
-                    if(med.getDisplayName().equals(commMedium)) {
+                    if (med.getDisplayName().equals(commMedium)) {
                         capbankAdditionalInfo.setCustomCommMedium(false);
                         break;
                     }
@@ -157,10 +157,10 @@ public class CapBank extends CapControlDeviceBase {
         //check for custom bankSize
         capBank.setBankSizeCustom(capBank.getBankSize());
         int bankSize = capBank.getBankSize();
-        if(bankSize != 0) {
+        if (bankSize != 0) {
             CapBankSize[] bankSizes = CapBankSize.values();
             for (CapBankSize size : bankSizes) {
-                if(size.getDisplayValue() == bankSize) {
+                if (size.getDisplayValue() == bankSize) {
                     capBank.setCustomBankSize(false);
                     break;
                 }
