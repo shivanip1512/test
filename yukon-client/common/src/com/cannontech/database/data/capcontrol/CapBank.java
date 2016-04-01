@@ -51,7 +51,7 @@ public class CapBank extends CapControlDeviceBase {
     private List<CCMonitorBankList> ccMonitorBankList = new ArrayList<CCMonitorBankList>();
     private CapBankAdditional capbankAdditionalInfo = new CapBankAdditional();
     
-    private Boolean createCBC;
+    private Boolean createCBC = false;
     private String cbcControllerName;
     private PaoType cbcType;
     private Integer cbcCommChannel;
