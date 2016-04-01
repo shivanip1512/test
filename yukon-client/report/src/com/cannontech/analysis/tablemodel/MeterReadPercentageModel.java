@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.activemq.openwire.v2.IntegerResponseMarshaller;
 import org.apache.log4j.Logger;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -87,22 +85,22 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
         public Integer countNoData = 0;
         public Integer countUnsupported = 0;
     }
-
+    
     private class DateRange {
 
-        private DateMidnight startDate;
-        private DateMidnight stopDate;
+        private DateTime  startDate;
+        private DateTime  stopDate;
 
-        DateRange(DateMidnight startDate, DateMidnight stopDate) {
+        DateRange(DateTime  startDate, DateTime  stopDate) {
             this.startDate = startDate;
             this.stopDate = stopDate;
         }
 
-        public DateMidnight getStartDate() {
+        public DateTime  getStartDate() {
             return startDate;
         }
 
-        public DateMidnight getStopDate() {
+        public DateTime getStopDate() {
             return stopDate;
         }
     }
@@ -162,8 +160,8 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
 
                 // find that devices that were successfully read within the last 10 years
                 // This must cover a wider time range than the report or counts will be wrong and can go negative.
-                DateMidnight tenYrStopDate = new DateMidnight(context.getJodaTimeZone()).plusDays(1);
-                DateMidnight tenYrStartDate = tenYrStopDate.minusYears(10);
+                DateTime tenYrStopDate = new DateTime().plusDays(1);
+                DateTime tenYrStartDate = tenYrStopDate.minusYears(10);
                 DateRange tenYrDateRange = new DateRange(tenYrStartDate, tenYrStopDate);
 
                 int successTenYearCount = getSuccessfulDeviceCount(paoTypeToAttribute, group, actualPaoTypes, tenYrDateRange);
@@ -281,8 +279,8 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
      */
     private List<DateRange> createDateRanges() {
         List<DateRange> ranges = Lists.newArrayList();
-        DateMidnight stopDate = new DateMidnight(context.getJodaTimeZone()).minusDays(1);
-        DateMidnight startDate = null;
+        DateTime stopDate = new DateTime().withTimeAtStartOfDay().minusDays(1);
+        DateTime startDate = null;
 
         if (period == MeterReadPercentagePeriod.MONTHLY) {
             startDate = stopDate.dayOfMonth().withMinimumValue();
@@ -304,7 +302,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
 		DatedModelAttributes datedModel = this;
         // date range for the report header
         datedModel.setStartDate(startDate.toDate());
-        datedModel.setStopDate(new DateTime(new DateMidnight(context.getJodaTimeZone())).minusSeconds(1).toDate());
+        datedModel.setStopDate(new DateTime(new DateTime()).minusSeconds(1).toDate());
         return ranges;
     }
 
