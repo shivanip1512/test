@@ -1,5 +1,6 @@
 package com.cannontech.dr.rfn.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -327,14 +328,14 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             long timeSeconds = time.getMillis() / 1000;
 
             if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.USAGE) {
-                return getWattHours(device.getPaoIdentifier().getPaoId(), timeSeconds);
+                return roundToOneDecimalPlace(getWattHours(device.getPaoIdentifier().getPaoId(), timeSeconds));
             } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.DEMAND) {
                 // I think this may still be wrong since intervalSeconds may not end up being on the "clock" hour exactly due to leap seconds. 
                 long endOfLastInterval = timeSeconds - (timeSeconds % intervalSeconds);
                 long beginningOfLastInterval = endOfLastInterval - intervalSeconds;
                 // If I used 1 kWh in 15 minutes, I would use 4kWh over an hour and my "demand" is 4 kW so we multiply Usage*<seconds in hour>/<Seconds in interval> thus  1kWh*3600/900=4kW.
                 result = (getWattHours(device.getPaoIdentifier().getPaoId(), endOfLastInterval) - getWattHours(device.getPaoIdentifier().getPaoId(), beginningOfLastInterval)) * (3600/intervalSeconds);
-                return result;
+                return roundToOneDecimalPlace(result);
             } else {
                 maxValue = minValue + RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getChangeBy();
                 random = new Random().nextDouble();
@@ -357,7 +358,19 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
                     + (random * (RfnMeterSimulatorConfiguration.getRfnMeterValueGenerator(attribute).getMaxValue() 
                     - RfnMeterSimulatorConfiguration.getRfnMeterValueGenerator(attribute).getMinValue()));
         }
-        return Math.round(result * 100.0) / 100.0;
+        return roundToOneDecimalPlace(result);
+    }
+    
+    /*
+     * Data from the real device returns value rounded to one decimal place.
+     * Examples:
+     * 1.9991 -> 1.9
+     * 1.1294 -> 1.1
+     * 1.2097 -> 1.2
+     * 1.2997 -> 1.2
+     */
+    private Double roundToOneDecimalPlace(Double value){
+        return new BigDecimal(value).setScale(1, BigDecimal.ROUND_DOWN).doubleValue();
     }
 
     /**
