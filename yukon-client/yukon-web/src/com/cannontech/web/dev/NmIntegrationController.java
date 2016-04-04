@@ -581,8 +581,8 @@ public class NmIntegrationController {
         }
     }
 
-    @RequestMapping("startMetersArchieveRequest")
-    public void startMetersArchieveRequest(SimulatorSettings settings, FlashScope flash) {
+    @RequestMapping("startMetersArchiveRequest")
+    public void startMetersArchiveRequest(SimulatorSettings settings, FlashScope flash) {
         try {
             simulatorsCommunicationService.sendRequest(new RfnMeterDataSimulatorStartRequest(settings),
                 SimulatorResponseBase.class);
@@ -613,7 +613,7 @@ public class NmIntegrationController {
         
         RfnMeterDataSimulatorStatusResponse response = getRfnMeterSimulatorStatusResponse().response;
         if(response == null){
-            return "rfn/dataSimulator.jsp";
+            return "rfn/rfnMeterSimulator.jsp";
         }
         if (response.getStatus().isRunning().get()) {
             model.addAttribute("currentSettings", response.getSettings());

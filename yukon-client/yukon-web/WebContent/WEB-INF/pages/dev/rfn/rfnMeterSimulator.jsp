@@ -16,7 +16,7 @@
         	var formData = $('#formData').serialize();
             if($(this).attr('id') === 'send-message') {
                 $.ajax({
-                    url: yukon.url('/dev/rfn/startMetersArchieveRequest'),
+                    url: yukon.url('/dev/rfn/startMetersArchiveRequest'),
                     type: 'post',
                     data: formData 
                     }).done(function(data) {
