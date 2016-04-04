@@ -38,6 +38,8 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
             .name( boost::replace_all_copy( title, " ", "" ) + "_outThread" ) // use the title and remove all white spaces to set the thread name
             .priority( THREAD_PRIORITY_HIGHEST ))
 {
+    CTILOG_DEBUG( dout, who() << " - CtiConnection::CtiConnection() @0x" << std::hex << this );
+
     // create message listener and register function and caller
     _messageListener.reset(
             new MessageListener(
@@ -50,7 +52,7 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
 
 CtiConnection::~CtiConnection()
 {
-    CTILOG_DEBUG( dout, who() << "CtiConnection::~CtiConnection()" );
+    CTILOG_DEBUG( dout, who() << " - CtiConnection::~CtiConnection() @0x" << std::hex << this );
 }
 
 long CtiConnection::getConnectionId() const

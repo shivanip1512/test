@@ -23,6 +23,8 @@ CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerC
     CtiConnection( "Server Connection " + std::to_string(++serverConnectionCount), inQ, termSeconds ),
     _replyDest( listenerConnection.getClientReplyDest() )
 {
+    CTILOG_DEBUG( dout, who() << " - CtiServerConnection::CtiServerConnection() @0x" << std::hex << this );
+
     if( inQ )
     {
         inQ->setName(listenerConnection.getServerQueueName());
@@ -45,7 +47,7 @@ CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerC
  */
 CtiServerConnection::~CtiServerConnection()
 {
-    CTILOG_DEBUG( dout, who() << "CtiServerConnection::~CtiServerConnection()" );
+    CTILOG_DEBUG( dout, who() << "- CtiServerConnection::~CtiServerConnection() @0x" << std::hex << this );
 
     try
     {

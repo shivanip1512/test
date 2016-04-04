@@ -16,11 +16,13 @@ CtiConnectionManager::CtiConnectionManager( CtiListenerConnection& listenerConn,
    _clientExpirationDelay(900),
    _serverRequestId(0),
    CtiServerConnection(listenerConn, inQ)
-{}
+{
+    CTILOG_DEBUG( dout, who() << " - CtiConnectionManager::CtiConnectionManager() @0x" << std::hex << this );
+}
 
 CtiConnectionManager::~CtiConnectionManager()
 {
-    CTILOG_DEBUG( dout, who() << "CtiConnectionManager::~CtiConnectionManager()" );
+    CTILOG_DEBUG( dout, who() << " - CtiConnectionManager::~CtiConnectionManager() @0x" << std::hex << this );
 
    // We better just do the normal stuff one at a time... Make sure this is virtual
    // so base destructor gets called in all cases.

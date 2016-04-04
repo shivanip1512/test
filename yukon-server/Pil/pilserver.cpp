@@ -385,6 +385,7 @@ void PilServer::connectionThread()
         {
             if( !_listenerConnection.verifyConnection() )
             {
+                CTILOG_INFO( dout, "[Re]starting listener, resetting connections" );
                 mConnectionTable.clear();
 
                 _listenerConnection.start();
@@ -1334,9 +1335,7 @@ YukonError_t PilServer::executeMulti(const CtiMultiMsg *pMulti)
 
 void PilServer::clientShutdown(CtiServer::ptr_type &CM)
 {
-//#ifdef DEBUG_SHUTDOWN
-    CTILOG_INFO(dout, "Now shutting down");
-//#endif
+    CTILOG_INFO(dout, CM->who() << "Now shutting down");
 
     Inherited::clientShutdown(CM);
 }
