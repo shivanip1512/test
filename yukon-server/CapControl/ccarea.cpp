@@ -196,10 +196,10 @@ void CtiCCArea::checkAndUpdateChildVoltReductionFlags()
     setChildVoltReductionFlag( isChildSubstationReducing );
 }
 
-void CtiCCArea::handleSpecializedPointData( CtiPointDataMsg * message )
+void CtiCCArea::handleSpecializedPointData( const CtiPointDataMsg & message )
 {
-    const long   pointID = message->getId();
-    const double value   = message->getValue();
+    const long   pointID = message.getId();
+    const double value   = message.getValue();
 
     if ( pointID == getVoltReductionControlPointId() )
     {

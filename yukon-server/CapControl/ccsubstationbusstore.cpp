@@ -7178,7 +7178,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                 for ( const long pointid : *areaToDelete->getPointIds() )
                 {
                     {   // _pointid_area_map
-                        for ( auto & range = _pointid_area_map.equal_range( pointid );
+                        for ( auto range = _pointid_area_map.equal_range( pointid );
                               range.first != range.second;
                               ++range.first )
                         {
@@ -7190,7 +7190,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                         }
                     }
                     {   // _pointID_to_pao
-                        for ( auto & range = _pointID_to_pao.equal_range( pointid );
+                        for ( auto range = _pointID_to_pao.equal_range( pointid );
                               range.first != range.second;
                               ++range.first )
                         {
@@ -7266,7 +7266,7 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                 for ( const long pointid : *spAreaToDelete->getPointIds() )
                 {
                     {   // _pointid_specialarea_map
-                        for ( auto & range = _pointid_specialarea_map.equal_range( pointid );
+                        for ( auto range = _pointid_specialarea_map.equal_range( pointid );
                               range.first != range.second;
                               ++range.first )
                         {
@@ -7278,7 +7278,7 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                         }
                     }
                     {   // _pointID_to_pao
-                        for ( auto & range = _pointID_to_pao.equal_range( pointid );
+                        for ( auto range = _pointID_to_pao.equal_range( pointid );
                               range.first != range.second;
                               ++range.first )
                         {

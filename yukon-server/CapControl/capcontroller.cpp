@@ -1936,8 +1936,8 @@ void CtiCapController::parseMessage(CtiMessage *message)
                 break;
             case MSG_POINTDATA:
                 {
-                    CtiPointDataMsg * pData = (CtiPointDataMsg*) message;
-                    pointDataMsg(pData);
+                    const CtiPointDataMsg * pData = static_cast<const CtiPointDataMsg *>( message );
+                    pointDataMsg( *pData );
                 }
                 break;
             case MSG_PCRETURN:
@@ -2000,7 +2000,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
             case MSG_SIGNAL:
                 {
                     const CtiSignalMsg * signal = static_cast<const CtiSignalMsg *>( message );
-                    signalMsg(signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo());
+                    signalMsg( *signal );
                 }
                 break;
             case MSG_TAG:
@@ -2331,22 +2331,24 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
 
     Handles point data messages and updates substation bus point values.
 ---------------------------------------------------------------------------*/
-void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
+void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
 {
-    int pointID = message->getId();
-    double value = message->getValue();
-    unsigned quality = message->getQuality();
-    unsigned tags = message->getTags();
-    CtiTime timestamp = message->getTime();
+    const int      pointID   = message.getId();
+    const double   value     = message.getValue();
+    const unsigned quality   = message.getQuality();
+    const unsigned tags      = message.getTags();
+    const CtiTime  timestamp = message.getTime();
 
     if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
     {
         Cti::FormattedList list;
 
         list << "Point Data";
-        list.add("ID")   << pointID;
-        list.add("Val")  << value;
-        list.add("Time") << timestamp;
+        list.add("ID")      << pointID;
+        list.add("Val")     << value;
+        list.add("Time")    << timestamp;
+        list.add("Quality") << quality;
+        list.add("Tags")    << tags;
 
         CTILOG_INFO(dout, list);
     }
@@ -2356,7 +2358,7 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
     try
     {
         CapControlPointDataHandler pointHandler = store->getPointDataHandler();
-        pointHandler.processIncomingPointData(message);
+        pointHandler.processIncomingPointData( const_cast<CtiPointDataMsg *>( &message ) );  // <-- sigh...
 
         pointDataMsgBySubBus(pointID, value, quality, timestamp);
 
@@ -2367,10 +2369,10 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
             pointDataMsgByCapBank(pointID, value, quality, tags, timestamp);
         }
 
-        pointDataMsgBySubstation(pointID, value, quality, timestamp);
+        pointDataMsgBySubstation(pointID, value);
 
         // Areas and Special Areas handled here
-        for ( auto & range = store->getPointIDToPaoMultiMap().equal_range( pointID );
+        for ( auto range = store->getPointIDToPaoMultiMap().equal_range( pointID );
               range.first != range.second;
               ++range.first )
         {
@@ -2448,7 +2450,7 @@ void CtiCapController::checkDisablePaoPoint(CapControlPao* pao, long pointID, bo
     }
 }
 
-void CtiCapController::pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp)
+void CtiCapController::pointDataMsgBySubstation( long pointID, double value)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -2513,7 +2515,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
     }
 }
 
-void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigned quality, CtiTime& timestamp)
+void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigned quality, const CtiTime& timestamp)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -2843,7 +2845,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
 }
 
-void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigned quality, CtiTime& timestamp )
+void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigned quality, const CtiTime& timestamp )
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -3072,7 +3074,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
 }
 
 
-void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp)
+void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsigned quality, unsigned tags, const CtiTime& timestamp)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -3864,17 +3866,18 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr curr
 
     Handles signal messages and updates substation bus tags.
 ---------------------------------------------------------------------------*/
-void CtiCapController::signalMsg(long pointID, unsigned tags, const string& text, const string& additional)
+void CtiCapController::signalMsg( const CtiSignalMsg & signal )
 {
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         Cti::FormattedList list;
 
         list << "Signal Message received";
-        list.add("Point ID") << pointID;
-        list.add("Tags")     << tags;
-        list.add("Text")     << text;
-        list.add("Additional Info") << additional;
+        list.add("Point ID")        << signal.getId();
+        list.add("Tags")            << signal.getTags();
+        list.add("Text")            << signal.getText();
+        list.add("Additional Info") << signal.getAdditionalInfo();
+        list.add("Message Time")    << signal.getMessageTime();
 
         CTILOG_DEBUG(dout, list);
     }

@@ -102,12 +102,12 @@ class CtiCapController : public MessageListener
         void updateAllPointQualities(long quality);
 
         void parseMessage(CtiMessage* message);
-        void pointDataMsg(CtiPointDataMsg* message);
-        void pointDataMsgBySubBus(long pointID, double value, unsigned quality, CtiTime& timestamp);
-        void pointDataMsgByFeeder(long pointID, double value, unsigned quality, CtiTime& timestamp);
-        void pointDataMsgByCapBank(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp);
-        void pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp);
-        void signalMsg(long pointID, unsigned tags, const std::string& text, const std::string& additional);
+        void pointDataMsg( const CtiPointDataMsg & message );
+        void pointDataMsgBySubBus(long pointID, double value, unsigned quality, const CtiTime& timestamp);
+        void pointDataMsgByFeeder(long pointID, double value, unsigned quality, const CtiTime& timestamp);
+        void pointDataMsgByCapBank(long pointID, double value, unsigned quality, unsigned tags, const CtiTime& timestamp);
+        void pointDataMsgBySubstation( long pointID, double value);
+        void signalMsg( const CtiSignalMsg & signal );
         void checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand);
 
         bool isCbcDbChange(const CtiDBChangeMsg* dbChange);

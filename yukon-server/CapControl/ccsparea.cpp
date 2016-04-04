@@ -99,10 +99,10 @@ bool CtiCCSpecial::insertDynamicData( Cti::Database::DatabaseConnection & conn, 
     return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
 
-void CtiCCSpecial::handleSpecializedPointData( CtiPointDataMsg * message )
+void CtiCCSpecial::handleSpecializedPointData( const CtiPointDataMsg & message )
 {
-    const long   pointID = message->getId();
-    const double value   = message->getValue();
+    const long   pointID = message.getId();
+    const double value   = message.getValue();
 
     if ( pointID == getVoltReductionControlPointId() )
     {

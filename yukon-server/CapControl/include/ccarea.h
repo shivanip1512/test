@@ -38,7 +38,7 @@ private:
     bool updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
     bool insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
 
-    void handleSpecializedPointData( CtiPointDataMsg * message ) override;
+    void handleSpecializedPointData( const CtiPointDataMsg & message ) override;
 
     CtiCCArea(const CtiCCArea& area) = default;
     CtiCCArea& operator=(const CtiCCArea& right) = delete;

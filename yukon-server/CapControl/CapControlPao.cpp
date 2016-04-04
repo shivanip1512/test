@@ -339,7 +339,7 @@ long desolveDisabledStateCommand( const std::string & paoType, const bool disabl
                 { CapControlCommand::DISABLE_CAPBANK,           CapControlCommand::ENABLE_CAPBANK } }
     };
 
-    if ( const auto & commandPair = Cti::mapFind( _lookup, paoType ) )
+    if ( const auto commandPair = Cti::mapFind( _lookup, paoType ) )
     {
         return disabled
                 ? commandPair->first
@@ -351,10 +351,10 @@ long desolveDisabledStateCommand( const std::string & paoType, const bool disabl
 
 }
 
-void CapControlPao::handlePointData( CtiPointDataMsg * message )
+void CapControlPao::handlePointData( const CtiPointDataMsg & message )
 {
-    const long   pointID = message->getId();
-    const double value   = message->getValue();
+    const long   pointID = message.getId();
+    const double value   = message.getValue();
 
     handleSpecializedPointData( message );
 
@@ -371,7 +371,7 @@ void CapControlPao::handlePointData( CtiPointDataMsg * message )
     }
 }
 
-void CapControlPao::handleSpecializedPointData( CtiPointDataMsg * message )
+void CapControlPao::handleSpecializedPointData( const CtiPointDataMsg & message )
 {
 
 
