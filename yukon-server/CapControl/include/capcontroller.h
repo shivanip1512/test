@@ -106,8 +106,6 @@ class CtiCapController : public MessageListener
         void pointDataMsgBySubBus(long pointID, double value, unsigned quality, CtiTime& timestamp);
         void pointDataMsgByFeeder(long pointID, double value, unsigned quality, CtiTime& timestamp);
         void pointDataMsgByCapBank(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp);
-        void pointDataMsgByArea(long pointID, double value, unsigned quality, CtiTime& timestamp);
-        void pointDataMsgBySpecialArea(long pointID, double value, unsigned quality, CtiTime& timestamp);
         void pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp);
         void signalMsg(long pointID, unsigned tags, const std::string& text, const std::string& additional);
         void checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand);

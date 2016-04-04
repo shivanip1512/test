@@ -347,14 +347,6 @@ bool CtiCCSubstationBusStore::findCapBankByPointID(long point_id, PointIdToCapBa
     return begin != end;
 }
 
-int CtiCCSubstationBusStore::getNbrOfAreasWithPointID(long point_id)
-{
-    return _pointid_area_map.count(point_id);
-}
-int CtiCCSubstationBusStore::getNbrOfSpecialAreasWithPointID(long point_id)
-{
-    return _pointid_specialarea_map.count(point_id);
-}
 int CtiCCSubstationBusStore::getNbrOfSubstationsWithPointID(long point_id)
 {
     return _pointid_station_map.count(point_id);
@@ -1141,6 +1133,9 @@ bool CtiCCSubstationBusStore::deleteCapControlMaps()
         _capbank_feeder_map.clear();
         _altsub_sub_idmap.clear();
         _cbc_capbank_map.clear();
+
+
+        _pointID_to_pao.clear();
     }
     catch( ... )
     {
@@ -4089,6 +4084,8 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                 for ( const long pointID : *currentArea->getPointIds() )
                 {
                     pointid_area_map->emplace( pointID, currentArea );
+
+                    _pointID_to_pao.emplace( pointID, currentArea );
                 }
             }
         }
@@ -4361,6 +4358,8 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                 for ( const long pointID : *currentSpArea->getPointIds() )
                 {
                     pointid_specialarea_map->emplace( pointID, currentSpArea );
+
+                    _pointID_to_pao.emplace( pointID, currentSpArea );
                 }
             }
         }
@@ -7168,56 +7167,57 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
 
 void CtiCCSubstationBusStore::deleteArea(long areaId)
 {
-    CtiCCAreaPtr areaToDelete = findAreaByPAObjectID(areaId);
-
     try
     {
-        if (areaToDelete != NULL)
+        if ( CtiCCAreaPtr areaToDelete = findAreaByPAObjectID( areaId ) )
         {
             setStoreRecentlyReset(true);
             try
             {
-                //Delete pointids on this sub
-                for each (long pointid in *areaToDelete->getPointIds())
+                //Delete pointids on this area
+                for ( const long pointid : *areaToDelete->getPointIds() )
                 {
-                    int ptCount = getNbrOfAreasWithPointID(pointid);
-                    if (ptCount > 1)
-                    {
-                        PointIdToAreaMultiMap::iterator iter1 = _pointid_area_map.lower_bound(pointid);
-                        while (iter1 != _pointid_area_map.end() || iter1 != _pointid_area_map.upper_bound(pointid))
+                    {   // _pointid_area_map
+                        for ( auto & range = _pointid_area_map.equal_range( pointid );
+                              range.first != range.second;
+                              ++range.first )
                         {
-                           if (((CtiCCAreaPtr)iter1->second)->getPaoId() == areaToDelete->getPaoId())
-                           {
-                               _pointid_area_map.erase(iter1);
-                               break;
-                           }
-                           iter1++;
+                            if ( range.first->second == areaToDelete )
+                            {
+                                _pointid_area_map.erase( range.first );
+                                break;
+                            }
                         }
                     }
-                    else
-                        _pointid_area_map.erase(pointid);
-               }
-               areaToDelete->getPointIds()->clear();
+                    {   // _pointID_to_pao
+                        for ( auto & range = _pointID_to_pao.equal_range( pointid );
+                              range.first != range.second;
+                              ++range.first )
+                        {
+                            if ( range.first->second == areaToDelete )
+                            {
+                                _pointID_to_pao.erase( range.first );
+                                break;
+                            }
+                        }
+                    }
+                }
+                areaToDelete->getPointIds()->clear();
             }
             catch(...)
             {
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
-            long stationId;
-            long subBusId;
-
-            CtiCCSubstationPtr station = NULL;
-            for each (long stationId in areaToDelete->getSubstationIds())
+            for ( const long stationId : areaToDelete->getSubstationIds() )
             {
-                station = findSubstationByPAObjectID(stationId);
-                if (station != NULL)
+                if ( CtiCCSubstationPtr station = findSubstationByPAObjectID( stationId ) )
                 {
                     if (station->getSaEnabledId() > 0)
                     {
                         continue;
                     }
-                    for each ( long subBusId in station->getCCSubIds() )
+                    for ( const long subBusId : station->getCCSubIds() )
                     {
                         deleteSubBus(subBusId);
                     }
@@ -7229,24 +7229,13 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
 
             try
             {
-                string areaName = areaToDelete->getPaoName();
+                std::string areaName = areaToDelete->getPaoName();
                 _paobject_area_map.erase(areaToDelete->getPaoId());
-                CtiCCArea_vec::iterator itr = _ccGeoAreas->begin();
-                while ( itr != _ccGeoAreas->end() )
-                {
-                    CtiCCAreaPtr area = *itr;
-                    if (area->getPaoId() == areaId)
-                    {
-                        itr = _ccGeoAreas->erase(itr);
-                        break;
-                    }else
-                        ++itr;
-                }
-                if ( areaToDelete != NULL )
-                {
-                    delete areaToDelete;
-                    areaToDelete = NULL;
-                }
+                _ccGeoAreas->erase( std::remove( _ccGeoAreas->begin(), _ccGeoAreas->end(), areaToDelete ),
+                                    _ccGeoAreas->end() );
+
+                delete areaToDelete;
+
                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
                     CTILOG_DEBUG(dout, "AREA: " << areaName <<" has been deleted.");
@@ -7256,49 +7245,52 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
             {
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
-
         }
     }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
 }
-
 
 void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
 {
-    CtiCCSpecialPtr spAreaToDelete = findSpecialAreaByPAObjectID(areaId);
-
     try
     {
-        if (spAreaToDelete != NULL)
+        if ( CtiCCSpecialPtr spAreaToDelete = findSpecialAreaByPAObjectID( areaId ) )
         {
             setStoreRecentlyReset(true);
             try
             {
-                //Delete pointids on this sub
-                for each (long pointid in *spAreaToDelete->getPointIds())
+                //Delete pointids on this special area
+                for ( const long pointid : *spAreaToDelete->getPointIds() )
                 {
-                    int ptCount = getNbrOfSpecialAreasWithPointID(pointid);
-                    if (ptCount > 1)
-                    {
-                        PointIdToSpecialAreaMultiMap::iterator iter1 = _pointid_specialarea_map.lower_bound(pointid);
-                        while (iter1 != _pointid_specialarea_map.end() || iter1 != _pointid_specialarea_map.upper_bound(pointid))
+                    {   // _pointid_specialarea_map
+                        for ( auto & range = _pointid_specialarea_map.equal_range( pointid );
+                              range.first != range.second;
+                              ++range.first )
                         {
-                           if (((CtiCCSpecialPtr)iter1->second)->getPaoId() == spAreaToDelete->getPaoId())
-                           {
-                               _pointid_specialarea_map.erase(iter1);
-                               break;
-                           }
-                           iter1++;
+                            if ( range.first->second == spAreaToDelete )
+                            {
+                                _pointid_specialarea_map.erase( range.first );
+                                break;
+                            }
                         }
                     }
-                    else
-                        _pointid_specialarea_map.erase(pointid);
-               }
-               spAreaToDelete->getPointIds()->clear();
+                    {   // _pointID_to_pao
+                        for ( auto & range = _pointID_to_pao.equal_range( pointid );
+                              range.first != range.second;
+                              ++range.first )
+                        {
+                            if ( range.first->second == spAreaToDelete )
+                            {
+                                _pointID_to_pao.erase( range.first );
+                                break;
+                            }
+                        }
+                    }
+                }
+                spAreaToDelete->getPointIds()->clear();
             }
             catch(...)
             {
@@ -7321,25 +7313,13 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
 
             try
             {
-                string areaName = spAreaToDelete->getPaoName();
+                std::string areaName = spAreaToDelete->getPaoName();
                 _paobject_specialarea_map.erase(spAreaToDelete->getPaoId());
-                CtiCCSpArea_vec::iterator itr = _ccSpecialAreas->begin();
-                while ( itr != _ccSpecialAreas->end() )
-                {
-                    CtiCCSpecialPtr area = *itr;
-                    if (area->getPaoId() == areaId)
-                    {
-                        itr = _ccSpecialAreas->erase(itr);
-                        break;
-                    }else
-                        ++itr;
+                _ccSpecialAreas->erase( std::remove( _ccSpecialAreas->begin(), _ccSpecialAreas->end(), spAreaToDelete ),
+                                        _ccSpecialAreas->end() );
 
-                }
-                if ( spAreaToDelete != NULL )
-                {
-                    delete spAreaToDelete;
-                    spAreaToDelete = NULL;
-                }
+                delete spAreaToDelete;
+
                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
                     CTILOG_DEBUG(dout, "SPECIAL AREA: " << areaName <<" has been deleted.");
@@ -7355,7 +7335,6 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
 }
 
 void CtiCCSubstationBusStore::deleteSubBus(long subBusId)

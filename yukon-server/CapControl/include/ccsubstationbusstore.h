@@ -191,8 +191,6 @@ public:
     bool findSubstationByPointID (long point_id, PointIdToSubstationMultiMap::iterator  &begin, PointIdToSubstationMultiMap::iterator  &end);
     bool findFeederByPointID     (long point_id, PointIdToFeederMultiMap::iterator      &begin, PointIdToFeederMultiMap::iterator      &end);
     bool findCapBankByPointID    (long point_id, PointIdToCapBankMultiMap::iterator     &begin, PointIdToCapBankMultiMap::iterator     &end);
-    int getNbrOfAreasWithPointID (long point_id);
-    int getNbrOfSpecialAreasWithPointID(long point_id) ;
     int getNbrOfSubBusesWithPointID(long point_id);
     int getNbrOfSubstationsWithPointID(long point_id);
     int getNbrOfSubsWithAltSubID(long altSubId);
@@ -601,4 +599,14 @@ public:
     bool reloadVoltageRegulatorFromDatabase(const long regulatorId);
 
     static AttributeService &getAttributeService();
+
+
+
+    using PointIdToPaoMultiMap = std::multimap< long, CapControlPao * >;
+
+    PointIdToPaoMultiMap & getPointIDToPaoMultiMap() { return _pointID_to_pao; }
+
+private:
+
+    PointIdToPaoMultiMap    _pointID_to_pao;
 };

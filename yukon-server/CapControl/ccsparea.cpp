@@ -4,10 +4,12 @@
 #include "ccid.h"
 #include "database_util.h"
 #include "ccsubstationbusstore.h"
+#include "ExecutorFactory.h"
 
 using Cti::CapControl::serializeFlag;
 
 extern unsigned long _CC_DEBUG;
+extern bool _AUTO_VOLT_REDUCTION;
 
 DEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
 
@@ -95,5 +97,31 @@ bool CtiCCSpecial::insertDynamicData( Cti::Database::DatabaseConnection & conn, 
         << getVoltReductionControlValue();
 
     return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
+}
+
+void CtiCCSpecial::handleSpecializedPointData( CtiPointDataMsg * message )
+{
+    const long   pointID = message->getId();
+    const double value   = message->getValue();
+
+    if ( pointID == getVoltReductionControlPointId() )
+    {
+        const bool reduceVoltage = value;
+
+        if ( reduceVoltage != getVoltReductionControlValue()
+             && ! getDisableFlag() )
+        {
+            setVoltReductionControlValue( reduceVoltage );
+
+            if ( _AUTO_VOLT_REDUCTION )
+            {
+                CtiCCExecutorFactory::createExecutor(
+                    new ItemCommand( getVoltReductionControlValue()
+                                        ? CapControlCommand::AUTO_DISABLE_OVUV
+                                        : CapControlCommand::AUTO_ENABLE_OVUV,
+                                     getPaoId() ) )->execute();
+            }
+        }
+    }
 }
 

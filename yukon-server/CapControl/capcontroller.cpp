@@ -2369,9 +2369,13 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
 
         pointDataMsgBySubstation(pointID, value, quality, timestamp);
 
-        pointDataMsgByArea(pointID, value, quality, timestamp);
-
-        pointDataMsgBySpecialArea(pointID, value, quality, timestamp);
+        // Areas and Special Areas handled here
+        for ( auto & range = store->getPointIDToPaoMultiMap().equal_range( pointID );
+              range.first != range.second;
+              ++range.first )
+        {
+            range.first->second->handlePointData( message );
+        }
 
         if (store->getLinkStatusPointId() > 0)
         {
@@ -2444,107 +2448,6 @@ void CtiCapController::checkDisablePaoPoint(CapControlPao* pao, long pointID, bo
     }
 }
 
-void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned quality, CtiTime& timestamp)
-{
-
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-    CtiCCAreaPtr currentArea = NULL;
-    PointIdToAreaMultiMap::iterator areaIter, end;
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
-    store->findAreaByPointID(pointID, areaIter, end);
-
-    while (areaIter != end)
-    {
-        try
-        {
-            currentArea = areaIter->second;
-            if (currentArea != NULL)
-            {
-                if( currentArea->getVoltReductionControlPointId() == pointID )
-                {
-                    const bool reduceVoltage = value;
-
-                    if (currentArea->getVoltReductionControlValue() != reduceVoltage)
-                    {
-                        currentArea->setVoltReductionControlValue(reduceVoltage);
-                        if (_AUTO_VOLT_REDUCTION)
-                        {
-                            if (currentArea->getVoltReductionControlValue())
-                            {
-                                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()))->execute();
-                            }
-                            else
-                            {
-                                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()))->execute();
-                            }
-                        }
-                        currentArea->checkAndUpdateChildVoltReductionFlags();
-                    }
-                }
-
-                checkDisablePaoPoint(currentArea, pointID, value, CapControlCommand::ENABLE_AREA, CapControlCommand::DISABLE_AREA);
-            }
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-        areaIter++;
-    }
-}
-void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, unsigned quality, CtiTime& timestamp)
-{
-
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-
-    CtiCCSpecialPtr currentSpArea = NULL;
-    PointIdToSpecialAreaMultiMap::iterator saIter, end;
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
-    store->findSpecialAreaByPointID(pointID, saIter, end);
-
-    while (saIter != end)
-    {
-        try
-        {
-            currentSpArea = saIter->second;
-            if (currentSpArea != NULL)
-            {
-                if( currentSpArea->getVoltReductionControlPointId() == pointID )
-                {
-                   // if( timestamp > currentSpArea->getLastControlPointUpdateTime() )
-                    {
-                        const bool reduceVoltage = value;
-
-                        if (currentSpArea->getVoltReductionControlValue() != reduceVoltage &&
-                            !currentSpArea->getDisableFlag())
-                        {
-                            currentSpArea->setVoltReductionControlValue(reduceVoltage);
-                            if (_AUTO_VOLT_REDUCTION)
-                            {
-                                if (currentSpArea->getVoltReductionControlValue())
-                                {
-                                    CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_DISABLE_OVUV, currentSpArea->getPaoId()))->execute();
-                                }
-                                else
-                                {
-                                    CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_ENABLE_OVUV, currentSpArea->getPaoId()))->execute();
-                                }
-                            }
-                        }
-                    }
-                }
-                checkDisablePaoPoint(currentSpArea, pointID, value, CapControlCommand::ENABLE_AREA, CapControlCommand::DISABLE_AREA);
-            }
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-        saIter++;
-    }
-}
 void CtiCapController::pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
 

@@ -4,6 +4,9 @@
 #include "capcontroller.h"
 #include "ccutil.h"
 #include "resolvers.h"
+#include "msg_pdata.h"
+#include "ExecutorFactory.h"
+#include "std_helper.h"
 
 using Cti::CapControl::PointIdVector;
 using Cti::CapControl::deserializeFlag;
@@ -313,5 +316,65 @@ void CapControlPao::insertPointRegistration( std::set<long> & registrationIDs, c
     {
         registrationIDs.insert( pointID );
     }
+}
+
+namespace
+{
+
+long desolveDisabledStateCommand( const std::string & paoType, const bool disabled )
+{
+    static const std::map< std::string, std::pair<long, long> > _lookup
+    {
+        {   "CCAREA",
+                { CapControlCommand::DISABLE_AREA,              CapControlCommand::ENABLE_AREA } },
+        {   "CCSPECIALAREA",
+                { CapControlCommand::DISABLE_AREA,              CapControlCommand::ENABLE_AREA } },
+        {   "CCSUBSTATION",
+                { CapControlCommand::DISABLE_SUBSTATION,        CapControlCommand::ENABLE_SUBSTATION } },
+        {   "CCSUBBUS",
+                { CapControlCommand::DISABLE_SUBSTATION_BUS,    CapControlCommand::ENABLE_SUBSTATION_BUS } },
+        {   "CCFEEDER",
+                { CapControlCommand::DISABLE_FEEDER,            CapControlCommand::ENABLE_FEEDER } },
+        {   "CAP BANK",
+                { CapControlCommand::DISABLE_CAPBANK,           CapControlCommand::ENABLE_CAPBANK } }
+    };
+
+    if ( const auto & commandPair = Cti::mapFind( _lookup, paoType ) )
+    {
+        return disabled
+                ? commandPair->first
+                : commandPair->second;
+    }
+
+    return CapControlCommand::UNDEFINED;
+}
+
+}
+
+void CapControlPao::handlePointData( CtiPointDataMsg * message )
+{
+    const long   pointID = message->getId();
+    const double value   = message->getValue();
+
+    handleSpecializedPointData( message );
+
+    if ( pointID == getDisabledStatePointId() )
+    {
+        const bool disabled = value;
+
+        if ( disabled != getDisableFlag() )
+        {
+            CtiCCExecutorFactory::createExecutor(
+                new ItemCommand( desolveDisabledStateCommand( getPaoType(), disabled ),
+                                 getPaoId() ) )->execute();
+        }
+    }
+}
+
+void CapControlPao::handleSpecializedPointData( CtiPointDataMsg * message )
+{
+
+
+
 }
 

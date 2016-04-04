@@ -4,8 +4,10 @@
 #include "ccid.h"
 #include "database_util.h"
 #include "ccsubstationbusstore.h"
+#include "ExecutorFactory.h"
 
 extern unsigned long _CC_DEBUG;
+extern bool _AUTO_VOLT_REDUCTION;
 
 using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::serializeFlag;
@@ -192,5 +194,32 @@ void CtiCCArea::checkAndUpdateChildVoltReductionFlags()
     }
 
     setChildVoltReductionFlag( isChildSubstationReducing );
+}
+
+void CtiCCArea::handleSpecializedPointData( CtiPointDataMsg * message )
+{
+    const long   pointID = message->getId();
+    const double value   = message->getValue();
+
+    if ( pointID == getVoltReductionControlPointId() )
+    {
+        const bool reduceVoltage = value;
+
+        if ( reduceVoltage != getVoltReductionControlValue() )
+        {
+            setVoltReductionControlValue( reduceVoltage );
+
+            if ( _AUTO_VOLT_REDUCTION )
+            {
+                CtiCCExecutorFactory::createExecutor(
+                    new ItemCommand( getVoltReductionControlValue()
+                                        ? CapControlCommand::AUTO_DISABLE_OVUV
+                                        : CapControlCommand::AUTO_ENABLE_OVUV,
+                                     getPaoId() ) )->execute();
+            }
+
+            checkAndUpdateChildVoltReductionFlags();
+        }
+    }
 }
 

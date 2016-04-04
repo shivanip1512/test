@@ -12,6 +12,8 @@ namespace Cti
 class RowReader;
 }
 
+class CtiPointDataMsg;
+
 
 class CapControlPao
 {
@@ -60,6 +62,8 @@ public:
 
     CapControlPao& operator=(const CapControlPao& right);
 
+    void handlePointData( CtiPointDataMsg * message );
+
 protected:
 
     void insertPointRegistration( std::set<long> & registrationIDs, const long pointID ) const;
@@ -70,6 +74,7 @@ private:
 
     virtual bool assignSpecializedPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
     virtual void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs );
+    virtual void handleSpecializedPointData( CtiPointDataMsg * message );
 
     int _paoId;
     std::string _paoCategory;
