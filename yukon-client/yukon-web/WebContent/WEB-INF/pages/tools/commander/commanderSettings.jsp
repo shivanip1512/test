@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:includeScript link="/resources/js/pages/yukon.tools.commander.js"/>
-<cti:msgScope paths="modules.tools.commander,yukon.common,yukon.web.input.error">
+<cti:msgScope paths="modules.tools.commander,yukon.common">
 <script>
 $(function() {
     var spinner = $('#commandPriority').spinner();
@@ -43,7 +43,7 @@ $(function() {
                 </cti:list>
                              
                 <div class="warning dn">
-                <i:inline key=".outOfRangeInt" arguments="${arguments}"/>
+                <i:inline key="yukon.web.input.error.outOfRangeInt" arguments="${arguments}"/>
                    </div>
             </tags:nameValue2> 
             <tags:nameValue2 nameKey=".queue_commands">

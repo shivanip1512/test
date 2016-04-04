@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
+import com.cannontech.common.device.commands.CommandPriority;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
@@ -97,8 +98,6 @@ public class CommanderController {
     private static final String keyBase = "yukon.web.modules.tools.commander";
     private static final String json = MediaType.APPLICATION_JSON_VALUE;
     private static final Random unAuthorizedcommandIds = new Random(System.currentTimeMillis());
-    private static final int maxCommandPriority = 14;
-    private static final int minCmdPriority = 1;
     private static final boolean queueCommand = false;
     private static final Comparator<CommandRequest> onTimestamp = new Comparator<CommandRequest>() {
         @Override
@@ -279,7 +278,7 @@ public class CommanderController {
     public String editSettingsPopup(ModelMap model, HttpServletRequest req) throws IOException {
         Integer priority = webUtil.getYukonCookieValue(req, "commander", "priority", null, JsonUtils.INT_TYPE);
         if (priority == null) {
-            priority = maxCommandPriority;
+            priority = CommandPriority.maxPriority;
         }
         model.addAttribute("priority", priority);
         Boolean queueCmd = webUtil.getYukonCookieValue(req, "commander", "queueCommand", null, JsonUtils.BOOLEAN_TYPE);
@@ -290,8 +289,8 @@ public class CommanderController {
         CommandParams commandParams = new CommandParams();
         commandParams.setQueueCommand(queueCmd);
         model.addAttribute("commandParams", commandParams);
-        model.addAttribute("minCmdPriority",minCmdPriority);
-        model.addAttribute("maxCmdPriority", maxCommandPriority);
+        model.addAttribute("minCmdPriority",CommandPriority.minPriority);
+        model.addAttribute("maxCmdPriority", CommandPriority.maxPriority);
 
         return "commander/commanderSettings.jsp";
     }
