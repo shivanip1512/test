@@ -9,8 +9,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.capcontrol.dao.CapbankDao;
-import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.userpage.model.SiteModule;
@@ -24,8 +22,6 @@ import com.cannontech.web.search.lucene.index.site.PaoPageIndexBuilder.PaoTypeHa
 public class CapControlPaoTypeHandler implements PaoTypeHandler {
     
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private CapControlCache cache;
-    @Autowired private CapbankDao capbankDao;
 
     @Override
     public Set<PaoType> getTypesHandled() {
@@ -53,42 +49,34 @@ public class CapControlPaoTypeHandler implements PaoTypeHandler {
         } else if (paoType == PaoType.CAP_CONTROL_SUBSTATION) {
 
             builder.pageName("substation");
-            builder.path("/vv/substation/" + paoId);
+            builder.path("/capcontrol/substations/" + paoId);
             builder.pageArgs(paoName);
 
         } else if (paoType == PaoType.CAP_CONTROL_SUBBUS) {
             builder.pageName("bus");
-            builder.path("/vv/bus/" + paoId);
+            builder.path("/capcontrol/buses/" + paoId);
             builder.pageArgs(paoName);
 
         } else if (paoType == PaoType.CAP_CONTROL_FEEDER) {
             builder.pageName("feeder");
-            builder.path("/vv/feeder/" + paoId);
+            builder.path("/capcontrol/feeders/" + paoId);
             builder.pageArgs(paoName);
 
         } else if (paoType == PaoType.CAPBANK) {
             builder.pageName("bank");
-            builder.path("/vv/bank/" + paoId);
+            builder.path("/capcontrol/capbanks/" + paoId);
             builder.pageArgs(paoName);
 
         } else if (paoType.isCbc()) {
             builder.pageName("cbc");
-            builder.path("/vv/cbc/" + paoId);
+            builder.path("/capcontrol/cbc/" + paoId);
             builder.pageArgs(paoName);
 
         } else if (paoType.isRegulator()) {
             builder.pageName("regulator.VIEW");
             builder.path("/capcontrol/regulators/" + paoId);
             builder.pageArgs(paoName);
-        } else {
-            buildEditorPage(builder, paoType, paoId, paoName);
-        }
-    }
-    
-    private void buildEditorPage(DocumentBuilder builder, PaoType paoType, int paoId, String paoName) {
-        builder.pageName("edit." + paoType.name());
-        builder.path("/editor/cbcBase.jsf?type=2&itemid=" + paoId);
-        builder.pageArgs(paoName);
+        } 
     }
 
     @Override

@@ -5,18 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CapControlUtils;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
@@ -200,30 +195,5 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
         }
         return capbanks;
     }
-    
-    @Override
-    public String getCapControlFacesEditorLinkHtml(HttpServletRequest request, int ccId) {
 
-        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(ccId);
-        String name = pao.getPaoName();
-
-        String url;
-        if (pao.getPaoType().isRegulator()) {
-            url = request.getContextPath() + "/capcontrol/regulators/" + ccId;
-        } else if (pao.getPaoType() == PaoType.CAP_CONTROL_AREA || pao.getPaoType() == PaoType.CAP_CONTROL_SPECIAL_AREA) {
-            url = request.getContextPath() + "/capcontrol/areas/" + ccId;
-        } else if (pao.getPaoType().isCbc()) {
-            url = request.getContextPath() + "/capcontrol/cbc/" + ccId;
-        } else {
-            url= request.getContextPath() + "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
-                    + "&amp;itemid=" + ccId;
-        }
-        String html = getLinkHtml(url, name);
-        return html;
-    }
-    
-    private String getLinkHtml(String url, String value) {
-        String html = "<a href=\"" + url + "\">" + StringUtils.escapeXmlAndJavascript(value) + "</a>";
-        return html;
-    }
 }

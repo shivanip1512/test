@@ -82,8 +82,10 @@ public class VoltVarRedirectController {
             return "redirect:/capcontrol/areas/" + id;
         } else if (pao.getPaoType() == PaoType.CAP_CONTROL_SUBSTATION){
             return "redirect:/capcontrol/substations/" + id;
+        } else if (pao.getPaoType() == PaoType.CAPBANK){
+            return "redirect:/capcontrol/capbanks/" + id;
         }
 
-        return "redirect:/editor/cbcBase.jsf?type=2&itemid="+ id;
+        return "redirect:/capcontrol/tier/areas";
     }
 }

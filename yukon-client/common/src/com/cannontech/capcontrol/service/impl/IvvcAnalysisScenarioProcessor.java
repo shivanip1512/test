@@ -17,8 +17,8 @@ import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.IvvcAnalysisFormatType;
 import com.cannontech.capcontrol.service.IvvcAnalysisScenarioMsgFormatter;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
@@ -47,7 +47,7 @@ public class IvvcAnalysisScenarioProcessor {
                 String dateTimeString = getTimeStamp(message.getTimeStamp(), userContext);
 
                 int subBusId = message.getSubBusId();
-                String subBusLink = getCapControlFacesEditorLinkHtml(subBusId, userContext);
+                String subBusLink = getCapControlLinkHtml(subBusId, userContext);
                 
                 float actualPercentage = message.getFloatData().get(0);
                 float minPercentage = message.getFloatData().get(1);
@@ -67,10 +67,10 @@ public class IvvcAnalysisScenarioProcessor {
                 String dateTimeString = getTimeStamp(message.getTimeStamp(), userContext);
                 
                 int subBusId = message.getSubBusId();
-                String subBusLink = getCapControlFacesEditorLinkHtml(subBusId, userContext);
+                String subBusLink = getCapControlLinkHtml(subBusId, userContext);
                 
                 int regId = message.getIntData().get(0);
-                String regLink = getCapControlFacesEditorLinkHtml(regId, userContext);
+                String regLink = getCapControlLinkHtml(regId, userContext);
                 
                 Zone zone;
                 try {
@@ -98,7 +98,7 @@ public class IvvcAnalysisScenarioProcessor {
                 String dateTimeString = getTimeStamp(message.getTimeStamp(), userContext);
                 
                 int subBusId = message.getSubBusId();
-                String subBusLink = getCapControlFacesEditorLinkHtml(subBusId, userContext);
+                String subBusLink = getCapControlLinkHtml(subBusId, userContext);
                 
                 int tapPeriod = Iterables.getOnlyElement(message.getIntData());
                 
@@ -117,7 +117,7 @@ public class IvvcAnalysisScenarioProcessor {
                 String dateTimeString = getTimeStamp(message.getTimeStamp(), userContext);
                 
                 int subBusId = message.getSubBusId();
-                String subBusLink = getCapControlFacesEditorLinkHtml(subBusId, userContext);
+                String subBusLink = getCapControlLinkHtml(subBusId, userContext);
                 
                 String msg = getMessageWithScenarioIdAndArgs(message.getScenarioId(), userContext,
                                                              dateTimeString, subBusLink);
@@ -134,10 +134,10 @@ public class IvvcAnalysisScenarioProcessor {
                 String dateTimeString = getTimeStamp(message.getTimeStamp(), userContext);
                 
                 int subBusId = message.getSubBusId();
-                String subBusLink = getCapControlFacesEditorLinkHtml(subBusId, userContext);
+                String subBusLink = getCapControlLinkHtml(subBusId, userContext);
                 
                 int ccId = Iterables.getOnlyElement(message.getIntData());
-                String ccLink = getCapControlFacesEditorLinkHtml(ccId, userContext);
+                String ccLink = getCapControlLinkHtml(ccId, userContext);
                 
                 String msg = getMessageWithScenarioIdAndArgs(message.getScenarioId(), userContext, 
                                                              dateTimeString, subBusLink, ccLink);
@@ -156,7 +156,7 @@ public class IvvcAnalysisScenarioProcessor {
                 int num = message.getIntData().get(0);
                 
                 int ccId = message.getIntData().get(1);
-                String ccLink = getCapControlFacesEditorLinkHtml(ccId, userContext);
+                String ccLink = getCapControlLinkHtml(ccId, userContext);
                 
                 String msg = getMessageWithScenarioIdAndArgs(message.getScenarioId(), userContext, 
                                                              dateTimeString, num, ccLink);
@@ -211,7 +211,7 @@ public class IvvcAnalysisScenarioProcessor {
         return html;
     }
     
-    private String getCapControlFacesEditorLinkHtml(int ccId, YukonUserContext userContext) {
+    private String getCapControlLinkHtml(int ccId, YukonUserContext userContext) {
 
         String name;
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(ccId);
@@ -222,13 +222,23 @@ public class IvvcAnalysisScenarioProcessor {
             name = pao.getPaoName();
         }
 
-        String url;
-        if (pao != null && pao.getPaoType().isRegulator()) {
-            url = "/capcontrol/regulator/" + ccId;
-        } else if (pao != null && pao.getPaoType().isCbc()) {
-            url = "/capcontrol/cbc/" + ccId;
-        } else {
-            url = "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL + "&amp;itemid=" + ccId;
+        String url = "/capcontrol/tier/areas";
+        if (pao != null) {
+            if (pao.getPaoType().isRegulator()) {
+                url = "/capcontrol/regulator/" + ccId;
+            } else if (pao.getPaoType().isCbc()) {
+                url = "/capcontrol/cbc/" + ccId;
+            } else if (pao.getPaoType() == PaoType.CAP_CONTROL_AREA || pao.getPaoType() == PaoType.CAP_CONTROL_SPECIAL_AREA) {
+                url = "/capcontrol/areas/" + ccId;
+            } else if (pao.getPaoType() == PaoType.CAP_CONTROL_SUBBUS) {
+                url = "/capcontrol/buses/" + ccId;
+            } else if (pao.getPaoType() == PaoType.CAP_CONTROL_FEEDER) {
+                url = "/capcontrol/feeders/" + ccId;
+            } else if (pao.getPaoType() == PaoType.CAP_CONTROL_SUBSTATION) {
+                url = "/capcontrol/substations/" + ccId;
+            } else if (pao.getPaoType() == PaoType.CAPBANK) {
+                url = "/capcontrol/capbanks/" + ccId;
+            }
         }
 
         String html = getLinkHtml(url, name, new HashMap<String, String>());

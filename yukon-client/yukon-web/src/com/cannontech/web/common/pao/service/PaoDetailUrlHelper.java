@@ -90,7 +90,7 @@ public class PaoDetailUrlHelper {
         Function<YukonPao, String> cbcLink = new Function<YukonPao, String>() {
             @Override
             public String apply(YukonPao pao) {
-                return "/vv/cbc/" + pao.getPaoIdentifier().getPaoId();
+                return "/capcontrol/cbc/" + pao.getPaoIdentifier().getPaoId();
             }
         };
         Function<YukonPao, String> regulatorLink = new Function<YukonPao, String>() {
@@ -109,28 +109,28 @@ public class PaoDetailUrlHelper {
         capControlUrlBuilder.put(PaoType.CAPBANK, new Function<YukonPao, String>() {
             @Override
             public String apply(YukonPao pao) {
-                return "/vv/bank/" + pao.getPaoIdentifier().getPaoId();
+                return "/capcontrol/capbanks/" + pao.getPaoIdentifier().getPaoId();
             }
         });
         
         capControlUrlBuilder.put(PaoType.CAP_CONTROL_FEEDER, new Function<YukonPao, String>() {
             @Override
             public String apply(YukonPao pao) {
-                return "/vv/feeder/" + pao.getPaoIdentifier().getPaoId();
+                return "/capcontrol/feeders/" + pao.getPaoIdentifier().getPaoId();
             }
         });
         
         capControlUrlBuilder.put(PaoType.CAP_CONTROL_SUBBUS, new Function<YukonPao, String>() {
             @Override
             public String apply(YukonPao pao) {
-                return "/vv/bus/" + pao.getPaoIdentifier().getPaoId();
+                return "/capcontrol/buses/" + pao.getPaoIdentifier().getPaoId();
             }
         });
         
         capControlUrlBuilder.put(PaoType.CAP_CONTROL_SUBSTATION, new Function<YukonPao, String>() {
             @Override
             public String apply(YukonPao pao) {
-                return "/vv/substation/" + pao.getPaoIdentifier().getPaoId();
+                return "/capcontrol/substations/" + pao.getPaoIdentifier().getPaoId();
             }
         });
         

@@ -9,8 +9,7 @@ public class CBCNavigationUtil {
     
 	private static final String [] PAGES_TO_SKIP = {
 													"bankMove.jsp",
-													"cbcPointTimestamps.jsp",
-													"cbcWizBase.jsf"
+													"cbcPointTimestamps.jsp"
 													};
     public CBCNavigationUtil() {
         super();

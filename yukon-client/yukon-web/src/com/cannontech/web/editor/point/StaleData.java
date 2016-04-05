@@ -1,8 +1,5 @@
 package com.cannontech.web.editor.point;
 
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.model.SelectItem;
-
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
@@ -44,7 +41,7 @@ public class StaleData {
         }
     }
     
-    private SelectItem[] updateStyles = null;
+    //private SelectItem[] updateStyles = null;
     private Integer updateStyle = 0;
     private Integer time = 5;
     private boolean enabled = false;
@@ -109,27 +106,6 @@ public class StaleData {
                 CTILogger.error(e.getMessage(), e);
             }
         }
-    }
-    
-    public void enableClick(@SuppressWarnings("unused") ValueChangeEvent vce){
-        if(isEnabled()) {
-            this.enabled = false;
-        } else {
-            this.enabled = true;
-        }
-    }
-    
-    public SelectItem[] getUpdateStyles() {
-        
-        if( updateStyles == null ) {
-            
-            updateStyles = new SelectItem[] {
-                new SelectItem(0, "Always"),
-                new SelectItem(1, "On Change")
-            };
-        }
-
-        return updateStyles;
     }
 
     public Integer getUpdateStyle() {

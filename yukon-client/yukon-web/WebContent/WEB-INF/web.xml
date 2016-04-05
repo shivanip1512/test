@@ -31,13 +31,6 @@
         <param-value>Webserver</param-value>
     </context-param>
 
-    <context-param>
-        <param-name>javax.faces.CONFIG_FILES</param-name>
-        <param-value>
-            /WEB-INF/faces-capcontrol-config.xml
-        </param-value>
-    </context-param>
-
     <filter>
         <filter-name>loginFilter</filter-name>
         <filter-class>com.cannontech.web.login.LoginFilter</filter-class>
@@ -51,11 +44,6 @@
     <filter>
         <filter-name>ErrorHelper</filter-name>
         <filter-class>com.cannontech.web.util.ErrorHelperFilter</filter-class>
-    </filter>
-
-    <filter>
-        <filter-name>facesFilter</filter-name>
-        <filter-class>com.cannontech.web.filter.FacesFilter</filter-class>
     </filter>
 
     <filter>
@@ -79,12 +67,6 @@
         <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
     </filter>
 
-    <!-- A MyFaces filter used to find resources in jar files -->
-    <filter>
-        <filter-name>extensionsFilter</filter-name>
-        <filter-class>org.apache.myfaces.component.html.util.ExtensionsFilter</filter-class>
-    </filter>
-
     <!-- LoginFilter must be first filter-mapping entry -->
     <filter-mapping>
         <filter-name>loginFilter</filter-name>
@@ -103,11 +85,6 @@
 
     <filter-mapping>
         <filter-name>timerFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>facesFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
@@ -139,16 +116,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <filter-mapping>
-        <filter-name>extensionsFilter</filter-name>
-        <url-pattern>*.jsf</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>extensionsFilter</filter-name>
-        <url-pattern>/faces/*</url-pattern>
-    </filter-mapping>
-
     <listener>
         <listener-class>com.cannontech.servlet.KickStartLoggingListener</listener-class>
     </listener>
@@ -168,13 +135,6 @@
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
-
-    <!-- Faces Servlet -->
-    <servlet>
-        <servlet-name>Faces Servlet</servlet-name>
-        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
 
     <servlet>
         <servlet-name>common</servlet-name>
@@ -481,12 +441,6 @@
     </servlet>
 
     <!-- [INSERT GENERATED WEB.XML FRAGMENT HERE] -->
-
-    <!-- Faces extension mapping -->
-    <servlet-mapping>
-        <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>*.jsf</url-pattern>
-    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>common</servlet-name>
