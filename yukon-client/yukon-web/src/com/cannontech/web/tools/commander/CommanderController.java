@@ -277,7 +277,7 @@ public class CommanderController {
     @RequestMapping("editSettingsPopup")
     public String editSettingsPopup(ModelMap model, HttpServletRequest req) throws IOException {
         Integer priority = webUtil.getYukonCookieValue(req, "commander", "priority", null, JsonUtils.INT_TYPE);
-        if (priority == null) {
+        if (priority == null || !CommandPriority.isCommandPriorityValid(priority)) {
             priority = CommandPriority.maxPriority;
         }
         model.addAttribute("priority", priority);
