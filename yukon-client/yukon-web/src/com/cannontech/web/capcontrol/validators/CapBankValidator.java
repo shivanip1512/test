@@ -26,8 +26,9 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
     public void doValidation(CapBank capbank, Errors errors) {
 
         validateName(capbank, errors);
-        if(capbank.getCreateCBC())
+        if (capbank.getCreateCBC()) {
             validateCBCName(capbank, errors);
+        }
 
     }
 
@@ -68,6 +69,10 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
                     errors.rejectValue("cbcControllerName", "yukon.web.error.nameConflict");
                 }
             }
+        }
+        if(capbank.getName().equals(capbank.getCbcControllerName())){
+            errors.rejectValue("name", "yukon.web.error.valuesCannotBeSame");
+            errors.rejectValue("cbcControllerName", "yukon.web.error.valuesCannotBeSame");
         }
     }
 }

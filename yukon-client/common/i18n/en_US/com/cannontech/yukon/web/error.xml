@@ -16,6 +16,7 @@
     <entry key="yukon.web.error.required">Field is required.</entry>
     <entry key="yukon.web.error.isBlank">Cannot be blank.</entry>
     <entry key="yukon.web.error.nameConflict">Name already exists</entry>
+    <entry key="yukon.web.error.valuesCannotBeSame">Fields cannot have the same value.</entry>
     <entry key="yukon.web.error.isNotPositive">Must be a positive number.</entry>
     <entry key="yukon.web.error.notValidNumber">Not a valid number.</entry>
     <entry key="yukon.web.error.isNotPositiveInt">Must be a positive whole number.</entry>
