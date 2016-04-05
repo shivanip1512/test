@@ -20,8 +20,6 @@ import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -1226,19 +1224,10 @@ public class CcHomeController {
             HttpServletRequest request) {
         
         EconomicEvent event = economicEventDao.getForId(eventId);
-        List<EconomicEventParticipant> participantList = economicEventParticipantDao.getForEvent(event);
-        DataModel participantDataModel = new ListDataModel(participantList);
-        EconomicStrategy strategy = (EconomicStrategy) strategyFactory.getStrategy(event.getProgram());
-        getOtherRevisionsModel(event);
-        Map<Integer, EconomicEventPricing> revisions = event.getRevisions();
         model.addAttribute("event", event);
-
-        DateTimeFormatter dateTimeFormatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.TIME, userContext);
-        List<String> pricingTableTotals = new ArrayList<>();
-
-        int nParticipants = participantDataModel.getRowCount();
-        List<List<Object>> tableData = new ArrayList<>();
-        participantDataModel.setRowIndex(0);
+        
+        EconomicStrategy strategy = (EconomicStrategy) strategyFactory.getStrategy(event.getProgram());
+        Map<Integer, EconomicEventPricing> revisions = event.getRevisions();
         
         // determine pricing revision to use, if not passed in, use current
         EconomicEventPricing currentRevision = event.getLatestRevision();
@@ -1252,9 +1241,12 @@ public class CcHomeController {
         int countRevisions =
             economicService.getFallThroughWindow(curEconEventPricingRevision, 0).getPricingRevision().getWindows().size();
         BigDecimal[] columnTotals = new BigDecimal[countRevisions];
-        for (int bigInd = 0; bigInd < columnTotals.length; bigInd += 1) {
+        
+        for (int bigInd = 0; bigInd < columnTotals.length; bigInd++) {
             columnTotals[bigInd] = new BigDecimal(0);
         }
+        
+        DateTimeFormatter dateTimeFormatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.TIME, userContext);
         List<List<String>> pricingTableHead = new ArrayList<>();
         for (int rev = 0; rev < countRevisions; rev += 1) {
             curPriceWindow = economicService.getFallThroughWindow(curEconEventPricingRevision, rev);
@@ -1271,6 +1263,7 @@ public class CcHomeController {
             priceHeadings.add(curEnergyPriceStr);
             pricingTableHead.add(priceHeadings);
         }
+        
         Set<Entry<Integer, EconomicEventPricing>> revisionSet = revisions.entrySet();
         List<List<EconomicEventPricingWindow>> pricingWindows = new ArrayList<List<EconomicEventPricingWindow>>();
         List<Integer> revisionList = new ArrayList<Integer>();
@@ -1286,38 +1279,42 @@ public class CcHomeController {
             revisionList.add(revision);
             pricingWindows.add(pricingWindowsForRevision);
         }
+        
         model.addAttribute("pricingWindows", pricingWindows);
         model.addAttribute("revisionList", revisionList);
         model.addAttribute("selectedRevision", curEconEventPricingRevision.getRevision());
-        pricingWindows.get(0).get(0).getPricingRevision().getRevision();
+        
+        List<EconomicEventParticipant> participantList = economicEventParticipantDao.getForEvent(event);
+        List<List<Object>> tableData = new ArrayList<>();
         Integer columnIndex = 0;
-        for (int rowInd = 0; rowInd < nParticipants; rowInd += 1) {
+        for (EconomicEventParticipant participant : participantList) {
             
             List<Object> pricingData = new ArrayList<>();
-            participantDataModel.setRowIndex(rowInd);
-            EconomicEventParticipant pRowData = (EconomicEventParticipant) participantDataModel.getRowData();
-            String companyName = pRowData.getCustomer().getCompanyName();
-            Integer idInteger = pRowData.getCustomer().getId();
+            String companyName = participant.getCustomer().getCompanyName();
+            Integer idInteger = participant.getCustomer().getId();
             Map<String, Object> companyInfo = new HashMap<>();
             companyInfo.put("name", companyName);
             companyInfo.put("id", idInteger);
             pricingData.add(companyInfo);
-            pricingData.add(getAckForRow(pRowData, currentRevision));
-            String imgPath = request.getContextPath() + getNotifForRow(pRowData, strategy);
+            pricingData.add(getAckForRow(participant, currentRevision));
+            String imgPath = request.getContextPath() + getNotifForRow(participant, strategy);
             pricingData.add(imgPath);
             tableData.add(pricingData);
 
             EconomicEventParticipantSelectionWindow selection;
-            for (columnIndex = 0; columnIndex < countRevisions; columnIndex += 1) {
-                    selection = economicService.getCustomerSelectionWindow(currentRevision, pRowData, columnIndex);
+            for (columnIndex = 0; columnIndex < countRevisions; columnIndex++) {
+                    selection = economicService.getCustomerSelectionWindow(currentRevision, participant, columnIndex);
                 BigDecimal energyToBuy = selection.getEnergyToBuy();
                 pricingData.add(energyToBuy.toString());
                 columnTotals[columnIndex] = columnTotals[columnIndex].add(energyToBuy);
             }
         }
-        for (Integer totalsIndex = 0; totalsIndex < columnIndex; totalsIndex += 1) {
+        
+        List<String> pricingTableTotals = new ArrayList<>();
+        for (int totalsIndex = 0; totalsIndex < columnIndex; totalsIndex++) {
             pricingTableTotals.add(columnTotals[totalsIndex] == null ? "-----" : columnTotals[totalsIndex].toString());
         }
+        
         model.addAttribute("pricingTableHead", pricingTableHead);
         model.addAttribute("tableData", tableData);
         model.addAttribute("pricingTableTotals", pricingTableTotals);
@@ -1498,14 +1495,6 @@ public class CcHomeController {
         }
         return "/WebConfig/yukon/Icons/information.gif";
 
-    }
-    
-    private ListDataModel getOtherRevisionsModel(EconomicEvent economicEvent) {
-        ArrayList<EconomicEventPricing> others = 
-            new ArrayList<EconomicEventPricing>(economicEvent.getRevisions().values());
-        others.remove(economicEvent.getLatestRevision());
-        ListDataModel otherRevisionsModel = new ListDataModel(others);
-        return otherRevisionsModel;
     }
     
     @SuppressWarnings("unused")

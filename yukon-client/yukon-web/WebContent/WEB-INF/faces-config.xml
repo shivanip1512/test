@@ -53,17 +53,7 @@
 	<converter>
 		<converter-id>cti_TimeConverter</converter-id> 
 		<converter-class>com.cannontech.web.util.TimeConverter</converter-class> 
-	</converter> 
-    
-    <converter>
-        <converter-id>objectConverter</converter-id>
-        <converter-class>com.cannontech.web.cc.ObjectConverter</converter-class>
-    </converter>
-    
-    <converter>
-        <converter-id>objectSerializingConverter</converter-id>
-        <converter-class>com.cannontech.web.cc.ObjectSerializingConverter</converter-class>
-    </converter>
+	</converter>
     
     <!-- Validators -->
     <validator>
