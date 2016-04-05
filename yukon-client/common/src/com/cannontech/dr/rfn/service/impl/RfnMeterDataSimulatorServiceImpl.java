@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,9 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private RfnDataSimulatorStatus status = new RfnDataSimulatorStatus();
     private Multimap<PaoType, PointMapper> pointMappers;
 
-    private Map<RfnDevice, Map<Attribute, TimestampValue>> storedValue = new HashMap<>();
+    private Map<RfnDevice, Map<Attribute, TimestampValue>> billingStoredValue = new HashMap<>();
+    private Map<RfnDevice, Map<Attribute, TimestampValue>> intervalStoredValue = new HashMap<>();
+    
     private final static int secondsPerYear = 31556926;
     private final static long epoch =
         (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005")) / 1000;
@@ -173,7 +176,8 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
 
             RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
             message.setReadingType(RfnMeterReadingType.BILLING);
-            message.setData(createReadingForType(device, attributeToGenerateMessage, todaysDeviceBillingGenerationTime));
+            message.setData(createReadingForType(device, attributeToGenerateMessage, todaysDeviceBillingGenerationTime,
+                RfnMeterReadingType.BILLING, time));
             message.setDataPointId(1);
             resultList.add(message);
         }
@@ -188,7 +192,8 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
 
             RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
             message.setReadingType(RfnMeterReadingType.INTERVAL);
-            message.setData(createReadingForType(device, attributeToGenerateMessage, intervalTime));
+            message.setData(createReadingForType(device, attributeToGenerateMessage, intervalTime,
+                RfnMeterReadingType.INTERVAL, time));
             message.setDataPointId(1);
             resultList.add(message);
 
@@ -199,7 +204,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     }
     
     private RfnMeterReadingData createReadingForType(RfnDevice device,
-            List<BuiltInAttribute> attributeToGenerateMessage, DateTime time) {
+            List<BuiltInAttribute> attributeToGenerateMessage, DateTime time, RfnMeterReadingType type, DateTime currentTime) {
         RfnMeterReadingData data = new RfnMeterReadingData();
         data.setTimeStamp(time.getMillis());
         data.setRfnIdentifier(device.getRfnIdentifier());
@@ -214,7 +219,8 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             Attribute attribute = getAttributeForPoint(device.getPaoIdentifier().getPaoType(), pointName);
             if (attributeToGenerateMessage.contains(attribute)) {
                 if (attribute != null && RfnMeterSimulatorConfiguration.attributeExists(attribute.toString())) {
-                    TimestampValue timestampValue = getValueAndTimestampForPoint(device, attribute, time);
+                    TimestampValue timestampValue =
+                        getValueAndTimestampForPoint(device, attribute, time, type, currentTime);
                     channelData.setChannelNumber(channelNo);
                     channelNo++;
                     channelData.setStatus(ChannelDataStatus.OK);
@@ -262,44 +268,58 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
      *  Generate Value and Timestamp for each point. This will generate the same value for a point based on if its hourly
      * or daily.
      */
-    private TimestampValue getValueAndTimestampForPoint(RfnDevice device, Attribute attribute, DateTime time) {
+    private TimestampValue getValueAndTimestampForPoint(RfnDevice device, Attribute attribute, DateTime time,
+            RfnMeterReadingType type, DateTime currentTime) {
+        Map<Attribute, TimestampValue> storedDevice;
+        Map<Attribute, TimestampValue> updateStoredDevice;
+        // Create separate map for generating all 24 message for interval metering type.
+        if (type == RfnMeterReadingType.BILLING) {
+            storedDevice = billingStoredValue.get(device);
+        } else {
+            storedDevice = intervalStoredValue.get(device);
+        }
 
-        Map<Attribute, TimestampValue> storedDevice = storedValue.get(device);
         TimestampValue storedTimestampValue = null;
         Double generateValue = 0.0;
-        
         if (storedDevice != null) {
             storedTimestampValue = storedDevice.get(attribute);
 
-            if (storedTimestampValue != null
-                && RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).valueType != GeneratedValueType.INCREASING) {
-                if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds() == DateTimeConstants.SECONDS_PER_HOUR) {
+            if (storedTimestampValue != null) {
+                if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).generationType == GenerationType.HOURLY) {
                     if (storedTimestampValue.getTimestamp().isAfter(time.minusHours(1))) {
                         return storedTimestampValue;
                     }
-                } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds() == DateTimeConstants.SECONDS_PER_DAY) {
+                } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).generationType == GenerationType.DAILY) {
                     if (storedTimestampValue.getTimestamp().isAfter(time.minusDays(1))) {
                         return storedTimestampValue;
                     }
-                    generateValue = generateValue(device, attribute, storedTimestampValue.getValue(), time);
-                } else {
-                    generateValue = generateValue(device, attribute, storedTimestampValue.getValue(), time);
+
                 }
-            } else {
-                generateValue = generateValue(device, attribute, 0.0, time);
             }
+
+            double lastValue = storedTimestampValue != null ? storedTimestampValue.getValue() : 0.0;
+            generateValue = generateValue(device, attribute, lastValue, time, currentTime);
             TimestampValue timestampValue = new TimestampValue(time, generateValue);
-            Map<Attribute, TimestampValue> obj = storedValue.get(device);
-            obj.put(attribute, timestampValue);
+            if (type == RfnMeterReadingType.BILLING) {
+                updateStoredDevice = billingStoredValue.get(device);
+            } else {
+                updateStoredDevice = intervalStoredValue.get(device);
+            }
+            updateStoredDevice.put(attribute, timestampValue);
             return timestampValue;
 
         } else {
             // If device does not exists, add in map
-            generateValue = generateValue(device, attribute, 0.0, time);
-            TimestampValue timestampValue = new TimestampValue(DateTime.now(), generateValue);
+            generateValue = generateValue(device, attribute, 0.0, time, currentTime);
+            TimestampValue timestampValue = new TimestampValue(time, generateValue);
             Map<Attribute, TimestampValue> timestampValueMap = new HashMap<>();
             timestampValueMap.put(attribute, timestampValue);
-            storedValue.put(device, timestampValueMap);
+
+            if (type == RfnMeterReadingType.BILLING) {
+                billingStoredValue.put(device, timestampValueMap);
+            } else {
+                intervalStoredValue.put(device, timestampValueMap);
+            }
             return timestampValue;
         }
     }
@@ -308,7 +328,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     /**
      * Generate value based on the last value and incrementor value
      */
-    private Double generateValue(RfnDevice device, Attribute attribute, Double lastValue, DateTime time) {
+    private Double generateValue(RfnDevice device, Attribute attribute, Double lastValue, DateTime time, DateTime currentTime) {
 
         Double maxValue;
         Double minValue = lastValue;
@@ -324,23 +344,53 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
 
         if (valueType == GeneratedValueType.INCREASING) {
 
-            long intervalSeconds = RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getIntervalSeconds();
             long timeSeconds = time.getMillis() / 1000;
 
-            if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.USAGE) {
-                return roundToOneDecimalPlace(getWattHours(device.getPaoIdentifier().getPaoId(), timeSeconds));
-            } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.DEMAND) {
-                // I think this may still be wrong since intervalSeconds may not end up being on the "clock" hour exactly due to leap seconds. 
-                long endOfLastInterval = timeSeconds - (timeSeconds % intervalSeconds);
-                long beginningOfLastInterval = endOfLastInterval - intervalSeconds;
-                // If I used 1 kWh in 15 minutes, I would use 4kWh over an hour and my "demand" is 4 kW so we multiply Usage*<seconds in hour>/<Seconds in interval> thus  1kWh*3600/900=4kW.
-                result = (getWattHours(device.getPaoIdentifier().getPaoId(), endOfLastInterval) - getWattHours(device.getPaoIdentifier().getPaoId(), beginningOfLastInterval)) * (3600/intervalSeconds);
-                return roundToOneDecimalPlace(result);
+            if (RfnMeterSimulatorConfiguration.getUsageTypes().contains(
+                RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute())) {
+                // Increasing WH value hourly
+                result = getWattHours(device.getPaoIdentifier().getPaoId(), timeSeconds);
+            } else if (RfnMeterSimulatorConfiguration.getDemandTypes().contains(
+                RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute())) {
+
+                if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.DEMAND) {
+                    // Here getting hourly demand value based on the time stamp
+                    result =
+                        getDemand(device.getPaoIdentifier().getPaoId(), DateTimeConstants.SECONDS_PER_HOUR, timeSeconds);
+                    System.out.println(result);
+                } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute() == BuiltInAttribute.PEAK_DEMAND) {
+                    /*
+                     * calculating peak demand if month day is more than 15 then considering freeze time
+                     * 15th date of current month. if month day is less than 15 considering freeze time
+                     * 15th date of previous month
+                     * For calculating (PEAK DEMAND), here considering current time stamp
+                     */
+
+                    long currentTimeSeconds = currentTime.getMillis() / 1000;
+                    long freezeTimestamp = 0;
+
+                    if (time.getDayOfMonth() <= 15) {
+                        freezeTimestamp =
+                            currentTime.withTime(1, 0, 0, 0).withDayOfMonth(15).minusMonths(1).getMillis() / 1000;
+                    } else {
+                        freezeTimestamp = currentTime.withTime(1, 0, 0, 0).withDayOfMonth(15).getMillis() / 1000;
+                    }
+
+                    result =
+                        getPeakDemand(device.getPaoIdentifier().getPaoId(), DateTimeConstants.SECONDS_PER_HOUR,
+                            freezeTimestamp, currentTimeSeconds);
+                    System.out.println(result);
+                }
+
+            } else if (RfnMeterSimulatorConfiguration.getRateDemandTypes().contains(
+                RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getAttribute())) {
+                // TODO for RATE DEMAND TYPES
             } else {
-                maxValue = minValue + RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).getChangeBy();
-                random = new Random().nextDouble();
-                result = minValue + (random * (maxValue - minValue));
+                // EACH USAGE RATE is 1/4 of USAGE
+                result = getWattHours(device.getPaoIdentifier().getPaoId(), timeSeconds) / 4;
             }
+
+            return result;
 
         } else if (valueType == GeneratedValueType.DECREASING) {
             if (minValue > minValue - RfnMeterSimulatorConfiguration.valueOf(attribute.toString())
@@ -404,6 +454,57 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         status.getSuccess().incrementAndGet();
     }
 
+    /**
+     * Calculating demand (W) value based on address , demand interval and time
+     */
+    public double getDemand(int address, long demandIntervalSeconds, long nowSeconds) {
+
+        long endOfLastInterval = nowSeconds - nowSeconds % demandIntervalSeconds;
+        long beginningOfLastInterval = endOfLastInterval - demandIntervalSeconds;
+
+        double demandHwhBegin = getWattHours(address, beginningOfLastInterval);
+        double demandHwhEnd = getWattHours(address, endOfLastInterval);
+
+        double diffWh = (demandHwhEnd - demandHwhBegin) * (DateTimeConstants.SECONDS_PER_HOUR / demandIntervalSeconds);
+        return diffWh;
+
+    }
+
+    /**
+     * Calculating peak demand (W) based on address, demand interval , monthlyTimestamp ,current time
+     */
+
+    public double getPeakDemand(int address, long demandInterval, long freezeTimestamp, long nowSeconds) {
+        double maxIntervalConsumption = 0;
+        long maxIntervalTimestamp = 0;
+
+        // Align it to its following interval.
+        long firstIntervalStart = freezeTimestamp - (freezeTimestamp % demandInterval) + demandInterval;
+
+        long intervalBegin = firstIntervalStart;
+        while ((intervalBegin + demandInterval) < nowSeconds) {
+            // Calculate the consumption from the start point of the interval.
+            double intervalConsumption = makeValueConsumption(address, intervalBegin, demandInterval);
+
+            if (intervalConsumption > maxIntervalConsumption) {
+                maxIntervalConsumption = intervalConsumption;
+
+                // Timestamp for the peak is the end of the interval.
+                maxIntervalTimestamp = intervalBegin + demandInterval;
+            }
+
+            intervalBegin = intervalBegin + demandInterval;
+        }
+
+        double peakDemand = getDemand(address, demandInterval, maxIntervalTimestamp);
+
+        return peakDemand;
+    }
+
+    /**
+     * Calculating watt hour (WH) based on address and time
+     */
+
     private double getWattHours(int address, long CurrentTimeInSeconds) {
         long duration = CurrentTimeInSeconds - epoch;
         double consumptionWs = makeValueConsumption(address, epoch, duration);
@@ -426,7 +527,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         // Mod the hWh by 10000000 to reduce the range from 0 to 9999999,
         // since the MCT Device reads hWh this corresponds to 999,999.9 kWh
         // which is the desired changeover point.
-        return (reading/10) % 1_000_000_000;
+        return (reading / 10) % 1_000_000_000;
     }
 
     /**
