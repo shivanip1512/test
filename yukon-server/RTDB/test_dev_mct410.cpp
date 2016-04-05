@@ -2191,8 +2191,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE( outmsg );
 
-        std::vector<unsigned char> expected = boost::assign::list_of
-                (0x04)(0xcb)(0x2f)(0x00)(0x00)(0x05);
+        std::vector<unsigned char> expected = {
+                0x04, 0xcb, 0x2f, 0x00, 0x00, 0x05 };
 
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0fe);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x02);  //  function write
@@ -2228,8 +2228,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE( outmsg );
 
-        std::vector<unsigned char> expected = boost::assign::list_of
-                (0x04)(0xcb)(0x2f)(0x34)(0x04)(0x04);
+        std::vector<unsigned char> expected = {
+                0x04, 0xcb, 0x2f, 0x34, 0x04, 0x04 };
 
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0fe);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x02);  //  function write
@@ -2316,8 +2316,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE( outmsg );
 
-        std::vector<unsigned char> expected = boost::assign::list_of
-                (0x04)(0xcb)(0x2f)(0x00)(0x00)(0x05)(0x07)(0x11);
+        std::vector<unsigned char> expected = {
+                0x04, 0xcb, 0x2f, 0x00, 0x00, 0x05, 0x07, 0x11 };
 
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0fe);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x02);  //  function write
@@ -2453,8 +2453,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE( outmsg );
 
-        std::vector<unsigned char> expected = boost::assign::list_of
-                (0x04)(0xcb)(0x2f)(0x34)(0x04)(0x04)(0x07)(0x11);
+        std::vector<unsigned char> expected = {
+                0x04, 0xcb, 0x2f, 0x34, 0x04, 0x04, 0x07, 0x11 };
 
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0fe);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x02);  //  function write
@@ -2539,8 +2539,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
 
-            const std::vector<unsigned> expected = boost::assign::list_of
-                (0x12)(0xd6)(0x87)(0x2a)(0x96)(0x04)(0x07)(0x11)(0x40);
+            const std::vector<unsigned> expected = {
+                0x12, 0xd6, 0x87, 0x2a, 0x96, 0x04, 0x07, 0x11, 0x40 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -2578,8 +2578,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
 
-            const std::vector<unsigned> expected = boost::assign::list_of
-                (0x0c);
+            const std::vector<unsigned> expected = {
+                0x0c };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -2651,8 +2651,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
 
-            const std::vector<unsigned> expected = boost::assign::list_of
-                (0x01)(0xe2)(0x40)(0x11)(0xd7)(0x03)(0x06)(0x12)(0x44);
+            const std::vector<unsigned> expected = {
+                0x01, 0xe2, 0x40, 0x11, 0xd7, 0x03, 0x06, 0x12, 0x44 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -2690,8 +2690,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
 
-            const std::vector<unsigned> expected = boost::assign::list_of
-                (0x15);
+            const std::vector<unsigned> expected = {
+                0x15 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -2762,8 +2762,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
 
-            const std::vector<unsigned> expected = boost::assign::list_of
-                (0x12)(0xd6)(0x87)(0x2a)(0x96)(0x04)(0x07)(0x11)(0x40);
+            const std::vector<unsigned> expected = {
+                0x12, 0xd6, 0x87, 0x2a, 0x96, 0x04, 0x07, 0x11, 0x40 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -2860,8 +2860,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
 
-            const std::vector<unsigned> expected = boost::assign::list_of
-                (0x12)(0xd6)(0x87)(0x00)(0x00)(0x04)(0x07)(0x11)(0x40);
+            const std::vector<unsigned> expected = {
+                0x12, 0xd6, 0x87, 0x00, 0x00, 0x04, 0x07, 0x11, 0x40 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -2958,8 +2958,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
 
-            const std::vector<unsigned> expected = boost::assign::list_of
-                (0x12)(0xd6)(0x87)(0x00)(0x00)(0x04)(0x00)(0x00)(0x40);
+            const std::vector<unsigned> expected = {
+                0x12, 0xd6, 0x87, 0x00, 0x00, 0x04, 0x00, 0x00, 0x40 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -5318,16 +5318,99 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
-    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak)
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_overlap)
     {
         Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
+
+        const CtiTime timeBegin(CtiDate(18, 3, 2014), 12, 34, 56);
 
         test_Mct410IconDevice mct410;
 
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 10);
 
-        CtiCommandParser parse("getvalue lp peak day channel 1 3/17/2014 17");
+        {
+            CtiCommandParser parse("getvalue lp peak day channel 1 3/17/2014 17");
+            request.setCommandString(parse.getCommandStr());
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        }
+
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(outList.size(), 1);
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        BOOST_CHECK(isSentOnRouteMsg(retList.front()));
+
+        //  reading existing peak
+        {
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE(om);
+                BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, 3);
+                BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 160);
+                BOOST_CHECK_EQUAL(om->Buffer.BSt.Length, 7);
+
+                OutEchoToIN(*om, im);
+
+                std::array<unsigned char, 7> buf { 0x10, 0x01, 0x00, 0x01, 0x30, 0x02, 0x30 };
+
+                std::copy(buf.begin(), buf.end(), im.Buffer.DSt.Message);
+
+                im.Buffer.DSt.Length = buf.size();
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList));
+
+            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+            BOOST_REQUIRE_EQUAL(vgList.size(), 1);
+            BOOST_REQUIRE_EQUAL(outList.size(), 1);
+
+            auto retList_itr = retList.cbegin();
+
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+
+            auto outList_itr = outList.cbegin();
+
+            const auto om = *outList_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, 2);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 6);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Length, 9);
+
+            const auto results_begin = om->Buffer.BSt.Message;
+            const auto results_end = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+            std::array<unsigned char, 9> expected { 0xff, 0x01, 0x53, 0x27, 0xd2, 0xd0, 0x11, 0x00, 0x00 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                    expected.begin(), expected.end(),
+                    results_begin, results_end);
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_no_overlap)
+    {
+        const CtiDate dateBegin { 4, 4, 2016 };
+        const CtiTime timeBegin { dateBegin, 17, 24, 36 };
+
+        Cti::Test::Override_CtiDate_Now overrideDate { dateBegin };
+        Cti::Test::Override_CtiTime_Now overrideTime { timeBegin };
+
+        test_Mct410IconDevice mct410;
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 10);
+
+        CtiCommandParser parse("getvalue lp peak day channel 1 04/04/2016 6");
         request.setCommandString(parse.getCommandStr());
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
@@ -5336,15 +5419,149 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
 
-        BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
+        //  reading existing peak
+        {
+            BOOST_CHECK(isSentOnRouteMsg(retList.front()));
+
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE(om);
+                BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, 3);
+                BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 160);
+                BOOST_CHECK_EQUAL(om->Buffer.BSt.Length, 7);
+
+                OutEchoToIN(*om, im);
+
+                std::array<unsigned char, 7> buf = { 0x00, 0x02, 0x8d, 0x56, 0xfa, 0x0b, 0xcf };
+
+                std::copy(buf.begin(), buf.end(), im.Buffer.DSt.Message);
+
+                im.Buffer.DSt.Length = buf.size();
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList));
+        }
+
+        BOOST_REQUIRE_EQUAL(vgList.size(), 1);
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+        BOOST_REQUIRE_EQUAL(outList.size(), 1);
 
         {
-            const OUTMESS *om = outList.front();
+            auto retList_itr = retList.cbegin();
 
-            BOOST_REQUIRE( om );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO, 3 );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 160 );
-            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length, 7 );
+            BOOST_CHECK(isSentOnRouteMsg(*retList_itr++));
+
+            auto outList_itr = outList.cbegin();
+
+            const auto om = *outList_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, 2);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 6);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Length, 9);
+
+            const auto results_begin = om->Buffer.BSt.Message;
+            const auto results_end = om->Buffer.BSt.Message + om->Buffer.BSt.Length;
+
+            std::array<unsigned char, 9> expected { 0xff, 0x01, 0x57, 0x03, 0x46, 0x50, 0x06, 0x00, 0x00 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(), expected.end(),
+                results_begin, results_end);
+
+            INMESS im;
+
+            OutEchoToIN(*om, im);
+
+            im.Buffer.DSt.Length = 0;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            delete_container(retList);  retList.clear();
+            delete_container(vgList);   vgList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.ResultDecode(im, timeBegin, vgList, retList, outList));
+        }
+
+        BOOST_CHECK(vgList.empty());
+        BOOST_CHECK(outList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 2);
+
+        {
+            auto retList_itr = retList.begin();
+            CtiRequestMsg *req;
+
+            {
+                auto msg = *retList_itr++;
+
+                BOOST_REQUIRE(msg);
+
+                req = dynamic_cast<CtiRequestMsg *>(msg);
+
+                BOOST_REQUIRE(req);
+
+                BOOST_CHECK_EQUAL(req->DeviceId(), 123456);
+                BOOST_CHECK_EQUAL(req->CommandString(), "getvalue lp peak day channel 1 04/04/2016 6");
+                BOOST_CHECK_EQUAL(req->getMessageTime(), timeBegin + 9);
+            }
+
+            {
+                auto msg = *retList_itr++;
+
+                BOOST_REQUIRE(msg);
+
+                auto ret = dynamic_cast<const CtiReturnMsg *>(msg);
+
+                BOOST_REQUIRE(ret);
+
+                BOOST_CHECK_EQUAL(ret->DeviceId(), 123456);
+                BOOST_CHECK_EQUAL(ret->Status(), 0);
+                BOOST_CHECK_EQUAL(ret->ResultString(), "Test MCT-410iL / delaying 9 seconds for device peak report processing (until 04/04/2016 17:24:45)");
+                BOOST_CHECK(ret->ExpectMore());
+            }
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(req, CtiCommandParser{ req->CommandString() }, vgList, retList, outList));
+        }
+
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(outList.size(), 1);
+        BOOST_REQUIRE_EQUAL(retList.size(), 3);  //  first two are the messages from before
+
+        {
+            BOOST_CHECK(isSentOnRouteMsg(retList.back()));
+
+            INMESS im;
+
+            {
+                const OUTMESS *om = outList.front();
+
+                BOOST_REQUIRE(om);
+                BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, 3);
+                BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 160);
+                BOOST_CHECK_EQUAL(om->Buffer.BSt.Length, 13);
+
+                OutEchoToIN(*om, im);
+
+                std::array<unsigned char, 13> buf { 0x00, 0x02, 0xa9, 0x57, 0x01, 0xf4, 0xcf, 0x00, 0x02, 0x97, 0x00, 0x0e, 0xcb };
+
+                std::copy(buf.begin(), buf.end(), im.Buffer.DSt.Message);
+
+                im.Buffer.DSt.Length = buf.size();
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            }
+
+            delete_container(retList);  retList.clear();
+            delete_container(outList);  outList.clear();
+
+            BOOST_CHECK_EQUAL(ClientErrors::InvalidTimestamp, mct410.ResultDecode(im, timeBegin, vgList, retList, outList));
         }
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
