@@ -25,4 +25,13 @@
     </div>
 </c:forEach>
 
+<div class="action-area">
+    <cti:msg2 var="popupTitle" key=".deleteCoordinates.title"/>
+    <div class="dn" id="confirm-delete" data-dialog data-title="${popupTitle}" data-event="yukon:tools:map:delete-coordinates">
+        <i:inline key=".deleteCoordinates" arguments="${pao.name}"/>
+    </div>
+    
+    <cti:button id="remove-pin" renderMode="image" icon="icon-map-delete" data-popup="#confirm-delete" data-pao="${pao.paoIdentifier.paoId}"/>
+</div>
+
 </cti:msgScope>

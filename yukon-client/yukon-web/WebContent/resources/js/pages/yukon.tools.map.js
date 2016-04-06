@@ -127,7 +127,7 @@ yukon.tools.map = (function() {
     },
     
     /** Method to update device list with recursive setTimeout. */
-    _update = function() {
+    _update = function(once) {
         $.getJSON(decodeURI($('#locations').val())).done(function(fc) {
             
             var toAdd = [], toRemove = [], icons = {},
@@ -175,7 +175,9 @@ yukon.tools.map = (function() {
         }).fail(function(xhr, status, error) {
             debug.log('update failed:' + status + ': ' + error);
         }).always(function() {
-            _updater = setTimeout(_update, _updateInterval);
+            if (!once) {
+                _updater = setTimeout(_update, _updateInterval);
+            }
         });
     },
     
@@ -357,6 +359,28 @@ yukon.tools.map = (function() {
                 var pixel = _map.getEventPixel(e.originalEvent),
                     hit = _map.forEachFeatureAtPixel(pixel, function(feature, layer) { return true; });
                 $('#' + _map.getTarget()).css('cursor', hit ? 'pointer' : 'default');
+            });
+            
+            /** Remove the coordinates for the device when the user clicks OK on the confirmation popup. **/
+            $(document).on('yukon:tools:map:delete-coordinates', function(event) {
+                var paoId = $('#remove-pin').data("pao"),
+                    removeUrl = yukon.url('/tools/map/device/' + paoId);
+                
+                $.ajax({
+                    url: removeUrl,
+                    type: 'POST',
+                    data: {_method: 'DELETE'}, //Spring request type hackery
+                    success: function(results) {
+                        $('#confirm-delete').dialog('close');
+                        yukon.ui.removeAlerts();
+                        _update(true); //refresh map
+                    },
+                    error: function(xhr, status, error) {
+                        var errorMsg = xhr.responseJSON.message;
+                        yukon.ui.alertError(errorMsg);
+                    }
+                });
+                
             });
             
             /** Remove animation classes when animation finishes. */

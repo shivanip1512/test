@@ -73,4 +73,8 @@ public interface PaoLocationService {
      */
     List<PaoDistance> getNearbyLocations(PaoLocation location, double distance, DistanceUnit unit, PaoTag... tags);
     
+    /**
+     * Delete the location information for the specified pao.
+     */
+    public void deleteLocationForPaoId(int paoId);
 }

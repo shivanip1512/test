@@ -6,19 +6,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.meter.model.DisplayableMeter;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -37,6 +42,7 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.mapping.model.Filter;
@@ -58,6 +64,7 @@ public class MapController {
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private PointService pointService;
     @Autowired private StateDao stateDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -121,6 +128,26 @@ public class MapController {
         model.addAttribute("attributes", supported);
         
         return "map/info.jsp";
+    }
+    
+    @RequestMapping(value="/map/device/{id}", method=RequestMethod.DELETE)
+    public @ResponseBody Map<String, String> deleteCoordinates(@PathVariable int id, YukonUserContext userContext, 
+                                                    HttpServletResponse response) {
+        
+        Map<String, String> json = new HashMap<>();
+        try {
+            //throw new IllegalArgumentException("Something very bad has happened!");
+            paoLocationService.deleteLocationForPaoId(id);
+            response.setStatus(HttpStatus.OK.value());
+            return json;
+        } catch (Exception e) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String message = accessor.getMessage("yukon.web.modules.tools.map.deleteCoordinates.error", e.getMessage());
+            
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            json.put("message", message);
+            return json;
+        }
     }
     
     @RequestMapping("/map/locations")

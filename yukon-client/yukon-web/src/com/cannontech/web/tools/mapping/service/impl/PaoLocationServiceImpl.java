@@ -125,4 +125,8 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         return nearby;
     }
     
+    @Override
+    public void deleteLocationForPaoId(int paoId) {
+        paoLocationDao.delete(paoId);
+    }
 }
