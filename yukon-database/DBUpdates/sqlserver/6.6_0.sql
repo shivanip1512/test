@@ -22,6 +22,16 @@ WHERE RolePropertyId = -10800
 AND Value = '/cc/ciSetup.jsf';
 /* End YUK-15180 */
 
+/* Start YUK-15216 */
+UPDATE DeviceConfigCategoryItem 
+SET ItemName = 'timeOffset', 
+    ItemValue = CASE 
+                  WHEN ItemValue='true' THEN 'LOCAL' 
+                  ELSE 'UTC' 
+                END
+WHERE ItemName = 'localTime';
+/* End YUK-15216 */
+
 /* Start YUK-15201 */
 /* @error ignore-begin */
 CREATE TABLE StoredProcedureLog (
