@@ -136,7 +136,6 @@ public class MapController {
         
         Map<String, String> json = new HashMap<>();
         try {
-            //throw new IllegalArgumentException("Something very bad has happened!");
             paoLocationService.deleteLocationForPaoId(id);
             response.setStatus(HttpStatus.OK.value());
             return json;
