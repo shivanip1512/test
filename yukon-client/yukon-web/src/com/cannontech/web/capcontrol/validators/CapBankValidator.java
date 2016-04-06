@@ -33,46 +33,38 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
     }
 
     private void validateName(CapBank capbank, Errors errors) {
+        checkForNameConflicts(capbank, errors, false);
 
-        Integer id = capbank.getId();
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
-
-        if (!paoDao.isNameAvailable(capbank.getName(), PaoType.CAPBANK)) {
-
-            if (id == null) {
-                //For create, we must have an available name
-                errors.rejectValue("name", "yukon.web.error.nameConflict");
-            } else {
-                //For edit, we can use the name it already has
-                String existingName = dbCache.getAllPaosMap().get(id).getPaoName();
-                if (!existingName.equals(capbank.getName())) {
-                    errors.rejectValue("name", "yukon.web.error.nameConflict");
-                }
-            }
-        }
     }
     
     private void validateCBCName(CapBank capbank, Errors errors) {
-
-        Integer id = capbank.getId();
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "cbcControllerName", "yukon.web.error.isBlank");
-
-        if (!paoDao.isNameAvailable(capbank.getCbcControllerName(), capbank.getCbcType())) {
-
-            if (id == null) {
-                //For create, we must have an available name
-                errors.rejectValue("cbcControllerName", "yukon.web.error.nameConflict");
-            } else {
-                //For edit, we can use the name it already has
-                String existingName = dbCache.getAllPaosMap().get(id).getPaoName();
-                if (!existingName.equals(capbank.getName())) {
-                    errors.rejectValue("cbcControllerName", "yukon.web.error.nameConflict");
-                }
-            }
-        }
+        checkForNameConflicts(capbank, errors, true);
         if(capbank.getName().equals(capbank.getCbcControllerName())){
             errors.rejectValue("name", "yukon.web.error.valuesCannotBeSame");
             errors.rejectValue("cbcControllerName", "yukon.web.error.valuesCannotBeSame");
+        }
+    }
+    
+    private void checkForNameConflicts(CapBank capbank, Errors errors, boolean checkCBCName) {
+        Integer id = capbank.getId();
+        String fieldName = checkCBCName ? "cbcControllerName" : "name";
+        PaoType paoType = checkCBCName ? capbank.getCbcType() : capbank.getPaoType();
+        String fieldValue = checkCBCName ? capbank.getCbcControllerName() : capbank.getName();
+        
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
+
+        if (!paoDao.isNameAvailable(fieldValue, paoType)) {
+
+            if (id == null) {
+                //For create, we must have an available name
+                errors.rejectValue(fieldName, "yukon.web.error.nameConflict");
+            } else {
+                //For edit, we can use the name it already has
+                String existingName = dbCache.getAllPaosMap().get(id).getPaoName();
+                if (!existingName.equals(fieldValue)) {
+                    errors.rejectValue(fieldName, "yukon.web.error.nameConflict");
+                }
+            }
         }
     }
 }

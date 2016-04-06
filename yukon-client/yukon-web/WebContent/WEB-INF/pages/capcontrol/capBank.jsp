@@ -403,9 +403,6 @@
     <cti:toJson id="two-way-types" object="${twoWayTypes}"/>
     <cti:toJson id="tcp-comm-ports" object="${tcpCommPorts}"/>
     <cti:includeScript link="/resources/js/pages/yukon.da.capbank.js" />
-<%--     <cti:displayForPageEditModes modes="CREATE"> --%>
-<%--         <cti:includeScript link="/resources/js/pages/yukon.da.cbc.js" /> --%>
-<%--     </cti:displayForPageEditModes> --%>
     <%-- EDIT POINTS POPUP --%>
 <div class="dn js-edit-points-popup"
     data-dialog
