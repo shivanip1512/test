@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/21/2016 3:26:18 PM                         */
+/* Created on:     4/6/2016 2:25:31 PM                          */
 /*==============================================================*/
 
 
@@ -2959,7 +2959,7 @@ go
 INSERT INTO DeviceConfigCategoryItem VALUES (0, 0, 'internalRetries', 2);
 INSERT INTO DeviceConfigCategoryItem VALUES (1, 0, 'omitTimeRequest', 'false');
 INSERT INTO DeviceConfigCategoryItem VALUES (2, 0, 'enableDnpTimesyncs', 'false');
-INSERT INTO DeviceConfigCategoryItem VALUES (3, 0, 'localTime', 'false');
+INSERT INTO DeviceConfigCategoryItem VALUES (3, 0, 'timeOffset', 'UTC');
 INSERT INTO DeviceConfigCategoryItem VALUES (4, 0, 'enableUnsolicitedMessagesClass1', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (5, 0, 'enableUnsolicitedMessagesClass2', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (6, 0, 'enableUnsolicitedMessagesClass3', 'true');
