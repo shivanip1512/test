@@ -58,17 +58,17 @@ public class RphSimulatorDaoImpl implements RphSimulatorDao {
             sql.append("OPEN point_cursor");
             sql.append("FETCH NEXT FROM point_cursor");
             sql.append("INTO @PointId ");
-            sql.append("BEGIN TRANSACTION");
             sql.append("WHILE @@FETCH_STATUS = 0");
             sql.append("BEGIN");
+            sql.append("BEGIN TRANSACTION");
             
             type.appendInsertSql(sql);
             
             sql.append("SET @SetInsertLoop = @SetInsertLoop + 1");
             sql.append("FETCH NEXT FROM point_cursor");
             sql.append("INTO @PointId");
-            sql.append("END");
             sql.append("COMMIT");
+            sql.append("END");
             sql.append("CLOSE point_cursor");
             sql.append("DEALLOCATE point_cursor");
 
