@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.meter.model.DisplayableMeter;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -56,6 +58,7 @@ import com.google.common.collect.Sets;
 @Controller
 public class MapController {
     
+    private static final Logger log = YukonLogManager.getLogger(MapController.class);
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private ObjectFormattingService objectFormattingService;
@@ -137,14 +140,18 @@ public class MapController {
         Map<String, String> json = new HashMap<>();
         try {
             paoLocationService.deleteLocationForPaoId(id);
+            log.debug("Deleted coordinates for paoId " + id);
             response.setStatus(HttpStatus.OK.value());
             return json;
         } catch (Exception e) {
+            log.error("Error deleting coordinates for paoId " + id);
+            
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String message = accessor.getMessage("yukon.web.modules.tools.map.deleteCoordinates.error", e.getMessage());
+            json.put("message", message);
             
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            json.put("message", message);
+            
             return json;
         }
     }
