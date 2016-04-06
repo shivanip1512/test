@@ -59,6 +59,8 @@ public:
 
     CtiCCSubstation* replicate() const;
 
+    void setDirty( const bool flag ) { _dirty = flag; }
+
 private:
 
     std::string _parentName;

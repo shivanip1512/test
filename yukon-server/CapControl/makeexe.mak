@@ -349,7 +349,8 @@ capcontrolpao.obj:	precompiled.h CapControlPao.h yukon.h types.h \
 		PointResponseDao.h database_connection.h \
 		PointResponseDatabaseDao.h database_reader.h row_reader.h \
 		database_writer.h row_writer.h ccexecutor.h ctdpcptrq.h \
-		CtiPCPtrQueue.h resolvers.h db_entry_defines.h
+		CtiPCPtrQueue.h resolvers.h db_entry_defines.h \
+		ExecutorFactory.h std_helper.h
 capcontrolpointdatahandler.obj:	precompiled.h \
 		CapControlPointDataHandler.h yukon.h types.h ctidbgmem.h \
 		PointDataHandler.h PointDataListener.h msg_pdata.h dlldefs.h \
@@ -431,7 +432,8 @@ ccarea.obj:	precompiled.h ccarea.h ccAreaBase.h Controllable.h \
 		StrategyLoader.h ZoneManager.h Zone.h ZoneLoader.h \
 		VoltageRegulatorManager.h VoltageRegulatorLoader.h \
 		DatabaseDaoFactory.h PointResponseDao.h \
-		PointResponseDatabaseDao.h database_reader.h row_reader.h
+		PointResponseDatabaseDao.h database_reader.h row_reader.h \
+		ExecutorFactory.h ccexecutor.h msg_multi.h
 ccareabase.obj:	precompiled.h ccareabase.h Controllable.h \
 		CapControlPao.h yukon.h types.h ctidbgmem.h cctypes.h \
 		ccOperationStats.h message.h ctitime.h dlldefs.h \
@@ -839,7 +841,8 @@ ccsparea.obj:	precompiled.h ccsparea.h ccAreaBase.h Controllable.h \
 		StrategyLoader.h ZoneManager.h Zone.h ZoneLoader.h \
 		VoltageRegulatorManager.h VoltageRegulatorLoader.h \
 		DatabaseDaoFactory.h PointResponseDao.h \
-		PointResponseDatabaseDao.h database_reader.h row_reader.h
+		PointResponseDatabaseDao.h database_reader.h row_reader.h \
+		ExecutorFactory.h ccexecutor.h msg_multi.h
 ccstate.obj:	precompiled.h ccstate.h collectable.h ccid.h logger.h \
 		dlldefs.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
@@ -2023,6 +2026,13 @@ test_ccsubstationbus.obj:	ccsubstationbus.h Controllable.h \
 		ccexecutor.h ctdpcptrq.h CtiPCPtrQueue.h PointDataRequest.h \
 		PointDataRequestFactory.h kvarstrategy.h \
 		pfactorkwkvarstrategy.h ExecutorFactory.h MsgVerifyBanks.h
+test_ccsubstations.obj:	boost_test_helpers.h millisecond_timer.h \
+		dlldefs.h ctitime.h ctidate.h test_reader.h row_reader.h \
+		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
+		os2_2w32.h constants.h numstr.h module_util.h version.h \
+		ccsubstation.h CapControlPao.h cctypes.h ccOperationStats.h \
+		message.h collectable.h loggable.h connectionHandle.h \
+		ccConfirmationStats.h pointtypes.h
 test_ccutil.obj:	ccutil.h pointattribute.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h devicetypes.h msg_pcrequest.h message.h ctitime.h \
 		collectable.h loggable.h connectionHandle.h dsm2.h \

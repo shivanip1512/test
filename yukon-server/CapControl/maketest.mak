@@ -64,7 +64,8 @@ test_utils.obj \
 test_TwoWayCBCPoints.obj \
 test_BusOptimizedSort.obj \
 test_ccStatistics.obj \
-test_ccAreas.obj
+test_ccAreas.obj \
+test_ccSubstations.obj
 
 
 CAPCTRLBASEOBJS= \
@@ -442,6 +443,13 @@ test_ccsubstationbus.obj:	ccsubstationbus.h Controllable.h \
 		ccexecutor.h ctdpcptrq.h CtiPCPtrQueue.h PointDataRequest.h \
 		PointDataRequestFactory.h kvarstrategy.h \
 		pfactorkwkvarstrategy.h ExecutorFactory.h MsgVerifyBanks.h
+test_ccsubstations.obj:	boost_test_helpers.h millisecond_timer.h \
+		dlldefs.h ctitime.h ctidate.h test_reader.h row_reader.h \
+		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
+		os2_2w32.h constants.h numstr.h module_util.h version.h \
+		ccsubstation.h CapControlPao.h cctypes.h ccOperationStats.h \
+		message.h collectable.h loggable.h connectionHandle.h \
+		ccConfirmationStats.h pointtypes.h
 test_ccutil.obj:	ccutil.h pointattribute.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h devicetypes.h msg_pcrequest.h message.h ctitime.h \
 		collectable.h loggable.h connectionHandle.h dsm2.h \
