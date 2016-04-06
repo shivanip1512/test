@@ -18,6 +18,16 @@ SET ItemName = 'timeOffset',
 WHERE ItemName = 'localTime';
 /* End YUK-15216 */
 
+/* Start YUK-15201 */
+CREATE TABLE StoredProcedureLog (
+  EntryId           NUMBER          NOT NULL,
+  ProcedureName     VARCHAR2(50)    NOT NULL,
+  LogDate           DATE            NOT NULL,
+  LogString         VARCHAR2(500)   NOT NULL,
+  CONSTRAINT PK_StoredProcedureLog PRIMARY KEY (EntryId)
+);
+/* End YUK-15201 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

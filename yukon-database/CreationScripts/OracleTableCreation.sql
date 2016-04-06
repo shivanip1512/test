@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/6/2016 2:28:08 PM                          */
+/* Created on:     4/6/2016 4:49:45 PM                          */
 /*==============================================================*/
 
 
@@ -8150,6 +8150,17 @@ create table StatusPointMonitorProcessor  (
 INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse');
 INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration');
 INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage');
+
+/*==============================================================*/
+/* Table: StoredProcedureLog                                    */
+/*==============================================================*/
+create table StoredProcedureLog  (
+   EntryId              NUMBER                          not null,
+   ProcedureName        VARCHAR2(50)                    not null,
+   LogDate              DATE                            not null,
+   LogString            VARCHAR2(500)                   not null,
+   constraint PK_StoredProcedureLog primary key (EntryId)
+);
 
 /*==============================================================*/
 /* Table: Substation                                            */

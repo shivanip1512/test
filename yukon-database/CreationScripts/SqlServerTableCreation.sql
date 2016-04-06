@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/6/2016 2:25:31 PM                          */
+/* Created on:     4/6/2016 4:50:41 PM                          */
 /*==============================================================*/
 
 
@@ -8651,6 +8651,18 @@ go
 INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse');
 INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration');
 INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage');
+
+/*==============================================================*/
+/* Table: StoredProcedureLog                                    */
+/*==============================================================*/
+create table StoredProcedureLog (
+   EntryId              numeric              not null,
+   ProcedureName        varchar(50)          not null,
+   LogDate              datetime             not null,
+   LogString            varchar(500)         not null,
+   constraint PK_StoredProcedureLog primary key (EntryId)
+)
+go
 
 /*==============================================================*/
 /* Table: Substation                                            */

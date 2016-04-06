@@ -22,6 +22,18 @@ WHERE RolePropertyId = -10800
 AND Value = '/cc/ciSetup.jsf';
 /* End YUK-15180 */
 
+/* Start YUK-15201 */
+/* @error ignore-begin */
+CREATE TABLE StoredProcedureLog (
+  EntryId           NUMBER          NOT NULL,
+  ProcedureName     VARCHAR2(50)    NOT NULL,
+  LogDate           DATE            NOT NULL,
+  LogString         VARCHAR2(500)   NOT NULL,
+  CONSTRAINT PK_StoredProcedureLog PRIMARY KEY (EntryId)
+);
+/* @error ignore-end */
+/* End YUK-15201 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
