@@ -134,7 +134,7 @@ public class HighBillController {
         //-------------------------------------------
         DateFormat dateFormatter = dateFormattingService.getDateFormatter(DateFormattingService.DateFormatEnum.DATE, userContext);
         
-        Date defaultStopDate = new Date();
+        Date defaultStopDate = TimeUtil.addDays(new Date(), -1);
         Date defaultStartDate = TimeUtil.addDays(defaultStopDate, -5);
         
         String startDateStr = ServletRequestUtils.getStringParameter(request, "getReportStartDate");
@@ -350,7 +350,7 @@ public class HighBillController {
         Date preCommandStartDate = null;
         Date preCommandStopDate = null;
         Date postCommandStartDate = null;
-        Date postCommandStopDate = new Date();
+        Date postCommandStopDate = TimeUtil.addDays(new Date(), -1);
         
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
@@ -376,14 +376,14 @@ public class HighBillController {
             return "meterReadErrors.jsp";
         }
         
-        Date today = new Date();
-        if (preCommandStartDate.after(today)) {
+        Date yesterday = TimeUtil.addDays(new Date(), -1);
+        if (preCommandStartDate.after(yesterday)) {
             String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStart3");
             model.addAttribute("errorMsg", errorMsg);
             return "meterReadErrors.jsp";
         }
         
-        if (preCommandStopDate.after(today)) {
+        if (preCommandStopDate.after(yesterday)) {
             String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStop2");
             model.addAttribute("errorMsg", errorMsg);
             return "meterReadErrors.jsp";
@@ -559,19 +559,19 @@ public class HighBillController {
     
     private List<String> getAvailableDaysAfterPeak(PeakReportResult result) {
         
-        Date today = new Date();
+        Date yesterday = TimeUtil.addDays(new Date(), -1);
         List<String> postAvailableDaysAfterPeak = new ArrayList<String>();
         if(result != null && !result.isNoData()) {
             
             // how many days after peak should be available to gather lp data? 0,1,2,3?
             Date peakDate = DateUtils.truncate(result.getPeakStopDate(), Calendar.DATE);
             postAvailableDaysAfterPeak.add("0");
-            long daysBetween = getDaysBetween(today, peakDate) + 1;
+            long daysBetween = getDaysBetween(yesterday, peakDate) + 1;
             for (int d = 1; d < daysBetween && d <= 3; d++) {
                 postAvailableDaysAfterPeak.add(Integer.valueOf(d).toString());
             }
             Date rangeStopDate = DateUtils.truncate(result.getRangeStopDate(), Calendar.DATE);
-            if (rangeStopDate.compareTo(today) <= 0) {
+            if (rangeStopDate.compareTo(yesterday) <= 0) {
                 postAvailableDaysAfterPeak.add("All");
             }
         }

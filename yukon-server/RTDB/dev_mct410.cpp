@@ -3081,7 +3081,7 @@ YukonError_t Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &
     else
     {
         //  Set the report date outside of the requested range to ensure we won't have an overlap when they retry the request.
-        new_date -= (new_range + 1);
+        new_date -= (new_range + 10);
         new_range = 1;
 
         std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID()));
