@@ -154,6 +154,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     
     //Trending
     TRENDS_HISTORICAL_MONTHS(GlobalSettingSubCategory.GRAPHING, integerType(), 24),
+    TRENDS_MAX_RECORDS_PER_POINT(GlobalSettingSubCategory.GRAPHING, integerType(), 70000),
+    
     // Voice Server
     CALL_RESPONSE_TIMEOUT(GlobalSettingSubCategory.VOICE, integerType(), 240),
     CALL_PREFIX(GlobalSettingSubCategory.VOICE, stringType(), null),

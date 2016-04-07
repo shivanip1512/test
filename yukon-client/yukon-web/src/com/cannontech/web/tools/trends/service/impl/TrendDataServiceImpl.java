@@ -50,7 +50,8 @@ public class TrendDataServiceImpl implements TrendDataService {
         Instant end = new DateTime().withTimeAtStartOfDay().plusDays(1).toInstant();
         Instant start = getEarliestStartDate().toInstant();
         Range<Instant> instantRange = Range.inclusive(start, end);
-        return rawPointHistoryDao.getPointData(pointId, instantRange, Order.FORWARD);
+        int maxRows = globalSettingDao.getInteger(GlobalSettingType.TRENDS_MAX_RECORDS_PER_POINT);
+        return rawPointHistoryDao.getLimitedPointData(pointId, instantRange, false, Order.FORWARD, maxRows);
     }
     
     @Override

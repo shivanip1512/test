@@ -306,6 +306,8 @@
     <entry key="yukon.common.setting.RUN_INTERVAL.description">Interval at which to generate web graphs.</entry>
     <entry key="yukon.common.setting.TRENDS_HISTORICAL_MONTHS">Historical Data</entry>
     <entry key="yukon.common.setting.TRENDS_HISTORICAL_MONTHS.description">Number of past months available for trending data.</entry>
+    <entry key="yukon.common.setting.TRENDS_MAX_RECORDS_PER_POINT">Max number of records per point</entry>
+    <entry key="yukon.common.setting.TRENDS_MAX_RECORDS_PER_POINT.description">Max number of records per point.</entry>
     <entry key="yukon.common.setting.GOOGLE_ANALYTICS_ENABLED">Google Analytics Enabled</entry>
     <entry key="yukon.common.setting.GOOGLE_ANALYTICS_ENABLED.description">Turn on Google analytics for the web server.</entry>
     <entry key="yukon.common.setting.GOOGLE_ANALYTICS_TRACKING_IDS">Google Analytics Tracking ID's</entry>
