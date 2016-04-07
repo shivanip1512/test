@@ -570,6 +570,14 @@ begin
     
     // Remove all features.
 	FeatureRemoveAllInMediaAndLog();
+	//Remove Lucene indexes so they're rebuilt on startup
+    if(ExistsDir(TARGETDIR ^ "cache") = EXISTS) then
+        nResult = DeleteDir(TARGETDIR ^ "cache", ALLCONTENTS);
+          if(nResult < 0) then
+              MessageBox("Unable to clear Lucene indexes. Please manually rebuild indexes.", WARNING);
+          endif;
+    endif;
+     
     // Added in 11.0, disable the cancel button during uninstall.
     if( REMOVEALLMODE ) then
         Disable( CANCELBUTTON );
