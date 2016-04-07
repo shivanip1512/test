@@ -873,8 +873,7 @@ public class ServletUtil {
      * Prints out the stack trace of the Throwable. HTML characters are escaped.
      * Certain lines will be printed as bold and red. Which lines are determined
      * within this function, but is currently configured to be methods in any
-     * com.cannontech package and the MyFaces method that indciates which rendering
-     * phase the error was in.
+     * com.cannontech package
      * 
      * @param t the Throwable who's stack trace will be printed
      * @param p the PrintWriter on which the stack trace will be printed
@@ -883,7 +882,7 @@ public class ServletUtil {
     public static String printNiceHtmlStackTrace(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter p = new PrintWriter(sw);
-        String[] keyWords = { "com.cannontech", "org.apache.myfaces.lifecycle" };
+        String[] keyWords = { "com.cannontech" };
         synchronized (p) {
             p.write("<pre>");
             while (t != null) {

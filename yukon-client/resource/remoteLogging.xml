@@ -35,10 +35,6 @@
   	<level value="warn"/>
   </logger>
   
-  <logger name="org.apache.myfaces">
-  	<level value="warn"/>
-  </logger>
-  
   <!-- root logger -->
   
   <root>
