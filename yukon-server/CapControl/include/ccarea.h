@@ -27,6 +27,10 @@ public:
 
     CtiCCArea* replicate() const;
 
+protected:
+
+    CtiCCArea(const CtiCCArea& area) = default;
+
 private:
 
     bool _reEnableAreaFlag;
@@ -40,7 +44,6 @@ private:
 
     void handleSpecializedPointData( const CtiPointDataMsg & message ) override;
 
-    CtiCCArea(const CtiCCArea& area) = default;
     CtiCCArea& operator=(const CtiCCArea& right) = delete;
 };
 

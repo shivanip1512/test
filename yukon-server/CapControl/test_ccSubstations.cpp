@@ -7,11 +7,29 @@
 #include "ccsubstation.h"
 
 
+struct test_CtiCCSubstation : CtiCCSubstation
+{
+    test_CtiCCSubstation()
+        :   CtiCCSubstation()
+    {
+
+    }
+
+    test_CtiCCSubstation( Cti::RowReader & rdr )
+        :   CtiCCSubstation( rdr )
+    {
+
+    }
+
+    using CtiCCSubstation::setDirty;
+};
+
+
 BOOST_AUTO_TEST_SUITE( test_Substation )
 
 BOOST_AUTO_TEST_CASE( test_Substation_construction )
 {
-    boost::ptr_map< long, CtiCCSubstation >    substations;
+    boost::ptr_map< long, test_CtiCCSubstation >    substations;
 
     {   // Core area object initialization
 
@@ -62,7 +80,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
 
             reader[ "PAObjectID" ] >> paoID;
 
-            substations.insert( paoID, new CtiCCSubstation( reader ) );
+            substations.insert( paoID, new test_CtiCCSubstation( reader ) );
         }
     }
 

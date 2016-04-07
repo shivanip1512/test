@@ -8,11 +8,66 @@
 #include "ccsparea.h"
 
 
+struct test_CtiCCArea : CtiCCArea
+{
+    test_CtiCCArea()
+        :   CtiCCArea()
+    {
+
+    }
+
+    test_CtiCCArea( Cti::RowReader & rdr )
+        :   CtiCCArea( rdr, nullptr )
+    {
+
+    }
+
+    test_CtiCCArea * replicate() const
+    {
+        return new test_CtiCCArea( *this );
+    }
+
+    using CtiCCArea::isDirty;
+    using CtiCCArea::setDirty;
+
+protected:
+
+    test_CtiCCArea( const test_CtiCCArea & other ) = default;
+};
+
+struct test_CtiCCSpecial : CtiCCSpecial
+{
+    test_CtiCCSpecial()
+        :   CtiCCSpecial()
+    {
+
+    }
+
+    test_CtiCCSpecial( Cti::RowReader & rdr )
+        :   CtiCCSpecial( rdr, nullptr )
+    {
+
+    }
+
+    test_CtiCCSpecial * replicate() const
+    {
+        return new test_CtiCCSpecial( *this );
+    }
+
+    using CtiCCSpecial::isDirty;
+    using CtiCCSpecial::setDirty;
+
+protected:
+
+    test_CtiCCSpecial( const test_CtiCCSpecial & other ) = default;
+};
+
+
 BOOST_AUTO_TEST_SUITE( test_Area )
 
 BOOST_AUTO_TEST_CASE( test_ccArea_construction )
 {
-    boost::ptr_map< long, CtiCCArea >    areas;
+    boost::ptr_map< long, test_CtiCCArea >    areas;
 
     {   // Core area object initialization
 
@@ -93,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
 
             reader[ "PAObjectID" ] >> paoID;
 
-            areas.insert( paoID, new CtiCCArea( reader, nullptr ) );
+            areas.insert( paoID, new test_CtiCCArea( reader ) );
         }
     }
 
@@ -491,7 +546,7 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
 
 // Test and document our object copying behavior via replicate
 
-    boost::scoped_ptr<CtiCCArea>    newArea( areas[ 2 ].replicate() );
+    boost::scoped_ptr<test_CtiCCArea>   newArea( areas[ 2 ].replicate() );
 
     // Our new object is identical to the one it was replicated from.
 
@@ -613,7 +668,7 @@ BOOST_AUTO_TEST_CASE( test_ccArea_construction )
 
 BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
 {
-    boost::ptr_map< long, CtiCCSpecial >    areas;
+    boost::ptr_map< long, test_CtiCCSpecial >    areas;
 
     {   // Core area object initialization
 
@@ -694,7 +749,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
 
             reader[ "PAObjectID" ] >> paoID;
 
-            areas.insert( paoID, new CtiCCSpecial( reader, nullptr ) );
+            areas.insert( paoID, new test_CtiCCSpecial( reader ) );
         }
     }
 
@@ -1012,7 +1067,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
 
 // Test and document our object copying behavior via replicate
 
-    boost::scoped_ptr<CtiCCSpecial>     newArea( areas[ 2 ].replicate() );
+    boost::scoped_ptr<test_CtiCCSpecial>    newArea( areas[ 2 ].replicate() );
 
     // Our new object is identical to the one it was replicated from.
 

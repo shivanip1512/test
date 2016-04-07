@@ -21,10 +21,6 @@ public:
 
     DynamicData();
 
-    bool isDirty() const;
-
-    void setDirty( const bool flag );
-
     template<class T>
     bool updateStaticValue( T & currentValue, const T & newValue )
     {
@@ -51,6 +47,12 @@ public:
     bool hasDynamicData( Cti::RowReader & columnValue );
 
     void writeDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime );
+
+protected:
+
+    bool isDirty() const;
+
+    void setDirty( const bool flag );
 
 private:
 

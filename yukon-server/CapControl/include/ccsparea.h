@@ -18,6 +18,10 @@ public:
 
     CtiCCSpecial* replicate() const;
 
+protected:
+
+    CtiCCSpecial(const CtiCCSpecial& area) = default;
+
 private:
 
     std::string formatFlags() const;
@@ -26,7 +30,6 @@ private:
 
     void handleSpecializedPointData( const CtiPointDataMsg & message ) override;
 
-    CtiCCSpecial(const CtiCCSpecial& area) = default;
     CtiCCSpecial& operator=(const CtiCCSpecial& right) = delete;
 };
 

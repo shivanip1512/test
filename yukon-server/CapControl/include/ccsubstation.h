@@ -59,6 +59,8 @@ public:
 
     CtiCCSubstation* replicate() const;
 
+protected:
+
     void setDirty( const bool flag ) { _dirty = flag; }
 
 private:
