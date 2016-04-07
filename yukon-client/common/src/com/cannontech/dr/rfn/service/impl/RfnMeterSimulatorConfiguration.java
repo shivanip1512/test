@@ -9,41 +9,37 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public enum RfnMeterSimulatorConfiguration {
 
-    DELIVERED_KWH(BuiltInAttribute.DELIVERED_KWH, GenerationType.HOURLY, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.USAGE), // Remove USAGE as it is duplicate of DELIVERED_KWH
-    RECEIVED_KWH(BuiltInAttribute.RECEIVED_KWH, GenerationType.HOURLY, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.USAGE),
-    SUM_KWH(BuiltInAttribute.SUM_KWH, GenerationType.HOURLY, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.USAGE),
-    NET_KWH(BuiltInAttribute.NET_KWH, GenerationType.HOURLY, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.USAGE),
-    DEMAND(BuiltInAttribute.DEMAND, GenerationType.HOURLY, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.DEMAND),
-    RECEIVED_KWH_RATE_A(BuiltInAttribute.RECEIVED_KWH_RATE_A, GenerationType.HOURLY, GeneratedValueType.INCREASING, 100.00, 10000.00, 20.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    SUM_KWH_RATE_A(BuiltInAttribute.SUM_KWH_RATE_A, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    NET_KWH_RATE_A(BuiltInAttribute.NET_KWH_RATE_A, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    RECEIVED_KWH_RATE_B(BuiltInAttribute.RECEIVED_KWH_RATE_B, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    SUM_KWH_RATE_B(BuiltInAttribute.SUM_KWH_RATE_B, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    NET_KWH_RATE_B(BuiltInAttribute.NET_KWH_RATE_B, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    RECEIVED_KWH_RATE_C(BuiltInAttribute.RECEIVED_KWH_RATE_C, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    SUM_KWH_RATE_C(BuiltInAttribute.SUM_KWH_RATE_C, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    NET_KWH_RATE_C(BuiltInAttribute.NET_KWH_RATE_C, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    RECEIVED_KWH_RATE_D(BuiltInAttribute.RECEIVED_KWH_RATE_D, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    SUM_KWH_RATE_D(BuiltInAttribute.SUM_KWH_RATE_D, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    NET_KWH_RATE_D(BuiltInAttribute.NET_KWH_RATE_D, GenerationType.HOURLY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
-    PEAK_DEMAND(BuiltInAttribute.PEAK_DEMAND, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.DEMAND),
-    PEAK_DEMAND_FROZEN(BuiltInAttribute.PEAK_DEMAND_FROZEN, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
-    PEAK_DEMAND_RATE_A(BuiltInAttribute.PEAK_DEMAND_RATE_A, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
-    PEAK_DEMAND_FROZEN_RATE_A(BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_A, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
-    PEAK_DEMAND_RATE_B(BuiltInAttribute.PEAK_DEMAND_RATE_B, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
-    PEAK_DEMAND_FROZEN_RATE_B(BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_B, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
-    PEAK_DEMAND_RATE_C(BuiltInAttribute.PEAK_DEMAND_RATE_C, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
-    PEAK_DEMAND_FROZEN_RATE_C(BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_C, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
-    PEAK_DEMAND_RATE_D(BuiltInAttribute.PEAK_DEMAND_RATE_D, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
-    PEAK_DEMAND_FROZEN_RATE_D(BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_D, GenerationType.DAILY, GeneratedValueType.INCREASING, 1000.00, 100000.00, 100.00, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
+    DELIVERED_KWH(BuiltInAttribute.DELIVERED_KWH, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.USAGE), // Remove USAGE as it is duplicate of DELIVERED_KWH
+    RECEIVED_KWH(BuiltInAttribute.RECEIVED_KWH, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.USAGE),
+    SUM_KWH(BuiltInAttribute.SUM_KWH, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.USAGE),
+    NET_KWH(BuiltInAttribute.NET_KWH, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.USAGE),
+    DEMAND(BuiltInAttribute.DEMAND, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.DEMAND),
+    RECEIVED_KWH_RATE_A(BuiltInAttribute.RECEIVED_KWH_RATE_A, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    SUM_KWH_RATE_A(BuiltInAttribute.SUM_KWH_RATE_A, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    NET_KWH_RATE_A(BuiltInAttribute.NET_KWH_RATE_A, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    RECEIVED_KWH_RATE_B(BuiltInAttribute.RECEIVED_KWH_RATE_B, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    SUM_KWH_RATE_B(BuiltInAttribute.SUM_KWH_RATE_B, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    NET_KWH_RATE_B(BuiltInAttribute.NET_KWH_RATE_B, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    RECEIVED_KWH_RATE_C(BuiltInAttribute.RECEIVED_KWH_RATE_C, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    SUM_KWH_RATE_C(BuiltInAttribute.SUM_KWH_RATE_C, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    NET_KWH_RATE_C(BuiltInAttribute.NET_KWH_RATE_C, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    RECEIVED_KWH_RATE_D(BuiltInAttribute.RECEIVED_KWH_RATE_D, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    SUM_KWH_RATE_D(BuiltInAttribute.SUM_KWH_RATE_D, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    NET_KWH_RATE_D(BuiltInAttribute.NET_KWH_RATE_D, GenerationType.HOURLY, false, RfnMeterReadingType.INTERVAL, AttributeGroupType.RATE_USAGE),
+    PEAK_DEMAND(BuiltInAttribute.PEAK_DEMAND, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.DEMAND),
+    PEAK_DEMAND_FROZEN(BuiltInAttribute.PEAK_DEMAND_FROZEN, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
+    PEAK_DEMAND_RATE_A(BuiltInAttribute.PEAK_DEMAND_RATE_A, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
+    PEAK_DEMAND_FROZEN_RATE_A(BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_A, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
+    PEAK_DEMAND_RATE_B(BuiltInAttribute.PEAK_DEMAND_RATE_B, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
+    PEAK_DEMAND_FROZEN_RATE_B(BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_B, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
+    PEAK_DEMAND_RATE_C(BuiltInAttribute.PEAK_DEMAND_RATE_C, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
+    PEAK_DEMAND_FROZEN_RATE_C(BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_C, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
+    PEAK_DEMAND_RATE_D(BuiltInAttribute.PEAK_DEMAND_RATE_D, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
+    PEAK_DEMAND_FROZEN_RATE_D(BuiltInAttribute.PEAK_DEMAND_FROZEN_RATE_D, GenerationType.DAILY, true, RfnMeterReadingType.BILLING, AttributeGroupType.RATE_DEMAND),
 ;
     
     BuiltInAttribute attribute = null;
     GenerationType generationType = null;
-    GeneratedValueType valueType = null;
-    Double minValue = null;
-    Double maxValue = null;
-    Double changeBy = 0.0;
     boolean dated; 
     RfnMeterReadingType rfnMeterReadingType = null;
     AttributeGroupType attributeGroupType =  null;
@@ -52,14 +48,10 @@ public enum RfnMeterSimulatorConfiguration {
     private final static List<BuiltInAttribute> usageAttributeType = new ArrayList<BuiltInAttribute>();
     private final static List<BuiltInAttribute> rateDemandAttributeType = new ArrayList<BuiltInAttribute>();
 
-    private RfnMeterSimulatorConfiguration(BuiltInAttribute attribute, GenerationType generationType, GeneratedValueType valueType,
-            Double minValue, Double maxValue, Double changeBy, boolean dated, RfnMeterReadingType rfnMeterReadingType, AttributeGroupType attributeGroupType) {
+    private RfnMeterSimulatorConfiguration(BuiltInAttribute attribute, GenerationType generationType, boolean dated,
+            RfnMeterReadingType rfnMeterReadingType, AttributeGroupType attributeGroupType) {
         this.attribute = attribute;
         this.generationType = generationType;
-        this.valueType = valueType;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-        this.changeBy = changeBy;
         this.dated = dated;
         this.rfnMeterReadingType = rfnMeterReadingType;
         this.attributeGroupType = attributeGroupType;
@@ -84,30 +76,13 @@ public enum RfnMeterSimulatorConfiguration {
     public GenerationType getGenerationType() {
         return generationType;
     }
-
-    public Double getMinValue() {
-        return minValue;
-    }
-
-    public Double getMaxValue() {
-        return maxValue;
-    }
-
-    public Double getChangeBy() {
-        return changeBy;
-    }
-
+    
     public boolean isDated() {
         return dated;
     }
     
     public RfnMeterReadingType getRfnMeterReadingType() {
         return rfnMeterReadingType;
-    }
-
-    
-    public GeneratedValueType getValueType() {
-        return valueType;
     }
 
     public BuiltInAttribute getAttribute() {
