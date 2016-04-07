@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.collections.keyvalue.MultiKey;
+import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,8 +47,6 @@ import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
-import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -60,16 +58,14 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
 
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private LoadControlClientConnection clientConnection;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EstimatedLoadService estimatedLoadService;
     @Autowired private EstimatedLoadDao estimatedLoadDao;
     @Autowired private ControlAreaDao controlAreaDao;
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private @Qualifier("estimatedLoad") Executor executor;
-    @Autowired private ProgramDao programDao;
 
     private static final int CACHE_SECONDS_TO_LIVE = 120;
-    private final Cache<MultiKey, EstimatedLoadResult> cache = CacheBuilder.newBuilder()
+    private final Cache<MultiKey<Integer>, EstimatedLoadResult> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(CACHE_SECONDS_TO_LIVE, TimeUnit.SECONDS).build();
     private final static Map<Class<? extends EstimatedLoadException>, ButtonInfo> exceptionToButtonInfo;
     private final static String baseKey = "yukon.web.modules.dr.estimatedLoad.";
@@ -148,7 +144,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
      * that value is returned. If not, a new Runnable is created and executed that will insert the value into cache.  
      */
     private EstimatedLoadResult getProgramValue(final int programId, final int gearId, boolean blocking) {
-        final MultiKey resultKey = new MultiKey(programId, gearId); 
+        final MultiKey<Integer> resultKey = new MultiKey<Integer>(programId, gearId); 
         EstimatedLoadResult amount = null;
         
         if (blocking) {
@@ -188,7 +184,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
      * Then the value will be returned to all waiting callers and placed in the cache.
     **/
     private EstimatedLoadResult getProgramValueBlocking(final int programId, final int gearId) {
-        final MultiKey resultKey = new MultiKey(programId, gearId); 
+        final MultiKey<Integer> resultKey = new MultiKey<Integer>(programId, gearId); 
         EstimatedLoadResult result = null;
         try {
             result = cache.get(resultKey, new Callable<EstimatedLoadResult>() {
