@@ -618,7 +618,7 @@ end;
 //---------------------------------------------------------------------------
 function OnMaintUIBefore()
     number nResult, nType;
-    string szTitle, szMsg, sMsg1, sMsg2, sInstalledVersion,sDir;
+    string szTitle, szMsg, sMsg1, sMsg2, sInstalledVersion, sDir;
     BOOL bOpt, bOptNo, bOptYes;
 begin
 	//set the string shown on the installer windows' title bars
@@ -706,9 +706,9 @@ Dlg_ObjDialogs:
 			if(nResult = BACK) then
 				goto Dialog_UninstBackup;
 			endif;
-			//Remove Lucene indexes so they're rebuilt on startup
-    		sDir = TARGETDIR ^ "\\cache";
-    		DeleteDir(sDir, ALLCONTENTS);
+            //Remove Lucene indexes so they're rebuilt on startup
+            sDir = TARGETDIR ^ "\\cache";
+            DeleteDir(sDir, ALLCONTENTS);
 			// Ensure that all previously installed features are removed.
 			FeatureRemoveAllInMediaAndLog();
             // Added in 11.0 - Set appropriate StatusEx static text.
