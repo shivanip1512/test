@@ -524,6 +524,7 @@ end;
 //---------------------------------------------------------------------------
 function OnUninstall()
 string szIgnore, szMsg;
+string sDir;
 number nResult;
 BOOL bOpt1, bOpt2, bOptNo, bOptYes;
 begin
