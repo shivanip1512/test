@@ -224,6 +224,8 @@ yukon.tools.map = (function() {
                         $('#marker-info').show();
                         _overlay.setPosition(coord);
                     });
+                    //close any lingering delete dialogs to simplify handling
+                    $('#confirm-delete').dialog('destroy');
                 } else {
                     $('#marker-info').hide();
                 }
@@ -371,7 +373,7 @@ yukon.tools.map = (function() {
                     type: 'POST',
                     data: {_method: 'DELETE'}, //Spring request type hackery
                     success: function(results) {
-                        $('#confirm-delete').dialog('close');
+                        $('#confirm-delete').dialog('destroy');
                         yukon.ui.removeAlerts();
                         _update(true); //refresh map
                     },
@@ -381,6 +383,11 @@ yukon.tools.map = (function() {
                     }
                 });
                 
+            });
+            
+            /** Destroy the coordinate deletion confirmation popup when cancelled **/
+            $(document).on('click', '.cancel-delete', function(event) {
+                $('#confirm-delete').dialog('destroy');
             });
             
             /** Remove animation classes when animation finishes. */

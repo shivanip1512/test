@@ -72,6 +72,8 @@
     <entry key="yukon.web.modules.tools.map.status.retrieving">Retrieving device Status...</entry>
     <entry key="yukon.web.modules.tools.map.status.filtering">Applying filter...</entry>
     <entry key="yukon.web.modules.tools.map.liveUpdate">Live Update:</entry>
+    <entry key="yukon.web.modules.tools.map.deleteCoordinates.delete">Delete</entry>
+    <entry key="yukon.web.modules.tools.map.deleteCoordinates.hoverText">Delete map coordinates for this device</entry>
     <entry key="yukon.web.modules.tools.map.deleteCoordinates">Are you sure you want to delete map coordinates for {0}?</entry>
     <entry key="yukon.web.modules.tools.map.deleteCoordinates.title">Delete coordinates?</entry>
     <entry key="yukon.web.modules.tools.map.deleteCoordinates.error">Unable to delete coordinates: {0}</entry>
