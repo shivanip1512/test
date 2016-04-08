@@ -597,7 +597,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             thisVal = o1.getMeter().getName();
             anotherVal = o2.getMeter().getName();
             
-            if( thisVal.equalsIgnoreCase(anotherVal)) {
+            if (thisVal.equalsIgnoreCase(anotherVal) && o1.getPointName() != null && o2.getPointName() != null)
+            {
                 thisVal = o1.getPointName();
                 anotherVal = o2.getPointName();
             }
