@@ -21,8 +21,17 @@ struct test_CtiCCSubstation : CtiCCSubstation
 
     }
 
+    test_CtiCCSubstation * replicate() const
+    {
+        return new test_CtiCCSubstation( *this );
+    }
+
     using CtiCCSubstation::isDirty;
     using CtiCCSubstation::setDirty;
+
+protected:
+
+    test_CtiCCSubstation( const test_CtiCCSubstation & other ) = default;
 };
 
 
@@ -590,6 +599,153 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getChildVoltReductionFlag() );
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
+
+// Test and document our object copying behavior via replicate
+
+    boost::scoped_ptr<test_CtiCCSubstation>     newSubstation( substations[ 3 ].replicate() );
+
+    // Our new object is identical to the one it was replicated from.
+
+    // CapControlPao
+    BOOST_CHECK_EQUAL(                    3, newSubstation->getPaoId() );
+    BOOST_CHECK_EQUAL(         "CAPCONTROL", newSubstation->getPaoCategory() );
+    BOOST_CHECK_EQUAL(         "CAPCONTROL", newSubstation->getPaoClass() );
+    BOOST_CHECK_EQUAL( "Groom Lake Station", newSubstation->getPaoName() );
+    BOOST_CHECK_EQUAL(       "CCSUBSTATION", newSubstation->getPaoType() );
+    BOOST_CHECK_EQUAL(         "Top Secret", newSubstation->getPaoDescription() );
+    BOOST_CHECK_EQUAL(                false, newSubstation->getDisableFlag() );
+    BOOST_CHECK_EQUAL(                    0, newSubstation->getDisabledStatePointId() );
+
+    BOOST_CHECK_EQUAL(                    0, newSubstation->getPointIds()->size() );
+
+    BOOST_CHECK_EQUAL(                    3, newSubstation->getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(                    3, newSubstation->getConfirmationStats().getPAOId() );
+
+    // CtiCCSubstation                                     
+    BOOST_CHECK_EQUAL(                  101, newSubstation->getVoltReductionControlId() );
+    BOOST_CHECK_EQUAL(                false, newSubstation->getVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                   "", newSubstation->getParentName() );
+    BOOST_CHECK_EQUAL(                    0, newSubstation->getParentId() );
+    BOOST_CHECK_EQUAL(                    0, newSubstation->getDisplayOrder() );
+    BOOST_CHECK_EQUAL(                 -1.0, newSubstation->getPFactor() );
+    BOOST_CHECK_EQUAL(                 -1.0, newSubstation->getEstPFactor() );
+    BOOST_CHECK_EQUAL(                false, newSubstation->getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    0, newSubstation->getSaEnabledId() );
+    BOOST_CHECK_EQUAL(                false, newSubstation->getSaEnabledFlag() );
+    BOOST_CHECK_EQUAL(                false, newSubstation->getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(                false, newSubstation->getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                false, newSubstation->getChildVoltReductionFlag() );
+
+    BOOST_CHECK_EQUAL(                false, newSubstation->isDirty() );
+
+    // Mess with it -- make sure it is independent from its source
+
+    newSubstation->setPaoName( "Mongo Fett" );
+    newSubstation->setPaoDescription( "Failed Clone" );
+    newSubstation->setDisableFlag( true );
+    newSubstation->setDisabledStatePointId( 1234 );
+    newSubstation->setVoltReductionControlId( 2345 );
+    newSubstation->setOvUvDisabledFlag( true );
+    newSubstation->setPFactor( 0.5 );
+    newSubstation->setEstPFactor( 0.25 );
+    newSubstation->setChildVoltReductionFlag( true );   // sets 'dirty' and 'updated' as well
+    newSubstation->setSaEnabledId( 279 );
+    newSubstation->setSaEnabledFlag( true );
+    newSubstation->setDisplayOrder( 4 );
+
+    // validate our changes
+
+    // CapControlPao
+    BOOST_CHECK_EQUAL(                    3, newSubstation->getPaoId() );
+    BOOST_CHECK_EQUAL(         "CAPCONTROL", newSubstation->getPaoCategory() );
+    BOOST_CHECK_EQUAL(         "CAPCONTROL", newSubstation->getPaoClass() );
+    BOOST_CHECK_EQUAL(         "Mongo Fett", newSubstation->getPaoName() );
+    BOOST_CHECK_EQUAL(       "CCSUBSTATION", newSubstation->getPaoType() );
+    BOOST_CHECK_EQUAL(       "Failed Clone", newSubstation->getPaoDescription() );
+    BOOST_CHECK_EQUAL(                 true, newSubstation->getDisableFlag() );
+    BOOST_CHECK_EQUAL(                 1234, newSubstation->getDisabledStatePointId() );
+
+    BOOST_CHECK_EQUAL(                    0, newSubstation->getPointIds()->size() );
+
+    BOOST_CHECK_EQUAL(                    3, newSubstation->getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(                    3, newSubstation->getConfirmationStats().getPAOId() );
+
+    // CtiCCSubstation                                     
+    BOOST_CHECK_EQUAL(                 2345, newSubstation->getVoltReductionControlId() );
+    BOOST_CHECK_EQUAL(                false, newSubstation->getVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                   "", newSubstation->getParentName() );
+    BOOST_CHECK_EQUAL(                    0, newSubstation->getParentId() );
+    BOOST_CHECK_EQUAL(                    4, newSubstation->getDisplayOrder() );
+    BOOST_CHECK_EQUAL(                  0.5, newSubstation->getPFactor() );
+    BOOST_CHECK_EQUAL(                 0.25, newSubstation->getEstPFactor() );
+    BOOST_CHECK_EQUAL(                 true, newSubstation->getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                  279, newSubstation->getSaEnabledId() );
+    BOOST_CHECK_EQUAL(                 true, newSubstation->getSaEnabledFlag() );
+    BOOST_CHECK_EQUAL(                false, newSubstation->getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(                 true, newSubstation->getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                 true, newSubstation->getChildVoltReductionFlag() );
+
+    BOOST_CHECK_EQUAL(                 true, newSubstation->isDirty() );
+
+    // Verify our original object we replicated from is unchanged
+
+    // CapControlPao
+    BOOST_CHECK_EQUAL(                    3, substations[  3 ].getPaoId() );
+    BOOST_CHECK_EQUAL(         "CAPCONTROL", substations[  3 ].getPaoCategory() );
+    BOOST_CHECK_EQUAL(         "CAPCONTROL", substations[  3 ].getPaoClass() );
+    BOOST_CHECK_EQUAL( "Groom Lake Station", substations[  3 ].getPaoName() );
+    BOOST_CHECK_EQUAL(       "CCSUBSTATION", substations[  3 ].getPaoType() );
+    BOOST_CHECK_EQUAL(         "Top Secret", substations[  3 ].getPaoDescription() );
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].getDisableFlag() );
+    BOOST_CHECK_EQUAL(                    0, substations[  3 ].getDisabledStatePointId() );
+
+    BOOST_CHECK_EQUAL(                    0, substations[  3 ].getPointIds()->size() );
+
+    BOOST_CHECK_EQUAL(                    3, substations[  3 ].getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(                    3, substations[  3 ].getConfirmationStats().getPAOId() );
+
+    // CtiCCSubstation                                     
+    BOOST_CHECK_EQUAL(                  101, substations[  3 ].getVoltReductionControlId() );
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].getVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(                   "", substations[  3 ].getParentName() );
+    BOOST_CHECK_EQUAL(                    0, substations[  3 ].getParentId() );
+    BOOST_CHECK_EQUAL(                    0, substations[  3 ].getDisplayOrder() );
+    BOOST_CHECK_EQUAL(                 -1.0, substations[  3 ].getPFactor() );
+    BOOST_CHECK_EQUAL(                 -1.0, substations[  3 ].getEstPFactor() );
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(                    0, substations[  3 ].getSaEnabledId() );
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].getSaEnabledFlag() );
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].getChildVoltReductionFlag() );
+
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].isDirty() );
+
+// Test operator== and operator!=
+
+    BOOST_CHECK(     *newSubstation == substations[ 3 ] );
+    BOOST_CHECK( ! ( *newSubstation != substations[ 3 ] ) );
+
+    BOOST_CHECK_EQUAL(  3, newSubstation->getPaoId() );
+    BOOST_CHECK_EQUAL(  3, newSubstation->getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(  3, newSubstation->getConfirmationStats().getPAOId() );
+
+    BOOST_CHECK_EQUAL(  3, substations[ 3 ].getPaoId() );
+    BOOST_CHECK_EQUAL(  3, substations[ 3 ].getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(  3, substations[ 3 ].getConfirmationStats().getPAOId() );
+
+    newSubstation->setPaoId( 4 );
+
+    BOOST_CHECK( ! ( *newSubstation == substations[ 3 ] ) );
+    BOOST_CHECK(     *newSubstation != substations[ 3 ] );
+
+    BOOST_CHECK_EQUAL(  4, newSubstation->getPaoId() );
+    BOOST_CHECK_EQUAL(  4, newSubstation->getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(  4, newSubstation->getConfirmationStats().getPAOId() );
+
+    BOOST_CHECK_EQUAL(  3, substations[ 3 ].getPaoId() );
+    BOOST_CHECK_EQUAL(  3, substations[ 3 ].getOperationStats().getPAOId() );
+    BOOST_CHECK_EQUAL(  3, substations[ 3 ].getConfirmationStats().getPAOId() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
