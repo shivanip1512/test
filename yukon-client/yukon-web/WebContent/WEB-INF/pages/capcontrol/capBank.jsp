@@ -380,19 +380,31 @@
         </cti:displayForPageEditModes>
 
         <div class="page-action-area">
-            <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="save" type="submit" classes="primary action" />
-            </cti:displayForPageEditModes>
-            <cti:displayForPageEditModes modes="EDIT">
 
+            <cti:displayForPageEditModes modes="VIEW">
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <cti:url var="editUrl" value="/capcontrol/capbanks/${capbank.id}/edit"/>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+            </cti:checkRolesAndProperties>
+            </cti:displayForPageEditModes>
+    
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <cti:button nameKey="save" type="submit" classes="primary action"/>
+            </cti:displayForPageEditModes>
+    
+            <cti:displayForPageEditModes modes="EDIT">
+    
                 <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:capbank:delete"/>
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${capbank.name}"/>
-
+    
+                <cti:url var="viewUrl" value="/capcontrol/capbanks/${capbank.id}"/>
+                <cti:button nameKey="cancel" href="${viewUrl}"/>
+    
             </cti:displayForPageEditModes>
-            
-            <cti:url var="viewUrl" value="/capcontrol/capbanks/${capbank.id}"/>
-            <cti:button nameKey="cancel" href="${viewUrl}"/>
-
+    
+            <cti:displayForPageEditModes modes="CREATE">
+                <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
+            </cti:displayForPageEditModes>
         </div>
     </form:form>
 

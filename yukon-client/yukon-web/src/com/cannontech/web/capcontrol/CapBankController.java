@@ -75,14 +75,16 @@ public class CapBankController {
     private static final String baseKey = "yukon.web.modules.capcontrol.capbank";
 
     @RequestMapping(value = "capbanks/{id}", method = RequestMethod.GET)
-    public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
-
+    public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
         CapBank capbank = capbankService.getCapBank(id);
-
-        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
-        PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
-        model.addAttribute("mode", mode);
-
+        model.addAttribute("mode", PageEditMode.VIEW);
+        return setUpModel(model, capbank, userContext);
+    }
+    
+    @RequestMapping(value = "capbanks/{id}/edit", method = RequestMethod.GET)
+    public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+        CapBank capbank = capbankService.getCapBank(id);
+        model.addAttribute("mode", PageEditMode.EDIT);
         return setUpModel(model, capbank, userContext);
     }
 

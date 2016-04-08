@@ -78,9 +78,7 @@ public class FeederController {
     @RequestMapping(value="feeders/{id}", method=RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, LiteYukonUser user) {
         CapControlFeeder feeder = feederService.get(id);
-        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
-        model.addAttribute("mode", mode);
+        model.addAttribute("mode", PageEditMode.VIEW);
         return setUpModel(model, feeder, user);
     }
 

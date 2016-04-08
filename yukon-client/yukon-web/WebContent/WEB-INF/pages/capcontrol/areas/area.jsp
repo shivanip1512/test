@@ -288,22 +288,8 @@
         
     </tags:sectionContainer2>
 </cti:displayForPageEditModes>
-
-    <div class="page-action-area">
-
-        <cti:displayForPageEditModes modes="EDIT">
-
-            <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:area:delete" />
-            <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${area.name}"/>
-
-            <cti:url var="viewUrl" value="/capcontrol/areas/${area.id}"/>
-            <cti:button nameKey="cancel" href="${viewUrl}"/>
-
-        </cti:displayForPageEditModes>
-
-    </div>
     
-    </form:form>
+</form:form>
     
 <cti:url var="url" value="/capcontrol/areas/${area.id}"/>
 <form:form id="delete-area" method="DELETE" action="${url}">

@@ -220,6 +220,13 @@
         </div>
 
         <div class="page-action-area">
+            <cti:displayForPageEditModes modes="VIEW">
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <cti:url var="editUrl" value="/capcontrol/cbc/${cbc.id}/edit"/>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+            </cti:checkRolesAndProperties>
+            </cti:displayForPageEditModes>
+        
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action" />
             </cti:displayForPageEditModes>
@@ -237,11 +244,15 @@
                 <%-- Copy CBC Button --%>
                 <cti:button nameKey="copy" icon="icon-disk-multiple"
                     data-popup="#copy-cbc"/>
+            
+                <cti:url var="viewUrl" value="/capcontrol/cbc/${cbc.id}"/>
+                <cti:button nameKey="cancel" href="${viewUrl}"/>
+            
             </cti:displayForPageEditModes>
-
-
-            <cti:msg2 var="returnText" key="yukon.common.return"/>
-            <cti:button label="${returnText}" href="javascript:window.history.back()" />
+            
+            <cti:displayForPageEditModes modes="CREATE">
+                <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
+            </cti:displayForPageEditModes>
 
         </div>
     </form:form>

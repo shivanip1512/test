@@ -149,9 +149,7 @@ public class AreaController {
     /** VIEW */
     @RequestMapping("areas/{areaId}")
     public String view(ModelMap model, LiteYukonUser user, @PathVariable int areaId) {
-        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
-        model.addAttribute("mode", mode);
+        model.addAttribute("mode", PageEditMode.VIEW);
         Area area = areaDao.getArea(areaId);
         return setupModel(model, area, user);
     }

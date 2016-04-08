@@ -33,7 +33,6 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
@@ -62,7 +61,6 @@ public class CbcController {
     @Autowired private CbcValidator cbcValidator;
     @Autowired private PointDao pointDao;
     @Autowired private CbcService cbcService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
@@ -84,14 +82,17 @@ public class CbcController {
             .build();
 
     @RequestMapping(value = "cbc/{id}", method = RequestMethod.GET)
-    public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
-
+    public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
         CapControlCBC cbc = cbcService.getCbc(id);
-
-        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
-        PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
-        model.addAttribute("mode", mode);
-
+        model.addAttribute("mode", PageEditMode.VIEW);
+        return setUpModel(model, cbc, userContext);
+    }
+    
+    @RequestMapping(value = "cbc/{id}/edit", method = RequestMethod.GET)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+        CapControlCBC cbc = cbcService.getCbc(id);
+        model.addAttribute("mode", PageEditMode.EDIT);
         return setUpModel(model, cbc, userContext);
     }
 

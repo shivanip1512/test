@@ -79,6 +79,7 @@ public class SubstationController {
         return setUpModel(model, substation, user, flashScope);
     }
     
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     @RequestMapping(value="substations/{substationId}/edit", method=RequestMethod.GET)
     public String edit(HttpServletRequest request, 
             FlashScope flashScope, 
@@ -87,9 +88,7 @@ public class SubstationController {
             @PathVariable int substationId) throws NotAuthorizedException {
         
         CapControlSubstation substation = substationService.get(substationId);
-        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
-        model.addAttribute("mode", mode);
+        model.addAttribute("mode", PageEditMode.EDIT);
         return setUpModel(model, substation, user, flashScope);
         
     }
@@ -103,9 +102,7 @@ public class SubstationController {
             @PathVariable int substationId) throws NotAuthorizedException {
        
         CapControlSubstation substation = substationService.get(substationId);
-        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        PageEditMode mode = canEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
-        model.addAttribute("mode", mode);
+        model.addAttribute("mode", PageEditMode.VIEW);
         return setUpModel(model, substation, user, flashScope);
         
     }
@@ -124,6 +121,9 @@ public class SubstationController {
         
         boolean hasSubBusControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
         model.addAttribute("hasSubBusControl", hasSubBusControl);
+        
+        boolean hasFeederControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user);
+        model.addAttribute("hasFeederControl", hasFeederControl);
         
         boolean hasCapbankControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
         model.addAttribute("hasCapbankControl", hasCapbankControl);
@@ -278,6 +278,7 @@ public class SubstationController {
     }
     
     @RequestMapping("substations/{substationId}/buses/edit")
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String editBuses(ModelMap model, @PathVariable int substationId) {
         
         List<Assignment> unassigned = substationService.getUnassignedBuses();
@@ -290,6 +291,7 @@ public class SubstationController {
     }
     
     @RequestMapping(value="substations/{substationId}/buses", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public void saveBuses(HttpServletResponse resp, @PathVariable int substationId, FlashScope flash,
             @RequestParam(value="children[]", required=false, defaultValue="") Integer[] busIds) {
         substationService.assignBuses(substationId, Arrays.asList(busIds));
