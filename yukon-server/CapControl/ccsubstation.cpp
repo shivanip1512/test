@@ -11,6 +11,8 @@ using std::string;
 
 extern unsigned long _CC_DEBUG;
 
+using Cti::CapControl::deserializeFlag;
+using Cti::CapControl::serializeFlag;
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::setVariableIfDifferent;
 
@@ -31,15 +33,30 @@ _pfactor(0),
 _estPfactor(0),
 _saEnabledFlag(false),
 _saEnabledId(0),
-_voltReductionControlId(0),
-_insertDynamicDataFlag(false),
-_dirty(false)
+_voltReductionControlId(0)
 {
 }
 
-CtiCCSubstation::CtiCCSubstation(Cti::RowReader& rdr) : CapControlPao(rdr)
+CtiCCSubstation::CtiCCSubstation( Cti::RowReader & rdr )
+    :   CapControlPao( rdr ),
+        _parentId( 0 ),
+        _displayOrder( 0 ),
+        _ovUvDisabledFlag( false ),
+        _voltReductionFlag( false ),
+        _recentlyControlledFlag( false ),
+        _stationUpdatedFlag( false ),
+        _childVoltReductionFlag( false ),
+        _pfactor( -1 ),
+        _estPfactor( -1 ),
+        _saEnabledFlag( false ),
+        _saEnabledId( 0 ),
+        _voltReductionControlId( 0 )
 {
-    restore(rdr);
+    restoreStaticData( rdr );
+    if ( hasDynamicData( rdr["AdditionalFlags"] ) )
+    {
+        restoreDynamicData( rdr );
+    }
 }
 
 CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation)
@@ -75,7 +92,6 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
         _parentId = right._parentId;
         _displayOrder = right._displayOrder;
 
-        _additionalFlags = right._additionalFlags;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _voltReductionFlag = right._voltReductionFlag;
         _voltReductionControlId = right._voltReductionControlId;
@@ -102,35 +118,32 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation* CtiCCSubstation::replicate() const
 {
-    return(new CtiCCSubstation(*this));
+    return new CtiCCSubstation( *this );
 }
 
-/*---------------------------------------------------------------------------
-    restore
-
-    Restores given a Reader
----------------------------------------------------------------------------*/
-void CtiCCSubstation::restore(Cti::RowReader& rdr)
+void CtiCCSubstation::restoreStaticData( Cti::RowReader & rdr )
 {
-    CapControlPao::restore(rdr);
+    rdr["VoltReductionPointId"] >> _voltReductionControlId;
+}
 
-    rdr["voltreductionpointid"] >> _voltReductionControlId;
+void CtiCCSubstation::restoreDynamicData( Cti::RowReader & rdr )
+{
+    std::string flags;
 
-    setParentId(0);
-    setDisplayOrder(0);
-    setOvUvDisabledFlag(false);
-    setVoltReductionFlag(false);
-    setPFactor(-1);
-    setEstPFactor(-1);
-    setSaEnabledFlag(false);
-    setSaEnabledId(0);
-    setRecentlyControlledFlag(false);
-    setStationUpdatedFlag(false);
-    setChildVoltReductionFlag(false);
+    rdr["AdditionalFlags"] >> flags;
 
-    _insertDynamicDataFlag = true;
-    _dirty = true;
+    _ovUvDisabledFlag       = deserializeFlag( flags, Index_OvUvDisabled );
+    _saEnabledFlag          = deserializeFlag( flags, Index_SAEnabled );
+    _recentlyControlledFlag = deserializeFlag( flags, Index_RecentControl );
+    _stationUpdatedFlag     = deserializeFlag( flags, Index_StationUpdated );
+    _childVoltReductionFlag = deserializeFlag( flags, Index_ChildVReduction );
 
+    if ( _voltReductionControlId > 0 )
+    {
+        _voltReductionFlag  = deserializeFlag( flags, Index_VoltReduction );
+    }
+
+    rdr["SAEnabledID"] >> _saEnabledId;
 }
 
 /*---------------------------------------------------------------------------
@@ -140,156 +153,113 @@ void CtiCCSubstation::restore(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if( _dirty )
-    {
-        if( !_insertDynamicDataFlag )
-        {
-            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
-            addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
-            addFlags[1] = (_saEnabledFlag?'Y':'N');
-            addFlags[2] = (_voltReductionFlag?'Y':'N');
-            addFlags[3] = (_recentlyControlledFlag?'Y':'N');
-            addFlags[4] = (_stationUpdatedFlag?'Y':'N');
-            addFlags[5] = (_childVoltReductionFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) +
-                                char2string(*(addFlags+2)) + char2string(*(addFlags+3)) +
-                                char2string(*(addFlags+4)) +  char2string(*(addFlags+5)));
-            _additionalFlags.append("NNNNNNNNNNNNNN");
-
-            static const string updaterSql = "update dynamicccsubstation set additionalflags = ?, saenabledid = ?"
-                                             " where substationid = ?";
-            Cti::Database::DatabaseWriter updater(conn, updaterSql);
-
-            updater << _additionalFlags <<  _saEnabledId << getPaoId();
-
-            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
-            {
-                _dirty = false; // No error occured!
-            }
-        }
-        else
-        {
-            CTILOG_INFO(dout, "Inserted substation into dynamicCCSubstation: " << getPaoName());
-            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
-
-            static const string inserterSql = "insert into dynamicccsubstation values (?, ?, ?)";
-            Cti::Database::DatabaseWriter inserter(conn, inserterSql);
-
-            inserter << getPaoId() << addFlags << _saEnabledId;
-
-            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
-            {
-                _insertDynamicDataFlag = false;
-                _dirty = false; // No error occured!
-            }
-        }
-    }
+    writeDynamicData( conn, currentDateTime );
 
     getOperationStats().dumpDynamicData(conn, currentDateTime);
 }
 
-void CtiCCSubstation::setDynamicData(Cti::RowReader& rdr)
+
+/*
+    Generate the additionalflags string for the dynamic data
+*/
+std::string CtiCCSubstation::formatFlags() const
 {
-    rdr["additionalflags"] >> _additionalFlags;
-    std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-    _ovUvDisabledFlag = (_additionalFlags[0]=='y');
-    _saEnabledFlag = (_additionalFlags[1]=='y');
-    _voltReductionFlag = (_additionalFlags[2]=='y');
-    _recentlyControlledFlag = (_additionalFlags[3]=='y');
-    _stationUpdatedFlag = (_additionalFlags[4]=='y');
-    _childVoltReductionFlag = (_additionalFlags[5]=='y');
+    std::string flags( Length_DynamicFlags, serializeFlag( false ) );
 
-    if (_voltReductionControlId <= 0)
-    {
-        setVoltReductionFlag(false);
-    }
+    flags[ Index_OvUvDisabled ]    = serializeFlag( _ovUvDisabledFlag );
+    flags[ Index_SAEnabled ]       = serializeFlag( _saEnabledFlag );
+    flags[ Index_VoltReduction ]   = serializeFlag( _voltReductionFlag );
+    flags[ Index_RecentControl ]   = serializeFlag( _recentlyControlledFlag );
+    flags[ Index_StationUpdated ]  = serializeFlag( _stationUpdatedFlag );
+    flags[ Index_ChildVReduction ] = serializeFlag( _childVoltReductionFlag );
 
-    rdr["saenabledid"] >> _saEnabledId;
-    _insertDynamicDataFlag = false;
-    _dirty = false;
+    return flags;
 }
 
-/*---------------------------------------------------------------------------
-    getOvUvDisabledFlag
+bool CtiCCSubstation::updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "UPDATE "
+            "DYNAMICCCSUBSTATION "
+        "SET "
+            "AdditionalFlags = ?, "
+            "SAEnabledID = ? "
+        "WHERE "
+            "SubStationID = ?";
 
-    Returns the ovuv disable flag of the substation
----------------------------------------------------------------------------*/
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer
+        << formatFlags()
+        << getSaEnabledId()
+        << getPaoId();
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+}
+
+bool CtiCCSubstation::insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "INSERT INTO "
+            "DYNAMICCCSUBSTATION "
+        "VALUES "
+            "(?, ?, ?)";
+
+    CTILOG_INFO( dout, "Inserting substation into DYNAMICCCSUBSTATION: " << getPaoName() );
+
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer
+        << getPaoId()
+        << formatFlags()
+        << getSaEnabledId();
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
+}
+
+/*
+    Accessors
+*/
 bool CtiCCSubstation::getOvUvDisabledFlag() const
 {
     return _ovUvDisabledFlag;
 }
-/*---------------------------------------------------------------------------
-    getVoltReductionFlag
 
-    Returns the VoltReduction flag of the substation
----------------------------------------------------------------------------*/
 bool CtiCCSubstation::getVoltReductionFlag() const
 {
     return _voltReductionFlag;
 }
-/*---------------------------------------------------------------------------
-    getChildVoltReductionFlag
 
-    Returns the ChildVoltReduction flag of the substation
----------------------------------------------------------------------------*/
 bool CtiCCSubstation::getChildVoltReductionFlag() const
 {
     return _childVoltReductionFlag;
 }
-/*---------------------------------------------------------------------------
-    getVoltReductionControlId
 
-    Returns the VoltReduction pointId of the substation
----------------------------------------------------------------------------*/
 long CtiCCSubstation::getVoltReductionControlId() const
 {
     return _voltReductionControlId;
 }
 
-
-/*---------------------------------------------------------------------------
-    getParentId
-
-    Returns the parentID (AreaId) of the substation
----------------------------------------------------------------------------*/
 long CtiCCSubstation::getParentId() const
 {
     return _parentId;
 }
 
-/*---------------------------------------------------------------------------
-    getParentName
-
-    Returns the ParentName of the substation bus
----------------------------------------------------------------------------*/
 const string& CtiCCSubstation::getParentName() const
 {
     return _parentName;
 }
-/*---------------------------------------------------------------------------
-    getDisplayOrder
 
-    Returns the displayOrder (AreaId) of the substation
----------------------------------------------------------------------------*/
 long CtiCCSubstation::getDisplayOrder() const
 {
     return _displayOrder;
 }
-/*---------------------------------------------------------------------------
-    getPFactor
 
-    Returns the pfactor  of the substation
----------------------------------------------------------------------------*/
 double CtiCCSubstation::getPFactor() const
 {
     return _pfactor;
 }
 
-/*---------------------------------------------------------------------------
-    getEstPFactor
-
-    Returns the estpfactor  of the substation
----------------------------------------------------------------------------*/
 double CtiCCSubstation::getEstPFactor() const
 {
     return _estPfactor;
@@ -304,6 +274,7 @@ bool CtiCCSubstation::getRecentlyControlledFlag() const
 {
     return _recentlyControlledFlag;
 }
+
 bool CtiCCSubstation::getStationUpdatedFlag() const
 {
     return _stationUpdatedFlag;
@@ -313,154 +284,78 @@ long CtiCCSubstation::getSaEnabledId() const
 {
     return _saEnabledId;
 }
-/*---------------------------------------------------------------------------
-    isDirty()
 
-    Returns the dirty flag of the area
----------------------------------------------------------------------------*/
-bool CtiCCSubstation::isDirty() const
-{
-    return _dirty;
-}
-
-/*---------------------------------------------------------------------------
-    setOvUvDisabledFlag
-
-    Sets the ovuv disable flag of the substation
----------------------------------------------------------------------------*/
+/*
+    Mutators
+        * static data should be updated through updateStaticValue().
+        * dynamic data should be updated through updateDynamicValue() to maintain the state of the _dirty
+            flag ensuring proper DB serialization.
+        * anything that changes a value on the web display should set _stationUpdatedFlag to make sure the
+            substation message is sent to the UI.
+*/
 void CtiCCSubstation::setOvUvDisabledFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
+    updateDynamicValue( _ovUvDisabledFlag, flag );
 }
-/*---------------------------------------------------------------------------
-    setVoltReductionFlag
 
-    Sets the VoltReduction flag of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setVoltReductionFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_voltReductionFlag, flag);
+    updateDynamicValue( _voltReductionFlag, flag );
 }
-/*---------------------------------------------------------------------------
-    setChildVoltReductionFlag
 
-    Sets the ChildVoltReduction flag of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setChildVoltReductionFlag(bool flag)
 {
-    const bool flagChanged = setVariableIfDifferent(_childVoltReductionFlag, flag);
-    _dirty |= flagChanged;
-    _stationUpdatedFlag |= flagChanged;
+    _stationUpdatedFlag |= updateDynamicValue( _childVoltReductionFlag, flag );
 }
 
-/*---------------------------------------------------------------------------
-    setVoltReductionControlId
-
-    Sets the VoltReductionControlId of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setVoltReductionControlId(long pointid)
 {
-    _voltReductionControlId = pointid;
+    updateStaticValue( _voltReductionControlId, pointid );
 }
 
-
-/*---------------------------------------------------------------------------
-    setParentId
-
-    Sets the parentID (AreaID) of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setParentId(long parentId)
 {
-    _parentId = parentId;
+    updateStaticValue( _parentId, parentId );
 }
 
-
-/*---------------------------------------------------------------------------
-    setParentName
-
-    Sets the ParentName in the substation bus
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setParentName(const string& parentName)
 {
-    _dirty |= setVariableIfDifferent(_parentName, parentName);
+    updateDynamicValue( _parentName, parentName );
 }
 
-/*---------------------------------------------------------------------------
-    setDisplayOrder
-
-    Sets the DisplayOrder (AreaID) of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setDisplayOrder(long displayOrder)
 {
-    _displayOrder = displayOrder;
+    updateStaticValue( _displayOrder, displayOrder );
 }
-/*---------------------------------------------------------------------------
-    setPFactor
 
-    Sets the pfactor (calculated) of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setPFactor(double pfactor)
 {
-    _dirty |= setVariableIfDifferent(_pfactor, pfactor);
+    updateDynamicValue( _pfactor, pfactor );
 }
 
-/*---------------------------------------------------------------------------
-    setEstPFactor
-
-    Sets the estpfactor (calculated) of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setEstPFactor(double estpfactor)
 {
-
-    if (_estPfactor != estpfactor)
-    {
-        setStationUpdatedFlag(true);
-        _dirty = true;
-        _estPfactor = estpfactor;
-    }
+    _stationUpdatedFlag |= updateDynamicValue( _estPfactor, estpfactor );
 }
 
-/*---------------------------------------------------------------------------
-    setSaEnabledFlag
-
-    Sets the Special Area Enabled Flag of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setSaEnabledFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_saEnabledFlag, flag);
+    updateDynamicValue( _saEnabledFlag, flag );
 }
 
-/*---------------------------------------------------------------------------
-    setRecentlyControlledFlag
-
-    Sets the Substation RecentlyControlled Flag of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setRecentlyControlledFlag(bool flag)
 {
-    const bool flagChanged = setVariableIfDifferent(_recentlyControlledFlag, flag);
-    _dirty |= flagChanged;
-    _stationUpdatedFlag |= flagChanged;
+    _stationUpdatedFlag |= updateDynamicValue( _recentlyControlledFlag, flag );
 }
 
-/*---------------------------------------------------------------------------
-    setRecentlyControlledFlag
-
-    Sets the Substation RecentlyControlled Flag of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setStationUpdatedFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_stationUpdatedFlag, flag);
+    updateDynamicValue( _stationUpdatedFlag, flag );
 }
 
-
-/*---------------------------------------------------------------------------
-    setSaEnabledId
-
-    Sets the Special Area Enabled Id of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::setSaEnabledId(long saId)
 {
-    _dirty |= setVariableIfDifferent(_saEnabledId, saId);
+    updateDynamicValue( _saEnabledId, saId );
 }
 
 
@@ -469,13 +364,11 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-    CtiCCSubstationBusPtr currentSubstationBus = NULL;
-
-    for each (long busId in getCCSubIds() )
+    for ( const long busId : getCCSubIds() )
     {
-        currentSubstationBus = store->findSubBusByPAObjectID(busId);
+        CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID( busId );
 
-        if (currentSubstationBus != NULL && currentSubstationBus->getVerificationFlag())
+        if ( currentSubstationBus && currentSubstationBus->getVerificationFlag() )
         {
             try
             {
@@ -486,67 +379,43 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
             {
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
-
         }
     }
-
 }
 
-
-/*---------------------------------------------------------------------------
-    setRecentlyControlledFlag
-
-    Sets the recently controlled flag of the substation
----------------------------------------------------------------------------*/
 void CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-    CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    int numberOfSubBusesPending = 0;
+    setRecentlyControlledFlag(
+        std::any_of( _subBusIds.begin(), _subBusIds.end(),
+                     [ & ]( const long busID ) -> bool
+                     {
+                         CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( busID );
 
-    for each (long busId in getCCSubIds())
-    {
-        currentSubstationBus = store->findSubBusByPAObjectID(busId);
-
-        if (currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getPerformingVerificationFlag())
-        {
-            setRecentlyControlledFlag(true);
-            numberOfSubBusesPending += 1;
-        }
-    }
-    if (numberOfSubBusesPending == 0)
-    {
-        setRecentlyControlledFlag(false);
-    }
+                         return bus
+                                ? bus->getRecentlyControlledFlag() || bus->getPerformingVerificationFlag()
+                                : false;
+                     } ) );
 }
-
 
 void CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-    CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    int numberOfSubBusesVoltReducting = 0;
+    setChildVoltReductionFlag(
+        std::any_of( _subBusIds.begin(), _subBusIds.end(),
+                     [ & ]( const long busID ) -> bool
+                     {
+                         CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( busID );
 
-    for each (long busId in getCCSubIds())
-    {
-        currentSubstationBus = store->findSubBusByPAObjectID(busId);
-
-        if (currentSubstationBus->getVoltReductionFlag())
-        {
-            setChildVoltReductionFlag(true);
-            numberOfSubBusesVoltReducting += 1;
-        }
-    }
-    if (numberOfSubBusesVoltReducting == 0)
-    {
-        setChildVoltReductionFlag(false);
-    }
+                         return bus
+                                ? bus->getVoltReductionFlag()
+                                : false;
+                     } ) );
 }
-
 
 void CtiCCSubstation::getPowerFactorData( double & watts, double & vars, double & estimatedVars )
 {
@@ -557,7 +426,7 @@ void CtiCCSubstation::getPowerFactorData( double & watts, double & vars, double 
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
-    for each ( const long busID in getCCSubIds() )
+    for ( const long busID : getCCSubIds() )
     {
         if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( busID ) )
         {
@@ -567,7 +436,6 @@ void CtiCCSubstation::getPowerFactorData( double & watts, double & vars, double 
         }
     }
 }
-
 
 void CtiCCSubstation::updatePowerFactorData()
 {

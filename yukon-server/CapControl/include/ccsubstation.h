@@ -1,9 +1,10 @@
 #pragma once
 
 #include "CapControlPao.h"
+#include "DynamicData.h"
 
 
-class CtiCCSubstation : public CapControlPao
+class CtiCCSubstation : public CapControlPao, public DynamicData
 {
 public:
     DECLARE_COLLECTABLE( CtiCCSubstation );
@@ -51,9 +52,7 @@ public:
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     void checkAndUpdateRecentlyControlledFlag();
     void checkAndUpdateChildVoltReductionFlags();
-    bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
-    void setDynamicData(Cti::RowReader& rdr);
 
     CtiCCSubstation& operator=(const CtiCCSubstation& right);
 
@@ -61,15 +60,27 @@ public:
 
 protected:
 
-    void setDirty( const bool flag ) { _dirty = flag; }
+
 
 private:
+
+    enum DynamicFlagInfo
+    {
+        Index_OvUvDisabled,
+        Index_SAEnabled,
+        Index_VoltReduction,
+        Index_RecentControl,
+        Index_StationUpdated,
+        Index_ChildVReduction,
+
+        Length_DynamicFlags = 20
+    };
+
 
     std::string _parentName;
     long _parentId;
     long _displayOrder;
 
-    std::string _additionalFlags;
     bool _ovUvDisabledFlag;
     bool _voltReductionFlag;
     bool _recentlyControlledFlag;
@@ -83,13 +94,14 @@ private:
 
     long _voltReductionControlId;
 
-    //don't stream
-    bool _insertDynamicDataFlag;
-    bool _dirty;
-
     Cti::CapControl::PaoIdVector _subBusIds;
 
-    void restore(Cti::RowReader& rdr);
+    std::string formatFlags() const;
+    bool updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
+    bool insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
+
+    void restoreStaticData(Cti::RowReader& rdr);
+    void restoreDynamicData(Cti::RowReader& rdr);
 };
 
 typedef CtiCCSubstation* CtiCCSubstationPtr;

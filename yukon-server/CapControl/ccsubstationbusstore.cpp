@@ -3606,50 +3606,55 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                   ChildToParentMultiMap *substation_specialarea_map,
                                   CtiCCSubstation_vec *ccSubstations)
 {
-    CtiCCSubstationPtr substationToUpdate = NULL;
-
-    if (substationId > 0)
-    {
-        substationToUpdate = findSubstationByPAObjectID(substationId);
-    }
-
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
     {
-        if (substationToUpdate != NULL)
+        if ( substationId > 0 )
         {
-            deleteSubstation(substationId);
+            deleteSubstation( substationId );
         }
-        CtiTime currentDateTime;
-        {
-            static const string sqlNoID =   "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                                "YP.description, YP.disableflag, CSS.voltreductionpointid "
-                                            "FROM yukonpaobject YP, capcontrolsubstation CSS "
-                                            "WHERE YP.paobjectid = CSS.substationid";
 
-            static const string sqlWithID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                                "YP.description, YP.disableflag, CSS.voltreductionpointid "
-                                             "FROM yukonpaobject YP, capcontrolsubstation CSS "
-                                             "WHERE YP.paobjectid = CSS.substationid AND YP.paobjectid = ?";
+        {
+            static const std::string sql =
+                "SELECT "
+                    "Y.PAObjectID, "
+                    "Y.Category, "
+                    "Y.PAOClass, "
+                    "Y.PAOName, "
+                    "Y.Type, "
+                    "Y.Description, "
+                    "Y.DisableFlag, "
+                    "S.VoltReductionPointId, "
+                    "D.AdditionalFlags, "
+                    "D.SAEnabledID "
+                "FROM "
+                    "YukonPAObject Y "
+                        "JOIN CAPCONTROLSUBSTATION S "
+                            "ON Y.PAObjectID = S.SubstationID "
+                        "LEFT OUTER JOIN DYNAMICCCSUBSTATION D "
+                            "ON S.SubstationID = D.SubStationID";
+
+            static const std::string sqlID = sql +
+                " WHERE Y.PAObjectID = ?";
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            Cti::Database::DatabaseReader     rdr( connection );
 
             if ( substationId > 0 )
             {
-                rdr.setCommandText(sqlWithID);
+                rdr.setCommandText( sqlID );
                 rdr << substationId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
             while ( rdr() )
@@ -3663,53 +3668,16 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                     pointid_station_map->insert(make_pair(currentCCSubstation->getVoltReductionControlId(), currentCCSubstation));
                     currentCCSubstation->addPointId(currentCCSubstation->getVoltReductionControlId());
                 }
-            }
 
-        }
-        {
-            static const string sqlNoID =  "SELECT DSS.substationid, DSS.additionalflags, DSS.saenabledid "
-                                           "FROM capcontrolsubstation CCS, dynamicccsubstation DSS "
-                                           "WHERE CCS.substationid = DSS.substationid";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if( substationId > 0 )
-            {
-                static const string sqlID = string(sqlNoID + " AND CCS.substationid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << substationId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentSubstationId;
-
-                rdr["substationid"] >> currentSubstationId;
-
-                if (CtiCCSubstationPtr currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map))
+                CtiCCSpecialPtr currentSA = findSpecialAreaByPAObjectID(currentCCSubstation->getSaEnabledId());
+                if (!currentSA)
                 {
-                     currentCCSubstation->setDynamicData(rdr);
-                     CtiCCSpecialPtr currentSA = findSpecialAreaByPAObjectID(currentCCSubstation->getSaEnabledId());
-                     if (!currentSA)
-                     {
-                         currentCCSubstation->setSaEnabledId(0);
-                     }
+                    currentCCSubstation->setSaEnabledId(0);
                 }
-
             }
         }
+
+
         {
             static const string sqlNoID = "SELECT CAS.areaid, CAS.substationbusid, CAS.displayorder "
                                           "FROM ccsubareaassignment CAS";

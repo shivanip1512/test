@@ -21,6 +21,7 @@ struct test_CtiCCSubstation : CtiCCSubstation
 
     }
 
+    using CtiCCSubstation::isDirty;
     using CtiCCSubstation::setDirty;
 };
 
@@ -33,7 +34,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
 
     {   // Core area object initialization
 
-        using CCSubstationRow     = Cti::Test::StringRow<8>;
+        using CCSubstationRow     = Cti::Test::StringRow<10>;
         using CCSubstationReader  = Cti::Test::TestReader<CCSubstationRow>;
 
         CCSubstationRow columnNames =
@@ -45,7 +46,9 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
             "Type",
             "Description",
             "DisableFlag",
-            "VoltReductionPointID"
+            "VoltReductionPointID",
+            "AdditionalFlags",
+            "SAEnabledID"
         };
 
         std::vector<CCSubstationRow> rowVec
@@ -58,7 +61,9 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
                 "CCSUBSTATION",
                 "Top Secret",
                 "N",
-                "101"
+                "101",
+                CCSubstationReader::getNullString(),
+                CCSubstationReader::getNullString()
             },
             {
                 "13",
@@ -68,7 +73,9 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
                 "CCSUBSTATION",
                 "(none)",
                 "Y",
-                "0"
+                "0",
+                "NYNYNYNNNNNNNNNNNNNN",
+                "200"
             }
         };
 
@@ -113,79 +120,13 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     BOOST_CHECK_EQUAL(                    0, substations[  3 ].getSaEnabledId() );
     BOOST_CHECK_EQUAL(                false, substations[  3 ].getSaEnabledFlag() );
     BOOST_CHECK_EQUAL(                false, substations[  3 ].getRecentlyControlledFlag() );
-    BOOST_CHECK_EQUAL(                 true, substations[  3 ].getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].getStationUpdatedFlag() );
     BOOST_CHECK_EQUAL(                false, substations[  3 ].getChildVoltReductionFlag() );
                           
-    BOOST_CHECK_EQUAL(                 true, substations[  3 ].isDirty() );         // set to true at end of restore() -- why?
+    BOOST_CHECK_EQUAL(                false, substations[  3 ].isDirty() );
 
 // Second entry        
                        
-    // CapControlPao   
-    BOOST_CHECK_EQUAL(                   13, substations[ 13 ].getPaoId() );
-    BOOST_CHECK_EQUAL(         "CAPCONTROL", substations[ 13 ].getPaoCategory() );
-    BOOST_CHECK_EQUAL(         "CAPCONTROL", substations[ 13 ].getPaoClass() );
-    BOOST_CHECK_EQUAL(     "Station 2_0002", substations[ 13 ].getPaoName() );
-    BOOST_CHECK_EQUAL(       "CCSUBSTATION", substations[ 13 ].getPaoType() );
-    BOOST_CHECK_EQUAL(             "(none)", substations[ 13 ].getPaoDescription() );
-    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getDisableFlag() );
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getDisabledStatePointId() );
-                       
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getPointIds()->size() );
-                       
-    BOOST_CHECK_EQUAL(                   13, substations[ 13 ].getOperationStats().getPAOId() );
-    BOOST_CHECK_EQUAL(                   13, substations[ 13 ].getConfirmationStats().getPAOId() );
-                          
-    // CtiCCSubstation                                         
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getVoltReductionControlId() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getVoltReductionFlag() );
-    BOOST_CHECK_EQUAL(                   "", substations[ 13 ].getParentName() );
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getParentId() );
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getDisplayOrder() );
-    BOOST_CHECK_EQUAL(                 -1.0, substations[ 13 ].getPFactor() );
-    BOOST_CHECK_EQUAL(                 -1.0, substations[ 13 ].getEstPFactor() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getOvUvDisabledFlag() );
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getSaEnabledId() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getSaEnabledFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getRecentlyControlledFlag() );
-    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getChildVoltReductionFlag() );
-
-    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );         // set to true at end of restore() -- why?
-                          
-
-    {   // Dynamic data initialization
-
-        using CCSubstationRow     = Cti::Test::StringRow<3>;
-        using CCSubstationReader  = Cti::Test::TestReader<CCSubstationRow>;
-
-        CCSubstationRow columnNames =
-        {
-            "SubStationID",
-            "AdditionalFlags",
-            "SAEnabledID"
-        };
-
-        std::vector<CCSubstationRow> rowVec
-        {
-            {
-                "13",
-                "NYNYNYNNNNNNNNNNNNNN",
-                "200"
-            }
-        };
-
-        CCSubstationReader reader( columnNames, rowVec );
-
-        while ( reader() )
-        {
-            long    paoID;
-
-            reader[ "SubStationID" ] >> paoID;
-
-            substations[ paoID ].setDynamicData( reader );
-        }
-    }
-
     // CapControlPao   
     BOOST_CHECK_EQUAL(                   13, substations[ 13 ].getPaoId() );
     BOOST_CHECK_EQUAL(         "CAPCONTROL", substations[ 13 ].getPaoCategory() );
