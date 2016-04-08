@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/6/2016 4:50:41 PM                          */
+/* Created on:     4/8/2016 10:37:35 AM                         */
 /*==============================================================*/
 
 
@@ -14223,7 +14223,10 @@ BEGIN TRY
         END;
 
         SET @output = @output + N' : Time ' + CAST(DATEDIFF(millisecond, @start_time, CURRENT_TIMESTAMP) AS varchar(20)) + ' millis';
-        EXEC xp_logevent 201000, @output;  /* 201000 is an arbitrary number, means nothing, write to SQLServer Log */
+        INSERT INTO StoredProcedureLog VALUES (
+            (SELECT ISNULL(MAX(EntryId) + 1, 1) FROM StoredProcedureLog), 
+            'sp_SmartIndexMaintenance', 
+            GETDATE(), @output);
 
         FETCH NEXT FROM partitions INTO @objectid, @indexid, @partitionnum, @frag, @pagecount;
     END;
@@ -14246,10 +14249,17 @@ BEGIN CATCH
 
     SET @output = N'ERROR: ' + CAST(@ErrorNumber AS VARCHAR(10)) + ' Message:' +  @ErrorMessage +
             ' ErrorLine:' + CAST(@ErrorLine AS VARCHAR(10)) + ' ErrorState:' + CAST(@ErrorState AS VARCHAR(10));
-    EXEC xp_logevent 201000, @output;  /* write to SQLServer Log */
+    INSERT INTO StoredProcedureLog VALUES (
+            (SELECT ISNULL(MAX(EntryId) + 1, 1) FROM StoredProcedureLog), 
+            'sp_SmartIndexMaintenance', 
+            GETDATE(), @output);
     RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
 END CATCH
-EXEC xp_logevent 201000, N'Smart Index Maintenance Complete';  /* write to SQLServer Log */
-go
+
+INSERT INTO StoredProcedureLog VALUES (
+            (SELECT ISNULL(MAX(EntryId) + 1, 1) FROM StoredProcedureLog), 
+            'sp_SmartIndexMaintenance', 
+            GETDATE(), 'Smart Index Maintenance Complete');
+GO
 
 
