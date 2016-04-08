@@ -25,6 +25,7 @@
     </div>
 </c:forEach>
 
+<cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
 <div class="action-area">
     
     <div class="dn" 
@@ -40,5 +41,6 @@
     
     <cti:button id="remove-pin" renderMode="image" icon="icon-map-delete" data-popup="#confirm-delete" data-pao="${pao.paoIdentifier.paoId}" nameKey="deleteCoordinates"/>
 </div>
+</cti:checkRolesAndProperties>
 
 </cti:msgScope>

@@ -40,6 +40,8 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -47,6 +49,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
@@ -134,6 +137,7 @@ public class MapController {
     }
     
     @RequestMapping(value="/map/device/{id}", method=RequestMethod.DELETE)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public @ResponseBody Map<String, String> deleteCoordinates(@PathVariable int id, YukonUserContext userContext, 
                                                     HttpServletResponse response) {
         
