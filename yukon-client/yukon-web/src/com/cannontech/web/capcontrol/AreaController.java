@@ -34,6 +34,7 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -106,6 +107,11 @@ public class AreaController {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", key + "name.required");
             if (!errors.hasFieldErrors("name")) {
                 YukonValidationUtils.checkExceedsMaxLength(errors, "name", area.getName(), 60);
+            }
+            if(!errors.hasFieldErrors("name")){
+                if(!PaoUtils.isValidPaoName(area.getName())){
+                    errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+                }
             }
             if (!errors.hasFieldErrors("name")) {
                 LiteYukonPAObject unique = paoDao.findUnique(area.getName(), area.getType());
