@@ -59,58 +59,6 @@ CtiCCSubstation::CtiCCSubstation( Cti::RowReader & rdr )
     }
 }
 
-CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation)
-{
-    operator=(substation);
-}
-
-/*---------------------------------------------------------------------------
-    Destructor
----------------------------------------------------------------------------*/
-CtiCCSubstation::~CtiCCSubstation()
-{
-    try
-    {
-        _subBusIds.clear();
-    }
-    catch (...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-    }
-}
-
-/*---------------------------------------------------------------------------
-    operator=
----------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
-{
-    if( this != &right )
-    {
-        CapControlPao::operator=(right);
-
-        _parentName = right._parentName;
-        _parentId = right._parentId;
-        _displayOrder = right._displayOrder;
-
-        _ovUvDisabledFlag = right._ovUvDisabledFlag;
-        _voltReductionFlag = right._voltReductionFlag;
-        _voltReductionControlId = right._voltReductionControlId;
-        _childVoltReductionFlag = right._childVoltReductionFlag;
-
-        _pfactor = right._pfactor;
-        _estPfactor = right._estPfactor;
-        _saEnabledFlag = right._saEnabledFlag;
-        _saEnabledId = right._saEnabledId;
-        _recentlyControlledFlag = right._recentlyControlledFlag;
-        _stationUpdatedFlag = right._stationUpdatedFlag;
-
-        _subBusIds.clear();
-        _subBusIds.assign(right._subBusIds.begin(), right._subBusIds.end());
-
-    }
-    return *this;
-}
-
 /*---------------------------------------------------------------------------
     replicate
 

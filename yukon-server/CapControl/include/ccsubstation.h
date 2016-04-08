@@ -11,9 +11,8 @@ public:
 
     CtiCCSubstation();
     CtiCCSubstation(Cti::RowReader& rdr);
-    CtiCCSubstation(const CtiCCSubstation& substation);
 
-    virtual ~CtiCCSubstation();
+    virtual ~CtiCCSubstation() = default;
 
     bool getOvUvDisabledFlag() const;
     bool getVoltReductionFlag() const;
@@ -54,13 +53,11 @@ public:
     void checkAndUpdateChildVoltReductionFlags();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
-    CtiCCSubstation& operator=(const CtiCCSubstation& right);
-
     CtiCCSubstation* replicate() const;
 
 protected:
 
-
+    CtiCCSubstation( const CtiCCSubstation & substation ) = default;
 
 private:
 
@@ -102,6 +99,8 @@ private:
 
     void restoreStaticData(Cti::RowReader& rdr);
     void restoreDynamicData(Cti::RowReader& rdr);
+
+    CtiCCSubstation& operator=( const CtiCCSubstation& right ) = delete;
 };
 
 typedef CtiCCSubstation* CtiCCSubstationPtr;
