@@ -30,6 +30,7 @@ import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -101,7 +102,12 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
                     }
                 }
             }
-            
+            if (!errors.hasFieldErrors("name")) {
+                if (!PaoUtils.isValidPaoName(meter.getName())) {
+                    errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+                }
+            }
+
             // Meter Number
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "meterNumber", key + "meterNumber.required");
             

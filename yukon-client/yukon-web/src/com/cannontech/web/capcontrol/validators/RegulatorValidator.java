@@ -10,6 +10,7 @@ import com.cannontech.capcontrol.model.Regulator;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -33,6 +34,12 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
     public void doValidation(Regulator regulator, Errors errors) {
 
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
+        
+        if (!errors.hasFieldErrors("name")) {
+            if (!PaoUtils.isValidPaoName(regulator.getName())) {
+                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+            }
+        }
 
         boolean idSpecified = regulator.getId() != null;
 

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -20,6 +21,13 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
     protected void doValidation(GatewaySettings settings, Errors errors) {
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", baseKey + "name.required");
+        
+        if(!errors.hasFieldErrors("name")){
+            if(!PaoUtils.isValidPaoName(settings.getName())){
+                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+            }
+        }
+        
         YukonValidationUtils.checkExceedsMaxLength(errors, "name", settings.getName(), 60);
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "ipAddress", baseKey + "ipAddress.required");

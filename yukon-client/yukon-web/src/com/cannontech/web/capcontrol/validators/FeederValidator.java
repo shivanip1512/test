@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -32,6 +33,12 @@ public class FeederValidator extends SimpleValidator<CapControlFeeder> {
 
         Integer id = feeder.getId();
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
+        
+        if(!errors.hasFieldErrors("name")){
+            if(!PaoUtils.isValidPaoName(feeder.getName())){
+                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+            }
+        }
 
         if (!paoDao.isNameAvailable(feeder.getName(), PaoType.CAP_CONTROL_FEEDER)) {
 

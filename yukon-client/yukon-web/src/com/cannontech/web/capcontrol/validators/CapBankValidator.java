@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -52,6 +53,11 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
         String fieldValue = checkCBCName ? capbank.getCbcControllerName() : capbank.getName();
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
+        if (!errors.hasFieldErrors("name")) {
+            if (!PaoUtils.isValidPaoName(capbank.getName())) {
+                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+            }
+        }
 
         if (!paoDao.isNameAvailable(fieldValue, paoType)) {
 

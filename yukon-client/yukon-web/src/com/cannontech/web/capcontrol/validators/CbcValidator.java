@@ -10,6 +10,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -53,6 +54,12 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
 
     private void validateName(CapControlCBC cbc, Errors errors) {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
+        
+        if(!errors.hasFieldErrors("name")){
+            if(!PaoUtils.isValidPaoName(cbc.getName())){
+                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+            }
+        }
 
         boolean idSpecified = cbc.getId() != null;
 
