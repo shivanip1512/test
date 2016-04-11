@@ -73,7 +73,6 @@
 using namespace std;
 
 #define MAX_ARCHIVER_ENTRIES     10             // If this many entries appear, we'll do a dump
-#define MAX_DYNLMQ_ENTRIES       100            // If this many entries appear, we'll do a dump
 #define DUMP_RATE                30             // Otherwise, do a dump every this many seconds
 #define CONFRONT_RATE            300            // Ask every client to post once per 5 minutes or be terminated
 #define UPDATERTDB_RATE          1800           // Save all dirty point records once per n seconds
@@ -94,9 +93,6 @@ using Cti::DeviceBaseLite;
 CtiPointClientManager      PointMgr;   // The RTDB for memory points....
 CtiVanGoghExecutorFactory  ExecFactory;
 
-static map< long, CtiPointDataMsg* > fullBoatMap;
-
-static const CtiTime MAXTime(YUKONEOT);
 int CntlHistInterval = 3600;
 int CntlHistPointPostInterval = 300;
 int CntlStopInterval = 300;
@@ -2096,8 +2092,8 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiServer::ptr_typ
                             {
                                 CtiPointDataMsg *pNewData = (CtiPointDataMsg *)pDat->replicateMessage();
 
-                                pNewData->resetTags(~TAG_POINT_OLD_TIMESTAMP);            // Dispatch has specifically asked for old timestamp, dont remove it
-                                pNewData->setTags( pDyn->getDispatch().getTags() );       // Report any set tags out to the clients.
+                                pNewData->resetTags(~MASK_INCOMING_VALUE_TAGS);  //  Reset everything but the incoming value tags
+                                pNewData->setTags(pDyn->getDispatch().getTags() & ~MASK_INCOMING_VALUE_TAGS);  //  Set any of the "sticky" tags
 
                                 Ord.push_back(pNewData);
                             }

@@ -88,6 +88,11 @@ const unsigned TAG_ACTIVE_ALARM                = 0x80000000;  // Alarm State is 
 // Masks
 const unsigned MASK_RESETTABLE_TAGS            = 0x0013FF00;  // Tags which are reset upon any setPoint operation
 
+const unsigned MASK_INCOMING_VALUE_TAGS        = TAG_POINT_OLD_TIMESTAMP | 
+                                                 TAG_POINT_DATA_TIMESTAMP_VALID | 
+                                                 TAG_POINT_DATA_UNSOLICITED | 
+                                                 TAG_POINT_LOAD_PROFILE_DATA;
+
 const unsigned MASK_ANY_ALARM                  = 0xC0000000;  // Get any alarm
 const unsigned MASK_ANY_CONTROL                = 0x000C0000;
 
