@@ -14259,7 +14259,7 @@ END CATCH
 INSERT INTO StoredProcedureLog VALUES (
             (SELECT ISNULL(MAX(EntryId) + 1, 1) FROM StoredProcedureLog), 
             'sp_SmartIndexMaintenance', 
-            GETDATE(), 'Smart Index Maintenance Complete'); /* Log procedure completion */
-GO
+            GETDATE(), 'Smart Index Maintenance Complete');
+go
 
 
