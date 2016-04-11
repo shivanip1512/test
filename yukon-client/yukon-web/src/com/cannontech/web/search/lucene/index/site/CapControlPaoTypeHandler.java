@@ -41,7 +41,6 @@ public class CapControlPaoTypeHandler implements PaoTypeHandler {
         
         if (paoType == PaoType.CAP_CONTROL_AREA || paoType == PaoType.CAP_CONTROL_SPECIAL_AREA) {
             
-            builder.pageType(PageType.USER_PAGE);
             builder.pageName("area");
             builder.path("/capcontrol/areas/" + paoId);
             builder.pageArgs(paoName);
