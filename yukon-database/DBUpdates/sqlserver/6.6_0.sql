@@ -33,15 +33,18 @@ WHERE ItemName = 'localTime';
 /* End YUK-15216 */
 
 /* Start YUK-15201 */
-/* @error ignore-begin */
-CREATE TABLE StoredProcedureLog (
-  EntryId           NUMERIC         NOT NULL,
-  ProcedureName     VARCHAR(50)     NOT NULL,
-  LogDate           DATETIME        NOT NULL,
-  LogString         VARCHAR(500)    NOT NULL,
-  CONSTRAINT PK_StoredProcedureLog PRIMARY KEY (EntryId)
-);
-/* @error ignore-end */
+IF NOT EXISTS (
+    SELECT * FROM INFORMATION_SCHEMA.TABLES 
+    WHERE TABLE_NAME = N'StoredProcedureLog')
+BEGIN
+    CREATE TABLE StoredProcedureLog (
+      EntryId           NUMERIC         NOT NULL,
+      ProcedureName     VARCHAR(50)     NOT NULL,
+      LogDate           DATETIME        NOT NULL,
+      LogString         VARCHAR(500)    NOT NULL,
+      CONSTRAINT PK_StoredProcedureLog PRIMARY KEY (EntryId)
+    );
+END;
 
 IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE sp_SmartIndexMaintenance;

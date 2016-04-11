@@ -33,15 +33,23 @@ WHERE ItemName = 'localTime';
 /* End YUK-15216 */
 
 /* Start YUK-15201 */
-/* @error ignore-begin */
-CREATE TABLE StoredProcedureLog (
-  EntryId           NUMBER          NOT NULL,
-  ProcedureName     VARCHAR2(50)    NOT NULL,
-  LogDate           DATE            NOT NULL,
-  LogString         VARCHAR2(500)   NOT NULL,
-  CONSTRAINT PK_StoredProcedureLog PRIMARY KEY (EntryId)
-);
-/* @error ignore-end */
+DECLARE 
+    v_sql VARCHAR2(1024);
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count FROM USER_TABLES WHERE TABLE_NAME = UPPER('StoredProcedureLog');
+    IF (v_count = 0)
+    THEN 
+        v_sql := 'CREATE TABLE StoredProcedureLog (' ||
+          'EntryId           NUMBER          NOT NULL,'       ||
+          'ProcedureName     VARCHAR2(50)    NOT NULL,'       ||
+          'LogDate           DATE            NOT NULL,'       ||
+          'LogString         VARCHAR2(500)   NOT NULL,'       ||
+          'CONSTRAINT PK_StoredProcedureLog PRIMARY KEY (EntryId) )';
+        EXECUTE IMMEDIATE v_sql;
+    END IF;
+END;
+/
 /* End YUK-15201 */
 
 /**************************************************************/
