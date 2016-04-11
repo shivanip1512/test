@@ -114,6 +114,8 @@
     <entry key="yukon.common.pao.RFN440_2131TD">RFN-440-2131TD</entry>
     <entry key="yukon.common.pao.RFN440_2132TD">RFN-440-2132TD</entry>
     <entry key="yukon.common.pao.RFN440_2133TD">RFN-440-2133TD</entry>
+    
+    <entry key="yukon.common.pao.RFN500_S4X">RFN-500-S4x</entry>
 
     <entry key="yukon.common.pao.RFWMETER">RFW-Meter</entry>
     <entry key="yukon.common.pao.LCR6200_RFN">LCR-6200 RFN</entry>

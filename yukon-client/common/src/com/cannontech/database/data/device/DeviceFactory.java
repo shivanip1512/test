@@ -197,6 +197,7 @@ public final class DeviceFactory {
         case RFN430SL2:
         case RFN430SL3:
         case RFN430SL4:
+        case RFN500_S4X:
             returnDevice = new RfnMeterBase(paoType);
             break;
             

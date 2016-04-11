@@ -1,6 +1,6 @@
 package com.cannontech.common.pao;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Set;
 
@@ -133,6 +133,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFN440_2131TD(DeviceTypes.RFN440_2131TD, "RFN-440-2131TD", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN440_2132TD(DeviceTypes.RFN440_2132TD, "RFN-440-2132TD", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN440_2133TD(DeviceTypes.RFN440_2133TD, "RFN-440-2133TD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
+    RFN500_S4X(DeviceTypes.RFN500_S4X, "RFN-500-S4x", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFWMETER(DeviceTypes.RFWMETER, "RFW-Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
     LCR6200_RFN(DeviceTypes.LCR6200_RFN, "LCR-6200 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),

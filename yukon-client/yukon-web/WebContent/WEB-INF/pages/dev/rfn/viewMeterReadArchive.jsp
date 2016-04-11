@@ -53,6 +53,7 @@ function useRandom() {
                         <option value="2131T">2131T</option>
                         <option value="2131xT">2131xT</option>
                         <option value="C2SX">C2SX</option>
+                        <option value="E650">S4x</option>
                     </select>
                 </tags:nameValue>
                 

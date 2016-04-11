@@ -55,6 +55,8 @@ public enum RfnManufacturerModel {
     RFN_430SL2(PaoType.RFN430SL2, "SCH", "SENTINEL-L2"),
     RFN_430SL3(PaoType.RFN430SL3, "SCH", "SENTINEL-L3"),
     RFN_430SL4(PaoType.RFN430SL4, "SCH", "SENTINEL-L4"),
+    
+    RFN_500_S4X(PaoType.RFN500_S4X, "LGYR", "E650"),
     ;
     
     private PaoType type;
