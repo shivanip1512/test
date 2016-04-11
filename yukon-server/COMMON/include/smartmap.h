@@ -50,6 +50,7 @@ public:
 
     void clear()
     {
+        writer_lock_guard_t guard( _lock );
         _map.clear();
     }
 

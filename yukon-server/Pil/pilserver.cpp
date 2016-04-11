@@ -851,6 +851,12 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
 
                 //  This sends all ReturnMsgs to the connectionHandle, overriding the ReturnMsg->ConnectionHandle (if set).
                 Conn->WriteConnQue(pRet, CALLSITE);
+                if( DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD )
+                {
+                    CTILOG_DEBUG( dout, "pilserver: handle=" << connectionHandle << ", this=0x" << hex << this <<
+                        ", Conn=0x" << &Conn << ", use_count=" << dec << Conn.use_count() <<
+                        ", refering to 0x" << hex << Conn->hash( *Conn.get() ) );
+                }
             }
             else
             {
