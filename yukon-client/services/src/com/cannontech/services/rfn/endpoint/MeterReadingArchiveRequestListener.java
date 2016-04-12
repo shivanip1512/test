@@ -1,6 +1,9 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
@@ -16,23 +19,27 @@ import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveResponse;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
-import com.cannontech.amr.rfn.service.RfnChannelDataConverter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.services.calculated.CalculatedPointDataProducer;
+import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 @ManagedResource
 public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnMeterReadingArchiveRequest> {
     
+    private static final int MINUTES_TO_WAIT_TO_SEND_STARTUP_REQUEST = 5;
+    
     private static final Logger log = YukonLogManager.getLogger(MeterReadingArchiveRequestListener.class);
     
-    @Autowired private RfnChannelDataConverter converter;
     @Autowired private CalculatedPointDataProducer calculatedProducer;
+    @Autowired private ConnPool connPool;
     
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveResponse";
     
     private List<Converter> converters; // Threads to convert channel data to point data
@@ -123,12 +130,32 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         converters = converterBuilder.build();
         calculators = calculatorBuilder.build();
         
-        // This message is signifying that we are ready to archive data from Network Manager
-        // (we only need to send this message once... so we are doing it for no particular reason in this listener)
-        RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
-        jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
+        sendStartupNotificationToNetworkManager();
     }
     
+    private void sendStartupNotificationToNetworkManager() {
+        log.info("Waiting " + MINUTES_TO_WAIT_TO_SEND_STARTUP_REQUEST
+            + " minutes to send startup notification request to Network Manager");
+        scheduledExecutorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // wait for dispatch to be available before sending notification to NM
+                    DispatchClientConnection dispatchConnection = connPool.getDefDispatchConn();
+                    if (!dispatchConnection.isValid()) {
+                        log.info("Waiting for dispatch to connect");
+                        dispatchConnection.waitForValidConnection();
+                    }
+                    RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
+                    jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
+                    log.info("Startup notification request is sent to Network manager");
+                } catch (Exception e) {
+                    log.error("Failed to send startup notification to Network Manager", e);
+                }
+            }
+        }, MINUTES_TO_WAIT_TO_SEND_STARTUP_REQUEST, TimeUnit.MINUTES);
+    }
+
     @PreDestroy
     @Override
     protected void shutdown() {
