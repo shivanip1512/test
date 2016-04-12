@@ -2913,7 +2913,7 @@
     
     <pointGroup>    
         <!-- Mappings for RFN-500 nodes -->
-        <paoType value="RFN500_S4X" />
+        <paoType value="RFN500S4X" />
         
         <point name="Delivered kWh">
             <uom>Wh</uom>
@@ -4457,8 +4457,12 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <point name="RFN Temperature">
-            <uom>Temp-C</uom>
+        <point name="Device Temperature">
+            <uom>&#176;C</uom>
+            <multiplier value="1"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+            </modifiers>
         </point>
     </pointGroup>
 </pointMappings>
