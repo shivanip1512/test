@@ -31,8 +31,10 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -60,6 +62,7 @@ public class InventoryActionsController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private DateFormattingService dateFormatting;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
     
     private static final int maxInventory = 1000;
@@ -99,6 +102,8 @@ public class InventoryActionsController {
     public @ResponseBody List<Map<String, Object>> recent(YukonUserContext userContext) {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
+        List<Integer> validEcIds = Lists.transform(energyCompany.getDescendants(true), EnergyCompanyDao.TO_ID_FUNCTION);
         
         List<Map<String, Object>> tasks = new ArrayList<>();
         
@@ -106,22 +111,27 @@ public class InventoryActionsController {
         Collections.sort(recentTasks);
         
         for (AbstractInventoryTask task : recentTasks) {
-            Map<String, Object> data = new HashMap<>();
-            Map<String, Object> text = new HashMap<>();
-            
-            long startTime = task.getStartedAt();
-            data.put("id", task.getTaskId());
-            data.put("startedAt", startTime);
-            data.put("completed", task.getCompletedItems());
-            data.put("total", task.getTotalItems());
-            data.put("complete", task.isComplete());
-            
-            String formatted = dateFormatting.format(startTime, DateFormatEnum.DATEHM, userContext);
-            text.put("startedAt", formatted);
-            text.put("type", accessor.getMessage(task));
-            
-            data.put("text", text);
-            tasks.add(data);
+            EnergyCompany ec = ecDao.getEnergyCompany(task.getUserContext().getYukonUser());
+            // to view the recent asset action the user needs to be from the same ec as the user who created the
+            // action or to be from a parent company
+            if (validEcIds.contains(ec.getId())) {
+                Map<String, Object> data = new HashMap<>();
+                Map<String, Object> text = new HashMap<>();
+                
+                long startTime = task.getStartedAt();
+                data.put("id", task.getTaskId());
+                data.put("startedAt", startTime);
+                data.put("completed", task.getCompletedItems());
+                data.put("total", task.getTotalItems());
+                data.put("complete", task.isComplete());
+                
+                String formatted = dateFormatting.format(startTime, DateFormatEnum.DATEHM, userContext);
+                text.put("startedAt", formatted);
+                text.put("type", accessor.getMessage(task));
+                
+                data.put("text", text);
+                tasks.add(data);
+            }
         }
         
         return tasks;

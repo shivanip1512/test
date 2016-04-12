@@ -20,6 +20,7 @@ import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -42,6 +43,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 @CheckRole({YukonRole.CONSUMER_INFO, YukonRole.INVENTORY})
 @Controller
@@ -89,20 +91,18 @@ public class AssetDashboardController {
     private void setupModel(ModelMap model, YukonUserContext userContext) {
         
         LiteYukonUser user = userContext.getYukonUser();
-        boolean ecOperator = ecDao.isEnergyCompanyOperator(userContext.getYukonUser());
-        
-        if (ecOperator) {
-            EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
-            
-            int ecId = ec.getId();
+        EnergyCompany energyCompany = null;
+        try {
+            energyCompany = ecDao.getEnergyCompanyByOperator(user);
+
+            int ecId = energyCompany.getId();
             model.addAttribute("energyCompanyId", ecId);
             
             MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
             String title = accessor.getMessage(key + "fileUploadTitle");
             model.addAttribute("fileUploadTitle", title);
             
-            MeteringType type = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, 
-                    MeteringType.class, ecId);
+            MeteringType type = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ecId);
             model.addAttribute("showAddMeter", type == MeteringType.yukon);
             
             boolean showLinks = configSource.getBoolean(MasterConfigBoolean.DIGI_ENABLED);
@@ -122,8 +122,7 @@ public class AssetDashboardController {
             model.addAttribute("showHardwareCreate", showHardwareCreate);
             
             /** Account Creation */
-            boolean hasCreateAccount = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
-            boolean showAccountCreate = hasCreateAccount && ecOperator;
+            boolean showAccountCreate = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
             model.addAttribute("showAccountCreate", showAccountCreate);
             
             /** Actions Dropdown Button */
@@ -132,14 +131,13 @@ public class AssetDashboardController {
             }
             
             SerialNumberValidation snv = ecSettingsDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
-                                                                         SerialNumberValidation.class,
-                                                                         ecId);
+                SerialNumberValidation.class, ecId);
             model.addAttribute("showAddByRange", snv == SerialNumberValidation.NUMERIC && hasAddHardwareByRange);
             
             model.addAttribute("inventorySearch", new InventorySearch());
             
             String deviceList = YukonSelectionListEnum.DEVICE_TYPE.getListName();
-            List<YukonListEntry> devicesTypes = listService.getSelectionList(ec, deviceList).getYukonListEntries();
+            List<YukonListEntry> devicesTypes = listService.getSelectionList(energyCompany, deviceList).getYukonListEntries();
             
             Iterable<YukonListEntry> addHardwareTypes = Iterables.filter(devicesTypes, new Predicate<YukonListEntry>() {
                 @Override
@@ -150,20 +148,33 @@ public class AssetDashboardController {
             });
             model.addAttribute("addHardwareTypes", addHardwareTypes.iterator());
             
-            Iterable<YukonListEntry> addHardwareByRangeTypes = Iterables.filter(devicesTypes, 
-            new Predicate<YukonListEntry>() {
-                @Override
-                public boolean apply(YukonListEntry input) {
-                    HardwareType type = HardwareType.valueOf(input.getYukonDefID()); 
-                    return type.isSupportsAddByRange();
-                }
-            });
+            Iterable<YukonListEntry> addHardwareByRangeTypes =
+                Iterables.filter(devicesTypes, new Predicate<YukonListEntry>() {
+                    @Override
+                    public boolean apply(YukonListEntry input) {
+                        HardwareType type = HardwareType.valueOf(input.getYukonDefID());
+                        return type.isSupportsAddByRange();
+                    }
+                });
             model.addAttribute("addHardwareByRangeTypes", addHardwareByRangeTypes.iterator());
             
+            List<Integer> validEcIds = Lists.transform(energyCompany.getDescendants(true), EnergyCompanyDao.TO_ID_FUNCTION);
             // All recent inventory tasks
-            List<AbstractInventoryTask> tasks = new ArrayList<>(taskCache.getTasks().values());
+            List<AbstractInventoryTask> tasks = new ArrayList<>();
+            for (AbstractInventoryTask task : taskCache.getTasks().values()) {
+                EnergyCompany ec = ecDao.getEnergyCompany(task.getUserContext().getYukonUser());
+                // to view the recent asset action the user needs to be from the same ec as the user who created the
+                // action or to be from a parent company
+                if (validEcIds.contains(ec.getId())) {
+                    tasks.add(task);
+                }
+            }
+            
             Collections.sort(tasks);
             model.addAttribute("tasks", tasks);
+            
+        } catch (EnergyCompanyNotFoundException e) {
+            //ignore, the user is not an operator
         }
     }
     
