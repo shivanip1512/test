@@ -189,7 +189,7 @@
     
     <c:if test="${canEdit && fn:length(subBusList) < 2}">
         <span class="fr">
-            <cti:button nameKey="edit" icon="icon-pencil" 
+            <cti:button nameKey="edit.buses" icon="icon-pencil" 
                 data-popup=".js-edit-buses-popup" data-popup-toggle=""/>
         </span>
     </c:if>
@@ -205,7 +205,7 @@
             </select>
             <c:if test="${canEdit}">
                 <span class="fr">
-                    <cti:button nameKey="edit" icon="icon-pencil" 
+                    <cti:button nameKey="edit.buses" icon="icon-pencil" 
                         data-popup=".js-edit-buses-popup" data-popup-toggle=""/>
                 </span>
             </c:if>

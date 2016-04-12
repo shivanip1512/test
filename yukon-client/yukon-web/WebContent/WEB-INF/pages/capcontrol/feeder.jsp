@@ -18,6 +18,27 @@
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
 <tags:setFormEditMode mode="${mode}"/>
+
+
+<c:if test="${hasFeederControl}">
+    <script type="text/javascript">
+        addCommandMenuBehavior('a[id^="feederState_"]');
+    </script>
+</c:if>
+
+<div class="js-page-additional-actions dn">
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <li class="divider" />
+    </cti:checkRolesAndProperties>
+    <c:if test="${hasFeederControl}">
+        <cm:dropdownOption linkId="feederState_${feeder.id}" key=".substation.feeder.actions" icon="icon-cog" href="javascript:void(0);" />
+    </c:if>
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <cti:url var="editUrl" value="/capcontrol/feeders/${feeder.id}/edit" />
+        <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+    </cti:checkRolesAndProperties>
+</div>
+
 <cti:url var="action" value="/capcontrol/feeders"/>
 <form:form commandName="feeder" action="${action}" method="POST">
     <cti:csrfToken/>
@@ -184,10 +205,38 @@
                  </div>
              </cti:displayForPageEditModes>
           </div>
+          
+                        
+                  <div class="page-action-area tabbed-container">
+
+<%--         <cti:displayForPageEditModes modes="VIEW">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <cti:url var="editUrl" value="/capcontrol/feeders/${feeder.id}/edit"/>
+            <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+        </cti:checkRolesAndProperties>
+        </cti:displayForPageEditModes> --%>
+
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <cti:button nameKey="save" type="submit" classes="primary action"/>
+        </cti:displayForPageEditModes>
+
+        <cti:displayForPageEditModes modes="EDIT">
+
+            <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:feeder:delete" data-feeder-id="${feeder.id}" />
+            <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${feeder.name}"/>
+
+            <cti:url var="viewUrl" value="/capcontrol/feeders/${feeder.id}"/>
+            <cti:button nameKey="cancel" href="${viewUrl}"/>
+
+        </cti:displayForPageEditModes>
+
+        <cti:displayForPageEditModes modes="CREATE">
+            <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
+        </cti:displayForPageEditModes>
+    </div>
                 
      <cti:displayForPageEditModes modes="EDIT,VIEW">   
-        <cti:msg2 var="capBanksSection" key=".capBanksSection"/>
-        <tags:sectionContainer title="${capBanksSection}" styleClass="clear">
+        <tags:boxContainer2 nameKey="capBanksSection">
             <c:if test="${empty capBankList}">
                 <span class="empty-list"><i:inline key=".feeder.noAssignedCapBanks"/></span>
             </c:if>
@@ -210,39 +259,13 @@
             </c:if>
             <c:if test="${canEdit}">
                 <div class="action-area">
-                    <cti:button nameKey="edit" icon="icon-pencil"
+                    <cti:button nameKey="edit.capbanks" icon="icon-pencil"
                         data-popup=".js-edit-capbanks-popup" data-popup-toggle=""/>
                 </div>
             </c:if>
-        </tags:sectionContainer>
+        </tags:boxContainer2>
     </cti:displayForPageEditModes>
-        <div class="page-action-area">
 
-        <cti:displayForPageEditModes modes="VIEW">
-        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-            <cti:url var="editUrl" value="/capcontrol/feeders/${feeder.id}/edit"/>
-            <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-        </cti:checkRolesAndProperties>
-        </cti:displayForPageEditModes>
-
-        <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <cti:button nameKey="save" type="submit" classes="primary action"/>
-        </cti:displayForPageEditModes>
-
-        <cti:displayForPageEditModes modes="EDIT">
-
-            <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:feeder:delete" data-feeder-id="${feeder.id}" />
-            <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${feeder.name}"/>
-
-            <cti:url var="viewUrl" value="/capcontrol/feeders/${feeder.id}"/>
-            <cti:button nameKey="cancel" href="${viewUrl}"/>
-
-        </cti:displayForPageEditModes>
-
-        <cti:displayForPageEditModes modes="CREATE">
-            <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
-        </cti:displayForPageEditModes>
-    </div>
 </form:form>
 
     <cti:url var="url" value="/capcontrol/feeders/${feeder.id}"/>

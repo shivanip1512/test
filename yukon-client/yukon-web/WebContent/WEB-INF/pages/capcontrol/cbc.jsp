@@ -16,6 +16,16 @@
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
     <tags:setFormEditMode mode="${mode}" />
+    
+    <div class="js-page-additional-actions dn">
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <li class="divider" />
+        <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
+        data-popup="#copy-cbc"/>
+        <cti:url var="editUrl" value="/capcontrol/cbc/${cbc.id}/edit" />
+        <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+    </cti:checkRolesAndProperties>
+</div>
 
     <cti:url var="action" value="/capcontrol/cbc" />
     <form:form id="cbc-edit-form" commandName="cbc" action="${action}" method="POST">
@@ -220,12 +230,12 @@
         </div>
 
         <div class="page-action-area">
-            <cti:displayForPageEditModes modes="VIEW">
+<%--             <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                 <cti:url var="editUrl" value="/capcontrol/cbc/${cbc.id}/edit"/>
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:checkRolesAndProperties>
-            </cti:displayForPageEditModes>
+            </cti:displayForPageEditModes> --%>
         
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action" />
@@ -242,8 +252,8 @@
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${cbc.name}"/>
 
                 <%-- Copy CBC Button --%>
-                <cti:button nameKey="copy" icon="icon-disk-multiple"
-                    data-popup="#copy-cbc"/>
+<%--                 <cti:button nameKey="copy" icon="icon-disk-multiple"
+                    data-popup="#copy-cbc"/> --%>
             
                 <cti:url var="viewUrl" value="/capcontrol/cbc/${cbc.id}"/>
                 <cti:button nameKey="cancel" href="${viewUrl}"/>

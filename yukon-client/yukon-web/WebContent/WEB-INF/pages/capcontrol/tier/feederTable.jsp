@@ -11,7 +11,7 @@
     </script>
 </cti:checkRolesAndProperties>
 
-<table id="fdrTable" class="compact-results-table has-alerts-multi has-actions">
+<table id="fdrTable" class="compact-results-table has-alerts-multi has-actions row-highlighting">
     <thead>
         <tr>
             <th>&nbsp;</th>

@@ -116,6 +116,12 @@ public class BusController {
             bus = (CapControlSubBus) modelBus;
         }
         
+        boolean hasSubBusControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
+        model.addAttribute("hasSubBusControl", hasSubBusControl);
+        
+        boolean hasFeederControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user);
+        model.addAttribute("hasFeederControl", hasFeederControl);
+        
         if(bus.getId() != null){
             Integer parentId = busDao.getParent(bus.getId());
             if (parentId != null) {

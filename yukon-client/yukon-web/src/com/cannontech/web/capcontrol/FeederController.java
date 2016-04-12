@@ -111,7 +111,12 @@ public class FeederController {
         model.addAttribute("feederId", feeder.getId());
         
         model.addAttribute("canEdit", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user));
-
+        
+        boolean hasFeederControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user);
+        model.addAttribute("hasFeederControl", hasFeederControl);
+        
+        boolean hasCapbankControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
+        model.addAttribute("hasCapbankControl", hasCapbankControl);
         
         if(feeder.getId() != null){
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(feeder.getId());

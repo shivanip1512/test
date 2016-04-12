@@ -72,6 +72,11 @@ $(function() {
     <c:if test="${hasSubstationControl}">
         <cm:dropdownOption linkId="substationState_${substationId}" key=".substation.actions" icon="icon-cog" href="javascript:void(0);" />
     </c:if>
+    
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <cti:url var="editUrl" value="/capcontrol/substations/${substationId}/edit" />
+        <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+    </cti:checkRolesAndProperties>
 </div>
 
 <div class="dn" data-pao-id="${substationId}"></div>
@@ -149,7 +154,7 @@ $(function() {
                             </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     </tags:nameValueContainer2>
-                    <div class="action-area">
+<%--                     <div class="action-area">
 
                     <cti:displayForPageEditModes modes="VIEW">
                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
@@ -157,7 +162,7 @@ $(function() {
                         <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
                     </cti:checkRolesAndProperties>
                     </cti:displayForPageEditModes>
-                    </div>
+                    </div> --%>
                 </div>
             </div>
             <capTags:warningImg paoId="${substationId}" type="SUBSTATION" alertBox="true"/>

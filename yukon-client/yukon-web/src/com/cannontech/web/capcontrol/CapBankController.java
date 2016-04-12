@@ -147,6 +147,9 @@ public class CapBankController {
         }
         model.addAttribute("capbank", capbank);
         model.addAttribute("orphan", true);
+        
+        boolean hasCapbankControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, userContext.getYukonUser());
+        model.addAttribute("hasCapbankControl", hasCapbankControl);
 
         
         if(capbank.getId() != null) {

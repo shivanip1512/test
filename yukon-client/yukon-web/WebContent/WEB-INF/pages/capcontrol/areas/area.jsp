@@ -22,6 +22,12 @@
     </script>
 </c:if>
 
+<c:if test="${hasSubstationControl}">
+    <script type="text/javascript">
+        addCommandMenuBehavior('a[id^="substationState"]');
+    </script>
+</c:if>
+
 <div class="js-page-additional-actions dn">
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <li class="divider" />
@@ -29,6 +35,10 @@
     <c:if test="${hasAreaControl}">
         <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
     </c:if>
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" 
+        data-popup=".js-edit-info-popup" data-popup-toggle=""/>
+    </cti:checkRolesAndProperties>
 </div>
 
 <%-- EDIT INFO POPUP --%>
@@ -101,12 +111,12 @@
                     </tags:nameValueContainer2>
                     <capTags:warningImg paoId="${areaId}" type="${updater}" alertBox="true"/>
                               
-                    <c:if test="${canEdit}">
+<%--                     <c:if test="${canEdit}">
                         <div class="action-area">
                             <cti:button nameKey="edit" icon="icon-pencil" 
                                 data-popup=".js-edit-info-popup" data-popup-toggle=""/>
                         </div>
-                    </c:if>
+                    </c:if> --%>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="CREATE">
                     <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
@@ -203,9 +213,9 @@
 
 <cti:displayForPageEditModes modes="EDIT,VIEW">
 
-    <tags:sectionContainer2 nameKey="substationsContainer" arguments="${areaName}">
-        
-        <table id="subTable" class="compact-results-table has-alerts dashed">
+    <tags:boxContainer2 nameKey="substationsContainer" arguments="${areaName}">
+           
+        <table id="subTable" class="compact-results-table has-alerts dashed row-highlighting has-actions">
             <thead>
                 <tr>
                     <th>&nbsp;</th>
@@ -216,7 +226,7 @@
                     <th class="tar"><i:inline key=".unavailableKvars"/></th>
                     <th class="tar"><i:inline key=".closedKvars"/></th>
                     <th class="tar"><i:inline key=".trippedKvars"/></th>
-                    <th class="tar"><i:inline key=".pfactorEstimated"/></th>
+                    <th class="tar"><i:inline key=".pfactorEstimatedOps"/></th>
                 </tr>
             </thead>
             
@@ -272,21 +282,31 @@
                     </td>
                     <%-- POWER FACTOR --%>
                     <td class="tar">
-                        <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" initialize="false"/>
+                        <span style="margin-right:10px;"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" initialize="false"/>
+                        <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                            <c:if test="${hasSubstationControl}">
+                                <li>
+                                    <a id="substationState_${substationId}" href="javascript:void(0)" class="clearfix">
+                                        <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".substation.actions"/></span>
+                                    </a>
+                                </li>
+                             </c:if>                         
+                        </cm:dropdown>
                     </td>
                 </tr>
             </c:forEach>
             
         </table>
-        
+
         <c:if test="${canEdit}">
-            <div class="action-area">
-                <cti:button nameKey="edit" icon="icon-pencil" 
-                    data-popup=".js-edit-stations-popup" data-popup-toggle=""/>
-            </div>
+             <div class="action-area">
+                <cti:button nameKey="edit.stations" icon="icon-pencil" 
+                    data-popup=".js-edit-stations-popup" data-popup-toggle="" />
+              </div>
         </c:if>
         
-    </tags:sectionContainer2>
+    </tags:boxContainer2>
+
 </cti:displayForPageEditModes>
     
 </form:form>

@@ -17,6 +17,25 @@
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
     <tags:setFormEditMode mode="${mode}" />
+    
+    <c:if test="${hasCapbankControl}">
+    <script type="text/javascript">
+        addCommandMenuBehavior('a[id^="capbankState_"]');
+    </script>
+</c:if>
+
+<div class="js-page-additional-actions dn">
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <li class="divider" />
+    </cti:checkRolesAndProperties>
+    <c:if test="${hasCapbankControl}">
+        <cm:dropdownOption linkId="capbankState_${capbank.id}" key=".substation.capBank.actions" icon="icon-cog" href="javascript:void(0);" />
+    </c:if>
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <cti:url var="editUrl" value="/capcontrol/capbanks/${capbank.id}/edit" />
+        <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+    </cti:checkRolesAndProperties>
+</div>
 
     <cti:url var="action" value="/capcontrol/capbanks" />
     <form:form id="capbank-edit-form" commandName="capbank" action="${action}" method="POST">
@@ -98,7 +117,7 @@
                                         <tags:selectWithItems id="bankSize" path="CapBank.bankSize" 
                                         items="${bankSizes}" itemValue="displayValue"/>
                                         <tags:input id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6" /> kVar
-                                        <i:inline key=".custom"/><input id="customSizeCheckbox" type="checkbox" class="js-custom-bankSize" <c:if test="${capbank.capBank.customBankSize}">checked="checked"</c:if>>
+                                        <i:inline key=".custom"/><input id="customSizeCheckbox" type="checkbox" class="js-custom-bankSize" <c:if test="${capbank.capBank.customBankSize}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".recloseDelay" data-toggle-group="integrity">
                                         <tags:intervalStepper path="CapBank.recloseDelay"
@@ -243,7 +262,7 @@
                                         <tags:selectWithItems id="commMedium" path="capbankAdditionalInfo.commMedium" 
                                         items="${communicationMediumList}" itemValue="displayName"/>
                                         <tags:input id="customCommMedium" path="capbankAdditionalInfo.commMediumCustom" inputClass="dn"/>
-                                        <i:inline key=".custom"/><input id="customMediumCheckbox" type="checkbox" class="js-custom-medium" <c:if test="${capbank.capbankAdditionalInfo.customCommMedium}">checked="checked"</c:if>>
+                                        <i:inline key=".custom"/><input id="customMediumCheckbox" type="checkbox" class="js-custom-medium" <c:if test="${capbank.capbankAdditionalInfo.customCommMedium}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbAddInfo.commStrength">
                                         <tags:input path="capbankAdditionalInfo.commStrengh" />
@@ -322,7 +341,7 @@
         <cti:displayForPageEditModes modes="EDIT,VIEW">
 
             <div class="column-12-12 clearfix">
-                <tags:sectionContainer2 nameKey="assignedPointsSection">
+                <tags:boxContainer2 nameKey="assignedPointsSection" styleClass="with-footer">
                 <table class="compact-results-table row-highlighting">
                     <tr>
                         <th><i:inline key=".assignedPoints.point"/></th>
@@ -368,25 +387,30 @@
                         </tr>
                         </c:forEach>
                 </table>        
-                <c:if test="${canEdit}">
+                
+                <c:if test="${canEdit}">                
                     <div class="action-area">
-                        <cti:button nameKey="edit" icon="icon-pencil"
+                        <cti:button nameKey="edit.points" icon="icon-pencil"
                             data-popup=".js-edit-points-popup" data-popup-toggle=""/>
                     </div>
                 </c:if>
-                </tags:sectionContainer2>    
+                
+             </tags:boxContainer2>    
+                
             </div>
+            
+            
         
         </cti:displayForPageEditModes>
 
         <div class="page-action-area">
 
-            <cti:displayForPageEditModes modes="VIEW">
+<%--             <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                 <cti:url var="editUrl" value="/capcontrol/capbanks/${capbank.id}/edit"/>
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:checkRolesAndProperties>
-            </cti:displayForPageEditModes>
+            </cti:displayForPageEditModes> --%>
     
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action"/>
