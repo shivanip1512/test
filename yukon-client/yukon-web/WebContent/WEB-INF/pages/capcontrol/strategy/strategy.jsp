@@ -301,9 +301,9 @@
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="EDIT">
-                
+                <cti:msg2 var="deleteTitle" key=".strategies.delete"/>
                 <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:strategy:delete"
-                    disabled="${deleteDisabled}" title="${deleteTitle}"/>
+                    title="${deleteTitle}"/>
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${strategy.name}"/>
                 
                 <cti:url var="viewUrl" value="/capcontrol/strategies/${strategy.id}" />

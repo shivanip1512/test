@@ -666,6 +666,7 @@
     
     <!-- strategies.jsp -->
     <entry key="yukon.web.modules.capcontrol.strategies.pageName">Strategies</entry>
+    <entry key="yukon.web.modules.capcontrol.strategies.delete">Delete Strategy</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.strategyContainer.title">Strategies</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.noStrategies">No Strategies</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.strategyName">Strategy Name</entry>
