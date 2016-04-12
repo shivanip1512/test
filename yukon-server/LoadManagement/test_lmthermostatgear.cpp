@@ -142,8 +142,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_delta, thermost
     columnValues[ controlMethodIndex ] = "ThermostatRamping";
     columnValues[ settingsIndex      ] = "DCH-";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+    LMGearReader reader( columnNames, std::vector<LMGearRow>({ columnValues }));
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
@@ -170,8 +169,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_delta, therm
     columnValues[ controlMethodIndex ] = "ThermostatRamping";
     columnValues[ settingsIndex      ] = "ACH-";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+    LMGearReader reader( columnNames, std::vector<LMGearRow>({ columnValues }));
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
@@ -198,8 +196,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_celsius, the
     columnValues[ controlMethodIndex ] = "ThermostatRamping";
     columnValues[ settingsIndex      ] = "AFH-";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+    LMGearReader reader( columnNames, std::vector<LMGearRow>({ columnValues }));
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
@@ -226,8 +223,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_cool_mode, ther
     columnValues[ controlMethodIndex ] = "ThermostatRamping";
     columnValues[ settingsIndex      ] = "AF-I";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+	LMGearReader reader(columnNames, std::vector<LMGearRow>({ columnValues }));
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
@@ -254,8 +250,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_both_modes, the
     columnValues[ controlMethodIndex ] = "ThermostatRamping";
     columnValues[ settingsIndex      ] = "AFHI";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+    LMGearReader reader( columnNames, std::vector<LMGearRow>( { columnValues } ) );
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
@@ -282,8 +277,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_no_mode, thermo
     columnValues[ controlMethodIndex ] = "ThermostatRamping";
     columnValues[ settingsIndex      ] = "AF--";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+    LMGearReader reader( columnNames, std::vector<LMGearRow>( { columnValues } ) );
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
@@ -310,8 +304,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_heat, th
     columnValues[ controlMethodIndex ] = "SimpleThermostatRamping";
     columnValues[ settingsIndex      ] = "--H-";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+    LMGearReader reader( columnNames, std::vector<LMGearRow>( { columnValues } ) );
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
@@ -340,8 +333,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_cool, th
     columnValues[ controlMethodIndex ] = "SimpleThermostatRamping";
     columnValues[ settingsIndex      ] = "---I";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+    LMGearReader reader( columnNames, std::vector<LMGearRow>( { columnValues } ) );
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
@@ -370,8 +362,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_none_err
     columnValues[ controlMethodIndex ] = "SimpleThermostatRamping";
     columnValues[ settingsIndex      ] = "----";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+    LMGearReader reader( columnNames, std::vector<LMGearRow>( { columnValues } ) );
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );
@@ -397,8 +388,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_simple_gear_settings_both_err
     columnValues[ controlMethodIndex ] = "SimpleThermostatRamping";
     columnValues[ settingsIndex      ] = "--HI";
 
-    LMGearReader reader( columnNames,
-                         std::vector<LMGearRow>( boost::assign::list_of( columnValues ) ) );
+    LMGearReader reader( columnNames, std::vector<LMGearRow>( { columnValues } ) );
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );

@@ -69,7 +69,7 @@ public:
     bool        isStructType ( StructTypes structType ) const;
     StructTypes getStructType( void ) const;
 
-    virtual enum Elements
+    enum Elements
     {
         Undefined
     };

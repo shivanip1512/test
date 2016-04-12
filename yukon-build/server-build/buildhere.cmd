@@ -15,11 +15,11 @@ set cwd=%cd%
 
 rem Make Visual Studio toolset available.
 
-if exist "C:\Program Files\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" (
-        call "C:\Program Files\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+if exist "C:\Program Files\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" (
+        call "C:\Program Files\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
 ) else (
-        if exist "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" (
-                call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+        if exist "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" (
+                call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
         ) else (
                 echo Couldn't locate Visual Studio toolset.
         )

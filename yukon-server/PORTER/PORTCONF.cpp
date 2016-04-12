@@ -298,7 +298,7 @@ void VConfigThread()
             /* get the new auxilary ID */
             GetString (File, Buffer, sizeof (Buffer));
 
-            if(sscanf (Buffer, "%hd\n", &VSt.VConfig.Data[0]) != 1)
+            if(sscanf (Buffer, "%hhu\n", &VSt.VConfig.Data[0]) != 1)
             {
                fclose (File);
                CTIDelete (Name);
@@ -320,7 +320,7 @@ void VConfigThread()
             /* Do a new Section address */
             GetString (File, Buffer, sizeof (Buffer));
 
-            if(sscanf (Buffer, "%hd", &VSt.VConfig.Data[0]) != 1)
+            if(sscanf (Buffer, "%hhu", &VSt.VConfig.Data[0]) != 1)
             {
                fclose (File);
                CTIDelete (Name);
@@ -511,7 +511,7 @@ void VConfigThread()
             /* get the new utility ID */
             GetString (File, Buffer, sizeof (Buffer));
 
-            if(sscanf (Buffer, "%hd\n", &VSt.VConfig.Data[0]) != 1)
+            if(sscanf (Buffer, "%hhu\n", &VSt.VConfig.Data[0]) != 1)
             {
                fclose (File);
                CTIDelete (Name);

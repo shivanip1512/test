@@ -547,7 +547,7 @@ bool CtiDeviceRTM::tryDecodeAsSA305(const UCHAR *abuf, const INT len, string &co
     //  Convert from ASCII hex digits to bytes
     for( int i = 0; i < len; i += 2 )
     {
-        char num[3] = { abuf[i], abuf[i+1], 0 };
+        char num[3] = { static_cast<char>(abuf[i]), static_cast<char>(abuf[i+1]), 0 };
         char *endptr;
 
         unsigned long result = strtoul(num, &endptr, 16);

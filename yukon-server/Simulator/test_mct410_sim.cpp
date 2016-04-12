@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE( test_peak_demand )
     {
         unsigned address;
         unsigned demandInterval; // seconds
-        unsigned lastFreezeTimestamp;
+        ctitime_t lastFreezeTimestamp;
         CtiTime c_time;
         testMct410Sim::peak_demand_t result;
     }

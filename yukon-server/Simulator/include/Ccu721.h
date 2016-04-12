@@ -388,8 +388,8 @@ private:
 
     struct queue_info
     {
-        typedef std::multiset<const queue_entry, queue_entry::pending_less>   pending_set;
-        typedef std::multiset<const queue_entry, queue_entry::completed_less> completed_set;
+        typedef std::multiset<queue_entry, queue_entry::pending_less>   pending_set;
+        typedef std::multiset<queue_entry, queue_entry::completed_less> completed_set;
 
         pending_set   pending;
 

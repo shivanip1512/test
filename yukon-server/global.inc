@@ -63,7 +63,7 @@ RESOURCE        = $(COMPILEBASE)\resource
 
 CPP_LIBRARIES   = $(DEV_ENVIRONMENT)\libraries
 
-XERCES          = $(CPP_LIBRARIES)\apache\xerces-c\3.1.2-1
+XERCES          = $(CPP_LIBRARIES)\apache\xerces-c\3.1.2-vc140-1
 XERCES_BIN      = $(XERCES)\$(CONFIGURATION)\bin
 !IFDEF DEBUG
 XERCES_LIB      = $(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib
@@ -74,7 +74,7 @@ XERCES_DLL      = xerces-c_3_1.dll
 !ENDIF
 XERCES_INCLUDE      = $(XERCES)\include
 
-TCL             = $(CPP_LIBRARIES)\tcl\8.6.4-1
+TCL             = $(CPP_LIBRARIES)\tcl\8.6.4-vc140-1
 TCL_INCLUDE     = $(TCL)\include
 TCL_BIN         = $(TCL)\$(CONFIGURATION)\bin
 !IFDEF DEBUG
@@ -87,13 +87,13 @@ TCL_LIBS = \
 $(TCL)\$(CONFIGURATION)\lib\tcl86t.lib
 !ENDIF
 
-BOOST           = $(CPP_LIBRARIES)\boost\1.58.0-1
+BOOST           = $(CPP_LIBRARIES)\boost\1.60.0-vc140-1
 BOOST_INCLUDE   = $(BOOST)\include
 BOOST_BIN       = $(BOOST)\bin
 !IFDEF DEBUG
-BOOST_VERSION = vc120-mt-gd-1_58
+BOOST_VERSION = vc140-mt-gd-1_60
 !ELSE
-BOOST_VERSION = vc120-mt-1_58
+BOOST_VERSION = vc140-mt-1_60
 !ENDIF
 BOOST_DLL_1 = boost_chrono-$(BOOST_VERSION).dll
 BOOST_DLL_2 = boost_date_time-$(BOOST_VERSION).dll
@@ -112,7 +112,7 @@ $(BOOST)\lib\boost_system-$(BOOST_VERSION).lib
 BOOST_TEST_LIBS = \
 $(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib
 
-SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.1.5-1
+SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.1.7-vc140-1
 SQLAPI_BIN      = $(SQLAPI)\bin
 !IFDEF DEBUG
 SQLAPI_LIB      = $(SQLAPI)\lib\sqlapid.lib
@@ -122,7 +122,7 @@ SQLAPI_LIB      = $(SQLAPI)\lib\sqlapi.lib
 SQLAPI_DLL      = sqlapi.dll
 !ENDIF
 
-ACTIVEMQ        = $(CPP_LIBRARIES)\apache\activemq-cpp\3.8.4-1
+ACTIVEMQ        = $(CPP_LIBRARIES)\apache\activemq-cpp\3.8.4-vc140-1
 ACTIVEMQ_INCLUDE= $(ACTIVEMQ)\include
 ACTIVEMQ_BIN    = $(ACTIVEMQ)\$(CONFIGURATION)\bin
 ACTIVEMQ_LIB    = $(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib
@@ -132,25 +132,25 @@ ACTIVEMQ_DLL    = activemq-cppd.dll
 ACTIVEMQ_DLL    = activemq-cpp.dll
 !ENDIF
 
-APR             = $(CPP_LIBRARIES)\apache\apr\1.5.2-1
+APR             = $(CPP_LIBRARIES)\apache\apr\1.5.2-vc140-1
 APR_BIN         = $(APR)\$(CONFIGURATION)\bin
 APR_LIB         = $(APR)\$(CONFIGURATION)\lib\libapr-1.lib
 APR_DLL         = libapr-1.dll
 APR_INCLUDE     = $(APR)\include
 
-APR_UTIL        = $(CPP_LIBRARIES)\apache\apr-util\1.5.4-1
+APR_UTIL        = $(CPP_LIBRARIES)\apache\apr-util\1.5.4-vc140-1
 APR_UTIL_BIN    = $(APR_UTIL)\$(CONFIGURATION)\bin
 APR_UTIL_LIB    = $(APR_UTIL)\$(CONFIGURATION)\lib\libaprutil-1.lib
 APR_UTIL_DLL    = libaprutil-1.dll
 # APR_UTIL_INCLUDE= $(APR_UTIL)\include
 
-APR_ICONV       = $(CPP_LIBRARIES)\apache\apr-iconv\1.2.1-1
+APR_ICONV       = $(CPP_LIBRARIES)\apache\apr-iconv\1.2.1-vc140-1
 APR_ICONV_BIN   = $(APR_ICONV)\$(CONFIGURATION)\bin
 APR_ICONV_LIB   = $(APR_ICONV)\$(CONFIGURATION)\lib\libapriconv-1.lib
 APR_ICONV_DLL   = libapriconv-1.dll
 # APR_ICONV_INCLUDE= $(APR_ICONV)\include
 
-THRIFT          = $(CPP_LIBRARIES)\apache\thrift\0.9.2-1
+THRIFT          = $(CPP_LIBRARIES)\apache\thrift\0.9.3-vc140-1
 THRIFT_BIN      = $(THRIFT)\$(CONFIGURATION)\bin
 THRIFT_INCLUDE  = $(THRIFT)\include
 THRIFT_LIB      = $(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib
@@ -158,32 +158,30 @@ THRIFT_LIB      = $(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib
 CAJUN           = $(CPP_LIBRARIES)\cajun\2.0.2-1
 CAJUN_INCLUDE   = $(CAJUN)\include
 
-LOG4CXX         = $(CPP_LIBRARIES)\apache\log4cxx\0.10.0-1
+LOG4CXX         = $(CPP_LIBRARIES)\apache\log4cxx\0.10.0-vc140-1
 LOG4CXX_BIN     = $(LOG4CXX)\$(CONFIGURATION)\bin
 LOG4CXX_INCLUDE = $(LOG4CXX)\include
 LOG4CXX_LIB     = $(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib
 LOG4CXX_DLL     = log4cxx.dll
 
 MICROSOFT       = $(CPP_LIBRARIES)\microsoft
-MICROSOFT_VC    = $(MICROSOFT)\vc\12.0\$(CONFIGURATION)
+MICROSOFT_VC    = $(MICROSOFT)\vc\14.0\$(CONFIGURATION)
 !IFDEF DEBUG
-MICROSOFT_VCR_DLL = msvcr120d.dll
-MICROSOFT_VCP_DLL = msvcp120d.dll
+MICROSOFT_VCP_DLL = msvcp140d.dll
 !ELSE
-MICROSOFT_VCR_DLL = msvcr120.dll
-MICROSOFT_VCP_DLL = msvcp120.dll
+MICROSOFT_VCP_DLL = msvcp140.dll
 !ENDIF
 
 MICROSOFT_SQL     = $(MICROSOFT)\sql-server-client-dll\2000.80.194.0
 MICROSOFT_SQL_DLL = ntwdblib.dll
 
-DBGHELP           = $(MICROSOFT)\dbghelp\6.12.2.633
+DBGHELP           = $(MICROSOFT)\dbghelp\6.12.2.633-vc140-1
 DBGHELP_BIN       = $(DBGHELP)\bin
 DBGHELP_DLL       = dbghelp.dll
 DBGHELP_LIBS =\
 $(DBGHELP)\lib\dbghelp.lib
 
-OPENSSL         = $(CPP_LIBRARIES)\openssl\1.0.1p-1
+OPENSSL         = $(CPP_LIBRARIES)\openssl\1.0.1q-vc140-1
 OPENSSL_BIN     = $(OPENSSL)\$(CONFIGURATION)\bin
 OPENSSL_LIB     = $(OPENSSL)\$(CONFIGURATION)\lib
 OPENSSL_DLL_1   = libeay32.dll
@@ -193,7 +191,7 @@ $(OPENSSL_LIB)\libeay32.lib \
 $(OPENSSL_LIB)\ssleay32.lib
 OPENSSL_INCLUDE = $(OPENSSL)\include
 
-LIBCOAP         = $(CPP_LIBRARIES)\libcoap\4.0.1-1
+LIBCOAP         = $(CPP_LIBRARIES)\libcoap\4.0.1-vc140-1
 LIBCOAP_INCLUDE = $(LIBCOAP)\include
 !IFDEF DEBUG
 LIBCOAP_LIBS = $(LIBCOAP)\$(CONFIGURATION)\lib\libcoapd.lib Ws2_32.lib
@@ -226,8 +224,8 @@ DLLFLAGS= /nologo /Zi /Od /EHa /LD /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSIO
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used
-CFLAGS  = /nologo /Zi /O2 /Oy- /EHa     /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /Zi /O2 /Oy- /EHa /LD /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+CFLAGS  = /nologo /Zi /O2 /Oy- /EHsc    /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zi /O2 /Oy- /EHsc /LD /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
 !ENDIF
 
 

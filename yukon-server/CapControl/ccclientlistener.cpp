@@ -17,7 +17,7 @@ using Cti::ThreadStatusKeeper;
 
 
 ---------------------------------------------------------------------------*/
-CtiCCClientListener CtiCCClientListener::_instance = CtiCCClientListener();
+CtiCCClientListener CtiCCClientListener::_instance;
 
 
 /*------------------------------------------------------------------------

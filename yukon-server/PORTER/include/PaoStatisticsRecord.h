@@ -20,20 +20,6 @@ class PaoStatisticsRecord
 {
 public:
 
-    bool writeRecord(Database::DatabaseWriter &writer);
-
-    bool isStale(CtiTime timeNow) const;
-    bool isDirty() const;
-
-    void incrementRequests();
-    void incrementAttempts(const YukonError_t status);
-    void incrementCompletions();
-
-    unsigned getCompletions() const;
-    unsigned getRequests() const;
-
-protected:
-
     enum StatisticTypes
     {
         Daily,
@@ -51,9 +37,23 @@ protected:
         unsigned requests, unsigned attempts, unsigned completions,
         unsigned protocol_errors, unsigned comm_errors, unsigned system_errors);
 
+    bool writeRecord(Database::DatabaseWriter &writer);
+
+    bool isStale(CtiTime timeNow) const;
+    bool isDirty() const;
+
+    void incrementRequests();
+    void incrementAttempts(const YukonError_t status);
+    void incrementCompletions();
+
+    unsigned getCompletions() const;
+    unsigned getRequests() const;
+
     static CtiTime hourStart (const CtiTime t);
     static CtiTime dayStart  (const CtiTime t);
     static CtiTime monthStart(const CtiTime t);
+
+protected:
 
 private:
 

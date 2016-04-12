@@ -2,11 +2,12 @@
 @echo off
 
 PATH ..\yukon-build\server-build;%PATH%
+call "%VS140COMNTOOLS%vsvars32.bat"
 
 :: defaults
 set conf=/p:Configuration=Release
 set mp=/m:8
-set verbose=/v:n
+set verbose=/v:m
 
 for %%x in (%*) do (
   if "%%x" == "clean" set clean=/t:clean

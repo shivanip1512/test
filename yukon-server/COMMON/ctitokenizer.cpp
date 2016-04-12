@@ -1,6 +1,7 @@
 #include "precompiled.h"
 #include <boost/tokenizer.hpp>
 #include "ctitokenizer.h"
+#include "boostutil.h"
 
 /*
  * Constructor, initiates the date memebers

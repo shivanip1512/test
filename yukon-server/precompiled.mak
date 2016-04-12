@@ -12,6 +12,6 @@ precompiled.pch: $(COMMON)\include\precompiled.h
 	$(CC) $(CCOPTS) $(DLLFLAGS) $(INCLPATHS) /Yc"precompiled.h" /Fp"precompiled.pch" -c precompiled.cpp
 
 clean:
-	@-del precompiled.pch precompiled.obj vc120.pdb
+	@-del precompiled.pch precompiled.obj vc140.pdb
 
 deps:

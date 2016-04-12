@@ -29,7 +29,7 @@ private:
     Cti::ServerSockets _udp_sockets;
     unsigned short _connected_port;
 
-    typedef std::pair<unsigned short, unsigned short> dnp_address_pair;
+    typedef std::pair<long, long> dnp_address_pair;
     //typedef std::pair<unsigned short, unsigned short> uecp_address_pair;  //  Not using UECP unsolicited inbounds
     typedef std::pair<unsigned short, unsigned long>  gpuff_type_serial_pair;
 

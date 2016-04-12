@@ -13,6 +13,14 @@
 #include <algorithm>
 #include <vector>
 
+#if (_MSC_VER < 1900)
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+
+#pragma message("Compiled with version " STRING(_MSC_VER))
+#error("This is being compiled with the wrong version of Visual C++ ")
+#endif
+
 class INMESS;
 class CtiOutMessage;
 using OUTMESS = CtiOutMessage;

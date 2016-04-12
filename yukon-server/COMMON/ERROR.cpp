@@ -4,6 +4,7 @@
 #include "yukon.h"
 #include "constants.h"
 #include "numstr.h"
+#include "boostutil.h"
 
 #include "std_helper.h"
 

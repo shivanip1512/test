@@ -1,13 +1,13 @@
 !include $(COMPILEBASE)\global.inc
 
-TARGET=vc120.pdb
+TARGET=vc140.pdb
 
 ALL:	$(TARGET)
 
 copy:	$(TARGET)
 
-vc120.pdb: $(PRECOMPILED)\vc120.pdb $(PRECOMPILED)\precompiled.pch
-	@copy $(PRECOMPILED)\vc120.pdb .
+vc140.pdb: $(PRECOMPILED)\vc140.pdb $(PRECOMPILED)\precompiled.pch
+	@copy $(PRECOMPILED)\vc140.pdb .
 
 clean:
 	@-del $(TARGET)

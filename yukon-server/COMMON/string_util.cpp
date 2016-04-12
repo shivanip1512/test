@@ -6,6 +6,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include "boostutil.h"
 
 #include "string_util.h"
 

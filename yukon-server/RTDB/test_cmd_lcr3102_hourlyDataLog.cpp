@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_error_active )
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     try
     {
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_temperature_active )
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     try
     {
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_setpoint_active )
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     try
     {
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_temperature_and_setpoint_active )
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     try
     {
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_runtime_inactive )
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     try
     {
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_shedtime_inactive )
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     try
     {
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_runtime_and_shedtime_inactive )
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     try
     {
@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
     executeTime.addSeconds(21600 - tz);
 
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     {
         auto ptr = hourlyRead.executeCommand(executeTime.seconds());
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
     _get_timezone(&tz);
     executeTime.addSeconds(21600 - tz);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     {
         auto ptr = hourlyRead.executeCommand(executeTime.seconds());
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
     _get_timezone(&tz);
     executeTime.addSeconds(21600 - tz);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     {
         auto ptr = hourlyRead.executeCommand(executeTime.seconds());
@@ -563,7 +563,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
     _get_timezone(&tz);
     executeTime.addSeconds(21600 - tz);
 
-    test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
+    test_Lcr3102HourlyDataLogCommand hourlyRead(executeTime.seconds());
 
     {
         auto ptr = hourlyRead.executeCommand(executeTime.seconds());

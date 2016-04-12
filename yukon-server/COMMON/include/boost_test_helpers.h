@@ -38,7 +38,7 @@ char fromAscii(char c)
 struct byte_str
 {
     typedef std::vector<unsigned char> uchar_vector;
-    typedef std::vector<unsigned>  printable_vector;
+    typedef std::vector<unsigned char> printable_vector;
 
     uchar_vector bytes;
     printable_vector printable;

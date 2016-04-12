@@ -6,7 +6,6 @@ copy:
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 
         -@if not exist $(YUKONOUTPUT)\$(DBGHELP_DLL)       copy $(DBGHELP_BIN)\$(DBGHELP_DLL)         $(YUKONOUTPUT)
-        -@if not exist $(YUKONOUTPUT)\$(MICROSOFT_VCR_DLL)  copy $(MICROSOFT_VC)\$(MICROSOFT_VCR_DLL)   $(YUKONOUTPUT)
         -@if not exist $(YUKONOUTPUT)\$(MICROSOFT_VCP_DLL)  copy $(MICROSOFT_VC)\$(MICROSOFT_VCP_DLL)   $(YUKONOUTPUT)
         -@if not exist $(YUKONOUTPUT)\$(MICROSOFT_SQL_DLL) copy $(MICROSOFT_SQL)\$(MICROSOFT_SQL_DLL) $(YUKONOUTPUT)
 
@@ -38,7 +37,7 @@ copy:
         -@if not exist $(YUKONOUTPUT)\$(LOG4CXX_DLL)    copy $(LOG4CXX_BIN)\$(LOG4CXX_DLL)     $(YUKONOUTPUT)
 
 clean:
-        -del \
+        -del /Q \
 $(YUKONOUTPUT)\$(DBGHELP_DLL) \
 $(YUKONOUTPUT)\$(MICROSOFT_VCR_DLL) \
 $(YUKONOUTPUT)\$(MICROSOFT_VCP_DLL) \

@@ -11,6 +11,7 @@
 #include "ctitime.h"
 #include "boost/assign.hpp"
 #include "std_helper.h"
+#include "boostutil.h"
 
 using std::string;
 using namespace std;

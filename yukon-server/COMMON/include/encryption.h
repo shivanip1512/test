@@ -12,7 +12,7 @@ namespace Cti
 {
 namespace Encryption
 {
-    IM_EX_CTIBASE enum EncryptionType
+    enum EncryptionType
     {
         MasterCfg,
         OneWayMsgEncryptionKey

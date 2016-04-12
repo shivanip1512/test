@@ -6,6 +6,7 @@
 #include "dnp_object_binaryinput.h"
 #include "dnp_object_binaryoutput.h"
 #include "dnp_object_counter.h"
+#include "boostutil.h"
 
 BOOST_AUTO_TEST_SUITE( test_prot_dnp )
 

@@ -908,7 +908,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             //  4 bytes of time, 2 bytes duration in cycles.
             //    If duration's high bit is set, the duration is in seconds, not cycles.
-            char input[13] = {0x50, 1, 2, 3, 4, 5, 0x50, 7, 8, 9, 0x8a, 11, 12};
+            int input[13] = {0x50, 1, 2, 3, 4, 5, 0x50, 7, 8, 9, 0x8a, 11, 12};
 
             std::copy(input, input + 13, im.Buffer.DSt.Message);
             im.Buffer.DSt.Length = 13;

@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
+    Lcr3102TamperReadCommand tamperRead;
 
     {
         auto ptr = tamperRead.executeCommand(executeTime);
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
+    Lcr3102TamperReadCommand tamperRead;
 
     {
         auto ptr = tamperRead.executeCommand(executeTime);
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
+    Lcr3102TamperReadCommand tamperRead;
 
     {
         auto ptr = tamperRead.executeCommand(executeTime);
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
+    Lcr3102TamperReadCommand tamperRead;
 
     {
         auto ptr = tamperRead.executeCommand(executeTime);
@@ -385,7 +385,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102TamperReadCommand tamperRead = Lcr3102TamperReadCommand();
+    Lcr3102TamperReadCommand tamperRead;
 
     {
         auto ptr = tamperRead.executeCommand(executeTime);

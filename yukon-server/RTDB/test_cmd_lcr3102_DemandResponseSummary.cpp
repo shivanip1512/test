@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);
@@ -323,7 +323,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);
@@ -475,7 +475,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);
@@ -551,7 +551,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);
@@ -627,7 +627,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);
@@ -703,7 +703,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
     CtiDate today(13, 10, 2010);
     CtiTime executeTime(today, 10, 6);
 
-    Lcr3102DemandResponseSummaryCommand drSummaryRead = Lcr3102DemandResponseSummaryCommand();
+    Lcr3102DemandResponseSummaryCommand drSummaryRead;
 
     {
         auto ptr = drSummaryRead.executeCommand(executeTime);

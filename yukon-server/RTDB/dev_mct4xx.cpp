@@ -2568,11 +2568,11 @@ YukonError_t Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, co
 
     const unsigned char interest[5] =
     {
-        interval_beginning_time >> 24,
-        interval_beginning_time >> 16,
-        interval_beginning_time >>  8,
-        interval_beginning_time,
-        _llpRequest.channel + 1
+        static_cast<const unsigned char>(interval_beginning_time >> 24),
+        static_cast<const unsigned char>(interval_beginning_time >> 16),
+        static_cast<const unsigned char>(interval_beginning_time >>  8),
+        static_cast<const unsigned char>(interval_beginning_time),
+        static_cast<const unsigned char>(_llpRequest.channel + 1)
     };
 
     if( InMessage.Return.OptionsField != _llpRequest.request_id && !_llpRequest.request_id )

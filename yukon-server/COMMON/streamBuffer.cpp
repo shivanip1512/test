@@ -6,6 +6,7 @@
 #include "ctitime.h"
 #include "numstr.h"
 #include "streamBuffer.h"
+#include "boostutil.h"
 
 namespace Cti {
 

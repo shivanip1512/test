@@ -347,7 +347,7 @@ fdrtelegyr.dll: $(FDRTELEGYROBJS) Makefile $(OBJ)\fdrtelegyr.res
                 @if exist ..\telegyr\lib\apiclilib.lib copy ..\telegyr\lib\apiclilib.lib $(COMPILEBASE)\lib
                 @if exist ..\telegyr\lib\pllib.lib copy ..\telegyr\lib\pllib.lib $(COMPILEBASE)\lib
                 @if exist ..\telegyr\lib\psapi.lib copy ..\telegyr\lib\psapi.lib $(COMPILEBASE)\lib
-                $(CC) $(DLLFLAGS) $(FDRTELEGYROBJS) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(FDRTELEGYRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib /Fe..\$@ /link $(IGNORE_LIB) fdrtelegyr.res
+                $(CC) $(DLLFLAGS) $(FDRTELEGYROBJS) $(INCLPATHS) $(BOOST_LIBS) $(CTIFDRLIBS) $(FDRTELEGYRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib Ws2_32.lib legacy_stdio_definitions.lib legacy_stdio_wide_specifiers.lib /Fe..\$@ /link $(IGNORE_LIB) fdrtelegyr.res
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
 		-@if not exist $(YUKONDEBUG) md $(YUKONDEBUG)
 		@if exist ..\$(@B).pdb copy ..\$(@B).pdb $(YUKONDEBUG)

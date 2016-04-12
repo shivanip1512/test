@@ -45,6 +45,12 @@ Things to note about telegyr learned the hard way...
 // this class header
 #include "fdrtelegyr.h"
 
+extern "C" {
+	int __cdecl _imp___iob() { return 0; }
+	int __cdecl _imp___pctype() { return 0; }
+	int __cdecl _imp____mb_cur_max() { return 0; } 
+};
+
 using std::string;
 using std::endl;
 

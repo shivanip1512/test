@@ -21,7 +21,7 @@ set COMPILEBASE=%cd%
 
 rem Build it.
 
-call buildhere.cmd %*
+call msb.cmd %*
 set _ERRORLEVEL=%ERRORLEVEL%
 
 set exit=0

@@ -112,9 +112,9 @@ CtiNumStr::operator string() const
         {
             if( _fmt == Format_Exponential )
             {
-                if( _zeroes && ((_padding - 7) > _precision)  )
+                if( _zeroes && ((_padding - 6) > _precision)  )
                 {
-                    precision = _padding - 7;
+                    precision = _padding - 6;
                 }
             }
             else

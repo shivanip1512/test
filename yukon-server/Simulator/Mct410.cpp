@@ -907,7 +907,7 @@ Mct410Sim::peak_demand_t Mct410Sim::checkForNewPeakDemand(const unsigned address
         }
     }
 
-    short peakDemand = getDynamicDemand(address, demandInterval, maxIntervalTimestamp);
+    unsigned short peakDemand = getDynamicDemand(address, demandInterval, maxIntervalTimestamp);
 
     peak_demand_t result = { peakDemand, maxIntervalTimestamp };
 

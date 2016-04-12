@@ -22,109 +22,173 @@ namespace Cti {
 namespace Devices {
 
 
-const Mct420Device::CommandSet       Mct420Device::_commandStore = boost::assign::list_of
-    (CommandStore(EmetconProtocol::GetConfig_Multiplier,          EmetconProtocol::IO_Function_Read, 0xf3, 2))
-    (CommandStore(EmetconProtocol::GetConfig_MeterParameters,     EmetconProtocol::IO_Function_Read, 0xf3, 2))
-    (CommandStore(EmetconProtocol::GetConfig_DailyReadInterest,   EmetconProtocol::IO_Function_Read, 0x1e, 11))
-    (CommandStore(EmetconProtocol::GetConfig_Options,             EmetconProtocol::IO_Function_Read, 0x01, 6))
-    (CommandStore(EmetconProtocol::PutConfig_Channel2NetMetering, EmetconProtocol::IO_Write,         0x85, 0));
+		const Mct420Device::CommandSet       Mct420Device::_commandStore = {
+			{CommandStore(EmetconProtocol::GetConfig_Multiplier, EmetconProtocol::IO_Function_Read, 0xf3, 2)},
+			{CommandStore(EmetconProtocol::GetConfig_MeterParameters, EmetconProtocol::IO_Function_Read, 0xf3, 2)},
+			{CommandStore(EmetconProtocol::GetConfig_DailyReadInterest, EmetconProtocol::IO_Function_Read, 0x1e, 11)},
+			{CommandStore(EmetconProtocol::GetConfig_Options, EmetconProtocol::IO_Function_Read, 0x01, 6)},
+			{CommandStore(EmetconProtocol::PutConfig_Channel2NetMetering, EmetconProtocol::IO_Write, 0x85, 0) }
+		};
 
-
-const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boost::assign::map_list_of
-    (0x000, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision))
-        ( 1, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_SSpec        )))
-    (0x04f, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay)))
-    (0x005, boost::assign::map_list_of
-        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1))
-        ( 6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2))
-        ( 7, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask )))
-    (0x00f, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters)))
-    (0x013, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_AddressBronze           ))
-        ( 1, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_AddressLead             ))
-        ( 3, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_AddressCollection       ))
-        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID)))
-    (0x019, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio)))
-    (0x01a, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DemandInterval       ))
-        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval  ))
-        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval))
-        ( 3, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval    )))
-    (0x01e, boost::assign::map_list_of
-        ( 0, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold ))
-        ( 2, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold))
-        ( 4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_OutageCycles         )))
-    (0x022, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_OutageCycles)))
-    (0x036, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance)))
-    (0x03f, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset)))
-    (0x0d0, boost::assign::map_list_of
-        ( 0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday1))
-        ( 4, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday2))
-        ( 8, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)))
-    (0x0d4, boost::assign::map_list_of
-        ( 0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday2))
-        ( 4, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)))
-    (0x0d8, boost::assign::map_list_of
-        ( 0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)))
-    (0x101, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Configuration))
-        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1))
-        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2))
-        ( 3, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask))
-        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Options)))
-    (0x19d, boost::assign::map_list_of
-        ( 4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len))
-        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len))
-        ( 6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len))
-        ( 7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len)))
-    (0x1ad, boost::assign::map_list_of
-        ( 0, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_DayTable))
-        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate))
-        (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset)))
-    (0x1f3, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters))
-        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio)))
-    (0x1f6, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01))
-        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric02))
-        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric03))
-        ( 3, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric04))
-        ( 4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric05))
-        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric06))
-        ( 6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric07))
-        ( 7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric08))
-        ( 8, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric09))
-        ( 9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric10))
-        (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric11))
-        (11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric12))
-        (12, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric13)))
-    (0x1f7, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric14))
-        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric15))
-        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric16))
-        ( 3, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric17))
-        ( 4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric18))
-        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric19))
-        ( 6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric20))
-        ( 7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric21))
-        ( 8, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric22))
-        ( 9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric23))
-        (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric24))
-        (11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric25))
-        (12, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric26)))
-    (0x1fe, boost::assign::map_list_of
-        //( 5, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold  ))  //  stored by Mct410DisconnectConfigurationCommand
-        ( 7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay     ))
-        ( 9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes))
-        (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes   ))
-        (11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Configuration    )));
+		const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = {
+			{0x000,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision)},
+					{1, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_SSpec)}
+				}
+			},
+			{0x04f,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay)}
+				}
+			},
+			{0x005,
+				{
+					{5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1)},
+					{6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2)},
+					{7, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask)}
+				}
+			},
+			{0x00f,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters)}
+				}
+			},
+			{0x013,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_AddressBronze)},
+					{1, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_AddressLead)},
+					{3, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_AddressCollection)},
+					{5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID)}
+				}
+			},
+			{0x019,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio)}
+				}
+			},
+			{0x01a,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DemandInterval)},
+					{1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval)},
+					{2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval)},
+					{3, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval)}
+				}
+			},
+			{0x01e,
+				{
+					{0, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold)},
+					{2, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold)},
+					{4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_OutageCycles)}
+				}
+			},
+			{0x022,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_OutageCycles)}
+				}
+			},
+			{0x036,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance)}
+				}
+			},
+			{0x03f,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset)}
+				}
+			},
+			{0x0d0,
+				{
+					{0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday1)},
+					{4, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday2)},
+					{8, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)}
+				}
+			},
+			{0x0d4,
+				{
+					{0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday2)},
+					{4, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)}
+				}
+			},
+			{0x0d8,
+				{
+					{0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)}
+				}
+			},
+			{0x101,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Configuration)},
+					{1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1)},
+					{2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2)},
+					{3, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask)},
+					{5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Options)}
+				}
+			},
+			{0x19d,
+				{
+					{4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len)},
+					{5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len)},
+					{6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len)},
+					{7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len)}
+				}
+			},
+			{0x1ad,
+				{
+					{0, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_DayTable)},
+					{2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate)},
+					{10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset)}
+				}
+			},
+			{0x1f3,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters)},
+					{1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio)}
+				}
+			},
+			{0x1f6,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01)},
+					{1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric02)},
+					{2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric03)},
+					{3, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric04)},
+					{4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric05)},
+					{5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric06)},
+					{6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric07)},
+					{7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric08)},
+					{8, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric09)},
+					{9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric10)},
+					{10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric11)},
+					{11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric12)},
+					{12, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric13)}
+				}
+			},
+			{0x1f7,
+				{
+					{0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric14)},
+					{1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric15)},
+					{2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric16)},
+					{3, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric17)},
+					{4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric18)},
+					{5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric19)},
+					{6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric20)},
+					{7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric21)},
+					{8, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric22)},
+					{9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric23)},
+					{10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric24)},
+					{11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric25)},
+					{12, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric26)}
+				}
+			},
+			{ 0x1fe,
+				{
+					//{ 5, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold)}  //  stored by Mct410DisconnectConfigurationCommand
+					{7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay)},
+					{9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes)},
+					{10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes)},
+					{11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Configuration)}
+				}
+			}
+		};
 
 
 const Mct420Device::FlagSet Mct420Device::_eventFlags = boost::assign::list_of
