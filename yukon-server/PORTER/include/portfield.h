@@ -19,7 +19,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
 YukonError_t NonWrapDecode(const INMESS &InMessage, CtiDeviceSPtr &Device);
 YukonError_t CheckAndRetryMessage(YukonError_t CommResult, CtiPortSPtr Port, INMESS &InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
 YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMESS &InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
-Cti::Optional<repeater_info> findRepeaterInRouteByAddress(const int routeId, const Cti::MacroOffset &macroOffset, const unsigned echo_address);
+Cti::Optional<repeater_info> findRepeaterInRouteByAddress(int routeId, const Cti::MacroOffset &macroOffset, const unsigned echo_address);
 YukonError_t ReturnResultMessage(YukonError_t CommResult, INMESS &InMessage, OUTMESS *&OutMessage);
 
 YukonError_t InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, std::list< CtiMessage* > &traceList);
