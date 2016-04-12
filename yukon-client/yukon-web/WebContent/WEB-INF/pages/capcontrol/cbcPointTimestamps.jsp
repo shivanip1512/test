@@ -30,13 +30,15 @@
                                 <c:set var="rendered" value="${true}"/>
                                 <span class="box state-box"
                                     data-format="background"
-                                    data-color-updater="POINT/${point.pointID}/{rawValue|lastControlReasonColor}"></span>
+                                    data-color-updater="POINT/${point.pointID}/{rawValue|lastControlReasonColor}"
+                                    style="background-color: rgb(209, 72, 54);"></span>
                             </c:if>
                             <c:if test="${format == '{rawValue|ignoredControlReason}'}">
                                 <c:set var="rendered" value="${true}"/>
                                 <span class="box state-box"
                                     data-format="background"
-                                    data-color-updater="POINT/${point.pointID}/{rawValue|ignoredControlReasonColor}"></span>
+                                    data-color-updater="POINT/${point.pointID}/{rawValue|ignoredControlReasonColor}" 
+                                    style="background-color: rgb(209, 72, 54);"></span>
                             </c:if>
                             <c:if test="${!rendered && point.stateGroupID != 0}">
                                 <c:set var="rendered" value="${true}"/>
