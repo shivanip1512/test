@@ -1427,7 +1427,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
     if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
     {
-		Cti::readers_writer_lock_t::writer_lock_guard_t lock{ RouteManager.getLock() };
+        Cti::readers_writer_lock_t::writer_lock_guard_t lock{ RouteManager.getLock() };
 
         RouteManager.RefreshList();
 

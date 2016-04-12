@@ -1276,10 +1276,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                                 status = commResult_status;
                             }
 
-                            vector<CtiDeviceSingle::queued_result_t> queued_results;
-                            ds->getQueuedResults(queued_results);
-
-                            for each( CtiDeviceSingle::queued_result_t result in queued_results )
+                            for( auto result : ds->getQueuedResults() )
                             {
                                 OUTMESS *om = result.first;
                                 INMESS *im = result.second;
@@ -3172,50 +3169,50 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
 
 Cti::Optional<repeater_info> findRepeaterInRouteByAddress( int routeId, const MacroOffset& retryMacroOffset, const unsigned echo_address )
 {
-	std::vector<long> repeaterIds;
-	std::string routeName;
+    std::vector<long> repeaterIds;
+    std::string routeName;
 
-	{
-		readers_writer_lock_t::reader_lock_guard_t lock{ RouteManager.getLock() };
+    {
+        readers_writer_lock_t::reader_lock_guard_t lock{ RouteManager.getLock() };
 
-		CtiRouteSPtr route = RouteManager.getRouteById(routeId);
+        CtiRouteSPtr route = RouteManager.getRouteById(routeId);
 
-		if (route->getType() == RouteTypeMacro)
-		{
-			Cti::Routes::MacroRouteSPtr macroRoute = boost::static_pointer_cast<Cti::Routes::MacroRoute>(route);
-
-			const unsigned originalMacroOffset =
-				(retryMacroOffset && *retryMacroOffset)
-				? *retryMacroOffset - 1
-				: 0;
-
-			if (CtiRouteSPtr subroute = macroRoute->getSubroute(originalMacroOffset))
-			{
-				route = subroute;
-
-				routeId = route->getRouteID();
-			}
-		}
-
-		if (route->getType() == RouteTypeCCU)
-		{
-			CtiRouteCCUSPtr ccuRoute = boost::static_pointer_cast<CtiRouteCCU>(route);
-
-			const CtiRouteCCU::RepeaterSet &repeaters = ccuRoute->getRepeaters();
-
-			boost::transform(repeaters, std::back_inserter(repeaterIds), [](auto &rpt) { return rpt.getDeviceID(); });
-			
-			routeName = route->getName();
-		}
-	}
-
-	int rte_pos = 0;
-	for( const auto repeaterId : repeaterIds )
-	{
-		rte_pos++;
-        if( CtiDeviceSPtr repeater = DeviceManager.getDeviceByID(repeaterId) )
+        if (route->getType() == RouteTypeMacro)
         {
-            if( (repeater->getAddress() & 0x1fff) == echo_address )
+            Cti::Routes::MacroRouteSPtr macroRoute = boost::static_pointer_cast<Cti::Routes::MacroRoute>(route);
+
+            const unsigned originalMacroOffset =
+                (retryMacroOffset && *retryMacroOffset)
+                ? *retryMacroOffset - 1
+                : 0;
+
+            if (CtiRouteSPtr subroute = macroRoute->getSubroute(originalMacroOffset))
+            {
+                route = subroute;
+
+                routeId = route->getRouteID();
+            }
+        }
+
+        if (route->getType() == RouteTypeCCU)
+        {
+            CtiRouteCCUSPtr ccuRoute = boost::static_pointer_cast<CtiRouteCCU>(route);
+
+            const CtiRouteCCU::RepeaterSet &repeaters = ccuRoute->getRepeaters();
+
+            boost::transform(repeaters, std::back_inserter(repeaterIds), [](auto &rpt) { return rpt.getDeviceID(); });
+
+            routeName = route->getName();
+        }
+    }
+
+    int rte_pos = 0;
+    for (const auto repeaterId : repeaterIds)
+    {
+        rte_pos++;
+        if (CtiDeviceSPtr repeater = DeviceManager.getDeviceByID(repeaterId))
+        {
+            if ((repeater->getAddress() & 0x1fff) == echo_address)
             {
                 repeater_info details;
 
