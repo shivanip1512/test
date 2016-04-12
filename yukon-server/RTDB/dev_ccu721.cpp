@@ -189,15 +189,16 @@ LONG Ccu721Device::getAddress() const
 }
 
 
-bool Ccu721Device::hasQueuedWork()  const {  return ! _queued_outmessages.empty();  }
+bool Ccu721Device::hasQueuedWork()  const {  reader_guard lock( _queued_mux );  return !_queued_outmessages.empty();  }
 bool Ccu721Device::hasWaitingWork() const {  return _klondike.hasWaitingWork();   }
 bool Ccu721Device::hasRemoteWork()  const {  return _klondike.hasRemoteWork();    }
 
-unsigned Ccu721Device::queuedWorkCount() const {  return _queued_outmessages.size();  }
-
+unsigned Ccu721Device::queuedWorkCount() const {  reader_guard lock{ _queued_mux };  return _queued_outmessages.size();  }
 
 string Ccu721Device::queueReport() const
 {
+    reader_guard lock{ _queued_mux };
+
     ostringstream report;
 
     report.fill(' ');
@@ -347,8 +348,10 @@ string Ccu721Device::queueReport() const
 }
 
 
-unsigned long Ccu721Device::getRequestCount(ULONG requestID) const
+unsigned long Ccu721Device::getRequestCount(unsigned long requestID) const
 {
+    reader_guard lock{ _queued_mux };
+
     return std::count_if(_queued_outmessages.begin(),
                          _queued_outmessages.end(),
                          boost::bind(findRequestIDMatch, reinterpret_cast<void *>(requestID), _1));
@@ -357,6 +360,8 @@ unsigned long Ccu721Device::getRequestCount(ULONG requestID) const
 
 void Ccu721Device::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter, std::list<void *> &entries)
 {
+    writer_guard lock{ _queued_mux };
+
     request_handles::iterator itr = _queued_outmessages.begin();
 
     while( itr != _queued_outmessages.end() )
@@ -386,6 +391,8 @@ DeviceQueueInterface *Ccu721Device::getDeviceQueueHandler()
 YukonError_t Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     YukonError_t retval = ClientErrors::None;
+
+    writer_guard lock{ _queued_mux };
 
     // If they are the same, it is a message to the CCU and should not be queued
     // Instead of checking this, should all messages to the CCU be marked DTRAN?
@@ -629,7 +636,9 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
             case KlondikeProtocol::Command_LoadQueue:
             case KlondikeProtocol::Command_ReadQueue:
             {
-                for each( KlondikeProtocol::queue_result_t result in _klondike.getQueuedResults() )
+                writer_guard lock{ _queued_mux };
+
+                for( auto result : _klondike.getQueuedResults() )
                 {
                     OUTMESS *om = static_cast<OUTMESS *>(result.requester);
 
@@ -689,13 +698,13 @@ YukonError_t Ccu721Device::translateKlondikeError(KlondikeProtocol::KlondikeErro
 }
 
 
-void Ccu721Device::getQueuedResults(std::vector<queued_result_t> &results)
+auto Ccu721Device::getQueuedResults() -> std::vector<queued_result_t>
 {
-    results.insert(results.end(),
-                   _results.begin(),
-                   _results.end());
+    std::vector<queued_result_t> ret;
 
-    _results.clear();
+    _results.swap(ret);
+
+    return ret;
 }
 
 

@@ -21,6 +21,10 @@ class IM_EX_DEVDB Ccu721Device : public CtiDeviceRemote, public DeviceQueueInter
 
     typedef std::set<OUTMESS *> request_handles;
 
+    mutable readers_writer_lock_t _queued_mux;
+    using reader_guard = readers_writer_lock_t::reader_lock_guard_t;
+    using writer_guard = readers_writer_lock_t::writer_lock_guard_t;
+
     request_handles _queued_outmessages;
 
     OUTMESS *_current_om;
@@ -96,7 +100,7 @@ public:
     YukonError_t recvCommRequest(OUTMESS *OutMessage) override;
     YukonError_t sendCommResult (INMESS  &InMessage)  override;
 
-    void getQueuedResults(std::vector<queued_result_t> &results);
+    std::vector<queued_result_t> getQueuedResults();
 
     YukonError_t processInbound(const OUTMESS *om, INMESS &im);
 };

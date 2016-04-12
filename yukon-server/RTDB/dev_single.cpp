@@ -680,7 +680,7 @@ bool CtiDeviceSingle::isTransactionComplete( void )
 
 void CtiDeviceSingle::sendDispatchResults( CtiConnection &vg_connection ) { }
 void CtiDeviceSingle::getVerificationObjects( queue< CtiVerificationBase * > &work_queue ) { }
-void CtiDeviceSingle::getQueuedResults( vector<queued_result_t> &results ) { }
+auto CtiDeviceSingle::getQueuedResults() -> vector<queued_result_t> {  return {};  }
 
 
 std::string CtiDeviceSingle::eWordReport( const ESTRUCT &ESt, Cti::Optional<repeater_info> repeater_details ) const

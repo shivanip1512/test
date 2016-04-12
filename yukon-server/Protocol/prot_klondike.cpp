@@ -254,10 +254,9 @@ KlondikeProtocol::Command KlondikeProtocol::getCommand( void ) const
 
 vector<KlondikeProtocol::queue_result_t> KlondikeProtocol::getQueuedResults()
 {
-    //  This would be perfect for a move constructor.
-    vector<queue_result_t> results(_plc_results.begin(), _plc_results.end());
+    vector<queue_result_t> results;
 
-    _plc_results.clear();
+    _plc_results.swap(results);
 
     return results;
 }

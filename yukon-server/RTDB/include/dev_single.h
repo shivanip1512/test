@@ -239,7 +239,7 @@ public:
     virtual void sendDispatchResults(CtiConnection &vg_connection);
 
     virtual void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
-    virtual void getQueuedResults(std::vector<queued_result_t> &results);
+    virtual std::vector<queued_result_t> getQueuedResults();
 
     virtual YukonError_t ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 

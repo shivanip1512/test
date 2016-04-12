@@ -1276,10 +1276,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                                 status = commResult_status;
                             }
 
-                            vector<CtiDeviceSingle::queued_result_t> queued_results;
-                            ds->getQueuedResults(queued_results);
-
-                            for each( CtiDeviceSingle::queued_result_t result in queued_results )
+                            for( auto result : ds->getQueuedResults() )
                             {
                                 OUTMESS *om = result.first;
                                 INMESS *im = result.second;
