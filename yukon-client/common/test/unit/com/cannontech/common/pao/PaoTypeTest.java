@@ -1,6 +1,6 @@
 package com.cannontech.common.pao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -121,6 +121,7 @@ public class PaoTypeTest {
                             PaoType.RFN440_2132TD,
 //                            PaoType.RFN440_2133T,
                             PaoType.RFN440_2133TD,
+                            PaoType.RFN500_S4X,
                             PaoType.RFWMETER,
                             PaoType.LCR6200_RFN,
                             PaoType.LCR6600_RFN,
@@ -316,6 +317,7 @@ public class PaoTypeTest {
                         PaoType.RFN440_2132TD,
 //                        PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
+                        PaoType.RFN500_S4X,
                         PaoType.RFN_1200,
                         PaoType.RFWMETER,
                         PaoType.LCR6200_RFN,
@@ -588,6 +590,7 @@ public class PaoTypeTest {
                         PaoType.RFN440_2132TD,
 //                        PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
+                        PaoType.RFN500_S4X,
                         PaoType.RFN_1200,
                         PaoType.RFWMETER,
                         PaoType.LCR6200_RFN,
@@ -769,6 +772,7 @@ public class PaoTypeTest {
                         PaoType.RFN440_2132TD,
 //                        PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
+                        PaoType.RFN500_S4X,
                         PaoType.RFN_1200,
                         PaoType.RFWMETER,
                         PaoType.LCR6200_RFN,
@@ -966,6 +970,7 @@ public class PaoTypeTest {
                         PaoType.RFN440_2132TD,
 //                        PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
+                        PaoType.RFN500_S4X,
                         PaoType.RFN_1200,
                         PaoType.RFWMETER,
                         PaoType.LCR6200_RFN,
@@ -1160,6 +1165,7 @@ public class PaoTypeTest {
                       PaoType.RFN440_2132TD,
 //                      PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
+                        PaoType.RFN500_S4X,
                         PaoType.RFWMETER,
                         PaoType.LCR6200_RFN,
                         PaoType.LCR6600_RFN,
