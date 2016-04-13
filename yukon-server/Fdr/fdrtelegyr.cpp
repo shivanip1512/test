@@ -45,6 +45,12 @@ Things to note about telegyr learned the hard way...
 // this class header
 #include "fdrtelegyr.h"
 
+/*
+ * The telgyr library was built on an earlier version of Visual Studio.  In VS2015 
+ * the infrastructure for stdio changed.  VS2015 provides some relief from this with 
+ * legacy_stdio_definitions.lib and legacy_stdio_wide_specifiers.lib but not quite 
+ * enough to get us to link.  The following supplies some missing symbols.
+ */
 extern "C" {
 	int __cdecl _imp___iob() { return 0; }
 	int __cdecl _imp___pctype() { return 0; }
