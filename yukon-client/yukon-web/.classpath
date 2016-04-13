@@ -40,9 +40,9 @@
 	<classpathentry kind="lib" path="/third-party/jsch-0.1.44.jar"/>
 	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar" sourcepath="/SchemaCompare"/>
-	<classpathentry kind="lib" path="/third-party/lucene-core-5.4.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/lucene-analyzers-common-5.4.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/lucene-queryparser-5.4.1.jar"/>
+	<classpathentry kind="lib" path="/third-party/lucene-core-6.0.0.jar"/>
+	<classpathentry kind="lib" path="/third-party/lucene-analyzers-common-6.0.0.jar"/>
+	<classpathentry kind="lib" path="/third-party/lucene-queryparser-6.0.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/jsoup-1.7.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>

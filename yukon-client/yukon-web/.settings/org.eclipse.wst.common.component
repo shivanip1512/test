@@ -175,13 +175,13 @@
         <dependent-module archiveName="yuicompressor-2.4.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/yuicompressor-2.4.8.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="lucene-core-5.4.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/lucene-core-5.4.1.jar">
+        <dependent-module archiveName="lucene-core-6.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/lucene-core-6.0.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="lucene-analyzers-common-5.4.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/lucene-analyzers-common-5.4.1.jar">
+        <dependent-module archiveName="lucene-analyzers-common-6.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/lucene-analyzers-common-6.0.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="lucene-queryparser-5.4.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/lucene-queryparser-5.4.1.jar">
+        <dependent-module archiveName="lucene-queryparser-6.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/lucene-queryparser-6.0.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/yukon-web/build/classes"/>
