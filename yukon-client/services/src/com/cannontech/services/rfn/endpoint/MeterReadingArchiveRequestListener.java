@@ -148,7 +148,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
                     }
                     RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
                     jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
-                    log.info("Startup notification request is sent to Network manager");
+                    log.info("Startup notification request has been sent to Network manager");
                 } catch (Exception e) {
                     log.error("Failed to send startup notification to Network Manager", e);
                 }
