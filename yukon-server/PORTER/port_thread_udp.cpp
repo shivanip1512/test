@@ -250,8 +250,8 @@ void UdpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 
 UdpPortHandler::dnp_address_pair UdpPortHandler::makeDnpAddressPair(const CtiDeviceSingle &device)
 {
-    return dnp_address_pair(device.getMasterAddress(),
-                            device.getAddress());
+    return dnp_address_pair((unsigned short)device.getMasterAddress(),
+                            (unsigned short)device.getAddress());
 }
 
 
