@@ -35,7 +35,6 @@ import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.HolidayScheduleDao;
@@ -71,7 +70,6 @@ import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -150,6 +148,14 @@ public class AreaController {
     @RequestMapping("areas/{areaId}")
     public String view(ModelMap model, LiteYukonUser user, @PathVariable int areaId) {
         model.addAttribute("mode", PageEditMode.VIEW);
+        Area area = areaDao.getArea(areaId);
+        return setupModel(model, area, user);
+    }
+    
+    /** EDIT */
+    @RequestMapping("areas/{areaId}/edit")
+    public String edit(ModelMap model, LiteYukonUser user, @PathVariable int areaId) {
+        model.addAttribute("mode", PageEditMode.EDIT);
         Area area = areaDao.getArea(areaId);
         return setupModel(model, area, user);
     }
@@ -300,39 +306,6 @@ public class AreaController {
         }
 
         return "redirect:areas/" + area.getId() + "/edit";
-    }
-    
-    /** EDIT INFO POPUP */
-    @RequestMapping("areas/{areaId}/info/edit")
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String editInfoPopup(ModelMap model, @PathVariable int areaId) {
-        
-        Area area = areaDao.getArea(areaId);
-        model.addAttribute("area", area);
-        
-        return "areas/info.jsp";
-    }
-    
-    /** SAVE INFO */
-    @RequestMapping(value="areas/{areaId}/info", method=RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String saveInfo(HttpServletResponse resp, 
-            @ModelAttribute("area") Area area, BindingResult result, 
-            FlashScope flash) {
-        
-        validator.validate(area, result);
-        
-        if (result.hasErrors()) {
-            // Failure
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            return "areas/info.jsp";
-        }
-        
-        areaDao.save(area);
-        
-        // Success
-        flash.setConfirm(new YukonMessageSourceResolvable(areaKey + "info.updated"));
-        return JsonUtils.writeResponse(resp, ImmutableMap.of("success", true));
     }
     
     /**

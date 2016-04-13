@@ -8,6 +8,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+
 
 <c:set var="pageName" value="area.${mode}"/>
 <cti:standardPage module="capcontrol" page="${pageName}">
@@ -36,18 +38,10 @@
         <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
     </c:if>
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" 
-        data-popup=".js-edit-info-popup" data-popup-toggle=""/>
+        <cti:url var="editUrl" value="/capcontrol/areas/${areaId}/edit" />
+        <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
     </cti:checkRolesAndProperties>
 </div>
-
-<%-- EDIT INFO POPUP --%>
-<div class="dn js-edit-info-popup"
-    data-dialog
-    data-title="<cti:msg2 key=".edit.info" arguments="${areaName}"/>"
-    data-url="<cti:url value="/capcontrol/areas/${areaId}/info/edit"/>"
-    data-event="yukon:vv:area:info:save"
-    data-delete ></div>
 
 <%-- EDIT SUBSTATIONS POPUP --%>
 <div class="dn js-edit-stations-popup"
@@ -80,7 +74,7 @@
         <cti:tabs>
                 <cti:msg2 var="infoTab" key=".infoTab"/>
                 <cti:tab title="${infoTab}">
-                 <cti:displayForPageEditModes modes="EDIT,VIEW">
+                 <cti:displayForPageEditModes modes="VIEW">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name" valueClass="wbba">
                             <span>${fn:escapeXml(areaName)}</span>
@@ -110,15 +104,8 @@
                          </tags:nameValue2>
                     </tags:nameValueContainer2>
                     <capTags:warningImg paoId="${areaId}" type="${updater}" alertBox="true"/>
-                              
-<%--                     <c:if test="${canEdit}">
-                        <div class="action-area">
-                            <cti:button nameKey="edit" icon="icon-pencil" 
-                                data-popup=".js-edit-info-popup" data-popup-toggle=""/>
-                        </div>
-                    </c:if> --%>
                 </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="CREATE">
+                <cti:displayForPageEditModes modes="CREATE,EDIT">
                     <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                         <tags:nameValue2 nameKey="yukon.common.name">
                             <tags:input path="name" size="35" maxlength="60"/>
@@ -144,8 +131,21 @@
                         </tags:nameValue2>
                      </tags:nameValueContainer2>
                     <div class="page-action-area">
-                        <cti:button nameKey="save" type="submit" classes="primary action"/>
-                        <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
+                         <cti:button nameKey="save" type="submit" classes="primary action"/>
+
+                        <cti:displayForPageEditModes modes="EDIT">
+                
+                            <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:area:delete"/>
+                            <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${area.name}"/>
+                
+                            <cti:url var="viewUrl" value="/capcontrol/areas/${areaId}"/>
+                            <cti:button nameKey="cancel" href="${viewUrl}"/>
+                
+                        </cti:displayForPageEditModes>
+                
+                        <cti:displayForPageEditModes modes="CREATE">
+                            <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
+                        </cti:displayForPageEditModes>
                     </div>
                 </cti:displayForPageEditModes>
             </cti:tab>
@@ -209,7 +209,6 @@
         </div>
     </cti:displayForPageEditModes>
 </div>
-
 
 <cti:displayForPageEditModes modes="EDIT,VIEW">
 

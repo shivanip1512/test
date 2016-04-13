@@ -41,22 +41,6 @@ yukon.da.area = (function () {
                 
             });
             
-            /** User clicked save on edit info dialog. */
-            $(document).on('yukon:vv:area:info:save', function (ev) {
-                
-                var dialog = $('.js-edit-info-popup');
-                
-                $('.js-edit-info-popup form').ajaxSubmit({
-                    success: function (data, status, xhr, $form) {
-                        dialog.dialog('close');
-                        window.location.reload();
-                    },
-                    error: function (xhr, status, error, $form) {
-                        dialog.html(xhr.responseText);
-                    }
-                });
-            });
-            
             $(document).on('yukon:ui:dialog:delete', function (ev) {
                 var dialog = $(ev.target);
                 $('#delete-area-form').submit();
