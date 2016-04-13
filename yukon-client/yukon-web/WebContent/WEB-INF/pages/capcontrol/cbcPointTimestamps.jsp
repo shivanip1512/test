@@ -28,17 +28,11 @@
                             <c:set var="rendered" value="${false}"/>
                             <c:if test="${format == '{rawValue|lastControlReason}'}">
                                 <c:set var="rendered" value="${true}"/>
-                                <span class="box state-box"
-                                    data-format="background"
-                                    data-color-updater="POINT/${point.pointID}/{rawValue|lastControlReasonColor}"
-                                    style="background-color: rgb(209, 72, 54);"></span>
+                                    <cti:pointStatus pointId="${point.pointID}" />
                             </c:if>
                             <c:if test="${format == '{rawValue|ignoredControlReason}'}">
                                 <c:set var="rendered" value="${true}"/>
-                                <span class="box state-box"
-                                    data-format="background"
-                                    data-color-updater="POINT/${point.pointID}/{rawValue|ignoredControlReasonColor}" 
-                                    style="background-color: rgb(209, 72, 54);"></span>
+                                    <cti:pointStatus pointId="${point.pointID}" />
                             </c:if>
                             <c:if test="${!rendered && point.stateGroupID != 0}">
                                 <c:set var="rendered" value="${true}"/>
