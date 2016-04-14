@@ -347,10 +347,6 @@ bool CtiCCSubstationBusStore::findCapBankByPointID(long point_id, PointIdToCapBa
     return begin != end;
 }
 
-int CtiCCSubstationBusStore::getNbrOfSubstationsWithPointID(long point_id)
-{
-    return _pointid_station_map.count(point_id);
-}
 int CtiCCSubstationBusStore::getNbrOfSubBusesWithPointID(long point_id)
 {
     return _pointid_subbus_map.count(point_id);
@@ -1007,18 +1003,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
             {
                 currentSpecial->dumpDynamicData( conn, currentDateTime );
             }
-
-            if( _ccSubstations->size() > 0 )
+            for ( CtiCCSubstationPtr currentCCSubstation : *_ccSubstations )
             {
-                for(long i=0;i<_ccSubstations->size();i++)
-                {
-                    CtiCCSubstation* currentCCSubstation = (CtiCCSubstation*)(*_ccSubstations)[i];
-                    currentCCSubstation->dumpDynamicData(conn,currentDateTime);
-                    currentCCSubstation->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                }
+                currentCCSubstation->dumpDynamicData( conn, currentDateTime );
             }
-
-
 
             for(long i=0;i<_ccSubstationBuses->size();i++)
             {
@@ -3614,6 +3602,8 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
             deleteSubstation( substationId );
         }
 
+        std::set<long>  modifiedPaoIDs;
+
         {
             static const std::string sql =
                 "SELECT "
@@ -3659,24 +3649,78 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
             while ( rdr() )
             {
+                CtiCCSubstationPtr currentCCSubstation = CtiCCSubstationPtr( new CtiCCSubstation( rdr ) );
 
-                CtiCCSubstationPtr currentCCSubstation = CtiCCSubstationPtr(new CtiCCSubstation(rdr));
-                paobject_substation_map->insert(make_pair(currentCCSubstation->getPaoId(),currentCCSubstation));
+                paobject_substation_map->emplace( currentCCSubstation->getPaoId(), currentCCSubstation );
 
-                if (currentCCSubstation->getVoltReductionControlId() > 0 )
+                if ( ! findSpecialAreaByPAObjectID( currentCCSubstation->getSaEnabledId() ) )
                 {
-                    pointid_station_map->insert(make_pair(currentCCSubstation->getVoltReductionControlId(), currentCCSubstation));
-                    currentCCSubstation->addPointId(currentCCSubstation->getVoltReductionControlId());
+                    currentCCSubstation->setSaEnabledId( 0 );
                 }
 
-                CtiCCSpecialPtr currentSA = findSpecialAreaByPAObjectID(currentCCSubstation->getSaEnabledId());
-                if (!currentSA)
+                modifiedPaoIDs.insert( currentCCSubstation->getPaoId() );
+            }
+        }
+        {
+            static const std::string sql = 
+                "SELECT "
+                    "P.POINTID, "
+                    "P.POINTTYPE, "
+                    "P.PAObjectID, "
+                    "P.POINTOFFSET "
+                "FROM "
+                    "POINT P "
+                        "JOIN CAPCONTROLSUBSTATION S "
+                            "ON P.PAObjectID = S.SubstationID";
+
+            static const std::string sqlID = sql +
+                " WHERE P.PAObjectID = ?";
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader     rdr( connection );
+
+            if ( substationId > 0 )
+            {
+                rdr.setCommandText( sqlID );
+                rdr << substationId;
+            }
+            else
+            {
+                rdr.setCommandText( sql );
+            }
+
+            rdr.execute();
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                CTILOG_INFO( dout, rdr.asString() );
+            }
+
+            while ( rdr() )
+            {
+                long substationID;
+
+                rdr["PAObjectID"] >> substationID;
+
+                if ( CtiCCSubstationPtr substation = findInMap( substationID, paobject_substation_map ) )
                 {
-                    currentCCSubstation->setSaEnabledId(0);
+                    substation->assignPoint( rdr );
                 }
             }
         }
 
+        for ( const long paoID : modifiedPaoIDs )
+        {
+            if ( CtiCCSubstationPtr substation = findInMap( paoID, paobject_substation_map ) )
+            {
+                for ( const long pointID : *substation->getPointIds() )
+                {
+                    pointid_station_map->emplace( pointID, substation );
+
+                    _pointID_to_pao.emplace( pointID, substation );
+                }
+            }
+        }
 
         {
             static const string sqlNoID = "SELECT CAS.areaid, CAS.substationbusid, CAS.displayorder "
@@ -3794,90 +3838,6 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                     }
                     substation_specialarea_map->insert(make_pair(currentSubId, currentSpAreaId));
                     currentCCSpArea->addSubstationId(currentSubId);
-                }
-            }
-        }
-        {
-            static const string sqlNoID =  "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "
-                                           "FROM capcontrolsubstation CCS, point PT "
-                                           "WHERE CCS.substationid = PT.paobjectid";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if( substationId > 0 )
-            {
-                static const string sqlID = string(sqlNoID + " AND CCS.substationid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << substationId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentStationId;
-
-                rdr["paobjectid"] >> currentStationId;
-                CtiCCSubstationPtr currentStation = findInMap(currentStationId, paobject_substation_map);
-                if (!currentStation)
-                {
-                    continue;
-                }
-                if ( !rdr["pointid"].isNull() )
-                {
-                    long tempPointId = -1000;
-                    long tempPointOffset = -1000;
-                    string tempPointType = "(none)";
-                    rdr["pointid"] >> tempPointId;
-                    rdr["pointoffset"] >> tempPointOffset;
-                    rdr["pointtype"] >> tempPointType;
-
-                    if ( resolvePointType(tempPointType) == StatusPointType &&
-                         tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
-                    {
-                        currentStation->setDisabledStatePointId(tempPointId, substationId);
-                        pointid_station_map->insert(make_pair(tempPointId,currentStation));
-                        currentStation->addPointId(tempPointId);
-                    }
-                    else if ( resolvePointType(tempPointType) == AnalogPointType )
-                    {
-                        if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
-                             tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
-                        {
-                            if (currentStation->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
-                            {
-                                pointid_station_map->insert(make_pair(tempPointId,currentStation));
-                                currentStation->addPointId(tempPointId);
-                            }
-                        }
-                        else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
-                                  tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
-                        {
-                            if (currentStation->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
-                            {
-                                pointid_station_map->insert(make_pair(tempPointId,currentStation));
-                                currentStation->addPointId(tempPointId);
-                            }
-                        }
-                        else
-                        {//undefined area point
-                            CTILOG_INFO(dout, "Undefined Substation point offset: " << tempPointOffset);
-                        }
-                    }
-                    else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
-                    {
-                        CTILOG_INFO(dout, "Undefined Substation point type: " << tempPointType);
-                    }
                 }
             }
         }
@@ -4647,19 +4607,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     if (currentCCSubstation != NULL)
                     {
                         currentCCSubstationBus->setParentName(currentCCSubstation->getPaoName());
-                        bool found = false;
-                        for each (long busId in currentCCSubstation->getCCSubIds())
-                        {
-                            if (busId == currentSubBusId)
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if(!found)
-                        {
-                            currentCCSubstation->addCCSubId(currentSubBusId);
-                        }
+                        currentCCSubstation->addCCSubId(currentSubBusId);
                     }
 
                     cCSubstationBuses->push_back(currentCCSubstationBus);
@@ -7051,27 +6999,34 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
         try
         {
             //Delete pointids on this sub
-           for each (long pointid in *substationToDelete->getPointIds())
-           {
-
-                int ptCount = getNbrOfSubstationsWithPointID(pointid);
-                if (ptCount > 1)
-                {
-                    PointIdToSubstationMultiMap::iterator iter1 = _pointid_station_map.lower_bound(pointid);
-                    while (iter1 != _pointid_station_map.end() || iter1 != _pointid_station_map.upper_bound(pointid))
+            for ( const long pointid : *substationToDelete->getPointIds() )
+            {
+                {    // _pointid_station_map
+                    for ( auto range = _pointid_station_map.equal_range( pointid );
+                          range.first != range.second;
+                          ++range.first )
                     {
-                       if (((CtiCCSubstationPtr)iter1->second)->getPaoId() == substationToDelete->getPaoId())
-                       {
-                           _pointid_station_map.erase(iter1);
-                           break;
-                       }
-                       iter1++;
+                        if ( range.first->second == substationToDelete )
+                        {
+                            _pointid_station_map.erase( range.first );
+                            break;
+                        }
                     }
                 }
-                else
-                    _pointid_station_map.erase(pointid);
-           }
-           substationToDelete->getPointIds()->clear();
+                {    // _pointID_to_pao
+                    for ( auto range = _pointID_to_pao.equal_range( pointid );
+                          range.first != range.second;
+                          ++range.first )
+                    {
+                        if ( range.first->second == substationToDelete )
+                        {
+                            _pointID_to_pao.erase( range.first );
+                            break;
+                        }
+                    }
+                }
+            }
+            substationToDelete->getPointIds()->clear();
         }
         catch(...)
         {
@@ -7095,25 +7050,16 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
                 }
             }
 
-            string substationName = substationToDelete->getPaoName();
+            std::string substationName = substationToDelete->getPaoName();
+
             _paobject_substation_map.erase(substationToDelete->getPaoId());
             _substation_area_map.erase(substationToDelete->getPaoId());
             _substation_specialarea_map.erase(substationToDelete->getPaoId());
-            CtiCCSubstation_vec::iterator itr = _ccSubstations->begin();
-            for( ;itr != _ccSubstations->end(); itr++ )
-            {
-                CtiCCSubstation *substation = *itr;
-                if (substation->getPaoId() == substationId)
-                {
-                    _ccSubstations->erase(itr);
-                    break;
-                }
-            }
-            if ( substationToDelete != NULL )
-            {
-                delete substationToDelete;
-                substationToDelete = NULL;
-            }
+            _ccSubstations->erase( std::remove( _ccSubstations->begin(), _ccSubstations->end(), substationToDelete ),
+                                   _ccSubstations->end() );
+
+            delete substationToDelete;
+
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
                 CTILOG_DEBUG(dout, "SUBSTATION: " << substationName <<" has been deleted.");
@@ -7123,13 +7069,11 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
-
     }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
 }
 
 
@@ -7746,7 +7690,7 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(long reloadId, BYTE reloa
                                      &_pointid_station_map, &_substation_area_map,
                            &_substation_specialarea_map, _ccSubstations);
 
-        CtiCCSubstation *station = findSubstationByPAObjectID(reloadId);
+        CtiCCSubstationPtr station = findSubstationByPAObjectID(reloadId);
         if (station != NULL)
         {
             addVectorIdsToSet(station->getCCSubIds(), modifiedBusIdsSet);
@@ -7856,7 +7800,7 @@ void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(PaoIdVector sta
 {
     for each (long stationId in stationIdList)
     {
-        CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
+        CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
         if (station != NULL)
         {
             addVectorIdsToSet(station->getCCSubIds(), modifiedBusIdsSet);
@@ -8251,7 +8195,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 void CtiCCSubstationBusStore::checkAndUpdateVoltReductionFlagsByBus(CtiCCSubstationBusPtr bus)
 {
 
-    CtiCCSubstation* currentStation = findSubstationByPAObjectID(bus->getParentId());
+    CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(bus->getParentId());
     if (currentStation != NULL)
     {
         currentStation->checkAndUpdateChildVoltReductionFlags();
@@ -8555,7 +8499,7 @@ void CtiCCSubstationBusStore::insertItemsIntoMap(int mapType, long* first, long*
         case PointIdSubstationMap:
         {
             long pointId = *first;
-            CtiCCSubstation* subToInsert = (CtiCCSubstation*) second;
+            CtiCCSubstationPtr subToInsert = (CtiCCSubstationPtr) second;
             _pointid_station_map.insert(make_pair(pointId, subToInsert));
             break;
         }
@@ -8676,9 +8620,9 @@ PaoIdToAreaMap & CtiCCSubstationBusStore::getPAOAreaMap()
 {
     return _paobject_area_map;
 }
-PaoIdToSubstationMap* CtiCCSubstationBusStore::getPAOStationMap()
+PaoIdToSubstationMap & CtiCCSubstationBusStore::getPAOStationMap()
 {
-    return &_paobject_substation_map;
+    return _paobject_substation_map;
 }
 PaoIdToSpecialAreaMap & CtiCCSubstationBusStore::getPAOSpecialAreaMap()
 {
@@ -9486,12 +9430,10 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
 
     try
     {
-        for(i=0;i<_ccSubstations->size();i++)
+        for ( CtiCCSubstationPtr currentStation : *_ccSubstations )
         {
-            CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
             currentStation->getOperationStats().createPointDataMsgs(pointChanges);
             currentStation->getConfirmationStats().createPointDataMsgs(pointChanges);
-
         }
     }
     catch(...)
@@ -9556,7 +9498,7 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
 
 
 void CtiCCSubstationBusStore::createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
-                                                       CtiCCSubstation* station, CtiCCAreaPtr area, CtiCCSpecialPtr spArea)
+                                                       CtiCCSubstationPtr station, CtiCCAreaPtr area, CtiCCSpecialPtr spArea)
 {
     if (cap != NULL)
         cap->getOperationStats().createPointDataMsgs(pointChanges);
@@ -9586,7 +9528,7 @@ void CtiCCSubstationBusStore::cascadeAreaStrategySettings(CtiCCAreaBasePtr objec
 
     for each (long stationId in object->getSubstationIds())
     {
-        CtiCCSubstation *station =findSubstationByPAObjectID(stationId);
+        CtiCCSubstationPtr station =findSubstationByPAObjectID(stationId);
         if (station == NULL)
             continue;
         for each ( long busId in station->getCCSubIds() )

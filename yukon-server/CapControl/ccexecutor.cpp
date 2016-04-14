@@ -205,7 +205,7 @@ void CtiCCCommandExecutor::EnableSubstation()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
-    CtiCCSubstation* station = store->findSubstationByPAObjectID(_itemId);
+    CtiCCSubstationPtr station = store->findSubstationByPAObjectID(_itemId);
     if (station != NULL)
     {
         string text1 = string("Manual Enable Substation");
@@ -243,7 +243,7 @@ void CtiCCCommandExecutor::DisableSubstation()
     EventLogEntries ccEvents;
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
 
-    CtiCCSubstation* station = store->findSubstationByPAObjectID(_itemId);
+    CtiCCSubstationPtr station = store->findSubstationByPAObjectID(_itemId);
     if (station != NULL)
     {
         string text1 = string("Manual Disable Substation");
@@ -3793,7 +3793,7 @@ void CtiCCCommandExecutor::ConfirmArea()
 
         for each(long stationId in currentArea->getSubstationIds())
         {
-            CtiCCSubstation *station = store->findSubstationByPAObjectID(stationId);
+            CtiCCSubstationPtr station = store->findSubstationByPAObjectID(stationId);
             if (station != NULL)
             {
                 for each (long busId in station->getCCSubIds())
@@ -3864,7 +3864,7 @@ void CtiCCCommandExecutor::ConfirmArea()
 
                 for each (long stationId in currentSpArea->getSubstationIds())
                 {
-                    CtiCCSubstation *station = store->findSubstationByPAObjectID(stationId);
+                    CtiCCSubstationPtr station = store->findSubstationByPAObjectID(stationId);
                     if (station != NULL)
                     {
                         for each (long busId in station->getCCSubIds())
@@ -3918,7 +3918,7 @@ void CtiCCCommandExecutor::ConfirmSubstation()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
-    CtiCCSubstation* station = store->findSubstationByPAObjectID(_itemId);
+    CtiCCSubstationPtr station = store->findSubstationByPAObjectID(_itemId);
     if (station != NULL)
     {
         string text1 = string("Manual Confirm Substation");
@@ -4991,7 +4991,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    CtiCCSubstation* currentStation = store->findSubstationByPAObjectID(paoId);
+    CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(paoId);
     if (currentStation != NULL)
     {
         for each (long busId in currentStation->getCCSubIds())

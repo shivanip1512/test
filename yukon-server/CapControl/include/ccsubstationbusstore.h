@@ -192,7 +192,6 @@ public:
     bool findFeederByPointID     (long point_id, PointIdToFeederMultiMap::iterator      &begin, PointIdToFeederMultiMap::iterator      &end);
     bool findCapBankByPointID    (long point_id, PointIdToCapBankMultiMap::iterator     &begin, PointIdToCapBankMultiMap::iterator     &end);
     int getNbrOfSubBusesWithPointID(long point_id);
-    int getNbrOfSubstationsWithPointID(long point_id);
     int getNbrOfSubsWithAltSubID(long altSubId);
     std::pair<PaoIdToPointIdMultiMap::iterator, PaoIdToPointIdMultiMap::iterator> getSubsWithAltSubID(int altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
@@ -401,7 +400,7 @@ public:
 
     PaoIdToSubBusMap* getPAOSubMap();
     PaoIdToAreaMap & getPAOAreaMap();
-    PaoIdToSubstationMap* getPAOStationMap();
+    PaoIdToSubstationMap & getPAOStationMap();
     PaoIdToSpecialAreaMap & getPAOSpecialAreaMap();
 
     static const std::string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
@@ -418,7 +417,7 @@ public:
 
     void resetAllOpStats();
     void createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
-                                  CtiCCSubstation* station, CtiCCAreaPtr area, CtiCCSpecialPtr spArea);
+                                  CtiCCSubstationPtr station, CtiCCAreaPtr area, CtiCCSpecialPtr spArea);
     void createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
     void setControlStatusAndIncrementFailCount(CtiMultiMsg_vec& pointChanges, long status, CtiCCCapBank* cap);

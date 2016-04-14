@@ -14,7 +14,6 @@ class CtiCCSubstationsMsg : public CapControlMessage
 
         CtiCCSubstationsMsg(CtiCCSubstation_vec& substationList, unsigned long bitMask = 0);
         CtiCCSubstationsMsg(CtiCCSubstation_set& substationList, unsigned long bitMask = 0);
-        CtiCCSubstationsMsg(CtiCCSubstation* ccSubstations);
         CtiCCSubstationsMsg(const CtiCCSubstationsMsg& ccSubstations);
 
         virtual ~CtiCCSubstationsMsg();

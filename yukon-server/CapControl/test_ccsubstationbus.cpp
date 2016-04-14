@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(test_parallel_bus)
     _strategyManager.reloadAll();
 
     CtiCCAreaPtr area = create_object<CtiCCArea>(1, "Area-1");
-    CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
+    CtiCCSubstationPtr station = create_object<CtiCCSubstation>(2, "Substation-A");
 
 
     CtiCCSubstationBus *bus1 = create_object<CtiCCSubstationBus>(3, "SubBus-A1");
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     Cti::CapControl::EventLogEntries ccEvents;
 
     CtiCCAreaPtr area = create_object<CtiCCArea>(1, "Area-1");
-    CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
+    CtiCCSubstationPtr station = create_object<CtiCCSubstation>(2, "Substation-A");
 
     CtiCCSubstationBus *bus1 = create_object<CtiCCSubstationBus>(3, "SubBus-A1");
     CtiCCFeeder *feed11 = create_object<CtiCCFeeder>(11, "Feeder11");

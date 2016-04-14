@@ -583,9 +583,8 @@ void CtiCapController::controlLoop()
                             continue;
 
                         CtiCCAreaPtr currentArea = NULL;
-                        CtiCCSubstation* currentStation = NULL;
 
-                        currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+                        CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
                         if (currentStation != NULL )
                         {
                             currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
@@ -887,7 +886,7 @@ void CtiCapController::controlLoop()
     CTILOG_DEBUG(dout, "CtiCapController control loop thread is stopping");
 }
 
-void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCCSubstation* currentStation, CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
+void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCCSubstationPtr currentStation, CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
 
@@ -1445,38 +1444,13 @@ void CtiCapController::registerForPoints( const RegistrationMethod m )
 
             currentSpArea->getPointRegistrationIds( registrationIds );
         }
-
-        PaoIdToSubstationMap::iterator stationIter = store->getPAOStationMap()->begin();
-        for ( ; stationIter != store->getPAOStationMap()->end() ; stationIter++)
+        for ( const auto & mapEntry : store->getPAOStationMap() )
         {
-            CtiCCSubstation* currentStation = stationIter->second;
+            CtiCCSubstationPtr currentStation = mapEntry.second;
 
-            if( currentStation->getVoltReductionControlId() > 0 )
-            {
-                registrationIds.insert(currentStation->getVoltReductionControlId());
-            }
-            if( currentStation->getDisabledStatePointId() > 0 )
-            {
-                registrationIds.insert(currentStation->getDisabledStatePointId());
-            }
-            if ( currentStation->getOperationStats().getUserDefOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentStation->getOperationStats().getUserDefOpSuccessPercentId());
-            }
-            if ( currentStation->getOperationStats().getDailyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentStation->getOperationStats().getDailyOpSuccessPercentId());
-            }
-            if ( currentStation->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentStation->getOperationStats().getWeeklyOpSuccessPercentId());
-            }
-            if ( currentStation->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentStation->getOperationStats().getMonthlyOpSuccessPercentId());
-            }
-
+            currentStation->getPointRegistrationIds( registrationIds );
         }
+
         PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
         for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
         {
@@ -2369,9 +2343,7 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
             pointDataMsgByCapBank(pointID, value, quality, tags, timestamp);
         }
 
-        pointDataMsgBySubstation(pointID, value);
-
-        // Areas and Special Areas handled here
+        // Areas, Special Areas and Substations handled here
         for ( auto range = store->getPointIDToPaoMultiMap().equal_range( pointID );
               range.first != range.second;
               ++range.first )
@@ -2450,71 +2422,6 @@ void CtiCapController::checkDisablePaoPoint(CapControlPao* pao, long pointID, bo
     }
 }
 
-void CtiCapController::pointDataMsgBySubstation( long pointID, double value)
-{
-
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-
-    CtiCCSubstation* currentStation = NULL;
-    CtiCCAreaPtr currentArea = NULL;
-    PointIdToSubstationMultiMap::iterator stationIter, end;
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
-    store->findSubstationByPointID(pointID, stationIter, end);
-
-    while (stationIter != end)
-    {
-        try
-        {
-            currentStation = stationIter->second;
-            if (currentStation != NULL)
-            {
-                if (currentStation->getVoltReductionControlId() == pointID)
-                {
-                    if (!currentStation->getVoltReductionFlag())
-                    {
-                        if (value > 0)
-                        {
-                            currentStation->setVoltReductionFlag(true);
-                            currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
-                            if (currentArea != NULL)
-                            {
-                                currentArea->setChildVoltReductionFlag(true);
-                            }
-                            if (_AUTO_VOLT_REDUCTION)
-                            {
-                                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_DISABLE_OVUV, currentStation->getPaoId()))->execute();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (value == 0)
-                        {
-                            currentStation->setVoltReductionFlag(false);
-                            currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
-                            if (currentArea != NULL)
-                            {
-                                currentArea->checkAndUpdateChildVoltReductionFlags();
-                            }
-                            if (_AUTO_VOLT_REDUCTION)
-                            {
-                                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::AUTO_ENABLE_OVUV, currentStation->getPaoId()))->execute();
-                            }
-                        }
-                    }
-                }
-                checkDisablePaoPoint(currentStation, pointID, value, CapControlCommand::ENABLE_AREA, CapControlCommand::DISABLE_AREA);
-            }
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-        stationIter++;
-    }
-}
-
 void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigned quality, const CtiTime& timestamp)
 {
 
@@ -2522,7 +2429,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    CtiCCSubstation* currentStation = NULL;
+    CtiCCSubstationPtr currentStation = NULL;
     CtiCCAreaPtr currentArea = NULL;
 
     PointIdToSubBusMultiMap::iterator subIter, end;

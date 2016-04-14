@@ -28,22 +28,22 @@ public:
     long getVoltReductionControlId() const;
     bool getChildVoltReductionFlag() const;
 
-    Cti::CapControl::PaoIdVector getCCSubIds() const {return _subBusIds;};
-    void addCCSubId(long busId){_subBusIds.push_back(busId);};
+    Cti::CapControl::PaoIdVector getCCSubIds() const;
+    void addCCSubId(const long busId);
 
-    void setOvUvDisabledFlag(bool flag);
-    void setVoltReductionFlag(bool flag);
+    void setOvUvDisabledFlag(const bool flag);
+    void setVoltReductionFlag(const bool flag);
     void setParentName(const std::string& name);
-    void setParentId(long parentId);
-    void setDisplayOrder(long displayOrder);
-    void setPFactor(double pfactor);
-    void setEstPFactor(double estpfactor);
-    void setSaEnabledFlag(bool flag);
-    void setRecentlyControlledFlag(bool flag);
-    void setStationUpdatedFlag(bool flag);
-    void setSaEnabledId(long saId);
-    void setVoltReductionControlId(long pointid);
-    void setChildVoltReductionFlag(bool flag);
+    void setParentId(const long parentId);
+    void setDisplayOrder(const long displayOrder);
+    void setPFactor(const double pfactor);
+    void setEstPFactor(const double estpfactor);
+    void setSaEnabledFlag(const bool flag);
+    void setRecentlyControlledFlag(const bool flag);
+    void setStationUpdatedFlag(const bool flag);
+    void setSaEnabledId(const long saId);
+    void setVoltReductionControlId(const long pointid);
+    void setChildVoltReductionFlag(const bool flag);
 
     void getPowerFactorData( double & watts, double & vars, double & estimatedVars );
     void updatePowerFactorData();
@@ -84,12 +84,13 @@ private:
     bool _stationUpdatedFlag;
     bool _childVoltReductionFlag;
 
-    double _pfactor;
-    double _estPfactor;
     bool _saEnabledFlag;
     long _saEnabledId;
 
     long _voltReductionControlId;
+
+    double _pfactor;
+    double _estPfactor;
 
     Cti::CapControl::PaoIdVector _subBusIds;
 
@@ -99,6 +100,9 @@ private:
 
     void restoreStaticData(Cti::RowReader& rdr);
     void restoreDynamicData(Cti::RowReader& rdr);
+
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+    void handleSpecializedPointData( const CtiPointDataMsg & message ) override;
 
     CtiCCSubstation& operator=( const CtiCCSubstation& right ) = delete;
 };

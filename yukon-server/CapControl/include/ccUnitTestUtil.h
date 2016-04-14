@@ -136,7 +136,7 @@ void initialize_area(Test_CtiCCSubstationBusStore* store, CtiCCAreaPtr area)
     area->setDisableFlag(false);
 }
 
-void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCAreaPtr parentArea)
+void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstationPtr station, CtiCCAreaPtr parentArea)
 {
     station->setSaEnabledFlag(false);
     station->setParentId(parentArea->getPaoId());
@@ -145,14 +145,14 @@ void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstation* st
     station->setDisableFlag(false);
 }
 
-void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, CtiCCSubstation* parentStation)
+void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, CtiCCSubstationPtr parentStation)
 {
     bus->setParentId(parentStation->getPaoId());
     bus->setEventSequence(22);
     bus->setCurrentVarLoadPointId(1);
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     bus->setVerificationFlag(false);
-    parentStation->getCCSubIds().push_back(bus->getPaoId());
+    parentStation->addCCSubId( bus->getPaoId() );
     store->addSubBusToPaoMap(bus);
     store->getCCSubstationBuses(0, false)->push_back(bus);
     bus->setDisableFlag(false);

@@ -64,7 +64,7 @@ class CtiCapController : public MessageListener
         void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges,
                                        CtiCCArea_vec& areaChanges, long broadCastMask);
         void readClientMsgQueue();
-        void checkBusForNeededControl(CtiCCAreaPtr currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
+        void checkBusForNeededControl(CtiCCAreaPtr currentArea, CtiCCSubstationPtr currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                                 CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
 
         DispatchConnectionPtr getDispatchConnection();
@@ -106,7 +106,6 @@ class CtiCapController : public MessageListener
         void pointDataMsgBySubBus(long pointID, double value, unsigned quality, const CtiTime& timestamp);
         void pointDataMsgByFeeder(long pointID, double value, unsigned quality, const CtiTime& timestamp);
         void pointDataMsgByCapBank(long pointID, double value, unsigned quality, unsigned tags, const CtiTime& timestamp);
-        void pointDataMsgBySubstation( long pointID, double value);
         void signalMsg( const CtiSignalMsg & signal );
         void checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand);
 

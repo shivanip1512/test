@@ -5,16 +5,17 @@
 #include "database_util.h"
 #include "ccsubstationbusstore.h"
 #include "MsgVerifyBanks.h"
+#include "ExecutorFactory.h"
 
 using std::endl;
 using std::string;
 
 extern unsigned long _CC_DEBUG;
+extern bool _AUTO_VOLT_REDUCTION;
 
 using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::serializeFlag;
 using Cti::CapControl::PaoIdVector;
-using Cti::CapControl::setVariableIfDifferent;
 
 DEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 
@@ -72,6 +73,11 @@ CtiCCSubstation* CtiCCSubstation::replicate() const
 void CtiCCSubstation::restoreStaticData( Cti::RowReader & rdr )
 {
     rdr["VoltReductionPointId"] >> _voltReductionControlId;
+
+    if ( _voltReductionControlId > 0 )
+    {
+        addPointId( _voltReductionControlId );
+    }
 }
 
 void CtiCCSubstation::restoreDynamicData( Cti::RowReader & rdr )
@@ -241,27 +247,27 @@ long CtiCCSubstation::getSaEnabledId() const
         * anything that changes a value on the web display should set _stationUpdatedFlag to make sure the
             substation message is sent to the UI.
 */
-void CtiCCSubstation::setOvUvDisabledFlag(bool flag)
+void CtiCCSubstation::setOvUvDisabledFlag(const bool flag)
 {
     updateDynamicValue( _ovUvDisabledFlag, flag );
 }
 
-void CtiCCSubstation::setVoltReductionFlag(bool flag)
+void CtiCCSubstation::setVoltReductionFlag(const bool flag)
 {
     updateDynamicValue( _voltReductionFlag, flag );
 }
 
-void CtiCCSubstation::setChildVoltReductionFlag(bool flag)
+void CtiCCSubstation::setChildVoltReductionFlag(const bool flag)
 {
     _stationUpdatedFlag |= updateDynamicValue( _childVoltReductionFlag, flag );
 }
 
-void CtiCCSubstation::setVoltReductionControlId(long pointid)
+void CtiCCSubstation::setVoltReductionControlId(const long pointid)
 {
     updateStaticValue( _voltReductionControlId, pointid );
 }
 
-void CtiCCSubstation::setParentId(long parentId)
+void CtiCCSubstation::setParentId(const long parentId)
 {
     updateStaticValue( _parentId, parentId );
 }
@@ -271,41 +277,57 @@ void CtiCCSubstation::setParentName(const string& parentName)
     updateDynamicValue( _parentName, parentName );
 }
 
-void CtiCCSubstation::setDisplayOrder(long displayOrder)
+void CtiCCSubstation::setDisplayOrder(const long displayOrder)
 {
     updateStaticValue( _displayOrder, displayOrder );
 }
 
-void CtiCCSubstation::setPFactor(double pfactor)
+void CtiCCSubstation::setPFactor(const double pfactor)
 {
     updateDynamicValue( _pfactor, pfactor );
 }
 
-void CtiCCSubstation::setEstPFactor(double estpfactor)
+void CtiCCSubstation::setEstPFactor(const double estpfactor)
 {
     _stationUpdatedFlag |= updateDynamicValue( _estPfactor, estpfactor );
 }
 
-void CtiCCSubstation::setSaEnabledFlag(bool flag)
+void CtiCCSubstation::setSaEnabledFlag(const bool flag)
 {
     updateDynamicValue( _saEnabledFlag, flag );
 }
 
-void CtiCCSubstation::setRecentlyControlledFlag(bool flag)
+void CtiCCSubstation::setRecentlyControlledFlag(const bool flag)
 {
     _stationUpdatedFlag |= updateDynamicValue( _recentlyControlledFlag, flag );
 }
 
-void CtiCCSubstation::setStationUpdatedFlag(bool flag)
+void CtiCCSubstation::setStationUpdatedFlag(const bool flag)
 {
     updateDynamicValue( _stationUpdatedFlag, flag );
 }
 
-void CtiCCSubstation::setSaEnabledId(long saId)
+void CtiCCSubstation::setSaEnabledId(const long saId)
 {
     updateDynamicValue( _saEnabledId, saId );
 }
 
+PaoIdVector CtiCCSubstation::getCCSubIds() const
+{
+    return _subBusIds;
+}
+
+void CtiCCSubstation::addCCSubId(const long busId)
+{
+    if ( std::none_of( _subBusIds.begin(), _subBusIds.end(),    // add busId to collection if it isn't already a member
+                       [ busId ]( const long ID ) -> bool       //  this should be a std::set<> ... someday
+                       {
+                           return ID == busId;
+                       } ) )
+    {
+        _subBusIds.push_back( busId );
+    }
+}
 
 void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)
 {
@@ -395,5 +417,47 @@ void CtiCCSubstation::updatePowerFactorData()
 
     setPFactor( Cti::CapControl::calculatePowerFactor( totalVars, totalWatts ) );
     setEstPFactor( Cti::CapControl::calculatePowerFactor( totalEstimatedVars, totalWatts ) );
+}
+
+void CtiCCSubstation::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+{
+    insertPointRegistration( registrationIDs, getVoltReductionControlId() );
+}
+
+void CtiCCSubstation::handleSpecializedPointData( const CtiPointDataMsg & message )
+{
+    const long   pointID = message.getId();
+    const double value   = message.getValue();
+
+    if ( pointID == getVoltReductionControlId() )
+    {
+        const bool reduceVoltage = value;
+
+        if ( reduceVoltage != getVoltReductionFlag() )
+        {
+            setVoltReductionFlag( reduceVoltage );
+
+            {
+                CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+
+                if ( CtiCCAreaPtr parentArea = store->findAreaByPAObjectID( getParentId() ) )
+                {
+                    reduceVoltage
+                        ? parentArea->setChildVoltReductionFlag( true )
+                        : parentArea->checkAndUpdateChildVoltReductionFlags();
+                }
+            }
+
+            if ( _AUTO_VOLT_REDUCTION )
+            {
+                CtiCCExecutorFactory::createExecutor(
+                    new ItemCommand( reduceVoltage
+                                        ? CapControlCommand::AUTO_DISABLE_OVUV
+                                        : CapControlCommand::AUTO_ENABLE_OVUV,
+                                     getPaoId() ) )->execute();
+            }
+        }
+    }
 }
 

@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     BOOST_CHECK_EQUAL(                false, substations[  3 ].getDisableFlag() );
     BOOST_CHECK_EQUAL(                    0, substations[  3 ].getDisabledStatePointId() );
                                                  
-    BOOST_CHECK_EQUAL(                    0, substations[  3 ].getPointIds()->size() );
+    BOOST_CHECK_EQUAL(                    1, substations[  3 ].getPointIds()->size() );
                                                  
     BOOST_CHECK_EQUAL(                    3, substations[  3 ].getOperationStats().getPAOId() );
     BOOST_CHECK_EQUAL(                    3, substations[  3 ].getConfirmationStats().getPAOId() );
@@ -616,7 +616,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     BOOST_CHECK_EQUAL(                false, newSubstation->getDisableFlag() );
     BOOST_CHECK_EQUAL(                    0, newSubstation->getDisabledStatePointId() );
 
-    BOOST_CHECK_EQUAL(                    0, newSubstation->getPointIds()->size() );
+    BOOST_CHECK_EQUAL(                    1, newSubstation->getPointIds()->size() );
 
     BOOST_CHECK_EQUAL(                    3, newSubstation->getOperationStats().getPAOId() );
     BOOST_CHECK_EQUAL(                    3, newSubstation->getConfirmationStats().getPAOId() );
@@ -665,7 +665,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     BOOST_CHECK_EQUAL(                 true, newSubstation->getDisableFlag() );
     BOOST_CHECK_EQUAL(                 1234, newSubstation->getDisabledStatePointId() );
 
-    BOOST_CHECK_EQUAL(                    0, newSubstation->getPointIds()->size() );
+    BOOST_CHECK_EQUAL(                    1, newSubstation->getPointIds()->size() );
 
     BOOST_CHECK_EQUAL(                    3, newSubstation->getOperationStats().getPAOId() );
     BOOST_CHECK_EQUAL(                    3, newSubstation->getConfirmationStats().getPAOId() );
@@ -699,7 +699,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     BOOST_CHECK_EQUAL(                false, substations[  3 ].getDisableFlag() );
     BOOST_CHECK_EQUAL(                    0, substations[  3 ].getDisabledStatePointId() );
 
-    BOOST_CHECK_EQUAL(                    0, substations[  3 ].getPointIds()->size() );
+    BOOST_CHECK_EQUAL(                    1, substations[  3 ].getPointIds()->size() );
 
     BOOST_CHECK_EQUAL(                    3, substations[  3 ].getOperationStats().getPAOId() );
     BOOST_CHECK_EQUAL(                    3, substations[  3 ].getConfirmationStats().getPAOId() );
@@ -746,6 +746,175 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     BOOST_CHECK_EQUAL(  3, substations[ 3 ].getPaoId() );
     BOOST_CHECK_EQUAL(  3, substations[ 3 ].getOperationStats().getPAOId() );
     BOOST_CHECK_EQUAL(  3, substations[ 3 ].getConfirmationStats().getPAOId() );
+}
+
+BOOST_AUTO_TEST_CASE( test_ccSubstation_point_assignment )
+{
+    boost::ptr_map< long, CtiCCSubstation >     substations;
+
+    {   // Core area object initialization
+
+        using CCSubstationRow     = Cti::Test::StringRow<10>;
+        using CCSubstationReader  = Cti::Test::TestReader<CCSubstationRow>;
+
+        CCSubstationRow columnNames =
+        {
+            "PAObjectID",
+            "Category",
+            "PAOClass",
+            "PAOName",
+            "Type",
+            "Description",
+            "DisableFlag",
+            "VoltReductionPointID",
+            "AdditionalFlags",
+            "SAEnabledID"
+        };
+
+        std::vector<CCSubstationRow> rowVec
+        {
+            {
+                "3",
+                "CAPCONTROL",
+                "CAPCONTROL",
+                "Groom Lake Station",
+                "CCSUBSTATION",
+                "Top Secret",
+                "N",
+                "101",
+                CCSubstationReader::getNullString(),
+                CCSubstationReader::getNullString()
+            }
+        };
+
+        CCSubstationReader reader( columnNames, rowVec );
+
+        while ( reader() )
+        {
+            long    paoID;
+
+            reader[ "PAObjectID" ] >> paoID;
+
+            substations.insert( paoID, new CtiCCSubstation( reader ) );
+        }
+    }
+
+    // Validate the attached point IDs
+
+    BOOST_CHECK_EQUAL(    0, substations[ 3 ].getDisabledStatePointId() );
+    BOOST_CHECK_EQUAL(    1, substations[ 3 ].getPointIds()->size() );
+    BOOST_CHECK_EQUAL(  101, substations[ 3 ].getVoltReductionControlId() );
+
+    BOOST_CHECK_EQUAL(    0, substations[ 3 ].getOperationStats().getUserDefOpSuccessPercentId() );
+    BOOST_CHECK_EQUAL(    0, substations[ 3 ].getOperationStats().getDailyOpSuccessPercentId() );
+    BOOST_CHECK_EQUAL(    0, substations[ 3 ].getOperationStats().getWeeklyOpSuccessPercentId() );
+    BOOST_CHECK_EQUAL(    0, substations[ 3 ].getOperationStats().getMonthlyOpSuccessPercentId() );
+
+    BOOST_CHECK_EQUAL(    0, substations[ 3 ].getConfirmationStats().getUserDefCommSuccessPercentId() );
+    BOOST_CHECK_EQUAL(    0, substations[ 3 ].getConfirmationStats().getDailyCommSuccessPercentId() );
+    BOOST_CHECK_EQUAL(    0, substations[ 3 ].getConfirmationStats().getWeeklyCommSuccessPercentId() );
+    BOOST_CHECK_EQUAL(    0, substations[ 3 ].getConfirmationStats().getMonthlyCommSuccessPercentId() );
+
+    // Validate the contents of the point ID collection
+    {
+        std::vector<long>   expected
+        {
+            101
+        };
+
+        BOOST_CHECK_EQUAL_RANGES( expected, *substations[ 3 ].getPointIds() );
+    }
+
+    // Validate the points we register for
+    {
+        std::vector<long>   expected
+        {
+            101
+        };
+
+        std::set<long>  registeredPoints;
+
+        substations[ 3 ].getPointRegistrationIds( registeredPoints );
+
+        BOOST_CHECK_EQUAL_RANGES( expected, registeredPoints );
+    }
+
+    {   // Point initialization
+
+        using CCSubstationPointRow     = Cti::Test::StringRow<3>;
+        using CCSubstationPointReader  = Cti::Test::TestReader<CCSubstationPointRow>;
+
+        CCSubstationPointRow columnNames =
+        {
+            "POINTID",
+            "POINTTYPE",
+            "POINTOFFSET"
+        };
+
+        std::vector<CCSubstationPointRow> rowVec
+        {
+            {   "300",  "Status",   "1001"  },      // not an actual point
+            {   "671",  "Analog",   "10001" },      // daily ops
+            {   "681",  "Analog",   "10002" },      // weekly ops
+            {   "683",  "Analog",   "10003" },      // monthly ops
+            {   "690",  "Analog",   "10000" },      // user def ops
+            {   "691",  "Analog",   "10010" },      // user def conf
+            {   "692",  "Analog",   "170"   },      // not an actual point
+            {   "693",  "Analog",   "10013" },      // monthly conf
+            {   "695",  "Analog",   "10012" },      // weekly conf
+            {   "697",  "Analog",   "10011" },      // daily conf
+            {  "1000",  "Status",   "500"   },      // disabled state
+            {  "1005",  "Status",   "-1"    },      // tag point
+            {  "1009",  "Analog",   "180"   }       // not an actual point
+        };
+
+        CCSubstationPointReader reader( columnNames, rowVec );
+
+        while ( reader() )
+        {
+            substations[ 3 ].assignPoint( reader );
+        }
+    }
+
+    // Validate the attached point IDs
+
+    BOOST_CHECK_EQUAL( 1000, substations[ 3 ].getDisabledStatePointId() );
+    BOOST_CHECK_EQUAL(   10, substations[ 3 ].getPointIds()->size() );
+    BOOST_CHECK_EQUAL(  101, substations[ 3 ].getVoltReductionControlId() );
+
+    BOOST_CHECK_EQUAL(  690, substations[ 3 ].getOperationStats().getUserDefOpSuccessPercentId() );
+    BOOST_CHECK_EQUAL(  671, substations[ 3 ].getOperationStats().getDailyOpSuccessPercentId() );
+    BOOST_CHECK_EQUAL(  681, substations[ 3 ].getOperationStats().getWeeklyOpSuccessPercentId() );
+    BOOST_CHECK_EQUAL(  683, substations[ 3 ].getOperationStats().getMonthlyOpSuccessPercentId() );
+
+    BOOST_CHECK_EQUAL(  691, substations[ 3 ].getConfirmationStats().getUserDefCommSuccessPercentId() );
+    BOOST_CHECK_EQUAL(  697, substations[ 3 ].getConfirmationStats().getDailyCommSuccessPercentId() );
+    BOOST_CHECK_EQUAL(  695, substations[ 3 ].getConfirmationStats().getWeeklyCommSuccessPercentId() );
+    BOOST_CHECK_EQUAL(  693, substations[ 3 ].getConfirmationStats().getMonthlyCommSuccessPercentId() );
+
+    // Validate the contents of the point ID collection
+    {
+        std::vector<long>   expected
+        {
+            101, 671, 681, 683, 690, 691, 693, 695, 697, 1000
+        };
+
+        BOOST_CHECK_EQUAL_RANGES( expected, *substations[ 3 ].getPointIds() );
+    }
+
+    // Validate the points we register for
+    {
+        std::vector<long>   expected
+        {
+            101, 671, 681, 683, 690, 1000
+        };
+
+        std::set<long>  registeredPoints;
+
+        substations[ 3 ].getPointRegistrationIds( registeredPoints );
+
+        BOOST_CHECK_EQUAL_RANGES( expected, registeredPoints );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
