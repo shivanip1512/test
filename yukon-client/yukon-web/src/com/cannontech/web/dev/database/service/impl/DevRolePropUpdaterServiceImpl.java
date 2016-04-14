@@ -272,7 +272,6 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     setRoleProperty(group, YukonRoleProperty.MOVE_IN_MOVE_OUT,true);
                     setRoleProperty(group, YukonRoleProperty.PROFILE_COLLECTION_SCANNING,true);
                     setRoleProperty(group, YukonRoleProperty.HIGH_BILL_COMPLAINT,true);
-                    setRoleProperty(group, YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED,true);
                     setRoleProperty(group, YukonRoleProperty.OUTAGE_PROCESSING,true);
                     setRoleProperty(group, YukonRoleProperty.TAMPER_FLAG_PROCESSING,true);
                     setRoleProperty(group, YukonRoleProperty.PHASE_DETECT,true);

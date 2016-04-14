@@ -261,8 +261,6 @@ public enum YukonRoleProperty {
     MOVE_IN_MOVE_OUT(METERING, METERING.getBasePropertyId() - 8, booleanType()),
     PROFILE_COLLECTION_SCANNING(METERING, METERING.getBasePropertyId() - 9, booleanType()),
     HIGH_BILL_COMPLAINT(METERING, METERING.getBasePropertyId() - 10, booleanType()),
-    CIS_DETAIL_WIDGET_ENABLED(METERING, METERING.getBasePropertyId() - 11, booleanType()),
-    CIS_DETAIL_TYPE(METERING, METERING.getBasePropertyId() - 12, InputTypeFactory.enumType(CisDetailRolePropertyEnum.class)),
     OUTAGE_PROCESSING(METERING, METERING.getBasePropertyId() - 13, booleanType()),
     TAMPER_FLAG_PROCESSING(METERING, METERING.getBasePropertyId() - 14, booleanType()),
     PHASE_DETECT(METERING, METERING.getBasePropertyId() - 15, booleanType()),

@@ -13,6 +13,7 @@ import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
+import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
@@ -68,6 +69,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     MSP_EXCLUDE_DISABLED_METERS(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     MSP_RFN_PING_FORCE_CHANNEL_READ(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),      //YUK-13818
     MSP_DISABLE_DISCONNECT_STATUS(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
+    CIS_DETAIL_TYPE(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(CisDetailRolePropertyEnum.class), CisDetailRolePropertyEnum.NONE),
+    
     // OpenADR
     OADR_REQUEST_INTERVAL(GlobalSettingSubCategory.OPEN_ADR, integerType(), 60000),
     OADR_VEN_ID(GlobalSettingSubCategory.OPEN_ADR, stringType(), "VEN"),

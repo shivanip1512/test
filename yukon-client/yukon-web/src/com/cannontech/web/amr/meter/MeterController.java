@@ -41,6 +41,7 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -50,7 +51,8 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.multispeak.client.MultispeakFuncs;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
@@ -64,23 +66,24 @@ import com.google.common.collect.Maps;
 @CheckRole({ YukonRole.METERING, YukonRole.APPLICATION_BILLING, YukonRole.SCHEDULER, YukonRole.DEVICE_ACTIONS })
 public class MeterController {
     
-    @Autowired private MeterSearchService meterSearchService;
     @Autowired private AttributeService attributeService;
-    @Autowired private DeviceDao deviceDao;
-    @Autowired private MultispeakFuncs multispeakFuncs;
-    @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
-    @Autowired private PointDao pointDao;
-    @Autowired private PointService pointService;
-    @Autowired private PaoLoadingService paoLoadingService;
-    @Autowired private DeviceFilterCollectionHelper filterCollectionHelper;
     @Autowired private CachingPointFormattingService pointFormattingService;
-    @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private PaoDefinitionDao paoDefDao;
-    @Autowired private MspMeterSearchService mspMeterSearchService;
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private DeviceFilterCollectionHelper filterCollectionHelper;
     @Autowired private DisconnectService disconnectService;
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private MeterSearchService meterSearchService;
+    @Autowired private MspMeterSearchService mspMeterSearchService;
+    @Autowired private PaoDefinitionDao paoDefDao;
+    @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private PointDao pointDao;
+    @Autowired private PointService pointService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    
    
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
     
@@ -239,9 +242,9 @@ public class MeterController {
         pointFormattingService.addLitePointsToCache(litePoints);
         
         /** Page Widgets */
-        String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
-        model.addAttribute("cisInfoWidgetName", cisInfoWidgetName);
-        model.addAttribute("showCis", cisInfoWidgetName != null);
+        CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class);
+        model.addAttribute("cisInfoWidgetName", cisDetail.getWidgetName());
+        model.addAttribute("showCis", cisDetail != CisDetailRolePropertyEnum.NONE);
         model.addAttribute("showConfig", configurableDevice);
         model.addAttribute("showDisconnect", disconnectDevice);
         model.addAttribute("showEvents", rfEventsDevice);

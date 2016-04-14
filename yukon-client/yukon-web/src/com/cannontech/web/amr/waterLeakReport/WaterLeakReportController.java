@@ -63,6 +63,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -410,18 +411,19 @@ public class WaterLeakReportController {
         
         MspMeterAccountInfo mspMeterAccountInfo = mspMeterAccountInfoMap.getIfPresent(paoId);
         if (mspMeterAccountInfo == null) {
-            YukonMeter meter = meterDao.getForId(paoId);
-            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-
-            mspMeterAccountInfo = new MspMeterAccountInfo();
-            mspMeterAccountInfo.mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
-            mspMeterAccountInfo.mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
-            mspMeterAccountInfo.mspMeter = mspObjectDao.getMspMeter(meter, mspVendor);
-            mspMeterAccountInfo.phoneNumbers =
-                mspCustomerInfoService.getPhoneNumbers(mspMeterAccountInfo.mspCustomer, userContext);
-            mspMeterAccountInfo.emailAddresses =
-                mspCustomerInfoService.getEmailAddresses(mspMeterAccountInfo.mspCustomer, userContext);
-            mspMeterAccountInfoMap.put(paoId, mspMeterAccountInfo);
+            MultispeakVendor mspVendor = getPrimaryCISVendor();
+            if (mspVendor != null) {
+                YukonMeter meter = meterDao.getForId(paoId);
+                mspMeterAccountInfo = new MspMeterAccountInfo();
+                mspMeterAccountInfo.mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
+                mspMeterAccountInfo.mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
+                mspMeterAccountInfo.mspMeter = mspObjectDao.getMspMeter(meter, mspVendor);
+                mspMeterAccountInfo.phoneNumbers =
+                    mspCustomerInfoService.getPhoneNumbers(mspMeterAccountInfo.mspCustomer, userContext);
+                mspMeterAccountInfo.emailAddresses =
+                    mspCustomerInfoService.getEmailAddresses(mspMeterAccountInfo.mspCustomer, userContext);
+                mspMeterAccountInfoMap.put(paoId, mspMeterAccountInfo);
+            }
         }
 
         model.addAttribute("mspPhoneNumbers", mspMeterAccountInfo.phoneNumbers);
@@ -722,6 +724,21 @@ public class WaterLeakReportController {
             });
         Ordering<WaterMeterLeak> result = dateOrdering.compound(getMeterNameComparator());
         return result;
+    }
+
+    /**
+     * Returns the MultiSpeak Vendor that represents the Primary CIS.
+     * If no vendor is defined, or if it's "Yukon", then return null
+     */
+    private MultispeakVendor getPrimaryCISVendor() {
+        CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class);
+        if (cisDetail == CisDetailRolePropertyEnum.MULTISPEAK) {
+            int vendorId = multispeakFuncs.getPrimaryCIS();
+            if (vendorId > MultispeakVendor.CANNON_MSP_VENDORID) {
+                return multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
+            }
+        }
+        return null;
     }
 
     @InitBinder

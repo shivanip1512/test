@@ -22,8 +22,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
-import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.msp.beans.v3.CoordType;
 import com.cannontech.msp.beans.v3.Customer;
@@ -45,7 +45,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -53,7 +53,7 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/accountInformationWidget/*")
-@CheckRoleProperty(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED)
+@CheckRole(YukonRole.METERING)
 public class AccountInformationWidget extends WidgetControllerBase{
     
     @Autowired private MspObjectDao mspObjectDao;
@@ -66,15 +66,11 @@ public class AccountInformationWidget extends WidgetControllerBase{
     
    @Autowired
     public AccountInformationWidget(@Qualifier("widgetInput.deviceId") 
-            SimpleWidgetInput simpleWidgetInput,
-            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
-        
-        String checkRole = YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED.name();
-       
+            SimpleWidgetInput simpleWidgetInput) {
+  
         addInput(simpleWidgetInput);
         setIdentityPath("common/deviceIdentity.jsp");
         setLazyLoad(true);
-        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
 
     @Override
@@ -85,10 +81,9 @@ public class AccountInformationWidget extends WidgetControllerBase{
         int deviceId = WidgetParameterHelper.getIntParameter(request, "deviceId");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
-        int vendorId = globalSettingDao.getInteger(GlobalSettingType.MSP_PRIMARY_CB_VENDORID);
-        if (vendorId <= 0) {
-        	mav.addObject("hasVendorId", false);
-        	return mav;
+        if (!isConfigured()) {
+            mav.addObject("hasVendorId", false);
+            return mav;
         }
         mav.addObject("hasVendorId", true);
         
@@ -387,7 +382,17 @@ public class AccountInformationWidget extends WidgetControllerBase{
             list.add(info);
         }
     }
-    
+
+    /**
+     * Returns true if the system is configured for MultiSpeak Account Information AND has a primary CIS defined.
+     */
+    private boolean isConfigured() {
+        CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class);
+        int vendorId = globalSettingDao.getInteger(GlobalSettingType.MSP_PRIMARY_CB_VENDORID);
+        
+        return (cisDetail == CisDetailRolePropertyEnum.MULTISPEAK && vendorId > MultispeakVendor.CANNON_MSP_VENDORID);
+    }
+
     public class Info {
         
         private String label = "";
@@ -460,5 +465,4 @@ public class AccountInformationWidget extends WidgetControllerBase{
             return StringUtils.isBlank(value);
         }
     }
-
 }

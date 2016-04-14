@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -35,6 +36,7 @@ import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
@@ -51,6 +53,7 @@ public class MultispeakController {
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspMeterSearchService mspMeterSearchService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
     
     private MultispeakVendor defaultMspVendor;
@@ -357,6 +360,15 @@ public class MultispeakController {
             // update Primary CIS Vendor
             if (oldMspPrimaryCIS != mspPrimaryCIS) {
                 globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, mspPrimaryCIS, user);
+                if (globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE,  CisDetailRolePropertyEnum.class) != CisDetailRolePropertyEnum.CAYENTA) {
+                    // Manage only if not already set to CAYENTA.
+                    if ( mspPrimaryCIS <= MultispeakVendor.CANNON_MSP_VENDORID) {
+                        globalSettingUpdateDao.updateSettingValue(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.NONE, user);
+                    } else {
+                        globalSettingUpdateDao.updateSettingValue(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.MULTISPEAK, user);
+                    }
+                }
+            
                 //reload the search field methods since primaryCIS has changed
                 mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }

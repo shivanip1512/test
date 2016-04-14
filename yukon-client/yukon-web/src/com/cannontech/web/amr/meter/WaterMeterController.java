@@ -18,13 +18,13 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.security.annotation.CheckRole;
 
 @Controller
@@ -32,12 +32,12 @@ import com.cannontech.web.security.annotation.CheckRole;
 @RequestMapping("/water/*")
 public class WaterMeterController {
 
-    @Autowired private DeviceDao deviceDao = null;
-    @Autowired private MultispeakFuncs multispeakFuncs;
-    @Autowired private PointDao pointDao = null;
-    @Autowired private PaoLoadingService paoLoadingService = null;
     @Autowired private CachingPointFormattingService cachingPointFormattingService = null;
+    @Autowired private DeviceDao deviceDao = null;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao = null;
+    @Autowired private PaoLoadingService paoLoadingService = null;
+    @Autowired private PointDao pointDao = null;
 
     @RequestMapping("home")
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
@@ -55,10 +55,8 @@ public class WaterMeterController {
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
         cachingPointFormattingService.addLitePointsToCache(litePoints);
         
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        
-        String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
-        mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
+        CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class);
+        mav.addObject("cisInfoWidgetName", cisDetail.getWidgetName());
         
         boolean isRfMesh = device.getDeviceType().getPaoClass() == PaoClass.RFMESH;
         if (isRfMesh) {

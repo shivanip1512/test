@@ -41,10 +41,8 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
@@ -452,30 +450,6 @@ public class MultispeakFuncs {
             parsedValue = parsedValue.substring(0, bracketIndex).trim();
         }
         return parsedValue;
-    }
-
-    /**
-     * This method returns the cisInfoWidgetName for the user. If it is NONE, it
-     * will use the venderId and proceed as if they actually had the MULTISPEAK
-     * value set.
-     */
-    public String getCisDetailWidget(LiteYukonUser liteYukonUser) {
-        boolean cisDetailWidgetEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED,
-                                                                                 liteYukonUser);
-        if (cisDetailWidgetEnabled) {
-            CisDetailRolePropertyEnum cisDetailRoleProperty = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE,
-                                                                                                   CisDetailRolePropertyEnum.class,
-                                                                                                   liteYukonUser);
-            String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
-            if (cisInfoWidgetName == null) {
-                int vendorId = getPrimaryCIS();
-                if (vendorId > 0) {
-                    cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
-                }
-            }
-            return cisInfoWidgetName;
-        }
-        return null;
     }
 
     /**
