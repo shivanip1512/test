@@ -230,13 +230,7 @@
         </div>
 
         <div class="page-action-area">
-<%--             <cti:displayForPageEditModes modes="VIEW">
-            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <cti:url var="editUrl" value="/capcontrol/cbc/${cbc.id}/edit"/>
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-            </cti:checkRolesAndProperties>
-            </cti:displayForPageEditModes> --%>
-        
+   
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action" />
             </cti:displayForPageEditModes>
@@ -250,10 +244,6 @@
                 <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:cbc:delete"
                     disabled="${deleteDisabled}" title="${deleteTitle}"/>
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${cbc.name}"/>
-
-                <%-- Copy CBC Button --%>
-<%--                 <cti:button nameKey="copy" icon="icon-disk-multiple"
-                    data-popup="#copy-cbc"/> --%>
             
                 <cti:url var="viewUrl" value="/capcontrol/cbc/${cbc.id}"/>
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
@@ -269,6 +259,7 @@
 
     <cti:msg2 var="copyText" key="components.button.copy.label"/>
     <div id="copy-cbc" class="dn" data-title="Copy CBC" data-dialog data-ok-text="${copyText}" data-event="yukon:da:cbc:copy">
+        <tags:setFormEditMode mode="EDIT" />
         <cti:url var="copyUrl" value="/capcontrol/cbc/${cbc.id}/copy"/>
         <form action="${copyUrl}" method="POST">
             <cti:csrfToken/>
@@ -278,7 +269,7 @@
                     <input name="newName" value="${newName}">
                 </tags:nameValue>
                 <tags:nameValue name="Copy Points">
-                    <tags:switchButton name="copyPoints" offNameKey=".no.label" onNameKey=".yes.label"/>
+                    <tags:switchButton name="copyPoints" offNameKey=".no.label" onNameKey=".yes.label" checked="${true}"/>
                 </tags:nameValue>
             </tags:nameValueContainer>
         </form>

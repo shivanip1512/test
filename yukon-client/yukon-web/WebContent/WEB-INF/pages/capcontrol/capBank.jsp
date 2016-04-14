@@ -341,7 +341,7 @@
         <cti:displayForPageEditModes modes="EDIT,VIEW">
 
             <div class="column-12-12 clearfix">
-                <tags:boxContainer2 nameKey="assignedPointsSection" styleClass="with-footer">
+                <tags:boxContainer2 nameKey="assignedPointsSection">
                 <table class="compact-results-table row-highlighting">
                     <tr>
                         <th><i:inline key=".assignedPoints.point"/></th>
@@ -404,14 +404,6 @@
         </cti:displayForPageEditModes>
 
         <div class="page-action-area">
-
-<%--             <cti:displayForPageEditModes modes="VIEW">
-            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <cti:url var="editUrl" value="/capcontrol/capbanks/${capbank.id}/edit"/>
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-            </cti:checkRolesAndProperties>
-            </cti:displayForPageEditModes> --%>
-    
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action"/>
             </cti:displayForPageEditModes>

@@ -207,14 +207,7 @@
           </div>
           
                         
-                  <div class="page-action-area tabbed-container">
-
-<%--         <cti:displayForPageEditModes modes="VIEW">
-        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-            <cti:url var="editUrl" value="/capcontrol/feeders/${feeder.id}/edit"/>
-            <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-        </cti:checkRolesAndProperties>
-        </cti:displayForPageEditModes> --%>
+     <div class="page-action-area tabbed-container">
 
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <cti:button nameKey="save" type="submit" classes="primary action"/>

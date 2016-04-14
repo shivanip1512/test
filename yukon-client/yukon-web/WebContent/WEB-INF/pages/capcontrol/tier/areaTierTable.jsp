@@ -78,8 +78,10 @@
                                 </c:otherwise>
                             </c:choose>
                             
-                            <cti:url var="editUrl" value="/capcontrol/areas/${areaId}"/>
-                            <cm:dropdownOption key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
+                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                                <cti:url var="editUrl" value="/capcontrol/areas/${areaId}/edit"/>
+                                <cm:dropdownOption key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
+                            </cti:checkRolesAndProperties>
 
                             <c:if test="${showAnalysis}">
                                 <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions_${areaId}" on="#showTrendsPopup_${areaId}">

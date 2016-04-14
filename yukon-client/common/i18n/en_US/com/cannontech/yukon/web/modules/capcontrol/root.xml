@@ -1117,7 +1117,7 @@
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit2">Unsolicited Class 2</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit3">Unsolicited Class 3</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.save.fail">Unable to Save CBC: {0}</entry>
-    <entry key="yukon.web.modules.capcontrol.cbc.copy.success">Now editing copy</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.copy.success">Copy of CBC was successfully created.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.copy.fail">Name not available</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.delete.success">Deleted CBC</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.delete.fail">Unable to delete</entry>
