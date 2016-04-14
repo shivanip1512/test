@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/8/2016 10:37:35 AM                         */
+/* Created on:     4/14/2016 12:37:35 PM                        */
 /*==============================================================*/
 
 
@@ -14130,7 +14130,7 @@ go
 
 
 IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
-    DROP PROCEDURE sp_SmartIndexMaintenance
+    DROP PROCEDURE sp_SmartIndexMaintenance;
 go
 
 CREATE PROCEDURE sp_SmartIndexMaintenance AS
