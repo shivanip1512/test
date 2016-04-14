@@ -31,6 +31,7 @@ IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE sp_SmartIndexMaintenance;
 go
 
+/* @start-block */
 CREATE PROCEDURE sp_SmartIndexMaintenance AS
 BEGIN TRY
 
@@ -158,6 +159,7 @@ INSERT INTO StoredProcedureLog VALUES (
             (SELECT ISNULL(MAX(EntryId) + 1, 1) FROM StoredProcedureLog), 
             'sp_SmartIndexMaintenance', 
             GETDATE(), 'Smart Index Maintenance Complete');
+/* @end-block */
 GO
 /* End YUK-15201 */
 
