@@ -22,26 +22,25 @@ DEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSubstation::CtiCCSubstation() :
-_parentId(0),
-_displayOrder(0),
-_ovUvDisabledFlag(false),
-_voltReductionFlag(false),
-_recentlyControlledFlag(false),
-_stationUpdatedFlag(false),
-_childVoltReductionFlag(false),
-_pfactor(0),
-_estPfactor(0),
-_saEnabledFlag(false),
-_saEnabledId(0),
-_voltReductionControlId(0)
+CtiCCSubstation::CtiCCSubstation()
+    :   CapControlPao(),
+        _parentId( 0 ),
+        _ovUvDisabledFlag( false ),
+        _voltReductionFlag( false ),
+        _recentlyControlledFlag( false ),
+        _stationUpdatedFlag( false ),
+        _childVoltReductionFlag( false ),
+        _pfactor( 0 ),
+        _estPfactor( 0 ),
+        _saEnabledFlag( false ),
+        _saEnabledId( 0 ),
+        _voltReductionControlId( 0 )
 {
 }
 
 CtiCCSubstation::CtiCCSubstation( Cti::RowReader & rdr )
     :   CapControlPao( rdr ),
         _parentId( 0 ),
-        _displayOrder( 0 ),
         _ovUvDisabledFlag( false ),
         _voltReductionFlag( false ),
         _recentlyControlledFlag( false ),
@@ -199,16 +198,6 @@ long CtiCCSubstation::getParentId() const
     return _parentId;
 }
 
-const string& CtiCCSubstation::getParentName() const
-{
-    return _parentName;
-}
-
-long CtiCCSubstation::getDisplayOrder() const
-{
-    return _displayOrder;
-}
-
 double CtiCCSubstation::getPFactor() const
 {
     return _pfactor;
@@ -272,24 +261,14 @@ void CtiCCSubstation::setParentId(const long parentId)
     updateStaticValue( _parentId, parentId );
 }
 
-void CtiCCSubstation::setParentName(const string& parentName)
-{
-    updateDynamicValue( _parentName, parentName );
-}
-
-void CtiCCSubstation::setDisplayOrder(const long displayOrder)
-{
-    updateStaticValue( _displayOrder, displayOrder );
-}
-
 void CtiCCSubstation::setPFactor(const double pfactor)
 {
-    updateDynamicValue( _pfactor, pfactor );
+    _stationUpdatedFlag |= updateStaticValue( _pfactor, pfactor );
 }
 
 void CtiCCSubstation::setEstPFactor(const double estpfactor)
 {
-    _stationUpdatedFlag |= updateDynamicValue( _estPfactor, estpfactor );
+    _stationUpdatedFlag |= updateStaticValue( _estPfactor, estpfactor );
 }
 
 void CtiCCSubstation::setSaEnabledFlag(const bool flag)

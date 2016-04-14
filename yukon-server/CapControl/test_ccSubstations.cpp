@@ -120,9 +120,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     // CtiCCSubstation                                     
     BOOST_CHECK_EQUAL(                  101, substations[  3 ].getVoltReductionControlId() );
     BOOST_CHECK_EQUAL(                false, substations[  3 ].getVoltReductionFlag() );
-    BOOST_CHECK_EQUAL(                   "", substations[  3 ].getParentName() );
     BOOST_CHECK_EQUAL(                    0, substations[  3 ].getParentId() );
-    BOOST_CHECK_EQUAL(                    0, substations[  3 ].getDisplayOrder() );
     BOOST_CHECK_EQUAL(                 -1.0, substations[  3 ].getPFactor() );
     BOOST_CHECK_EQUAL(                 -1.0, substations[  3 ].getEstPFactor() );
     BOOST_CHECK_EQUAL(                false, substations[  3 ].getOvUvDisabledFlag() );
@@ -154,9 +152,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     // CtiCCSubstation                                         
     BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getVoltReductionControlId() );
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].getVoltReductionFlag() );        // flags[ 2 ] == 'N' -- false
-    BOOST_CHECK_EQUAL(                   "", substations[ 13 ].getParentName() );
     BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getParentId() );
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getDisplayOrder() );
     BOOST_CHECK_EQUAL(                 -1.0, substations[ 13 ].getPFactor() );
     BOOST_CHECK_EQUAL(                 -1.0, substations[ 13 ].getEstPFactor() );
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].getOvUvDisabledFlag() );         // flags[ 0 ] == 'N' -- false
@@ -230,42 +226,6 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
 
     //
 
-    BOOST_CHECK_EQUAL(                   "", substations[ 13 ].getParentName() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
-
-    substations[ 13 ].setParentName( "" );
-
-    BOOST_CHECK_EQUAL(                   "", substations[ 13 ].getParentName() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
-
-    substations[ 13 ].setParentName( "Alpha" );
-
-    BOOST_CHECK_EQUAL(              "Alpha", substations[ 13 ].getParentName() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
-
-    substations[ 13 ].setDirty( false );
-
-    BOOST_CHECK_EQUAL(              "Alpha", substations[ 13 ].getParentName() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
-
-    substations[ 13 ].setParentName( "" );
-
-    BOOST_CHECK_EQUAL(                   "", substations[ 13 ].getParentName() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
-
-    substations[ 13 ].setDirty( false );
-
-    BOOST_CHECK_EQUAL(                   "", substations[ 13 ].getParentName() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
-
-    //
-
     BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getParentId() );
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
@@ -290,30 +250,6 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
 
     //
 
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getDisplayOrder() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
-
-    substations[ 13 ].setDisplayOrder( 0 );
-
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getDisplayOrder() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
-
-    substations[ 13 ].setDisplayOrder( 2 );
-
-    BOOST_CHECK_EQUAL(                    2, substations[ 13 ].getDisplayOrder() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
-
-    substations[ 13 ].setDisplayOrder( 0 );
-
-    BOOST_CHECK_EQUAL(                    0, substations[ 13 ].getDisplayOrder() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
-
-    //
-
     BOOST_CHECK_EQUAL(                 -1.0, substations[ 13 ].getPFactor() );
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
@@ -327,9 +263,10 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     substations[ 13 ].setPFactor( 0.7 );
 
     BOOST_CHECK_EQUAL(                  0.7, substations[ 13 ].getPFactor() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
+    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
 
+    substations[ 13 ].setStationUpdatedFlag( false );
     substations[ 13 ].setDirty( false );
 
     BOOST_CHECK_EQUAL(                  0.7, substations[ 13 ].getPFactor() );
@@ -339,9 +276,10 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     substations[ 13 ].setPFactor( -1.0 );
 
     BOOST_CHECK_EQUAL(                 -1.0, substations[ 13 ].getPFactor() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
+    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
 
+    substations[ 13 ].setStationUpdatedFlag( false );
     substations[ 13 ].setDirty( false );
 
     BOOST_CHECK_EQUAL(                 -1.0, substations[ 13 ].getPFactor() );
@@ -364,7 +302,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
 
     BOOST_CHECK_EQUAL(                  0.7, substations[ 13 ].getEstPFactor() );
     BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
+    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
 
     substations[ 13 ].setStationUpdatedFlag( false );
     substations[ 13 ].setDirty( false );
@@ -377,7 +315,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
 
     BOOST_CHECK_EQUAL(                 -1.0, substations[ 13 ].getEstPFactor() );
     BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getStationUpdatedFlag() );
-    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
+    BOOST_CHECK_EQUAL(                false, substations[ 13 ].isDirty() );
 
     substations[ 13 ].setStationUpdatedFlag( false );
     substations[ 13 ].setDirty( false );
@@ -624,9 +562,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     // CtiCCSubstation                                     
     BOOST_CHECK_EQUAL(                  101, newSubstation->getVoltReductionControlId() );
     BOOST_CHECK_EQUAL(                false, newSubstation->getVoltReductionFlag() );
-    BOOST_CHECK_EQUAL(                   "", newSubstation->getParentName() );
     BOOST_CHECK_EQUAL(                    0, newSubstation->getParentId() );
-    BOOST_CHECK_EQUAL(                    0, newSubstation->getDisplayOrder() );
     BOOST_CHECK_EQUAL(                 -1.0, newSubstation->getPFactor() );
     BOOST_CHECK_EQUAL(                 -1.0, newSubstation->getEstPFactor() );
     BOOST_CHECK_EQUAL(                false, newSubstation->getOvUvDisabledFlag() );
@@ -651,7 +587,6 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     newSubstation->setChildVoltReductionFlag( true );   // sets 'dirty' and 'updated' as well
     newSubstation->setSaEnabledId( 279 );
     newSubstation->setSaEnabledFlag( true );
-    newSubstation->setDisplayOrder( 4 );
 
     // validate our changes
 
@@ -673,9 +608,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     // CtiCCSubstation                                     
     BOOST_CHECK_EQUAL(                 2345, newSubstation->getVoltReductionControlId() );
     BOOST_CHECK_EQUAL(                false, newSubstation->getVoltReductionFlag() );
-    BOOST_CHECK_EQUAL(                   "", newSubstation->getParentName() );
     BOOST_CHECK_EQUAL(                    0, newSubstation->getParentId() );
-    BOOST_CHECK_EQUAL(                    4, newSubstation->getDisplayOrder() );
     BOOST_CHECK_EQUAL(                  0.5, newSubstation->getPFactor() );
     BOOST_CHECK_EQUAL(                 0.25, newSubstation->getEstPFactor() );
     BOOST_CHECK_EQUAL(                 true, newSubstation->getOvUvDisabledFlag() );
@@ -707,9 +640,7 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     // CtiCCSubstation                                     
     BOOST_CHECK_EQUAL(                  101, substations[  3 ].getVoltReductionControlId() );
     BOOST_CHECK_EQUAL(                false, substations[  3 ].getVoltReductionFlag() );
-    BOOST_CHECK_EQUAL(                   "", substations[  3 ].getParentName() );
     BOOST_CHECK_EQUAL(                    0, substations[  3 ].getParentId() );
-    BOOST_CHECK_EQUAL(                    0, substations[  3 ].getDisplayOrder() );
     BOOST_CHECK_EQUAL(                 -1.0, substations[  3 ].getPFactor() );
     BOOST_CHECK_EQUAL(                 -1.0, substations[  3 ].getEstPFactor() );
     BOOST_CHECK_EQUAL(                false, substations[  3 ].getOvUvDisabledFlag() );

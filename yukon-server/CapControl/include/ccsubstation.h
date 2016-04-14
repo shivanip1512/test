@@ -16,9 +16,7 @@ public:
 
     bool getOvUvDisabledFlag() const;
     bool getVoltReductionFlag() const;
-    const std::string& getParentName() const;
     long getParentId() const;
-    long getDisplayOrder() const;
     double getPFactor() const;
     double getEstPFactor() const;
     bool getSaEnabledFlag() const;
@@ -33,9 +31,7 @@ public:
 
     void setOvUvDisabledFlag(const bool flag);
     void setVoltReductionFlag(const bool flag);
-    void setParentName(const std::string& name);
     void setParentId(const long parentId);
-    void setDisplayOrder(const long displayOrder);
     void setPFactor(const double pfactor);
     void setEstPFactor(const double estpfactor);
     void setSaEnabledFlag(const bool flag);
@@ -74,9 +70,7 @@ private:
     };
 
 
-    std::string _parentName;
     long _parentId;
-    long _displayOrder;
 
     bool _ovUvDisabledFlag;
     bool _voltReductionFlag;

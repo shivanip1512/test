@@ -3723,7 +3723,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
         }
 
         {
-            static const string sqlNoID = "SELECT CAS.areaid, CAS.substationbusid, CAS.displayorder "
+            static const string sqlNoID = "SELECT CAS.areaid, CAS.substationbusid "
                                           "FROM ccsubareaassignment CAS";
 
             Cti::Database::DatabaseConnection connection;
@@ -3752,14 +3752,13 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
             {
                 long currentAreaId;
                 long currentSubstationId;
-                long displayOrder;
+
                 rdr["areaid"] >> currentAreaId;
                 rdr["substationbusid"] >> currentSubstationId;
-                rdr["displayorder"] >>displayOrder;
+
                 if (CtiCCSubstationPtr currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map))
                 {
                     currentCCSubstation->setParentId(currentAreaId);
-                    currentCCSubstation->setDisplayOrder(displayOrder);
                     CtiCCAreaPtr currentCCArea = NULL;
 
                     if (substationId > 0)
