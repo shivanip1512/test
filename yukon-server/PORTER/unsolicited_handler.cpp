@@ -362,7 +362,12 @@ void UnsolicitedHandler::purgePortWork(const YukonError_t error_code)
     _active_devices.clear();
 }
 
-
+/*
+ * Clean up any work thay the device may have in progress.  
+ *
+ * Flush inbound and outbound messages.
+ * Remove device from it's state queue.
+ */
 void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &active_device, const YukonError_t error_code)
 {
     device_record &dr = *active_device.first;
@@ -382,8 +387,44 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
         dr.inbound.pop();
     }
 
-    //  null out its entry in the activity list it was in
-    *active_device.second = 0;
+    //  remove from the activity list it was in
+    switch (active_device.second)
+    {
+    case RequestPending:
+        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _request_pending");
+        _request_pending.remove(&dr);
+        break;
+
+    case ToGenerate:
+        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _to_generate");
+        _to_generate.remove(&dr);
+        break;
+
+    case WaitingForData:
+        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _waiting_for_data");
+        _waiting_for_data.remove(&dr);
+        _waiting_devices.erase(&dr);
+
+        for (auto it = _timeouts.begin(); it != _timeouts.end(); )
+        {
+            if (it->second->device->getID() == dr.device->getID())
+            {
+                _timeouts.erase(it);
+                break;
+            }
+        }
+        break;
+
+    case ToDecode:
+        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _to_decode");
+        _to_decode.remove(&dr);
+        break;
+
+    case RequestComplete:
+        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _request_complete");
+        _request_complete.remove(&dr);
+        break;
+    }
 }
 
 
@@ -482,7 +523,7 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
 
     if( _active_devices.find(dr) == _active_devices.end() )
     {
-        _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
+        queueRequestPending(dr);
     }
 }
 
@@ -586,7 +627,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
             //  this should pay attention to the status
             dr->device->recvCommRequest(om);
 
-            _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
+            queueToGenerate(dr);
         }
         else
         {
@@ -594,7 +635,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
             dr->outbound.pop_front();
 
             //  but re-examine this device
-            _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
+            queueRequestPending(dr);
         }
     }
     else if( ! dr->inbound.empty() )
@@ -615,7 +656,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
                 //  push a null OM on there so can distinguish this request from anything else that comes in
                 dr->outbound.push_back(0);
 
-                _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
+                queueToGenerate(dr);
             }
             catch( const std::exception& e )
             {
@@ -625,7 +666,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
         else if( isGpuffDevice(*dr->device) )
         {
             //  GPUFF is unsolicited-only - decode inbounds right away
-            _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
+            queueToDecode(dr);
         }
         else
         {
@@ -654,7 +695,7 @@ bool UnsolicitedHandler::generateOutbounds(const MillisecondTimer &timer, const 
 }
 
 
-void Cti::Porter::UnsolicitedHandler::tryGenerate(device_record *dr)
+void UnsolicitedHandler::tryGenerate(device_record *dr)
 {
     dr->device_status = dr->device->generate(dr->xfer);
 
@@ -662,11 +703,11 @@ void Cti::Porter::UnsolicitedHandler::tryGenerate(device_record *dr)
     {
         if( dr->device->isTransactionComplete() )
         {
-            _active_devices[dr] = _request_complete.insert(_request_complete.end(), dr);
+            queueRequestComplete(dr);
         }
         else
         {
-            _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
+            queueToGenerate(dr);
         }
 
         return;
@@ -688,19 +729,16 @@ void Cti::Porter::UnsolicitedHandler::tryGenerate(device_record *dr)
     //  if we have data, are expecting no data, or we have an error, decode right away
     if( ! dr->inbound.empty() || ! dr->xfer.getInCountExpected() || dr->comm_status )
     {
-        _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
+        queueToDecode(dr);
     }
     else
     {
         const CtiTime timeout = CtiTime::now() + getDeviceTimeout(*dr);
 
-        const device_list::iterator waiting_itr = _waiting_for_data.insert(_waiting_for_data.end(), dr);
-
-        _active_devices [dr] = waiting_itr;
-        _waiting_devices[dr] = waiting_itr;
+        queueWaitingForData(dr);
 
         //  insert because it's a multimap - we might have multiple entries for this timeout value
-        _timeouts.insert(make_pair(timeout, waiting_itr));
+        _timeouts.emplace(timeout, dr);
     }
 }
 
@@ -888,20 +926,14 @@ void UnsolicitedHandler::addInboundWork(device_record &dr, packet *p)
 
         if( itr != _waiting_devices.end() )
         {
-            device_list::iterator waiting_itr = itr->second;
-
-            //  we just got data - null out this device's entry so the timeout thread ignores it
-            *waiting_itr = 0;
-
-            _waiting_devices.erase(itr);
-
+            _waiting_devices.erase(&dr);
             //  we just got work - we're ready to try a decode
-            _active_devices[&dr] = _to_decode.insert(_to_decode.end(), &dr);
+            queueToDecode(&dr);
         }
         else if( _active_devices.find(&dr) == _active_devices.end() )
         {
             //  it's new work, so get him started next time the pending list is examined
-            _active_devices[&dr] = _request_pending.insert(_request_pending.end(), &dr);
+            queueRequestPending(&dr);
         }
     }
 }
@@ -914,18 +946,11 @@ bool UnsolicitedHandler::expireTimeouts(const MillisecondTimer &timer, const uns
     while( ! _timeouts.empty() && _timeouts.begin()->first < now )
     {
         const CtiTime timeout = _timeouts.begin()->first;
-        device_list::iterator waiting_itr = _timeouts.begin()->second;
+        device_record *dr = _timeouts.begin()->second;
 
         _timeouts.erase(_timeouts.begin());
-
-        if( device_record *dr = *waiting_itr )
-        {
-            _waiting_devices.erase(dr);
-
-            _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
-        }
-
-        _waiting_for_data.erase(waiting_itr);
+        queueToDecode(dr);
+        _waiting_for_data.remove(dr);
 
         if( timer.elapsed() > until )
         {
@@ -943,13 +968,13 @@ bool UnsolicitedHandler::processInbounds(const MillisecondTimer &timer, const un
 }
 
 
-void Cti::Porter::UnsolicitedHandler::processInbound(device_record *dr)
+void UnsolicitedHandler::processInbound(device_record *dr)
 {
     if( isGpuffDevice(*dr->device) )
     {
         processGpuffInbound(*dr);
 
-        _active_devices[dr] = _request_complete.insert(_request_complete.end(), dr);
+        queueRequestComplete(dr);
     }
     else
     {
@@ -957,11 +982,11 @@ void Cti::Porter::UnsolicitedHandler::processInbound(device_record *dr)
 
         if( dr->device->isTransactionComplete() )
         {
-            _active_devices[dr] = _request_complete.insert(_request_complete.end(), dr);
+            queueRequestComplete(dr);
         }
         else
         {
-            _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
+            queueToGenerate(dr);
         }
     }
 }
@@ -1177,7 +1202,7 @@ bool UnsolicitedHandler::sendResults(const MillisecondTimer &timer, const unsign
 }
 
 
-void Cti::Porter::UnsolicitedHandler::sendResult(device_record *dr)
+void UnsolicitedHandler::sendResult(device_record *dr)
 {
     dr->device->sendDispatchResults(VanGoghConnection);
 
@@ -1229,7 +1254,7 @@ void Cti::Porter::UnsolicitedHandler::sendResult(device_record *dr)
     }
 
     //  all done with this request - check to see if there's anything else waiting for us
-    _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
+    queueRequestPending(dr);
 }
 
 
@@ -1238,6 +1263,47 @@ void UnsolicitedHandler::receiveMessage(CtiMessage *msg)
     _message_queue.putQueue(msg);
 }
 
+void UnsolicitedHandler::queueRequestPending(device_record *dr)
+{
+    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _request_pending");
+
+    _request_pending.insert(_request_pending.end(), dr);
+    _active_devices[dr] = RequestPending;
+}
+
+void UnsolicitedHandler::queueToGenerate(device_record *dr)
+{
+    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _to_generate");
+
+    _to_generate.insert(_to_generate.end(), dr);
+    _active_devices[dr] = ToGenerate;
+}
+
+void UnsolicitedHandler::queueWaitingForData(device_record *dr)
+{
+    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _waiting_for_data");
+
+    _waiting_for_data.insert(_waiting_for_data.end(), dr);
+    _active_devices[dr] = WaitingForData;
+
+    _waiting_devices[dr] = WaitingForData;
+}
+
+void UnsolicitedHandler::queueToDecode(device_record *dr)
+{
+    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _to_decode");
+
+    _to_decode.insert(_to_decode.end(), dr);
+    _active_devices[dr] = ToDecode;
+}
+
+void UnsolicitedHandler::queueRequestComplete(device_record *dr)
+{
+    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _request_complete");
+
+    _request_complete.insert(_request_complete.end(), dr);
+    _active_devices[dr] = RequestComplete;
+}
 
 void UnsolicitedMessenger::addClient(UnsolicitedHandler *client)
 {

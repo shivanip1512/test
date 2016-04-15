@@ -85,8 +85,20 @@ private:
 
     CtiFIFOQueue< CtiMessage > _message_queue;
 
+    /* 
+     *  State our communication to the device is in.  
+     *  Corresponds with the device_list this device is in. 
+     */
+    enum DeviceState {
+        RequestPending,
+        ToGenerate,
+        WaitingForData,
+        ToDecode,
+        RequestComplete
+    };
+
     typedef std::list<device_record *> device_list;
-    typedef std::map <device_record *, device_list::iterator> device_activity_map;
+    typedef std::map <device_record *, DeviceState> device_activity_map;
 
     void startLog();
 
@@ -150,6 +162,7 @@ private:
 
     om_list _request_queue;
 
+    /* While processing commands, devices are passed around these queues based on their state. */
     device_list _request_pending;
     device_list _to_generate;
     device_list _waiting_for_data;
@@ -159,7 +172,7 @@ private:
     template<class Element>
     bool processQueue(std::list<Element> &queue, const char *function, void (UnsolicitedHandler::*processElement)(Element), const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
 
-    std::multimap<CtiTime, device_list::iterator> _timeouts;
+    std::multimap<CtiTime, device_record *> _timeouts;
 
     device_activity_map _active_devices;
 
@@ -209,6 +222,14 @@ public:
     void run();
 
     void receiveMessage(CtiMessage *msg);
+
+    // Put device in the work queue and set state
+    void queueRequestPending(device_record *dr);
+    void queueToGenerate(device_record *dr);
+    void queueWaitingForData(device_record *dr);
+    void queueToDecode(device_record *dr);
+    void queueRequestComplete(device_record *dr);
+
 };
 
 
