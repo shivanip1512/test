@@ -44,20 +44,27 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
 
                 LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
                 String errorMsg = selectedPaoDefinition.getDisplayName() + " is not an compatible type for device: " + devicePao.getPaoName() + "; Type:" + devicePao.getPaoType();
-                throw new ProcessingException(errorMsg);
+                
+                throw new ProcessingException(errorMsg,
+                                              "deviceIncompatible",
+                                              selectedPaoDefinition.getDisplayName(),
+                                              devicePao.getPaoName(),
+                                              devicePao.getPaoType());
             }
             else {
                 return deviceUpdateService.changeDeviceType(device, selectedPaoDefinition, info);
             }
-
         }
         catch (IllegalArgumentException e) {
-            throw new ProcessingException("Invalid device type: " + newDeviceType);
+            throw new ProcessingException("Invalid device type: " + newDeviceType, "invalidDeviceType", newDeviceType );
         } catch (DataRetrievalFailureException e) {
-            throw new ProcessingException("Could not find device with id: " + device.getDeviceId(),
-                                          e);
+            throw new ProcessingException("Could not find device with id: " + device.getDeviceId(), "deviceNotFoundWithId",
+                                          e, device.getDeviceId());
         } catch (PersistenceException e) {
-            throw new ProcessingException("Could not change device type for device with id: " + device.getDeviceId(), e);
+            throw new ProcessingException("Could not change device type for device with id: " + device.getDeviceId(),
+                                          "changeDeviceType",
+                                          e,
+                                          device.getDeviceId());
         }
     }
 }

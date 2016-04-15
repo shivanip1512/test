@@ -87,8 +87,8 @@ public class StatusPointImportProcessor extends PointImportProcessor {
         try {
             builder.insert();
         } catch(IllegalStateException e) {
-            String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.invalidStateOrGroup");
-            throw new ProcessingException(error, e);
+            String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidStateOrGroup");
+            throw new ProcessingException(error, "invalidStateOrGroup", e);
         }
     }
 }

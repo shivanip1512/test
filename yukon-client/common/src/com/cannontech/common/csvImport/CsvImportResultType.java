@@ -31,6 +31,7 @@ public enum CsvImportResultType implements DisplayableEnum{
     }
     
     public String getFormatKey() {
-        return "yukon.web.import.result." + this.name();
+        return "yukon.exception.processingException." + this.name();
     }
+    
 }

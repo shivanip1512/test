@@ -114,9 +114,19 @@ public class MassDeleteController {
                 deviceDao.removeDevice(device);
             }
         } catch (DataRetrievalFailureException e) {
-            throw new ProcessingException("Could not find device: " + paoLoadingService.getDisplayablePao(device).getName() + " (id=" + device.getDeviceId() + ")", e);
+            String displayablePao = paoLoadingService.getDisplayablePao(device).getName();
+            throw new ProcessingException("Could not find device: " +displayablePao+ " (id=" + device.getDeviceId() + ")",
+                                          "paoNotFound",
+                                          e,
+                                          displayablePao,
+                                          device.getDeviceId());
         } catch (Exception e) {
-            throw new ProcessingException("Could not delete device: " + paoLoadingService.getDisplayablePao(device).getName() + " (id=" + device.getDeviceId() + ")", e);
+            String displayablePao = paoLoadingService.getDisplayablePao(device).getName();
+            throw new ProcessingException("Could not delete device: " + displayablePao + " (id=" + device.getDeviceId() + ")",
+                                          "deleteDevice",
+                                          e,
+                                          displayablePao,
+                                          device.getDeviceId());
         }
     }
     

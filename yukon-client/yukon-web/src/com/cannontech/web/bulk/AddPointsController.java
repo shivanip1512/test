@@ -155,7 +155,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
                     		if (!pointExistsForDevice && pointDao.findPointByName(device, pointTemplate.getName()) != null) {
                     		    String errorMessage = "Point with name (" + pointTemplate.getName() + ") already exists for device (" + paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()) + ")";
                     		    log.debug(errorMessage);
-                    		    throw new ProcessingException(errorMessage);
+                    		    throw new ProcessingException(errorMessage, "pointAlreadyExists", pointTemplate.getName(), paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()));
                     		}
                     		
                     		// add new point
@@ -219,9 +219,9 @@ public class AddPointsController extends AddRemovePointsControllerBase {
                     	log.debug("No points selected for device type, none added or updated: deviceId=" + device.getPaoIdentifier().getPaoId());
                     }
                 } catch (PersistenceException e) {
-                    throw new ProcessingException("Add point failed", e);
+                    throw new ProcessingException("Add point failed", "addPointFailed", e );
                 } catch (NotFoundException e) {
-                    throw new ProcessingException("Add point failed", e);
+                    throw new ProcessingException("Add point failed", "addPointFailed", e);
                 }
             }
         };

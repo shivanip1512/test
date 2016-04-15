@@ -31,13 +31,12 @@ public class DisconnectAddressBulkFieldProcessor extends BulkYukonDeviceFieldPro
                     ; // don't error if wrong device type and was trying to remove disconnect
                 }
             }
-            
         } catch (IllegalArgumentException e) {
-            throw new ProcessingException(e.getMessage());
+            throw new ProcessingException(e.getMessage(), "disconnectAddressNotAccepted");
         } catch (IllegalUseOfAttribute e) {
-            throw new ProcessingException(e.getMessage());
+            throw new ProcessingException(e.getMessage(), "illegalAttributeUse");
         } catch (TransactionException e) {
-            throw new ProcessingException("Unable to update disconnect address.");
+            throw new ProcessingException("Unable to update disconnect address.", "disconnectUpdate");
         }
     }
     

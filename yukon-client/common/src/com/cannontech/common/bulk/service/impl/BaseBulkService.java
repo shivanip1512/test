@@ -244,7 +244,7 @@ public abstract class BaseBulkService {
                 try {
                     bulkFieldProcessors = findYukonDeviceFieldProcessors(updateableDevice, bulkFields);
                 } catch (UnprocessableHeadersException e) {
-                    throw new ProcessingException("Unable to find processor for field(s).", e);
+                    throw new ProcessingException("Unable to find processor for field(s).", "processorNotFound", e );
                 }
                 
                 // run processors

@@ -166,6 +166,7 @@
                 <value>classpath:com/cannontech/yukon/web/captcha</value>
                 <value>classpath:com/cannontech/yukon/web/login</value>
                 <value>classpath:com/cannontech/yukon/web/error</value>
+                <value>classpath:com/cannontech/yukon/web/exception</value>
                 <value>classpath:com/cannontech/yukon/web/changeLogin</value>
                 <value>classpath:com/cannontech/yukon/web/components</value>
                 <value>classpath:com/cannontech/yukon/web/displayableEnums</value>

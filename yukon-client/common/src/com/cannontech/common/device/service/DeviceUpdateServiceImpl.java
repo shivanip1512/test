@@ -340,10 +340,10 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         if (newDevice instanceof MCTBase && oldDevice instanceof RfnBase) {
             
             if (info == null || info.getRouteId() < 0) {
-                throw new ProcessingException("Address and route id are required");
+                throw new ProcessingException("Address and route id are required", "addressRouteRequired");
             }
             if (!dlcAddressRangeService.isValidEnforcedAddress(newDefinition.getType(), info.getAddress())) {
-                throw new ProcessingException("Invalid address: " + info.getAddress() + ".");
+                throw new ProcessingException("Invalid address: " + info.getAddress() + ".", "invalidAddress", info.getAddress());
             }
             ((MCTBase) newDevice).setAddress(info.getAddress());
             ((MCTBase) newDevice).getDeviceRoutes().setRouteID(info.getRouteId());
@@ -360,7 +360,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             try {
                 rfnDeviceLookupService.getDevice(rfnIdentifier);
                 // device found, unable to change device type
-                throw new ProcessingException("Device: " + rfnIdentifier + " already exists.");
+                throw new ProcessingException("Device: " + rfnIdentifier + " already exists.", "deviceAlreadyExists", rfnIdentifier);
             } catch (NotFoundException e) {
                 // ignore
             }

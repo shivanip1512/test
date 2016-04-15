@@ -52,7 +52,7 @@ public class OneAtATimeProcessorTest extends TestCase {
 
             public void process(String object) throws ProcessingException {
                 if (callCount++ == 0) {
-                    throw new ProcessingException("processing error");
+                    throw new ProcessingException("processing error", "processingError");
                 }
             }
 

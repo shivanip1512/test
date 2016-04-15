@@ -40,18 +40,10 @@
     <entry key="yukon.web.modules.tools.bulk.pointImport.error.invalidDeviceName">Calculation file contains an invalid device name: {0} (Line {1})</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.error.invalidPointName">Calculation file contains an invalid point, "{0}" on device "{1}" (Line {2})</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.error.invalidCalculationType">Calculation file contains an invalid calculation type, "{0}"</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.error.invalidCalculation">No calculation named "{0}" is specified in the calculation file.</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.error.invalidStateOrGroup">The specified state or state group is invalid</entry>
     
     <!-- result messages -->
     <entry key="yukon.web.modules.tools.bulk.pointImport.operationSuccessful">Line {0}: Operation successful.</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.operationFailed">Line {0}: Operation failed - {1}.</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.error.unhandledAction">Unable to process action: {0}</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.error.invalidDevice">The device "{0}" does not exist</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.error.pointExists">Point "{0}" already exists on device "{1}"</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.error.pointOffsetInUse">Point offset {0} on device "{1}" is already in use</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.error.pointDoesNotExist">Point "{0}" does not exist on device "{1}"</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.error.unknownError">An unexpected error occurred. See application log for additional information</entry>
     
     <!-- column descriptions -->
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.action">The type of import operation to perform.</entry>

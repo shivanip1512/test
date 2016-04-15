@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <!-- Import Results -->
-    <entry key="yukon.web.import.result.SUCCESS">Success - {0} succeeded for "{1}"</entry>
-    <entry key="yukon.web.import.result.INVALID_IMPORT_ACTION">Invalid Import Action - Cannot perform action "{0}" for "{1}"</entry>
-    <entry key="yukon.web.import.result.OBJECT_EXISTS">Object Already Exists - {0} failed on "{1}"</entry>
-    <entry key="yukon.web.import.result.NO_SUCH_OBJECT">Object Does Not Exist - {0} failed on "{1}"</entry>
-    <entry key="yukon.web.import.result.MISSING_DATA">Data Missing - Required values were missing: {0}</entry>
-    <entry key="yukon.web.import.result.BAD_DATA">Invalid Value - Specified value is not valid in column: {0}</entry>
-    <entry key="yukon.web.import.result.CONDITIONAL_BAD_DATA">Invalid Value - {0} failed. The value "{1}" is not permitted for {2} objects</entry>
-    <entry key="yukon.web.import.result.HAS_DEPENDENCIES">Object Has Dependencies - {0} failed for "{1}"</entry>
-    <entry key="yukon.web.import.result.INVALID_CHARS">Name cannot include any of the following characters: / \ , ' " |</entry>
-    <entry key="yukon.web.import.result.INVALID_CONFIG_ADD">Unable to attach configuration "{2}" to {1}. Using the default configuration instead.</entry>
-    <entry key="yukon.web.import.result.INVALID_CONFIG_UPDATE">Unable to attach configuration "{2}" to {1}. Existing configuration still in use.</entry>
     
     <!-- Import Errors -->
     <entry key="yukon.web.import.error.noImportFile">No import file was selected.</entry>

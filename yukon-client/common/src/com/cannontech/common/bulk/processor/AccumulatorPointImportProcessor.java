@@ -39,8 +39,8 @@ public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor 
             int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
             
             if(pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.ANALOG_POINT)) {
-                String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.pointOffsetInUse", pointOffset, deviceName);
-                throw new ProcessingException(error);
+                String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
+                throw new ProcessingException(error, "pointOffsetInUse", pointOffset, deviceName);
             }
             
             builder.setPointOffset(pointOffset);

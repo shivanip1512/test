@@ -373,7 +373,10 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
                     archiveDataAnalysisDao.insertSlotValues(device.getPaoIdentifier(), analysis, point.getPointID(), excludeBadPointQualities);
                 } catch(IllegalUseOfAttribute illegal) {
                     String error = "Invalid attribute " + attribute + " for device with id " + device.getPaoIdentifier().getPaoId();
-                    throw new ProcessingException(error);
+                    throw new ProcessingException(error,
+                                                  "invalidAttribute",
+                                                  attribute,
+                                                  device.getPaoIdentifier().getPaoId());
                 }
                 
                 try {

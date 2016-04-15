@@ -17,7 +17,7 @@
         <c:forEach var="e" items="${exceptionRowNumberMap}">
             <tr>
                 <td><i:inline key=".line" arguments="${e.key + 2}"/></td>
-                <td>${fn:escapeXml(e.value.message)}</td>
+                <td><i:inline key="${e.value}"/></td>
             </tr>
         </c:forEach>
     </tbody>

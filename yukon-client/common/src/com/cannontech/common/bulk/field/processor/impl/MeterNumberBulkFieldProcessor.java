@@ -19,7 +19,10 @@ public class MeterNumberBulkFieldProcessor extends BulkYukonDeviceFieldProcessor
             deviceDao.changeMeterNumber(device, value.getMeterNumber());
         }
         catch (DataAccessException e) {
-            throw new ProcessingException("Could not change meter number of device with id: " + device.getDeviceId(), e);
+            throw new ProcessingException("Could not change meter number of device with id: " + device.getDeviceId(),
+                                          "changeMeterNumber",
+                                          e,
+                                          device.getDeviceId());
         }
     }
     

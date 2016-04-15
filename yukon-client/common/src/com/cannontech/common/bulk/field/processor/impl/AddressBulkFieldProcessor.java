@@ -20,10 +20,10 @@ public class AddressBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
             deviceUpdateService.changeAddress(device, value.getAddress());
         }
         catch (DataAccessException e) {
-            throw new ProcessingException("Unable to update address.");
+            throw new ProcessingException("Unable to update address.", "updateAddress");
         }
         catch (IllegalArgumentException e) {
-            throw new ProcessingException(e.getMessage());
+            throw new ProcessingException(e.getMessage(), "addressInvalidRange", value.getAddress());
         }
     }
     

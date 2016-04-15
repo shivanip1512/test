@@ -19,10 +19,14 @@ public class RouteBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
             this.deviceUpdateService.changeRoute(device, value.getRoute());
         }
         catch (IllegalArgumentException e) {
-            throw new ProcessingException(e.getMessage(), e);
+            throw new ProcessingException(e.getMessage(), "invalidRouteName", e, value.getRoute());
         }
         catch (DataAccessException e) {
-            throw new ProcessingException("Could not change route of device with id: " + device.getDeviceId() + ", and value: " + value.getRoute(), e);
+            throw new ProcessingException("Could not change route of device with id: " + device.getDeviceId() + ", and value: " + value.getRoute(),
+                                          "changeRoute",
+                                          e,
+                                          device.getDeviceId(),
+                                          value.getRoute());
         }
     }
     

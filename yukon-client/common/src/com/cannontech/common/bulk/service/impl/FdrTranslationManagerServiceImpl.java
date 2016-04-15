@@ -176,26 +176,26 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                             boolean insertSucceeded = dataRow.setInterfaceColumn(column, columnValue);
                             if(!insertSucceeded) {
                                 //Throw exception - option doesn't match fdr interface
-                                String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.invalidColumnForInterface", header, dataRow.getInterface().toString());
-                                throw new ProcessingException(error);
+                                String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidColumnForInterface", header, dataRow.getInterface().toString());
+                                throw new ProcessingException(error, "invalidColumnForInterface", header, dataRow.getInterface().toString());
                             }
                         } catch(IllegalArgumentException e) {
                             //Throw exception - not a valid interface column
-                            String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.noValidInterface", columnValue);
-                            throw new ProcessingException(error, e);
+                            String error = messageSourceAccessor.getMessage("yukon.exception.processingException.noValidInterface", columnValue);
+                            throw new ProcessingException(error, "noValidInterface", e, columnValue);
                         }  
                     }
                 }
                 
                 //Validate data object
                 if(dataRow.getInterface() == null) {
-                    String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.noInterfaceColumns");
-                    throw new ProcessingException(error);
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.noInterfaceColumns");
+                    throw new ProcessingException(error, "noInterfaceColumns");
                 }
                 String missingColumn = dataRow.getMissingColumn();
                 if(missingColumn != null) {
-                    String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.missingAnyColumn", missingColumn);
-                    throw new ProcessingException(error);
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.missingAnyColumn", missingColumn);
+                    throw new ProcessingException(error, "missingAnyColumn", missingColumn);
                 }
                 
                 //Attempt to find the device and point to attach this translation to.
@@ -204,28 +204,28 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 try {
                     paoType = PaoType.getForDbString(dataRow.getDeviceType());
                 } catch(IllegalArgumentException e) {
-                    String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.invalidDeviceType", dataRow.getDeviceType());
-                    throw new ProcessingException(error, e);
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidDeviceTypeFdr", dataRow.getDeviceType());
+                    throw new ProcessingException(error, "invalidDeviceType", e, dataRow.getDeviceType());
                 }
                 YukonPao pao = paoDao.findYukonPao(dataRow.getDeviceName(), paoType);
                 if(pao == null) {
-                    String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.deviceNotFound", dataRow.getDeviceName(), paoType);
-                    throw new ProcessingException(error);
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.deviceNotFound", dataRow.getDeviceName(), paoType);
+                    throw new ProcessingException(error, "deviceNotFound", dataRow.getDeviceName(), paoType);
                 }
                 LitePoint point = pointDao.findPointByName(pao, dataRow.getPointName());
                 if(point == null) {
-                    String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.pointNotFound", dataRow.getPointName(), dataRow.getDeviceName());
-                    throw new ProcessingException(error);
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointNotFound", dataRow.getPointName(), dataRow.getDeviceName());
+                    throw new ProcessingException(error, "pointNotFound", dataRow.getPointName(), dataRow.getDeviceName() );
                 }
                 FdrDirection fdrDirection = FdrDirection.getEnum(dataRow.getDirection());
                 if(fdrDirection == null) {
-                    String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.invalidDirection", dataRow.getDirection());
-                    throw new ProcessingException(error);
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidDirection", dataRow.getDirection());
+                    throw new ProcessingException(error, "invalidDirection", dataRow.getDirection());
                 }
                 List<FdrDirection> supportedDirections = dataRow.getInterface().getSupportedDirectionsList();
                 if(!supportedDirections.contains(fdrDirection)) {
-                    String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.unsupportedDirection", fdrDirection, dataRow.getInterface());
-                    throw new ProcessingException(error);
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unsupportedDirection", fdrDirection, dataRow.getInterface());
+                    throw new ProcessingException(error, "unsupportedDirection", fdrDirection, dataRow.getInterface());
                 }
                                 
                 //build translation
@@ -247,18 +247,18 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                     try {
                         fdrTranslationDao.add(translation);
                     } catch(DataIntegrityViolationException e) {
-                        String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.unableToInsert");
-                        throw new ProcessingException(error, e);
+                        String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unableToInsert");
+                        throw new ProcessingException(error, "unableToInsert", e);
                     }
                 } else if(dataRow.getAction().equalsIgnoreCase(FdrImportAction.REMOVE.toString())) {
                     boolean success = fdrTranslationDao.delete(translation);
                     if(!success) {
-                        String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.unableToRemove");
-                        throw new ProcessingException(error);
+                        String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unableToRemove");
+                        throw new ProcessingException(error, "unableToRemove");
                     }
                 } else {
-                    String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.invalidAction");
-                    throw new ProcessingException(error);
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidAction");
+                    throw new ProcessingException(error, "invalidAction");
                 }
             }
         };

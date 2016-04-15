@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<!-- Processing Exceptions -->
+<entry key="yukon.exception.processingException.deleteLocation">Could not delete location of device with paoId: {0}</entry>
+<entry key="yukon.exception.processingException.invalidLatitude">Valid Latitude (Must be between {0} and {1}) not specified for device with paoId: {2}</entry>
+<entry key="yukon.exception.processingException.invalidLongitude">Valid Longitude (Must be between {0} and {1}) not specified for device with paoId: {2}</entry>
+<entry key="yukon.exception.processingException.setLocation">Could not set location of device with paoId: {0}</entry>
+<entry key="yukon.exception.processingException.updateAddress">Unable to update address.</entry>
+<entry key="yukon.exception.processingException.illegalAttributeUse">Illegal use of attribute.</entry>
+<entry key="yukon.exception.processingException.disconnectUpdate">Unable to update disconnect address.</entry>
+<entry key="yukon.exception.processingException.enableDevice">Could not enable device with id: {0}</entry>
+<entry key="yukon.exception.processingException.disableDevice">Could not disable device with id: {0}</entry>
+<entry key="yukon.exception.processingException.changeMeterNumber">Could not change meter number of device with id: {0}</entry>
+<entry key="yukon.exception.processingException.changeDeviceName">Could not change name of device with id: {0}</entry>
+<entry key="yukon.exception.processingException.changeRfnDevice">Could not change serial number, manufacturer, model of device with id: {0}</entry>
+<entry key="yukon.exception.processingException.changeRoute">Could not change route of device with id: {0}, and value: {1}</entry>
+<entry key="yukon.exception.processingException.pointOffsetInUse">Point offset {0} on device {1} is already in use</entry>
+<entry key="yukon.exception.processingException.invalidAttribute">Invalid attribute {0} for device with id {1}</entry>
+<entry key="yukon.exception.processingException.processorNotFound">Unable to find processor for field(s).</entry>
+<entry key="yukon.exception.processingException.deviceIncompatible">{0} is not an compatible type for device: {1} ; Type: {2}</entry>
+<entry key="yukon.exception.processingException.invalidDeviceType">Invalid device type: {0}</entry>
+<entry key="yukon.exception.processingException.deviceNotFound">COULD NOT FIND: {0}</entry>
+<entry key="yukon.exception.processingException.changeDeviceType">Could not change device type for device with id: {0}</entry>
+<entry key="yukon.exception.processingException.addressRouteRequired">Address and route id are required: {0}</entry>
+<entry key="yukon.exception.processingException.invalidAddress">Invalid address: {0}</entry>
+<entry key="yukon.exception.processingException.deviceAlreadyExists">Device: {0} already exists.</entry>
+<entry key="yukon.exception.processingException.pointAlreadyExists">Point with name {0} already exists for device {1}</entry>
+<entry key="yukon.exception.processingException.addPointFailed">Add point failed.</entry>
+<entry key="yukon.exception.processingException.paoNotFound">Could not find device: {0} (id={1})</entry>
+<entry key="yukon.exception.processingException.deleteDevice">Could not delete device: {0} (id={1})</entry>
+<entry key="yukon.exception.processingException.invalidCalculation">No calculation is specified in the calculation file</entry>
+<entry key="yukon.exception.processingException.invalidStateOrGroup">The specified state or state group is invalid</entry>
+<entry key="yukon.exception.processingException.unhandledAction">Unable to process action: {0}</entry>
+<entry key="yukon.exception.processingException.invalidDeviceType">Invalid device type</entry>
+<entry key="yukon.exception.processingException.invalidColumnForInterface">The column {0} is not valid for interface {1}.</entry>
+<entry key="yukon.exception.processingException.noValidInterface">Unable to find a valid interface for column {0}.</entry>
+<entry key="yukon.exception.processingException.noInterfaceColumns">Import Error: No interface-specific values provided.</entry>
+<entry key="yukon.exception.processingException.missingAnyColumn">Import Error: Missing column value for {0}.</entry>
+<entry key="yukon.exception.processingException.deviceNotFound">Import Error: No device found with name {0} and type {1}.</entry>
+<entry key="yukon.exception.processingException.deviceNotFoundWithId">Could not find device with id: {0}</entry>
+<entry key="yukon.exception.processingException.pointNotFound">Point {0} on Device {1} is not a valid point.</entry>
+<entry key="yukon.exception.processingException.invalidDirection">{0} is not a valid direction.</entry>
+<entry key="yukon.exception.processingException.unsupportedDirection">{0} direction is not supported by the {1} interface.</entry>
+<entry key="yukon.exception.processingException.unableToInsert">Unable to insert translation - a conflicting translation exists on this point.</entry>
+<entry key="yukon.exception.processingException.unableToRemove">Unable to remove translation - no matching translation found.</entry>
+<entry key="yukon.exception.processingException.invalidAction">Import Error: Invalid Action.</entry>
+<entry key="yukon.exception.processingException.invalidDeviceTypeFdr">{0} is not a valid device type.</entry>
+<entry key="yukon.exception.processingException.validationError">Unknown validation error: {0}</entry>
+<entry key="yukon.exception.processingException.unknownError">An unexpected error occurred. See application log for additional information</entry>
+<entry key="yukon.exception.processingException.pointDoesNotExist">Point "{0}" does not exist on device "{1}"</entry>
+<entry key="yukon.exception.processingException.invalidDevice">The device "{0}" does not exist</entry>
+<entry key="yukon.exception.processingException.pointExists">Point "{0}" already exists on device "{1}"</entry>
+<entry key="yukon.exception.processingException.addressInvalidRange">Address not in valid range for device type: {0}</entry>
+<entry key="yukon.exception.processingException.disconnectAddressNotAccepted">Device type does not accept disconnect addresses.</entry>
+<entry key="yukon.exception.processingException.invalidRouteName">Invalid route name: {0}</entry>
+<entry key="yukon.exception.processingException.processingError">Processing Error</entry>
+<entry key="yukon.exception.processingException.SUCCESS">Success - {0} succeeded for "{1}"</entry>
+<entry key="yukon.exception.processingException.INVALID_IMPORT_ACTION">Invalid Import Action - Cannot perform action "{0}" for "{1}"</entry>
+<entry key="yukon.exception.processingException.OBJECT_EXISTS">Object Already Exists - {0} failed on "{1}"</entry>
+<entry key="yukon.exception.processingException.NO_SUCH_OBJECT">Object Does Not Exist - {0} failed on "{1}"</entry>
+<entry key="yukon.exception.processingException.MISSING_DATA">Data Missing - Required values were missing: {0}</entry>
+<entry key="yukon.exception.processingException.BAD_DATA">Invalid Value - Specified value is not valid in column: {0}</entry>
+<entry key="yukon.exception.processingException.CONDITIONAL_BAD_DATA">Invalid Value - {0} failed. The value "{1}" is not permitted for {2} objects</entry>
+<entry key="yukon.exception.processingException.HAS_DEPENDENCIES">Object Has Dependencies - {0} failed for "{1}"</entry>
+<entry key="yukon.exception.processingException.INVALID_CHARS">Name cannot include any of the following characters: / \ , ' " |</entry>
+<entry key="yukon.exception.processingException.INVALID_CONFIG_ADD">Unable to attach configuration "{2}" to {1}. Using the default configuration instead.</entry>
+<entry key="yukon.exception.processingException.INVALID_CONFIG_UPDATE">Unable to attach configuration "{2}" to {1}. Existing configuration still in use.</entry>
+
+</properties>

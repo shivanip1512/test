@@ -44,19 +44,7 @@
     <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.badColumn">Import Error: The column {0} is not a valid column header. Select "Ignore columns with invalid headers" to ignore this.</entry>
     <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.missingColumn">Import Error: Missing column "{0}" for interface "{1}".</entry>
     <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.defaultHeaderMissing">Import Error: Missing required column "{0}".</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.noValidInterface">Unable to find a valid interface for column "{0}".</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.invalidColumnForInterface">The column "{0}" is not valid for interface "{1}".</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.unableToInsert">Unable to insert translation - a conflicting translation exists on this point.</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.unableToRemove">Unable to remove translation - no matching translation found.</entry>
     <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.invalidDestination">"{0}" is not a valid destination.</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.invalidDeviceType">"{0} is not a valid device type."</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.deviceNotFound">Import Error: No device found with name "{0}" and type "{1}".</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.missingAnyColumn">Import Error: Missing column value for {0}.</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.noInterfaceColumns">Import Error: No interface-specific values provided.</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.invalidAction">Import Error: Invalid Action.</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.invalidDirection">"{0}" is not a valid direction.</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.unsupportedDirection">"{0}" direction is not supported by the "{1}" interface.</entry>
-    <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.error.pointNotFound">Point "{0}" on Device "{1}" is not a valid point.</entry>
     
     <!-- IMPORT LOG MESSAGES -->
     <entry key="yukon.web.modules.tools.bulk.fdrTranslationManagement.operationSuccessful">Line {0}: Operation successful.</entry>

@@ -23,7 +23,10 @@ public class RfnMeterBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
             rfnDeviceDao.updateDevice(new RfnDevice(meter.getName(), meter.getPaoIdentifier(), updatedIdentifier));
         }
         catch (DataAccessException e) {
-            throw new ProcessingException("Could not change serial number, manufacturer, model of device with id " + device.getDeviceId() + ": " + e.getMessage(), e);
+            throw new ProcessingException("Could not change serial number, manufacturer, model of device with id " + device.getDeviceId() + ": " + e.getMessage(),
+                                          "changeRfnDevice",
+                                          e,
+                                          device.getDeviceId());
         }
     }
     

@@ -27,7 +27,7 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
                 return;
             } catch (DataAccessException e) {
                 throw new ProcessingException("Could not delete location of device with paoId " + device.getPaoIdentifier()
-                    + ": " + e.getMessage(), e);
+                    + ": " + e.getMessage(), "deleteLocation", e, device.getPaoIdentifier() );
             }
         }
         
@@ -35,12 +35,12 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
         if (value.getLatitude() == null || ((value.getLatitude() < -90.0) || (value.getLatitude() > 90.0))) {
             throw new ProcessingException(
                 "Valid Latitude (Must be between -90 and 90) not specified for device with paoId "
-                    + device.getPaoIdentifier());
+                    + device.getPaoIdentifier(), "invalidLatitude", "-90", "90", device.getPaoIdentifier());
         }
         if (value.getLongitude() == null || ((value.getLongitude() < -180.0) || (value.getLongitude() > 180.0))) {
             throw new ProcessingException(
                 "Valid Longitude (Must be between -180 and 180) not specified for device with paoId "
-                    + device.getPaoIdentifier());
+                    + device.getPaoIdentifier(), "invalidLongitude", "-180", "180", device.getPaoIdentifier());
         }
         
         try {
@@ -52,7 +52,7 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
                 YukonUserContext.system.getYukonUser());
         } catch (DataAccessException e) {
             throw new ProcessingException("Could not set location of device with paoId " + device.getPaoIdentifier()
-                + ": " + e.getMessage(), e);
+                + ": " + e.getMessage(), "setLocation", e, device.getPaoIdentifier());
         }
     }
 }

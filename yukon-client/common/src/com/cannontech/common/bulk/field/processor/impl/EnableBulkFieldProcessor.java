@@ -36,7 +36,11 @@ public class EnableBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
             }
         }
         catch (DataAccessException e) {
-            throw new ProcessingException("Could not " + ((enable) ? "enable" : "disable") + " device with id: " + device.getDeviceId(), e);
+            String status = (enable) ? "enable" : "disable";
+            throw new ProcessingException("Could not " + status + " device with id: " + device.getDeviceId(),
+                                          status+"Device",
+                                          e,
+                                          device.getDeviceId());
         }
     }
     

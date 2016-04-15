@@ -21,7 +21,7 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
                 try {
                     deviceConfigurationService.assignConfigToDevice(configuration, device);
                 } catch (InvalidDeviceTypeException e) {
-                    throw new ProcessingException(e.getMessage());
+                    throw new ProcessingException(e.getMessage(), "invalidDeviceType");
                 }
             }
         };
@@ -34,7 +34,7 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
                 try {
                     deviceConfigurationService.unassignConfig(device);
                 } catch (InvalidDeviceTypeException e) {
-                    throw new ProcessingException(e.getMessage());
+                    throw new ProcessingException(e.getMessage(), "invalidDeviceType");
                 }
             }
         };

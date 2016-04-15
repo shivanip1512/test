@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.exception.DisplayableRuntimeException;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -46,6 +47,9 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
             String messageString = templateProcessorFactory.processResolvableTemplate((ResolvableTemplate) object,
                                                                                       userContext);
             return new YukonMessageSourceResolvable(null, arguments, messageString);
+        }
+        if (object instanceof DisplayableRuntimeException) {
+            return ((DisplayableRuntimeException) object).getMessageSourceResolvable();
         }
         return new YukonMessageSourceResolvable(null, arguments, object != null ? Objects.toString(object) : "");
     }
