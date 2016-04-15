@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_season
-*
-* Date:   3/16/2003
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_season.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/10/23 20:34:36 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-
 
 #include "ctidbgmem.h"  // CTIDBG_new
 #include "mgr_season.h"
@@ -39,17 +24,17 @@ CtiSeasonManager::CtiSeasonManager()
 /*
   Returns true if the given date is inside any of the seasons in the given season schedule
 */
-bool CtiSeasonManager::isInSeason(const CtiDate& date, long season_sched_id)
+bool CtiSeasonManager::isInAnySeason(const CtiDate& date, long season_sched_id)
 {
     unsigned month_of_year = date.month();
     unsigned day_of_month = date.dayOfMonth();
 
-    std::multimap<long, date_of_season>::iterator lower = _season_map.lower_bound(season_sched_id);
-    std::multimap<long, date_of_season>::iterator upper = _season_map.upper_bound(season_sched_id);
+    SeasonScheduleMap::iterator lower = _season_map.lower_bound(season_sched_id);
+    SeasonScheduleMap::iterator upper = _season_map.upper_bound(season_sched_id);
 
     if(lower != upper)
     {
-        for(std::multimap<long, date_of_season>::iterator iter = lower;
+        for(SeasonScheduleMap::iterator iter = lower;
             iter != upper;
             iter++)
         {
@@ -70,9 +55,9 @@ bool CtiSeasonManager::isInSeason(const CtiDate& date, long season_sched_id)
     return false;
 }
 
-bool CtiSeasonManager::isInSeason(long season_sched_id, const CtiDate& date)
+bool CtiSeasonManager::isInAnySeason(long season_sched_id, const CtiDate& date)
 {
-    return isInSeason(date, season_sched_id);
+    return isInAnySeason(date, season_sched_id);
 }
 
 void CtiSeasonManager::refresh()
