@@ -264,4 +264,7 @@
     
     <entry key="yukon.web.widgetClasses.SubscribedMonitorsWidget.emptyList">No Monitors</entry>
     <entry key="yukon.web.widgetClasses.SubscribedMonitorsWidget.subscription.removed">{0} removed from Subscriptions</entry>
+    
+    <entry key="yukon.web.widgetClasses.DisconnectMeterWidget.disconnectAddress">Disconnect Address</entry>
+    <entry key="yukon.web.widgetClasses.DisconnectMeterWidget.confirmAddrDelete">Confirm Delete</entry>
 </properties>

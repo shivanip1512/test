@@ -481,4 +481,17 @@ public class DisconnectServiceImpl implements DisconnectService {
         return false;
     }
     
+    @Override
+    public boolean supportsDisconnectConfiguration(Iterable<SimpleDevice> meters) {
+        
+        for (DisconnectStrategy strategy : strategies) {
+            FilteredDevices filteredDevices = strategy.filter(meters);
+            if (!filteredDevices.getNotConfigured().isEmpty() ||!filteredDevices.getValid().isEmpty()) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
 }

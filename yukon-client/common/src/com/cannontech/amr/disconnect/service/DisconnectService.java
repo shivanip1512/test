@@ -52,4 +52,12 @@ public interface DisconnectService {
      * @throws UnsupportedOperationException if the device doesn't support disconnect. 
      */
     DisconnectMeterResult execute(DisconnectCommand command, DeviceRequestType type, YukonMeter meter, YukonUserContext userContext);
+
+    /**   
+     * Returns true if at least one of the devices supports disconnect and is not configured.
+     *
+     * @param meters
+     * @return
+     */
+    boolean supportsDisconnectConfiguration(Iterable<SimpleDevice> meters);
 }

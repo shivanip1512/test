@@ -7,11 +7,17 @@
     <entry key="yukon.web.widgets.disconnectMeterWidget.query.label">Query</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.query.labelBusy">Querying</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.read.label">Read</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.delete.label">Remove</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.configure">Disconnect Collar Address Configuration </entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.configure.label">Configure {0}</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.connect.label">Connect</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.connect.labelBusy">Connecting</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.connect.confirmText">Are you sure you want to connect this meter?</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.disconnect.label">Disconnect</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnect.enable">Enable</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnect.disable">Disable</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnectAddress">Disconnect Address</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.disconnect.labelBusy">Disconnecting</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.disconnect.confirmText">Are you sure you want to disconnect this meter?</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.disconnectConfigSettings">Disconnect Configuration</entry>
@@ -46,5 +52,9 @@
     <entry key="yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.error">There was an error sending the command: {0}</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError">The was an error confirming the command, meter may be in an unknown state:({0})</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.success">{0} Successful</entry>
-   
+    
+    <entry key="yukon.web.widgets.disconnectMeterWidget.error.disconnectAddress.required">You have enabled disconnect. Please specify an address.</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.error.disconnectAddress.unique">The disconnect address is already used by the other devices, please mention unique address</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.update.successful">The disconnect address is already used by the other devices, please mention unique address</entry>
+    
 </properties>

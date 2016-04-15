@@ -78,6 +78,9 @@
     <entry key="yukon.web.components.button.down.hoverText">Move Down</entry>
     <entry key="yukon.web.components.button.download.label">Download</entry>
     <entry key="yukon.web.components.button.edit.label">Edit</entry>
+    <entry key="yukon.web.components.button.connect.label">Connect</entry>
+    <entry key="yukon.web.components.button.disconnect.label">Arm</entry>
+    <entry key="yukon.web.components.button.arm.label">Connect</entry>
     <entry key="yukon.web.components.button.enable.label">Enable</entry>
     <entry key="yukon.web.components.button.enable.labelBusy">Enabling</entry>
     <entry key="yukon.web.components.button.enabled.label">Enabled</entry>
@@ -197,4 +200,8 @@
     <entry key="yukon.web.components.export">Export:</entry>
     <entry key="yukon.web.components.jstree.input.search.tooltip">Begin typing to search for a node in the tree. Matches will be highlighted with blue text. Hit 'Enter' to cycle through the results.</entry>
     
+    <entry key="yukon.web.widgetClasses.DisconnectMeterWidget.configure">Configuration successful</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmAddrDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmAddrDelete.message">Are you sure you want to delete the Collar Address "{0}"?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmAddrDelete.ok">Delete</entry>
 </properties>
