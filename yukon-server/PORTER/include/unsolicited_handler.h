@@ -229,7 +229,7 @@ public:
     void queueWaitingForData(device_record *dr);
     void queueToDecode(device_record *dr);
     void queueRequestComplete(device_record *dr);
-
+    void setDeviceState(device_list &map, device_record *dr, DeviceState state);
 };
 
 

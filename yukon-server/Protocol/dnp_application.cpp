@@ -119,7 +119,7 @@ void ApplicationLayer::processResponse( void )
 
         for( int i = 0; i < _response.buf_len; i++ )
         {
-            data << std::setw(2) << _response.buf <<" ";
+            data << std::setw(2) << (int)_response.buf[i] <<" ";
 
             if( !(i % 20) && i )
             {

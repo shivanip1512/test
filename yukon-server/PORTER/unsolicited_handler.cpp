@@ -1267,16 +1267,14 @@ void UnsolicitedHandler::queueRequestPending(device_record *dr)
 {
     CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _request_pending");
 
-    _request_pending.insert(_request_pending.end(), dr);
-    _active_devices[dr] = RequestPending;
+    setDeviceState(_request_pending, dr, RequestPending);
 }
 
 void UnsolicitedHandler::queueToGenerate(device_record *dr)
 {
     CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _to_generate");
 
-    _to_generate.insert(_to_generate.end(), dr);
-    _active_devices[dr] = ToGenerate;
+    setDeviceState(_to_generate, dr, ToGenerate);
 }
 
 void UnsolicitedHandler::queueWaitingForData(device_record *dr)
@@ -1293,16 +1291,20 @@ void UnsolicitedHandler::queueToDecode(device_record *dr)
 {
     CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _to_decode");
 
-    _to_decode.insert(_to_decode.end(), dr);
-    _active_devices[dr] = ToDecode;
+    setDeviceState(_to_decode, dr, ToDecode);
 }
 
 void UnsolicitedHandler::queueRequestComplete(device_record *dr)
 {
     CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _request_complete");
 
-    _request_complete.insert(_request_complete.end(), dr);
-    _active_devices[dr] = RequestComplete;
+    setDeviceState(_request_complete, dr, RequestComplete);
+}
+
+void UnsolicitedHandler::setDeviceState(device_list &queue, device_record *dr, DeviceState state)
+{
+    queue.insert(queue.end(), dr);
+    _active_devices[dr] = state;
 }
 
 void UnsolicitedMessenger::addClient(UnsolicitedHandler *client)
