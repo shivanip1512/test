@@ -9811,7 +9811,6 @@
     </pao>
 
     <pao id="RFN500_BASE" inherits="RFN_COMMON" abstract="true">
-    <!-- THIS ONE IS DONE. DO NOT TOUCH IT!!! -->
         <points>
             <point type="Analog" offset="265">
                 <name>Peak Total kW</name>
@@ -10889,7 +10888,6 @@
     </pao>
     
     <pao id="RFN500_TOU_RECORDING_ACTIVE" abstract="true">
-        <!-- THIS ONE IS DONE. DO NOT TOUCH IT!!! -->
         <points>
             <point type="Analog" offset="25">
                 <name>Rate A kWh</name>
@@ -11014,7 +11012,6 @@
     </pao>
 
     <pao id="RFN500_TOU_RECORDING_REACTIVE" inherits="RFN500_TOU_RECORDING_ACTIVE" abstract="true">
-        <!-- THIS ONE IS DONE. DO NOT TOUCH IT!!! -->
         <points>
             <point type="Analog" offset="215">
                 <name>Total kVArh</name>
@@ -11228,20 +11225,20 @@
         </attributes>
     </pao>
     
-    <pao id="RFN500S4E_AD" inherits="RFN500_BASE">
-        <displayName>RFN-500S4e-AD</displayName>
+    <pao id="RFN500S4AD" inherits="RFN500_BASE">
+        <displayName>RFN-500S4AD</displayName>
     </pao>
     
-    <pao id="RFN500S4E_AT" inherits="RFN500_BASE, RFN500_TOU_RECORDING_ACTIVE">
-        <displayName>RFN-500S4e-AT</displayName>
+    <pao id="RFN500S4AT" inherits="RFN500_BASE, RFN500_TOU_RECORDING_ACTIVE">
+        <displayName>RFN-500S4AT</displayName>
     </pao>
     
-    <pao id="RFN500S4E_AR" inherits="RFN500_BASE, RFN500_TOU_RECORDING_ACTIVE">
-        <displayName>RFN-500S4e-AR</displayName>
+    <pao id="RFN500S4AR" inherits="RFN500_BASE, RFN500_TOU_RECORDING_ACTIVE">
+        <displayName>RFN-500S4AR</displayName>
     </pao>
     
-    <pao id="RFN500S4E_RD" inherits="RFN500_BASE">
-        <displayName>RFN-500S4e-RD</displayName>
+    <pao id="RFN500S4RD" inherits="RFN500_BASE">
+        <displayName>RFN-500S4RD</displayName>
         <points>
             <point type="Analog" offset="215">
                 <name>Total kVArh</name>
@@ -11293,12 +11290,12 @@
         </attributes>
     </pao>
     
-    <pao id="RFN500S4E_RT" inherits="RFN500_BASE, RFN500_TOU_RECORDING_REACTIVE">
-        <displayName>RFN-500S4e-RT</displayName>
+    <pao id="RFN500S4RT" inherits="RFN500_BASE, RFN500_TOU_RECORDING_REACTIVE">
+        <displayName>RFN-500S4RT</displayName>
     </pao>
     
-    <pao id="RFN500S4E_RR" inherits="RFN500_BASE, RFN500_TOU_RECORDING_REACTIVE">
-        <displayName>RFN-500S4e-RR</displayName>
+    <pao id="RFN500S4RR" inherits="RFN500_BASE, RFN500_TOU_RECORDING_REACTIVE">
+        <displayName>RFN-500S4RR</displayName>
     </pao>
     
     <pao id="TRANSDATA_MARKV">

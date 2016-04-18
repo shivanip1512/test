@@ -48,8 +48,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PaoType.RFWMETER,
             PaoType.IPC410FL, PaoType.IPC420FD, PaoType.IPC430S4E, PaoType.IPC430SL,
             PaoType.RFN430SL0, PaoType.RFN430SL1, PaoType.RFN430SL2, PaoType.RFN430SL3, PaoType.RFN430SL4,
-            PaoType.RFN500S4X, PaoType.RFN500S4E_AD, PaoType.RFN500S4E_AT, PaoType.RFN500S4E_AR,
-            PaoType.RFN500S4E_RD, PaoType.RFN500S4E_RT, PaoType.RFN500S4E_RR,
+            PaoType.RFN500S4X, PaoType.RFN500S4AD, PaoType.RFN500S4AT, PaoType.RFN500S4AR,
+            PaoType.RFN500S4RD, PaoType.RFN500S4RT, PaoType.RFN500S4RR,
             PaoType.RFN_1200, PaoType.ECOBEE_SMART_SI, PaoType.ECOBEE_3, PaoType.ECOBEE_SMART
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
