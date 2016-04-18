@@ -77,6 +77,8 @@ protected:
 
         CtiTime last_outbound;
         CtiTime last_keepalive;
+
+        CtiTime timeout;
     };
 
 private:

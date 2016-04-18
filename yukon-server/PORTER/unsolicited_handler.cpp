@@ -391,37 +391,45 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
     switch (active_device.second)
     {
     case RequestPending:
-        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _request_pending");
+        CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _request_pending");
         _request_pending.remove(&dr);
         break;
 
     case ToGenerate:
-        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _to_generate");
+        CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _to_generate");
         _to_generate.remove(&dr);
         break;
 
     case WaitingForData:
-        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _waiting_for_data");
-        _waiting_for_data.remove(&dr);
-        _waiting_devices.erase(&dr);
-
-        for (auto it = _timeouts.begin(); it != _timeouts.end(); )
         {
-            if (it->second->device->getID() == dr.device->getID())
+            CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _waiting_for_data");
+            _waiting_for_data.remove(&dr);
+            _waiting_devices.erase(&dr);
+
+            // We're going to remove the timeout timer from the queue
+            // We'll narrow the search by looking only at those matching our timeout value
+            CtiTime timeout = dr.timeout;
+            auto timeoutIt = _timeouts.lower_bound(timeout); // gets first element in range
+            auto timeoutEnd = _timeouts.upper_bound(timeout); // gets last
+            while (timeoutIt != timeoutEnd)
             {
-                _timeouts.erase(it);
-                break;
+                if (timeoutIt->second->device->getID() == dr.device->getID())
+                {
+                    _timeouts.erase(timeoutIt);
+                    break;
+                }
+                timeoutIt++;
             }
         }
         break;
 
     case ToDecode:
-        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _to_decode");
+        CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _to_decode");
         _to_decode.remove(&dr);
         break;
 
     case RequestComplete:
-        CTILOG_DEBUG(dout, "Purging device " << dr.device->getID() << " from _request_complete");
+        CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _request_complete");
         _request_complete.remove(&dr);
         break;
     }
@@ -739,6 +747,7 @@ void UnsolicitedHandler::tryGenerate(device_record *dr)
 
         //  insert because it's a multimap - we might have multiple entries for this timeout value
         _timeouts.emplace(timeout, dr);
+        dr->timeout = timeout;
     }
 }
 
@@ -943,6 +952,7 @@ bool UnsolicitedHandler::expireTimeouts(const MillisecondTimer &timer, const uns
 {
     CtiTime now;
 
+    // we may have been waiting for a device that has already been removed from the timeout queue.
     while( ! _timeouts.empty() && _timeouts.begin()->first < now )
     {
         const CtiTime timeout = _timeouts.begin()->first;
@@ -1265,21 +1275,21 @@ void UnsolicitedHandler::receiveMessage(CtiMessage *msg)
 
 void UnsolicitedHandler::queueRequestPending(device_record *dr)
 {
-    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _request_pending");
+    CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _request_pending");
 
     setDeviceState(_request_pending, dr, RequestPending);
 }
 
 void UnsolicitedHandler::queueToGenerate(device_record *dr)
 {
-    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _to_generate");
+    CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _to_generate");
 
     setDeviceState(_to_generate, dr, ToGenerate);
 }
 
 void UnsolicitedHandler::queueWaitingForData(device_record *dr)
 {
-    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _waiting_for_data");
+    CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _waiting_for_data");
 
     _waiting_for_data.insert(_waiting_for_data.end(), dr);
     _active_devices[dr] = WaitingForData;
@@ -1289,14 +1299,14 @@ void UnsolicitedHandler::queueWaitingForData(device_record *dr)
 
 void UnsolicitedHandler::queueToDecode(device_record *dr)
 {
-    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _to_decode");
+    CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _to_decode");
 
     setDeviceState(_to_decode, dr, ToDecode);
 }
 
 void UnsolicitedHandler::queueRequestComplete(device_record *dr)
 {
-    CTILOG_DEBUG(dout, "Queueing device " << dr->device->getID() << " to _request_complete");
+    CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _request_complete");
 
     setDeviceState(_request_complete, dr, RequestComplete);
 }
