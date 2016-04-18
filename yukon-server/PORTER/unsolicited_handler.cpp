@@ -406,20 +406,8 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
             _waiting_for_data.remove(&dr);
             _waiting_devices.erase(&dr);
 
-            // We're going to remove the timeout timer from the queue
-            // We'll narrow the search by looking only at those matching our timeout value
-            CtiTime timeout = dr.timeout;
-            auto timeoutIt = _timeouts.lower_bound(timeout); // gets first element in range
-            auto timeoutEnd = _timeouts.upper_bound(timeout); // gets last
-            while (timeoutIt != timeoutEnd)
-            {
-                if (timeoutIt->second->device->getID() == dr.device->getID())
-                {
-                    _timeouts.erase(timeoutIt);
-                    break;
-                }
-                timeoutIt++;
-            }
+            purgeTimeout(dr);
+
         }
         break;
 
@@ -432,6 +420,24 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
         CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _request_complete");
         _request_complete.remove(&dr);
         break;
+    }
+}
+
+// We're going to remove the timeout timer from the queue
+void UnsolicitedHandler::purgeTimeout(device_record &dr)
+{
+    // We'll narrow the search by looking only at those matching our timeout value
+    CtiTime timeout = dr.timeout;
+    auto timeoutIt = _timeouts.lower_bound(timeout); // gets first element in range
+    auto timeoutEnd = _timeouts.upper_bound(timeout); // gets last
+    while (timeoutIt != timeoutEnd)
+    {
+        if (timeoutIt->second->device->getID() == dr.device->getID())
+        {
+            _timeouts.erase(timeoutIt);
+            break;
+        }
+        timeoutIt++;
     }
 }
 
@@ -980,6 +986,8 @@ bool UnsolicitedHandler::processInbounds(const MillisecondTimer &timer, const un
 
 void UnsolicitedHandler::processInbound(device_record *dr)
 {
+    purgeTimeout(*dr);
+
     if( isGpuffDevice(*dr->device) )
     {
         processGpuffInbound(*dr);
