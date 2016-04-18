@@ -59,10 +59,10 @@
         </c:if>
     </tags:nameValueContainer2>
 
-    <c:if test="${canEdit}">
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <div class="action-area">
             <cti:button nameKey="edit" icon="icon-pencil" data-popup=".js-edit-strat-popup"
                 data-popup-toggle="" />
         </div>
-    </c:if>
+    </cti:checkRolesAndProperties>
 </cti:tab>

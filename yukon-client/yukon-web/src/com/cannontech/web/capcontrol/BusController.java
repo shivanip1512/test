@@ -29,7 +29,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.core.schedule.model.PaoSchedule;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
@@ -67,7 +66,6 @@ public class BusController {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private PointDao pointDao;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SeasonScheduleDao seasonScheduleDao;
     @Autowired private StrategyDao strategyDao;
     @Autowired private StrategyService strategyService;
@@ -115,12 +113,6 @@ public class BusController {
         if (modelBus instanceof CapControlSubBus) {
             bus = (CapControlSubBus) modelBus;
         }
-        
-        boolean hasSubBusControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-        model.addAttribute("hasSubBusControl", hasSubBusControl);
-        
-        boolean hasFeederControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user);
-        model.addAttribute("hasFeederControl", hasFeederControl);
         
         if(bus.getId() != null){
             Integer parentId = busDao.getParent(bus.getId());
@@ -182,8 +174,6 @@ public class BusController {
         List<PaoSchedule> schedules = paoScheduleDao.getAll();
         model.addAttribute("allSchedules", schedules);
         model.addAttribute("scheduleCommands", ScheduleCommand.values());
-
-        model.addAttribute("canEdit", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user));
 
         return "bus.jsp";
     }

@@ -8,11 +8,11 @@
 <cti:standardPage module="capcontrol" page="areas">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
-    <c:if test="${hasAreaControl}">
+    <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
         <script type="text/javascript">
             addCommandMenuBehavior('a[id^="areaState_"]');
         </script>
-    </c:if>
+    </cti:checkRolesAndProperties>
 
     <c:forEach var="item" items="${areasMap}">
         <c:set var="areas" value="${item.value}" />

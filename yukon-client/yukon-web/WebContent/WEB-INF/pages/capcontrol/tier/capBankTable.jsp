@@ -5,7 +5,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-    <c:set var="hasControlAttr" value="${hasCapbankControl ? 'data-has-control' : ''}" />
+<cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
+    <c:set var="hasControlAttr" value="data-has-control" />
+</cti:checkRolesAndProperties>
     <table id="capBankTable" class="compact-results-table has-alerts has-actions row-highlighting" ${hasControlAttr}>
         <thead>
             <tr>
@@ -137,11 +139,11 @@
                         <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
                     </cti:url>
                     <cm:dropdown icon="icon-cog" triggerClasses="fr">
-                        <c:if test="${hasCapbankControl}">
+                        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
                             <cm:dropdownOption key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="js-bank-command" />
                             <cm:dropdownOption key=".capBank.state" icon="icon-pencil" href="javascript:void(0);" classes="js-bank-state" />
                             <li class="divider" />
-                        </c:if>
+                        </cti:checkRolesAndProperties>
                          <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                             <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.ccName}" javaScriptEscape="true"/>
                             <cm:dropdownOption key=".capBank.info" icon="icon-magnifier" classes="js-bank-info"
@@ -155,7 +157,7 @@
                         <cm:dropdownOption classes="js-show-bank-comments" key=".menu.viewComments" icon="icon-comment" />
                         <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${bankId}" />
                         <cm:dropdownOption href="${recentEventsUrl}" key=".menu.viewRecentEvents" icon="icon-calendar-view-month"/>
-                        <c:if test="${hasCapbankControl}">
+                        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
                             <li class="divider" />
                             <c:if test="${not viewableCapBank.bankMoved}">
                                 <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank" href="javascript:void(0);" />
@@ -164,7 +166,7 @@
                                 <cm:dropdownOption classes="js-return" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER" icon="icon-bullet-go-left" />
                                 <cm:dropdownOption classes="js-assign" key=".command.assignBankHere" icon="icon-bullet-go-down" />
                             </c:if>
-                        </c:if>
+                        </cti:checkRolesAndProperties>
                     </cm:dropdown>
                 </td>
             </tr>

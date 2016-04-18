@@ -29,16 +29,12 @@ import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.Substation;
-import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.cache.FilterCacheFactory;
-import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.HolidayScheduleDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
@@ -57,16 +53,12 @@ import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.mbean.ServerDatabaseCache;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.area.dao.AreaDao;
 import com.cannontech.web.capcontrol.area.model.Area;
 import com.cannontech.web.capcontrol.models.Assignment;
 import com.cannontech.web.capcontrol.service.StrategyService;
-import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
@@ -77,7 +69,6 @@ import com.google.common.collect.Lists;
 public class AreaController {
     
     @Autowired private ServerDatabaseCache dbcache;
-    @Autowired private FilterCacheFactory vvCacheFactory;
     @Autowired private PaoDao paoDao;
     @Autowired private PointDao pointDao;
     @Autowired private AreaDao areaDao;
@@ -87,7 +78,6 @@ public class AreaController {
     @Autowired private StrategyDao strategyDao;
     @Autowired private StrategyService strategyService;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private CapControlWebUtilsService webUtils;
     @Autowired private DurationFormattingService durationFormatting;
 
     private static final Logger log = YukonLogManager.getLogger(AreaController.class);
@@ -192,34 +182,10 @@ public class AreaController {
                 model.addAttribute("voltReduction", paoName + " - " + pointName);
                 model.addAttribute("voltReductionId", point.getPointID());
             }
-            
-            CapControlCache cache = vvCacheFactory.createUserAccessFilteredCache(user);
 
             List<Substation> subs = substationDao.getSubstationsByArea(areaId);
             sortSubs(areaId, subs);
             model.addAttribute("subStations", subs);
-            List<SubBus> busses = null;
-            try {
-                busses = cache.getSubBusesByArea(areaId);
-            } catch (NotFoundException ne) {
-                busses = Collections.emptyList();
-            }
-            Collections.sort(busses, CapControlUtils.SUB_DISPLAY_COMPARATOR);
-            model.addAttribute("subBusList", webUtils.createViewableSubBus(busses));
-            List<Feeder> feeders = null;
-            try {
-                feeders = cache.getFeedersByArea(areaId);
-            } catch (NotFoundException ne) {
-                feeders = Collections.emptyList();
-            }
-            model.addAttribute("feederList", webUtils.createViewableFeeder(feeders));
-            List<CapBankDevice> banks = null;
-            try {
-                banks = cache.getCapBanksByArea(areaId);
-            } catch (NotFoundException ne) {
-                banks = Collections.emptyList();
-            }
-            model.addAttribute("capBankList", webUtils.createViewableCapBank(banks));
             
             // SEASON SCHEDULING
             SeasonSchedule scheduleSchedule = seasonSchedules.getScheduleForPao(areaId);
@@ -243,15 +209,6 @@ public class AreaController {
         boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
         boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
         model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
-        
-        boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        model.addAttribute("canEdit", canEdit);
-        
-        boolean hasAreaControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
-        model.addAttribute("hasAreaControl", hasAreaControl);
-        
-        boolean hasSubstationControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user);
-        model.addAttribute("hasSubstationControl", hasSubstationControl);
         
         if (log.isDebugEnabled()) {
             Duration d = new Duration(startPage, Instant.now());

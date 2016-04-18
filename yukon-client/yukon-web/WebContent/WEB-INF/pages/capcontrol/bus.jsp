@@ -19,19 +19,19 @@
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 <tags:setFormEditMode mode="${mode}"/>
 
-<c:if test="${hasSubBusControl}">
+<cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="busState_"]');
     </script>
-</c:if>
+</cti:checkRolesAndProperties>
 
 <div class="js-page-additional-actions dn">
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <li class="divider" />
     </cti:checkRolesAndProperties>
-    <c:if test="${hasSubBusControl}">
+    <cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS">
         <cm:dropdownOption linkId="busState_${bus.id}" key=".substation.bus.actions" icon="icon-cog" href="javascript:void(0);" />
-    </c:if>
+    </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/buses/${bus.id}/edit" />
         <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
@@ -115,12 +115,12 @@
                                 </c:forEach>
                             </tbody>
                             </table>
-                            <c:if test="${canEdit}">
+                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                 <div class="action-area">
                                     <cti:button nameKey="edit" icon="icon-pencil" data-popup=".js-edit-sched-popup"
                                         data-popup-toggle="" />
                                 </div>
-                            </c:if>
+                            </cti:checkRolesAndProperties>
                     </cti:tab>
                 </cti:displayForPageEditModes>
             </cti:tabs>
@@ -380,12 +380,12 @@
                 </c:if>
             </c:if>
             
-            <c:if test="${canEdit}">
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                 <div class="action-area">
                     <cti:button nameKey="edit.feeders" icon="icon-pencil"
                         data-popup=".js-edit-feeders-popup" data-popup-toggle=""/>
                 </div>
-            </c:if>
+            </cti:checkRolesAndProperties>
             
         </tags:boxContainer2>    
             

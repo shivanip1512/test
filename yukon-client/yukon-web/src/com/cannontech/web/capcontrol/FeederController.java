@@ -31,7 +31,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -63,7 +62,6 @@ public class FeederController {
     @Autowired private CapControlCache ccCache;
     @Autowired private HolidayScheduleDao hoidayScheduleDao;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SeasonScheduleDao seasonScheduleDao;
     @Autowired private StrategyDao strategyDao;
     @Autowired private StrategyService strategyService;
@@ -109,14 +107,6 @@ public class FeederController {
         model.addAttribute("feeder", feeder);
         model.addAttribute("feederName", feeder.getName());
         model.addAttribute("feederId", feeder.getId());
-        
-        model.addAttribute("canEdit", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user));
-        
-        boolean hasFeederControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user);
-        model.addAttribute("hasFeederControl", hasFeederControl);
-        
-        boolean hasCapbankControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
-        model.addAttribute("hasCapbankControl", hasCapbankControl);
         
         if(feeder.getId() != null){
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(feeder.getId());

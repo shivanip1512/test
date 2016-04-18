@@ -140,13 +140,13 @@
                     <cti:capControlValue paoId="${feederId}" type="FEEDER" format="DAILY_MAX_OPS"/>
                 </span>
                 <cm:dropdown icon="icon-cog" triggerClasses="fr">
-                    <c:if test="${hasFeederControl}">
+                    <cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS">
                         <li>
                             <a id="feederState_${feederId}" href="javascript:void(0)" class="clearfix">
                                 <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".feeder.actions"/></span>
                             </a>
                         </li>
-                    </c:if>
+                    </cti:checkRolesAndProperties>
                     <cti:url var="locationUrl" value="/capcontrol/capbank/capBankLocations">
                         <cti:param name="value" value="${feederId}"/>
                     </cti:url>

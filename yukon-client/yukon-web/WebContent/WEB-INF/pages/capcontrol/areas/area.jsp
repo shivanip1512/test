@@ -18,25 +18,25 @@
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 <tags:setFormEditMode mode="${mode}"/>
 
-<c:if test="${hasAreaControl}">
+<cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="areaState_"]');
     </script>
-</c:if>
+</cti:checkRolesAndProperties>
 
-<c:if test="${hasSubstationControl}">
+<cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="substationState"]');
     </script>
-</c:if>
+</cti:checkRolesAndProperties>
 
 <div class="js-page-additional-actions dn">
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <li class="divider" />
     </cti:checkRolesAndProperties>
-    <c:if test="${hasAreaControl}">
+    <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
         <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
-    </c:if>
+    </cti:checkRolesAndProperties>
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/areas/${areaId}/edit" />
         <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
@@ -282,27 +282,27 @@
                     <%-- POWER FACTOR --%>
                     <td class="tar">
                         <span style="margin-right:10px;"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" initialize="false"/>
-                        <cm:dropdown icon="icon-cog" triggerClasses="fr">
-                            <c:if test="${hasSubstationControl}">
+                        <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
+                            <cm:dropdown icon="icon-cog" triggerClasses="fr">
                                 <li>
                                     <a id="substationState_${substationId}" href="javascript:void(0)" class="clearfix">
                                         <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".substation.actions"/></span>
                                     </a>
                                 </li>
-                             </c:if>                         
-                        </cm:dropdown>
+                            </cm:dropdown>
+                        </cti:checkRolesAndProperties>                  
                     </td>
                 </tr>
             </c:forEach>
             
         </table>
 
-        <c:if test="${canEdit}">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
              <div class="action-area">
                 <cti:button nameKey="edit.stations" icon="icon-pencil" 
                     data-popup=".js-edit-stations-popup" data-popup-toggle="" />
               </div>
-        </c:if>
+        </cti:checkRolesAndProperties>
         
     </tags:boxContainer2>
 

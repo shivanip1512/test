@@ -70,9 +70,6 @@ public class BusViewController {
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
         
-        boolean hasSubBusControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-        model.addAttribute("hasSubBusControl", hasSubBusControl);
-        
         LiteYukonPAObject bus = dbCache.getAllPaosMap().get(subBusId);
         LitePoint pfPoint = attrService.getPointForAttribute(bus, BuiltInAttribute.POWER_FACTOR);
         model.addAttribute("pfPoint", pfPoint);

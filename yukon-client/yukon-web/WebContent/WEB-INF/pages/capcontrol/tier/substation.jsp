@@ -28,11 +28,11 @@
 
 <c:set var="substationId" value="${substation.id}"/>
 
-<c:if test="${hasSubstationControl}">
+<cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="substationState"]');
     </script>
-</c:if>
+</cti:checkRolesAndProperties>
 
 <c:if test="${!orphan}">
     <script type="text/javascript">
@@ -69,9 +69,9 @@ $(function() {
     </i:simplePopup>
     <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
 
-    <c:if test="${hasSubstationControl}">
+    <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
         <cm:dropdownOption linkId="substationState_${substationId}" key=".substation.actions" icon="icon-cog" href="javascript:void(0);" />
-    </c:if>
+    </cti:checkRolesAndProperties>
     
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/substations/${substationId}/edit" />

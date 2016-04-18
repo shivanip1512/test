@@ -38,13 +38,18 @@
         $('.selectedZone').removeClass('selectedZone');
         $(span).addClass('selectedZone');
     }
-    
+
 </script>
+    
+<cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS">
+    <script type="text/javascript">
+        addCommandMenuBehavior('a[id^="subbusState"]');
+    </script>
+</cti:checkRolesAndProperties>
 
 <c:set var="dividerAdded" value="false" />
 
-<c:if test="${hasSubBusControl}">
-    
+ <cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS"> 
     <div class="js-page-additional-actions dn">
         <c:if test="${not dividerAdded}">
             <li class="divider">
@@ -52,7 +57,7 @@
         </c:if>
         <cm:dropdownOption linkId="subbusState_${subBusId}" key="yukon.common.actions" icon="icon-cog"/>
     </div>
-</c:if>
+</cti:checkRolesAndProperties>
 
 <c:if test="${hasEditingRole}">
     <div class="js-page-additional-actions dn">

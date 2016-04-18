@@ -34,7 +34,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
@@ -64,7 +63,6 @@ public class CapBankController {
 
     @Autowired private PointDao pointDao;
     @Autowired private CapBankService capbankService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private CapControlCache ccCache;
     @Autowired private EnergyCompanyDao ecDao;
@@ -147,10 +145,6 @@ public class CapBankController {
         }
         model.addAttribute("capbank", capbank);
         model.addAttribute("orphan", true);
-        
-        boolean hasCapbankControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, userContext.getYukonUser());
-        model.addAttribute("hasCapbankControl", hasCapbankControl);
-
         
         if(capbank.getId() != null) {
 
@@ -248,8 +242,6 @@ public class CapBankController {
         capbankService.setAssignedPoints(capbank);
         model.addAttribute("unassignedPoints", capbankService.getUnassignedPoints(capbank));
         
-        model.addAttribute("canEdit", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser()));
-
         return "capBank.jsp";
     }
     

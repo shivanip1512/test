@@ -61,26 +61,17 @@
                     <td class="tar">
                         <span style="margin-right:10px;"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="PFACTOR"/></span>
                        <cm:dropdown icon="icon-cog" triggerClasses="fr">
-                            <c:if test="${hasAreaControl}">
+                            <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
                                 <li>
                                     <a id="areaState_${areaId}" href="javascript:void(0)" class="clearfix">
                                         <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".area.actions"/></span>
                                     </a>
                                 </li>
-                             </c:if>
-                                
-                            <c:choose>
-                                <c:when test="${hasEditingRole}">
-                                    <c:set var="editKey" value="edit"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:set var="editKey" value="info"/>
-                                </c:otherwise>
-                            </c:choose>
+                             </cti:checkRolesAndProperties>
                             
                             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                 <cti:url var="editUrl" value="/capcontrol/areas/${areaId}/edit"/>
-                                <cm:dropdownOption key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
+                                <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
                             </cti:checkRolesAndProperties>
 
                             <c:if test="${showAnalysis}">

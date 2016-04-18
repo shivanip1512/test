@@ -111,25 +111,9 @@ public class SubstationController {
 
         Instant startPage = Instant.now();
         
-        model.addAttribute("canEdit", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user));
         boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
         boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
         model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
-        
-        boolean hasSubstationControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user);
-        model.addAttribute("hasSubstationControl", hasSubstationControl);
-        
-        boolean hasSubBusControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-        model.addAttribute("hasSubBusControl", hasSubBusControl);
-        
-        boolean hasFeederControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user);
-        model.addAttribute("hasFeederControl", hasFeederControl);
-        
-        boolean hasCapbankControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
-        model.addAttribute("hasCapbankControl", hasCapbankControl);
-        
-        boolean showFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
-        model.addAttribute("showFlip", showFlip);
         
         Object modelSubstation = model.get("substation");
         if (modelSubstation instanceof CapControlSubstation) {

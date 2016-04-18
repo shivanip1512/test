@@ -18,19 +18,19 @@
 
     <tags:setFormEditMode mode="${mode}" />
     
-    <c:if test="${hasCapbankControl}">
+<cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="capbankState_"]');
     </script>
-</c:if>
+</cti:checkRolesAndProperties>
 
 <div class="js-page-additional-actions dn">
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <li class="divider" />
     </cti:checkRolesAndProperties>
-    <c:if test="${hasCapbankControl}">
+    <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
         <cm:dropdownOption linkId="capbankState_${capbank.id}" key=".substation.capBank.actions" icon="icon-cog" href="javascript:void(0);" />
-    </c:if>
+    </cti:checkRolesAndProperties>
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/capbanks/${capbank.id}/edit" />
         <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
@@ -377,9 +377,9 @@
                                 <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].lowerBandwidth" size="10" /></span>
                             </td>
                             <td>
-                                <c:if test="${canEdit}">
+                                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-capbank-point show-on-hover" />
-                                </c:if>
+                                </cti:checkRolesAndProperties>
                             </td>
                             <form:hidden path="ccMonitorBankList[${idx}].deviceId" />
                             <form:hidden path="ccMonitorBankList[${idx}].pointId" />
@@ -388,12 +388,12 @@
                         </c:forEach>
                 </table>        
                 
-                <c:if test="${canEdit}">                
+                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                     <div class="action-area">
                         <cti:button nameKey="edit.points" icon="icon-pencil"
                             data-popup=".js-edit-points-popup" data-popup-toggle=""/>
                     </div>
-                </c:if>
+                </cti:checkRolesAndProperties>
                 
              </tags:boxContainer2>    
                 
