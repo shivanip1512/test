@@ -135,6 +135,12 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFN440_2133TD(DeviceTypes.RFN440_2133TD, "RFN-440-2133TD", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN500S4X(DeviceTypes.RFN500S4X, "RFN-500S4x", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN500S4E_AD(DeviceTypes.RFN500S4E_AD, "RFN-500S4e-AD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN500S4E_AT(DeviceTypes.RFN500S4E_AT, "RFN-500S4e-AT", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN500S4E_AR(DeviceTypes.RFN500S4E_AR, "RFN-500S4e-AR", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN500S4E_RD(DeviceTypes.RFN500S4E_RD, "RFN-500S4e-RD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN500S4E_RT(DeviceTypes.RFN500S4E_RT, "RFN-500S4e-RT", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN500S4E_RR(DeviceTypes.RFN500S4E_RR, "RFN-500S4e-RR", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFWMETER(DeviceTypes.RFWMETER, "RFW-Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
     LCR6200_RFN(DeviceTypes.LCR6200_RFN, "LCR-6200 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),

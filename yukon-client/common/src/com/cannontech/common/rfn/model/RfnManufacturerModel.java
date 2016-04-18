@@ -56,7 +56,13 @@ public enum RfnManufacturerModel {
     RFN_430SL3(PaoType.RFN430SL3, "SCH", "SENTINEL-L3"),
     RFN_430SL4(PaoType.RFN430SL4, "SCH", "SENTINEL-L4"),
     
-    RFN_500_S4X(PaoType.RFN500S4X, "LGYR", "E650"),
+    RFN_500S4X(PaoType.RFN500S4X, "LGYR", "E650"),
+    RFN_500S4E_AD(PaoType.RFN500S4E_AD, "LGYR", "S4-AD"),
+    RFN_500S4E_AT(PaoType.RFN500S4E_AT, "LGYR", "S4-AT"),
+    RFN_500S4E_AR(PaoType.RFN500S4E_AR, "LGYR", "S4-AR"),
+    RFN_500S4E_RD(PaoType.RFN500S4E_RD, "LGYR", "S4-RD"),
+    RFN_500S4E_RT(PaoType.RFN500S4E_RT, "LGYR", "S4-RT"),
+    RFN_500S4E_RR(PaoType.RFN500S4E_RR, "LGYR", "S4-RR"),
     ;
     
     private PaoType type;

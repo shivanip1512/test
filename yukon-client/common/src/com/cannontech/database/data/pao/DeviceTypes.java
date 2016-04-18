@@ -233,6 +233,12 @@ public interface DeviceTypes extends TypeBase
     public final static int GWY800 = DEVICE_OFFSET + 174;
     
     public final static int RFN500S4X = DEVICE_OFFSET + 175; 
+    public final static int RFN500S4E_AD = DEVICE_OFFSET + 176;
+    public final static int RFN500S4E_AT = DEVICE_OFFSET + 177;
+    public final static int RFN500S4E_AR = DEVICE_OFFSET + 178;
+    public final static int RFN500S4E_RD = DEVICE_OFFSET + 179;
+    public final static int RFN500S4E_RT = DEVICE_OFFSET + 180;
+    public final static int RFN500S4E_RR = DEVICE_OFFSET + 181;
     
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
