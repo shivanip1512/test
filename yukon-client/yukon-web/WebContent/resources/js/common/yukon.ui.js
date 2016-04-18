@@ -770,6 +770,7 @@ yukon.ui = (function () {
                 bigContent = popup.is('[data-big-content]'),
                 loadEvent = popup.data('loadEvent'),
                 options = {
+                    modal: true,
                     minWidth: popup.is('[data-min-width]') ? popup.data('minWidth') : '150',
                     width: popup.is('[data-width]') ? popup.data('width') : 'auto',
                     height: popup.is('[data-height]') ? popup.data('height') : 'auto',

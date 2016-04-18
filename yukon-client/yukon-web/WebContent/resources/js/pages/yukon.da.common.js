@@ -232,7 +232,7 @@ yukon.da.common = (function () {
                 var content = $('#contentPopup');
                 content.load(yukon.url('/capcontrol/menu/create'), function () {
                     var title = content.find('input.title').val();
-                    content.dialog({title: title});
+                    content.dialog({title: title, modal: true});
                 });
             });
         },
@@ -449,7 +449,8 @@ yukon.da.common = (function () {
             var dialogArgs = {
                 'title': title,
                 'width': 'auto',
-                'height': 'auto'
+                'height': 'auto',
+                'modal': true
             },
             selector = selector || '<div></div>',
             dialog = $(selector);
@@ -467,7 +468,8 @@ yukon.da.common = (function () {
                 'title': $('#menuPopup #dialogTitle').val(),
                 'width': 'auto',
                 'height': 'auto',
-                'resizable': false
+                'resizable': false,
+                'modal': true
             };
             
             $.extend(dialogArgs, params);

@@ -18,6 +18,7 @@
 <script type="text/javascript">
 var defaults = { width: 'auto',
              autoOpen: false,
+             modal: true,
              title: '${cti:escapeJavaScript(title)}'
 };
 

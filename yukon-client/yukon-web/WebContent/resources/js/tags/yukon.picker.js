@@ -558,7 +558,7 @@ yukon.protoPicker = function (okText,
                 buttons = [{'text' : that.cancelText, 'click' : function () {cancel.call(that);}},
                            {'text' : that.okText, 'click' : function () {okPressed.call(that);}, 'class': 'primary action'}];
                 if (!that.inline) {
-                    $(document.getElementById(that.pickerId)).dialog({buttons : buttons, width : 600, height : 'auto'});
+                    $(document.getElementById(that.pickerId)).dialog({buttons : buttons, width : 600, height : 'auto', modal: true});
                 }
             }
         });
