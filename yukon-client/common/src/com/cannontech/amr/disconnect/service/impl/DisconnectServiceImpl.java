@@ -486,7 +486,7 @@ public class DisconnectServiceImpl implements DisconnectService {
         
         for (DisconnectStrategy strategy : strategies) {
             FilteredDevices filteredDevices = strategy.filter(meters);
-            if (!filteredDevices.getNotConfigured().isEmpty() || !filteredDevices.getValid().isEmpty()) {
+            if (!filteredDevices.getValid().isEmpty() || !filteredDevices.getNotConfigured().isEmpty()) {
                 return true;
             }
         }

@@ -9,14 +9,14 @@
 
 <input type="hidden" id="deviceIdentifier" value="${device.deviceId}">
 <tags:nameValueContainer2 naturalWidth="false">
-        <c:if test="${showDisconnect}">
+        <tags:nameValue2 label="${attribute}" valueClass="full-width">
+            <cti:pointStatus pointId="${pointId}" classes="vatt"/>
+            <cti:pointValue pointId="${pointId}" format="VALUE"/>&nbsp;
+            <tags:historicalValue pointId="${pointId}" pao="${device}" classes="wsnw"/>
+        </tags:nameValue2>
+        <c:if test="${isDisconnectCollarSupported}">
 	        <c:choose>
 	            <c:when test="${deviceMCT400Series.disconnectAddress != null}">
-		            <tags:nameValue2 label="${attribute}" valueClass="full-width">
-		                <cti:pointStatus pointId="${pointId}" classes="vatt"/>
-		                <cti:pointValue pointId="${pointId}" format="VALUE"/>&nbsp;
-		                <tags:historicalValue pointId="${pointId}" pao="${device}" classes="wsnw"/>
-	                </tags:nameValue2>
 		            <tags:nameValue2 nameKey=".disconnectAddress">${fn:escapeXml(deviceMCT400Series.disconnectAddress)}</tags:nameValue2>
 	            </c:when>
 	            <c:otherwise>
@@ -64,7 +64,7 @@
 	data-ok-text="<cti:msg2 key="yukon.common.save"/>"
 	data-url="${editUrl}">
 </div>
-
+<cti:msgScope paths="yukon.web.widgets.disconnectMeterWidget">
 <div class="action-area">
 	<c:if test="${success}">
 		<c:if test="${command != null}">
@@ -77,7 +77,7 @@
 		  <span class="success fl"><i:inline key=".query.success" /></span>
 		</c:if>
 	</c:if>
-	
+	<c:if test="${(isDisconnectCollarSupported && deviceMCT400Series.disconnectAddress != null ) || (!isDisconnectCollarSupported && showDisconnect)}">
 	<c:if test="${supportsRead}">
 	   <tags:widgetActionRefresh method="read" nameKey="read" icon="icon-read" classes="right M0"/>
 	</c:if>
@@ -91,9 +91,11 @@
 		</c:if>
 		<tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true" classes="left"/>
 	</cti:checkRolesAndProperties>
+	</c:if>
 	<cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
-	    <c:if test="${showDisconnect}">
+	    <c:if test="${isDisconnectCollarSupported}">
 		  <cti:button nameKey="edit" icon="icon-pencil" data-popup="#disconnect-meter-popup"/>
 	    </c:if>
 	</cti:checkRolesAndProperties>
 </div>
+</cti:msgScope>
