@@ -122,7 +122,7 @@ private:
 
     void purgeDeviceWork(const device_activity_map::value_type &active_device, const YukonError_t error_code);
     void purgePortWork(const YukonError_t error_code);
-    void purgeTimeout(device_record &dr);
+    void deactivateTimeout(device_record &dr);
 
     bool distributeRequests(const Cti::Timing::MillisecondTimer &timer, const unsigned long slice);
     void handleDeviceRequest(OUTMESS *om);

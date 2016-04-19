@@ -406,7 +406,7 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
             _waiting_for_data.remove(&dr);
             _waiting_devices.erase(&dr);
 
-            purgeTimeout(dr);
+            deactivateTimeout(dr);
 
         }
         break;
@@ -424,7 +424,7 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
 }
 
 // We're going to remove the timeout timer from the queue
-void UnsolicitedHandler::purgeTimeout(device_record &dr)
+void UnsolicitedHandler::deactivateTimeout(device_record &dr)
 {
     // We'll narrow the search by looking only at those matching our timeout value
     decltype(_timeouts)::iterator itr, end;
@@ -941,7 +941,7 @@ void UnsolicitedHandler::addInboundWork(device_record &dr, packet *p)
         if( itr != _waiting_devices.end() )
         {
             _waiting_devices.erase(&dr);
-            purgeTimeout(dr);
+            deactivateTimeout(dr);
 
             //  we just got work - we're ready to try a decode
             queueToDecode(&dr);
@@ -968,10 +968,10 @@ bool UnsolicitedHandler::expireTimeouts(const MillisecondTimer &timer, const uns
         if (timeout == dr->timeout)
         {
             _timeouts.erase(_timeouts.begin());
-        }
 
-        queueToDecode(dr);
-        _waiting_for_data.remove(dr);
+            queueToDecode(dr);
+            _waiting_for_data.remove(dr);
+        }
 
         if( timer.elapsed() > until )
         {
