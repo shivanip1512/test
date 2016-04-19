@@ -115,11 +115,17 @@
     <entry key="yukon.common.pao.RFN440_2132TD">RFN-440-2132TD</entry>
     <entry key="yukon.common.pao.RFN440_2133TD">RFN-440-2133TD</entry>
     
-    <entry key="yukon.common.pao.RFN530S4X">RFN-500S4x</entry>
-    <entry key="yukon.common.pao.RFN530S4EAD">RFN-500S4eAD</entry>
-    <entry key="yukon.common.pao.RFN530S4EAT">RFN-500S4eAT</entry>
-    <entry key="yukon.common.pao.RFN530S4ERD">RFN-500S4eRD</entry>
-    <entry key="yukon.common.pao.RFN530S4ERT">RFN-500S4eRT</entry>
+    <entry key="yukon.common.pao.RFN510FL">RFN-510fL</entry>
+    <entry key="yukon.common.pao.RFN520FAX">RFN-520fAX</entry>
+    <entry key="yukon.common.pao.RFN520FRX">RFN-520fRX</entry>
+    <entry key="yukon.common.pao.RFN520FAXD">RFN-520fAXD</entry>
+    <entry key="yukon.common.pao.RFN520FRXD">RFN-520fRXD</entry>
+    
+    <entry key="yukon.common.pao.RFN530S4X">RFN-530S4x</entry>
+    <entry key="yukon.common.pao.RFN530S4EAD">RFN-530S4eAD</entry>
+    <entry key="yukon.common.pao.RFN530S4EAT">RFN-530S4eAT</entry>
+    <entry key="yukon.common.pao.RFN530S4ERD">RFN-530S4eRD</entry>
+    <entry key="yukon.common.pao.RFN530S4ERT">RFN-530S4eRT</entry>
 
     <entry key="yukon.common.pao.RFWMETER">RFW-Meter</entry>
     <entry key="yukon.common.pao.LCR6200_RFN">LCR-6200 RFN</entry>
