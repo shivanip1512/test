@@ -427,17 +427,16 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
 void UnsolicitedHandler::purgeTimeout(device_record &dr)
 {
     // We'll narrow the search by looking only at those matching our timeout value
-    CtiTime timeout = dr.timeout;
-    auto timeoutIt = _timeouts.lower_bound(timeout); // gets first element in range
-    auto timeoutEnd = _timeouts.upper_bound(timeout); // gets last
-    while (timeoutIt != timeoutEnd)
+    decltype(_timeouts)::iterator itr, end;
+    std::tie(itr, end) = _timeouts.equal_range(dr.timeout);
+    while (itr != end)
     {
-        if (timeoutIt->second->device->getID() == dr.device->getID())
+        if (itr->second->device->getID() == dr.device->getID())
         {
-            _timeouts.erase(timeoutIt);
+            _timeouts.erase(itr);
             break;
         }
-        timeoutIt++;
+        itr++;
     }
 }
 
@@ -942,6 +941,8 @@ void UnsolicitedHandler::addInboundWork(device_record &dr, packet *p)
         if( itr != _waiting_devices.end() )
         {
             _waiting_devices.erase(&dr);
+            purgeTimeout(dr);
+
             //  we just got work - we're ready to try a decode
             queueToDecode(&dr);
         }
@@ -964,7 +965,11 @@ bool UnsolicitedHandler::expireTimeouts(const MillisecondTimer &timer, const uns
         const CtiTime timeout = _timeouts.begin()->first;
         device_record *dr = _timeouts.begin()->second;
 
-        _timeouts.erase(_timeouts.begin());
+        if (timeout == dr->timeout)
+        {
+            _timeouts.erase(_timeouts.begin());
+        }
+
         queueToDecode(dr);
         _waiting_for_data.remove(dr);
 
@@ -986,8 +991,6 @@ bool UnsolicitedHandler::processInbounds(const MillisecondTimer &timer, const un
 
 void UnsolicitedHandler::processInbound(device_record *dr)
 {
-    purgeTimeout(*dr);
-
     if( isGpuffDevice(*dr->device) )
     {
         processGpuffInbound(*dr);
