@@ -69,9 +69,9 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.alreadyExists.statusPointMonitorName">Name already exists.</entry>
     
     <!-- StatusPointMonitorController view.jsp -->
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.pageName">Status Point Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorView.pageName">Status Point Processing</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.pageDescription">{0}</entry>
-	<entry key="yukon.web.modules.amr.statusPointMonitorView.title">Status Point Monitoring</entry>
+	<entry key="yukon.web.modules.amr.statusPointMonitorView.title">Status Point Processing</entry>
 	<entry key="yukon.web.modules.amr.statusPointMonitorView.sectionHeader.title">Info</entry>
 	<entry key="yukon.web.modules.amr.statusPointMonitorView.name">Name</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.deviceGroup">Device Group</entry>

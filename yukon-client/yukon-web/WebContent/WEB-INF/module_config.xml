@@ -151,7 +151,7 @@
           <page name="meterEventsReport.selectDevices" type="BASIC">
             <link>/amr/meterEventsReport/selectDevices</link>
             <pages>
-              <page name="meterEventsReport.report" type="DETAIL"/>
+              <page name="meterEventsReport.report" type="BASIC"/>
             </pages>
           </page>
           <page name="meterEventsReport.jobs" type="BASIC"/>
