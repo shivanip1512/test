@@ -180,7 +180,7 @@
     <cti:msg2 var="cronHelpTitle" key=".cronHelpTitle"/>
     <div id="${id}-cron-help" data-title="${cronHelpTitle}" class="dn">
         <i:inline key=".cronHelpStart"/>
-        <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/TutorialLesson06" target="_blank">
+        <a href="http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/tutorial-lesson-06.html" target="_blank">
             <i:inline key=".cronHelpLink"/>
         </a>
         <i:inline key=".cronHelpEnd"/>
