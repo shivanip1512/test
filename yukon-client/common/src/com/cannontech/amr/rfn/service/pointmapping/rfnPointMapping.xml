@@ -2913,13 +2913,11 @@
     
     <pointGroup>    
         <!-- Mappings for RFN-500 nodes -->
-        <paoType value="RFN500S4X" />
-        <paoType value="RFN500S4AD" />
-        <paoType value="RFN500S4AT" />
-        <paoType value="RFN500S4AR" />
-        <paoType value="RFN500S4RD" />
-        <paoType value="RFN500S4RT" />
-        <paoType value="RFN500S4RR" />
+        <paoType value="RFN530S4X" />
+        <paoType value="RFN530S4EAD" />
+        <paoType value="RFN530S4EAT" />
+        <paoType value="RFN530S4ERD" />
+        <paoType value="RFN530S4ERT" />
         
         <point name="Delivered kWh">
             <uom>Wh</uom>

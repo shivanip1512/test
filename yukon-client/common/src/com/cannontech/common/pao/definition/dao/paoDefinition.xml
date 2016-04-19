@@ -9916,7 +9916,7 @@
         </attributes>
     </pao>
     
-    <pao id="RFN500S4X" inherits="RFN500_BASE">
+    <pao id="RFN530S4X" inherits="RFN500_BASE">
         <displayName>RFN-500S4x</displayName>
         <points>
             <point type="Analog" offset="50">
@@ -11225,20 +11225,16 @@
         </attributes>
     </pao>
     
-    <pao id="RFN500S4AD" inherits="RFN500_BASE">
-        <displayName>RFN-500S4AD</displayName>
+    <pao id="RFN530S4EAD" inherits="RFN500_BASE">
+        <displayName>RFN-530S4eAD</displayName>
     </pao>
     
-    <pao id="RFN500S4AT" inherits="RFN500_BASE, RFN500_TOU_RECORDING_ACTIVE">
-        <displayName>RFN-500S4AT</displayName>
+    <pao id="RFN530S4EAT" inherits="RFN500_BASE, RFN500_TOU_RECORDING_ACTIVE">
+        <displayName>RFN-530S4eAT</displayName>
     </pao>
     
-    <pao id="RFN500S4AR" inherits="RFN500_BASE, RFN500_TOU_RECORDING_ACTIVE">
-        <displayName>RFN-500S4AR</displayName>
-    </pao>
-    
-    <pao id="RFN500S4RD" inherits="RFN500_BASE">
-        <displayName>RFN-500S4RD</displayName>
+    <pao id="RFN530S4ERD" inherits="RFN500_BASE">
+        <displayName>RFN-500S4eRD</displayName>
         <points>
             <point type="Analog" offset="215">
                 <name>Sum kVArh</name>
@@ -11290,14 +11286,15 @@
         </attributes>
     </pao>
     
-    <pao id="RFN500S4RT" inherits="RFN500_BASE, RFN500_TOU_RECORDING_REACTIVE">
-        <displayName>RFN-500S4RT</displayName>
+    <pao id="RFN530S4ERT" inherits="RFN500_BASE, RFN500_TOU_RECORDING_REACTIVE">
+        <displayName>RFN-530S4eRT</displayName>
     </pao>
     
-    <pao id="RFN500S4RR" inherits="RFN500_BASE, RFN500_TOU_RECORDING_REACTIVE">
+<!--     
+    <pao id="RFN500RR" inherits="RFN500_BASE, RFN500_TOU_RECORDING_REACTIVE">
         <displayName>RFN-500S4RR</displayName>
     </pao>
-    
+     -->
     <pao id="TRANSDATA_MARKV">
         <displayName>TRANSDATA MARK-V</displayName>
         <displayGroup>Electronic Meters</displayGroup>
