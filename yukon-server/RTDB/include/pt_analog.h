@@ -74,6 +74,16 @@ public:
         {
             tag &= ~TAG_ATTRIB_CONTROL_AVAILABLE;
         }
+
+        if( _pointControl && _pointControl->isControlInhibited() )
+        {
+            tag |= TAG_DISABLE_CONTROL_BY_POINT;
+        }
+        else
+        {
+            tag &= ~TAG_DISABLE_CONTROL_BY_POINT;
+        }
+
         return Inherited::adjustStaticTags(tag);
     }
 
