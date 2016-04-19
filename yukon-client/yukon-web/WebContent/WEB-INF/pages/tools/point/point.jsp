@@ -467,7 +467,9 @@
                     <tbody>
                         <c:forEach var="alarmTableEntry" items="${pointModel.alarmTableEntries}" varStatus="status">
                         <tr>
-                            <td>${pointModel.alarmTableEntries[status.index].condition}</td>
+                            <td>${pointModel.alarmTableEntries[status.index].condition}
+                                <form:hidden path="alarmTableEntries[${status.index}].condition"/>
+                            </td>
                             <td>
                                 <%-- TODO this should take the liteID for the value rather than converting --%>
                                 <tags:selectWithItems path="alarmTableEntries[${status.index}].generate" 
