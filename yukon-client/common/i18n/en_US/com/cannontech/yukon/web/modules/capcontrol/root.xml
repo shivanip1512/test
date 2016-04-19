@@ -1111,12 +1111,14 @@
     <entry key="yukon.web.modules.capcontrol.cbc.dnpConfig">DNP Config</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.internalRetries">Internal Retries</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.useLocal">Use Local Time</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.timeOffset">Time Offset</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.enableTimeSync">Timesyncs Enabled</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.omitTimeReq">Omit Time Request</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit1">Unsolicited Class 1</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit2">Unsolicited Class 2</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit3">Unsolicited Class 3</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.save.fail">Unable to Save CBC: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.info.updated">CBC info was successfully updated.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.copy.success">Copy of CBC was successfully created.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.copy.fail">Name not available</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.delete.success">Deleted CBC</entry>

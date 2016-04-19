@@ -1035,6 +1035,9 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             case "localTime":
                 dnpConfiguration.setLocalTime(Boolean.valueOf(item.getValue()));
                 break;
+            case "timeOffset":
+                dnpConfiguration.setTimeOffset(item.getValue());
+                break;
             case "omitTimeRequest":
                 dnpConfiguration.setOmitTimeRequest(Boolean.valueOf(item.getValue()));
                 break;

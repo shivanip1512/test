@@ -15,6 +15,7 @@ public class DNPConfiguration extends LightDeviceConfiguration {
     private boolean enableUnsolicitedMessageClass1 = true;
     private boolean enableUnsolicitedMessageClass2 = true;
     private boolean enableUnsolicitedMessageClass3 = true;
+    private String timeOffset;
     
     public DNPConfiguration(Integer configurationId, String name, String description) {
         super(configurationId, name, description);
@@ -74,5 +75,13 @@ public class DNPConfiguration extends LightDeviceConfiguration {
     
     public void setEnableUnsolicitedMessageClass3(boolean enableUnsolicitedMessageClass3) {
         this.enableUnsolicitedMessageClass3 = enableUnsolicitedMessageClass3;
+    }
+
+    public String getTimeOffset() {
+        return timeOffset;
+    }
+
+    public void setTimeOffset(String timeOffset) {
+        this.timeOffset = timeOffset;
     }
 }

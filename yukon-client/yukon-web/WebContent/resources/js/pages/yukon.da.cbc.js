@@ -70,11 +70,13 @@ yukon.da.cbc = (function () {
                 yukon.ui.block(dnpFields, 200);
                 $.get(url)
                 .done(function (data) {
-                    data.dnpCategory.deviceConfigurationItems.forEach(function (field) {
-                        var fieldName = field.fieldName;
-                        var value = field.value;
-                        dnpFields.find('.js-dnp-' + fieldName).text(value);
-                    });
+                    if(data.dnpCategory != null) {
+                        data.dnpCategory.deviceConfigurationItems.forEach(function (field) {
+                            var fieldName = field.fieldName;
+                            var value = field.value;
+                            dnpFields.find('.js-dnp-' + fieldName).text(value);
+                        });
+                    }
                 }).always(function () {
                     yukon.ui.unblock(dnpFields);
                 });

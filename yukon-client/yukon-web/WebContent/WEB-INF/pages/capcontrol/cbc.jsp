@@ -199,10 +199,10 @@
                             valueClass="js-dnp-field js-dnp-internalRetries">
                             ${dnpConfig.internalRetries}
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".useLocal"
-                            valueClass="js-dnp-field js-dnp-localTime">
-                            ${dnpConfig.localTime}
-                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".timeOffset"
+                            valueClass="js-dnp-field js-dnp-timeOffset">
+                            <i:inline key="yukon.web.modules.tools.configs.enum.dnpTimeOffset.${dnpConfig.timeOffset}"/>
+                        </tags:nameValue2>                        
                         <tags:nameValue2 nameKey=".enableTimeSync"
                             valueClass="js-dnp-field js-dnp-enableDnpTimesyncs">
                             ${dnpConfig.enableDnpTimesyncs}

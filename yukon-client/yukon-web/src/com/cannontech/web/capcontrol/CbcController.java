@@ -114,7 +114,8 @@ public class CbcController {
     public String save(
             @ModelAttribute("cbc") CapControlCBC cbc, 
             BindingResult result, 
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            FlashScope flash) {
 
         cbcValidator.validate(cbc, result);
 
@@ -123,6 +124,8 @@ public class CbcController {
         }
         cbcService.save(cbc);
 
+        // Success
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".info.updated"));
         return "redirect:/capcontrol/cbc/" + cbc.getId();
     }
 
@@ -281,7 +284,7 @@ public class CbcController {
             return "redirect:cbc/create";
         }
 
-        return "redirect:cbc/" + cbc.getId();
+        return "redirect:cbc/" + cbc.getId() + "/edit";
     }
 
 }
