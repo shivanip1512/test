@@ -108,4 +108,8 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
         return 2;
     }
     
+    @ManagedAttribute
+    public String getArchivedReadings() {
+        return null;
+    }
 }

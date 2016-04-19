@@ -59,4 +59,79 @@
             <tags:widget bean="subscribedMonitorsWidget" container="section"/>
         </div>
     </div>
+    
+    <c:if test="${showSystemHealth}">
+        <div class="column one nogutter">
+        <cti:msgScope paths="modules.support.systemHealth">
+            <tags:sectionContainer2 nameKey="serverBrokerStatistics">
+                <c:if test="${not empty extendedQueueData}">
+                    <table class="compact-results-table stacked-md">
+                        <thead>
+                            <th><i:inline key=".queue"/></th>
+                            <th class="tar"><i:inline key=".archivedReadings"/></th>
+                            <th class="tar"><i:inline key=".processedArchiveRequests"/></th>
+                            <th class="tar"><i:inline key=".enqueuedCount"/></th>
+                            <th class="tar"><i:inline key=".dequeuedCount"/></th>
+                            <th class="tar"><i:inline key=".queueSize"/></th>
+                            <th class="tar"><i:inline key=".averageEnqueueTime"/></th>
+                            <%-- <th><i:inline key=".status"/></th> --%>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach var="queue" items="${extendedQueueData}">
+                                <tr>
+                                    <td class="wsnw">
+                                        <cti:button id="favMetricButton" renderMode="image" icon="icon-star" data-metric="${queue.metricIdentifier}" data-action="unfavorite"/>
+                                        <span title="${queue.queueName}">
+                                            <i:inline key="${queue}"/>
+                                        </span>
+                                    </td>
+                                    <td class="tar" id="${queue.metricIdentifier}-arc">${queue.archivedReadingsCount}</td>
+                                    <td class="tar" id="${queue.metricIdentifier}-arp">${queue.archiveRequestsProcessed}</td>
+                                    <td class="tar" id="${queue.metricIdentifier}-enq">${queue.enqueuedCount}</td>
+                                    <td class="tar" id="${queue.metricIdentifier}-deq">${queue.dequeuedCount}</td>
+                                    <td class="tar" id="${queue.metricIdentifier}-size">${queue.queueSize}</td>
+                                    <td class="tar" id="${queue.metricIdentifier}-avg">${queue.averageEnqueueTime}</td>
+                                    <%-- <td id="${queue.metricIdentifier}-status">${queue.status}</td> --%>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </c:if>
+                <c:if test="${not empty queueData}">
+                    <table class="compact-results-table stacked-md">
+                        <thead>
+                            <th><i:inline key=".queue"/></th>
+                            <th class="tar"><i:inline key=".enqueuedCount"/></th>
+                            <th class="tar"><i:inline key=".dequeuedCount"/></th>
+                            <th class="tar"><i:inline key=".queueSize"/></th>
+                            <th class="tar"><i:inline key=".averageEnqueueTime"/></th>
+                            <%-- <th><i:inline key=".status"/></th> --%>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach var="queue" items="${queueData}">
+                                <tr>
+                                    <td class="wsnw">
+                                        <cti:button id="favMetricButton" renderMode="image" icon="icon-star" data-metric="${queue.metricIdentifier}" data-action="unfavorite"/>
+                                        <span title="${queue.queueName}">
+                                            <i:inline key="${queue}"/>
+                                        </span>
+                                    </td>
+                                    <td class="tar" id="${queue.metricIdentifier}-enq">${queue.enqueuedCount}</td>
+                                    <td class="tar" id="${queue.metricIdentifier}-deq">${queue.dequeuedCount}</td>
+                                    <td class="tar" id="${queue.metricIdentifier}-size">${queue.queueSize}</td>
+                                    <td class="tar" id="${queue.metricIdentifier}-avg">${queue.averageEnqueueTime}</td>
+                                    <%-- <td id="${queue.metricIdentifier}-status">${queue.status}</td> --%>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </c:if>
+            </tags:sectionContainer2>
+        </cti:msgScope>
+        </div>
+        
+        <cti:includeScript link="/resources/js/pages/yukon.support.systemHealth.js"/>
+    </c:if>
 </cti:standardPage>

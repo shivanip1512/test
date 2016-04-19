@@ -1245,4 +1245,7 @@
     
     <bean class="com.cannontech.web.updater.point.CachedPointDataCorrelationServiceImpl"/>
     
+    <bean class="com.cannontech.web.support.service.impl.SystemHealthServiceImpl"/>
+    <bean class="com.cannontech.web.support.dao.impl.UserSystemMetricDaoImpl"/>
+    
 </beans>

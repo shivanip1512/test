@@ -885,6 +885,7 @@
             </pages>
           </page>
           <page name="indexes" type="BASIC"/>
+          <page name="systemHealth" type="BASIC"/>
         </pages>
       </page>
       <page name="siteMap" type="BASIC">

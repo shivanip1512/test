@@ -292,4 +292,26 @@
     <entry key="yukon.web.menu.tools.deviceGroupUpload">Device Group Upload</entry>
     <entry key="yukon.web.menu.tools.manageIndex">Manage Indexes</entry>
     
+    <!-- systemHealth.jsp -->
+    <entry key="yukon.web.modules.support.systemHealth.pageName">System Health</entry>
+    
+    <entry key="yukon.web.modules.support.systemHealth.serverBrokerStatistics.title">Server Broker Statistics</entry>
+    <entry key="yukon.web.modules.support.systemHealth.archivedReadings">Archived Readings</entry>
+    <entry key="yukon.web.modules.support.systemHealth.processedArchiveRequests">Processed Archive Requests</entry>
+    <entry key="yukon.web.modules.support.systemHealth.enqueuedCount">Enqueued Count</entry>
+    <entry key="yukon.web.modules.support.systemHealth.dequeuedCount">Dequeued Count</entry>
+    <entry key="yukon.web.modules.support.systemHealth.queueSize">Queue Size</entry>
+    <entry key="yukon.web.modules.support.systemHealth.averageEnqueueTime">Average Enqueue Time</entry>
+    <entry key="yukon.web.modules.support.systemHealth.queue">Queue</entry>
+    <entry key="yukon.web.modules.support.systemHealth.status">Status</entry>
+    
+    <entry key="yukon.web.modules.support.systemHealth.metric.meterReads">RFN Meter Archive Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.lcrReads">RFN LCR Archive Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayArchive">Gateway Archive Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.rfDa">RF DA Archive Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayArchiveRequest">Gateway Archive Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayDataRequest">Gateway Data Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayData">Gateway Data</entry>
+    
+    <entry key="yukon.web.modules.support.systemHealth.favoriteError">Error saving favorite settings.</entry>
 </properties>

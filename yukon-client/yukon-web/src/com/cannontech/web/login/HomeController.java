@@ -1,6 +1,7 @@
 package com.cannontech.web.login;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -31,6 +32,10 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.userpage.service.UserPageService;
+import com.cannontech.web.support.SystemHealthMetric;
+import com.cannontech.web.support.SystemHealthMetricIdentifier;
+import com.cannontech.web.support.SystemHealthMetricType;
+import com.cannontech.web.support.service.SystemHealthService;
 import com.google.common.base.Function;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
@@ -41,6 +46,7 @@ public class HomeController {
     
     private final Logger log = YukonLogManager.getLogger(HomeController.class);
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private SystemHealthService systemHealthService;
     @Autowired private UserPageDao userPageDao;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
     @Autowired private UserPageService userPageService;
@@ -58,18 +64,34 @@ public class HomeController {
     @RequestMapping("/dashboard")
     public String dashboard(ModelMap model, YukonUserContext userContext) {
         List<UserPage> pages = userPageDao.getPagesForUser(userContext.getYukonUser());
-
+        
+        // History
         List<UserPage> history = pages;//setupDisplayableHistory(pages, userContext);
         if (history.size() > UserPageDao.MAX_HISTORY ) {
             history = history.subList(0, UserPageDao.MAX_HISTORY);
         }
         model.put("history", history);
-
+        
+        // Favorites
         Multimap<SiteMapCategory, UserPage> favoritesMap = setupDisplayableFavorites(pages, userContext);
         model.put("favorites", favoritesMap.asMap());
 
         model.addAttribute("jreInstaller", CtiUtilities.getJREInstaller());
-
+        
+        // System health metrics
+        List<SystemHealthMetricIdentifier> favoriteIds = systemHealthService.getFavorites(userContext.getYukonUser());
+        Multimap<SystemHealthMetricType, SystemHealthMetric> metrics = systemHealthService.getMetricsByIdentifiers(favoriteIds);
+        
+        if (metrics.size() > 0) {
+            model.addAttribute("showSystemHealth", true);
+            Collection<SystemHealthMetric> extendedQueueData = metrics.get(SystemHealthMetricType.JMS_QUEUE_EXTENDED);
+            model.addAttribute("extendedQueueData", extendedQueueData);
+            Collection<SystemHealthMetric> queueData = metrics.get(SystemHealthMetricType.JMS_QUEUE);
+            model.addAttribute("queueData", queueData);
+        } else {
+            model.addAttribute("showSystemHealth", false);
+        }
+        
         return "dashboard.jsp";
     }
 
