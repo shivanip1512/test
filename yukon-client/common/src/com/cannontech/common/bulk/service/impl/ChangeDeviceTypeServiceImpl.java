@@ -56,7 +56,7 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
             }
         }
         catch (IllegalArgumentException e) {
-            throw new ProcessingException("Invalid device type: " + newDeviceType, "invalidDeviceType", newDeviceType );
+            throw new ProcessingException("Invalid device type: " + newDeviceType, "invalidDeviceType", e, newDeviceType );
         } catch (DataRetrievalFailureException e) {
             throw new ProcessingException("Could not find device with id: " + device.getDeviceId(), "deviceNotFoundWithId",
                                           e, device.getDeviceId());

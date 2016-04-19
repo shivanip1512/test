@@ -92,8 +92,8 @@ public class ProcessingException extends DisplayableRuntimeException implements
         super(message, keyBase + key, displayName, paoName, paoType);
     }
 
-    public ProcessingException(String message, String key, PaoType paoType) {
-        super(message, keyBase + key, paoType);
+    public ProcessingException(String message, String key, Throwable cause, PaoType paoType) {
+        super(message, cause, keyBase + key, paoType);
     }
 
     public ProcessingException(String message, String key, String deviceName, PaoType paoType) {
