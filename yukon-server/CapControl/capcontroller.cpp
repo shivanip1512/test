@@ -38,6 +38,8 @@
 #include "millisecond_timer.h"
 #include "module_util.h"
 #include "mgr_config.h"
+#include "mgr_holiday.h"
+#include "mgr_season.h"
 #include "win_helper.h"
 
 extern void refreshGlobalCParms();
@@ -1905,6 +1907,44 @@ void CtiCapController::parseMessage(CtiMessage *message)
                         CTILOG_DEBUG(dout, "State Group database change received, reloading state groups.");
 
                         ReloadStateNames();
+                    }
+                    else if ( dbChange && dbChange->getDatabase() == ChangeSeasonScheduleDb )
+                    {
+                        CTILOG_DEBUG(dout, "Season Schedule DB change received, reloading schedules.");
+
+                        CtiSeasonManager::getInstance().refresh();
+
+                        /* 
+                            dbChange->getId() is the schedule ID that needs to be reloaded, the manager currently
+                                doesn't have the capability to reload a single schedule.
+
+                            The CapControl objects currently don't get reloaded when a schedule changes - that
+                                is the way is has always worked. Schedule changes were only picked up when an
+                                individual object was reloaded. A CapControl restart was necessary to see the DB
+                                change sooner.
+
+                            In the future it may be nice to schedule a reload of the objects that are tied to
+                                the particular schedule being reloaded.
+                        */
+                    }
+                    else if ( dbChange && dbChange->getDatabase() == ChangeHolidayScheduleDb )
+                    {
+                        CTILOG_DEBUG(dout, "Holiday Schedule DB change received, reloading schedules.");
+
+                        CtiHolidayManager::getInstance().refresh();
+
+                        /* 
+                            dbChange->getId() is the schedule ID that needs to be reloaded, the manager currently
+                                doesn't have the capability to reload a single schedule.
+
+                            The CapControl objects currently don't get reloaded when a schedule changes - that
+                                is the way is has always worked. Schedule changes were only picked up when an
+                                individual object was reloaded. A CapControl restart was necessary to see the DB
+                                change sooner.
+
+                            In the future it may be nice to schedule a reload of the objects that are tied to
+                                the particular schedule being reloaded.
+                        */
                     }
                 }
                 break;

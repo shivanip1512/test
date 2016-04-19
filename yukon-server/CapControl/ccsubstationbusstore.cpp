@@ -16,6 +16,7 @@
 #include "msg_signal.h"
 #include "capcontroller.h"
 #include "mgr_holiday.h"
+#include "mgr_season.h"
 #include "utility.h"
 #include "thread_monitor.h"
 #include "database_connection.h"
@@ -1169,6 +1170,15 @@ void CtiCCSubstationBusStore::reset()
                 CTILOG_DEBUG(dout, "Database reload beginning");
             }
 
+            /*
+                Refresh the schedules.
+            */
+            CtiSeasonManager::getInstance().refresh();
+            CtiHolidayManager::getInstance().refresh();
+
+            /*************************************************************
+            ******  Loading Strategies                              ******
+            **************************************************************/
             if ( !reloadStrategyFromDatabase(-1) )
             {
                 _isvalid = false;
@@ -3593,9 +3603,10 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                   ChildToParentMap *substation_area_map,
                                   ChildToParentMultiMap *substation_specialarea_map,
                                   CtiCCSubstation_vec *ccSubstations)
+try
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
-    try
+
     {
         if ( substationId > 0 )
         {
@@ -3661,6 +3672,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 modifiedPaoIDs.insert( currentCCSubstation->getPaoId() );
             }
         }
+
         {
             static const std::string sql = 
                 "SELECT "
@@ -3702,146 +3714,156 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
                 rdr["PAObjectID"] >> substationID;
 
-                if ( CtiCCSubstationPtr substation = findInMap( substationID, paobject_substation_map ) )
+                if ( auto substation = Cti::mapFind( *paobject_substation_map, substationID ) )
                 {
-                    substation->assignPoint( rdr );
+                    (*substation)->assignPoint( rdr );
                 }
             }
         }
 
         for ( const long paoID : modifiedPaoIDs )
         {
-            if ( CtiCCSubstationPtr substation = findInMap( paoID, paobject_substation_map ) )
+            if ( auto substation = Cti::mapFind( *paobject_substation_map, paoID ) )
             {
-                for ( const long pointID : *substation->getPointIds() )
+                for ( const long pointID : *(*substation)->getPointIds() )
                 {
-                    pointid_station_map->emplace( pointID, substation );
+                    pointid_station_map->emplace( pointID, *substation );
 
-                    _pointID_to_pao.emplace( pointID, substation );
+                    _pointID_to_pao.emplace( pointID, *substation );
                 }
             }
         }
 
         {
-            static const string sqlNoID = "SELECT CAS.areaid, CAS.substationbusid "
-                                          "FROM ccsubareaassignment CAS";
+            static const std::string sql = 
+                "SELECT "
+                    "AreaID, "
+                    "SubstationBusID "
+                "FROM "
+                    "CCSUBAREAASSIGNMENT";
+
+            static const std::string sqlID = sql +
+                " WHERE SubstationBusID = ?";
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            Cti::Database::DatabaseReader     rdr( connection );
 
-            if (substationId > 0)
+            if ( substationId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " WHERE CAS.substationbusid = ?");
-                rdr.setCommandText(sqlID);
+                rdr.setCommandText( sqlID );
                 rdr << substationId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
-            CtiCCSubstationPtr currentCCSubstation;
             while ( rdr() )
             {
-                long currentAreaId;
-                long currentSubstationId;
+                long currentAreaId,
+                     currentSubstationId;
 
-                rdr["areaid"] >> currentAreaId;
-                rdr["substationbusid"] >> currentSubstationId;
+                rdr["AreaID"]          >> currentAreaId;
+                rdr["SubstationBusID"] >> currentSubstationId;
 
-                if (CtiCCSubstationPtr currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map))
+                if ( CtiCCSubstationPtr currentCCSubstation = findInMap( currentSubstationId, paobject_substation_map ) )
                 {
-                    currentCCSubstation->setParentId(currentAreaId);
-                    CtiCCAreaPtr currentCCArea = NULL;
+                    currentCCSubstation->setParentId( currentAreaId );
 
-                    if (substationId > 0)
-                        currentCCArea = findAreaByPAObjectID(currentAreaId);
-                    else
+                    CtiCCAreaPtr currentCCArea =
+                        ( substationId > 0 )
+                            ? findAreaByPAObjectID( currentAreaId )
+                            : findInMap( currentAreaId, paobject_area_map );
+
+                    if ( currentCCArea )
                     {
-                        currentCCArea = findInMap(currentAreaId, paobject_area_map);
+                        currentCCArea->addSubstationId( currentSubstationId );
                     }
-                    substation_area_map->insert(make_pair(currentSubstationId, currentAreaId));
-                    if (currentCCArea != NULL)
-                    {
-                        currentCCArea->addSubstationId(currentSubstationId);
-                    }
+
+                    substation_area_map->emplace( currentSubstationId, currentAreaId );
 
                     ccSubstations->push_back( currentCCSubstation );
                 }
             }
-
         }
+
+
         {
-            static const string sqlNoID = "SELECT CSR.substationbusid, CSR.areaid, CSR.displayorder "
-                                          "FROM ccsubspecialareaassignment CSR";
+            static const std::string sql = 
+                "SELECT "
+                    "AreaID, "
+                    "SubstationBusID "
+                "FROM "
+                    "CCSUBSPECIALAREAASSIGNMENT";
+
+            static const std::string sqlID = sql +
+                " WHERE SubstationBusID = ?";
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            Cti::Database::DatabaseReader     rdr( connection );
 
-            if( substationId > 0 )
+            if ( substationId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " WHERE CSR.substationbusid = ?");
-                rdr.setCommandText(sqlID);
+                rdr.setCommandText( sqlID );
                 rdr << substationId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
-            long currentSubId;
             while ( rdr() )
             {
-                rdr["substationbusid"] >> currentSubId;
-                //add substationbusids to special area list...;
-                long currentSpAreaId;
+                long currentSpAreaId,
+                     currentSubId;
 
-                rdr["areaid"] >> currentSpAreaId;
-                CtiCCSpecialPtr currentCCSpArea = NULL;
-                currentCCSpArea = findSpecialAreaByPAObjectID(currentSpAreaId);
+                rdr["AreaID"]          >> currentSpAreaId;
+                rdr["SubstationBusID"] >> currentSubId;
 
-                if (currentCCSpArea != NULL)
+                if ( CtiCCSpecialPtr currentCCSpArea = findSpecialAreaByPAObjectID( currentSpAreaId ) )
                 {
-                    CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(currentSubId);
-                    if (currentStation != NULL)
+                    if ( CtiCCSubstationPtr currentStation = findSubstationByPAObjectID( currentSubId ) )
                     {
-                        if (currentStation->getSaEnabledId() == 0)
+                        if ( currentStation->getSaEnabledId() == 0 )
                         {
-                            currentStation->setSaEnabledId(currentSpAreaId);
+                            currentStation->setSaEnabledId( currentSpAreaId );
                         }
-                        if (!currentCCSpArea->getDisableFlag())
+
+                        if ( ! currentCCSpArea->getDisableFlag() )
                         {
-                            currentStation->setSaEnabledId(currentSpAreaId);
-                            currentStation->setSaEnabledFlag(true);
+                            currentStation->setSaEnabledId( currentSpAreaId );
+                            currentStation->setSaEnabledFlag( true );
                         }
-                        if (currentStation->getParentId() <= 0)
+
+                        if ( currentStation->getParentId() <= 0 )
                         {
-                            currentStation->setParentId(currentSpAreaId);
+                            currentStation->setParentId( currentSpAreaId );
                             ccSubstations->push_back( currentStation );
                         }
-
                     }
-                    substation_specialarea_map->insert(make_pair(currentSubId, currentSpAreaId));
-                    currentCCSpArea->addSubstationId(currentSubId);
+
+                    substation_specialarea_map->emplace( currentSubId, currentSpAreaId );
+
+                    currentCCSpArea->addSubstationId( currentSubId );
                 }
             }
         }
 
-        if (substationId > 0) // else, when reloading all, then the reload of feeders will be called after subBusReload and take care of it.
+        if ( substationId > 0 ) // else, when reloading all, then the reload of feeders will be called after subBusReload and take care of it.
         {
             static const string sql =  "SELECT SBL.substationid, SBL.substationbusid, SBL.displayorder "
                                        "FROM ccsubstationsubbuslist SBL "
@@ -3875,32 +3897,30 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
             reloadOperationStatsFromDatabase(substationId,&_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
                                          &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
         }
-        //_reregisterforpoints = true;
-    }
-    catch(...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
-/*---------------------------------------------------------------------------
-    reloadSubBusFromDB
+catch ( ... )
+{
+    CTILOG_UNKNOWN_EXCEPTION_ERROR( dout );
+}
 
-    Reloads a single subbus from the database.
+/*---------------------------------------------------------------------------
+    reloadAreaFromDatabase
+
+    Reloads one (if a positive areaId is supplied)
+        or all areas from the database
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                                   PaoIdToAreaMap *paobject_area_map,
                                   PointIdToAreaMultiMap *pointid_area_map,
                                   CtiCCArea_vec *ccGeoAreas)
+try
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
-    try
-    {
-        if ( areaId > 0 )
-        {
-            deleteArea( areaId );
-        }
+    PaoIdToAreaMap      loadedAreas;
+    std::vector<long>   substations;
 
-        std::set<long>  modifiedPaoIDs;
+    {
+        Cti::Database::DatabaseConnection connection;
 
         {
             static const std::string sql = 
@@ -3925,8 +3945,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             static const std::string sqlID = sql +
                 " WHERE Y.PAObjectID = ?";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader     rdr( connection );
+            Cti::Database::DatabaseReader   rdr( connection );
 
             if ( areaId > 0 )
             {
@@ -3949,13 +3968,10 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             {
                 CtiCCAreaPtr currentCCArea = CtiCCAreaPtr( new CtiCCArea( rdr, _strategyManager.get() ) );
 
-                paobject_area_map->emplace( currentCCArea->getPaoId(), currentCCArea );
-
-                ccGeoAreas->push_back( currentCCArea );
-
-                modifiedPaoIDs.insert( currentCCArea->getPaoId() );
+                loadedAreas.emplace( currentCCArea->getPaoId(), currentCCArea );
             }
         }
+
         {
             static const std::string sql = 
                 "SELECT "
@@ -3971,8 +3987,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             static const std::string sqlID = sql +
                 " WHERE P.PAObjectID = ?";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader     rdr( connection );
+            Cti::Database::DatabaseReader   rdr( connection );
 
             if ( areaId > 0 )
             {
@@ -3997,210 +4012,223 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
                 rdr["PAObjectID"] >> currentAreaId;
 
-                if ( CtiCCAreaPtr currentArea = findInMap( currentAreaId, paobject_area_map ) )
+                if ( auto currentArea = Cti::mapFind( loadedAreas, currentAreaId ) )
                 {
-                    currentArea->assignPoint( rdr );
+                    (*currentArea)->assignPoint( rdr );
                 }
             }
         }
 
-        for ( const long paoID : modifiedPaoIDs )
+        const CtiDate   today;
+
         {
-            if ( CtiCCAreaPtr currentArea = findInMap( paoID, paobject_area_map ) )
+            static const std::string sql = 
+                "SELECT "
+                    "S.seasonscheduleid, "
+                    "S.seasonname, "
+                    "S.paobjectid, "
+                    "S.strategyid  "
+                "FROM "
+                    "CCSEASONSTRATEGYASSIGNMENT S "
+                        "JOIN CAPCONTROLAREA A "
+                            "ON S.paobjectid = A.AreaID";
+
+            static const std::string sqlID = sql +
+                " WHERE S.paobjectid = ?";
+
+            Cti::Database::DatabaseReader   rdr( connection );
+
+            if ( areaId > 0 )
             {
-                for ( const long pointID : *currentArea->getPointIds() )
-                {
-                    pointid_area_map->emplace( pointID, currentArea );
-
-                    _pointID_to_pao.emplace( pointID, currentArea );
-                }
+                rdr.setCommandText( sqlID );
+                rdr << areaId;
             }
-        }
-
-        {
-             static const string sqlNoID =  "SELECT SA.paobjectid, SA.seasonscheduleid, SA.seasonname, "
-                                               "SA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
-                                               "DS.seasonstartday, DS.seasonendday "
-                                            "FROM capcontrolarea CCA, ccseasonstrategyassignment SA, dateofseason DS "
-                                            "WHERE SA.paobjectid = CCA.areaid AND SA.seasonname = DS.seasonname AND "
-                                               "SA.seasonscheduleid = DS.seasonscheduleid";
-
-             Cti::Database::DatabaseConnection connection;
-             Cti::Database::DatabaseReader rdr(connection);
-
-             if( areaId > 0 )
-             {
-                 static const string sqlID = string(sqlNoID + " AND SA.paobjectid = ?");
-                 rdr.setCommandText(sqlID);
-                 rdr << areaId;
-             }
-             else
-             {
-                 rdr.setCommandText(sqlNoID);
-             }
-
-             rdr.execute();
-
-             while ( rdr() )
-             {
-                 int startMon, startDay, endMon, endDay;
-                 rdr["seasonstartmonth"] >> startMon;
-                 rdr["seasonendmonth"] >> endMon;
-                 rdr["seasonstartday"] >> startDay;
-                 rdr["seasonendday"] >> endDay;
-
-                 CtiDate today = CtiDate();
-
-                 if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                     today <= CtiDate(endDay, endMon, today.year())  )
-                 {
-                     long currentAreaId, stratId;
-                     rdr["paobjectid"] >> currentAreaId;
-                     rdr["strategyid"] >> stratId;
-
-
-                     CtiCCAreaPtr currentCCArea = NULL;
-                     if (areaId > 0)
-                          currentCCArea = findAreaByPAObjectID(currentAreaId);
-                     else
-                     {
-                         currentCCArea = findInMap(currentAreaId, paobject_area_map);
-                     }
-
-                     if (currentCCArea != NULL)
-                     {
-                         currentCCArea->setStrategy( stratId );
-                     }
-
-                 }
-             }
-        }
-
-        //CHECK HOLIDAY SETTINGS
-        CtiHolidayManager::getInstance().refresh();
-        if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
-        {
-             static const string sqlNoID =  "SELECT HSA.paobjectid, HSA.holidayscheduleid, HSA.strategyid, "
-                                               "DH.holidayname, DH.holidaymonth, DH.holidayday, DH.holidayyear "
-                                            "FROM capcontrolarea CCA, ccholidaystrategyassignment HSA, "
-                                               "dateofholiday DH "
-                                            "WHERE HSA.paobjectid = CCA.areaid AND "
-                                               "HSA.holidayscheduleid = DH.holidayscheduleid";
-
-             Cti::Database::DatabaseConnection connection;
-             Cti::Database::DatabaseReader rdr(connection);
-
-             if( areaId > 0)
-             {
-                 static const string sqlID = string(sqlNoID + " AND HSA.paobjectid = ?");
-                 rdr.setCommandText(sqlID);
-                 rdr << areaId;
-             }
-             else
-             {
-                 rdr.setCommandText(sqlNoID);
-             }
-
-             rdr.execute();
-
-             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-             {
-                 CTILOG_INFO(dout, rdr.asString());
-             }
-
-             while ( rdr() )
-             {
-                 int holMon, holDay, holYear, tempYear;
-                 rdr["holidaymonth"] >> holMon;
-                 rdr["holidayday"] >> holDay;
-                 rdr["holidayyear"] >> holYear;
-
-                 CtiDate today = CtiDate();
-                 if (holYear == -1)
-                 {
-                     tempYear = today.year();
-                 }
-                 else
-                     tempYear = holYear;
-
-                 if (today == CtiDate(holDay, holMon, tempYear) )
-                 {
-                     long currAreaId, stratId;
-                     rdr["paobjectid"] >> currAreaId;
-                     rdr["strategyid"] >> stratId;
-
-                     CtiCCAreaPtr currentArea = NULL;
-
-                     if (currAreaId > 0)
-                          currentArea = findAreaByPAObjectID(currAreaId);
-                     else
-                     {
-                         currentArea = findInMap(currAreaId, paobject_area_map);
-                     }
-
-                     if (currentArea != NULL)
-                     {
-                         currentArea->setStrategy( stratId );
-                     }
-                 }
-             }
-        }
-        if (areaId > 0) // else, when reloading all, then the reload of subs will be called after areaReload and take care of it.
-        {
-            static const string sql = "SELECT SAA.substationbusid, SAA.areaid, SAA.displayorder "
-                                      "FROM ccsubareaassignment SAA "
-                                      "WHERE SAA.areaid = ?";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection, sql);
-
-            rdr << areaId;
+            else
+            {
+                rdr.setCommandText( sql );
+            }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
-            long currentSubstationId;
             while ( rdr() )
             {
-                rdr["substationbusid"] >> currentSubstationId;
-                reloadSubstationFromDatabase(currentSubstationId,&_paobject_substation_map,
-                                       &_paobject_area_map, &_paobject_specialarea_map,
-                                             &_pointid_station_map, &_substation_area_map,
-                                       &_substation_specialarea_map, _ccSubstations );
+                long        scheduleID;
+                std::string seasonName;
+
+                rdr["seasonscheduleid"] >> scheduleID;
+                rdr["seasonname"]       >> seasonName;
+
+                if ( CtiSeasonManager::getInstance().isInNamedSeason( scheduleID, seasonName, today ) )
+                {
+                    long currentAreaID,
+                         strategyID;
+
+                    rdr["paobjectid"] >> currentAreaID;
+                    rdr["strategyid"] >> strategyID;
+
+                    if ( auto currentArea = Cti::mapFind( loadedAreas, currentAreaID ) )
+                    {
+                        (*currentArea)->setStrategy( strategyID );
+                    }
+                }
+            }
+        }
+
+        if ( CtiHolidayManager::getInstance().isHolidayForAnySchedule( today ) )
+        {
+            static const std::string sql = 
+                "SELECT "
+                    "H.HolidayScheduleId, "
+                    "H.PAObjectId, "
+                    "H.StrategyId "
+                "FROM "
+                    "CCHOLIDAYSTRATEGYASSIGNMENT H "
+                        "JOIN CAPCONTROLAREA A "
+                            "ON H.PAObjectId = A.AreaID";
+
+            static const std::string sqlID = sql +
+                " WHERE H.PAObjectId = ?";
+
+            Cti::Database::DatabaseReader   rdr( connection );
+
+            if ( areaId > 0 )
+            {
+                rdr.setCommandText( sqlID );
+                rdr << areaId;
+            }
+            else
+            {
+                rdr.setCommandText( sql );
             }
 
-            reloadOperationStatsFromDatabase(areaId,&_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
-                                             &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
+            rdr.execute();
 
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                CTILOG_INFO( dout, rdr.asString() );
+            }
 
-            cascadeAreaStrategySettings(findAreaByPAObjectID(areaId));
+            while ( rdr() )
+            {
+                long scheduleID;
+
+                rdr["HolidayScheduleId"] >> scheduleID;
+
+                if ( CtiHolidayManager::getInstance().isHoliday( scheduleID, today ) )
+                {
+                    long currentAreaID,
+                         strategyID;
+
+                    rdr["PAObjectId"] >> currentAreaID;
+                    rdr["StrategyId"] >> strategyID;
+
+                    if ( auto currentArea = Cti::mapFind( loadedAreas, currentAreaID ) )
+                    {
+                        (*currentArea)->setStrategy( strategyID );
+                    }
+                }
+            }
         }
-        //_reregisterforpoints = true;
+
+        if ( areaId > 0 )
+        {
+            {
+                static const std::string sql = 
+                    "SELECT "
+                        "SubstationBusID "          // <--- ummm, this should be SubstationID
+                    "FROM "
+                        "CCSUBAREAASSIGNMENT "
+                    "WHERE "
+                        "AreaID = ?";
+
+                Cti::Database::DatabaseReader   rdr( connection );
+
+                rdr << areaId;
+
+                rdr.execute();
+
+                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                {
+                    CTILOG_INFO( dout, rdr.asString() );
+                }
+
+                while ( rdr() )
+                {
+                    long substationID;
+
+                    rdr["SubstationBusID"] >> substationID;
+
+                    substations.push_back( substationID ); 
+                }
+            }
+        }
     }
-    catch(...)
+
+    CtiLockGuard<CtiCriticalSection>  guard( getMux() );
+
+    if ( areaId > 0 )
     {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+        deleteArea( areaId );
     }
+
+    for ( auto areaMap : loadedAreas )
+    {
+        paobject_area_map->emplace( areaMap.first, areaMap.second );
+
+        ccGeoAreas->push_back( areaMap.second );
+
+        for ( const long pointID : *areaMap.second->getPointIds() )
+        {
+            pointid_area_map->emplace( pointID, areaMap.second );
+
+            _pointID_to_pao.emplace( pointID, areaMap.second );
+        }
+    }
+
+    if ( areaId > 0 ) // else, when reloading all, then the reload of substations will be called afterwards and take care of it.
+    {
+        // if areaId <= 0 then this collection will be empty anyway...
+
+        for ( const long substationID : substations )
+        {
+            reloadSubstationFromDatabase( substationID, &_paobject_substation_map,
+                                          &_paobject_area_map, &_paobject_specialarea_map,
+                                          &_pointid_station_map, &_substation_area_map,
+                                          &_substation_specialarea_map, _ccSubstations );
+        }
+
+        reloadOperationStatsFromDatabase( areaId, &_paobject_capbank_map, &_paobject_feeder_map,
+                                          &_paobject_subbus_map, &_paobject_substation_map, 
+                                          &_paobject_area_map, &_paobject_specialarea_map );
+
+        cascadeAreaStrategySettings( findAreaByPAObjectID( areaId ) );
+    }
+}
+catch ( ... )
+{
+    CTILOG_UNKNOWN_EXCEPTION_ERROR( dout );
 }
 
 
 /*---------------------------------------------------------------------------
-    reloadSubBusFromDB
+    reloadSpecialAreaFromDatabase
 
-    Reloads a single subbus from the database.
+    Reloads all special areas form the database
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMap *paobject_specialarea_map,
-                                  PointIdToSpecialAreaMultiMap *pointid_specialarea_map,
-                                  CtiCCSpArea_vec *ccSpecialAreas)
+void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase( PaoIdToSpecialAreaMap *paobject_specialarea_map,
+                                                             PointIdToSpecialAreaMultiMap *pointid_specialarea_map,
+                                                             CtiCCSpArea_vec *ccSpecialAreas)
+try
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
-    try
+    PaoIdToSpecialAreaMap   loadedAreas;
+
     {
-        std::set<long>  modifiedPaoIDs;
+        Cti::Database::DatabaseConnection connection;
 
         {
             static const std::string sql = 
@@ -4222,8 +4250,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                         "LEFT OUTER JOIN DYNAMICCCSPECIALAREA D "
                             "ON A.AreaID = D.AreaID";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader     rdr(connection, sql);
+            Cti::Database::DatabaseReader   rdr( connection, sql );
 
             rdr.execute();
 
@@ -4234,15 +4261,12 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
 
             while ( rdr() )
             {
-                CtiCCSpecialPtr currentCCSpArea = CtiCCSpecialPtr( new CtiCCSpecial(rdr, _strategyManager.get() ) );
+                CtiCCSpecialPtr currentCCSpArea = CtiCCSpecialPtr( new CtiCCSpecial( rdr, _strategyManager.get() ) );
 
-                paobject_specialarea_map->emplace( currentCCSpArea->getPaoId(), currentCCSpArea );
-
-                ccSpecialAreas->push_back( currentCCSpArea );
-
-                modifiedPaoIDs.insert( currentCCSpArea->getPaoId() );
+                loadedAreas.emplace( currentCCSpArea->getPaoId(), currentCCSpArea );
             }
         }
+
         {
             static const std::string sql = 
                 "SELECT "
@@ -4255,8 +4279,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                         "JOIN CAPCONTROLSPECIALAREA A "
                             "ON P.PAObjectID = A.AreaID";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader     rdr( connection, sql );
+            Cti::Database::DatabaseReader   rdr( connection, sql );
 
             rdr.execute();
 
@@ -4271,128 +4294,123 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
 
                 rdr["PAObjectID"] >> currentAreaId;
 
-                if ( CtiCCSpecialPtr currentSpArea = findInMap( currentAreaId, paobject_specialarea_map ) )
+                if ( auto currentSpArea = Cti::mapFind( loadedAreas, currentAreaId ) )
                 {
-                    currentSpArea->assignPoint( rdr );
+                    (*currentSpArea)->assignPoint( rdr );
                 }
             }
         }
 
-        for ( const long paoID : modifiedPaoIDs )
+        const CtiDate   today;
+
         {
-            if ( CtiCCSpecialPtr currentSpArea = findInMap( paoID, paobject_specialarea_map ) )
+            static const std::string sql = 
+                "SELECT "
+                    "S.seasonscheduleid, "
+                    "S.seasonname, "
+                    "S.paobjectid, "
+                    "S.strategyid  "
+                "FROM "
+                    "CCSEASONSTRATEGYASSIGNMENT S "
+                        "JOIN CAPCONTROLSPECIALAREA A "
+                            "ON S.paobjectid = A.AreaID";
+
+            Cti::Database::DatabaseReader   rdr( connection, sql );
+
+            rdr.execute();
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                for ( const long pointID : *currentSpArea->getPointIds() )
-                {
-                    pointid_specialarea_map->emplace( pointID, currentSpArea );
+                CTILOG_INFO( dout, rdr.asString() );
+            }
 
-                    _pointID_to_pao.emplace( pointID, currentSpArea );
+            while ( rdr() )
+            {
+                long        scheduleID;
+                std::string seasonName;
+
+                rdr["seasonscheduleid"] >> scheduleID;
+                rdr["seasonname"]       >> seasonName;
+
+                if ( CtiSeasonManager::getInstance().isInNamedSeason( scheduleID, seasonName, today ) )
+                {
+                    long currentAreaID,
+                         strategyID;
+
+                    rdr["paobjectid"] >> currentAreaID;
+                    rdr["strategyid"] >> strategyID;
+
+                    if ( auto currentSpArea = Cti::mapFind( loadedAreas, currentAreaID ) )
+                    {
+                        (*currentSpArea)->setStrategy( strategyID );
+                    }
                 }
             }
         }
 
+        if ( CtiHolidayManager::getInstance().isHolidayForAnySchedule( today ) )
         {
-             static const string sqlNoID =  "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
-                                               "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
-                                               "DS.seasonstartday, DS.seasonendday "
-                                            "FROM capcontrolspecialarea CSA, ccseasonstrategyassignment SSA, "
-                                               "dateofseason DS "
-                                            "WHERE SSA.paobjectid = CSA.areaid AND SSA.seasonname = DS.seasonname "
-                                               "AND SSA.seasonscheduleid = DS.seasonscheduleid";
+            static const std::string sql = 
+                "SELECT "
+                    "H.HolidayScheduleId, "
+                    "H.PAObjectId, "
+                    "H.StrategyId "
+                "FROM "
+                    "CCHOLIDAYSTRATEGYASSIGNMENT H "
+                        "JOIN CAPCONTROLSPECIALAREA A "
+                            "ON H.PAObjectId = A.AreaID";
 
-             Cti::Database::DatabaseConnection connection;
-             Cti::Database::DatabaseReader rdr(connection);
+            Cti::Database::DatabaseReader   rdr( connection, sql );
 
-             rdr.setCommandText(sqlNoID);
-             rdr.execute();
+            rdr.execute();
 
-             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-             {
-                 CTILOG_INFO(dout, rdr.asString());
-             }
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                CTILOG_INFO( dout, rdr.asString() );
+            }
 
-             while ( rdr() )
-             {
-                 int startMon, startDay, endMon, endDay;
-                 rdr["seasonstartmonth"] >> startMon;
-                 rdr["seasonendmonth"] >> endMon;
-                 rdr["seasonstartday"] >> startDay;
-                 rdr["seasonendday"] >> endDay;
+            while ( rdr() )
+            {
+                long scheduleID;
 
-                 CtiDate today = CtiDate();
+                rdr["HolidayScheduleId"] >> scheduleID;
 
-                 if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                     today <= CtiDate(endDay, endMon, today.year())  )
-                 {
-                     long currentAreaId, stratId;
-                     rdr["paobjectid"] >> currentAreaId;
-                     rdr["strategyid"] >> stratId;
-                     if (CtiCCSpecialPtr currentCCSpArea = findInMap(currentAreaId, paobject_specialarea_map))
-                     {
-                         currentCCSpArea->setStrategy( stratId );
-                     }
-                 }
-             }
-        }
+                if ( CtiHolidayManager::getInstance().isHoliday( scheduleID, today ) )
+                {
+                    long currentAreaID,
+                         strategyID;
 
-        //CHECK FOR HOLIDAY SETTTINGS
-        CtiHolidayManager::getInstance().refresh();
-        if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
-        {
-             static const string sqlNoID =  "SELECT HSA.paobjectid, HSA.holidayscheduleid, HSA.strategyid, "
-                                               "DH.holidayname, DH.holidaymonth, DH.holidayday, DH.holidayyear "
-                                            "FROM capcontrolspecialarea CSA, ccholidaystrategyassignment HSA, "
-                                               "dateofholiday DH "
-                                            "WHERE HSA.paobjectid = CSA.areaid AND "
-                                               "HSA.holidayscheduleid = DH.holidayscheduleid";
+                    rdr["PAObjectId"] >> currentAreaID;
+                    rdr["StrategyId"] >> strategyID;
 
-             Cti::Database::DatabaseConnection connection;
-             Cti::Database::DatabaseReader rdr(connection);
-
-             rdr.setCommandText(sqlNoID);
-             rdr.execute();
-
-             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-             {
-                 CTILOG_INFO(dout, rdr.asString());
-             }
-
-             while ( rdr() )
-             {
-                 int holMon, holDay, holYear, tempYear;
-                 rdr["holidaymonth"] >> holMon;
-                 rdr["holidayday"] >> holDay;
-                 rdr["holidayyear"] >> holYear;
-
-                 CtiDate today = CtiDate();
-                 if (holYear == -1)
-                 {
-                     tempYear = today.year();
-                 }
-                 else
-                     tempYear = holYear;
-
-                 if (today == CtiDate(holDay, holMon, tempYear) )
-                 {
-                     long areaId, stratId;
-                     rdr["paobjectid"] >> areaId;
-                     rdr["strategyid"] >> stratId;
-
-                     CtiCCSpecialPtr currentSpArea = NULL;
-
-                     currentSpArea = findSpecialAreaByPAObjectID(areaId);
-                     if (currentSpArea != NULL)
-                     {
-                         currentSpArea->setStrategy( stratId );
-                     }
-                 }
-             }
+                    if ( auto currentSpArea = Cti::mapFind( loadedAreas, currentAreaID ) )
+                    {
+                        (*currentSpArea)->setStrategy( strategyID );
+                    }
+                }
+            }
         }
     }
-    catch(...)
+
+    CtiLockGuard<CtiCriticalSection>  guard( getMux() );
+
+    for ( auto areaMap : loadedAreas )
     {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+        paobject_specialarea_map->emplace( areaMap.first, areaMap.second );
+
+        ccSpecialAreas->push_back( areaMap.second );
+
+        for ( const long pointID : *areaMap.second->getPointIds() )
+        {
+            pointid_specialarea_map->emplace( pointID, areaMap.second );
+
+            _pointID_to_pao.emplace( pointID, areaMap.second );
+        }
     }
+}
+catch ( ... )
+{
+    CTILOG_UNKNOWN_EXCEPTION_ERROR( dout );
 }
 
 /*---------------------------------------------------------------------------
