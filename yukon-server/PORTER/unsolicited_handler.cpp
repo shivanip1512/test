@@ -965,10 +965,10 @@ bool UnsolicitedHandler::expireTimeouts(const MillisecondTimer &timer, const uns
         const CtiTime timeout = _timeouts.begin()->first;
         device_record *dr = _timeouts.begin()->second;
 
+        _timeouts.erase(_timeouts.begin());
+
         if (timeout == dr->timeout)
         {
-            _timeouts.erase(_timeouts.begin());
-
             queueToDecode(dr);
             _waiting_for_data.remove(dr);
         }
