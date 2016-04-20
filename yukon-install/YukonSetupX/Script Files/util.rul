@@ -499,3 +499,20 @@ begin
 	versionNumber = sV1 + "." + sV2 + "." + sV3;
 	return versionNumber;
 end;
+
+//---------------------------------------------------------------------------
+// Helper function to add the registry entry for ServicePipeTimeout to 3min
+//---------------------------------------------------------------------------
+export prototype SetServiceTimeOut();
+function SetServiceTimeOut()
+string sName, sKey;
+number nResult;
+begin
+	sKey = "\\SYSTEM\\CurrentControlSet\\Control";
+	sName = "ServicePipeTimeout";
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+	nResult = RegDBSetKeyValueEx(sKey, sName, REGDB_NUMBER, "180000", -1);
+	if(nResult != 0) then
+		MessageBox("Unable to set ServicePipeTimeout value.", WARNING);
+	endif;
+end;
