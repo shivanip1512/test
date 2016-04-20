@@ -3330,7 +3330,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Total kVArh">
+        <point name="Sum kVArh">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3373,7 +3373,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Total kVAh">
+        <point name="Sum kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3736,7 +3736,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Total kVArh">
+        <point name="Sum kVArh">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3786,7 +3786,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Total kVAh">
+        <point name="Sum kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3839,7 +3839,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kW">
+        <point name="Received Peak kW">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3849,7 +3849,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kW">
+        <point name="Sum Peak kW">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3861,7 +3861,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak Net kW">
+        <point name="Net Peak kW">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3873,7 +3873,7 @@
                 <modifier>Max Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVAr">
+        <point name="Delivered Peak kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3883,7 +3883,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVAr">
+        <point name="Received Peak kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3893,7 +3893,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kVAr">
+        <point name="Sum Peak kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3905,7 +3905,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVA">
+        <point name="Delivered Peak kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3915,7 +3915,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVA">
+        <point name="Received Peak kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3925,7 +3925,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kVA">
+        <point name="Sum Peak kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4002,7 +4002,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Total kVArh (Rate A kVArh)">
+        <point name="Sum kVArh (Rate A kVArh)">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4047,7 +4047,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Total kVAh (Rate A kVAh)">
+        <point name="Sum kVAh (Rate A kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4095,7 +4095,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kW (Rate A kW)">
+        <point name="Received Peak kW (Rate A kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4106,7 +4106,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kW (Rate A kW)">
+        <point name="Sum Peak kW (Rate A kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4119,7 +4119,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak Net kW (Rate A kW)">
+        <point name="Net Peak kW (Rate A kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4132,7 +4132,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVAr (Rate A kVAr)">
+        <point name="Delivered Peak kVAr (Rate A kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4143,7 +4143,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVAr (Rate A kVAr)">
+        <point name="Received Peak kVAr (Rate A kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4154,7 +4154,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kVAr (Rate A kVAr)">
+        <point name="Sum Peak kVAr (Rate A kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4167,7 +4167,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVA (Rate A kVA)">
+        <point name="Delivered Peak kVA (Rate A kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4178,7 +4178,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVA (Rate A kVA)">
+        <point name="Received Peak kVA (Rate A kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4189,7 +4189,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kVA (Rate A kVA)">
+        <point name="Sum Peak kVA (Rate A kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4267,7 +4267,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Total kVArh (Rate B kVArh)">
+        <point name="Sum kVArh (Rate B kVArh)">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4312,7 +4312,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Total kVAh (Rate B kVAh)">
+        <point name="Sum kVAh (Rate B kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4360,7 +4360,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kW (Rate B kW)">
+        <point name="Received Peak kW (Rate B kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4371,7 +4371,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kW (Rate B kW)">
+        <point name="Sum Peak kW (Rate B kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4384,7 +4384,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak Net kW (Rate B kW)">
+        <point name="Net Peak kW (Rate B kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4397,7 +4397,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVAr (Rate B kVAr)">
+        <point name="Delivered Peak kVAr (Rate B kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4408,7 +4408,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVAr (Rate B kVAr)">
+        <point name="Received Peak kVAr (Rate B kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4419,7 +4419,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kVAr (Rate B kVAr)">
+        <point name="Sum Peak kVAr (Rate B kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4432,7 +4432,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVA (Rate B kVA)">
+        <point name="Delivered Peak kVA (Rate B kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4443,7 +4443,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVA (Rate B kVA)">
+        <point name="Received Peak kVA (Rate B kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4454,7 +4454,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kVA (Rate B kVA)">
+        <point name="Sum Peak kVA (Rate B kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4532,7 +4532,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Total kVArh (Rate C kVArh)">
+        <point name="Sum kVArh (Rate C kVArh)">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4577,7 +4577,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Total kVAh (Rate C kVAh)">
+        <point name="Sum kVAh (Rate C kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4625,7 +4625,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kW (Rate C kW)">
+        <point name="Received Peak kW (Rate C kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4636,7 +4636,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kW (Rate C kW)">
+        <point name="Sum Peak kW (Rate C kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4649,7 +4649,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak Net kW (Rate C kW)">
+        <point name="Net Peak kW (Rate C kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4662,7 +4662,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVAr (Rate C kVAr)">
+        <point name="Delivered Peak kVAr (Rate C kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4673,7 +4673,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVAr (Rate C kVAr)">
+        <point name="Received Peak kVAr (Rate C kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4684,7 +4684,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kVAr (Rate C kVAr)">
+        <point name="Sum Peak kVAr (Rate C kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4697,7 +4697,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVA (Rate C kVA)">
+        <point name="Delivered Peak kVA (Rate C kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4708,7 +4708,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVA (Rate C kVA)">
+        <point name="Received Peak kVA (Rate C kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4784,7 +4784,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Total kVArh (Rate D kVArh)">
+        <point name="Sum kVArh (Rate D kVArh)">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4829,7 +4829,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Total kVAh (Rate D kVAh)">
+        <point name="Sum kVAh (Rate D kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4877,7 +4877,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kW (Rate D kW)">
+        <point name="Received Peak kW (Rate D kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4888,7 +4888,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kW (Rate D kW)">
+        <point name="Sum Peak kW (Rate D kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4901,7 +4901,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Peak Net kW (Rate D kW)">
+        <point name="Net Peak kW (Rate D kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4914,7 +4914,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVAr (Rate D kVAr)">
+        <point name="Delivered Peak kVAr (Rate D kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4925,7 +4925,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVAr (Rate D kVAr)">
+        <point name="Received Peak kVAr (Rate D kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4936,7 +4936,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Peak Total kVAr (Rate D kVAr)">
+        <point name="Sum Peak kVAr (Rate D kVAr)">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4949,7 +4949,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Peak Delivered kVA (Rate D kVA)">
+        <point name="Delivered Peak kVA (Rate D kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4960,7 +4960,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Peak Received kVA (Rate D kVA)">
+        <point name="Received Peak kVA (Rate D kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4989,7 +4989,7 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Total kW">
+        <point name="Sum kW">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5018,7 +5018,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Total kVAr">
+        <point name="Sum kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5047,7 +5047,7 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Total kVA">
+        <point name="Sum kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
