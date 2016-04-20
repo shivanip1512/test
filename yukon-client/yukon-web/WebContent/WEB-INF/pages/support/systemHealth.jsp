@@ -32,7 +32,9 @@
                                     <c:set var="action" value="favorite"/>
                                 </c:otherwise>
                             </c:choose>
-                            <cti:button id="favMetricButton" renderMode="image" icon="${favIcon}" data-metric="${queue.metricIdentifier}" data-action="${action}"/>
+                            <cti:button id="favMetricButton" renderMode="image" icon="${favIcon}" 
+                                        data-metric="${queue.metricIdentifier}" data-action="${action}"
+                                        nameKey="favMetricButton"/>
                             <span title="${queue.queueName}">
                                 <i:inline key="${queue}"/>
                             </span>
@@ -73,7 +75,9 @@
                                     <c:set var="action" value="favorite"/>
                                 </c:otherwise>
                             </c:choose>
-                            <cti:button id="favMetricButton" renderMode="image" icon="${favIcon}" data-metric="${queue.metricIdentifier}" data-action="${action}"/>
+                            <cti:button id="favMetricButton" renderMode="image" icon="${favIcon}" 
+                                        data-metric="${queue.metricIdentifier}" data-action="${action}"
+                                        nameKey="favMetricButton"/>
                             <span title="${queue.queueName}">
                                 <i:inline key="${queue}"/>
                             </span>

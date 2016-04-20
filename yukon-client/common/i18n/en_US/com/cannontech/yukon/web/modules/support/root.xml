@@ -295,7 +295,32 @@
     <!-- systemHealth.jsp -->
     <entry key="yukon.web.modules.support.systemHealth.pageName">System Health</entry>
     
-    <entry key="yukon.web.modules.support.systemHealth.serverBrokerStatistics.title">Server Broker Statistics</entry>
+    <entry key="yukon.web.modules.support.systemHealth.serverBrokerStatistics.title">Inter-Service Messaging Statistics</entry>
+    <entry key="yukon.web.modules.support.systemHealth.serverBrokerStatistics.helpText">
+        <![CDATA[
+            <h3>Queues</h3>
+            Queues handle messages between Yukon and Network Manager that contain information for device creation, device editing, or data archival.
+            <ul>
+                <li><b>RFN Meter Archive Request:</b> Meter data to be archived, sent from Network Manager to Yukon.</li>
+                <li><b>RFN LCR Archive Request:</b> LCR data to be archived, sent from Network Manager to Yukon.</li>
+                <li><b>Gateway Archive Request:</b> Initiates creation of an RF Gateway device, sent from Network Manager to Yukon.</li>
+                <li><b>RF DA Archive Request:</b> Initiates creation of an RF DA device, sent from Network Manager to Yukon.</li>
+                <li><b>Gateway Data Request:</b> Request for data about an RF Gateway, sent from Yukon to Network Manager.</li>
+                <li><b>Gateway Data Response:</b> RF Gateway data, sent from Network Manager to Yukon.</li>
+            </ul>
+            
+            <h3>Metrics</h3>
+            These metrics show how many messages are sent and received, and how efficiently they are being processed.
+            <ul>
+                <li><b>Archived Readings:</b> The number of data readings that have been archived.</li>
+                <li><b>Processed Archive Requests:</b> The number of messages that have been fully processed. (Each message may contain multiple data readings.)</li>
+                <li><b>Enqueued Count:</b> The number of messages that have been pushed onto the queue since service start.</li>
+                <li><b>Dequeued Count:</b> The number of messages that have been taken off the queue since service start.</li>
+                <li><b>Queue Size:</b> The number of messages currently on the queue.</li>
+                <li><b>Average Enqueue Time:</b> The average length of time a message waits in the queue for processing, since service start.</li>
+            </ul>
+        ]]>
+    </entry>
     <entry key="yukon.web.modules.support.systemHealth.archivedReadings">Archived Readings</entry>
     <entry key="yukon.web.modules.support.systemHealth.processedArchiveRequests">Processed Archive Requests</entry>
     <entry key="yukon.web.modules.support.systemHealth.enqueuedCount">Enqueued Count</entry>
@@ -311,7 +336,9 @@
     <entry key="yukon.web.modules.support.systemHealth.metric.rfDa">RF DA Archive Request</entry>
     <entry key="yukon.web.modules.support.systemHealth.metric.gatewayArchiveRequest">Gateway Archive Request</entry>
     <entry key="yukon.web.modules.support.systemHealth.metric.gatewayDataRequest">Gateway Data Request</entry>
-    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayData">Gateway Data</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayData">Gateway Data Response</entry>
     
+    <entry key="yukon.web.modules.support.systemHealth.favMetricButton.hoverText">Favorite this metric to display it on your Yukon dashboard.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.unfavMetricButton.hoverText">Un-favorite this metric to remove it from your Yukon dashboard.</entry>
     <entry key="yukon.web.modules.support.systemHealth.favoriteError">Error saving favorite settings.</entry>
 </properties>

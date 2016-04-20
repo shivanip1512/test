@@ -81,7 +81,9 @@
                             <c:forEach var="queue" items="${extendedQueueData}">
                                 <tr>
                                     <td class="wsnw">
-                                        <cti:button id="favMetricButton" renderMode="image" icon="icon-star" data-metric="${queue.metricIdentifier}" data-action="unfavorite"/>
+                                        <cti:button id="favMetricButton" renderMode="image" icon="icon-star" 
+                                                    data-metric="${queue.metricIdentifier}" data-action="unfavorite"
+                                                    nameKey="unfavMetricButton"/>
                                         <span title="${queue.queueName}">
                                             <i:inline key="${queue}"/>
                                         </span>
@@ -113,7 +115,9 @@
                             <c:forEach var="queue" items="${queueData}">
                                 <tr>
                                     <td class="wsnw">
-                                        <cti:button id="favMetricButton" renderMode="image" icon="icon-star" data-metric="${queue.metricIdentifier}" data-action="unfavorite"/>
+                                        <cti:button id="favMetricButton" renderMode="image" icon="icon-star" 
+                                                    data-metric="${queue.metricIdentifier}" data-action="unfavorite"
+                                                    nameKey="unfavMetricButton"/>
                                         <span title="${queue.queueName}">
                                             <i:inline key="${queue}"/>
                                         </span>

@@ -75,7 +75,6 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         }
     }
     
-    //TODO dequeue count
     private ExtendedQueueData getExtendedQueueData(SystemHealthMetricIdentifier metric) {
         try {
             String serviceBeanName = SystemHealthMetricIdentifier.getExtendedJmsQueueBeans(metric).get(0);
