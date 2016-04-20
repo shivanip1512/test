@@ -130,6 +130,8 @@ public class AreaController {
     public String createSpecial(ModelMap model, LiteYukonUser user) {
         Area area = new Area();
         area.setType(PaoType.CAP_CONTROL_SPECIAL_AREA);
+        //default special areas to disabled
+        area.setDisabled(true);
         model.addAttribute("mode",  PageEditMode.CREATE);
         return setupModel(model, area, user);
     }
@@ -296,7 +298,7 @@ public class AreaController {
         
         List<LiteCapControlObject> available = pao.getPaoType() == PaoType.CAP_CONTROL_AREA 
                 ? substationDao.getOrphans()
-                : substationDao.getSubstationsNotInSpecialArea();
+                : substationDao.getSubstationsNotInSpecialArea(areaId);
         List<Assignment> unassigned = Lists.transform(available, new Function<LiteCapControlObject, Assignment>() {
             @Override
             public Assignment apply(LiteCapControlObject o) {

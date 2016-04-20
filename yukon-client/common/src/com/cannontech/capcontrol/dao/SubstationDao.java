@@ -81,6 +81,6 @@ public interface SubstationDao {
      */
     List<Substation> getSubstationsByArea(int areaId);
 
-    /** Returns substations that are not assigned to a special area. */
-    List<LiteCapControlObject> getSubstationsNotInSpecialArea();
+    /** Returns substations that are not assigned to the specified area. */
+    List<LiteCapControlObject> getSubstationsNotInSpecialArea(int areaId);
 }

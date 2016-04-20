@@ -16,7 +16,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -215,15 +214,16 @@ public class SubstationDaoImpl implements SubstationDao {
     }
     
     @Override
-    public List<LiteCapControlObject> getSubstationsNotInSpecialArea() {
+    public List<LiteCapControlObject> getSubstationsNotInSpecialArea(int areaId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, PAOName, Type, Description, saa.AreaId ParentId");
         sql.append("FROM YukonPAObject ypo");
         sql.append("LEFT JOIN CCSubAreaAssignment saa on saa.SubstationBusId = ypo.PAObjectId");
         sql.append("WHERE Type").eq(PaoType.CAP_CONTROL_SUBSTATION);
-        sql.append("AND PAObjectID NOT IN (SELECT SubstationBusID FROM CCSubSpecialAreaAssignment)");
-        sql.append("ORDER BY PAOName");
+        sql.append("AND PAObjectID NOT IN (SELECT SubstationBusID FROM CCSubSpecialAreaAssignment");
+        sql.append(" WHERE AreaID").eq(areaId);
+        sql.append(") ORDER BY PAOName");
         
         List<LiteCapControlObject> subs = jdbcTemplate.query(sql, new YukonRowMapper<LiteCapControlObject>() {
             @Override
