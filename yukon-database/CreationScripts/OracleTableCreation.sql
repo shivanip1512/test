@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/8/2016 10:39:00 AM                         */
+/* Created on:     4/20/2016 4:00:57 PM                         */
 /*==============================================================*/
 
 
@@ -8646,6 +8646,15 @@ create table UserSubscription  (
 );
 
 /*==============================================================*/
+/* Table: UserSystemMetric                                      */
+/*==============================================================*/
+create table UserSystemMetric  (
+   UserId               NUMBER                          not null,
+   SystemHealthMetricId VARCHAR2(64)                    not null,
+   constraint PK_UserSystemMetric primary key (UserId, SystemHealthMetricId)
+);
+
+/*==============================================================*/
 /* Table: ValidationMonitor                                     */
 /*==============================================================*/
 create table ValidationMonitor  (
@@ -12831,6 +12840,11 @@ alter table UserPreference
 
 alter table UserSubscription
    add constraint FK_UserSubscription_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
+      on delete cascade;
+
+alter table UserSystemMetric
+   add constraint FK_UserSystemMetric_YukonUser foreign key (UserId)
       references YukonUser (UserID)
       on delete cascade;
 

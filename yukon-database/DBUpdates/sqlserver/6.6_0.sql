@@ -181,6 +181,19 @@ INSERT INTO StoredProcedureLog VALUES (
 GO
 /* End YUK-15201 */
 
+/* Start YUK-15280 */
+CREATE TABLE UserSystemMetric  (
+   UserId               numeric              not null,
+   SystemHealthMetricId varchar(64)          not null,
+   CONSTRAINT PK_UserSystemMetric PRIMARY KEY (UserId, SystemHealthMetricId)
+);
+
+ALTER TABLE UserSystemMetric
+   ADD CONSTRAINT FK_UserSystemMetric_YukonUser FOREIGN KEY (UserId)
+      REFERENCES YukonUser (UserID)
+      ON DELETE CASCADE;
+/* End YUK-15280 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

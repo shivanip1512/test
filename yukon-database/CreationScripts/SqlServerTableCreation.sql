@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/14/2016 12:37:35 PM                        */
+/* Created on:     4/20/2016 3:59:01 PM                         */
 /*==============================================================*/
 
 
@@ -9183,6 +9183,16 @@ create table UserSubscription (
 go
 
 /*==============================================================*/
+/* Table: UserSystemMetric                                      */
+/*==============================================================*/
+create table UserSystemMetric (
+   UserId               numeric              not null,
+   SystemHealthMetricId varchar(64)          not null,
+   constraint PK_UserSystemMetric primary key (UserId, SystemHealthMetricId)
+)
+go
+
+/*==============================================================*/
 /* Table: ValidationMonitor                                     */
 /*==============================================================*/
 create table ValidationMonitor (
@@ -13997,6 +14007,12 @@ go
 
 alter table UserSubscription
    add constraint FK_UserSubscription_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
+         on delete cascade
+go
+
+alter table UserSystemMetric
+   add constraint FK_UserSystemMetric_YukonUser foreign key (UserId)
       references YukonUser (UserID)
          on delete cascade
 go
