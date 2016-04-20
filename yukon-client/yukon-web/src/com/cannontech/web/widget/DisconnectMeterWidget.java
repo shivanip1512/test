@@ -1,9 +1,7 @@
 package com.cannontech.web.widget;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
@@ -50,7 +48,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -65,7 +62,6 @@ import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.device.DeviceMCT400Series;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -80,22 +76,22 @@ import com.google.common.collect.Sets;
 @Controller
 @RequestMapping("/disconnectMeterWidget/*")
 public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
-    
+
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private MeterDao meterDao;
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private DisconnectService disconnectService;  
+    @Autowired private DisconnectService disconnectService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private StateDao stateDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired MeterService meterService;
-    
+
     private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
     private final static String baseKey = "yukon.web.widgets.disconnectMeterWidget.";
-    
+
     @Autowired
     public DisconnectMeterWidget(@Qualifier("widgetInput.deviceId")
             SimpleWidgetInput simpleWidgetInput,
@@ -115,27 +111,29 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         
         return "disconnectMeterWidget/render.jsp";
     }
-    
-    private final Validator validator = new SimpleValidator<DeviceMCT400Series>(DeviceMCT400Series.class) {
+
+    private final Validator validator = new SimpleValidator<CollarAddressEditorBean>(CollarAddressEditorBean.class) {
 
         private final static String key = baseKey + "error.";
 
         @Override
-        protected void doValidation(DeviceMCT400Series mct400SeriesMeter, Errors errors) {
+        protected void doValidation(CollarAddressEditorBean addressEditorBean, Errors errors) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "disconnectAddress", key
                 + "disconnectAddress.required");
             if (!errors.hasFieldErrors("disconnectAddress")) {
                 YukonValidationUtils.checkExceedsMaxLength(errors, "disconnectAddress",
-                    mct400SeriesMeter.getDisconnectAddress().toString(), 7);
+                    addressEditorBean.getDisconnectAddress().toString(), 7);
             }
             if (!errors.hasFieldErrors("disconnectAddress")) {
-                YukonValidationUtils.checkRange(errors, "disconnectAddress", 
-                    mct400SeriesMeter.getDisconnectAddress(), 0, 4194304, true);
+                YukonValidationUtils.checkRange(errors, "disconnectAddress", addressEditorBean.getDisconnectAddress(),
+                    0, 4194304, true);
             }
             if (!errors.hasFieldErrors("disconnectAddress")) {
                 // Uniqueness check
-                List<String> devices = MCT400SeriesBase.isDiscAddressUnique(Integer.valueOf(mct400SeriesMeter.getDisconnectAddress().toString()),
-                        mct400SeriesMeter.getDeviceID());
+                List<String> devices =
+                    MCT400SeriesBase.isDiscAddressUnique(
+                        Integer.valueOf(addressEditorBean.getDisconnectAddress().toString()),
+                        addressEditorBean.getDeviceId());
                 if (!CollectionUtils.isEmpty(devices)) {
                     Object[] args = devices.toArray();
                     errors.rejectValue("disconnectAddress", key + "disconnectAddress.unique", args, "");
@@ -143,7 +141,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             }
         }
     };
-    
+
     @RequestMapping("query")
     public String query(ModelMap model, YukonUserContext userContext, Integer deviceId) {
     	
@@ -199,7 +197,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         
         return "disconnectMeterWidget/render.jsp";
     }
-    
+
     @RequestMapping("read")
     public String read(ModelMap model, YukonUserContext userContext, Integer deviceId) {
     	
@@ -218,7 +216,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         
         return "disconnectMeterWidget/render.jsp";
     }
-    
+
     @RequestMapping("helpInfo")
     public String helpInfo(ModelMap model, YukonUserContext userContext, int deviceId) {
         
@@ -227,7 +225,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         
         return "disconnectMeterWidget/helpInfo.jsp";
     }
-    
+
     @RequestMapping("connect")
     public String connect(ModelMap model, YukonUserContext userContext, int deviceId) {
         
@@ -259,7 +257,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         
         return "disconnectMeterWidget/render.jsp";
     }
-    
+
     @RequestMapping("arm")
     public String arm(ModelMap model, YukonUserContext userContext, int deviceId) {
         
@@ -275,7 +273,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         
         return "disconnectMeterWidget/render.jsp";
     }
-    
+
     private void addDisconnectResultToModel(ModelMap model, DisconnectMeterResult result) {
         if (result.getError() != null) {
             model.addAttribute("errors", Lists.newArrayList(result.getError()));
@@ -288,7 +286,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("command", result.getCommand());
         model.addAttribute("isRead", false);
     }
-    
+
     private void initModel(ModelMap model, YukonUserContext userContext, YukonMeter meter) {
         try {
             LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
@@ -305,20 +303,25 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
 
             boolean is213Supported = paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_213);
             model.addAttribute("is213Supported", is213Supported);
-            
-            boolean isDisconnectCollarSupported = paoDefinitionDao.isTagSupported(meter.getPaoType(), 
-                    PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
-            model.addAttribute("isDisconnectCollarSupported", isDisconnectCollarSupported);
         } catch (IllegalUseOfAttribute e) {
             model.addAttribute("isConfigured", false);
         }
+        Integer disconnectAddress = meterDao.getDisconnectAddress(meter.getDeviceId());
+        boolean isDisconnectCollarSupported =
+            paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
+        model.addAttribute("isDisconnectCollarSupported", isDisconnectCollarSupported);
         boolean supportsArm = disconnectService.supportsArm(Lists.newArrayList(new SimpleDevice(meter)));
+        if (isDisconnectCollarSupported && disconnectAddress != null) {
+            model.addAttribute("isConfigured", true);
+        } else if (isDisconnectCollarSupported && disconnectAddress == null) {
+            model.addAttribute("isConfigured", false);
+        } 
         model.addAttribute("device", meter);
         model.addAttribute("supportsArm", supportsArm);
         model.addAttribute("attribute", BuiltInAttribute.DISCONNECT_STATUS);
-        DeviceMCT400Series device = getDeviceMCT400Series(meter.getDeviceId());
-        model.addAttribute("deviceMCT400Series", device);
-        if (device.getDisconnectAddress() != null){
+
+        model.addAttribute("disconnectAddress", disconnectAddress);
+        if (disconnectAddress != null) {
             model.addAttribute("isNew", false);
         }
         if (meter.getPaoType().isRfn()) {
@@ -331,57 +334,56 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @RequestMapping(value = "edit", method = RequestMethod.GET)
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String edit(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
-        DeviceMCT400Series device = getDeviceMCT400Series(deviceId);
-        if(device.getDisconnectAddress() == null){
-            model.addAttribute("isNew", true);
+        Integer disconnectAddress = meterDao.getDisconnectAddress(deviceId);
+        CollarAddressEditorBean addressEditorBean = null;
+        if (disconnectAddress != null && disconnectAddress != 0) {
+            // Old Address
+            addressEditorBean = new CollarAddressEditorBean(deviceId, disconnectAddress, false);
+        } else {
+            // New Address
+            addressEditorBean = new CollarAddressEditorBean(deviceId, null, true);
         }
-        model.addAttribute("deviceMCT400Series", device);
+        model.addAttribute("addressEditorBean", addressEditorBean);
         return "disconnectMeterWidget/edit.jsp";
-    }
-    
-    private DeviceMCT400Series getDeviceMCT400Series(int deviceId) {
-        DeviceMCT400Series deviceMCT400Series = new DeviceMCT400Series();
-        deviceMCT400Series.setDeviceID(deviceId);
-        deviceMCT400Series.setDisconnectAddress(DeviceMCT400Series.getDisconnectAddress(
-                                                                                    deviceMCT400Series.getDeviceID()));
-        return deviceMCT400Series;
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String edit(HttpServletResponse resp,
-            @ModelAttribute("deviceMCT400Series") DeviceMCT400Series deviceMCT400Series, BindingResult result,
+            @ModelAttribute("addressEditorBean") CollarAddressEditorBean addressEditorBean, BindingResult result,
             ModelMap model, FlashScope flash, LiteYukonUser user) throws Exception {
 
-        validator.validate(deviceMCT400Series, result);
+        validator.validate(addressEditorBean, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            DeviceMCT400Series device = getDeviceMCT400Series(deviceMCT400Series.getDeviceID());
-            if (device.getDisconnectAddress() == null){
-                model.addAttribute("isNew", true);
-            }
+            // restore original address
+            Integer disconnectAddress = meterDao.getDisconnectAddress(addressEditorBean.getDeviceId());
+            model.addAttribute("disconnectAddress", disconnectAddress);
+            model.addAttribute("addressEditorBean", addressEditorBean);
             return "disconnectMeterWidget/edit.jsp";
         }
 
-        YukonMeter meter = meterDao.getForId(deviceMCT400Series.getDeviceID());
+        // Update configuration to DB and Points
+        YukonMeter meter = meterDao.getForId(addressEditorBean.getDeviceId());
         SimpleDevice device = SimpleDevice.of(meter.getPaoIdentifier());
-        meterService.addDisconnectAddress(device, deviceMCT400Series.getDisconnectAddress());
+        meterService.addDisconnectAddress(device, addressEditorBean.getDisconnectAddress());
+
         model.addAttribute("attribute", BuiltInAttribute.DISCONNECT_STATUS);
-        deviceMCT400Series = getDeviceMCT400Series(deviceMCT400Series.getDeviceID());
-        model.addAttribute("deviceMCT400Series", deviceMCT400Series);
-        if (deviceMCT400Series.getDisconnectAddress() != null){
-            model.addAttribute("isNew", false);
-        }
+        addressEditorBean =
+            new CollarAddressEditorBean(addressEditorBean.getDeviceId(), addressEditorBean.getDisconnectAddress(),
+                false);
+        model.addAttribute("addressEditorBean", addressEditorBean);
         flash.setMessage(new YukonMessageSourceResolvable("yukon.web.widgets.disconnectMeterWidget.update.successful"),
             FlashScopeMessageType.SUCCESS);
         return "disconnectMeterWidget/edit.jsp";
     }
 
-    @RequestMapping(value = "delete", method = RequestMethod.POST)
-    public String delete(HttpServletResponse resp,
-            @ModelAttribute("deviceMCT400Series") DeviceMCT400Series deviceMCT400Series, BindingResult result,
+    @RequestMapping(value = "removeDisconnectCollar", method = RequestMethod.POST)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
+    public String removeDisconnectCollar(HttpServletResponse resp,
+            @ModelAttribute("addressEditorBean") CollarAddressEditorBean collarAddressEditorBean, BindingResult result,
             ModelMap model, FlashScope flash, LiteYukonUser user) throws Exception {
-        YukonMeter meter = meterDao.getForId(deviceMCT400Series.getDeviceID());
+        YukonMeter meter = meterDao.getForId(collarAddressEditorBean.getDeviceId());
         SimpleDevice device = SimpleDevice.of(meter.getPaoIdentifier());
         try {
             meterService.removeDisconnectAddress(device);
@@ -389,9 +391,51 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.widgets.disconnectMeterWidget.delete.failed"));
             return "disconnectMeterWidget/render.jsp";
         }
-        Object args = deviceMCT400Series.getDisconnectAddress();
+        Object args = collarAddressEditorBean.getDisconnectAddress();
         flash.setMessage(new YukonMessageSourceResolvable("yukon.web.widgets.disconnectMeterWidget.delete.successful",
             args), FlashScopeMessageType.SUCCESS);
         return "disconnectMeterWidget/render.jsp";
+    }
+
+    public static class CollarAddressEditorBean {
+
+        private int deviceId;
+        private Integer disconnectAddress;
+        private boolean isNewCollarAddress;
+
+        public int getDeviceId() {
+            return deviceId;
+        }
+
+        public CollarAddressEditorBean(int deviceId, Integer disconnectAddress, boolean isNewCollarAddress) {
+            super();
+            this.deviceId = deviceId;
+            this.disconnectAddress = disconnectAddress;
+            this.isNewCollarAddress = isNewCollarAddress;
+        }
+
+        public CollarAddressEditorBean() {
+        }
+
+        public void setDeviceId(int deviceId) {
+            this.deviceId = deviceId;
+        }
+
+        public Integer getDisconnectAddress() {
+            return disconnectAddress;
+        }
+
+        public void setDisconnectAddress(Integer collarAddress) {
+            this.disconnectAddress = collarAddress;
+        }
+
+        public boolean getIsNewCollarAddress() {
+            return isNewCollarAddress;
+        }
+
+        public void setNewCollarAddress(boolean isNewCollarAddress) {
+            this.isNewCollarAddress = isNewCollarAddress;
+        }
+
     }
 }

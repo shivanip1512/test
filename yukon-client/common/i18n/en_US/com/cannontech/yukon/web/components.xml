@@ -197,5 +197,4 @@
     <entry key="yukon.web.components.export">Export:</entry>
     <entry key="yukon.web.components.jstree.input.search.tooltip">Begin typing to search for a node in the tree. Matches will be highlighted with blue text. Hit 'Enter' to cycle through the results.</entry>
     
-    <entry key="yukon.web.widgetClasses.DisconnectMeterWidget.configure">Configuration successful</entry>
 </properties>

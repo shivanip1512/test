@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -35,6 +36,7 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YNBoolean;
@@ -396,6 +398,27 @@ public class MeterDaoImpl implements MeterDao {
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject) dbPersistentDao.retrieveDBPersistent(liteYukonPAO);
         dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE);
+    }
+    
+    /**
+     * Returns true if the DeviceMCT400Series table has a row returned for mctID, else false.
+     * @param mctID
+     * @return
+     */
+    public Integer getDisconnectAddress(Integer mctID) {
+        
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DisconnectAddress FROM DeviceMCT400Series ");
+        sql.append("WHERE DeviceID = ").appendArgument(mctID);
+        Integer address;
+        try {
+            address = template.queryForInt(sql.getSql(), sql.getArguments());
+        } catch (EmptyResultDataAccessException e) {
+            // if no results, then it doesn't exist
+            return null;
+        }
+        return address;
     }
     
 }

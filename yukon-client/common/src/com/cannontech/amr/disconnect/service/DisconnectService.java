@@ -11,30 +11,28 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.user.YukonUserContext;
 
 public interface DisconnectService {
-    
+
     /**
      * Executes connect, disconnect or arm commands
      */
-    DisconnectResult execute(DisconnectCommand command,
-                             DeviceCollection deviceCollection,
-                             SimpleCallback<DisconnectResult> callback,
-                             YukonUserContext userContext);
+    DisconnectResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
+            SimpleCallback<DisconnectResult> callback, YukonUserContext userContext);
 
     /**
      * Returns result for the key provided.
      */
     DisconnectResult getResult(String key);
-    
+
     /**
      * Attempts to cancel the command sent.
      */
     void cancel(String key, YukonUserContext userContext, DisconnectCommand command);
-    
+
     /**
      * Returns the list of completed and pending results
      */
     Iterable<DisconnectResult> getResults();
-    
+
     /**
      * Returns true if the devices can be armed.
      */
@@ -42,22 +40,30 @@ public interface DisconnectService {
 
     /**
      * Returns true if at least one of the devices supports disconnect.
+     * Supports disconnect means the device has integrated disconnect OR disconnect collar configured.
      */
     boolean supportsDisconnect(Iterable<SimpleDevice> meters);
-    
-    /**
-     * Executes connect, disconnect or arm commands and waits for the result.
-     * Use {@link DisconnectService#supportsDisconnect()} to verify that device is supported prior to calling this method.
-     * 
-     * @throws UnsupportedOperationException if the device doesn't support disconnect. 
-     */
-    DisconnectMeterResult execute(DisconnectCommand command, DeviceRequestType type, YukonMeter meter, YukonUserContext userContext);
 
-    /**   
-     * Returns true if at least one of the devices supports disconnect and is not configured.
-     *
+    /**
+     * Returns true if at least one of the devices supports disconnect.
+     * Supports disconnect means the device has integrated disconnect OR
+     * when includeNotConfigured is true, device supports disconnect collar BUT it is NOT configured.
+     * when includeNotConfigured is false, device supports disconnect collar AND it IS configured.
+     * 
      * @param meters
      * @return
      */
-    boolean supportsDisconnectConfiguration(Iterable<SimpleDevice> meters);
+    boolean supportsDisconnect(Iterable<SimpleDevice> meters, boolean includeNotConfigured);
+
+    /**
+     * Executes connect, disconnect or arm commands and waits for the result.
+     * Use {@link DisconnectService#supportsDisconnect()} to verify that device is supported prior to calling
+     * this method.
+     * 
+     * @@ -52,12 +63,4 @@
+     * @throws UnsupportedOperationException if the device doesn't support disconnect.
+     */
+    DisconnectMeterResult execute(DisconnectCommand command, DeviceRequestType type, YukonMeter meter,
+            YukonUserContext userContext);
+
 }

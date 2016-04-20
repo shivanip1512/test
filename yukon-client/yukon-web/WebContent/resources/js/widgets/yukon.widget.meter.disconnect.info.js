@@ -15,7 +15,7 @@ yukon.widget.disconnectInfo = (function () {
 
     /** @constant {string} - URL for configuring the disconnect address. */
     _editUrl = yukon.url('/widget/disconnectMeterWidget/edit'), 
-    _deleteUrl = yukon.url('/widget/disconnectMeterWidget/delete'),
+    _deleteUrl = yukon.url('/widget/disconnectMeterWidget/removeDisconnectCollar'),
 
     mod = {
 
@@ -24,11 +24,7 @@ yukon.widget.disconnectInfo = (function () {
 
             if (_initialized) return;
 
-            $(document)
-                .on(
-                    'click',
-                    '#edit-btn',
-                    function (ev) {
+            $(document).on('click','#edit-btn',function (ev) {
 
                         var popup = $('#disconnect-meter-popup'), btns = popup
                             .closest('.ui-dialog').find('.ui-dialog-buttonset'), primary = btns
@@ -59,10 +55,7 @@ yukon.widget.disconnectInfo = (function () {
 
             /** Delete a Collar Entry */
 
-            $(document)
-                .on(
-                    'yukon:widget:meter:disconnect:delete:addr',
-                    function () {
+            $(document).on('yukon:widget:meter:disconnect:delete:addr',function () {
 
                         var popup = $('#disconnect-meter-popup'), btns = popup
                             .closest('.ui-dialog').find('.ui-dialog-buttonset'), primary = btns

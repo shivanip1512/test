@@ -54,9 +54,9 @@
     <entry key="yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.success">{0} Successful</entry>
     
     <entry key="yukon.web.widgets.disconnectMeterWidget.error.disconnectAddress.required">Disconnect address is required.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.error.disconnectAddress.unique">The disconnect address is already assigned to another meter {0}</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.error.disconnectAddress.unique">The disconnect address is already assigned to meter(s) {0}.</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.update.successful">Disconnect Address configuration successful.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.delete.failed">Failed to delete Collar address.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.delete.successful">The disconnect address {0} was removed successfully</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.delete.failed">Failed to delete collar address.</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.delete.successful">The disconnect address {0} was removed successfully.</entry>
     
 </properties>

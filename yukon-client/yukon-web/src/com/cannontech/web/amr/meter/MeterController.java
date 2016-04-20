@@ -221,7 +221,7 @@ public class MeterController {
         boolean configurableDevice = !deviceConfigDao.getAllConfigurationsByType(type).isEmpty();
         boolean outageSupported = outageDevice && (outageLogAttribute || blinkCountAttribute);
         // Device has internal disconnect or a disconnect collar attached
-        boolean disconnectDevice = disconnectService.supportsDisconnectConfiguration(Collections.singleton(device));
+        boolean disconnectDevice = disconnectService.supportsDisconnect(Collections.singleton(device), true);
         boolean voltageAndTouDevice = (mct4xxDevice || rfDevice) 
                 && (voltageAttribute || voltageThreePhaseDevice || currentThreePhaseDevice);
         

@@ -80,5 +80,12 @@ public interface MeterDao {
     List<Integer> getMetersWithDisconnectCollarAddress(Iterable<Integer> ids);
     
     List<SimpleMeter> getAllSimpleMeters();
+    
+    /**
+     * Returns Disconnect Address from the DeviceMCT400Series table for MCT ID.
+     * @param mctID
+     * @return
+     */
+    public Integer getDisconnectAddress(Integer mctID) ;
 
 }

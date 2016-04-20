@@ -148,24 +148,4 @@ public final static boolean hasExistingDisconnectAddress(Integer mctID) {
     }
 }
 
-/**
- * Returns true if the DeviceMCT400Series table has a row returned for mctID, else false.
- * @param mctID
- * @return
- */
-public final static Integer getDisconnectAddress(Integer mctID) {
-    
-    JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
-    SqlStatementBuilder sql = new SqlStatementBuilder();
-    sql.append("SELECT DisconnectAddress FROM DeviceMCT400Series ");
-    sql.append("WHERE DeviceID = ").appendArgument(mctID);
-    Integer address;
-    try {
-        address = template.queryForInt(sql.getSql(), sql.getArguments());
-    } catch (EmptyResultDataAccessException e) {
-        // if no results, then it doesn't exist
-        return null;
-    }
-    return address;
-}
 }
