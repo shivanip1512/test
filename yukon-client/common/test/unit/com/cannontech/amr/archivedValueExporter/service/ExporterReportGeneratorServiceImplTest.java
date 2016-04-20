@@ -43,8 +43,6 @@ import com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGenerat
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.dao.MockMeterDaoImpl;
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.amr.rfn.dao.MockRfnDeviceDaoImpl;
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.MockAttributeServiceImpl;
@@ -73,7 +71,6 @@ public class ExporterReportGeneratorServiceImplTest {
     
     private PaoSelectionService paoSelectionService = new MockPaoSelectionServiceImpl();
     private MeterDao meterDao = new MockMeterDaoImpl();
-    private RfnDeviceDao rfnDeviceDao = new MockRfnDeviceDaoImpl();
     private RawPointHistoryDao rawPointHistoryDao = new MockRawPointHistoryDaoImpl();
     private TimeZoneFormat tzFormat = TimeZoneFormat.LOCAL;
     
@@ -107,7 +104,6 @@ public class ExporterReportGeneratorServiceImplTest {
         ReflectionTestUtils.setField(exporterReportGeneratorService, "paoSelectionService", paoSelectionService);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "messageSourceResolver", messageSourceResolver);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "rawPointHistoryDao", rawPointHistoryDao);
-        ReflectionTestUtils.setField(exporterReportGeneratorService, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "unitMeasureDao", new MockUnitMeasureDaoImpl());
     }
 
