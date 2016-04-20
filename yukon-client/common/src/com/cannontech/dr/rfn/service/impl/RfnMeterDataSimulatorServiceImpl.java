@@ -44,6 +44,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 
 public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService implements RfnMeterDataSimulatorService {
+    
     private final Logger log = YukonLogManager.getLogger(RfnMeterDataSimulatorServiceImpl.class);
 
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
@@ -74,6 +75,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     @Override
     public synchronized void startSimulator(SimulatorSettings settings) {
         if (!status.isRunning().get()) {
+            log.debug("Start simulator");
             status = new RfnDataSimulatorStatus();
             status.setRunning(new AtomicBoolean(true));
             status.setStartTime(new Instant());

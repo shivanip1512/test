@@ -242,7 +242,7 @@ public class NmIntegrationController {
             data.add(gatewayData);
             
         } catch (Exception e) {
-            log.error("Couldn't look up value.", e);
+            log.warn("Couldn't look up value.", e);
         }
         
         return data;

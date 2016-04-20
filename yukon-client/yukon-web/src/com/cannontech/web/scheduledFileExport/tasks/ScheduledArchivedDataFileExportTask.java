@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -23,6 +24,7 @@ import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.exception.FileCreationException;
@@ -42,6 +44,8 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	@Autowired private ScheduledFileExportDao scheduledFileExportDao;
 	@Autowired private DeviceCollectionService deviceCollectionService;
 	
+    private static final Logger log = YukonLogManager.getLogger(ScheduledArchivedDataFileExportTask.class);
+	
 	private int collectionId;
 	private int formatId;
 	private Set<Attribute> attributes;
@@ -53,6 +57,8 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	    List<YukonMeter> meters = meterDao.getMetersForYukonPaos(deviceCollection.getDeviceList());
 		ExportFormat format = archiveValuesExportFormatDao.getByFormatId(formatId);
 		populateDataRange();
+		
+		log.debug("Generating scheduled data file export");
 		
 		//Get the report data
 		Attribute[] attributesArray = attributes.toArray(new Attribute[attributes.size()]);

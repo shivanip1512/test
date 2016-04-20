@@ -24,7 +24,7 @@ public abstract class RfnDataSimulatorService {
     protected static final int RANDOM_MIN = 1;
     protected static final int RANDOM_MAX = 100;
     
-    private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
+    private final Logger log = YukonLogManager.getLogger(RfnDataSimulatorService.class);
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;

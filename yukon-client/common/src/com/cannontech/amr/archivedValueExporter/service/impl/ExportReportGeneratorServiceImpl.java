@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -32,7 +33,7 @@ import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -82,7 +83,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private AttributeService attributeService;
     @Autowired private PointDao pointDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ConfigurationSource configSource;
@@ -97,6 +97,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private static String previewMeterNameKey = baseKey + "previewMeterName";
     private static String previewMeterAddressKey = baseKey + "previewMeterAddress";
     private static String previewMeterRouteKey = baseKey + "previewMeterRoute";
+    
+    private static final Logger log = YukonLogManager.getLogger(ExportReportGeneratorServiceImpl.class);
 
     /*The value to be returned in case the meter information we
     were looking for was not found, and the user elected to skip the record.
@@ -161,6 +163,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             YukonUserContext userContext, 
             Attribute[] attributes, BufferedWriter writer) throws IOException {
         
+        if (log.isDebugEnabled()) {
+            log.info("Generating report for " + allPaos.size() + " devices");
+        }
         Set<OptionalField> requestedFields = new HashSet<>();
         boolean needsName = false;
         boolean needsUoM = false;
@@ -234,15 +239,24 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                     long firstChangeId = range.getChangeIdRange().getFirstChangeId();
                     long lastChangeId = range.getChangeIdRange().getLastChangeId();
                     Range<Long> changeIdRange = Range.exclusiveInclusive(firstChangeId, lastChangeId);
-
+                    if (log.isDebugEnabled()) {
+                        log.info("Generating by last change id for a range " + changeIdRange);
+                    }
+    
                     for (Attribute attribute : attributes) {
+                        if (log.isDebugEnabled()) {
+                            log.info("Getting data for attribute=" + attribute + " devices=" + paosSublist.size());
+                        }
                         ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData =
-                                getDynamicAttributeData(paosSublist, attribute, null, range, changeIdRange, format);
+                            getDynamicAttributeData(paosSublist, attribute, null, range, changeIdRange, format);
+                        if (log.isDebugEnabled()) {
+                            log.info("Found values since the last change id=" + sinceLastChangeIdAttributeData.size());
+                        }
                         generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
                             sinceLastChangeIdAttributeData, unitMeasureLookupTable, writer);
+                        log.info("Finished writing to file");
                     }
-
-                    break;
+                break;
                 default:
                     throw new IllegalArgumentException(range.getDataRangeType()+" is not currently supported by the export report generator.");
             }
@@ -252,6 +266,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             writer.newLine();
         }
         writer.flush();
+        log.info("Generating report is done");
     }
     
     
