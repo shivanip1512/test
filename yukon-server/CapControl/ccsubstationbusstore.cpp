@@ -4162,17 +4162,19 @@ try
         deleteArea( areaId );
     }
 
-    for ( auto areaMap : loadedAreas )
+    for ( auto idAreaPair : loadedAreas )
     {
-        paobject_area_map->emplace( areaMap.first, areaMap.second );
+        const CtiCCAreaPtr  area = idAreaPair.second;
 
-        ccGeoAreas->push_back( areaMap.second );
+        paobject_area_map->insert( idAreaPair );
 
-        for ( const long pointID : *areaMap.second->getPointIds() )
+        ccGeoAreas->push_back( area );
+
+        for ( const long pointID : *area->getPointIds() )
         {
-            pointid_area_map->emplace( pointID, areaMap.second );
+            pointid_area_map->emplace( pointID, area );
 
-            _pointID_to_pao.emplace( pointID, areaMap.second );
+            _pointID_to_pao.emplace( pointID, area );
         }
     }
 
@@ -4380,17 +4382,19 @@ try
 
     CtiLockGuard<CtiCriticalSection>  guard( getMux() );
 
-    for ( auto areaMap : loadedAreas )
+    for ( auto idAreaPair : loadedAreas )
     {
-        paobject_specialarea_map->emplace( areaMap.first, areaMap.second );
+        const CtiCCSpecialPtr   specialArea = idAreaPair.second;
 
-        ccSpecialAreas->push_back( areaMap.second );
+        paobject_specialarea_map->insert( idAreaPair );
 
-        for ( const long pointID : *areaMap.second->getPointIds() )
+        ccSpecialAreas->push_back( specialArea );
+
+        for ( const long pointID : *specialArea->getPointIds() )
         {
-            pointid_specialarea_map->emplace( pointID, areaMap.second );
+            pointid_specialarea_map->emplace( pointID, specialArea );
 
-            _pointID_to_pao.emplace( pointID, areaMap.second );
+            _pointID_to_pao.emplace( pointID, specialArea );
         }
     }
 }

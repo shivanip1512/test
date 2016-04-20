@@ -1919,9 +1919,9 @@ void CtiCapController::parseMessage(CtiMessage *message)
                                 doesn't have the capability to reload a single schedule.
 
                             The CapControl objects currently don't get reloaded when a schedule changes - that
-                                is the way is has always worked. Schedule changes were only picked up when an
-                                individual object was reloaded. A CapControl restart was necessary to see the DB
-                                change sooner.
+                                is the way it has always worked (as of April 2016). Schedule changes were only
+                                picked up when an individual object was reloaded. A CapControl restart was
+                                necessary to see the DB change sooner.
 
                             In the future it may be nice to schedule a reload of the objects that are tied to
                                 the particular schedule being reloaded.
@@ -1938,9 +1938,9 @@ void CtiCapController::parseMessage(CtiMessage *message)
                                 doesn't have the capability to reload a single schedule.
 
                             The CapControl objects currently don't get reloaded when a schedule changes - that
-                                is the way is has always worked. Schedule changes were only picked up when an
-                                individual object was reloaded. A CapControl restart was necessary to see the DB
-                                change sooner.
+                                is the way it has always worked (as of April 2016). Schedule changes were only
+                                picked up when an individual object was reloaded. A CapControl restart was
+                                necessary to see the DB change sooner.
 
                             In the future it may be nice to schedule a reload of the objects that are tied to
                                 the particular schedule being reloaded.
