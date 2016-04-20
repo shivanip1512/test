@@ -336,13 +336,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     public String edit(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
         Integer disconnectAddress = meterDao.getDisconnectAddress(deviceId);
         CollarAddressEditorBean addressEditorBean = null;
-        if (disconnectAddress != null && disconnectAddress != 0) {
-            // Old Address
-            addressEditorBean = new CollarAddressEditorBean(deviceId, disconnectAddress, false);
-        } else {
-            // New Address
-            addressEditorBean = new CollarAddressEditorBean(deviceId, null, true);
-        }
+        model.addAttribute("disconnectAddress", disconnectAddress);
         model.addAttribute("addressEditorBean", addressEditorBean);
         return "disconnectMeterWidget/edit.jsp";
     }
@@ -370,8 +364,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
 
         model.addAttribute("attribute", BuiltInAttribute.DISCONNECT_STATUS);
         addressEditorBean =
-            new CollarAddressEditorBean(addressEditorBean.getDeviceId(), addressEditorBean.getDisconnectAddress(),
-                false);
+            new CollarAddressEditorBean(addressEditorBean.getDeviceId(), addressEditorBean.getDisconnectAddress());
         model.addAttribute("addressEditorBean", addressEditorBean);
         flash.setMessage(new YukonMessageSourceResolvable("yukon.web.widgets.disconnectMeterWidget.update.successful"),
             FlashScopeMessageType.SUCCESS);
@@ -401,17 +394,15 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
 
         private int deviceId;
         private Integer disconnectAddress;
-        private boolean isNewCollarAddress;
 
         public int getDeviceId() {
             return deviceId;
         }
 
-        public CollarAddressEditorBean(int deviceId, Integer disconnectAddress, boolean isNewCollarAddress) {
+        public CollarAddressEditorBean(int deviceId, Integer disconnectAddress) {
             super();
             this.deviceId = deviceId;
             this.disconnectAddress = disconnectAddress;
-            this.isNewCollarAddress = isNewCollarAddress;
         }
 
         public CollarAddressEditorBean() {
@@ -428,14 +419,5 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         public void setDisconnectAddress(Integer collarAddress) {
             this.disconnectAddress = collarAddress;
         }
-
-        public boolean getIsNewCollarAddress() {
-            return isNewCollarAddress;
-        }
-
-        public void setNewCollarAddress(boolean isNewCollarAddress) {
-            this.isNewCollarAddress = isNewCollarAddress;
-        }
-
     }
 }
