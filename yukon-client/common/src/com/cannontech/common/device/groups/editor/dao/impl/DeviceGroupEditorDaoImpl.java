@@ -584,9 +584,9 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         @Override
         public SqlFragmentSource generate(List<Integer> deviceIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("delete from DeviceGroupMember");
-            sql.append("where DeviceGroupId = " + groupId);
-            sql.append(" and YukonPaoId in (", deviceIds, ")");
+            sql.append("DELETE FROM DeviceGroupMember");
+            sql.append("WHERE DeviceGroupId = " + groupId);
+            sql.append(" AND YukonPaoId IN (", deviceIds, ")");
             return sql;
         }
     }
