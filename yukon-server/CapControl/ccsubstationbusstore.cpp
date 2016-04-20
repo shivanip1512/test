@@ -3593,7 +3593,8 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
 /*---------------------------------------------------------------------------
     reloadSubstationFromDatabase
 
-    Reloads a single substation from the database.
+    Reloads one (if a positive substationId is supplied)
+        or all substations from the database
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                   PaoIdToSubstationMap *paobject_substation_map,
@@ -3737,13 +3738,18 @@ try
         {
             static const std::string sql = 
                 "SELECT "
-                    "AreaID, "
-                    "SubstationBusID "
+                    "SubstationID, "
+                    "A.AreaID, "
+                    "S.AreaID AS SpecialAreaID "
                 "FROM "
-                    "CCSUBAREAASSIGNMENT";
+                    "CAPCONTROLSUBSTATION "
+                        "LEFT OUTER JOIN CCSUBAREAASSIGNMENT A "
+                            "ON SubstationID = A.SubstationBusID "
+                        "LEFT OUTER JOIN CCSUBSPECIALAREAASSIGNMENT S "
+                            "ON SubstationID = S.SubstationBusID";
 
             static const std::string sqlID = sql +
-                " WHERE SubstationBusID = ?";
+                " WHERE SubstationID = ?";
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader     rdr( connection );
@@ -3765,137 +3771,117 @@ try
                 CTILOG_INFO( dout, rdr.asString() );
             }
 
-            while ( rdr() )
+            while ( rdr() ) 
             {
-                long currentAreaId,
-                     currentSubstationId;
+                long substationID;
 
-                rdr["AreaID"]          >> currentAreaId;
-                rdr["SubstationBusID"] >> currentSubstationId;
+                rdr["SubstationID"] >> substationID;
 
-                if ( CtiCCSubstationPtr currentCCSubstation = findInMap( currentSubstationId, paobject_substation_map ) )
+                if ( auto substationSearch = Cti::mapFind( *paobject_substation_map, substationID ) )
                 {
-                    currentCCSubstation->setParentId( currentAreaId );
+                    CtiCCSubstationPtr substation = *substationSearch;
 
-                    CtiCCAreaPtr currentCCArea =
-                        ( substationId > 0 )
-                            ? findAreaByPAObjectID( currentAreaId )
-                            : findInMap( currentAreaId, paobject_area_map );
-
-                    if ( currentCCArea )
+                    if ( ! rdr["AreaID"].isNull() ) 
                     {
-                        currentCCArea->addSubstationId( currentSubstationId );
-                    }
+                        long areaID;
 
-                    substation_area_map->emplace( currentSubstationId, currentAreaId );
+                        rdr["AreaID"] >> areaID;
 
-                    ccSubstations->push_back( currentCCSubstation );
-                }
-            }
-        }
-
-
-        {
-            static const std::string sql = 
-                "SELECT "
-                    "AreaID, "
-                    "SubstationBusID "
-                "FROM "
-                    "CCSUBSPECIALAREAASSIGNMENT";
-
-            static const std::string sqlID = sql +
-                " WHERE SubstationBusID = ?";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader     rdr( connection );
-
-            if ( substationId > 0 )
-            {
-                rdr.setCommandText( sqlID );
-                rdr << substationId;
-            }
-            else
-            {
-                rdr.setCommandText( sql );
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO( dout, rdr.asString() );
-            }
-
-            while ( rdr() )
-            {
-                long currentSpAreaId,
-                     currentSubId;
-
-                rdr["AreaID"]          >> currentSpAreaId;
-                rdr["SubstationBusID"] >> currentSubId;
-
-                if ( CtiCCSpecialPtr currentCCSpArea = findSpecialAreaByPAObjectID( currentSpAreaId ) )
-                {
-                    if ( CtiCCSubstationPtr currentStation = findSubstationByPAObjectID( currentSubId ) )
-                    {
-                        if ( currentStation->getSaEnabledId() == 0 )
+                        if ( auto area = Cti::mapFind( *paobject_area_map, areaID ) )
                         {
-                            currentStation->setSaEnabledId( currentSpAreaId );
-                        }
+                            substation->setParentId( areaID );
 
-                        if ( ! currentCCSpArea->getDisableFlag() )
-                        {
-                            currentStation->setSaEnabledId( currentSpAreaId );
-                            currentStation->setSaEnabledFlag( true );
-                        }
+                            (*area)->addSubstationId( substationID );
 
-                        if ( currentStation->getParentId() <= 0 )
-                        {
-                            currentStation->setParentId( currentSpAreaId );
-                            ccSubstations->push_back( currentStation );
+                            substation_area_map->emplace( substationID, areaID );
                         }
                     }
 
-                    substation_specialarea_map->emplace( currentSubId, currentSpAreaId );
+                    if ( ! rdr["SpecialAreaID"].isNull() ) 
+                    {
+                        long specialAreaID;
 
-                    currentCCSpArea->addSubstationId( currentSubId );
+                        rdr["SpecialAreaID"] >> specialAreaID;
+
+                        if ( auto specialArea = Cti::mapFind( *paobject_specialarea_map, specialAreaID ) )
+                        {
+                            if ( substation->getParentId() <= 0 )
+                            {
+                                substation->setParentId( specialAreaID );
+                            }
+
+                            (*specialArea)->addSubstationId( substationID );
+
+                            substation_specialarea_map->emplace( substationID, specialAreaID );
+
+                            if ( substation->getSaEnabledId() == 0 )
+                            {
+                                substation->setSaEnabledId( specialAreaID );
+                            }
+
+                            if ( ! (*specialArea)->getDisableFlag() )
+                            {
+                                substation->setSaEnabledId( specialAreaID );
+                                substation->setSaEnabledFlag( true );
+                            }
+                        }
+                    }
+
+                    if ( substation->getParentId() > 0 )
+                    {
+                        ccSubstations->push_back( substation );
+                    }
                 }
             }
         }
 
         if ( substationId > 0 ) // else, when reloading all, then the reload of feeders will be called after subBusReload and take care of it.
         {
-            static const string sql =  "SELECT SBL.substationid, SBL.substationbusid, SBL.displayorder "
-                                       "FROM ccsubstationsubbuslist SBL "
-                                       "WHERE SBL.substationid = ? "
-                                       "ORDER BY SBL.substationid, SBL.displayorder";
+            std::vector<long>   reloadBusIDs;
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection, sql);
-
-            rdr << substationId;
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                static const std::string sql = 
+                    "SELECT "
+                        "SubStationBusID "
+                    "FROM "
+                        "CCSUBSTATIONSUBBUSLIST "
+                    "WHERE "
+                        "SubStationID = ?";
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader     rdr( connection, sql );
+
+                rdr << substationId;
+
+                rdr.execute();
+
+                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                {
+                    CTILOG_INFO( dout, rdr.asString() );
+                }
+
+                while ( rdr() )
+                {
+                    long currentSubBusId;
+
+                    rdr["SubStationBusID"] >> currentSubBusId;
+
+                    reloadBusIDs.push_back( currentSubBusId );
+                }
             }
 
-            long currentSubBusId;
-            while ( rdr() )
+            for ( const long currentSubBusId : reloadBusIDs )
             {
-
-                rdr["substationbusid"] >> currentSubBusId;
-               reloadSubBusFromDatabase(currentSubBusId, &_paobject_subbus_map,
-                                         &_paobject_substation_map, &_pointid_subbus_map,
-                                         &_altsub_sub_idmap, &_subbus_substation_map,
-                                         _ccSubstationBuses );
-
-
+                reloadSubBusFromDatabase( currentSubBusId, &_paobject_subbus_map,
+                                          &_paobject_substation_map, &_pointid_subbus_map,
+                                          &_altsub_sub_idmap, &_subbus_substation_map,
+                                          _ccSubstationBuses );
             }
-            reloadOperationStatsFromDatabase(substationId,&_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
-                                         &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
+
+            reloadOperationStatsFromDatabase( substationId, &_paobject_capbank_map,
+                                              &_paobject_feeder_map, &_paobject_subbus_map,
+                                              &_paobject_substation_map, &_paobject_area_map,
+                                              &_paobject_specialarea_map);
         }
     }
 }
