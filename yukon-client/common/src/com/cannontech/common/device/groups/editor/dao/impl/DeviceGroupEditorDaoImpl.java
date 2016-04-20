@@ -47,6 +47,8 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.MappingCollection;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SqlBuilder;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -74,10 +76,16 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DeviceGroupService deviceGroupService;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
     
     private StoredDeviceGroup rootGroupCache = null;
     private final Map<SystemGroupEnum, String> systemGroupPaths = new HashMap<>();
     
+    @PostConstruct
+    public void init() throws Exception {
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(jdbcTemplate);
+    }
+
     @PostConstruct
     private void initialize() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -557,21 +565,30 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     @Override
-    public int removeDevicesById(StoredDeviceGroup group,
-            Collection<Integer> deviceIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from DeviceGroupMember");
-        sql.append("where DeviceGroupId = ?");
-        sql.append("and YukonPaoId in (", deviceIds, ")");
-        
-        int rowsAffected = jdbcTemplate.update(sql.toString(), group.getId());
+    public int removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
 
+        int rowsAffected = chunkyJdbcTemplate.doUpdate(new RemoveDevicesByIdSqlGenerator(group.getId()), deviceIds);
         if (rowsAffected > 0) {
-            dbChangeManager.processDbChange(DbChangeType.DELETE, 
-                                        DbChangeCategory.DEVICE_GROUP_MEMBER, 
-                                        group.getId());
+            dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.DEVICE_GROUP_MEMBER, group.getId());
         }
         return rowsAffected;
+    }
+
+    private class RemoveDevicesByIdSqlGenerator implements SqlFragmentGenerator<Integer> {
+        private int groupId;
+
+        public RemoveDevicesByIdSqlGenerator(int groupId) {
+            this.groupId = groupId;
+        }
+
+        @Override
+        public SqlFragmentSource generate(List<Integer> deviceIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("delete from DeviceGroupMember");
+            sql.append("where DeviceGroupId = " + groupId);
+            sql.append(" and YukonPaoId in (", deviceIds, ")");
+            return sql;
+        }
     }
 
     @Override

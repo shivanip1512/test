@@ -142,23 +142,37 @@ public class ChunkingSqlTemplate {
     }
 
     public <I> void update(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input) {
-    	final List<I> tempInputList = Lists.newArrayList(input);
-    	final List<SqlFragmentSource> sqlFragmentList = new ArrayList<SqlFragmentSource>();
-    	
-    	int inputSize = tempInputList.size();
-    	for (int start = 0; start < inputSize; start += chunkSize ) {
-    		int nextToIndex = start + chunkSize;
-    		int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
-    		
-    		List<I> subList = tempInputList.subList(start, toIndex);
-    		
-    		SqlFragmentSource sqlFragmentSource = sqlGenerator.generate(subList);
-    		sqlFragmentList.add(sqlFragmentSource);
-    	}
-    	
-    	for (final SqlFragmentSource sql : sqlFragmentList) {
-    	    yukonJdbcTemplate.update(sql);
-    	}
+        List<SqlFragmentSource> sqlFragmentList = getSqlFragmentList(sqlGenerator, input);
+        for (final SqlFragmentSource sql : sqlFragmentList) {
+            yukonJdbcTemplate.update(sql);
+        }
+    }
+
+    private <I> List<SqlFragmentSource> getSqlFragmentList(final SqlFragmentGenerator<I> sqlGenerator,
+            final Iterable<I> input) {
+        final List<I> tempInputList = Lists.newArrayList(input);
+        final List<SqlFragmentSource> sqlFragmentList = new ArrayList<SqlFragmentSource>();
+
+        int inputSize = tempInputList.size();
+        for (int start = 0; start < inputSize; start += chunkSize) {
+            int nextToIndex = start + chunkSize;
+            int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
+
+            List<I> subList = tempInputList.subList(start, toIndex);
+
+            SqlFragmentSource sqlFragmentSource = sqlGenerator.generate(subList);
+            sqlFragmentList.add(sqlFragmentSource);
+        }
+        return sqlFragmentList;
+    }
+
+    public <I> int doUpdate(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input) {
+        List<SqlFragmentSource> sqlFragmentList = getSqlFragmentList(sqlGenerator, input);
+        int rowsAffected = 0;
+        for (final SqlFragmentSource sql : sqlFragmentList) {
+            rowsAffected += yukonJdbcTemplate.update(sql);
+        }
+        return rowsAffected;
     }
     
     public <I, R> List<R> query(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input, final YukonRowMapper<R> rowMapper) {
