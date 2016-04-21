@@ -71,6 +71,44 @@ SET PagePath = '/capcontrol/substations/' || SUBSTR(PagePath, 39, LENGTH(PagePat
 WHERE PageName = 'substation.VIEW';
 /* End YUK-15251 */
 
+/* Start YUK-15268 */
+/* @start-block */
+DECLARE
+  doAdd NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO doAdd FROM GlobalSetting WHERE Name = 'CIS_DETAIL_TYPE';
+    IF (doAdd = 0) THEN 
+        INSERT INTO GlobalSetting (GlobalSettingId, Name, Value) 
+            SELECT DISTINCT (SELECT NVL(MAX(GlobalSettingId) + 1,1) FROM GlobalSetting), 'CIS_DETAIL_TYPE', 'CAYENTA' 
+            FROM YukonGroupRole 
+            WHERE RolePropertyId = -20212 AND Value = 'CAYENTA';
+    END IF;
+END;
+/
+/* @end-block */
+
+/* @start-block */
+DECLARE
+  doAdd NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO doAdd FROM GlobalSetting WHERE Name = 'CIS_DETAIL_TYPE';
+    IF (doAdd = 0) THEN
+        INSERT INTO GlobalSetting (GlobalSettingId, Name, Value)
+            SELECT (SELECT NVL(MAX(GlobalSettingId) + 1,1) FROM GlobalSetting), 'CIS_DETAIL_TYPE', 'MULTISPEAK'
+            FROM GlobalSetting 
+            WHERE Name = 'MSP_PRIMARY_CB_VENDORID' AND Value > 1;
+    END IF;
+END;
+/
+/* @end-block */
+
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId =  -20212;
+  
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId =  -20212;
+/* End YUK-15268 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
