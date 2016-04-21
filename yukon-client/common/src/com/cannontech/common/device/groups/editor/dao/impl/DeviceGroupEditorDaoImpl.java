@@ -567,7 +567,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     public int removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
 
-        int rowsAffected = chunkyJdbcTemplate.doUpdate(new RemoveDevicesByIdSqlGenerator(group.getId()), deviceIds);
+        int rowsAffected = chunkyJdbcTemplate.update(new RemoveDevicesByIdSqlGenerator(group.getId()), deviceIds);
         if (rowsAffected > 0) {
             dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.DEVICE_GROUP_MEMBER, group.getId());
         }
@@ -585,7 +585,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         public SqlFragmentSource generate(List<Integer> deviceIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM DeviceGroupMember");
-            sql.append("WHERE DeviceGroupId = " + groupId);
+            sql.append("WHERE DeviceGroupId").eq(groupId);
             sql.append(" AND YukonPaoId IN (", deviceIds, ")");
             return sql;
         }
