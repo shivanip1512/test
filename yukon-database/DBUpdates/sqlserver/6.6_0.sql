@@ -194,6 +194,12 @@ ALTER TABLE UserSystemMetric
       ON DELETE CASCADE;
 /* End YUK-15280 */
 
+/* Start YUK-15251 */
+UPDATE UserPage
+SET PagePath = '/capcontrol/substations/' + SUBSTRING(PagePath, 39, LEN(PagePath)-38)
+WHERE PageName = 'substation.VIEW';
+/* End YUK-15251 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
