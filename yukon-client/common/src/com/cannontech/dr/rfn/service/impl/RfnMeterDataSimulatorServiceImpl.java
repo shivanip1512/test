@@ -31,6 +31,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
@@ -42,6 +43,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 
 public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService implements RfnMeterDataSimulatorService {
     
@@ -52,6 +55,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private UnitOfMeasureToPointMapper unitOfMeasureToPointMapper;
+    @Autowired private AttributeService attributeService;
 
     // minute of the day to send a request at/list of devices to send a read request to
     private SetMultimap<Integer, RfnDevice> meters = HashMultimap.create();
@@ -64,6 +68,8 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private final static int secondsPerYear = 31556926;
     private final static long epoch =
         (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005")) / 1000;
+    
+    private static final int INTERVAL_HOURS = 24;
     
     @Override
     @PostConstruct
@@ -129,8 +135,9 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             }
             for (RfnDevice meter : devices) {
                 try {
-                    List<RfnMeterReadingArchiveRequest> meterReadingData =
-                        generateMeterReadingData(meter, DateTime.now(), 24);
+                    List<RfnMeterReadingArchiveRequest> meterReadingData = generateMeterReadingData(meter);
+                    log.debug("Sending requests: " + meterReadingData.size() + " on queue "
+                        + meterReadingArchiveRequestQueueName);
                     for (RfnMeterReadingArchiveRequest meterArchiveRequest : meterReadingData) {
                         sendArchiveRequest(meterArchiveRequest);
                         if (needsDuplicate()) {
@@ -156,112 +163,117 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         return status;
     }
 
-    private List<RfnMeterReadingArchiveRequest> generateMeterReadingData(RfnDevice device, DateTime time,
-            int reportingIntervalHours) {
+    private List<RfnMeterReadingArchiveRequest> generateMeterReadingData(RfnDevice device) {
 
-        List<RfnMeterReadingArchiveRequest> resultList = Lists.newArrayList();
+        DateTime now = DateTime.now();
+        log.info("Generating meter reading data for "+ device);
+        
+        List<RfnMeterReadingArchiveRequest> requests = Lists.newArrayList();
 
         // Do Billing reading type if we have not reported since midnight today
         
         // NOTE the real device does midnight but does not follow DST, so this is compensating by
         // getting midnight in local time, then removing DST compensation by finding the active offset
         // and the normal offset and doing some awesome math.
-        DateTime todaysDeviceBillingGenerationTime = time.withTimeAtStartOfDay()
-                                                         .plusMillis(time.getZone().getOffset(time.withTimeAtStartOfDay()))
-                                                         .minusMillis (time.getZone().getStandardOffset(time.withTimeAtStartOfDay().getMillis()));
-        
-        if (time.minusHours(reportingIntervalHours).isBefore(todaysDeviceBillingGenerationTime)) {
-            List<BuiltInAttribute> attributeToGenerateMessage =
-                RfnMeterSimulatorConfiguration.getValuesByMeterReadingType(RfnMeterReadingType.BILLING);
+        DateTime billingGenerationTime = now.withTimeAtStartOfDay()
+                                                         .plusMillis(now.getZone().getOffset(now.withTimeAtStartOfDay()))
+                                                         .minusMillis (now.getZone().getStandardOffset(now.withTimeAtStartOfDay().getMillis()));
 
-            RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
-            message.setReadingType(RfnMeterReadingType.BILLING);
-            message.setData(createReadingForType(device, attributeToGenerateMessage, todaysDeviceBillingGenerationTime,
-                RfnMeterReadingType.BILLING, time));
-            message.setDataPointId(1);
-            resultList.add(message);
+        if (now.minusHours(INTERVAL_HOURS).isBefore(billingGenerationTime)) {
+            createAndAddArchiveRequest(device, billingGenerationTime, RfnMeterReadingType.BILLING, now, requests);
         }
 
-        List<BuiltInAttribute> attributeToGenerateMessage =
-            RfnMeterSimulatorConfiguration.getValuesByMeterReadingType(RfnMeterReadingType.INTERVAL);
-
         // Example with 4 hour reporting interval: 6:45 (-:45) -> 6 (-4 +1 ) -> 3 ---- Generate time for 3, 4, 5, 6
-        DateTime intervalTime = time.withTime(time.getHourOfDay(), 0, 0, 0).minusHours(reportingIntervalHours - 1);
+        DateTime intervalTime = now.withTime(now.getHourOfDay(), 0, 0, 0).minusHours(INTERVAL_HOURS - 1);
 
-        while (intervalTime.isBefore(time) || intervalTime.isEqual(time)) {
-
-            RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
-            message.setReadingType(RfnMeterReadingType.INTERVAL);
-            message.setData(createReadingForType(device, attributeToGenerateMessage, intervalTime,
-                RfnMeterReadingType.INTERVAL, time));
-            message.setDataPointId(1);
-            resultList.add(message);
-
+        while (intervalTime.isBefore(now) || intervalTime.isEqual(now)) {
+            createAndAddArchiveRequest(device, intervalTime, RfnMeterReadingType.INTERVAL, now, requests);
             intervalTime = intervalTime.plusHours(1);
         }
 
-        return resultList;
+        return requests;
     }
     
-    private RfnMeterReadingData createReadingForType(RfnDevice device,
-            List<BuiltInAttribute> attributeToGenerateMessage, DateTime time, RfnMeterReadingType type, DateTime currentTime) {
+    private void createAndAddArchiveRequest(RfnDevice device, DateTime time, RfnMeterReadingType type,
+            DateTime currentTime, List<RfnMeterReadingArchiveRequest> requests) {
+        log.debug("\n--Creating archive request for " + type + " device=" + device);
+        RfnMeterReadingArchiveRequest archiveRequest = new RfnMeterReadingArchiveRequest();
+        archiveRequest.setReadingType(type);
+        RfnMeterReadingData readingData = createReadingForType(device, time, type, currentTime);
+        archiveRequest.setData(readingData);
+        archiveRequest.setDataPointId(1);
+        log.debug("--archiveRequest= " + archiveRequest + " device=" + device);
+        requests.add(archiveRequest);
+    }
+
+    private PointMapper getMapperByName(String templateName, PaoType paoType) {
+        for (PointMapper mapper : pointMappers.get(paoType)) {
+            if (mapper.getName().equals(templateName)) {
+                return mapper;
+            }
+        }
+        return null;
+    }
+    
+    private RfnMeterReadingData createReadingForType(RfnDevice device, DateTime time, RfnMeterReadingType type,
+            DateTime currentTime) {
+
+        PaoType paoType = device.getPaoIdentifier().getPaoType();
+
+        List<ChannelData> channelDataList = Lists.newArrayList();
+        List<DatedChannelData> datedChannelDataList = Lists.newArrayList();
+
+        Set<Attribute> simulatedAttributes = RfnMeterSimulatorConfiguration.getValuesByMeterReadingType(type);
+        Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);
+        
+        // contains all elements of 'availableAttributes' that also belong to 'simulatedAttributes' but no other attributes
+        SetView<Attribute> intersection = Sets.intersection(simulatedAttributes, availableAttributes);
+        log.debug("---creating reading for the following attributes= "+intersection);
+        
+        Map<Attribute, AttributeDefinition> attrDefMap =
+            paoDefinitionDao.getPaoAttributeAttrDefinitionMap().get(paoType);
+
+        int channelNo = 1;
+        for (Attribute attribute : intersection) {
+            AttributeDefinition definition = attrDefMap.get(attribute);
+            String pointName = definition.getPointTemplate().getName();
+            PointMapper mapper = getMapperByName(pointName, paoType);
+            if (mapper != null) {
+                ChannelData channelData = new ChannelData();
+                TimestampValue timestampValue =
+                    getValueAndTimestampForPoint(device, attribute, time, type, currentTime);
+                channelData.setChannelNumber(channelNo);
+                channelNo++;
+                channelData.setStatus(ChannelDataStatus.OK);
+                channelData.setUnitOfMeasure(mapper.getUom());
+                channelData.setValue(timestampValue.getValue());
+
+                Set<String> modifiers = null;
+                for (ModifiersMatcher match : mapper.getModifiersMatchers()) {
+                    modifiers = match.getModifiers();
+                }
+                channelData.setUnitOfMeasureModifiers(modifiers);
+
+                if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).isDated()) {
+                    DatedChannelData datedChannelData = new DatedChannelData();
+                    datedChannelData.setBaseChannelData(channelData);
+                    datedChannelData.setTimeStamp(timestampValue.getTimestamp().getMillis());
+                    datedChannelDataList.add(datedChannelData);
+                    log.debug("----pointName="+pointName+" datedChannelData= "+datedChannelData);
+                } else {
+                    channelDataList.add(channelData);
+                    log.debug("----pointName="+pointName+" channelData= "+channelData);
+                }
+            }
+        }
         RfnMeterReadingData data = new RfnMeterReadingData();
         data.setTimeStamp(time.getMillis());
         data.setRfnIdentifier(device.getRfnIdentifier());
         data.setRecordInterval(300);
-
-        List<ChannelData> channelDataList = Lists.newArrayList();
-        List<DatedChannelData> datedChannelDataList = Lists.newArrayList();
-        int channelNo = 1;
-        for (PointMapper pointMapper : pointMappers.get(device.getPaoIdentifier().getPaoType())) {
-            ChannelData channelData = new ChannelData();
-            String pointName = pointMapper.getName();
-            Attribute attribute = getAttributeForPoint(device.getPaoIdentifier().getPaoType(), pointName);
-            if (attributeToGenerateMessage.contains(attribute)) {
-                if (attribute != null && RfnMeterSimulatorConfiguration.attributeExists(attribute.toString())) {
-                    TimestampValue timestampValue =
-                        getValueAndTimestampForPoint(device, attribute, time, type, currentTime);
-                    channelData.setChannelNumber(channelNo);
-                    channelNo++;
-                    channelData.setStatus(ChannelDataStatus.OK);
-                    channelData.setUnitOfMeasure(pointMapper.getUom());
-                    channelData.setValue(timestampValue.getValue());
-
-                    Set<String> modifiers = null;
-                    for (ModifiersMatcher match : pointMapper.getModifiersMatchers()) {
-                        modifiers = match.getModifiers();
-                    }
-                    channelData.setUnitOfMeasureModifiers(modifiers);
-
-                    if (!RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).isDated()) {
-                        channelDataList.add(channelData);
-                    } else {
-                        DatedChannelData datedChannelData = new DatedChannelData();
-                        datedChannelData.setBaseChannelData(channelData);
-                        datedChannelData.setTimeStamp(timestampValue.getTimestamp().getMillis());
-                        datedChannelDataList.add(datedChannelData);
-                    }
-                }
-            }
-        }
         data.setChannelDataList(channelDataList);
         data.setDatedChannelDataList(datedChannelDataList);
+        log.debug("---readingData= "+data);
         return data;
-    }
-
-    /**
-     * Find the attribute associated with a point
-     */
-    private Attribute getAttributeForPoint(PaoType paoType, String pointName) {
-        Map<Attribute, AttributeDefinition> attrDefMap =
-            paoDefinitionDao.getPaoAttributeAttrDefinitionMap().get(paoType);
-        for (AttributeDefinition attrDef : attrDefMap.values()) {
-            String pointNameForAttribute = attrDef.getPointTemplate().getName();
-            if (pointNameForAttribute.equals(pointName)) {
-                return attrDef.getAttribute();
-            }
-        }
-        return null;
     }
 
     /**
@@ -398,8 +410,6 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
      * Sends generated message on queue
      */
     private <R extends RfnIdentifyingMessage> void sendArchiveRequest(R archiveRequest) {
-        log.debug("Sending archive request: " + archiveRequest.getRfnIdentifier().getCombinedIdentifier() + " on queue "
-            + meterReadingArchiveRequestQueueName );
         jmsTemplate.convertAndSend(meterReadingArchiveRequestQueueName , archiveRequest);
         status.getSuccess().incrementAndGet();
     }

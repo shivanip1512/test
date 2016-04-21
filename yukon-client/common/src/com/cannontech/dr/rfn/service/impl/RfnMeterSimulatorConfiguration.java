@@ -1,7 +1,9 @@
 package com.cannontech.dr.rfn.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -93,8 +95,8 @@ public enum RfnMeterSimulatorConfiguration {
         return attributeGroupType;
     }
 
-    public static List<BuiltInAttribute> getValuesByMeterReadingType(RfnMeterReadingType rfnMeterReadingType) {
-        List<BuiltInAttribute> attributes = new ArrayList<BuiltInAttribute>();
+    public static Set<Attribute> getValuesByMeterReadingType(RfnMeterReadingType rfnMeterReadingType) {
+        Set<Attribute> attributes = new HashSet<Attribute>();
         for(RfnMeterSimulatorConfiguration value: RfnMeterSimulatorConfiguration.values()) {
             if(value.getRfnMeterReadingType() == rfnMeterReadingType) {
                 attributes.add(value.getAttribute());
