@@ -208,7 +208,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctiholidaydb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc140-mt-1_60.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctiholidaydb.lib;..\lib\ctiseasondb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc140-mt-1_60.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)test_capcontrol.exe</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
