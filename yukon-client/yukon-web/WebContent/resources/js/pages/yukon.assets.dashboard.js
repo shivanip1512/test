@@ -64,6 +64,17 @@ yukon.assets.dashboard = (function () {
             _updateRecentActions();
             
             _initialized = true;
+            
+            $(document).on('change', '.js-toggle-schedule .checkbox-input', function() {
+                var checkbox = $(this);
+                var scheduleId = checkbox.data('scheduleId');
+                
+                $.ajax({
+                    url: yukon.url('/stars/operator/inventory/schedule/toggleEnabled'),
+                    dataType: 'json',
+                    data: { 'scheduleId': scheduleId }
+                });
+            });
         },
         
         selectIndividually : function () {

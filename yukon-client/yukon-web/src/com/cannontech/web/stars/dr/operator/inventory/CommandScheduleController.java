@@ -1,7 +1,9 @@
 package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -149,6 +152,21 @@ public class CommandScheduleController {
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "deleted"));
         
         return "redirect:home";
+    }
+    
+    @RequestMapping("/operator/inventory/schedule/toggleEnabled")
+    public @ResponseBody Map<String, Boolean> toggleEnabled(YukonUserContext userContext, int scheduleId) {
+        
+        CommandSchedule schedule = commandScheduleDao.getById(scheduleId);
+        
+        boolean enabled = false;
+        if (schedule.isEnabled()) {
+            commandScheduleDao.disable(scheduleId);
+        } else {
+            commandScheduleDao.enable(scheduleId);
+            enabled = true;
+        }
+        return Collections.singletonMap("scheduleEnabled", enabled);
     }
     
     /* INIT BINDER */

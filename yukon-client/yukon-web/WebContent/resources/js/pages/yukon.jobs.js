@@ -34,24 +34,19 @@ yukon.jobs = (function () {
                 });
             });
 
-            $(document).on('click', '#jobs-table .js-toggle-job', function (ev) {
-                
-                var btn = $(ev.target),
-                    jobId = btn.closest('tr').data('jobId'); 
+            $(document).on('change', '.js-toggle-job .checkbox-input', function() {
+                var checkbox = $(this);
+                var jobId = checkbox.data('jobId');
                 
                 $.ajax({
-                    url: 'toggleEnabled',
+                    url: yukon.url('/group/scheduledGroupRequestExecutionResults/toggleEnabled'),
                     dataType: 'json',
                     data: { 'jobId': jobId }
                 }).done(function (data, textStatus, jqXHR) {
                     if (data.jobEnabled === false) {
-                        $(btn).closest('tr').addClass('subtle');
-                        $('#disableSpan_' + jobId).hide();
-                        $('#enableSpan_' + jobId).show();
+                        $(checkbox).closest('tr').addClass('subtle');
                     } else {
-                        $(btn).closest('tr').removeClass('subtle');
-                        $('#disableSpan_' + jobId).show();
-                        $('#enableSpan_' + jobId).hide();
+                        $(checkbox).closest('tr').removeClass('subtle');
                     }
                 });
             });
@@ -72,21 +67,18 @@ yukon.jobs = (function () {
                 $(jobRow).removeClass('success subtle');
                 if (state === 'Disabled') {
                     $(jobRow).addClass('subtle');
-                    $('#disableSpan_' + jobId).show();
-                    $('#enableSpan_' + jobId).hide();
+                    $('#toggle_' + jobId).removeAttr("disabled");
                     
                     $('#jobRunningSpan_' + jobId).hide();
                     $('#jobNotRunningSpan_' + jobId).show();
                 } else if (state === 'Running') {
                     $(jobRow).addClass('success');
-                    $('#disableSpan_' + jobId).hide();
-                    $('#enableSpan_' + jobId).show();
+                    $('#toggle_' + jobId).attr("disabled", true);
                     
                     $('#jobRunningSpan_' + jobId).show();
                     $('#jobNotRunningSpan_' + jobId).hide();
                 } else if (state === 'Scheduled') {
-                    $('#disableSpan_' + jobId).hide();
-                    $('#enableSpan_' + jobId).show();
+                    $('#toggle_' + jobId).removeAttr("disabled");
                     
                     $('#jobRunningSpan_' + jobId).hide();
                     $('#jobNotRunningSpan_' + jobId).show();

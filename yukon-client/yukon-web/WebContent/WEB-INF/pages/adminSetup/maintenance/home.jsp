@@ -10,23 +10,14 @@
 
 <script>
 $(function(){
-	$("a.icon-disabled").each(function(idx, val){
-		$(val).attr('title', $(val).attr('data-truejobNameMsg'));
-	});
-	
-	$("a.icon-enabled").each(function(idx, val){
-		$(val).attr('title', $(val).attr('data-falsejobNameMsg'));
-	});
-	
-	$("a.js-toggleJobEnabled").click(function(e){
-		$.ajax({
-			url: '${toggleJobAjaxUrl}?jobId=' + $(e.currentTarget).attr('data-jobid')
-		}).done(function (data, textStatus, jqXHR) {
-			var icon = 'icon-disabled';
-			if (data == true) icon = 'icon-enabled';
-			$(e.currentTarget).removeClass("icon-enabled icon-disabled").addClass(icon).attr('title', $(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
-		});
-	});
+    $(document).on('change', '.js-toggleJobEnabled .checkbox-input', function() {
+        var checkbox = $(this);
+        var jobId = checkbox.data('jobId');
+        
+        $.ajax({
+            url: '${toggleJobAjaxUrl}?jobId=' + jobId
+        });
+    });
 });
 </script>
 		    	<table class="compact-results-table has-alerts">
@@ -35,7 +26,7 @@ $(function(){
 						<th>&nbsp;</th>
 						<th><i:inline key=".tableHeader.scheduleName"/></th>
 						<th><i:inline key=".tableHeader.scheduleDescription"/></th>
-						<th class="tar"><i:inline key=".tableHeader.enabled"/></th>
+						<th></th>
 					</tr>
                 </thead>
                 <tfoot></tfoot>
@@ -57,12 +48,8 @@ $(function(){
 							<td>
 								<cti:dataUpdaterValue type="JOB" identifier="${job.id}/SCHEDULE_DESCRIPTION"/>
 							</td>
-							<cti:msg2 key="yukon.web.modules.adminSetup.maintenance.enable.circle.hoverText" argument="${jobNameMsg}" var="enableMsg" />
-							<cti:msg2 key="yukon.web.modules.adminSetup.maintenance.disable.circle.hoverText" argument="${jobNameMsg}" var="disableMsg"/>
 							<td class="fr">
-                                <c:if test="${job.disabled}"><c:set var="iconClass" value="icon-disabled"/></c:if>
-                                <c:if test="${not job.disabled}"><c:set var="iconClass" value="icon-enabled"/></c:if>
-								<a href="javascript:void(0);" class="icon ${iconClass} js-toggleJobEnabled" data-truejobNameMsg="${enableMsg}" data-falsejobNameMsg="${disableMsg}" data-jobid="${job.id}">Toggle Job</a>
+                                <tags:switch checked="${not job.disabled}" name="toggle" data-job-id="${job.id}" classes="js-toggleJobEnabled toggle-sm"/>
 							</td>
 		
 						</tr>

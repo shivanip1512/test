@@ -15,7 +15,7 @@
                     <th><i:inline key=".start"/></th>
                     <th><i:inline key=".runPeriod"/></th>
                     <th><i:inline key=".delayPeriod"/></th>
-                    <th><i:inline key=".enabled"/></th>
+                    <th></th>
                 </tr>
             </thead>
             <tfoot></tfoot>
@@ -40,16 +40,7 @@
                         </td>
                         
                         <td>
-                            <c:choose>
-                                <c:when test="${schedule.enabled}">
-                                    <tags:widgetActionRefreshImage method="disable" nameKey="disable" 
-                                        scheduleId="${schedule.commandScheduleId}" icon="icon-enabled" btnClass="fr"/>
-                                </c:when>
-                                <c:when test="${not schedule.enabled}">
-                                    <tags:widgetActionRefreshImage method="enable" nameKey="enable" 
-                                        scheduleId="${schedule.commandScheduleId}" icon="icon-disabled" btnClass="fr"/> 
-                                </c:when>
-                            </c:choose>
+                            <tags:switch checked="${schedule.enabled}" name="toggle" data-schedule-id="${schedule.commandScheduleId}" classes="js-toggle-schedule toggle-sm"/>
                         </td>
                     </tr>
                 </c:forEach>

@@ -100,7 +100,7 @@
                         <tags:sort column="${SCHED_DESC}"/>
                         <tags:sort column="${NEXT_RUN}"/>
                         <tags:sort column="${ENABLED_STATUS}"/>
-                        <th class="enabledStatus"><i:inline key=".executions.tableHeader.enabled"/></th>
+                        <th></th>
                     </thead>
                     <tfoot>
                     </tfoot>
@@ -158,18 +158,7 @@
                                 </td>
                                 <cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
                                     <td class="tar">
-                                        <span id="disableSpan_${jobId}" 
-                                            <c:if test="${jobWrapper.jobStatus eq 'DISABLED'
-                                                    || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                                                <cti:button nameKey="disable" classes="js-toggle-job fr" renderMode="image" 
-                                                    arguments="${jobWrapper.name}" icon="icon-disabled"/>
-                                        </span>
-                                        <span id="enableSpan_${jobId}" 
-                                            <c:if test="${jobWrapper.jobStatus eq 'ENABLED'
-                                                    || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                                                <cti:button nameKey="enable" classes="js-toggle-job fr" renderMode="image" 
-                                                    arguments="${jobWrapper.name}" icon="icon-enabled"/>
-                                        </span>
+                                        <tags:switch checked="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}" disabled="${jobWrapper.jobStatus eq 'RUNNING'}" name="toggle" id="toggle_${jobId}" data-job-id="${jobId}" classes="js-toggle-job toggle-sm"/>
                                     </td>
                                 </cti:checkRolesAndProperties>
                             </tr>

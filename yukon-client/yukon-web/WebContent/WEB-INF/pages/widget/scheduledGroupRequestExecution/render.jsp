@@ -73,22 +73,7 @@
                             <%-- enable/disable --%>
                             <c:if test="${canManage}">
                                 <td class="remove-column">
-                                    <span id="disableSpan_${jobId}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED'
-                                            || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                                        <tags:widgetActionRefreshImage method="toggleEnabled"
-                                                                       jobId="${jobId}" 
-                                                                       nameKey="enable"
-                                                                       arguments="${jobWrapper.name}"
-                                                                       icon="icon-disabled"/>
-                                    </span>
-                                    <span id="enableSpan_${jobId}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED'
-                                            || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                                        <tags:widgetActionRefreshImage method="toggleEnabled"
-                                                                       jobId="${jobId}" 
-                                                                       nameKey="disable"
-                                                                       arguments="${jobWrapper.name}"
-                                                                       icon="icon-enabled"/>
-                                    </span>
+                                    <tags:switch checked="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}" disabled="${jobWrapper.jobStatus eq 'RUNNING'}" name="toggle" id="toggle_${jobId}" data-job-id="${jobId}" classes="js-toggle-job toggle-sm"/>
                                 </td>
                             </c:if>
                         </tr>
