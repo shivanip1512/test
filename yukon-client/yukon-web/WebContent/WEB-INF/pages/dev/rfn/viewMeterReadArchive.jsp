@@ -75,6 +75,7 @@ function useRandom() {
                         <option value="Var">Var</option>
                         <option value="Varh">Varh</option>
                         <option value="Pulse">Pulse</option>
+                        
                     </select>
                 </tags:nameValue>
                 
@@ -111,6 +112,7 @@ function useRandom() {
                         </tr>  
                         <tr>   
                             <td><form:checkbox path="modifiers[tenths]" label="tenths"/></td>
+                            <td><form:checkbox path="modifiers[neutralToGround]" label="Phase Neutral->Ground"/></td>
                         </tr>
                     </table>
                 </tags:nameValue>

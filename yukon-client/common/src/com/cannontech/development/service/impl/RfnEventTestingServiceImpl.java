@@ -95,6 +95,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
                 .put("coincident", "Coincident")
                 .put("harmonic",   "Harmonic")
                 .put("cumulative", "Cumulative")
+                .put("neutralToGround", "Phase Neutral->Ground")
                 .build();
     }
     

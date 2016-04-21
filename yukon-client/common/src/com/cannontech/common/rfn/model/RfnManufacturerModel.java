@@ -56,6 +56,9 @@ public enum RfnManufacturerModel {
     RFN_430SL3(PaoType.RFN430SL3, "SCH", "SENTINEL-L3"),
     RFN_430SL4(PaoType.RFN430SL4, "SCH", "SENTINEL-L4"),
     
+    /* For the RFN_520 and RFN_530 meters below, there are cases where multiple manufacturer/model combinations
+     * map to the same pao type, like the 'S4-AT' and 'S4-AR' model strings that both map to the PaoType 'RFN530S4EAT'.
+     * This is intentional- multiple meter models are functionally the same in Yukon, this should not be changed. */
     RFN_510FL(PaoType.RFN510FL, "LGYR", "FocuskWh-500"),
     RFN_520FAXD(PaoType.RFN520FAX, "LGYR", "FocusAXD-500"),
     RFN_520FAXT(PaoType.RFN520FAX, "LGYR", "FocusAXT-500"),
