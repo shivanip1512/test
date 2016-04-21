@@ -511,7 +511,7 @@ begin
 	sKey = "\\SYSTEM\\CurrentControlSet\\Control";
 	sName = "ServicesPipeTimeout";
 	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
-	nResult = RegDBSetKeyValueEx(sKey, sName, REGDB_NUMBER, "180000", -1);
+	nResult = RegDBSetKeyValueEx(sKey, sName, REGDB_NUMBER, "60000", -1);
 	if(nResult != 0) then
 		MessageBox("Unable to set ServicePipeTimeout value.", WARNING);
 	endif;
