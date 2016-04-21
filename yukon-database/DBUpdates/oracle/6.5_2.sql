@@ -32,4 +32,4 @@ CREATE TABLE StoredProcedureLog (
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.5', '31-JAN-2015', 'Latest Update', 2, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.5', '06-APR-2016', 'Latest Update', 2, SYSDATE);
