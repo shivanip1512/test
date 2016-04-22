@@ -223,6 +223,12 @@ WHERE RolePropertyId =  -20212;
   
 DELETE FROM YukonRoleProperty
 WHERE RolePropertyId =  -20212;
+
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId =  -20211;
+  
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId =  -20211;
 /* End YUK-15268 */
 
 /**************************************************************/
