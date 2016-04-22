@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -401,24 +400,27 @@ public class MeterDaoImpl implements MeterDao {
     }
     
     /**
-     * Returns true if the DeviceMCT400Series table has a row returned for mctID, else false.
+     * Returns disconnect address if the DeviceMCT400Series table has a row returned for mctID or else return null
+     * 
      * @param mctID
-     * @return
+     * @return address
+     */
+    /**
+     * Returns disconnect address if the DeviceMCT400Series table has a row returned for mctID or else return null
+     * 
+     * @param mctID
+     * @return address
      */
     public Integer getDisconnectAddress(Integer mctID) {
-        
-        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DisconnectAddress FROM DeviceMCT400Series ");
-        sql.append("WHERE DeviceID = ").appendArgument(mctID);
-        Integer address;
+        sql.append("SELECT DisconnectAddress FROM DeviceMCT400Series");
+        sql.append("WHERE DeviceId").eq(mctID);
+        Integer address = null;
         try {
-            address = template.queryForObject(sql.getSql(), sql.getArguments(), Integer.class);
+            address = jdbcTemplate.queryForObject(sql.getSql(), sql.getArguments(),Integer.class);
         } catch (EmptyResultDataAccessException e) {
-            // if no results, then it doesn't exist
-            return null;
+            // if no results, then it doesn't exist return null;
         }
         return address;
     }
-    
 }

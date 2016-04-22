@@ -60,7 +60,6 @@ public interface DisconnectService {
      * Use {@link DisconnectService#supportsDisconnect()} to verify that device is supported prior to calling
      * this method.
      * 
-     * @@ -52,12 +63,4 @@
      * @throws UnsupportedOperationException if the device doesn't support disconnect.
      */
     DisconnectMeterResult execute(DisconnectCommand command, DeviceRequestType type, YukonMeter meter,

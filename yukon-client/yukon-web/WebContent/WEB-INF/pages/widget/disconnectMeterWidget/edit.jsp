@@ -7,6 +7,7 @@
 <c:if test="${not empty errorMsg}">
     <tags:alertBox>${errorMsg}</tags:alertBox>
 </c:if>
+
 <cti:msgScope paths="yukon.web.widgets.disconnectMeterWidget">
 <form:form id="meter-disconnect-addr-form" method="post" commandName="addressEditorBean" onsubmit="return false;">
     <form:hidden cssClass="js-meter-info-id" path="deviceId" />
@@ -20,14 +21,7 @@
     </tags:nameValueContainer2>
     <div class="page-action-area">
         <cti:button nameKey="save" id="edit-btn" classes="primary action" busy="true" />
-        <c:if test="${disconnectAddress != null}">
-            <!-- Remove Collar Address if exists-->
-            <cti:button nameKey="delete" id="delete-btn" classes="delete"
-                data-ok-event="yukon:widget:meter:disconnect:delete:addr" />
-        </c:if>
         <cti:button nameKey="cancel" id="cancel-btn" classes="primary action" />
     </div>
-    <d:confirm on="#delete-btn" nameKey="confirmDelete"
-        argument="${addressEditorBean.disconnectAddress}" />
 </form:form>
 </cti:msgScope>

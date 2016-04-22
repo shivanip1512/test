@@ -82,9 +82,9 @@ public interface MeterDao {
     List<SimpleMeter> getAllSimpleMeters();
     
     /**
-     * Returns Disconnect Address from the DeviceMCT400Series table for MCT ID.
+     * Returns Disconnect Address from the DeviceMCT400Series table for MCT ID or else returns null
      * @param mctID
-     * @return
+     * @returns address Id if found or else returns null
      */
     public Integer getDisconnectAddress(Integer mctID) ;
 
