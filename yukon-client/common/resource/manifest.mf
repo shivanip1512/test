@@ -13,6 +13,7 @@ Class-Path: ./
  ecs-1.4.2.jar 
  jdom-1.1.3.jar 
  jdom-2.0.2.jar 
+ jradius-client.jar 
  aopalliance-1.0.jar 
  spring-aop-4.2.0.RELEASE.jar 
  spring-aspects-4.2.0.RELEASE.jar 
