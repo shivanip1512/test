@@ -586,7 +586,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM DeviceGroupMember");
             sql.append("WHERE DeviceGroupId").eq(groupId);
-            sql.append(" AND YukonPaoId IN (", deviceIds, ")");
+            sql.append(" AND YukonPaoId").in(deviceIds);
             return sql;
         }
     }

@@ -158,7 +158,6 @@ public class ChunkingSqlTemplate {
         }
         
         for (final SqlFragmentSource sql : sqlFragmentList) {
-            yukonJdbcTemplate.update(sql);
             rowsAffected += yukonJdbcTemplate.update(sql);
         }
         return rowsAffected;
