@@ -43,7 +43,7 @@ BEGIN
       LogDate           DATETIME        NOT NULL,
       LogString         VARCHAR(500)    NOT NULL,
       CONSTRAINT PK_StoredProcedureLog PRIMARY KEY (EntryId)
-    );
+    )
 END;
 
 IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
