@@ -4123,34 +4123,32 @@ try
 
         if ( areaId > 0 )
         {
+            static const std::string sql = 
+                "SELECT "
+                    "SubstationBusID "          // <--- ummm, this should be SubstationID
+                "FROM "
+                    "CCSUBAREAASSIGNMENT "
+                "WHERE "
+                    "AreaID = ?";
+
+            Cti::Database::DatabaseReader   rdr( connection, sql );
+
+            rdr << areaId;
+
+            rdr.execute();
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                static const std::string sql = 
-                    "SELECT "
-                        "SubstationBusID "          // <--- ummm, this should be SubstationID
-                    "FROM "
-                        "CCSUBAREAASSIGNMENT "
-                    "WHERE "
-                        "AreaID = ?";
+                CTILOG_INFO( dout, rdr.asString() );
+            }
 
-                Cti::Database::DatabaseReader   rdr( connection );
+            while ( rdr() )
+            {
+                long substationID;
 
-                rdr << areaId;
+                rdr["SubstationBusID"] >> substationID;
 
-                rdr.execute();
-
-                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                {
-                    CTILOG_INFO( dout, rdr.asString() );
-                }
-
-                while ( rdr() )
-                {
-                    long substationID;
-
-                    rdr["SubstationBusID"] >> substationID;
-
-                    substations.push_back( substationID ); 
-                }
+                substations.push_back( substationID ); 
             }
         }
     }
