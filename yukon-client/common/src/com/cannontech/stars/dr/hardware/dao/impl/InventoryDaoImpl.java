@@ -44,7 +44,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.PagingExtractor;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -629,7 +629,7 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("WHERE LMHB.ManufacturerSerialNumber").in(serialNumbers);
         sql.append("AND ECTIM.EnergyCompanyId").eq_k(energyCompanyId);
         
-        return jdbcTemplate.query(sql, RowMapper.INTEGER);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
     
     @Override
@@ -666,7 +666,7 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("SELECT InventoryId");
         sql.append("FROM InventoryBase");
         sql.append("WHERE AccountId").eq(accountId);
-        inventoryIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        inventoryIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         return inventoryIds;
     }
@@ -675,7 +675,7 @@ public class InventoryDaoImpl implements InventoryDao {
     public int getYukonDefinitionIdByEntryId(int entryId) {
         
         String sql = "SELECT YukonDefinitionId FROM YukonListEntry WHERE entryId = ?";
-        int defId = jdbcTemplate.queryForInt(sql, entryId);
+        int defId = jdbcTemplate.queryForObject(sql, Integer.class, entryId);
         
         return defId;
     }
@@ -947,7 +947,7 @@ public class InventoryDaoImpl implements InventoryDao {
                 
                 return sql;
             }
-        }, thermostatIds, RowMapper.STRING);
+        }, thermostatIds, TypeRowMapper.STRING);
         
         return deviceLabels;
     }

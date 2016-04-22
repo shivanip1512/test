@@ -2,12 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <description>
     This file defines beans that live under the com.cannontech.core.dao
     package.
   </description>
+  <bean id="stateGroupDao" class="com.cannontech.core.dao.impl.StateGroupDaoImpl"/>
   <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl"/>
   <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl"/> 
   <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl"/>
@@ -41,7 +42,6 @@
 
   <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl"/>
 
-  <bean id="stateGroupDao" class="com.cannontech.core.dao.impl.StateGroupDaoImpl"/>
   <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl"/>
   <bean id="tagDao" class="com.cannontech.core.dao.impl.TagDaoImpl"/>
   <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoCache">

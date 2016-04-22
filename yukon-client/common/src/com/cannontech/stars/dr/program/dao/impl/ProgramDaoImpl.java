@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +50,7 @@ import com.google.common.collect.Lists;
 
 public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
-    private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
+    private final RowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
     private final PaoNameDisplayablePaoRowMapper programRowMapper = new PaoNameDisplayablePaoRowMapper();
 
     @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
@@ -313,8 +313,8 @@ public class ProgramDaoImpl implements ProgramDao {
         return programNamesStr;
     }
 
-    private ParameterizedRowMapper<Integer> createGroupIdRowMapper() {
-        final ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+    private RowMapper<Integer> createGroupIdRowMapper() {
+        final RowMapper<Integer> mapper = new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer groupId = rs.getInt("LMGroupDeviceId");
@@ -324,8 +324,8 @@ public class ProgramDaoImpl implements ProgramDao {
         return mapper;
     }
 
-    private ParameterizedRowMapper<Integer> createProgramIdRowMapper() {
-        final ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+    private RowMapper<Integer> createProgramIdRowMapper() {
+        final RowMapper<Integer> mapper = new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer groupId = rs.getInt("DeviceId");

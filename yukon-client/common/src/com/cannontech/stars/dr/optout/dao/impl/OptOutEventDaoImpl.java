@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -30,7 +30,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.IntegerRowMapper;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -238,8 +238,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
             }
         };
 
-        final ParameterizedRowMapper<Map.Entry<Integer, OptOutLog>> rowMapper =
-            new ParameterizedRowMapper<Map.Entry<Integer, OptOutLog>>() {
+        final RowMapper<Map.Entry<Integer, OptOutLog>> rowMapper =
+            new RowMapper<Map.Entry<Integer, OptOutLog>>() {
             @Override
             public Map.Entry<Integer, OptOutLog> mapRow(ResultSet rs, int rowNum)
                     throws SQLException {
@@ -331,7 +331,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
         sql.append("    AND EventState").eq_k(OptOutEventState.SCHEDULED);
         sql.append("    AND ProgramId").eq(program.getProgramId());
 
-        List<Integer> inventoryIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> inventoryIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return inventoryIds;
     }
 
@@ -762,7 +762,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
             }
         };
 
-        List<Integer> optedOutInventoryIds = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, RowMapper.INTEGER);
+        List<Integer> optedOutInventoryIds = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, TypeRowMapper.INTEGER);
 
         return Sets.newHashSet(optedOutInventoryIds);
 	}
@@ -786,7 +786,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	        }
 	    };
 
-	    List<Integer> optedOutInventoryIds = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, RowMapper.INTEGER);
+	    List<Integer> optedOutInventoryIds = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, TypeRowMapper.INTEGER);
 	    return Sets.newHashSet(optedOutInventoryIds);
 	}
 
@@ -908,7 +908,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	 * Helper class to map a result set row into an OptOutEventDto. This class must
 	 * be used in a transaction because it has a db hit inside the mapRow method.
 	 */
-	private class OptOutEventDtoRowMapper implements ParameterizedRowMapper<OptOutEventDto> {
+	private class OptOutEventDtoRowMapper implements RowMapper<OptOutEventDto> {
 
 		public OptOutEventDtoRowMapper(){}
 
@@ -941,7 +941,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 	}
 
-	private class OverrideHistoryRowMapper implements ParameterizedRowMapper<OverrideHistory> {
+	private class OverrideHistoryRowMapper implements RowMapper<OverrideHistory> {
 
 		@Override
 		public OverrideHistory mapRow(ResultSet rs, int rowNum)

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -22,7 +22,7 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
-    private static final ParameterizedRowMapper<Holiday> holidayRowMapper = new ParameterizedRowMapper<Holiday>() {
+    private static final RowMapper<Holiday> holidayRowMapper = new RowMapper<Holiday>() {
         @Override
         public Holiday mapRow(ResultSet rs, int rowNum) throws SQLException {
             Holiday holiday = new Holiday();
@@ -32,7 +32,7 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         }
     };
     
-    private static final ParameterizedRowMapper<HolidaySchedule> holidayScheduleRowMapper = new ParameterizedRowMapper<HolidaySchedule>() {
+    private static final RowMapper<HolidaySchedule> holidayScheduleRowMapper = new RowMapper<HolidaySchedule>() {
         @Override
         public HolidaySchedule mapRow(ResultSet rs, int rowNum) throws SQLException {
             HolidaySchedule holiday = new HolidaySchedule();
@@ -42,7 +42,7 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         }
     };
     
-    private static final ParameterizedRowMapper<Integer> scheduleIDRowMapper = new ParameterizedRowMapper<Integer>() {
+    private static final RowMapper<Integer> scheduleIDRowMapper = new RowMapper<Integer>() {
         @Override
         public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
             int scheduleId = rs.getInt("HolidayScheduleId");
@@ -93,7 +93,7 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         "From CCHolidayStrategyAssignment " +
         "Where PaobjectId = " + paoId;
         try {
-            Integer strategyId = jdbcTemplate.queryForInt(sql);
+            Integer strategyId = jdbcTemplate.queryForObject(sql, Integer.class);
             return strategyId;
         } catch (EmptyResultDataAccessException e) {
             return -1;

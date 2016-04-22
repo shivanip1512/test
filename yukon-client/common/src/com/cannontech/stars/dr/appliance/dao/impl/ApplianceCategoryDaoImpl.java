@@ -23,7 +23,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -126,7 +126,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         sql.append("AND EnergyCompanyId").in(appCatEnergyCompanyIds);
         
-        List<Integer> applianceCategoryIdList = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> applianceCategoryIdList = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return applianceCategoryIdList;
     }    
 
@@ -228,7 +228,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         ecIdFromAppCatQuery.append("AND MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         
         List<Integer> energyCompanyIds =
-            jdbcTemplate.query(ecIdFromAppCatQuery, RowMapper.INTEGER);
+            jdbcTemplate.query(ecIdFromAppCatQuery, TypeRowMapper.INTEGER);
 
         if (energyCompanyIds.size() > 0) {
             return energyCompanyIds;

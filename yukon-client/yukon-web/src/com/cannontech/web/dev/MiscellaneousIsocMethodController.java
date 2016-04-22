@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -36,7 +36,7 @@ public class MiscellaneousIsocMethodController {
             SqlStatementBuilder getMax = new SqlStatementBuilder();
             getMax.append("SELECT max(CCurtProgramTypeId)");
             getMax.append("FROM CCurtProgramType");
-            Integer currentMax = yukonJdbcTemplate.queryForObject(getMax, RowMapper.INTEGER_NULLABLE);
+            Integer currentMax = yukonJdbcTemplate.queryForObject(getMax, TypeRowMapper.INTEGER_NULLABLE);
             
             int primaryKey = currentMax == null ? 1 : currentMax + 1;
             

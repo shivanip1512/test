@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -46,6 +46,6 @@ public class EcobeeGroupDeviceMappingDaoImpl implements EcobeeGroupDeviceMapping
         sql.append("join YukonPaObject ypo on ib.DeviceId = ypo.PaObjectId");
         sql.append("where ypo.Type").in(PaoType.getEcobeeTypes());
         
-        return jdbcTemplate.query(sql, RowMapper.STRING);
+        return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
 }

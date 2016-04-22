@@ -31,7 +31,7 @@ public class TemplateDisplay {
         String sqlStmt = "SELECT TemplateNum FROM " + TABLE_NAME + " WHERE DisplayNum = ?";
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         try {
-            Integer templateNum = yukonTemplate.queryForInt(sqlStmt, getDisplayNum());
+            Integer templateNum = yukonTemplate.queryForObject(sqlStmt, Integer.class, getDisplayNum());
             setDisplayNum(  getDisplayNum() );
             setTemplateNum(templateNum);
         } catch (EmptyResultDataAccessException e){

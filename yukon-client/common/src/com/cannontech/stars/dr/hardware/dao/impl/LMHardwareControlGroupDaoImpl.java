@@ -16,8 +16,8 @@ import javax.annotation.PostConstruct;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,10 +56,10 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     private static final String TABLE_NAME = "LMHardwareControlGroup";
     private static final String selectOldInventoryLoadGroupConfigInfo; 
     private static final String selectOldInventoryConfigInfo; 
-    private static final ParameterizedRowMapper<LMHardwareConfiguration> oldControlInfoRowMapper;
+    private static final RowMapper<LMHardwareConfiguration> oldControlInfoRowMapper;
     
     private static final String selectDistinctGroupIdByAccountId;
-    private static final ParameterizedRowMapper<Integer> groupIdRowMapper;
+    private static final RowMapper<Integer> groupIdRowMapper;
     
     private SqlStatementBuilder selectSql = new SqlStatementBuilder();
     {
@@ -133,7 +133,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
             sql.append("AND GroupEnrollStop IS NOT NULL");
         }
         
-        return yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<DistinctEnrollment> () {
+        return yukonJdbcTemplate.query(sql, new RowMapper<DistinctEnrollment> () {
             @Override
             public DistinctEnrollment mapRow(ResultSet rs, int rowNum) throws SQLException {
                 DistinctEnrollment enrollment = new DistinctEnrollment();
@@ -608,8 +608,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         sql.append("WHERE hcg.accountId").eq(accountId);
         sql.append(    "AND hcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         sql.append(    "AND hcg.").append(dateColumn).append("IS NOT NULL");
-        ParameterizedRowMapper<HardwareConfigAction> rowMapper =
-            new ParameterizedRowMapper<HardwareConfigAction>() {
+        RowMapper<HardwareConfigAction> rowMapper =
+            new RowMapper<HardwareConfigAction>() {
                 @Override
                 public HardwareConfigAction mapRow(ResultSet rs, int index)
                         throws SQLException {
@@ -667,8 +667,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return rowMapper;
     }
     
-    private static final ParameterizedRowMapper<LMHardwareConfiguration> createOldConfigInfoRowMapper() {
-        final ParameterizedRowMapper<LMHardwareConfiguration> oldConfigInfoRowMapper = new ParameterizedRowMapper<LMHardwareConfiguration>() {
+    private static final RowMapper<LMHardwareConfiguration> createOldConfigInfoRowMapper() {
+        final RowMapper<LMHardwareConfiguration> oldConfigInfoRowMapper = new RowMapper<LMHardwareConfiguration>() {
             @Override
             public LMHardwareConfiguration mapRow(ResultSet rs, int rowNum) throws SQLException {
                 LMHardwareConfiguration hardwareConfiguration = new LMHardwareConfiguration();
@@ -682,8 +682,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return oldConfigInfoRowMapper;
     }
     
-    private static final ParameterizedRowMapper<Integer> createGroupIdRowMapper() {
-        ParameterizedRowMapper<Integer> rowMapper = new ParameterizedRowMapper<Integer>() {
+    private static final RowMapper<Integer> createGroupIdRowMapper() {
+        RowMapper<Integer> rowMapper = new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 int id = rs.getInt("LmGroupId");

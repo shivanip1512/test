@@ -4,11 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.database.db.importer.ImportFail;
 
-public class ImportFailRowMapper implements ParameterizedRowMapper<ImportFail> {
+public class ImportFailRowMapper implements RowMapper<ImportFail> {
     
     public ImportFail mapRow(ResultSet rs, int rowNum) throws SQLException {
         

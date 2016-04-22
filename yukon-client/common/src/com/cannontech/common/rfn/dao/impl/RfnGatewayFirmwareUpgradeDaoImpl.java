@@ -38,7 +38,7 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -124,7 +124,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
         sql.append("SELECT UpdateId");
         sql.append("FROM GatewayFirmwareUpdate");
         sql.append("WHERE SendDate").lt(timeoutMinutesBeforeNow);
-        List<Integer> updateIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> updateIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         if (!updateIds.isEmpty()) {
             sql = new SqlStatementBuilder();

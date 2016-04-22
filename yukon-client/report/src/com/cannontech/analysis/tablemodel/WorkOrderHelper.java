@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
@@ -82,7 +82,7 @@ public final class WorkOrderHelper {
             String meterNumber;
         }
         
-        final ParameterizedRowMapper<Holder> holderRowMapper = new ParameterizedRowMapper<Holder>() {
+        final RowMapper<Holder> holderRowMapper = new RowMapper<Holder>() {
             @Override
             public Holder mapRow(ResultSet rs, int rowNum) throws SQLException {
                 int inventoryId = rs.getInt(1);

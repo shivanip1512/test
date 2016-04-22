@@ -11,7 +11,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.mock.MockDataSource;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -42,7 +41,7 @@ public class ChunkingSqlTemplateTest {
                 return Arrays.toString(subList.toArray());
             }
         
-        }, fullSizeList, new ParameterizedRowMapper<String>() {
+        }, fullSizeList, new RowMapper<String>() {
 
             @Override
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {

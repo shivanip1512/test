@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,7 @@ import com.cannontech.stars.energyCompany.EcMappingCategory;
 
 public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
 
-    private static final ParameterizedRowMapper<ProgramLoadGroup> programGroupRowMapper;
+    private static final RowMapper<ProgramLoadGroup> programGroupRowMapper;
     
     private YukonJdbcTemplate yukonJdbcTemplate;
     private PaoDefinitionDao paoDefinitionDao;
@@ -97,8 +97,8 @@ public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
         return prog;
     }
 
-    private static final ParameterizedRowMapper<ProgramLoadGroup> createProgramGroupRowMapper() {
-        final ParameterizedRowMapper<ProgramLoadGroup> rowMapper = new ParameterizedRowMapper<ProgramLoadGroup>() {
+    private static final RowMapper<ProgramLoadGroup> createProgramGroupRowMapper() {
+        final RowMapper<ProgramLoadGroup> rowMapper = new RowMapper<ProgramLoadGroup>() {
             public ProgramLoadGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final ProgramLoadGroup program = new ProgramLoadGroup();
                 program.setPaobjectId(rs.getInt("PAObjectId"));

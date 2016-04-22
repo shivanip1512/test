@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -193,7 +193,7 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao {
         sql.append("AND wob.OrderID = map.WorkOrderID");
 
         // order number is a string and not necessarily a number
-        List<Long> callNumbers = Lists.transform(yukonJdbcTemplate.query(sql, RowMapper.STRING), toLongOrZero);
+        List<Long> callNumbers = Lists.transform(yukonJdbcTemplate.query(sql, TypeRowMapper.STRING), toLongOrZero);
         return callNumbers.isEmpty() ? 0L : Collections.max(callNumbers);
     }
 

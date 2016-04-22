@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +16,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -91,7 +90,7 @@ public class RawPointHistoryValidationService {
     private AtomicLong workingExecutions = new AtomicLong(0);
     private AtomicLong sleepingExecutions = new AtomicLong(0);
 
-    private static ParameterizedRowMapper<RawPointHistoryWrapper> rawPointHistoryRowMapper = new ParameterizedRowMapper<RawPointHistoryWrapper>()  {
+    private static RowMapper<RawPointHistoryWrapper> rawPointHistoryRowMapper = new RowMapper<RawPointHistoryWrapper>()  {
         @Override
         public RawPointHistoryWrapper mapRow(ResultSet rs, int rowNum) throws SQLException {
 

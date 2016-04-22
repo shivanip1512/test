@@ -119,7 +119,7 @@ public static Integer getFeederIdForCapBank( int paoId ){
                  " WHERE DeviceId = ? ";
     Integer feederId = -1;
     try {
-        feederId = jdbcOps.queryForInt(sql, paoId);
+        feederId = jdbcOps.queryForObject(sql, Integer.class, paoId);
     } catch (EmptyResultDataAccessException e) {
         return -1;
     }

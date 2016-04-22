@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -40,8 +40,8 @@ public class UnitMeasureDaoImpl implements UnitMeasureDao {
         chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
     }
     
-    private static final ParameterizedRowMapper<LiteUnitMeasure> liteUnitMeasureRowMapper = 
-        new ParameterizedRowMapper<LiteUnitMeasure>() {
+    private static final RowMapper<LiteUnitMeasure> liteUnitMeasureRowMapper = 
+        new RowMapper<LiteUnitMeasure>() {
         @Override
         public LiteUnitMeasure mapRow(ResultSet rs, int rowNum) throws SQLException {
             int uomID = rs.getInt("UoMID");

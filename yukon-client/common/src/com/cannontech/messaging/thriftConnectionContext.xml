@@ -2,8 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
-	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
 	default-lazy-init="true">
 
 	<context:annotation-config/>
@@ -413,13 +413,13 @@
 		class="org.springframework.beans.factory.config.ListFactoryBean">
 		<property name="sourceList">
 			<list>
-				<ref local="messaging.thrift.BaseMessageSerializer"/>
-				<ref local="messaging.thrift.disp.MultiSerializer"/>
-				<ref local="messaging.thrift.CommandSerializer"/>
-				<ref local="messaging.thrift.PingSerializer"/>
-				<ref local="messaging.thrift.serv.RequestSerializer"/>
-				<ref local="messaging.thrift.serv.ResponseSerializer"/>
-				<ref local="messaging.thrift.BooleanDataSerializer"/>
+				<ref bean="messaging.thrift.BaseMessageSerializer"/>
+				<ref bean="messaging.thrift.disp.MultiSerializer"/>
+				<ref bean="messaging.thrift.CommandSerializer"/>
+				<ref bean="messaging.thrift.PingSerializer"/>
+				<ref bean="messaging.thrift.serv.RequestSerializer"/>
+				<ref bean="messaging.thrift.serv.ResponseSerializer"/>
+				<ref bean="messaging.thrift.BooleanDataSerializer"/>
 			</list>
 		</property>
 	</bean>
@@ -428,34 +428,34 @@
 		class="org.springframework.beans.factory.config.ListFactoryBean">
 		<property name="sourceList">
 			<list merge="true">
-				<ref local="messaging.thrift.cap.AreaSerializer"/>
-				<ref local="messaging.thrift.cap.BankMoveSerializer"/>
-				<ref local="messaging.thrift.cap.CapBankDeviceSerializer"/>
-				<ref local="messaging.thrift.cap.CapControlSerializer"/>
-				<ref local="messaging.thrift.cap.ChangeOpStateSerializer"/>
-				<ref local="messaging.thrift.cap.CommandSerializer"/>
-				<ref local="messaging.thrift.cap.DeleteItemSerializer"/>
-				<ref local="messaging.thrift.cap.DynamicCommandSerializer"/>
-				<ref local="messaging.thrift.cap.FeederSerializer"/>
-				<ref local="messaging.thrift.cap.ItemCommandSerializer"/>
-				<ref local="messaging.thrift.cap.ServerResponseSerializer"/>
-				<ref local="messaging.thrift.cap.SpecialAreasSerializer"/>
-				<ref local="messaging.thrift.cap.SpecialAreaSerializer"/>
-				<ref local="messaging.thrift.cap.StateSerializer"/>
-				<ref local="messaging.thrift.cap.StatesSerializer"/>
-				<ref local="messaging.thrift.cap.StreamableSerializer"/>
-				<ref local="messaging.thrift.cap.SubAreasSerializer"/>
-				<ref local="messaging.thrift.cap.SubBusSerializer"/>
-				<ref local="messaging.thrift.cap.SubstationBusesSerializer"/>
-				<ref local="messaging.thrift.cap.SubStationSerializer"/>	
-				<ref local="messaging.thrift.cap.SubStationsSerializer"/>
-				<ref local="messaging.thrift.cap.SystemStatusSerializer"/>
-				<ref local="messaging.thrift.cap.VerifyBanksSerializer"/>
-				<ref local="messaging.thrift.cap.VerifyInactiveBanksSerializer"/>
-				<ref local="messaging.thrift.cap.VerifySelectedBankSerializer"/>
-				<ref local="messaging.thrift.cap.VoltageRegulatorItemSerializer"/>
-				<ref local="messaging.thrift.cap.VoltageRegulatorSerializer"/>
-				<ref local="messaging.thrift.disp.PointDataSerializer"/>
+				<ref bean="messaging.thrift.cap.AreaSerializer"/>
+				<ref bean="messaging.thrift.cap.BankMoveSerializer"/>
+				<ref bean="messaging.thrift.cap.CapBankDeviceSerializer"/>
+				<ref bean="messaging.thrift.cap.CapControlSerializer"/>
+				<ref bean="messaging.thrift.cap.ChangeOpStateSerializer"/>
+				<ref bean="messaging.thrift.cap.CommandSerializer"/>
+				<ref bean="messaging.thrift.cap.DeleteItemSerializer"/>
+				<ref bean="messaging.thrift.cap.DynamicCommandSerializer"/>
+				<ref bean="messaging.thrift.cap.FeederSerializer"/>
+				<ref bean="messaging.thrift.cap.ItemCommandSerializer"/>
+				<ref bean="messaging.thrift.cap.ServerResponseSerializer"/>
+				<ref bean="messaging.thrift.cap.SpecialAreasSerializer"/>
+				<ref bean="messaging.thrift.cap.SpecialAreaSerializer"/>
+				<ref bean="messaging.thrift.cap.StateSerializer"/>
+				<ref bean="messaging.thrift.cap.StatesSerializer"/>
+				<ref bean="messaging.thrift.cap.StreamableSerializer"/>
+				<ref bean="messaging.thrift.cap.SubAreasSerializer"/>
+				<ref bean="messaging.thrift.cap.SubBusSerializer"/>
+				<ref bean="messaging.thrift.cap.SubstationBusesSerializer"/>
+				<ref bean="messaging.thrift.cap.SubStationSerializer"/>	
+				<ref bean="messaging.thrift.cap.SubStationsSerializer"/>
+				<ref bean="messaging.thrift.cap.SystemStatusSerializer"/>
+				<ref bean="messaging.thrift.cap.VerifyBanksSerializer"/>
+				<ref bean="messaging.thrift.cap.VerifyInactiveBanksSerializer"/>
+				<ref bean="messaging.thrift.cap.VerifySelectedBankSerializer"/>
+				<ref bean="messaging.thrift.cap.VoltageRegulatorItemSerializer"/>
+				<ref bean="messaging.thrift.cap.VoltageRegulatorSerializer"/>
+				<ref bean="messaging.thrift.disp.PointDataSerializer"/>
 			</list>
 		</property>
 	</bean>
@@ -465,13 +465,13 @@
 		<property name="sourceList">
 			<list merge="true">
 				<!-- ref local="messaging.thrift.disp.MultiSerializer" / --> <!-- Already in commonSerializerList -->
-				<ref local="messaging.thrift.disp.DBChangeSerializer"/>
-				<ref local="messaging.thrift.disp.PointDataSerializer"/>
-				<ref local="messaging.thrift.disp.PointRegistrationSerializer"/>
-				<ref local="messaging.thrift.disp.RegistrationSerializer"/>
-				<ref local="messaging.thrift.disp.SignalSerializer"/>
-				<ref local="messaging.thrift.disp.TagSerializer"/>
-				<ref local="messaging.thrift.tp.ControlHistorySerializer"/> <!-- Needed by Dispatch event if defined in thirdparty -->
+				<ref bean="messaging.thrift.disp.DBChangeSerializer"/>
+				<ref bean="messaging.thrift.disp.PointDataSerializer"/>
+				<ref bean="messaging.thrift.disp.PointRegistrationSerializer"/>
+				<ref bean="messaging.thrift.disp.RegistrationSerializer"/>
+				<ref bean="messaging.thrift.disp.SignalSerializer"/>
+				<ref bean="messaging.thrift.disp.TagSerializer"/>
+				<ref bean="messaging.thrift.tp.ControlHistorySerializer"/> <!-- Needed by Dispatch event if defined in thirdparty -->
 			</list>
 		</property>
 	</bean>
@@ -480,15 +480,15 @@
 		class="org.springframework.beans.factory.config.ListFactoryBean">
 		<property name="sourceList">
 			<list merge="true">
-				<ref local="messaging.thrift.mac.AddScheduleSerializer"/>
-				<ref local="messaging.thrift.mac.DeleteScheduleSerializer"/>
-				<ref local="messaging.thrift.mac.InfoSerializer"/>
-				<ref local="messaging.thrift.mac.OverrideRequestSerializer"/>
-				<ref local="messaging.thrift.mac.RetrieveScheduleSerializer"/>
-				<ref local="messaging.thrift.mac.RetrieveScriptSerializer"/>
-				<ref local="messaging.thrift.mac.ScheduleSerializer"/>
-				<ref local="messaging.thrift.mac.ScriptFileSerializer"/>
-				<ref local="messaging.thrift.mac.UpdateScheduleSerializer"/>
+				<ref bean="messaging.thrift.mac.AddScheduleSerializer"/>
+				<ref bean="messaging.thrift.mac.DeleteScheduleSerializer"/>
+				<ref bean="messaging.thrift.mac.InfoSerializer"/>
+				<ref bean="messaging.thrift.mac.OverrideRequestSerializer"/>
+				<ref bean="messaging.thrift.mac.RetrieveScheduleSerializer"/>
+				<ref bean="messaging.thrift.mac.RetrieveScriptSerializer"/>
+				<ref bean="messaging.thrift.mac.ScheduleSerializer"/>
+				<ref bean="messaging.thrift.mac.ScriptFileSerializer"/>
+				<ref bean="messaging.thrift.mac.UpdateScheduleSerializer"/>
 			</list>
 		</property>
 	</bean>
@@ -497,17 +497,17 @@
 		class="org.springframework.beans.factory.config.ListFactoryBean">
 		<property name="sourceList">
 			<list merge="true">
-				<ref local="messaging.thrift.notif.AlarmSerializer"/>
-				<ref local="messaging.thrift.notif.CurtailmentEventDeleteSerializer"/>
-				<ref local="messaging.thrift.notif.CurtailmentEventSerializer"/>
-				<ref local="messaging.thrift.notif.EconomicEventDeleteSerializer"/>
-				<ref local="messaging.thrift.notif.EconomicEventSerializer"/>
-				<ref local="messaging.thrift.notif.EmailSerializer"/>
-				<ref local="messaging.thrift.notif.ProgramActionSerializer"/>
-				<ref local="messaging.thrift.notif.ControlSerializer"/>
-				<ref local="messaging.thrift.notif.VoiceCompletedSerializer"/>
-				<ref local="messaging.thrift.notif.VoiceDataRequestSerializer"/>
-				<ref local="messaging.thrift.notif.VoiceDataResponseSerializer"/>
+				<ref bean="messaging.thrift.notif.AlarmSerializer"/>
+				<ref bean="messaging.thrift.notif.CurtailmentEventDeleteSerializer"/>
+				<ref bean="messaging.thrift.notif.CurtailmentEventSerializer"/>
+				<ref bean="messaging.thrift.notif.EconomicEventDeleteSerializer"/>
+				<ref bean="messaging.thrift.notif.EconomicEventSerializer"/>
+				<ref bean="messaging.thrift.notif.EmailSerializer"/>
+				<ref bean="messaging.thrift.notif.ProgramActionSerializer"/>
+				<ref bean="messaging.thrift.notif.ControlSerializer"/>
+				<ref bean="messaging.thrift.notif.VoiceCompletedSerializer"/>
+				<ref bean="messaging.thrift.notif.VoiceDataRequestSerializer"/>
+				<ref bean="messaging.thrift.notif.VoiceDataResponseSerializer"/>
 			</list>
 		</property>
 	</bean>
@@ -516,12 +516,12 @@
 		class="org.springframework.beans.factory.config.ListFactoryBean">
 		<property name="sourceList">
 			<list merge="true">
-				<ref local="messaging.thrift.disp.PointDataSerializer"/>
-				<ref local="messaging.thrift.disp.SignalSerializer"/>
-				<ref local="messaging.thrift.port.RequestSerializer"/>
-				<ref local="messaging.thrift.port.ReturnSerrializer"/>
-				<ref local="messaging.thrift.port.QueueDataSerializer"/>
-				<ref local="messaging.thrift.port.RequestCancelSerializer"/>
+				<ref bean="messaging.thrift.disp.PointDataSerializer"/>
+				<ref bean="messaging.thrift.disp.SignalSerializer"/>
+				<ref bean="messaging.thrift.port.RequestSerializer"/>
+				<ref bean="messaging.thrift.port.ReturnSerrializer"/>
+				<ref bean="messaging.thrift.port.QueueDataSerializer"/>
+				<ref bean="messaging.thrift.port.RequestCancelSerializer"/>
 			</list>
 		</property>
 	</bean>
@@ -619,26 +619,26 @@
 		<constructor-arg index="1">
 			<map>
 				<entry key="CBC">
-					<idref local="messaging.CapcontrolConnectionFactory"/>
+					<idref bean="messaging.CapcontrolConnectionFactory"/>
 				</entry>
 				<entry key="Dispatch">
-					<idref local="messaging.DispatchConnectionFactory"/>
+					<idref bean="messaging.DispatchConnectionFactory"/>
 				</entry>
 				<entry key="MACS">
-					<idref local="messaging.MacConnectionFactory"/>
+					<idref bean="messaging.MacConnectionFactory"/>
 				</entry>
 				<entry key="Notification">
-					<idref local="messaging.NotifConnectionFactory"/>
+					<idref bean="messaging.NotifConnectionFactory"/>
 				</entry>
 				<entry key="Porter">
-					<idref local="messaging.PorterConnectionFactory"/>
+					<idref bean="messaging.PorterConnectionFactory"/>
 				</entry>
 			</map>
 		</constructor-arg>
 		<constructor-arg index="2">
 			<map>
 				<entry key="NotifListener">
-					<idref local="messaging.NotifListenerConnectionFactory"/>
+					<idref bean="messaging.NotifListenerConnectionFactory"/>
 				</entry>
 			</map>
 		</constructor-arg>

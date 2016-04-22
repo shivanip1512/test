@@ -29,7 +29,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -331,7 +331,7 @@ public class SetupDevDbMethodController {
         sql.append("and  PAOClass in ('CARRIER', 'TRANSMITTER', 'CAPCONTROL', 'RFMESH')");
         sql.append("and PAObjectId not in (select PAObjectId from PaoLocation)");
         
-        List<Integer> paoIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> paoIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         for (Integer paoId : paoIds) {
             

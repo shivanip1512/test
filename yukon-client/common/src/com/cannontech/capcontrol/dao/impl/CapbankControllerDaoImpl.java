@@ -16,7 +16,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
@@ -136,7 +136,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         sql.append("WHERE CB.CONTROLDEVICEID").eq(cbcPaoId);
         
         try {
-            PaoIdentifier paoIdentifier = yukonJdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
+            PaoIdentifier paoIdentifier = yukonJdbcTemplate.queryForObject(sql, TypeRowMapper.PAO_IDENTIFIER);
             return paoIdentifier;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Parent Subbus was not found for cbc with ID: " + cbcPaoId);

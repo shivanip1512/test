@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -35,7 +35,7 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
         final String sql = sqlBuilder.toString();
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        ParameterizedRowMapper<LiteStarsAppliance> rowMapper = createRowMapper(energyCompany);
+        RowMapper<LiteStarsAppliance> rowMapper = createRowMapper(energyCompany);
         
         List<LiteStarsAppliance> list = yukonJdbcTemplate.query(sql, rowMapper, accountId);
         return list;
@@ -54,7 +54,7 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
         final String sql = sqlBuilder.toString();
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        ParameterizedRowMapper<LiteStarsAppliance> unassignedAppRowMapper = createUnassignedAppRowMapper(energyCompany);
+        RowMapper<LiteStarsAppliance> unassignedAppRowMapper = createUnassignedAppRowMapper(energyCompany);
         
         List<LiteStarsAppliance> list = yukonJdbcTemplate.query(sql, unassignedAppRowMapper, accountId);
         return list;
@@ -73,15 +73,15 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
         sqlBuilder.append("WHERE AB.ApplianceId").eq(applianceId);
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        ParameterizedRowMapper<LiteStarsAppliance> rowMapper = createRowMapper(energyCompany);
+        RowMapper<LiteStarsAppliance> rowMapper = createRowMapper(energyCompany);
         
         LiteStarsAppliance liteStarsAppliance = yukonJdbcTemplate.queryForObject(sqlBuilder, rowMapper);
         return liteStarsAppliance;
         
     }
 
-    private ParameterizedRowMapper<LiteStarsAppliance> createRowMapper(final LiteStarsEnergyCompany energyCompany) {
-        return new ParameterizedRowMapper<LiteStarsAppliance>() {
+    private RowMapper<LiteStarsAppliance> createRowMapper(final LiteStarsEnergyCompany energyCompany) {
+        return new RowMapper<LiteStarsAppliance>() {
             @Override
             public LiteStarsAppliance mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final int applianceId = rs.getInt("ApplianceID");
@@ -117,8 +117,8 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
         };
     }
     
-    private ParameterizedRowMapper<LiteStarsAppliance> createUnassignedAppRowMapper(final LiteStarsEnergyCompany energyCompany) {
-        return new ParameterizedRowMapper<LiteStarsAppliance>() {
+    private RowMapper<LiteStarsAppliance> createUnassignedAppRowMapper(final LiteStarsEnergyCompany energyCompany) {
+        return new RowMapper<LiteStarsAppliance>() {
             @Override
             public LiteStarsAppliance mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final int applianceId = rs.getInt("ApplianceID");

@@ -1,7 +1,7 @@
 <beans
   xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- This defines the bean in Service Manager. This bean is defined for the Web context in startsContext.xml -->
     <bean class="com.cannontech.stars.dr.hardware.service.impl.HardwareConfigServiceImpl" init-method="startConfigTask"/>

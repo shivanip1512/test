@@ -55,7 +55,7 @@ import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -549,7 +549,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         idSql.append("WHERE DCC.CategoryType").eq(categoryType.value());
         idSql.append("   AND DCCM.DeviceConfigurationId").eq(deviceConfigurationId);
         
-        List<Integer> previousId = jdbcTemplate.query(idSql, RowMapper.INTEGER_NULLABLE);
+        List<Integer> previousId = jdbcTemplate.query(idSql, TypeRowMapper.INTEGER_NULLABLE);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (previousId.size() == 1) {
@@ -642,7 +642,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("WHERE M.DeviceConfigurationId").eq(deviceConfigurationId);
         sql.append("   AND PAO.Type").eq_k(paoType);
 
-        List<Integer> unassignedDeviceIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> unassignedDeviceIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 
         SqlStatementBuilder unassignSql = new SqlStatementBuilder();
         unassignSql.append("DELETE FROM DeviceConfigurationDeviceMap");
@@ -755,7 +755,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("   JOIN DeviceConfigCategoryMap DCCM ON DC.DeviceConfigurationId = DCCM.DeviceConfigurationId");
         sql.append("WHERE DCCM.DeviceConfigCategoryId").eq(categoryId);
 
-        List<String> configNames = jdbcTemplate.query(sql, RowMapper.STRING);
+        List<String> configNames = jdbcTemplate.query(sql, TypeRowMapper.STRING);
         
         return configNames;
     }

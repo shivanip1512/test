@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.model.Phase;
@@ -277,7 +277,7 @@ public class PointDaoImpl implements PointDao {
     @Override
     public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId) {
 
-        ParameterizedRowMapper<PointInfo> rowMapper = new PointInfoMapper();
+        RowMapper<PointInfo> rowMapper = new PointInfoMapper();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
@@ -300,7 +300,7 @@ public class PointDaoImpl implements PointDao {
         return pointNameAndTypes;
     }
 
-    private class PointInfoMapper implements ParameterizedRowMapper<PointInfo> {
+    private class PointInfoMapper implements RowMapper<PointInfo> {
 
         @Override
         public PointInfo mapRow(ResultSet rs, int rowNum) throws SQLException {

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YNBoolean;
@@ -469,7 +469,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         sql.append("FROM InventoryToAcctThermostatSch ITATS");
         sql.append("WHERE ITATS.AcctThermostatScheduleId").eq(atsId);
 
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
     @PostConstruct

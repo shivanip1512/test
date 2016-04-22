@@ -9,7 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.spring.LoggingJdbcTemplate;
@@ -42,7 +42,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
         return query(sql.getSql(), sql.getArguments(), rse);
     }
 
-    public <T> List<T> query(SqlFragmentSource sql, ParameterizedRowMapper<T> rm)
+    public <T> List<T> query(SqlFragmentSource sql, RowMapper<T> rm)
             throws DataAccessException {
         return query(sql.getSql(), rm, sql.getArguments());
     }
@@ -52,7 +52,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
         return query(sql, new YukonRowMapperAdapter<T>(rm));
     }
     
-    public <T> List<T> queryForLimitedResults(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, int maxResults){
+    public <T> List<T> queryForLimitedResults(SqlFragmentSource sql, RowMapper<T> rm, int maxResults){
         
         MaxListResultSetExtractor<T> rse = new MaxListResultSetExtractor<T>(rm, maxResults);
         query(sql.getSql(), sql.getArguments(), rse);
@@ -69,20 +69,22 @@ public class YukonJdbcTemplate extends JdbcTemplate {
         return rse.getResult();
     }
     
-    public <T> void query(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, Collection<? super T> result){
+    public <T> void query(SqlFragmentSource sql, RowMapper<T> rm, Collection<? super T> result){
         query(sql.getSql(), sql.getArguments(), new CollectionRowCallbackHandler<T>(rm, result));
     }
     
     public int queryForInt(SqlFragmentSource sql) throws DataAccessException {
-        return queryForInt(sql.getSql(), sql.getArguments());
+        Integer number = queryForObject(sql.getSql(), sql.getArguments(), Integer.class);
+        return number != null ? number.intValue() : 0;
     }
 
     public long queryForLong(SqlFragmentSource sql) throws DataAccessException {
-    	return queryForLong(sql.getSql(), sql.getArguments());
+        Long number = queryForObject(sql.getSql(), sql.getArguments(), Long.class);
+        return number != null ? number.longValue() : 0;
     }
     
     public <T> T queryForObject(SqlFragmentSource sql,
-            ParameterizedRowMapper<T> rm) throws DataAccessException {
+            RowMapper<T> rm) throws DataAccessException {
         return queryForObject(sql.getSql(), rm, sql.getArguments());
     }
 

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -158,7 +158,7 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
                 }
             };
             
-            List<GroupResultsModelRow> rows = template.query(gen, deviceIds, new ParameterizedRowMapper<GroupResultsModelRow>() {
+            List<GroupResultsModelRow> rows = template.query(gen, deviceIds, new RowMapper<GroupResultsModelRow>() {
                 @Override
                 public GroupResultsModelRow mapRow(ResultSet rs, int rowNum) throws SQLException {
                     DeviceReadStatisticsSummaryModel.GroupResultsModelRow row = new DeviceReadStatisticsSummaryModel.GroupResultsModelRow();

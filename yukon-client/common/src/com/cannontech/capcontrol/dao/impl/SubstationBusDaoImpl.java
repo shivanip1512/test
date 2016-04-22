@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
@@ -29,8 +29,8 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
@@ -43,7 +43,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ZoneDao zoneDao;
     
-    private static final ParameterizedRowMapper<SubstationBus> rowMapper = new ParameterizedRowMapper<SubstationBus>() {
+    private static final RowMapper<SubstationBus> rowMapper = new RowMapper<SubstationBus>() {
         @Override
         public SubstationBus mapRow(ResultSet rs, int rowNum) throws SQLException {
             PaoIdentifier paoIdentifier = new PaoIdentifier(rs.getInt("SubstationBusID"), PaoType.CAP_CONTROL_SUBBUS);
@@ -99,7 +99,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("FROM YukonPaObject PAO");
         sql.append("    JOIN CapControlSubstationBus S ON PAO.PaObjectID = S.SubstationBusID");
         
-        List<PaoIdentifier> listmap = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        List<PaoIdentifier> listmap = jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
         
         return listmap;
     }
@@ -231,7 +231,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("JOIN YukonPaObject YPO on YPO.PaObjectId = FSA.FeederID");
         sql.append("WHERE FSA.SubStationBusID").eq(subbusId);
         
-        return jdbcTemplate.query(sql, RowMapper.STRING);
+        return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
     
     @Override
@@ -261,7 +261,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 
         Integer parentId;
         try {
-            parentId = jdbcTemplate.queryForObject(sql, RowMapper.INTEGER);
+            parentId = jdbcTemplate.queryForObject(sql, TypeRowMapper.INTEGER);
         } catch (EmptyResultDataAccessException e) {
             parentId = null;
         }
@@ -340,7 +340,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("WHERE SubStationBusID").eq(busId);
         sql.append("ORDER BY DisplayOrder");
 
-        List<Integer> feederIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> feederIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 
         return feederIds;
     }

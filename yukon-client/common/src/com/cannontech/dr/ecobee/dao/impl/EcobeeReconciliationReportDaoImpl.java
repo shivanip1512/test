@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -145,7 +145,7 @@ public class EcobeeReconciliationReportDaoImpl implements EcobeeReconciliationRe
         sql.append("from EcobeeReconciliationReport");
         sql.append("where EcobeeReconReportId").eq_k(reportId);
         
-        return jdbcTemplate.queryForObject(sql, RowMapper.INSTANT);
+        return jdbcTemplate.queryForObject(sql, TypeRowMapper.INSTANT);
     }
     
     /**

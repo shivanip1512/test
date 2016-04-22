@@ -19,7 +19,7 @@ import com.cannontech.core.authentication.model.PasswordHistory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordEncrypter;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.services.password.EncryptPlainTextPasswordsService;
@@ -60,7 +60,7 @@ public class EncryptPlainTextPasswordsServiceImpl implements EncryptPlainTextPas
     private void encryptPasswords() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT userId FROM yukonUser WHERE authType").eq_k(AuthType.PLAIN);
-        List<Integer> userIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> userIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         if (userIds.size() == 0) {
             return;
         }
@@ -78,7 +78,7 @@ public class EncryptPlainTextPasswordsServiceImpl implements EncryptPlainTextPas
     private void encryptPasswordHistory() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT passwordHistoryId, password FROM passwordHistory WHERE authType").eq_k(AuthType.PLAIN);
-        List<Integer> passwordHistoryIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> passwordHistoryIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         if (passwordHistoryIds.size() == 0) {
             return;
         }

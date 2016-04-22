@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.core.dao.MeterHardwareBaseDao;
 
@@ -29,7 +29,7 @@ public class MeterHardwareBaseDaoImpl implements MeterHardwareBaseDao {
         sql.append("from LMHardwareToMeterMapping");
         sql.append("where MeterInventoryId ").eq(meterId);
 
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
     @Override

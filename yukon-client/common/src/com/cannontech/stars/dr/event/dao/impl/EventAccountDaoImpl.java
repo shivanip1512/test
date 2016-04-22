@@ -8,7 +8,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -26,7 +26,7 @@ public class EventAccountDaoImpl implements EventAccountDao {
     public List<Integer> getAllEventsForAccount(Integer accountId) {
         String sql = "SELECT EventId FROM EventAccount WHERE AccountId = ?";
         List<Integer> eventIds = new ArrayList<Integer>();
-        eventIds = jdbcTemplate.query(sql, new ParameterizedRowMapper<Integer>(){
+        eventIds = jdbcTemplate.query(sql, new RowMapper<Integer>(){
 
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {

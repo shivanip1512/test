@@ -16,7 +16,7 @@ import com.cannontech.common.bulk.collection.device.persistable.DeviceCollection
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionById;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionDbType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -76,7 +76,7 @@ public class DeviceCollectionDaoImpl implements DeviceCollectionDao {
             sql.append("SELECT DeviceId");
             sql.append("FROM DeviceCollectionById");
             sql.append("WHERE CollectionId").eq(collectionId);
-            List<Integer> deviceIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+            List<Integer> deviceIds = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
             
             return new DeviceCollectionById(collectionType, deviceIds);
             

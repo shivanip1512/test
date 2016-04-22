@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +29,7 @@ import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 import com.cannontech.stars.dr.event.model.EventBase;
 
 public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
-    private static final ParameterizedRowMapper<EventWorkOrder> rowMapper;
+    private static final RowMapper<EventWorkOrder> rowMapper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
     
@@ -148,8 +148,8 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
         return eventIds;
     }
     
-    private static ParameterizedRowMapper<EventWorkOrder> oldEventWorkOrderRowMapper() {
-        final ParameterizedRowMapper<EventWorkOrder> mapper = new ParameterizedRowMapper<EventWorkOrder>() {
+    private static RowMapper<EventWorkOrder> oldEventWorkOrderRowMapper() {
+        final RowMapper<EventWorkOrder> mapper = new RowMapper<EventWorkOrder>() {
             @Override
             public EventWorkOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final EventWorkOrder event = new EventWorkOrder();

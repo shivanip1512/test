@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
@@ -20,7 +20,7 @@ import com.cannontech.core.authorization.model.UserPaoPermission;
 import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -84,7 +84,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         sql.append("select paoid from UserPaoPermission where userid").eq(userID);
         sql.append("and permission").eq(permission.name());
 
-        List<Integer> paoIdList = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> paoIdList = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return paoIdList;
     }
 
@@ -101,7 +101,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         sql.append("and paoId").eq(paoId);
         sql.append("and permission").eq(permission.name());
 
-        List<String> allowList = jdbcTemplate.query(sql, RowMapper.STRING);
+        List<String> allowList = jdbcTemplate.query(sql, TypeRowMapper.STRING);
 
         if (allowList.size() == 0) {
             return AuthorizationResponse.UNKNOWN;
@@ -180,7 +180,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     /**
      * Mapping class to process a result set row into a UserPaoPermission
      */
-    private class UserPaoPermissionMapper implements ParameterizedRowMapper<UserPaoPermission> {
+    private class UserPaoPermissionMapper implements RowMapper<UserPaoPermission> {
         @Override
         public UserPaoPermission mapRow(ResultSet rs, int rowNum) throws SQLException {
             UserPaoPermission upp = new UserPaoPermission();

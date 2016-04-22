@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -36,7 +36,7 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -62,7 +62,7 @@ public final class PaoDaoImpl implements PaoDao {
         + "LEFT OUTER JOIN devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID "
         + "LEFT OUTER JOIN deviceroutes dr ON y.paobjectid = dr.deviceid ";
 
-    private final ParameterizedRowMapper<LiteYukonPAObject> litePaoRowMapper = new LitePaoRowMapper();
+    private final RowMapper<LiteYukonPAObject> litePaoRowMapper = new LitePaoRowMapper();
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private IDatabaseCache databaseCache;
@@ -79,7 +79,7 @@ public final class PaoDaoImpl implements PaoDao {
             sql.append("FROM YukonPAObject");
             sql.append("WHERE PAObjectID").eq(paoId);
 
-            YukonPao pao = jdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
+            YukonPao pao = jdbcTemplate.queryForObject(sql, TypeRowMapper.PAO_IDENTIFIER);
 
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -123,7 +123,7 @@ public final class PaoDaoImpl implements PaoDao {
         sql.append("AND Category").eq(paoCategory);
         sql.append("AND PaoClass").eq(paoClass);
 
-        PaoIdentifier paoIdentifier = jdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
+        PaoIdentifier paoIdentifier = jdbcTemplate.queryForObject(sql, TypeRowMapper.PAO_IDENTIFIER);
 
         return paoIdentifier;
     }
@@ -249,7 +249,7 @@ public final class PaoDaoImpl implements PaoDao {
             sql.append("SELECT PAOName");
             sql.append("FROM YukonPAObject");
             sql.append("WHERE PAObjectID").eq(paoId);
-            String name = jdbcTemplate.queryForObject(sql, RowMapper.STRING);
+            String name = jdbcTemplate.queryForObject(sql, TypeRowMapper.STRING);
             return name;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A PAObject with id " + paoId + "cannot be found.");
@@ -377,7 +377,7 @@ public final class PaoDaoImpl implements PaoDao {
             sql.append("AND pao.PAObjectID").neq(Device.SYSTEM_DEVICE_ID);
             sql.append("ORDER BY pao.Category, pao.PAOClass, pao.PAOName");
 
-            List<PaoIdentifier> result = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+            List<PaoIdentifier> result = jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
 
             return result;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -427,8 +427,8 @@ public final class PaoDaoImpl implements PaoDao {
             }
         };
 
-        ParameterizedRowMapper<Entry<Integer, String>> rowMapper =
-            new ParameterizedRowMapper<Entry<Integer, String>>() {
+        RowMapper<Entry<Integer, String>> rowMapper =
+            new RowMapper<Entry<Integer, String>>() {
                 @Override
                 public Entry<Integer, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
                     return Maps.immutableEntry(rs.getInt("PAObjectID"), rs.getString("PAOName"));
@@ -454,7 +454,7 @@ public final class PaoDaoImpl implements PaoDao {
             }
         };
 
-        return template.query(sqlGenerator, paoIds, RowMapper.PAO_IDENTIFIER);
+        return template.query(sqlGenerator, paoIds, TypeRowMapper.PAO_IDENTIFIER);
     }
 
     public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user) {
@@ -607,7 +607,7 @@ public final class PaoDaoImpl implements PaoDao {
         sql.append("FROM yukonPAObject");
         sql.append("WHERE type").in(paoTypes);
 
-        List<PaoIdentifier> paoIdentifiers = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        List<PaoIdentifier> paoIdentifiers = jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
 
         return paoIdentifiers;
     }
@@ -624,6 +624,6 @@ public final class PaoDaoImpl implements PaoDao {
         sql.append("FROM YukonPaobject");
         sql.append("ORDER BY Type");
         
-        return jdbcTemplate.query(sql, RowMapper.PAO_TYPE);
+        return jdbcTemplate.query(sql, TypeRowMapper.PAO_TYPE);
     }
 }

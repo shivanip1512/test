@@ -11,7 +11,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -99,7 +99,7 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
         sql.append("  AND  GroupEnrollStop IS NULL");
         sql.append("  AND  DeviceId").neq(programId);
         
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
     @Override

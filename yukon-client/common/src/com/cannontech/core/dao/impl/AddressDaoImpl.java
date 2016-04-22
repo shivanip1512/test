@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +30,7 @@ public class AddressDaoImpl implements AddressDao {
     private static final String updateSql;
     private static final String selectAllSql;
     private static final String selectByIdSql;
-    public static final ParameterizedRowMapper<LiteAddress> rowMapper;
+    public static final RowMapper<LiteAddress> rowMapper;
 
     static {
         insertSql =
@@ -146,8 +146,8 @@ public class AddressDaoImpl implements AddressDao {
         return list;
     }
 
-    private static final ParameterizedRowMapper<LiteAddress> createRowMapper() {
-        ParameterizedRowMapper<LiteAddress> rowMapper = new ParameterizedRowMapper<LiteAddress>() {
+    private static final RowMapper<LiteAddress> createRowMapper() {
+        RowMapper<LiteAddress> rowMapper = new RowMapper<LiteAddress>() {
             @Override
             public LiteAddress mapRow(ResultSet rs, int rowNum) throws SQLException {
                 LiteAddress address = new LiteAddress();

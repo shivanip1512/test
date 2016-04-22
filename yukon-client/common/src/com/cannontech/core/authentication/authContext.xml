@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="staticAuthenticationThrottleService" class="com.cannontech.core.authentication.service.impl.StaticAuthenticationThrottleServiceImpl">
         <qualifier value="static"/>
@@ -46,7 +46,7 @@
     <bean id="radiusLoginProvider" class="org.springframework.aop.framework.ProxyFactoryBean">
       <property name="targetSource">
         <bean class="org.springframework.aop.target.LazyInitTargetSource">
-           <property name="targetBeanName"><idref local="radiusLoginProviderTarget"/></property>
+           <property name="targetBeanName"><idref bean="radiusLoginProviderTarget"/></property>
         </bean>
       </property>
     </bean>

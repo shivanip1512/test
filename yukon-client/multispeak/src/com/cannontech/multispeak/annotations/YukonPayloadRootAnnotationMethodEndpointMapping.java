@@ -3,30 +3,42 @@ package com.cannontech.multispeak.annotations;
 import java.lang.reflect.Method;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerFactory;
 
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.server.endpoint.mapping.PayloadRootAnnotationMethodEndpointMapping;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.mapping.AbstractAnnotationMethodEndpointMapping;
+import org.springframework.ws.server.endpoint.support.PayloadRootUtils;
 import org.springframework.ws.transport.WebServiceConnection;
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
 import org.springframework.ws.transport.http.HttpServletConnection;
+
 import com.google.common.collect.ImmutableMap;
 
 /**
- * This Class extends the Spring provided PayloadRootAnnotationMethodEndpointMapping class to provide customized 
+ * This Class extends the Spring provided AbstractAnnotationMethodEndpointMapping class to provide customized 
  * mapping of {urlpart+localPart} as key to {Endpoint Method Handlers} as values. The getLookupKeyForMethod() enables 
  * creating this customized mappings and is invoked during server startup by specialized bean of spring framework.
  * The getLookupKeyForMessage() is used to retrieve the Endpoint mapped method corresponding to the {urlpart+localPart}
  * as key coming in the request url.
  */
-public class YukonPayloadRootAnnotationMethodEndpointMapping extends PayloadRootAnnotationMethodEndpointMapping {
+public class YukonPayloadRootAnnotationMethodEndpointMapping extends AbstractAnnotationMethodEndpointMapping<QName> {
 
     /**
      * The purpose of this enum to support the same endpoint for different url point to point or any other web service url) 
      * it is also building the map that contains the url and endPointAddress.
      */
+    
+    private static TransformerFactory transformerFactory;
+
+    static {
+        transformerFactory = TransformerFactory.newInstance();
+    }
+
     private enum EndPointMapping {
         
         MR_CBSoap("MR_CBSoap", "/soap/MR_ServerSoap"),
@@ -64,7 +76,7 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends PayloadRoot
     @Override
     protected QName getLookupKeyForMessage(MessageContext messageContext) throws Exception {
         String urlPart = "";
-        QName payloadRootPart = super.getLookupKeyForMessage(messageContext);
+        QName payloadRootPart = PayloadRootUtils.getPayloadRootQName(messageContext.getRequest().getPayloadSource(), transformerFactory);
 
         TransportContext transportContext = TransportContextHolder.getTransportContext();
         if (transportContext != null) {
@@ -82,9 +94,19 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends PayloadRoot
 
     @Override
     protected QName getLookupKeyForMethod(Method method) {
+        QName methodPart = null;
         RequestMapping rm = AnnotationUtils.findAnnotation(method.getDeclaringClass(), RequestMapping.class);
         String urlPart = rm == null || rm.value().length != 1 ? "" : rm.value()[0];
-        QName methodPart = super.getLookupKeyForMethod(method);
-        return new QName(methodPart.getNamespaceURI(), urlPart + "/" + methodPart.getLocalPart());
+        PayloadRoot annotation = AnnotationUtils.findAnnotation(method, PayloadRoot.class);
+        if (annotation != null) {
+
+            if (StringUtils.hasLength(annotation.localPart()) && StringUtils.hasLength(annotation.namespace())) {
+                methodPart = new QName(annotation.namespace(), urlPart + "/" + annotation.localPart());
+            } else {
+                methodPart = new QName(urlPart + "/" + annotation.localPart());
+            }
+        }
+        return methodPart;
     }
+
 }

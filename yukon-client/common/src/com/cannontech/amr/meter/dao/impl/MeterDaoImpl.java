@@ -36,8 +36,8 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -390,7 +390,7 @@ public class MeterDaoImpl implements MeterDao {
                 return sql;
             }
         };
-        List<Integer> deviceIds = template.query(sqlGenerator, ids, RowMapper.INTEGER);
+        List<Integer> deviceIds = template.query(sqlGenerator, ids, TypeRowMapper.INTEGER);
         return deviceIds;
     }
     
@@ -413,7 +413,7 @@ public class MeterDaoImpl implements MeterDao {
         sql.append("WHERE DeviceID = ").appendArgument(mctID);
         Integer address;
         try {
-            address = template.queryForInt(sql.getSql(), sql.getArguments());
+            address = template.queryForObject(sql.getSql(), sql.getArguments(), Integer.class);
         } catch (EmptyResultDataAccessException e) {
             // if no results, then it doesn't exist
             return null;

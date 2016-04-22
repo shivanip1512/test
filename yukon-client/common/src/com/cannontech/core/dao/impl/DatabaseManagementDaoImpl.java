@@ -14,7 +14,7 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DatabaseManagementDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 
@@ -40,7 +40,7 @@ public class DatabaseManagementDaoImpl implements DatabaseManagementDao {
         sql.append(     "FROM RAWPOINTHISTORY");
         sql.append(")");
         sql.append("SELECT CHANGEID FROM CTE WHERE RN <> 1");
-        List<Long> changeIds = yukonTemplate.queryForLimitedResults(sql, RowMapper.LONG, ROWS_TO_DELETE);
+        List<Long> changeIds = yukonTemplate.queryForLimitedResults(sql, TypeRowMapper.LONG, ROWS_TO_DELETE);
         chunkyJdbcTemplate.update(new RphDeleteByChangeIdsSqlGenerator(), changeIds);
         return changeIds.size();
     }
@@ -50,7 +50,7 @@ public class DatabaseManagementDaoImpl implements DatabaseManagementDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PointId FROM RAWPOINTHISTORY");
         sql.append(" WHERE PointId NOT IN (SELECT PointId FROM POINT)");
-        List<Long> pointIds = yukonTemplate.queryForLimitedResults(sql, RowMapper.LONG, ROWS_TO_DELETE);
+        List<Long> pointIds = yukonTemplate.queryForLimitedResults(sql, TypeRowMapper.LONG, ROWS_TO_DELETE);
         chunkyJdbcTemplate.update(new RphDeleteByPointIdsSqlGenerator(), pointIds);
         return pointIds.size();
     }
@@ -60,7 +60,7 @@ public class DatabaseManagementDaoImpl implements DatabaseManagementDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PointId FROM SYSTEMLOG");
         sql.append(" WHERE PointId NOT IN (SELECT PointId FROM POINT)");
-        List<Long> pointIds = yukonTemplate.queryForLimitedResults(sql, RowMapper.LONG, ROWS_TO_DELETE);
+        List<Long> pointIds = yukonTemplate.queryForLimitedResults(sql, TypeRowMapper.LONG, ROWS_TO_DELETE);
         chunkyJdbcTemplate.update(new SystemLogDeleteSqlGenerator(),  pointIds);
         return  pointIds.size();
     }

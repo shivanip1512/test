@@ -43,7 +43,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.core.service.PaoLoadingService;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -308,7 +308,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
                 sql1.append("SELECT SlotId");
                 sql1.append("FROM ArchiveDataAnalysisSlot");
                 sql1.append("WHERE AnalysisId").eq(analysisId);
-                List<Integer> slotIds = jdbcTemplate.query(sql1, RowMapper.INTEGER);
+                List<Integer> slotIds = jdbcTemplate.query(sql1, TypeRowMapper.INTEGER);
                 
                 //perform deletion of slots and slot values in chunks so we don't completely lock the table
                 log.debug("Deleting slots and slot values for analysis " + analysisId);
@@ -385,7 +385,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             .append("JOIN YukonPAObject ypo ON ypo.PaobjectId = slotValue.DeviceId");
         
 
-        List<PaoIdentifier> deviceIds = jdbcTemplate.query(builder, RowMapper.PAO_IDENTIFIER);
+        List<PaoIdentifier> deviceIds = jdbcTemplate.query(builder, TypeRowMapper.PAO_IDENTIFIER);
         return deviceIds;
     }
     

@@ -24,7 +24,7 @@ public class DisconnectCollarGroupProvider extends DeviceGroupProviderSqlBase {
         sql.append("JOIN DeviceMCT400Series d ON ypo.PAObjectID = d.DEVICEID ");
         sql.append("WHERE ypo.PAObjectID = ").appendArgument(device.getPaoIdentifier().getPaoId());
         
-        Integer deviceCount = jdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+        Integer deviceCount = jdbcTemplate.queryForObject(sql.getSql(), sql.getArguments(), Integer.class);
         return deviceCount > 0;
     }
 

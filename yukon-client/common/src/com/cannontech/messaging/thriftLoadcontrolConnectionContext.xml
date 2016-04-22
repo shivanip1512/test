@@ -2,8 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
-	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
 	default-lazy-init="true">
 
 	<context:annotation-config/>
@@ -282,51 +282,51 @@
 		class="org.springframework.beans.factory.config.ListFactoryBean">
 		<property name="sourceList">
 			<list merge="true">
-				<ref local="messaging.thrift.load.CommandSerializer"/>
-				<ref local="messaging.thrift.load.ControlAreaSerializer"/>
-				<ref local="messaging.thrift.load.CurtailmentAcknowledgeSerializer"/>				
-				<ref local="messaging.thrift.load.EnergyExchangeAcceptSerializer"/>
-				<ref local="messaging.thrift.load.EnergyExchangeControlSerializer"/>			
-				<ref local="messaging.thrift.load.LmMessageSerializer"/>
-				<ref local="messaging.thrift.load.ManualControlRequestSerializer"/>	
-				<ref local="messaging.thrift.load.ManualControlResponseSerializer"/>
+				<ref bean="messaging.thrift.load.CommandSerializer"/>
+				<ref bean="messaging.thrift.load.ControlAreaSerializer"/>
+				<ref bean="messaging.thrift.load.CurtailmentAcknowledgeSerializer"/>				
+				<ref bean="messaging.thrift.load.EnergyExchangeAcceptSerializer"/>
+				<ref bean="messaging.thrift.load.EnergyExchangeControlSerializer"/>			
+				<ref bean="messaging.thrift.load.LmMessageSerializer"/>
+				<ref bean="messaging.thrift.load.ManualControlRequestSerializer"/>	
+				<ref bean="messaging.thrift.load.ManualControlResponseSerializer"/>
 				
-				<ref local="messaging.thrift.load.CiCustomerBaseSerializer"/>
-				<ref local="messaging.thrift.load.ConstraintViolationSerializer"/>
-				<ref local="messaging.thrift.load.ControlAreaItemSerializer"/>
-				<ref local="messaging.thrift.load.ControlAreaTriggerItemSerializer"/>
-				<ref local="messaging.thrift.load.CurtailCustomerSerializer"/>
-				<ref local="messaging.thrift.load.DirectGroupBaseSerializer"/>				
-				<ref local="messaging.thrift.load.EnergyExchangeCustomerReplySerializer"/>				
-				<ref local="messaging.thrift.load.EnergyExchangeCustomerSerializer"/>
-				<ref local="messaging.thrift.load.EnergyExchangeHourlyCustomerSerializer"/>
-				<ref local="messaging.thrift.load.EnergyExchangeHourlyOfferSerializer"/>
-				<ref local="messaging.thrift.load.EnergyExchangeOfferRevisionSerializer"/>
-				<ref local="messaging.thrift.load.EnergyExchangeOfferSerializer"/>				
-				<ref local="messaging.thrift.load.GroupDigiSepSerializer"/>
-                <ref local="messaging.thrift.load.GroupEcobeeSerializer"/>
-				<ref local="messaging.thrift.load.GroupEmetconSerializer"/>
-				<ref local="messaging.thrift.load.GroupExpresscomSerializer"/>
-				<ref local="messaging.thrift.load.GroupGolaySerializer"/>
-				<ref local="messaging.thrift.load.GroupMCTSerializer"/>
-				<ref local="messaging.thrift.load.GroupPointSerializer"/>
-				<ref local="messaging.thrift.load.GroupRippleSerializer"/>
-				<ref local="messaging.thrift.load.GroupSA105Serializer"/>
-				<ref local="messaging.thrift.load.GroupSA205Serializer"/>
-				<ref local="messaging.thrift.load.GroupSA305Serializer"/>
-				<ref local="messaging.thrift.load.GroupSADigitalSerializer"/>				
-				<ref local="messaging.thrift.load.GroupVersacomSerializer"/>				
-				<ref local="messaging.thrift.load.ProgramControlWindowSerializer"/>
-				<ref local="messaging.thrift.load.ProgramCurtailmentSerializer"/>
-				<ref local="messaging.thrift.load.ProgramDirectGearSerializer"/>
-				<ref local="messaging.thrift.load.ProgramDirectSerializer"/>
-				<ref local="messaging.thrift.load.ProgramEnergyExchangeSerializer"/>
-				<ref local="messaging.thrift.load.ProgramSerializer"/>								
+				<ref bean="messaging.thrift.load.CiCustomerBaseSerializer"/>
+				<ref bean="messaging.thrift.load.ConstraintViolationSerializer"/>
+				<ref bean="messaging.thrift.load.ControlAreaItemSerializer"/>
+				<ref bean="messaging.thrift.load.ControlAreaTriggerItemSerializer"/>
+				<ref bean="messaging.thrift.load.CurtailCustomerSerializer"/>
+				<ref bean="messaging.thrift.load.DirectGroupBaseSerializer"/>				
+				<ref bean="messaging.thrift.load.EnergyExchangeCustomerReplySerializer"/>				
+				<ref bean="messaging.thrift.load.EnergyExchangeCustomerSerializer"/>
+				<ref bean="messaging.thrift.load.EnergyExchangeHourlyCustomerSerializer"/>
+				<ref bean="messaging.thrift.load.EnergyExchangeHourlyOfferSerializer"/>
+				<ref bean="messaging.thrift.load.EnergyExchangeOfferRevisionSerializer"/>
+				<ref bean="messaging.thrift.load.EnergyExchangeOfferSerializer"/>				
+				<ref bean="messaging.thrift.load.GroupDigiSepSerializer"/>
+                <ref bean="messaging.thrift.load.GroupEcobeeSerializer"/>
+				<ref bean="messaging.thrift.load.GroupEmetconSerializer"/>
+				<ref bean="messaging.thrift.load.GroupExpresscomSerializer"/>
+				<ref bean="messaging.thrift.load.GroupGolaySerializer"/>
+				<ref bean="messaging.thrift.load.GroupMCTSerializer"/>
+				<ref bean="messaging.thrift.load.GroupPointSerializer"/>
+				<ref bean="messaging.thrift.load.GroupRippleSerializer"/>
+				<ref bean="messaging.thrift.load.GroupSA105Serializer"/>
+				<ref bean="messaging.thrift.load.GroupSA205Serializer"/>
+				<ref bean="messaging.thrift.load.GroupSA305Serializer"/>
+				<ref bean="messaging.thrift.load.GroupSADigitalSerializer"/>				
+				<ref bean="messaging.thrift.load.GroupVersacomSerializer"/>				
+				<ref bean="messaging.thrift.load.ProgramControlWindowSerializer"/>
+				<ref bean="messaging.thrift.load.ProgramCurtailmentSerializer"/>
+				<ref bean="messaging.thrift.load.ProgramDirectGearSerializer"/>
+				<ref bean="messaging.thrift.load.ProgramDirectSerializer"/>
+				<ref bean="messaging.thrift.load.ProgramEnergyExchangeSerializer"/>
+				<ref bean="messaging.thrift.load.ProgramSerializer"/>								
 				
-				<ref local="messaging.thrift.load.ControlAreaChangedSerializer"/>				
-				<ref local="messaging.thrift.load.GroupChangedSerializer"/>
-				<ref local="messaging.thrift.load.ProgramChangedSerializer"/>
-				<ref local="messaging.thrift.load.TriggerChangedSerializer"/>
+				<ref bean="messaging.thrift.load.ControlAreaChangedSerializer"/>				
+				<ref bean="messaging.thrift.load.GroupChangedSerializer"/>
+				<ref bean="messaging.thrift.load.ProgramChangedSerializer"/>
+				<ref bean="messaging.thrift.load.TriggerChangedSerializer"/>
 			</list>
 		</property>
 	</bean>
@@ -352,7 +352,7 @@
 		<constructor-arg index="1">
 			<map>
 				<entry key="LC">
-					<idref local="messaging.loadcontrolConnectionFactory"/>
+					<idref bean="messaging.loadcontrolConnectionFactory"/>
 				</entry>
 			</map>
 		</constructor-arg>

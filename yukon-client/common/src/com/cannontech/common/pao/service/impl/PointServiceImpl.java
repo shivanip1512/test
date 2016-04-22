@@ -37,7 +37,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
@@ -235,7 +235,7 @@ public class PointServiceImpl implements PointService {
         SqlFragmentSource groupSqlWhereClause =
             deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "PaoPointLookup.paObjectId");
         sql.append("AND").appendFragment(groupSqlWhereClause);
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
     @Override
@@ -317,6 +317,6 @@ public class PointServiceImpl implements PointService {
             deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "PaoPointLookup.paObjectId");
         sql.appendFragment(groupSqlWhereClause);
 
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 }

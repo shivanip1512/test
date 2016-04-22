@@ -7,16 +7,16 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 public class PagingResultSetExtractor<T> implements ResultSetExtractor<T> {
     
     private int start;
     private int pageCount;
-    private ParameterizedRowMapper<T> rowMapper;
+    private RowMapper<T> rowMapper;
     List<T> resultList = new ArrayList<T>();
 
-    public PagingResultSetExtractor(int start, int pageCount, ParameterizedRowMapper<T> rowMapper) {
+    public PagingResultSetExtractor(int start, int pageCount, RowMapper<T> rowMapper) {
         this.start = start;
         this.pageCount = pageCount;
         this.rowMapper = rowMapper;

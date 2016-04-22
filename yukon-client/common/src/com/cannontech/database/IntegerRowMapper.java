@@ -3,13 +3,13 @@ package com.cannontech.database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * @deprecated Use {@link RowMapper#INTEGER} or {@link RowMapper#INTEGER_NULLABLE}
  */
 @Deprecated
-public final class IntegerRowMapper implements ParameterizedRowMapper<Integer> {
+public final class IntegerRowMapper implements RowMapper<Integer> {
 
     private final boolean nullable;
 

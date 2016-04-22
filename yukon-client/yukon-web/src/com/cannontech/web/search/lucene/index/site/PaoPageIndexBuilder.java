@@ -19,7 +19,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -159,7 +159,7 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
         if (database == DBChangeMsg.CHANGE_PAO_DB && dbChangeType != DbChangeType.DELETE) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("select type from yukonPaobject where paobjectId").eq(id);
-            PaoType paoType = jdbcTemplate.queryForObject(sql, RowMapper.PAO_TYPE);
+            PaoType paoType = jdbcTemplate.queryForObject(sql, TypeRowMapper.PAO_TYPE);
             PaoTypeHandler handler = handlersByType.get(paoType);
             if (handler == null) {
                 // We don't handle this particular PAO type.

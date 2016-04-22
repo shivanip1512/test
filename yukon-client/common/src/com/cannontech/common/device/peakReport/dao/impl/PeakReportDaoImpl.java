@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.device.peakReport.dao.PeakReportDao;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
@@ -72,7 +72,7 @@ public class PeakReportDaoImpl implements PeakReportDao {
     /**
      * Helper class which maps a result set row into a PeakReportResult
      */
-    private class PeakReportResultMapper implements ParameterizedRowMapper<PeakReportResult> {
+    private class PeakReportResultMapper implements RowMapper<PeakReportResult> {
 
         @Override
         public PeakReportResult mapRow(ResultSet rs, int rowNum) throws SQLException {

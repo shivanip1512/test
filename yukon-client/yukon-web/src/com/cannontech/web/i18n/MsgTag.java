@@ -32,7 +32,7 @@ public class MsgTag extends ThemeTag {
     public void setKey(Object key) {
         if (key instanceof MessageSourceResolvable) {
             setCode(null);
-            setMessage(key);
+            setMessage((MessageSourceResolvable) key);
         } else if (key instanceof DisplayableEnum) {
             DisplayableEnum displayableEnum = (DisplayableEnum) key;
             setCode(displayableEnum.getFormatKey());

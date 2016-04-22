@@ -9,8 +9,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class OutageMonitorDaoImpl implements OutageMonitorDao  {
 
-	private static final ParameterizedRowMapper<OutageMonitor> rowMapper;
+    private static final RowMapper<OutageMonitor> rowMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<OutageMonitor> template;
@@ -73,9 +73,9 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao  {
     
     public boolean processorExistsWithName(String name) {
 
-    	int c = yukonJdbcTemplate.queryForInt(selectCountByName, name);
-    	
-    	return c > 0;
+        int c = yukonJdbcTemplate.queryForObject(selectCountByName, Integer.class, name);
+
+        return c > 0;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -88,8 +88,8 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao  {
     	return yukonJdbcTemplate.update(deleteById, outageMonitorId) > 0;
     }
     
-    private static final ParameterizedRowMapper<OutageMonitor> createRowMapper() {
-        final ParameterizedRowMapper<OutageMonitor> rowMapper = new ParameterizedRowMapper<OutageMonitor>() {
+    private static final RowMapper<OutageMonitor> createRowMapper() {
+        final RowMapper<OutageMonitor> rowMapper = new RowMapper<OutageMonitor>() {
             public OutageMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
             	OutageMonitor outageMonitor = new OutageMonitor();
             	

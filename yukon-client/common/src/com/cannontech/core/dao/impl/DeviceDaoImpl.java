@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.SimpleMeter;
@@ -294,7 +294,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public int getRouteDeviceCount(int routeId) {
         String sql = "SELECT COUNT(*) FROM DeviceRoutes WHERE RouteId = ?";
-        return jdbcTemplate.queryForInt(sql, new Object[] { routeId });
+        return jdbcTemplate.queryForObject(sql, new Object[] { routeId }, Integer.class);
     }
 
     @Override
@@ -394,8 +394,8 @@ public final class DeviceDaoImpl implements DeviceDao {
             }
         };
 
-        ParameterizedRowMapper<Entry<Integer, String>> rowMapper =
-            new ParameterizedRowMapper<Entry<Integer, String>>() {
+        RowMapper<Entry<Integer, String>> rowMapper =
+            new RowMapper<Entry<Integer, String>>() {
                 @Override
                 public Entry<Integer, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
                     return Maps.immutableEntry(rs.getInt("deviceid"), rs.getString("paoname"));

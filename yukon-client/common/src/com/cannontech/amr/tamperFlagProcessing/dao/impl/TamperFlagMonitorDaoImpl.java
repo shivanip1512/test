@@ -9,8 +9,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao  {
 
-	private static final ParameterizedRowMapper<TamperFlagMonitor> rowMapper;
+    private static final RowMapper<TamperFlagMonitor> rowMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<TamperFlagMonitor> template;
@@ -73,9 +73,9 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao  {
     
     public boolean processorExistsWithName(String name) {
 
-    	int c = yukonJdbcTemplate.queryForInt(selectCountByName, name);
-    	
-    	return c > 0;
+        int c = yukonJdbcTemplate.queryForObject(selectCountByName, Integer.class, name);
+
+        return c > 0;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -88,8 +88,8 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao  {
     	return yukonJdbcTemplate.update(deleteById, tamperFlagMonitorId) > 0;
     }
     
-    private static final ParameterizedRowMapper<TamperFlagMonitor> createRowMapper() {
-        final ParameterizedRowMapper<TamperFlagMonitor> rowMapper = new ParameterizedRowMapper<TamperFlagMonitor>() {
+    private static final RowMapper<TamperFlagMonitor> createRowMapper() {
+        final RowMapper<TamperFlagMonitor> rowMapper = new RowMapper<TamperFlagMonitor>() {
             public TamperFlagMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
             	TamperFlagMonitor tamperFlagMonitor = new TamperFlagMonitor();
             	tamperFlagMonitor.setTamperFlagMonitorId(rs.getInt("TamperFlagMonitorId"));

@@ -3,12 +3,12 @@ package com.cannontech.common.device.groups.editor.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 
-public class YukonDeviceRowMapper implements ParameterizedRowMapper<SimpleDevice> {
+public class YukonDeviceRowMapper implements RowMapper<SimpleDevice> {
 
     public SimpleDevice mapRow(ResultSet rs, int rowNum) throws SQLException {
         int deviceId = rs.getInt("paobjectid");

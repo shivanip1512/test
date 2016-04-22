@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.analysis.ColumnProperties;
@@ -190,7 +190,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
                 }
             };
 
-            List<StarsAMRDetail> rows = template.query(gen, deviceIds, new ParameterizedRowMapper<StarsAMRDetail>() {
+            List<StarsAMRDetail> rows = template.query(gen, deviceIds, new RowMapper<StarsAMRDetail>() {
                 @Override
                 public StarsAMRDetail mapRow(ResultSet rs, int rowNum) throws SQLException {
                     

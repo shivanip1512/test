@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.FeederDao;
@@ -58,8 +58,8 @@ public class FeederDaoImpl implements FeederDao {
         sql.append("FROM CapControlFeeder");
         sql.append("WHERE FeederId").eq(feederId);
         
-        ParameterizedRowMapper<FeederPhaseData> mapper = 
-                new ParameterizedRowMapper<FeederPhaseData>() {
+        RowMapper<FeederPhaseData> mapper = 
+                new RowMapper<FeederPhaseData>() {
             
             @Override
             public FeederPhaseData mapRow(ResultSet rs, int rowNum) throws SQLException {

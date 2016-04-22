@@ -21,7 +21,7 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -129,7 +129,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         sql.append("WHERE LMPDG.LMGroupDeviceId").eq(loadGroup.getPaoId());
         sql.append("AND LMPDG.deviceId = LMPWP.deviceId");
     
-        return jdbcTemplate.query(sql, RowMapper.INTEGER);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
     
     @Override
@@ -141,7 +141,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         sql.append("WHERE gm.MacroType").eq(MacroTypes.GROUP);
         sql.append(    "AND gm.ChildID").eq(group.getPaoIdentifier().getPaoId());
 
-        return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        return jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
     }
     
     @Override

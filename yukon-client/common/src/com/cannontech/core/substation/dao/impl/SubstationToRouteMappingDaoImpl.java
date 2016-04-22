@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,7 +108,7 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getRoutesBySubstationId(final int substationId) {
-        return jdbcTemplate.query(selectBySubIdSql.toString(), new ParameterizedRowMapper<Route>() {
+        return jdbcTemplate.query(selectBySubIdSql.toString(), new RowMapper<Route>() {
             @Override
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoType type = PaoType.getForDbString(rs.getString("Type"));
@@ -120,7 +120,7 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getRouteIdsBySubstationId(final int substationId) {
-        return jdbcTemplate.query(selectBySubIdSql.toString(), new ParameterizedRowMapper<Integer>() {
+        return jdbcTemplate.query(selectBySubIdSql.toString(), new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return rs.getInt("PAObjectID");
@@ -131,7 +131,7 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getAvailableRoutesBySubstationId(final int substationId) {
-        return jdbcTemplate.query(selectAvailableSql.toString(), new ParameterizedRowMapper<Route>() {
+        return jdbcTemplate.query(selectAvailableSql.toString(), new RowMapper<Route>() {
             @Override
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoType type = PaoType.getForDbString(rs.getString("Type"));
@@ -143,7 +143,7 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getAll() {
-        return jdbcTemplate.query(selectAllSql.toString(), new ParameterizedRowMapper<Route>() {
+        return jdbcTemplate.query(selectAllSql.toString(), new RowMapper<Route>() {
             @Override
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoType type = PaoType.getForDbString(rs.getString("Type"));

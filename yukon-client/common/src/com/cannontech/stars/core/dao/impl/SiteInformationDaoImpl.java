@@ -7,8 +7,8 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -28,7 +28,7 @@ public class SiteInformationDaoImpl implements SiteInformationDao {
     @Autowired private NextValueHelper nextValueHelper;
 
     private static String TABLE_NAME = "SiteInformation";
-    private static final ParameterizedRowMapper<LiteSiteInformation> rowMapper;
+    private static final RowMapper<LiteSiteInformation> rowMapper;
     private SimpleTableAccessTemplate<LiteSiteInformation> siteInfoTemplate;
     
     static {
@@ -77,8 +77,8 @@ public class SiteInformationDaoImpl implements SiteInformationDao {
         return siteInfo;
     }
     
-    private static final ParameterizedRowMapper<LiteSiteInformation> createRowMapper() {
-        final ParameterizedRowMapper<LiteSiteInformation> rowMapper = new ParameterizedRowMapper<LiteSiteInformation>() {
+    private static final RowMapper<LiteSiteInformation> createRowMapper() {
+        final RowMapper<LiteSiteInformation> rowMapper = new RowMapper<LiteSiteInformation>() {
             public LiteSiteInformation mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final LiteSiteInformation siteInfo = new LiteSiteInformation();
                 siteInfo.setSiteID(rs.getInt("SiteId"));
@@ -98,7 +98,7 @@ public class SiteInformationDaoImpl implements SiteInformationDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT SubstationId FROM Substation WHERE SubstationName = ?");
         try {
-            int subId = yukonJdbcTemplate.queryForInt(sql.toString(), subName);
+            int subId = yukonJdbcTemplate.queryForObject(sql.toString(), Integer.class, subName);
             return subId;
         }catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unable to find SubstationId for name: " + subName);

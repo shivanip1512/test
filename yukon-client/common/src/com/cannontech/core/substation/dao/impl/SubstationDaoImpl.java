@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -15,7 +15,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class SubstationDaoImpl implements SubstationDao {
-    private static final ParameterizedRowMapper<Substation> rowMapper;
+    private static final RowMapper<Substation> rowMapper;
     private static final SqlStatementBuilder insertSql;
     private static final SqlStatementBuilder updateSql;
     private static final SqlStatementBuilder deleteSql;

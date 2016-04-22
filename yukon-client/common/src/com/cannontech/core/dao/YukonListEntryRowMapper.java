@@ -3,12 +3,12 @@ package com.cannontech.core.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.database.SqlUtils;
 
-public class YukonListEntryRowMapper implements ParameterizedRowMapper<YukonListEntry> {
+public class YukonListEntryRowMapper implements RowMapper<YukonListEntry> {
  
 	@Override
 	public YukonListEntry mapRow(ResultSet rs, int rowNum) throws SQLException {

@@ -140,7 +140,7 @@ public final static boolean hasExistingDisconnectAddress(Integer mctID) {
     sql.append("SELECT DisconnectAddress FROM DeviceMCT400Series ");
     sql.append("WHERE DeviceID = ").appendArgument(mctID);
     try {
-        int address = template.queryForInt(sql.getSql(), sql.getArguments());
+        int address = template.queryForObject(sql.getSql(), sql.getArguments(), Integer.class);
         return true;
     } catch (EmptyResultDataAccessException e) {
         // if no results, then it doesn't exist

@@ -2,8 +2,6 @@ package com.cannontech.web.taglib;
 
 import javax.servlet.jsp.JspException;
 
-import org.springframework.web.util.ExpressionEvaluationUtils;
-
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -59,11 +57,8 @@ public class RoleProperty extends javax.servlet.jsp.tagext.BodyTagSupport {
                         text = ServletUtil.addArticle(text);
                     }
                 }
-
-                // Expose as variable, if demanded, else write to the page.
-                String resolvedVar = ExpressionEvaluationUtils.evaluateString("var", this.var, pageContext);
-                if (resolvedVar != null) {
-                    pageContext.setAttribute(resolvedVar, text);
+                if (var != null) {
+                    pageContext.setAttribute(var, text);
                 } else {
                     pageContext.getOut().write(text);
                 }

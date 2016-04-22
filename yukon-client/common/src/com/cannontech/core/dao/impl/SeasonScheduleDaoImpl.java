@@ -12,14 +12,14 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
@@ -28,7 +28,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
-    private static final ParameterizedRowMapper<SeasonSchedule> mapper = new ParameterizedRowMapper<SeasonSchedule>() {
+    private static final RowMapper<SeasonSchedule> mapper = new RowMapper<SeasonSchedule>() {
         @Override
         public SeasonSchedule mapRow(ResultSet rs, int rowNum) throws SQLException {
             
@@ -40,7 +40,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao {
         }
     };
     
-    private static final ParameterizedRowMapper<Season> seasonMapper = new ParameterizedRowMapper<Season>() {
+    private static final RowMapper<Season> seasonMapper = new RowMapper<Season>() {
         @Override
         public Season mapRow(ResultSet rs, int rowNum) throws SQLException {
             
@@ -64,7 +64,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao {
         
         // Use a row mapper and expect multiple rows since this table will have 
         // a row per season of this poa's assigned schedule.
-        List<Integer> scheduleIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> scheduleIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         SeasonSchedule schedule = new SeasonSchedule();
         // All we wanted was the scheduleId.
@@ -101,7 +101,9 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao {
                 + " And SeasonName = ?" ;
             int strategyId;
             try {
-                strategyId = jdbcTemplate.queryForInt(sql, paoId, season.getScheduleId(), season.getSeasonName());
+                strategyId =
+                    jdbcTemplate.queryForObject(sql,
+                        new Object[] { paoId, season.getScheduleId(), season.getSeasonName() }, Integer.class);
             } catch (EmptyResultDataAccessException e) {
                 strategyId = -1;
             }

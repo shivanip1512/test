@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
@@ -23,7 +23,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
     @Override
     public List<LiteCapControlObject> getOrphans() {
         
-        ParameterizedRowMapper<LiteCapControlObject> rowMapper = new ParameterizedRowMapper<LiteCapControlObject>() {
+        RowMapper<LiteCapControlObject> rowMapper = new RowMapper<LiteCapControlObject>() {
             @Override
             public LiteCapControlObject mapRow(ResultSet rs, int rowNum) throws SQLException {
                 

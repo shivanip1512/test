@@ -91,7 +91,7 @@ public class CCFeederSubAssignment extends DBPersistent {
 
         Integer substationBusId = -1;
         try {
-            substationBusId = jdbcOps.queryForInt(sql, paoId);
+            substationBusId = jdbcOps.queryForObject(sql, Integer.class, paoId);
         } catch (EmptyResultDataAccessException e) {
             return -1;
         }

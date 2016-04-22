@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationMethodType;
@@ -19,8 +18,11 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.database.RowMapper;
+
+import org.springframework.jdbc.core.RowMapper;
+
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -55,7 +57,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY ca.AccountNumber");
 		
-		return jdbcTemplate.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 	}
 	
 	// PHONE NUMBER
@@ -81,7 +83,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY ca.AccountNumber");
 		
-		List<Integer> accountIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+		List<Integer> accountIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 				
 		return accountIds;
 	}
@@ -111,7 +113,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY cont.ContLastName, cont.ContFirstName");
 		
-		return jdbcTemplate.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 	}
 	
 	// SERIAL NUMBER
@@ -128,7 +130,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ib.AccountId").gt(0);
 		sql.append("ORDER BY lhb.ManufacturerSerialNumber");
 		
-		return jdbcTemplate.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 	}
 	
 	// MAP NUMBER
@@ -144,7 +146,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY site.SiteNumber");
 		
-		return jdbcTemplate.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 	}
 	
 	// ADDRESS
@@ -161,7 +163,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY addr.LocationAddress1, addr.LocationAddress2, addr.CityName, addr.StateCode");
 		
-		return jdbcTemplate.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 	}
 	
 	// ALT TRACKING NUMBER
@@ -177,7 +179,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY cust.AltTrackNum");
 		
-		return jdbcTemplate.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 	}
 	
 	// COMPANY NAME
@@ -193,7 +195,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY cicb.CompanyName");
 		
-		return jdbcTemplate.query(sql, RowMapper.INTEGER);
+		return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 	}
      
 	@Override
@@ -214,7 +216,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
         
         Function<Integer, Integer> mapper = Functions.identity();
 
-        ParameterizedRowMapper<Entry<Integer, AccountSearchResult>> rowMapper = new ParameterizedRowMapper<Entry<Integer, AccountSearchResult>>() {
+        RowMapper<Entry<Integer, AccountSearchResult>> rowMapper = new RowMapper<Entry<Integer, AccountSearchResult>>() {
             @Override
             public Entry<Integer, AccountSearchResult> mapRow(ResultSet rs, int rowNum) throws SQLException {
             	AccountSearchResult accountSearchResult = accountSearchResultRowMapper.mapRow(rs, rowNum);
@@ -266,7 +268,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
        return sqlGenerator;
 	}
 	
-	private class AccountSearchResultRowMapper implements ParameterizedRowMapper<AccountSearchResult> {
+	private class AccountSearchResultRowMapper implements RowMapper<AccountSearchResult> {
 		
 		@Override
 		public AccountSearchResult mapRow(ResultSet rs, int rowNum) throws SQLException {

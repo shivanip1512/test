@@ -3,10 +3,10 @@ package com.cannontech.loadcontrol.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 
-public class LmProgramGearHistoryMapper implements ParameterizedRowMapper<LmProgramGearHistory>{
+public class LmProgramGearHistoryMapper implements RowMapper<LmProgramGearHistory>{
 
     public LmProgramGearHistory mapRow(ResultSet rs, int rowNum) throws SQLException {
     	

@@ -93,6 +93,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     // stores a soft reference to the cache
     private static ServerDatabaseCache cache;
     
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private CommandDao commandDao;
     @Autowired private ContactDao contactDao;
@@ -102,7 +103,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Autowired private MeterDao meterDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PointDao pointDao;
-    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private YukonImageDao imageDao;

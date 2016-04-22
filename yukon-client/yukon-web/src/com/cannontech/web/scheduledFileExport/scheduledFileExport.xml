@@ -3,14 +3,14 @@
     xmlns:tx="http://www.springframework.org/schema/tx"
     xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- Scheduled Billing File Export Job Definition -->
     <bean id="scheduledBillingFileExportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
     	<property name="taskName">
-    		<idref local="scheduledBillingFileExportTask" />
+    		<idref bean="scheduledBillingFileExportTask" />
     	</property>
     	<property name="title" value="Scheduled Billing File Export Job" />
     	<property name="inputs">
@@ -138,7 +138,7 @@
     <!-- Scheduled Archived Data File Export Job Definition -->
     <bean id="scheduledArchivedDataFileExportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
     	<property name="taskName">
-    		<idref local="scheduledArchivedDataFileExportTask" />
+    		<idref bean="scheduledArchivedDataFileExportTask" />
     	</property>
     	<property name="title" value="Scheduled Archive Data File Export Job" />
     	<property name="inputs">
@@ -315,7 +315,7 @@
 	<!-- Scheduled Water Leak File Export Job Definition -->
     <bean id="scheduledWaterLeakFileExportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
     	<property name="taskName">
-    		<idref local="scheduledWaterLeakFileExportTask" />
+    		<idref bean="scheduledWaterLeakFileExportTask" />
     	</property>
     	<property name="title" value="Scheduled Water Leak File Export Job" />
     	<property name="inputs">
@@ -443,7 +443,7 @@
 	<!-- Scheduled Meter Events File Export Job Definition -->
     <bean id="scheduledMeterEventsFileExportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
     	<property name="taskName">
-    		<idref local="scheduledMeterEventsFileExportTask" />
+    		<idref bean="scheduledMeterEventsFileExportTask" />
     	</property>
     	<property name="title" value="Scheduled Meter Events File Export Job" />
     	<property name="inputs">

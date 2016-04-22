@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -219,7 +219,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	AND (lmhcg.OptOutStop IS NULL");
 		sql.append("         OR lmhcg.OptOutStop").gte(startDate).append(")");
 
-		List<Integer> inventoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+		List<Integer> inventoryIds = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 		return inventoryIds;
 	}
 

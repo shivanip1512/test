@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +20,7 @@ import com.cannontech.stars.dr.account.model.AccountSite;
 
 public class AccountSiteDaoImpl implements AccountSiteDao {
     private static final String selectSql;
-    private static final ParameterizedRowMapper<AccountSite> rowMapper;
+    private static final RowMapper<AccountSite> rowMapper;
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -119,8 +119,8 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
         Validate.notNull(accountSite, "accountSite parameter cannot be null.");
     }
     
-    private static ParameterizedRowMapper<AccountSite> createRowMapper() {
-        ParameterizedRowMapper<AccountSite> mapper = new ParameterizedRowMapper<AccountSite>() {
+    private static RowMapper<AccountSite> createRowMapper() {
+        RowMapper<AccountSite> mapper = new RowMapper<AccountSite>() {
             @Override
             public AccountSite mapRow(ResultSet rs, int rowNum) throws SQLException {
                 AccountSite accountSite = new AccountSite();

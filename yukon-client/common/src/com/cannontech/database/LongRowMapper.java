@@ -3,13 +3,13 @@ package com.cannontech.database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * @deprecated Use {@link RowMapper#LONG} or {@link RowMapper#LONG_NULLABLE}
  */
 @Deprecated
-public final class LongRowMapper implements ParameterizedRowMapper<Long> {
+public final class LongRowMapper implements RowMapper<Long> {
 
     private final boolean nullable;
 

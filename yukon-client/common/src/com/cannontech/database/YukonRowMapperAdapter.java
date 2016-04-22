@@ -3,9 +3,9 @@ package com.cannontech.database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
-public final class YukonRowMapperAdapter<T> implements ParameterizedRowMapper<T> {
+public final class YukonRowMapperAdapter<T> implements RowMapper<T> {
 
     private final YukonRowMapper<T> rm;
 

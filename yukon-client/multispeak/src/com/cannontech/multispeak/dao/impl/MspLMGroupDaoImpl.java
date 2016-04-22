@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
@@ -55,7 +55,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 		sqlVersacom = "SELECT DISTINCT grp.DeviceId, " + selectClause + " FROM LMGroupVersacom grp " + joinClause;
     }
 
-	private final ParameterizedRowMapper<MspLMGroupCommunications> mspLMGroupCommunicationsMapper = new ParameterizedRowMapper<MspLMGroupCommunications>() {
+	private final RowMapper<MspLMGroupCommunications> mspLMGroupCommunicationsMapper = new RowMapper<MspLMGroupCommunications>() {
         @Override
         public MspLMGroupCommunications mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createMspLMGroupCommunicationsMapping(rs);

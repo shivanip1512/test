@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -112,7 +112,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         sql.append("and pgh.EventTime").lt(endDateTime);
         sql.append("and (pgh.Action = 'Start' or pgh.Action = 'Gear Change')");
         
-        name = yukonJdbcTemplate.query(sql, RowMapper.STRING);
+        name = yukonJdbcTemplate.query(sql, TypeRowMapper.STRING);
         
         if(name.size() == 0){
             // Didn't find gear name within interval. Try to find the most recent gear name prior to startDateTime.
@@ -126,7 +126,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
             sql.append("    and pgh.EventTime").lt(startDateTime).append(") T");
             sql.append("where T.RowNumber = 1");
             
-            name = yukonJdbcTemplate.query(sql, RowMapper.STRING);
+            name = yukonJdbcTemplate.query(sql, TypeRowMapper.STRING);
         }
         return name.size() > 0 ? name.get(0) : defaultName;
     }

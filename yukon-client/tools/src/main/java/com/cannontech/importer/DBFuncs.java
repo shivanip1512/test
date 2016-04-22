@@ -59,7 +59,7 @@ public class DBFuncs {
             " AND PAOCLASS = 'ROUTE'";
             
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            routeID = jdbcOps.queryForInt(stmt, name);
+            routeID = jdbcOps.queryForObject(stmt, Integer.class, name);
             return routeID;
         } catch (IncorrectResultSizeDataAccessException e) {
             return routeID;
@@ -73,7 +73,7 @@ public class DBFuncs {
 		try {
 		    Integer paoID = 0;
 		    JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-		    paoID = jdbcOps.queryForInt(stmt, name);
+            paoID = jdbcOps.queryForObject(stmt, Integer.class, name);
             return paoID > 0;
         } 
         catch (IncorrectResultSizeDataAccessException e) {
@@ -92,7 +92,7 @@ public class DBFuncs {
 		    
         try {
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            returnDeviceID = jdbcOps.queryForInt(stmt, address);
+            returnDeviceID = jdbcOps.queryForObject(stmt, Integer.class, address);
         } 
         catch (IncorrectResultSizeDataAccessException e) {
             return null;

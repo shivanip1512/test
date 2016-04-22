@@ -4,14 +4,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 public class CollectionRowCallbackHandler<T> extends AbstractRowCallbackHandler {
     
-    private ParameterizedRowMapper<? extends T> rowMapper;
+    private RowMapper<? extends T> rowMapper;
     private Collection<? super T> collection;
 
-    public CollectionRowCallbackHandler(ParameterizedRowMapper<? extends T> rowMapper,
+    public CollectionRowCallbackHandler(RowMapper<? extends T> rowMapper,
             Collection<? super T> collection) {
         super();
         this.rowMapper = rowMapper;

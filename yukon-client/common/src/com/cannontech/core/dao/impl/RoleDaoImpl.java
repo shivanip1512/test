@@ -11,7 +11,7 @@ import java.util.Set;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -255,7 +255,7 @@ public class RoleDaoImpl implements RoleDao {
 
     }
     
-    private class YukonGroupRoleRowMapper implements ParameterizedRowMapper<YukonGroupRole> {
+    private class YukonGroupRoleRowMapper implements RowMapper<YukonGroupRole> {
 
         @Override
         public YukonGroupRole mapRow(ResultSet rs, int row) throws SQLException {

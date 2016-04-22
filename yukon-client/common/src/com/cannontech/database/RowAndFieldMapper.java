@@ -1,7 +1,7 @@
 package com.cannontech.database;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
-public interface RowAndFieldMapper<T> extends ParameterizedRowMapper<T>, FieldMapper<T> {
+public interface RowAndFieldMapper<T> extends RowMapper<T>, FieldMapper<T> {
 
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.amr.deviceread.dao.DeviceReadJobLogDao;
 import com.cannontech.amr.deviceread.model.DeviceReadJobLog;
@@ -19,7 +19,7 @@ public class DeviceReadJobLogDaoImpl implements DeviceReadJobLogDao {
   
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
-    private static final ParameterizedRowMapper<DeviceReadJobLog> deviceReadJobLogRowMapper = new ParameterizedRowMapper<DeviceReadJobLog>() {
+    private static final RowMapper<DeviceReadJobLog> deviceReadJobLogRowMapper = new RowMapper<DeviceReadJobLog>() {
 
 		@Override
         public DeviceReadJobLog mapRow(ResultSet rs, int rowNum) throws SQLException {

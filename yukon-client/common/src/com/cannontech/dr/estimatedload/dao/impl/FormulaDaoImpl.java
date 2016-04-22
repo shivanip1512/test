@@ -26,7 +26,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -646,7 +646,7 @@ public class FormulaDaoImpl implements FormulaDao {
         sql.append("WHERE EstimatedLoadFormulaId").eq(formulaId);
         sql.append("AND ApplianceCategoryId IS NOT NULL");
 
-        List<Integer> applianceCategoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> applianceCategoryIds = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 
         return applianceCategoryIds;
     }
@@ -689,7 +689,7 @@ public class FormulaDaoImpl implements FormulaDao {
         sql.append("WHERE EstimatedLoadFormulaId").eq(formulaId);
         sql.append("AND GearId IS NOT NULL");
 
-        List<Integer> gearIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> gearIds = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 
         return gearIds;
     }

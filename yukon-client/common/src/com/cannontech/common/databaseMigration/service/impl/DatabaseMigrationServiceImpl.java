@@ -623,12 +623,14 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         SqlStatementBuilder selectSQL = sqlHolder.buildSelectSQL();
         Integer primaryKey = 0;
         try {
-            primaryKey = yukonJdbcTemplate.queryForInt(selectSQL.getSql(), whereParameterValues.toArray());
+            primaryKey =
+                yukonJdbcTemplate.queryForObject(selectSQL.getSql(), whereParameterValues.toArray(), Integer.class);
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new ConfigurationErrorException("The reference in the import file does not exist" +
-            		" or returns too many entries. Table: " + table.getName() + ", column/values: " + columnValueMap.toString(), e);
+            throw new ConfigurationErrorException("The reference in the import file does not exist"
+                + " or returns too many entries. Table: " + table.getName() + ", column/values: "
+                + columnValueMap.toString(), e);
         }
-            
+
         return primaryKey;
     }
 

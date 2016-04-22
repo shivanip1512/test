@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +38,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
     private static final String selectPaoIdBySubstationId;
     private static final String selectLastTenForPaoAndActon;
     private static final YukonRowMapper<CapControlComment> rowMapper;
-    private static final ParameterizedRowMapper<List<Integer>> paoIdRowMapper;
+    private static final RowMapper<List<Integer>> paoIdRowMapper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     
@@ -239,8 +239,8 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return result;
     }
     
-    private static final ParameterizedRowMapper<String> createSimpleCommentRowMapper() {
-        ParameterizedRowMapper<String> rowMapper = new ParameterizedRowMapper<String>() {
+    private static final RowMapper<String> createSimpleCommentRowMapper() {
+        RowMapper<String> rowMapper = new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {
                 
@@ -275,8 +275,8 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         return rowMapper;
     }
     
-    private static final ParameterizedRowMapper<List<Integer>> createPaoIdRowMapper() {
-        final ParameterizedRowMapper<List<Integer>> rowMapper = new ParameterizedRowMapper<List<Integer>>() {
+    private static final RowMapper<List<Integer>> createPaoIdRowMapper() {
+        final RowMapper<List<Integer>> rowMapper = new RowMapper<List<Integer>>() {
             @Override
             public List<Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final int count = rs.getMetaData().getColumnCount();

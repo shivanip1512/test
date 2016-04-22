@@ -73,6 +73,6 @@ public final class LMDaoImpl implements LMDao {
     @Override
     public int getStartingGearForScenarioAndProgram(int programId, int scenarioId) {
         String sql = "select startgear from lmcontrolscenarioprogram where programid = ? and scenarioid = ?";
-        return jdbcTemplate.queryForInt(sql, programId, scenarioId);
+        return jdbcTemplate.queryForObject(sql, new Object[] { programId, scenarioId }, Integer.class);
     }
 }

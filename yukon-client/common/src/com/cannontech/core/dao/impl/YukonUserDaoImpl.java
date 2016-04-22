@@ -29,7 +29,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.PagingResultSetExtractor;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YNBoolean;
@@ -422,7 +422,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sql.append("FROM YukonUser");
         sql.append("WHERE UserGroupid").eq(userGroupId);
         
-        List<Integer> userIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> userIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         return userIds;
     }

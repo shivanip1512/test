@@ -40,12 +40,12 @@ public class CannonDispatcherServlet extends DispatcherServlet {
     }
     
     @Override
-    protected HandlerExecutionChain getHandler(HttpServletRequest request,
-            boolean cache) throws Exception {
-        
-        HandlerExecutionChain handler = super.getHandler(request, cache);
-        if (handler == null) return null;
-        
+    protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+
+        HandlerExecutionChain handler = super.getHandler(request);
+        if (handler == null)
+            return null;
+
         handler.addInterceptor(securityInterceptor);
         return handler;
     }

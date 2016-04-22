@@ -25,12 +25,12 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
     
     @Override
     public int getImportDataCount() {
-    	
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) ");
         sql.append("FROM " + ImportData.TABLE_NAME);
-        
-        int count = jdbcTemplate.queryForInt(sql.toString());
+
+        int count = jdbcTemplate.queryForObject(sql.toString(), Integer.class);
         return count;
     }
     

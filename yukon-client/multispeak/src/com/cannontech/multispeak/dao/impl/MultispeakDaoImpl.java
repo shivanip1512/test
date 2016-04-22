@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -36,16 +36,16 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     private static final String MSPVENDOR_TABLENAME = "MSPVendor";
     private static final String MSPINTERFACE_TABLENAME = "MSPInterface";
 
-    private final ParameterizedRowMapper<MultispeakVendor> mspVendorRowMapper =
-        new ParameterizedRowMapper<MultispeakVendor>() {
+    private final RowMapper<MultispeakVendor> mspVendorRowMapper =
+        new RowMapper<MultispeakVendor>() {
             @Override
             public MultispeakVendor mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return createMspVendor(rs);
             }
         };
 
-    private final ParameterizedRowMapper<MultispeakInterface> mspInterfaceRowMapper =
-        new ParameterizedRowMapper<MultispeakInterface>() {
+    private final RowMapper<MultispeakInterface> mspInterfaceRowMapper =
+        new RowMapper<MultispeakInterface>() {
             @Override
             public MultispeakInterface mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return createMspInterface(rs);

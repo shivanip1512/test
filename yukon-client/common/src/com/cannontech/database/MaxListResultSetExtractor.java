@@ -7,15 +7,15 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 public class MaxListResultSetExtractor<T> implements ResultSetExtractor {
     
-    private final ParameterizedRowMapper<T> rowMapper;
+    private final RowMapper<T> rowMapper;
     private final ArrayList<T> result = new ArrayList<T>();
     private final int maxRows;
 
-    public MaxListResultSetExtractor(ParameterizedRowMapper<T> rowMapper, int maxRows) {
+    public MaxListResultSetExtractor(RowMapper<T> rowMapper, int maxRows) {
         this.rowMapper = rowMapper;
         this.maxRows = maxRows;
     }

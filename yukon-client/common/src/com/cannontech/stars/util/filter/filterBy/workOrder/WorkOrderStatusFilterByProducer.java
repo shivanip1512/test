@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.SqlGenerator;
@@ -19,7 +19,7 @@ import com.cannontech.stars.util.filter.filterBy.FilterBy;
 import com.cannontech.stars.util.filter.filterBy.FilterByChunkingSqlGenerator;
 
 public class WorkOrderStatusFilterByProducer extends AbstractWorkOrderFilterByProducer {
-    private static final ParameterizedRowMapper<Integer> rowMapper = new IntegerRowMapper();
+    private static final RowMapper<Integer> rowMapper = new IntegerRowMapper();
     
     @Override
     public Collection<? extends FilterBy> createFilterBys(FilterWrapper filter) {

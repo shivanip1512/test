@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -21,7 +21,7 @@ import com.cannontech.database.SqlUtils;
  * To efficiently resolve the parents, it is more efficient to work on an entire collection
  * that can be processed in a non-linear manner.
  */
-public class PartialDeviceGroupRowMapper implements ParameterizedRowMapper<PartialDeviceGroup> {
+public class PartialDeviceGroupRowMapper implements RowMapper<PartialDeviceGroup> {
     
     public PartialDeviceGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
         PartialDeviceGroup partialDeviceGroup = new PartialDeviceGroup();

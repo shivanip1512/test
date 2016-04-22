@@ -22,7 +22,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.RowAndFieldMapper;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -94,37 +94,37 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 
     @Override
     public int getCountByExecutionId(int commandRequestExecutionId) {
-        return jdbcTemplate.queryForInt(selectCountById, commandRequestExecutionId);
+        return jdbcTemplate.queryForObject(selectCountById, Integer.class, commandRequestExecutionId);
     }
 
     @Override
     public int getSucessCountByExecutionId(int commandRequestExecutionId) {
-        return jdbcTemplate.queryForInt(selectSuccessCountById, commandRequestExecutionId);
+        return jdbcTemplate.queryForObject(selectSuccessCountById, Integer.class, commandRequestExecutionId);
     }
 
     @Override
     public int getFailCountByExecutionId(int commandRequestExecutionId) {
-        return jdbcTemplate.queryForInt(selectFailCountById, commandRequestExecutionId);
+        return jdbcTemplate.queryForObject(selectFailCountById, Integer.class, commandRequestExecutionId);
     }
 
     @Override
     public List<PaoIdentifier> getDeviceIdsByExecutionId(int commandRequestExecutionId) {
         SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
-        return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        return jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
     }
 
     @Override
     public List<PaoIdentifier> getSucessDeviceIdsByExecutionId(int commandRequestExecutionId) {
         SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
         sql.append("  AND CRER.ErrorCode = 0");
-        return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        return jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
     }
 
     @Override
     public List<PaoIdentifier> getFailDeviceIdsByExecutionId(int commandRequestExecutionId) {
         SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
         sql.append("  AND CRER.ErrorCode > 0");
-        return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        return jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         sql.append("  JOIN YukonPAObject YPO on CRER.DeviceId = YPO.PAObjectID");
         sql.append("WHERE CommandRequestExecId").eq(commandRequestExecutionId);
         sql.append("AND CRER.Type").eq_k(type);
-        return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        return jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
     }
 
     private SqlStatementBuilder getBaseDeviceSqlForExecutionId(int commandRequestExecutionId) {

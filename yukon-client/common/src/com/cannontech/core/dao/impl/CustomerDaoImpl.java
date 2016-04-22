@@ -10,8 +10,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.ContactNotificationType;
@@ -215,14 +215,14 @@ public final class CustomerDaoImpl implements CustomerDao {
     @Override
     public int getAddressIdForCICustomer(int customerId) {
         String sql = "select MainAddressId from CiCustomerBase where CustomerId = ?";
-        int addressId = yukonJdbcTemplate.queryForInt(sql, customerId);
+        int addressId = yukonJdbcTemplate.queryForObject(sql, Integer.class, customerId);
         return addressId;
     }
     
     @Override
     public boolean isCICustomer(int customerId) {
         String sql = "select CustomerTypeId from Customer where CustomerId = ?";
-        Integer type = yukonJdbcTemplate.queryForInt(sql, customerId);
+        Integer type = yukonJdbcTemplate.queryForObject(sql, Integer.class, customerId);
         if(type == CustomerTypes.CUSTOMER_CI) {
             return true;
         }
@@ -310,7 +310,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         sql.append(" where cu.PrimaryContactId = c.ContactId");
         sql.append(" AND c.LoginId = ?");
 
-        int customerId = yukonJdbcTemplate.queryForInt(sql.toString(), userId);
+        int customerId = yukonJdbcTemplate.queryForObject(sql.toString(), Integer.class, userId);
         LiteCustomer customer = this.getLiteCustomer(customerId);
 
         return customer;
@@ -342,7 +342,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*)");
         sql.append("from CiCustomerBase");
-        int result = yukonJdbcTemplate.queryForInt(sql.getSql());
+        int result = yukonJdbcTemplate.queryForObject(sql.getSql(), Integer.class);
         return result;
     }
     
@@ -404,7 +404,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         }
     }
     
-    private class CustomerInformationRowMapper implements ParameterizedRowMapper<CustomerInformation> {
+    private class CustomerInformationRowMapper implements RowMapper<CustomerInformation> {
         @Override
         public CustomerInformation mapRow(ResultSet rs, int rowNum) throws SQLException {
             

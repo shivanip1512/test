@@ -12,8 +12,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +46,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
-    private static final ParameterizedRowMapper<ValidationMonitor> rowMapper;
+    private static final RowMapper<ValidationMonitor> rowMapper;
     private SimpleTableAccessTemplate<ValidationMonitor> template;
     
     static {
@@ -139,8 +139,8 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
         return yukonJdbcTemplate.update(sql) > 0;
     }
     
-    private static final ParameterizedRowMapper<ValidationMonitor> createRowMapper() {
-        final ParameterizedRowMapper<ValidationMonitor> rowMapper = new ParameterizedRowMapper<ValidationMonitor>() {
+    private static final RowMapper<ValidationMonitor> createRowMapper() {
+        final RowMapper<ValidationMonitor> rowMapper = new RowMapper<ValidationMonitor>() {
             public ValidationMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
                 ValidationMonitor validationMonitor = new ValidationMonitor();
                 

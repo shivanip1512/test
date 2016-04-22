@@ -17,7 +17,7 @@ public class ClientMessageContextHolderInterceptor implements ClientInterceptor 
 
     @Override
     public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
-        return false;
+        return true;
     }
 
     @Override
@@ -26,6 +26,11 @@ public class ClientMessageContextHolderInterceptor implements ClientInterceptor 
         MessageContextHolder.setMessageContext(messageContext);
 
         return false;
+    }
+
+    @Override
+    public void afterCompletion(MessageContext messageContext, Exception arg1) throws WebServiceClientException {
+        
     }
 
 }

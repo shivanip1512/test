@@ -20,7 +20,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -420,7 +420,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getStrategyIdSql.append("SELECT StrategyId");
         getStrategyIdSql.append("FROM CcSeasonStrategyAssignment");
         getStrategyIdSql.append("WHERE PAObjectId").eq(substationBusId);
-        List<Integer> strategyIds = yukonJdbcTemplate.query(getStrategyIdSql, RowMapper.INTEGER);
+        List<Integer> strategyIds = yukonJdbcTemplate.query(getStrategyIdSql, TypeRowMapper.INTEGER);
         
         if(strategyIds.size() == 1) {
             //subbus strategy found

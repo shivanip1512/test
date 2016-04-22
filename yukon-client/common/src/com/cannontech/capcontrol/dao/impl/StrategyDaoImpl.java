@@ -14,8 +14,8 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
@@ -24,8 +24,8 @@ import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -52,7 +52,7 @@ import com.google.common.collect.Lists;
 
 public class StrategyDaoImpl implements StrategyDao {
     
-    private final ParameterizedRowMapper<CapControlStrategy> rowMapper = new StrategyRowMapper();
+    private final RowMapper<CapControlStrategy> rowMapper = new StrategyRowMapper();
     private SimpleTableAccessTemplate<CapControlStrategy> strategyTemplate;
     private static final YukonRowMapper<LiteCapControlStrategy> liteMapper = new YukonRowMapper<LiteCapControlStrategy>() {
         @Override
@@ -250,7 +250,7 @@ public class StrategyDaoImpl implements StrategyDao {
      * 
      * Note: this mapper MUST be used within a transaction
      */
-    private class StrategyRowMapper implements ParameterizedRowMapper<CapControlStrategy> {
+    private class StrategyRowMapper implements RowMapper<CapControlStrategy> {
         
         @Override
         public CapControlStrategy mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -320,7 +320,7 @@ public class StrategyDaoImpl implements StrategyDao {
         sql.append("  WHERE strategyid").eq(strategyId);
         sql.append(")");
         
-        return jdbcTemplate.query(sql, RowMapper.STRING);
+        return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
     
     @Override

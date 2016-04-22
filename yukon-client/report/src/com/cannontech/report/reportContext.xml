@@ -3,8 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <bean id="yukonReportModelDefinitionFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
         <property name="serviceLocatorInterface" value="com.cannontech.simplereport.YukonReportDefinitionFactory"/>
@@ -23,7 +23,7 @@
     <bean id="lcr3102DataModel" class="com.cannontech.analysis.tablemodel.LCR3102DataModel" scope="prototype"/>
     
     <bean id="lcr3102DataDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="lcr3102DataModel"/></property>
+        <property name="reportModelName"><idref bean="lcr3102DataModel"/></property>
         <property name="reportLayoutData">
            <bean class="com.cannontech.simplereport.reportlayoutdata.LCR3102DataReportLayoutData"/>
         </property>
@@ -33,7 +33,7 @@
     <bean id="strategyAssignmentModel" class="com.cannontech.analysis.tablemodel.StrategyAssignmentModel" scope="prototype"/>
 
     <bean id="startegyAssingmentDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="strategyAssignmentModel"/></property>
+        <property name="reportModelName"><idref bean="strategyAssignmentModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -90,7 +90,7 @@
         scope="prototype"/>
     
     <bean id="capControlDisabledDevicesDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="capControlDisabledDevicesModel"/></property>
+        <property name="reportModelName"><idref bean="capControlDisabledDevicesModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -150,7 +150,7 @@
    <bean id="timeControlledCapBanksModel" class="com.cannontech.analysis.tablemodel.TimeControlledCapBanksModel" scope="prototype"/>
     
     <bean id="timeControlledCapBanksDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="timeControlledCapBanksModel"/></property>
+        <property name="reportModelName"><idref bean="timeControlledCapBanksModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -210,7 +210,7 @@
     <bean id="varImbalanceOnExecutionModel" class="com.cannontech.analysis.tablemodel.VarImbalanceOnExecutionModel" scope="prototype"/>
     
     <bean id="varImbalanceOnExecutionDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="varImbalanceOnExecutionModel"/></property>
+        <property name="reportModelName"><idref bean="varImbalanceOnExecutionModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -272,7 +272,7 @@
     </bean>
     
     <bean id="disconnectCollarDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="disconnectCollarModel"/></property>
+        <property name="reportModelName"><idref bean="disconnectCollarModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -310,7 +310,7 @@
     </bean>
     
     <bean id="rawPointHistoryDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="rawPointHistoryModel"/></property>
+        <property name="reportModelName"><idref bean="rawPointHistoryModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -349,7 +349,7 @@
     <bean id="deviceGroupModel" class="com.cannontech.analysis.tablemodel.DeviceGroupModel" scope="prototype"/>
 
     <bean id="deviceGroupDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="deviceGroupModel"/></property>
+        <property name="reportModelName"><idref bean="deviceGroupModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -374,7 +374,7 @@
     <bean id="deviceCollectionModel" class="com.cannontech.analysis.tablemodel.DeviceCollectionModel" scope="prototype"/>
 
     <bean id="deviceCollectionDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="deviceCollectionModel"/></property>
+        <property name="reportModelName"><idref bean="deviceCollectionModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -409,7 +409,7 @@
     </bean>
     
     <bean id="phaseDetectDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="phaseDetectModel"/></property>
+        <property name="reportModelName"><idref bean="phaseDetectModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -438,7 +438,7 @@
     </bean>
     
     <bean id="bulkImportResultsDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="bulkImportResultsModel"/></property>
+        <property name="reportModelName"><idref bean="bulkImportResultsModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -469,7 +469,7 @@
     </bean>
     
     <bean id="kVarWattRPHDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="kVarWattRPHModel"/></property>
+        <property name="reportModelName"><idref bean="kVarWattRPHModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -516,7 +516,7 @@
     </bean>
     
     <bean id="kVarPhaseWattRPHDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="kVarPhaseWattRPHModel"/></property>
+        <property name="reportModelName"><idref bean="kVarPhaseWattRPHModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -561,7 +561,7 @@
     </bean>
     
     <bean id="powerFactorRPHDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="powerFactorRPHModel"/></property>
+        <property name="reportModelName"><idref bean="powerFactorRPHModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -607,7 +607,7 @@
     </bean>
     
     <bean id="normalizedUsageDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="normalizedUsageModel"/></property>
+        <property name="reportModelName"><idref bean="normalizedUsageModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -660,7 +660,7 @@
     </bean>
     
     <bean id="dailyUsageDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="dailyUsageModel"/></property>
+        <property name="reportModelName"><idref bean="dailyUsageModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -723,7 +723,7 @@
 
     <bean id="groupMeterReadSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="groupActionResultDefinition">
         <property name="reportModelName">
-            <idref local="groupMeterReadSuccessResultModel" />
+            <idref bean="groupMeterReadSuccessResultModel" />
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.GroupActionSuccessResultsReportLayoutData"/>
@@ -735,7 +735,7 @@
 
     <bean id="groupCommanderSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="groupActionResultDefinition">
         <property name="reportModelName">
-            <idref local="groupCommanderSuccessResultModel" />
+            <idref bean="groupCommanderSuccessResultModel" />
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.GroupActionSuccessResultsReportLayoutData"/>
@@ -748,7 +748,7 @@
 
     <bean id="groupCommanderFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="groupActionResultDefinition">
         <property name="reportModelName">
-            <idref local="groupCommanderFailureResultModel"/>
+            <idref bean="groupCommanderFailureResultModel"/>
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.GroupActionFailureResultsReportLayoutData"/>
@@ -757,7 +757,7 @@
 
     <bean id="groupMeterReadFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="groupActionResultDefinition">
         <property name="reportModelName">
-            <idref local="groupMeterReadFailureResultModel"/>
+            <idref bean="groupMeterReadFailureResultModel"/>
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.GroupActionFailureResultsReportLayoutData"/>
@@ -769,7 +769,7 @@
     </bean>
     
     <bean id="commandRequestExecutionResultsDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="commandRequestExecutionResultsModel"/></property>
+        <property name="reportModelName"><idref bean="commandRequestExecutionResultsModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -804,7 +804,7 @@
     </bean>
     
     <bean id="commandRequestExecutionFailureStatsDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="commandRequestExecutionFailureStatsModel"/></property>
+        <property name="reportModelName"><idref bean="commandRequestExecutionFailureStatsModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -829,7 +829,7 @@
 
     <bean id="surveyResultsSummaryModel" class="com.cannontech.analysis.tablemodel.SurveyResultsSummaryModel" scope="prototype"/>
     <bean id="surveyResultsSummaryDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="surveyResultsSummaryModel"/></property>
+        <property name="reportModelName"><idref bean="surveyResultsSummaryModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -902,7 +902,7 @@
 
     <bean id="surveyResultsDetailModel" class="com.cannontech.analysis.tablemodel.SurveyResultsDetailModel" scope="prototype"/>
     <bean id="surveyResultsDetailDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="surveyResultsDetailModel"/></property>
+        <property name="reportModelName"><idref bean="surveyResultsDetailModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
@@ -1024,7 +1024,7 @@
     
     <bean id="disconnectAllResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="disconnectResultDefinition">
         <property name="reportModelName">
-            <idref local="disconnectAllResultModel" />
+            <idref bean="disconnectAllResultModel" />
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.DisconnectAllResultsReportLayoutData"/>
@@ -1033,7 +1033,7 @@
     
     <bean id="disconnectSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="disconnectResultDefinition">
         <property name="reportModelName">
-            <idref local="disconnectSuccessResultModel" />
+            <idref bean="disconnectSuccessResultModel" />
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.DisconnectSuccessResultsReportLayoutData"/>
@@ -1042,7 +1042,7 @@
     
     <bean id="disconnectFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="disconnectResultDefinition">
         <property name="reportModelName">
-            <idref local="disconnectFailureResultModel"/>
+            <idref bean="disconnectFailureResultModel"/>
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.DisconnectFailureResultsReportLayoutData"/>
@@ -1086,7 +1086,7 @@
     
     <bean id="demandResetAllResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="demandResetResultDefinition">
         <property name="reportModelName">
-            <idref local="demandResetAllResultModel" />
+            <idref bean="demandResetAllResultModel" />
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.DemandResetAllResultsReportLayoutData"/>
@@ -1095,7 +1095,7 @@
     
     <bean id="demandResetSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="demandResetResultDefinition">
         <property name="reportModelName">
-            <idref local="demandResetSuccessResultModel" />
+            <idref bean="demandResetSuccessResultModel" />
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.DemandResetSuccessResultsReportLayoutData"/>
@@ -1104,7 +1104,7 @@
     
     <bean id="demandResetFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition" parent="demandResetResultDefinition">
         <property name="reportModelName">
-            <idref local="demandResetFailureResultModel"/>
+            <idref bean="demandResetFailureResultModel"/>
         </property>
         <property name="reportLayoutData">
             <bean class="com.cannontech.simplereport.reportlayoutdata.DemandResetFailureResultsReportLayoutData"/>

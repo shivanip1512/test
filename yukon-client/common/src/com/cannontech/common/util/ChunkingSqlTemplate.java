@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -30,7 +30,7 @@ public class ChunkingSqlTemplate {
      */
     @Deprecated
     public <I, R> List<R> query(final SqlGenerator<I> sqlGenerator, final Iterable<I> input, 
-                 final ParameterizedRowMapper<R> rowMapper, final Object... args) {
+                 final RowMapper<R> rowMapper, final Object... args) {
         
         final List<I> tempInputList = Lists.newArrayList(input);
         final List<R> resultList = new ArrayList<R>(tempInputList.size());
@@ -54,7 +54,7 @@ public class ChunkingSqlTemplate {
         return resultList;
     }
     
-    public <I, R> List<R> query(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input, final ParameterizedRowMapper<R> rowMapper) {
+    public <I, R> List<R> query(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input, final RowMapper<R> rowMapper) {
     	List<R> resultList = Lists.newArrayList();
 
     	CollectionRowCallbackHandler<R> rch = new CollectionRowCallbackHandler<R>(rowMapper, resultList);

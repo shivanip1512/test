@@ -30,7 +30,7 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -378,7 +378,7 @@ public final class ContactDaoImpl implements ContactDao {
         sql.append("FROM CustomerAdditionalContact");
         sql.append("WHERE Customerid").eq(customerId);
         
-        List<Integer> contactIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> contactIds = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return contactIds;
     }
 

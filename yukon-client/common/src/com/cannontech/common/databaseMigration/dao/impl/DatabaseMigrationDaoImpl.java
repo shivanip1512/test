@@ -40,8 +40,8 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         }
         
         try {
-            int maxPrimaryKeyValue = 
-            	jdbcTemplate.queryForInt(selectMaxSQL.getSql(), whereClauseValues.toArray());
+            Integer maxPrimaryKeyValue =
+                jdbcTemplate.queryForObject(selectMaxSQL.getSql(), whereClauseValues.toArray(), Integer.class);
             return ++maxPrimaryKeyValue;
         } catch (IncorrectResultSizeDataAccessException e) {
             // A value does not exist for this column.  Using the default of 0.

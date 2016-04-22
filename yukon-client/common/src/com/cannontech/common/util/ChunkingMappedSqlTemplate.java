@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapper;
@@ -61,7 +61,7 @@ public class ChunkingMappedSqlTemplate {
                                            final Iterable<C> input,
                                            final YukonRowMapper<Map.Entry<I, R>> rowMapper,
                                            Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
-        ParameterizedRowMapper<Map.Entry<I, R>> parameterizedRowMapper =
+        RowMapper<Map.Entry<I, R>> parameterizedRowMapper =
             new YukonRowMapperAdapter<Map.Entry<I,R>>(rowMapper);
         return mappedQuery(sqlGenerator, input, parameterizedRowMapper,
                            inputTypeToSqlGeneratorTypeMapper);
@@ -96,7 +96,7 @@ public class ChunkingMappedSqlTemplate {
      */
     public <I, R, C> Map<C, R> mappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
                                            final Iterable<C> input,
-                                           final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
+                                           final RowMapper<Map.Entry<I, R>> rowMapper,
                                            Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
 
         final Map<C, R> resultMap = Maps.newLinkedHashMap();
@@ -114,7 +114,7 @@ public class ChunkingMappedSqlTemplate {
             SqlFragmentGenerator<I> sqlGenerator, Iterable<C> input,
             YukonRowMapper<Map.Entry<I, R>> rowMapper,
             Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
-        ParameterizedRowMapper<Map.Entry<I, R>> parameterizedRowMapper =
+        RowMapper<Map.Entry<I, R>> parameterizedRowMapper =
             new YukonRowMapperAdapter<Map.Entry<I,R>>(rowMapper);
         return multimappedQuery(sqlGenerator, input, parameterizedRowMapper,
                                 inputTypeToSqlGeneratorTypeMapper);
@@ -122,7 +122,7 @@ public class ChunkingMappedSqlTemplate {
 
     public <I, R, C> ListMultimap<C, R> multimappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
                                                          final Iterable<C> input,
-                                                         final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
+                                                         final RowMapper<Map.Entry<I, R>> rowMapper,
                                                          Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
         
         final ArrayListMultimap<C, R> resultMap = ArrayListMultimap.create();
@@ -159,7 +159,7 @@ public class ChunkingMappedSqlTemplate {
      */
     public <I, R, C> SetMultimap<R, C> reverseMultimappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
                                                                final Iterable<C> input,
-                                                               final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
+                                                               final RowMapper<Map.Entry<I, R>> rowMapper,
                                                                Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
 
         final SetMultimap<R, C> resultMap = HashMultimap.create();
@@ -196,13 +196,13 @@ public class ChunkingMappedSqlTemplate {
      */
     public <I, R, C> SetMultimap<R, C> reverseMultimappedQuery(SqlFragmentGenerator<I> sqlGenerator, Iterable<C> input,
             YukonRowMapper<Map.Entry<I, R>> rowMapper, Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
-        ParameterizedRowMapper<Map.Entry<I, R>> parameterizedRowMapper =
+        RowMapper<Map.Entry<I, R>> parameterizedRowMapper =
                 new YukonRowMapperAdapter<Map.Entry<I,R>>(rowMapper);
         return reverseMultimappedQuery(sqlGenerator, input, parameterizedRowMapper, inputTypeToSqlGeneratorTypeMapper);
     }
 
     private <R, I, C> void processQuery(final SqlFragmentGenerator<I> sqlGenerator,
-            final Iterable<C> input, final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
+            final Iterable<C> input, final RowMapper<Map.Entry<I, R>> rowMapper,
             Function<C, I> inputTypeToSqlGeneratorTypeMapper, PairProcessor<C, R> processor) {
         final Multimap<I, R> intermediaryResult = ArrayListMultimap.create();
 

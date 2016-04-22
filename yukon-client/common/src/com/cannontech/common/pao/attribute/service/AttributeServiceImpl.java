@@ -53,7 +53,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -370,7 +370,7 @@ public class AttributeServiceImpl implements AttributeService {
                         return sql;
                     }
                 };
-                chunkyTemplate.queryInto(generator, PaoUtils.asPaoIdList(typeToDevices.get(type)), RowMapper.INTEGER,
+                chunkyTemplate.queryInto(generator, PaoUtils.asPaoIdList(typeToDevices.get(type)), TypeRowMapper.INTEGER,
                     pointIds);
             } catch (IllegalUseOfAttribute e) {
                 // Ignore pao types that don't support this attribute
@@ -447,7 +447,7 @@ public class AttributeServiceImpl implements AttributeService {
                 return sql;
             }
         };
-        chunkyTemplate.queryInto(generator, pointIds, RowMapper.INTEGER, groupIds);
+        chunkyTemplate.queryInto(generator, pointIds, TypeRowMapper.INTEGER, groupIds);
 
         List<LiteStateGroup> groups = new ArrayList<LiteStateGroup>();
         for (Integer groupId : groupIds) {

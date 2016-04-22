@@ -6,7 +6,7 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
@@ -14,7 +14,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-public class LitePaoRowMapper implements ParameterizedRowMapper<LiteYukonPAObject> {
+public class LitePaoRowMapper implements RowMapper<LiteYukonPAObject> {
     
     public LiteYukonPAObject mapRow(ResultSet rs, int rowNum) throws SQLException {
         int paoID = rs.getInt("PAObjectID");

@@ -12,8 +12,8 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
@@ -43,8 +43,8 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<OptOutSurvey> dbTemplate;
 
-    private final static ParameterizedRowMapper<Map.Entry<Integer, Integer>> optOutProgramRowMapper =
-        new ParameterizedRowMapper<Map.Entry<Integer, Integer>>(){
+    private final static RowMapper<Map.Entry<Integer, Integer>> optOutProgramRowMapper =
+        new RowMapper<Map.Entry<Integer, Integer>>(){
         @Override
         public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
@@ -150,7 +150,7 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         };
 
         Function<Integer, Integer> typeMapper = Functions.identity();
-        ParameterizedRowMapper<Map.Entry<Integer, Integer>> rowMapper = new ParameterizedRowMapper<Entry<Integer,Integer>>() {
+        RowMapper<Map.Entry<Integer, Integer>> rowMapper = new RowMapper<Entry<Integer,Integer>>() {
             @Override
             public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum)
                     throws SQLException {

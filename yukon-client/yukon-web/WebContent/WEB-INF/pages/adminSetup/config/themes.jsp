@@ -116,6 +116,11 @@
                     <c:set var="method" value="POST"/>
                 </c:if>
                 
+                <c:if test="${mode == 'VIEW'}">
+                    <cti:url var="action" value="/admin/config/themes"/>
+                    <c:set var="method" value="POST"/>
+                </c:if>
+                
                 <form:form id="theme-form" action="${action}" method="${method}">
                     <cti:csrfToken/>
                     <tags:hidden path="themeId"/>

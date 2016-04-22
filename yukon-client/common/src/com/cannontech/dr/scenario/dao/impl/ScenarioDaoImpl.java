@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -36,8 +36,8 @@ public class ScenarioDaoImpl implements ScenarioDao {
         singleScenarioByIdQueryGroupBy.append("GROUP BY PAO.PAObjectId, PAO.PAOName");
     }
     
-    private final static ParameterizedRowMapper<Scenario> scenarioRowMapper =
-        new ParameterizedRowMapper<Scenario>() {
+    private final static RowMapper<Scenario> scenarioRowMapper =
+        new RowMapper<Scenario>() {
             @Override
             public Scenario mapRow(ResultSet rs, int rowNum) throws SQLException {
                 
@@ -50,8 +50,8 @@ public class ScenarioDaoImpl implements ScenarioDao {
             }
         };
 
-    private final static ParameterizedRowMapper<ScenarioProgram> scenarioProgramRowMapper =
-        new ParameterizedRowMapper<ScenarioProgram>() {
+    private final static RowMapper<ScenarioProgram> scenarioProgramRowMapper =
+        new RowMapper<ScenarioProgram>() {
         @Override
         public ScenarioProgram mapRow(ResultSet rs, int rowNum)
                 throws SQLException {

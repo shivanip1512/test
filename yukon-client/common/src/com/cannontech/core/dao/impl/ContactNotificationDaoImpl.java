@@ -9,7 +9,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.ContactNotificationType;
@@ -19,7 +19,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteContact;
@@ -74,7 +74,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
         sql.append(" FROM ContactNotification");
         sql.append(" WHERE ContactId").eq(contactId);
 
-        List<Integer> previousNotificationIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> previousNotificationIds = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 
         // Save new/updated notifications
         List<Integer> currentNotificationIds = new ArrayList<Integer>();
@@ -214,7 +214,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
     public List<Integer> getNotificationIdsForContact(int contactId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ContactNotifId FROM ContactNotification WHERE ContactId").eq(contactId);
-        List<Integer> notifs = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> notifs = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return notifs;
     }
     
@@ -281,7 +281,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
      * Helper class to map a result set into LiteContactNotifications
      */
     private class LiteContactNotificationRowMapper implements
-            ParameterizedRowMapper<LiteContactNotification> {
+            RowMapper<LiteContactNotification> {
 
         @Override
         public LiteContactNotification mapRow(ResultSet rs, int rowNum)

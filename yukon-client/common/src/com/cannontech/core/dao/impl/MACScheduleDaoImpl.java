@@ -16,7 +16,7 @@ public final class MACScheduleDaoImpl implements MACScheduleDao{
     @Override
     public boolean usesHolidaySchedule(int holidayScheduleId) {
         String sql = "select count(*) from macschedule where holidayscheduleid = ?";
-        int count = jdbcTemplate.queryForInt(sql, holidayScheduleId);
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, holidayScheduleId);
         return count > 0; 
     }
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.dynamicBilling.Channel;
@@ -170,57 +170,55 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 		return allFormats;
 	}
 
-	/**
-	 * Helper class to process a result set row into a DynamicFormat. 
-	 */
-	private class DynamicFormatRowMapper implements
-			ParameterizedRowMapper<DynamicFormat> {
+    /**
+     * Helper class to process a result set row into a DynamicFormat.
+     */
+    private class DynamicFormatRowMapper implements RowMapper<DynamicFormat> {
 
-		@Override
+        @Override
         public DynamicFormat mapRow(ResultSet rs, int row) throws SQLException {
-			DynamicFormat format = new DynamicFormat();
-			format.setFormatId(rs.getInt("FormatID"));
-			format.setDelim(SqlUtils.convertDbValueToString(rs.getString("Delimiter")));
-			format.setHeader(SqlUtils.convertDbValueToString(rs.getString("Header")));
-			format.setFooter(SqlUtils.convertDbValueToString(rs.getString("Footer")));
-			format.setName(rs.getString("FormatType"));
-			format.setIsSystem(rs.getBoolean("SystemFormat"));
-			return format;
-		}
+            DynamicFormat format = new DynamicFormat();
+            format.setFormatId(rs.getInt("FormatID"));
+            format.setDelim(SqlUtils.convertDbValueToString(rs.getString("Delimiter")));
+            format.setHeader(SqlUtils.convertDbValueToString(rs.getString("Header")));
+            format.setFooter(SqlUtils.convertDbValueToString(rs.getString("Footer")));
+            format.setName(rs.getString("FormatType"));
+            format.setIsSystem(rs.getBoolean("SystemFormat"));
+            return format;
+        }
 
-	}
+    }
 
-	/**
-	 * Helper class to process a result set row into a DynamicBillingField. 
-	 */
-	private class BillingFieldRowMapper implements
-			ParameterizedRowMapper<DynamicBillingField> {
+    /**
+     * Helper class to process a result set row into a DynamicBillingField.
+     */
+    private class BillingFieldRowMapper implements RowMapper<DynamicBillingField> {
 
-		@Override
-        public DynamicBillingField mapRow(ResultSet rs, int row)
-				throws SQLException {
-			DynamicBillingField field = new DynamicBillingField();
-			field.setId(rs.getInt("id"));
-			field.setFormatId(rs.getInt("FormatID"));
-			field.setName(rs.getString("FieldName"));
-			field.setOrder(rs.getInt("FieldOrder"));
-			if (field.getName().equals("Plain Text")) {  //take string value literally.  We accept the fact that "" is now " ".
-			    field.setFormat(rs.getString("FieldFormat"));
-			} else {
-			    field.setFormat(SqlUtils.convertDbValueToString(rs.getString("FieldFormat")));
-			}
-			field.setMaxLength(rs.getInt("MaxLength"));
-			field.setPadChar(rs.getString("PadChar"));
-			field.setPadSide(rs.getString("PadSide"));
-			field.setReadingType(ReadingType.valueOf(rs.getString("ReadingType")));
-			field.setRoundingMode(RoundingMode.valueOf(rs.getString("RoundingMode")));
-			field.setChannel(Channel.valueOf(rs.getString("Channel")));
-			return field;
-		}
+        @Override
+        public DynamicBillingField mapRow(ResultSet rs, int row) throws SQLException {
+            DynamicBillingField field = new DynamicBillingField();
+            field.setId(rs.getInt("id"));
+            field.setFormatId(rs.getInt("FormatID"));
+            field.setName(rs.getString("FieldName"));
+            field.setOrder(rs.getInt("FieldOrder"));
+            if (field.getName().equals("Plain Text")) { // take string value literally. We accept the fact
+                                                        // that "" is now " ".
+                field.setFormat(rs.getString("FieldFormat"));
+            } else {
+                field.setFormat(SqlUtils.convertDbValueToString(rs.getString("FieldFormat")));
+            }
+            field.setMaxLength(rs.getInt("MaxLength"));
+            field.setPadChar(rs.getString("PadChar"));
+            field.setPadSide(rs.getString("PadSide"));
+            field.setReadingType(ReadingType.valueOf(rs.getString("ReadingType")));
+            field.setRoundingMode(RoundingMode.valueOf(rs.getString("RoundingMode")));
+            field.setChannel(Channel.valueOf(rs.getString("Channel")));
+            return field;
+        }
 
-	}
+    }
 
-	/**
+    /**
      * Check to see if the format name provided is unique.
      */
     @Override
@@ -231,7 +229,8 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
                 + " WHERE BFF.formatType = ? "
                 + " AND BFF.formatId != ? ";
 
-        int resultCount = jdbcTemplate.queryForInt(sql, format.getName(), format.getFormatId());
+        int resultCount =
+            jdbcTemplate.queryForObject(sql, new Object[] { format.getName(), format.getFormatId() }, Integer.class);
         
         if (resultCount == 0) {
             return true;

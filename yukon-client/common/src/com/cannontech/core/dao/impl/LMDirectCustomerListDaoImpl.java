@@ -15,7 +15,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.LMDirectCustomerListDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.web.LMDirectCustomerList;
@@ -33,7 +33,7 @@ public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
         sql.append("FROM LMDirectCustomerList");
         sql.append("WHERE CustomerID").eq(customerId);
         
-        Set<Integer> result = Sets.newHashSet(jdbcTemplate.query(sql, RowMapper.INTEGER));
+        Set<Integer> result = Sets.newHashSet(jdbcTemplate.query(sql, TypeRowMapper.INTEGER));
         return result;
     }
     

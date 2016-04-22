@@ -23,7 +23,7 @@ public class CBCTestUtil {
         areaID.append("YukonPaObject");
         areaID.append("WHERE type like 'CCAREA'");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.queryForInt(areaID.toString());
+        return yukonTemplate.queryForObject(areaID.toString(), Integer.class);
     }
 
     public static Integer getStrategyID() {
@@ -31,7 +31,7 @@ public class CBCTestUtil {
         stratID.append("SELECT MAX(strategyID)FROM ");
         stratID.append("CapControlStrategy");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.queryForInt(stratID.toString());
+        return yukonTemplate.queryForObject(stratID.toString(), Integer.class);
     }
 
     public static Integer getValidSubId() {
@@ -40,7 +40,7 @@ public class CBCTestUtil {
         subID.append("YukonPaObject");
         subID.append("WHERE type like 'CCSUBBUS'");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.queryForInt(subID.toString());
+        return yukonTemplate.queryForObject(subID.toString(), Integer.class);
     }
 
     public static Connection getConnection() {
@@ -85,6 +85,6 @@ public class CBCTestUtil {
         stratID.append("SELECT MAX(deviceID)FROM ");
         stratID.append("CapBank");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.queryForInt(stratID.toString());
+        return yukonTemplate.queryForObject(stratID.toString(), Integer.class);
     }
 }

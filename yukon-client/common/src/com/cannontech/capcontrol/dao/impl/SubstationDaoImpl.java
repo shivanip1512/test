@@ -16,7 +16,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -193,7 +193,7 @@ public class SubstationDaoImpl implements SubstationDao {
         sql.append(      " FROM CCSubAreaAssignment)");
         sql.append("ORDER BY PAObjectID");
         
-        List<Integer> listmap = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> listmap = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         return listmap;
     }
@@ -256,7 +256,7 @@ public class SubstationDaoImpl implements SubstationDao {
         sql.append(      " WHERE AreaID").eq(areaId);
         sql.append(      ")");
         
-        List<Integer> subs = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> subs = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         return subs;
     }

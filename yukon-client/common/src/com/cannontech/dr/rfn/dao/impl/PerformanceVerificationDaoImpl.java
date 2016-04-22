@@ -18,7 +18,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -94,7 +94,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("FROM RfnBroadcastEvent");
         sql.append("WHERE RfnBroadcastEventId").eq(messageId);
         
-        return jdbcTemplate.queryForObject(sql, RowMapper.INSTANT);
+        return jdbcTemplate.queryForObject(sql, TypeRowMapper.INSTANT);
     }
 
     @Override
@@ -305,7 +305,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("FROM RfnBroadcastEventDeviceStatus");
         sql.append("WHERE  DeviceId").eq(deviceId);
         sql.append("AND RfnBroadcastEventId").in(eventIds);
-        return jdbcTemplate.query(sql, RowMapper.LONG);
+        return jdbcTemplate.query(sql, TypeRowMapper.LONG);
     }
     
     @Override
@@ -315,7 +315,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("SELECT RfnBroadcastEventId");
         sql.append("FROM RfnBroadcastEvent");
         sql.append("WHERE RfnBroadcastEventId").in(eventIds);
-        return jdbcTemplate.query(sql, RowMapper.LONG);
+        return jdbcTemplate.query(sql, TypeRowMapper.LONG);
     }
     
     @Override

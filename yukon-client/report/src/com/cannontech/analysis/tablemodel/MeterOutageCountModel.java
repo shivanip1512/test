@@ -11,7 +11,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
@@ -264,7 +264,7 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
                 }
             };
 
-            List<OutageCountRow> rows = template.query(gen, deviceIds, new ParameterizedRowMapper<OutageCountRow>() {
+            List<OutageCountRow> rows = template.query(gen, deviceIds, new RowMapper<OutageCountRow>() {
                 @Override
                 public OutageCountRow mapRow(ResultSet rs, int rowNum) throws SQLException {
                     

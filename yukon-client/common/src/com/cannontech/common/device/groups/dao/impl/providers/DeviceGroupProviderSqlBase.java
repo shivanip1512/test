@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
@@ -50,7 +50,7 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
         SqlFragmentSource childDeviceGroupSqlWhereClause = getChildDeviceGroupSqlWhereClause(group, "d.deviceId");
         SqlStatementBuilder sql = new SqlStatementBuilder(countSql);
         sql.appendFragment(childDeviceGroupSqlWhereClause);
-        int result = jdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+        int result = jdbcTemplate.queryForInt(sql);
         return result;
     }
     
@@ -59,7 +59,7 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
         SqlFragmentSource deviceGroupSqlWhereClause = getDeviceGroupSqlWhereClause(group, "d.deviceId");
         SqlStatementBuilder sql = new SqlStatementBuilder(countSql);
         sql.appendFragment(deviceGroupSqlWhereClause);
-        int result = jdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+        int result = jdbcTemplate.queryForInt(sql);
         return result;
     }
     
@@ -90,7 +90,7 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
         SqlStatementBuilder sql = new SqlStatementBuilder(deviceSql);
         sql.appendFragment(getChildDeviceGroupSqlWhereClause(group, "ypo.paobjectId"));
         
-        final ParameterizedRowMapper<SimpleDevice> mapper = new YukonDeviceRowMapper();
+        final RowMapper<SimpleDevice> mapper = new YukonDeviceRowMapper();
         
         ResultSetExtractor rse = new ResultSetExtractor() {
 

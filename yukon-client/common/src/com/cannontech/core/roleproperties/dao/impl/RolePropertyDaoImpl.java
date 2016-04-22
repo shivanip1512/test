@@ -35,7 +35,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -311,7 +311,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         sql.append("FROM YukonGroupRole YGR");
         sql.append("WHERE YGR.GroupId").eq(roleGroupId);
         
-        List<Integer> roleIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> roleIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         return roleIds.contains(role.getRoleId());
     }
@@ -428,7 +428,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         totalDbHits.incrementAndGet();
 
         SqlFragmentSource sql = propertyTuple.getRolePropertyValueLookupQuery();
-        List<String> values = jdbcTemplate.query(sql, RowMapper.STRING);
+        List<String> values = jdbcTemplate.query(sql, TypeRowMapper.STRING);
         
         return processReturnedValues(propertyTuple, values);
     }
@@ -508,7 +508,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         sql.append("  JOIN YukonUser YU ON YU.UserGroupId = UGYGM.UserGroupId");
         sql.append("WHERE YU.UserId").eq(userId);
         
-        List<Integer> roleIdList = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> roleIdList = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         EnumSet<YukonRole> result = EnumSet.noneOf(YukonRole.class);
         for (Integer roleId : roleIdList) {

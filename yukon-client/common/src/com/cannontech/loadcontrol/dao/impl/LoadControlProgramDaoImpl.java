@@ -12,7 +12,7 @@ import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -38,7 +38,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
                   " INNER JOIN LMPROGRAM lmp ON (ypo.PAObjectID = lmp.DEVICEID)" +
                   " WHERE ypo.PAOName = ?";
 
-            return jdbcTemplate.queryForInt(sql, programName);
+            return jdbcTemplate.queryForObject(sql, Integer.class, programName);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No program named " + programName);
         }
@@ -52,7 +52,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
                         " FROM YukonPaObject ypo" +
                         " WHERE ypo.PAOName = ? AND ypo.Type = 'LMSCENARIO'";
 
-            return jdbcTemplate.queryForInt(sql, scenarioName);
+            return jdbcTemplate.queryForObject(sql, Integer.class, scenarioName);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No scenario named " + scenarioName);
         }
@@ -87,7 +87,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
                     " FROM LMControlScenarioProgram lmcsp" +
                     " WHERE lmcsp.programid = ? AND lmcsp.scenarioid = ?";
 
-        return jdbcTemplate.queryForInt(sql, programId, scenarioId);
+        return jdbcTemplate.queryForObject(sql, new Object[] { programId, scenarioId }, Integer.class);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         " INNER JOIN YukonPaObject ypo ON (lmpdg.DeviceID = ypo.PAObjectID)" +
         " WHERE lmcsp.scenarioid = ?";
 
-        ParameterizedRowMapper<ProgramStartingGear> programStartingGearMapper = new ParameterizedRowMapper<ProgramStartingGear>() {
+        RowMapper<ProgramStartingGear> programStartingGearMapper = new RowMapper<ProgramStartingGear>() {
 
             @Override
             public ProgramStartingGear mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -299,7 +299,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 	        " WHERE lmpdg.GEARNAME = ?" +
 	        " AND lmp.DEVICEID = ?";
 
-    		return jdbcTemplate.queryForInt(sql, gearName, programId);
+            return jdbcTemplate.queryForObject(sql, new Object[] { gearName, programId }, Integer.class);
 
     	} catch (IncorrectResultSizeDataAccessException e) {
     		throw new NotFoundException("Gear not found (programId = " + programId + ", gearName = " + gearName + ")");

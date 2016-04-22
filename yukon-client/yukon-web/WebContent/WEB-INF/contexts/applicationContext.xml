@@ -5,10 +5,10 @@
        xmlns:jms="http://www.springframework.org/schema/jms"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
-       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.1.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
        
     <context:annotation-config/>
     
@@ -162,149 +162,149 @@
         <property name="backs">
             <map>
                 <entry key="ALERT">
-                    <ref local="alertUpdateBackingService"/>
+                    <ref bean="alertUpdateBackingService"/>
                 </entry>
                 <entry key="CBCAREA">
-                    <ref local="cbcAreaUpdateBackingService"/>
+                    <ref bean="cbcAreaUpdateBackingService"/>
                 </entry>
                 <entry key="CBCSPECIALAREA">
-                    <ref local="cbcSpecialAreaUpdateBackingService"/>
+                    <ref bean="cbcSpecialAreaUpdateBackingService"/>
                 </entry>
                 <entry key="SUBSTATION">
-                    <ref local="subStationUpdateBackingService"/>
+                    <ref bean="subStationUpdateBackingService"/>
                 </entry>
                 <entry key="SUBBUS">
-                    <ref local="subBusUpdateBackingService"/>
+                    <ref bean="subBusUpdateBackingService"/>
                 </entry>
                 <entry key="FEEDER">
-                    <ref local="feederUpdateBackingService"/>
+                    <ref bean="feederUpdateBackingService"/>
                 </entry>
                 <entry key="CAPBANK">
-                    <ref local="capBankUpdateBackingService"/>
+                    <ref bean="capBankUpdateBackingService"/>
                 </entry>
                 <entry key="BACKGROUNDPROCESS">
-                    <ref local="backgroundProcessBackingService"/>
+                    <ref bean="backgroundProcessBackingService"/>
                 </entry>
                 <entry key="ROUTELOCATE">
-                    <ref local="routeLocateBackingService"/>
+                    <ref bean="routeLocateBackingService"/>
                 </entry>
                 <entry key="COMMANDER">
-                    <ref local="commanderUpdateBackingService"/>
+                    <ref bean="commanderUpdateBackingService"/>
                 </entry>
                 <entry key="COMMAND_REQUEST_EXECUTION">
-                    <ref local="commandRequestExecutionBackingService"/>
+                    <ref bean="commandRequestExecutionBackingService"/>
                 </entry>
                 <entry key="SCHEDULED_GROUP_REQUEST_EXECUTION">
-                    <ref local="scheduledGroupRequestExecutionBackingService"/>
+                    <ref bean="scheduledGroupRequestExecutionBackingService"/>
                 </entry>
                 <entry key="OUTAGE_PROCESSING">
-                    <ref local="outageMonitorBackingService"/>
+                    <ref bean="outageMonitorBackingService"/>
                 </entry>
                 <entry key="TAMPER_FLAG_PROCESSING">
-                    <ref local="tamperFlagMonitorBackingService"/>
+                    <ref bean="tamperFlagMonitorBackingService"/>
                 </entry>
                 <entry key="STATUS_POINT_MONITORING">
-                    <ref local="statusPointMonitorBackingService"/>
+                    <ref bean="statusPointMonitorBackingService"/>
                 </entry>
                 <entry key="DEVICE_DATA_MONITOR">
-                    <ref local="deviceDataMonitorBackingService"/>
+                    <ref bean="deviceDataMonitorBackingService"/>
                 </entry>
                 <entry key="VALIDATION_PROCESSING">
-                    <ref local="validationMonitorBackingService"/>
+                    <ref bean="validationMonitorBackingService"/>
                 </entry>
                 <entry key="JOB">
-                    <ref local="jobBackingService"/>
+                    <ref bean="jobBackingService"/>
                 </entry>
                 <entry key="GROUP_METER_READ">
-                    <ref local="groupMeterReadUpdateBackingService"/>
+                    <ref bean="groupMeterReadUpdateBackingService"/>
                 </entry>
                 <entry key="ESTIMATED_LOAD">
-                    <ref local="drEstimatedLoadBackingService"/>
+                    <ref bean="drEstimatedLoadBackingService"/>
                 </entry>
                 <entry key="DR_CONTROLAREA">
-                    <ref local="drControlAreaBackingService"/>
+                    <ref bean="drControlAreaBackingService"/>
                 </entry>
                 <entry key="DR_CA_TRIGGER">
-                    <ref local="drTriggerBackingService"/>
+                    <ref bean="drTriggerBackingService"/>
                 </entry>
                 <entry key="DR_PROGRAM">
-                    <ref local="drProgramBackingService"/>
+                    <ref bean="drProgramBackingService"/>
                 </entry>
                 <entry key="DR_LOADGROUP">
-                    <ref local="drLoadGroupBackingService"/>
+                    <ref bean="drLoadGroupBackingService"/>
                 </entry>
                 <entry key="DR_SCENARIO">
-                    <ref local="drScenarioBackingService"/>
+                    <ref bean="drScenarioBackingService"/>
                 </entry>
                 <entry key="PHASE_DETECT">
-                    <ref local="phaseDetectBackingService"/>
+                    <ref bean="phaseDetectBackingService"/>
                 </entry>
                 <entry key="DATABASE_MIGRATION">
-                    <ref local="databaseMigrationBackingService"/>
+                    <ref bean="databaseMigrationBackingService"/>
                 </entry>
                 <entry key="VOLTAGE_REGULATOR">
-                    <ref local="voltageRegulatorBackingService"/>
+                    <ref bean="voltageRegulatorBackingService"/>
                 </entry>
                 <entry key="MSP_DEVICE_GROUP_SYNC">
-                    <ref local="multispeakDeviceGroupSyncBackingService"/>
+                    <ref bean="multispeakDeviceGroupSyncBackingService"/>
                 </entry> 
                 <entry key="ACCOUNT_IMPORT">
-                    <ref local="accountImportBackingService"/>
+                    <ref bean="accountImportBackingService"/>
                 </entry>
                 <entry key="CAPCONTROL">
-                    <ref local="capControlBackingService"/>
+                    <ref bean="capControlBackingService"/>
                 </entry>
                 <entry key="DEVICE_RECONFIG">
-                    <ref local="deviceReconfigMonitorBackingService"/>
+                    <ref bean="deviceReconfigMonitorBackingService"/>
                 </entry>
                 <entry key="NEW_CONFIG">
-                    <ref local="newConfigBackingService"/>
+                    <ref bean="newConfigBackingService"/>
                 </entry>
                 <entry key="ARCHIVE_DATA_ANALYSIS_LP_READ">
-                    <ref local="adaProfileReadBackingService"/>
+                    <ref bean="adaProfileReadBackingService"/>
                 </entry>
                 <entry key="ARCHIVE_DATA_ANALYSIS">
-                    <ref local="archiveDataBackingService"/>
+                    <ref bean="archiveDataBackingService"/>
                 </entry>
                 <entry key="DEVELOPMENT">
-                    <ref local="devBackingService"/>
+                    <ref bean="devBackingService"/>
                 </entry>
                 <entry key="FDR_TRANSLATION_IMPORT">
-                    <ref local="fdrTranslationImportBackingService"/>
+                    <ref bean="fdrTranslationImportBackingService"/>
                 </entry>
                 <entry key="POINT_IMPORT">
-                    <ref local="pointImportBackingService"/>
+                    <ref bean="pointImportBackingService"/>
                 </entry>
                 <entry key="INVENTORY_TASK">
-                    <ref local="inventoryTaskBackingService"/>
+                    <ref bean="inventoryTaskBackingService"/>
                 </entry>
                 <entry key="LM_REPORTED_ADDRESS">
-                    <ref local="lmReportedDataBackingService"/>
+                    <ref bean="lmReportedDataBackingService"/>
                 </entry>
                 <entry key="WEATHER_STATION">
-                    <ref local="weatherDataBackingService"/>
+                    <ref bean="weatherDataBackingService"/>
                 </entry>
                 <entry key="ASSET_AVAILABILITY_READ">
-                    <ref local="assetAvailabilityReadBackingService"/>
+                    <ref bean="assetAvailabilityReadBackingService"/>
                 </entry>
                 <entry key="TDC">
-                    <ref local="tdcBackingService"/>
+                    <ref bean="tdcBackingService"/>
                 </entry>
                 <entry key="DISCONNECT">
-                    <ref local="disconnectBackingService"/>
+                    <ref bean="disconnectBackingService"/>
                 </entry>
                 <entry key="ECOBEE_READ">
-                    <ref local="ecobeeReadBackingService"/>
+                    <ref bean="ecobeeReadBackingService"/>
                 </entry>
                 <entry key="DEMAND_RESET">
-                    <ref local="demandResetBackingService"/>
+                    <ref bean="demandResetBackingService"/>
                 </entry>
             </map>
         </property>
         <property name="bulkBacks">
             <map>
                 <entry key="POINT">
-                    <ref local="pointUpdateBackingService"/>
+                    <ref bean="pointUpdateBackingService"/>
                 </entry>
             </map>
         </property>
@@ -320,7 +320,7 @@
     <bean id="pointDataUpdateRegistrationService"
         class="com.cannontech.web.updater.point.PointDataRegistrationServiceImpl" abstract="false">
         <property name="updaterService">
-            <ref local="dataUpdaterService"/>
+            <ref bean="dataUpdaterService"/>
         </property>
     </bean>
 

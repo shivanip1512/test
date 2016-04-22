@@ -16,7 +16,7 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -155,7 +155,7 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
         sql.append("SELECT DISTINCT SeasonalProgramId");
         sql.append("FROM ProgramToSeasonalProgram");
 
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
     
     @Override

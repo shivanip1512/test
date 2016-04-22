@@ -26,9 +26,9 @@ public class OptOutAdditionalDaoImpl implements OptOutAdditionalDao {
 		sql.append("	AND CustomerAccountId = ?");
 		
 		try {
-			int additionalOptOuts = jdbcTemplate.queryForInt(sql.toString(), 
-					inventoryId, 
-					customerAccountId);
+			int additionalOptOuts = jdbcTemplate.queryForObject(sql.toString(), 
+					new Object [] {inventoryId, 
+					customerAccountId}, Integer.class);
 
 			return additionalOptOuts;
 		} catch (EmptyResultDataAccessException e) {
@@ -49,9 +49,9 @@ public class OptOutAdditionalDaoImpl implements OptOutAdditionalDao {
 		sql.append("WHERE InventoryId = ?");
 		sql.append("	AND CustomerAccountId = ?");
 		
-		int rowCount = jdbcTemplate.queryForInt(sql.toString(), 
-				inventoryId, 
-				customerAccountId);
+		int rowCount = jdbcTemplate.queryForObject(sql.toString(), 
+				new Object [] {inventoryId, 
+				customerAccountId}, Integer.class);
 
 		if(rowCount > 0) {
 			// There are already additional opt outs for this inventory/account

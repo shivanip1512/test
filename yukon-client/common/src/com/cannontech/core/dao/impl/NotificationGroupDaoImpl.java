@@ -10,7 +10,7 @@ import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotificationGroupDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
@@ -57,7 +57,7 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao {
         sql.append(") results");
         sql.append("WHERE Attribs LIKE 'Y%'");   //the first char in Attribs represents sending emails.
 
-        return jdbcTemplate.query(sql, RowMapper.STRING);
+        return jdbcTemplate.query(sql, TypeRowMapper.STRING);
     }
     
     @Override

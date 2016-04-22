@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -69,7 +69,7 @@ public class MiniTdcWidget extends WidgetControllerBase {
         int displayNumber = WidgetParameterHelper.getRequiredIntParameter(request, "displayNumber");
         
         String sql = "select pointid from display2waydata where displaynum = ? order by ordering";
-        List<Integer> pointIdList = jdbcTemplate.query(sql, new ParameterizedRowMapper<Integer>() {
+        List<Integer> pointIdList = jdbcTemplate.query(sql, new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return rs.getInt(1);

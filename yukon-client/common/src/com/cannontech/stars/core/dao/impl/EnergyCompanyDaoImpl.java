@@ -23,7 +23,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -176,7 +176,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("FROM EnergyCompany");
         sql.append("WHERE ParentEnergyCompanyId").eq(energyCompanyId);
 
-        return jdbcTemplate.query(sql, RowMapper.INTEGER);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
     @Deprecated
@@ -186,7 +186,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("SELECT ParentEnergyCompanyId");
         sql.append("FROM EnergyCompany");
         sql.append("WHERE EnergyCompanyID").eq(energyCompanyId);
-        return jdbcTemplate.queryForObject(sql, RowMapper.INTEGER_NULLABLE);
+        return jdbcTemplate.queryForObject(sql, TypeRowMapper.INTEGER_NULLABLE);
     }
 
     @Deprecated
@@ -257,7 +257,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("FROM ECToRouteMapping");
         sql.append("WHERE EnergyCompanyId").eq(ecId);
 
-        List<Integer> routeIds = ImmutableList.copyOf(jdbcTemplate.query(sql, RowMapper.INTEGER));
+        List<Integer> routeIds = ImmutableList.copyOf(jdbcTemplate.query(sql, TypeRowMapper.INTEGER));
         cachedRouteIds.put(ecId, routeIds);
         return routeIds;
     }
@@ -293,7 +293,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CustomerID FROM EnergyCompanyCustomerList");
         sql.append("WHERE EnergyCompanyID").eq(energyCompany.getId());
-        return jdbcTemplate.query(sql, RowMapper.INTEGER);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
     @Override
@@ -301,7 +301,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EnergyCompanyID FROM EnergyCompanyCustomerList");
         sql.append("WHERE CustomerID").eq(ciCustomerId);
-        List<Integer> ecIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> ecIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
 
         List<EnergyCompany> customerEnergyCompanies = new ArrayList<>();
         for (Integer ecId : ecIds) {
@@ -344,7 +344,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("SELECT OperatorLoginID");
         sql.append("FROM EnergyCompanyOperatorLoginList");
         sql.append("WHERE EnergyCompanyID").eq(energyCompany.getId());
-        List<Integer> list = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> list = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return list;
     }
 

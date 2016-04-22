@@ -17,7 +17,7 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DemandResponseDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -44,7 +44,7 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
         sql.appendArgument(programId);
         sql.append("    )");
 
-        List<PaoIdentifier> parentList = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        List<PaoIdentifier> parentList = jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
 
         return parentList;
     }
@@ -60,7 +60,7 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
         sql.append("    WHERE lmGroupDeviceId").eq(group.getPaoIdentifier().getPaoId());
         sql.append("    )");
         
-        List<PaoIdentifier> programList = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        List<PaoIdentifier> programList = jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
         
         return programList;
     }

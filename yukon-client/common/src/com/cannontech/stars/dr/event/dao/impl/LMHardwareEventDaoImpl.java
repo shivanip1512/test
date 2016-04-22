@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +34,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     private static final String insertEcToCustomerEventSql;
     private static final String insertHardwareEventSql;    
     private static final String updateLmHwEventSql;
-    private static final ParameterizedRowMapper<LiteLMHardwareEvent> rowMapper;
+    private static final RowMapper<LiteLMHardwareEvent> rowMapper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ECMappingDao ecMappingDao;
@@ -136,8 +136,8 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
         return lmHwEvent;
     }
 
-    private static ParameterizedRowMapper<LiteLMHardwareEvent> createRowMapper() {
-        final ParameterizedRowMapper<LiteLMHardwareEvent> mapper = new ParameterizedRowMapper<LiteLMHardwareEvent>() {
+    private static RowMapper<LiteLMHardwareEvent> createRowMapper() {
+        final RowMapper<LiteLMHardwareEvent> mapper = new RowMapper<LiteLMHardwareEvent>() {
             @Override
             public LiteLMHardwareEvent mapRow(ResultSet rs, int rowNum)
                     throws SQLException {

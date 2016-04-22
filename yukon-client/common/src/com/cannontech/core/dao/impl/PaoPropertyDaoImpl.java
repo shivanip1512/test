@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
@@ -17,14 +17,14 @@ import com.cannontech.database.YukonJdbcTemplate;
 public class PaoPropertyDaoImpl implements PaoPropertyDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    private static final ParameterizedRowMapper<PaoProperty> rowMapper;
+    private static final RowMapper<PaoProperty> rowMapper;
    
     static { 
         rowMapper = PaoPropertyDaoImpl.createRowMapper();
     }
     
-    private static final ParameterizedRowMapper<PaoProperty> createRowMapper() {
-        ParameterizedRowMapper<PaoProperty> rowMapper = new ParameterizedRowMapper<PaoProperty>() {
+    private static final RowMapper<PaoProperty> createRowMapper() {
+        RowMapper<PaoProperty> rowMapper = new RowMapper<PaoProperty>() {
             @Override
             public PaoProperty mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoProperty property = new PaoProperty();

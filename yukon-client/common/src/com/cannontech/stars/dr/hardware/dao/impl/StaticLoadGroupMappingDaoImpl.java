@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -49,7 +49,7 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
         sql.append("SELECT DISTINCT LoadGroupId");
         sql.append("FROM StaticLoadGroupMapping");
         
-        List<Integer> ids = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> ids = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         return ids;
     }
@@ -76,7 +76,7 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
         sql.append("SELECT loadGroupId FROM StaticLoadGroupMapping");
         sql.append("WHERE applianceCategoryId").eq(applianceCategoryId);
         
-        return jdbcTemplate.query(sql, RowMapper.INTEGER);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
     
     public static class StarsStaticLoadGroupRowMapper implements YukonRowMapper<StarsStaticLoadGroupMapping> {

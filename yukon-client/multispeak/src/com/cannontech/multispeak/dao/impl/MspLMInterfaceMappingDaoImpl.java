@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
 	@Autowired private NextValueHelper nextValueHelper;
     @Autowired private PaoDao paoDao;
 
-    private final ParameterizedRowMapper<MspLmMapping> mspLMInterfaceMappingRowMapper = new ParameterizedRowMapper<MspLmMapping>() {
+    private final RowMapper<MspLmMapping> mspLMInterfaceMappingRowMapper = new RowMapper<MspLmMapping>() {
         @Override
         public MspLmMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createMspLMInterfaceMapping(rs);
@@ -97,7 +97,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
                          " WHERE StrategyName = ? " + 
                          " AND SubstationName = ? ";
 			
-            return jdbcTemplate.queryForInt(sql, new Object[] { strategyName, substationName});            
+            return jdbcTemplate.queryForObject(sql, new Object[] { strategyName, substationName }, Integer.class);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}

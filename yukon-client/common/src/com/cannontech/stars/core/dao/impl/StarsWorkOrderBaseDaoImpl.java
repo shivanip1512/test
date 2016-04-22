@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -25,7 +25,7 @@ import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 
 public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
     private static final String selectSql;
-    private static final ParameterizedRowMapper<LiteWorkOrderBase> rowMapper = createRowMapper();
+    private static final RowMapper<LiteWorkOrderBase> rowMapper = createRowMapper();
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EventWorkOrderDao eventWorkOrderDao;
@@ -92,8 +92,8 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
         return list;
     }
 
-    private static ParameterizedRowMapper<LiteWorkOrderBase> createRowMapper() {
-        return new ParameterizedRowMapper<LiteWorkOrderBase>() {
+    private static RowMapper<LiteWorkOrderBase> createRowMapper() {
+        return new RowMapper<LiteWorkOrderBase>() {
             @Override
             public LiteWorkOrderBase mapRow(ResultSet rs, int rowNum) throws SQLException {
                 LiteWorkOrderBase workOrder = new LiteWorkOrderBase();

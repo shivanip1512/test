@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -26,7 +26,7 @@ public class RolodexGroupProvider extends CompleteBinningDeviceGroupProviderBase
         sql.append("from YukonPaObject ypo");
         sql.append("where ypo.paobjectid").neq(Device.SYSTEM_DEVICE_ID);
         sql.append("order by SUBSTRING(ypo.PAOName, 1, 1)");
-        List<Character> leadCharacters = getJdbcTemplate().query(sql.getSql(), new ParameterizedRowMapper<Character>() {
+        List<Character> leadCharacters = getJdbcTemplate().query(sql.getSql(), new RowMapper<Character>() {
             public Character mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return rs.getString(1).toUpperCase().charAt(0);
             }

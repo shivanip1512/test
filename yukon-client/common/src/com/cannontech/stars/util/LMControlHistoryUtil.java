@@ -18,7 +18,7 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.pao.LMControlHistory;
@@ -517,7 +517,7 @@ public class LMControlHistoryUtil {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT GroupID FROM LMGroupSASimple");
                 sql.append("WHERE OperationalAddress").eq(liteCfg.getSASimple().getOperationalAddress());
-                groupIDs = jdbcTemplate.query(sql, RowMapper.INTEGER);
+                groupIDs = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
             }
 		}
 		catch (Exception e) {

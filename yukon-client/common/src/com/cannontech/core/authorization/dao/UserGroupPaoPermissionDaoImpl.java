@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
@@ -21,7 +21,7 @@ import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.users.model.LiteUserGroup;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.base.Function;
@@ -111,7 +111,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         sql.append("WHERE UserGroupId").in(userGroupIds);
         sql.append("  AND Permission").eq(permission);
 
-        List<Integer> paoIdList = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> paoIdList = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return paoIdList;
     }
 
@@ -136,7 +136,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         sql.append("  AND PaoId").eq(paoId);
         sql.append("  AND Permission").eq(permission);
         
-        List<String> allowList = yukonJdbcTemplate.query(sql, RowMapper.STRING);
+        List<String> allowList = yukonJdbcTemplate.query(sql, TypeRowMapper.STRING);
         
         if (allowList.size() == 0) {
             return AuthorizationResponse.UNKNOWN;
@@ -234,7 +234,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
     /**
      * Mapping class to process a result set row into a GroupPaoPermission
      */
-    private class GroupPaoPermissionMapper implements ParameterizedRowMapper<GroupPaoPermission> {
+    private class GroupPaoPermissionMapper implements RowMapper<GroupPaoPermission> {
 
         @Override
         public GroupPaoPermission mapRow(ResultSet rs, int rowNum) throws SQLException {

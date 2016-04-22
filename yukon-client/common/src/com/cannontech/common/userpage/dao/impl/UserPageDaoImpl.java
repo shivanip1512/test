@@ -27,7 +27,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.AdvancedFieldMapper;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.SqlUtils;
@@ -96,7 +96,7 @@ public class UserPageDaoImpl implements UserPageDao {
         sql.append("select Favorite from UserPage");
         sql.append(buildUniquenessCriterion(userPageKey));
         try {
-            boolean isFavorite = jdbcTemplate.queryForObject(sql, RowMapper.BOOLEAN);
+            boolean isFavorite = jdbcTemplate.queryForObject(sql, TypeRowMapper.BOOLEAN);
             return isFavorite;
         } catch (EmptyResultDataAccessException erdae) {
             // No history at all...it's not a favorite.

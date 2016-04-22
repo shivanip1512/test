@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.DateRowMapper;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -117,7 +117,7 @@ public class JobStatusDaoImpl implements JobStatusDao {
             sql.append("WHERE js.jobid").eq(jobId);
             sql.append("AND js.JobState").eq_k(JobRunStatus.COMPLETED);
             
-            Instant result = jdbcTemplate.queryForObject(sql, RowMapper.INSTANT);
+            Instant result = jdbcTemplate.queryForObject(sql, TypeRowMapper.INSTANT);
             return result.toDate();
         } catch (EmptyResultDataAccessException e) {
             return null;

@@ -4,9 +4,9 @@
     xmlns:tx="http://www.springframework.org/schema/tx"
     xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:annotation-config/>
 
@@ -74,7 +74,7 @@
     <!-- Moving JobDefinitions -->
     <bean id="moveInJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <property name="taskName">
-            <idref local="moveInTask"/>
+            <idref bean="moveInTask"/>
         </property>
         <property name="title" value="Move In Job"/>
         <property name="inputs">
@@ -126,7 +126,7 @@
 
     <bean id="moveOutJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <property name="taskName">
-            <idref local="moveOutTask"/>
+            <idref bean="moveOutTask"/>
         </property>
         <property name="title" value="Move Out Job"/>
         <property name="inputs">
@@ -198,7 +198,7 @@
     <!-- Toggle Profiling Job Definition -->
     <bean id="toggleProfilingJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <property name="taskName">
-            <idref local="toggleProfilingTask"/>
+            <idref bean="toggleProfilingTask"/>
         </property>
         <property name="title" value="Toggle Profiling Job"/>
         <property name="inputs">
@@ -242,7 +242,7 @@
     <!-- Scheduled Group Request Execution Job Definition -->
     <bean id="scheduledGroupRequestExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <property name="taskName">
-            <idref local="scheduledGroupRequestExecutionTask"/>
+            <idref bean="scheduledGroupRequestExecutionTask"/>
         </property>
         <property name="title" value="Scheduled Group Request Execution Job"/>
         <property name="inputs">
@@ -315,7 +315,7 @@
     <bean id="scheduledRphDuplicateDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="rphDuplicateDeletion"/>
         <property name="taskName">
-            <idref local="scheduledRphDuplicateDeletionExecutionTask"/>
+            <idref bean="scheduledRphDuplicateDeletionExecutionTask"/>
         </property>
         <property name="title" value="Scheduled Rph Duplicate Deletion Execution Job"/>
         <property name="inputs">
@@ -331,7 +331,7 @@
     <bean id="scheduledRphDanglingEntriesDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="rphDanglingDeletion"/>
         <property name="taskName">
-            <idref local="scheduledRphDanglingEntriesDeletionExecutionTask"/>
+            <idref bean="scheduledRphDanglingEntriesDeletionExecutionTask"/>
         </property>
         <property name="title" value="Scheduled Rph Dangling Entries Deletion Execution Job"/>
         <property name="inputs">
@@ -347,7 +347,7 @@
     <bean id="scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="systemLogDanglingDeletion"/>
         <property name="taskName">
-            <idref local="scheduledSystemLogDanglingEntriesDeletionExecutionTask"/>
+            <idref bean="scheduledSystemLogDanglingEntriesDeletionExecutionTask"/>
         </property>
         <property name="title" value="Scheduled System Log Dangling Entries Deletion Execution Job"/>
         <property name="inputs">
@@ -363,7 +363,7 @@
     <bean id="repeatingEstimatedLoadTaskJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="estimatedLoadData"/>
         <property name="taskName">
-            <idref local="repeatingEstimatedLoadTask"/>
+            <idref bean="repeatingEstimatedLoadTask"/>
         </property>
         <property name="title" value="Scheduled Estimated Load Data Update Execution Job"/>
         <property name="inputs">
@@ -378,7 +378,7 @@
     <bean id="repeatingWeatherDataTaskJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="weatherData"/>
         <property name="taskName">
-            <idref local="repeatingWeatherDataTask"/>
+            <idref bean="repeatingWeatherDataTask"/>
         </property>
         <property name="title" value="Scheduled Weather Data Update Execution Job"/>
         <property name="inputs">
@@ -393,7 +393,7 @@
     <bean id="repeatingExportHistoryDeletionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="exportHistoryDeletion"/>
         <property name="taskName">
-            <idref local="repeatingExportHistoryDeletionTask"/>
+            <idref bean="repeatingExportHistoryDeletionTask"/>
         </property>
         <property name="inputs">
             <bean class="com.cannontech.web.input.InputRoot">
@@ -407,7 +407,7 @@
     <bean id="spSmartIndexMaintanenceJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="spSmartIndexMaintanence"/>
         <property name="taskName">
-            <idref local="scheduledSpSmartIndexMaintenanceExecutionTask"/>
+            <idref bean="scheduledSpSmartIndexMaintenanceExecutionTask"/>
         </property>
         <property name="inputs">
             <bean class="com.cannontech.web.input.InputRoot">
@@ -421,7 +421,7 @@
     <bean id="rfnPerformanceVerificationJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="rfnPerformanceVerification"/>
         <property name="taskName">
-            <idref local="rfnPerformanceVerificationTask"/>
+            <idref bean="rfnPerformanceVerificationTask"/>
         </property>
         <property name="title" value="Rfn Performance Verification Job"/>
         <property name="inputs">
@@ -436,7 +436,7 @@
     <bean id="rfnPerformanceVerificationEmailJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="rfnPerformanceVerificationEmail"/>
         <property name="taskName">
-            <idref local="rfnPerformanceVerificationEmailTask"/>
+            <idref bean="rfnPerformanceVerificationEmailTask"/>
         </property>
         <property name="title" value="Rfn Performance Verification Email Job"/>
         <property name="inputs">
@@ -466,7 +466,7 @@
     <bean id="ecobeeReconciliationReportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="ecobeeReconciliationReport"/>
         <property name="taskName">
-            <idref local="ecobeeReconciliationReportTask"/>
+            <idref bean="ecobeeReconciliationReportTask"/>
         </property>
         <property name="title" value="Ecobee Reconciliation Report Execution Job"/>
         <property name="inputs">
@@ -481,7 +481,7 @@
     <bean id="ecobeePointUpdateJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="ecobeePointUpdate"/>
         <property name="taskName">
-            <idref local="ecobeePointUpdateTask"/>
+            <idref bean="ecobeePointUpdateTask"/>
         </property>
         <property name="title" value="Ecobee Point Update Execution Job"/>
         <property name="inputs">

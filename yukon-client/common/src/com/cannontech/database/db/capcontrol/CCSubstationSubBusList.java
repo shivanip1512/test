@@ -117,7 +117,7 @@ public class CCSubstationSubBusList extends com.cannontech.database.db.DBPersist
         Integer substationId = -1;
         String sql = "SELECT DISTINCT substationId FROM " + TABLE_NAME + " WHERE substationBusId = ? ";
         try {
-            substationId = jdbcOps.queryForInt(sql, subBusId);
+            substationId = jdbcOps.queryForObject(sql, Integer.class, subBusId);
         }catch (EmptyResultDataAccessException e) {
             return -1;
         }

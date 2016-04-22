@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
@@ -20,10 +20,10 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
-    private static final ParameterizedRowMapper<FdrTranslation> mapper;
+    private static final RowMapper<FdrTranslation> mapper;
     
     static {
-        mapper = new ParameterizedRowMapper<FdrTranslation>() {
+        mapper = new RowMapper<FdrTranslation>() {
             
             public FdrTranslation mapRow(ResultSet rs, int rowNum) throws SQLException {
                 

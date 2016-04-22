@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,7 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao {
     private static final String selectByIdSql;
     private static final String selectByIdAndAttributeSql;
 
-    private static final ParameterizedRowMapper<PointPropertyValue> rowMapper;
+    private static final RowMapper<PointPropertyValue> rowMapper;
 
     static {
         insertSql = "INSERT INTO PointPropertyValue (pointid, PointPropertyCode,fltvalue) VALUES (?,?,?)";
@@ -42,7 +42,7 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao {
 
         selectByIdAndAttributeSql = selectAllSql + " WHERE pointid = ? AND PointPropertyCode = ?";
 
-        rowMapper = new ParameterizedRowMapper<PointPropertyValue>() {
+        rowMapper = new RowMapper<PointPropertyValue>() {
             @Override
             public PointPropertyValue mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PointPropertyValue attribute = new PointPropertyValue();

@@ -229,7 +229,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("select count(*)");
         sql.append("from DeviceGroupMember dgm");
         sql.append("where dgm.devicegroupid = ? and dgm.yukonpaoid = ?");
-        int count = jdbcTemplate.queryForInt(sql.toString(), group.getId(), paoId);
+        int count = jdbcTemplate.queryForObject(sql.toString(), new Object[] { group.getId(), paoId }, Integer.class);
         return count > 0;
     }
 

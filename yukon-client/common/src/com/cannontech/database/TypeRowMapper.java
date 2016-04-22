@@ -9,7 +9,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 
-public interface RowMapper {
+public interface TypeRowMapper {
     
     /* NUMBERS */
     

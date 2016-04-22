@@ -18,7 +18,7 @@ import com.cannontech.core.dao.InUseException;
 import com.cannontech.core.dao.impl.LiteYukonUserMapper;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -80,7 +80,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.append("FROM ECToSubstationMapping");
         sql.append("WHERE EnergyCompanyId").eq(energycompanyId);
 
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
     @Override
@@ -260,7 +260,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.append("FROM ECToAccountMapping");
         sql.append("WHERE EnergyCompanyId").eq(ecId);
         
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
     
     @Override
@@ -424,7 +424,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.append("WHERE EnergyCompanyId").eq(energycompanyId);
         sql.append("AND MappingCategory").eq_k(category);
 
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 
     @PostConstruct

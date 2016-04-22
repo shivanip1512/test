@@ -4,9 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
-public final class DateRowMapper implements ParameterizedRowMapper<Date> {
+public final class DateRowMapper implements RowMapper<Date> {
 
     public DateRowMapper() {
         

@@ -21,7 +21,7 @@ import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -171,7 +171,7 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         sql.append("AND UnreasonableDown").eq_k(set.contains(RphTag.UNREASONABLEDOWN) ? 1 : 0);
         sql.append("AND ChangeOut").eq_k(set.contains(RphTag.CHANGEOUT) ? 1 : 0);
 
-        List<Long> result = yukonJdbcTemplate.query(sql, RowMapper.LONG);
+        List<Long> result = yukonJdbcTemplate.query(sql, TypeRowMapper.LONG);
         return result;
     }
 }

@@ -10,12 +10,12 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.model.ControlArea;
@@ -25,7 +25,7 @@ import com.google.common.collect.Sets;
 public class ControlAreaDaoImpl implements ControlAreaDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    private static class ControlAreaRowMapper implements ParameterizedRowMapper<ControlArea>  {
+    private static class ControlAreaRowMapper implements RowMapper<ControlArea>  {
         private final Map<Integer, List<ControlAreaTrigger>> triggerMap;
         ControlAreaRowMapper(Map<Integer, List<ControlAreaTrigger>> triggerMap){
             this.triggerMap = triggerMap;
@@ -89,7 +89,7 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
         sql.append("        WHERE deviceId").eq(controlAreaId);
         sql.append("     )");
         
-        List<Integer> programIdList = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> programIdList = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return Sets.newHashSet(programIdList);
     }
 

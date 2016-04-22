@@ -14,10 +14,8 @@ public class DataModelUtils {
         String sqlStmt = "SELECT DisplayNum FROM Display WHERE ";
         sqlStmt += "Name like ?";
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        Object tempInt = yukonTemplate.queryForObject(sqlStmt,
-                                                      new String[] { dispName },
-                                                      Integer.class);
-        return (Integer) tempInt;
+        Integer tempInt = yukonTemplate.queryForObject(sqlStmt, new String[] { dispName }, Integer.class);
+        return tempInt;
     }
 
     public static List<Integer> getAllDisplaysForTemplate(Integer templateNum) {
@@ -53,7 +51,8 @@ public class DataModelUtils {
         sqlStmt += "DisplayNum = ?";
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         try {
-            templateNum = yukonTemplate.queryForInt(sqlStmt, (Integer.parseInt("" + currentDisplayNumber)));
+            templateNum =
+                yukonTemplate.queryForObject(sqlStmt, Integer.class, (Integer.parseInt("" + currentDisplayNumber)));
         } catch (IncorrectResultSizeDataAccessException e) {
             templateNum = -1;
         }

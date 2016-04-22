@@ -19,7 +19,7 @@ import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -74,7 +74,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql2.append("  JOIN LMGroupVersacom LMGV ON PAO.PAObjectId = LMGV.DeviceId");
         sql2.append("WHERE LMGV.DeviceId").in(serialGroupIds);
         
-        List<Integer> versacomDefaultRouteIds = jdbcTemplate.query(sql2, RowMapper.INTEGER);
+        List<Integer> versacomDefaultRouteIds = jdbcTemplate.query(sql2, TypeRowMapper.INTEGER);
         if (versacomDefaultRouteIds.size() > 0) {
             return versacomDefaultRouteIds.get(0);
         }
@@ -86,7 +86,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql3.append("  JOIN LMGroupExpresscom LMGE ON PAO.PAObjectId = LMGE.LMGroupId");
         sql3.append("WHERE LMGE.LmGroupId").in(serialGroupIds);
         
-        List<Integer> expresscomDefaultRouteIds = jdbcTemplate.query(sql3, RowMapper.INTEGER);
+        List<Integer> expresscomDefaultRouteIds = jdbcTemplate.query(sql3, TypeRowMapper.INTEGER);
         if (expresscomDefaultRouteIds.size() > 0) {
             return expresscomDefaultRouteIds.get(0);
         }
@@ -157,7 +157,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql.append("WHERE macro.MacroType").eq(MacroTypes.GROUP);
         sql.append("  AND exc.SerialNumber = '0'");
         sql.append("  AND macro.OwnerID").in(permittedPaoIds);
-        List<Integer> routeGroupIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> routeGroupIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         return routeGroupIds;
     }
@@ -230,7 +230,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql1.append("WHERE PAO.Category").eq_k(PaoCategory.DEVICE);
         sql1.append(  "AND PAO.PAOClass").eq_k(PaoClass.GROUP);
         sql1.append(  "AND PAO.PAOName").eq(nameOfDefaultRoute);
-        List<Integer> paoObjectIds = jdbcTemplate.query(sql1, RowMapper.INTEGER);
+        List<Integer> paoObjectIds = jdbcTemplate.query(sql1, TypeRowMapper.INTEGER);
         
         return paoObjectIds;
     }

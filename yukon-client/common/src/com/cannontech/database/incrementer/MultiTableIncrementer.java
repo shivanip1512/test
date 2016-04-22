@@ -124,8 +124,9 @@ public class MultiTableIncrementer {
                 public Object doInTransaction(TransactionStatus status) {
                     // get current max
                     String maxSql = "select max(" + identityColumn + ") from " + tableName;
-                    long tableMax = jdbc.queryForLong(maxSql);
-                    long currentMax = Math.max(tableMax, 1);   //use 1 if the current max value is negative.
+                    Long tableMax = jdbc.queryForObject(maxSql, Long.class);
+                    long tableMaxValue  =  tableMax != null ? tableMax.longValue() : 0;
+                    long currentMax = Math.max(tableMaxValue, 1);   //use 1 if the current max value is negative.
 
                     // make sure row exists
                     String checkSql = "select " + keyColumnName + " from " + sequenceTableName

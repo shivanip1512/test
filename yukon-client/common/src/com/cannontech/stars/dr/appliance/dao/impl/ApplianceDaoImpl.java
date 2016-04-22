@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 
 public class ApplianceDaoImpl implements ApplianceDao {
-    private final ParameterizedRowMapper<Appliance> rowMapper = createRowMapper();
+    private final RowMapper<Appliance> rowMapper = createRowMapper();
     private YukonJdbcTemplate yukonJdbcTemplate;
     private ApplianceCategoryDao applianceCategoryDao;
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
@@ -171,8 +171,8 @@ public class ApplianceDaoImpl implements ApplianceDao {
         }
     }
     
-    private ParameterizedRowMapper<Appliance> createRowMapper() {
-        final ParameterizedRowMapper<Appliance> mapper = new ParameterizedRowMapper<Appliance>() {
+    private RowMapper<Appliance> createRowMapper() {
+        final RowMapper<Appliance> mapper = new RowMapper<Appliance>() {
             @Override
             public Appliance mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final Appliance appliance = new Appliance();

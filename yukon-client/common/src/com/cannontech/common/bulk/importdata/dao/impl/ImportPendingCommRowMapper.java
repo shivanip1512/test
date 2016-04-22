@@ -3,11 +3,11 @@ package com.cannontech.common.bulk.importdata.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.database.db.importer.ImportPendingComm;
 
-public class ImportPendingCommRowMapper implements ParameterizedRowMapper<ImportPendingComm> {
+public class ImportPendingCommRowMapper implements RowMapper<ImportPendingComm> {
     
     public ImportPendingComm mapRow(ResultSet rs, int rowNum) throws SQLException {
         

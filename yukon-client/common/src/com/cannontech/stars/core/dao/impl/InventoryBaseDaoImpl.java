@@ -31,7 +31,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -516,7 +516,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         sql.append("WHERE NOT EXISTS");
         sql.append(  "(SELECT * FROM InventoryBase ib WHERE ib.DeviceId = ypo.PAObjectId)");
         
-        List<PaoIdentifier> paoList = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+        List<PaoIdentifier> paoList = jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
         
         return paoList;
     }
@@ -544,7 +544,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         sql.append("SELECT InventoryId");
         sql.append("FROM InventoryBase");
         sql.append("WHERE AccountId").eq(accountId);
-        List<Integer> inventoryIdList = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> inventoryIdList = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         return inventoryIdList;
     }

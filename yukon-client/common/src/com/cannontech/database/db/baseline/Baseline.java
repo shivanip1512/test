@@ -239,7 +239,7 @@ public void update()
 public final static boolean usesHolidaySchedule(int holSchID) throws java.sql.SQLException {
     JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
     String sql = "select count(*) from " + TABLE_NAME + " where holidayscheduleid = ?";
-    int count = jdbcOps.queryForInt(sql, holSchID);
+    int count = jdbcOps.queryForObject(sql, Integer.class, holSchID);
     return count > 0; 
 }
 }

@@ -14,7 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -35,7 +35,7 @@ import com.cannontech.stars.util.filter.filterBy.FilterByFactory;
 import com.cannontech.stars.util.filter.filterBy.FilterBySqlFragmentBuilder;
 
 public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
-    private final ParameterizedRowMapper<Integer> idRowMapper = new IntegerRowMapper();
+    private final RowMapper<Integer> idRowMapper = new IntegerRowMapper();
     private FilterByFactory filterByFactory;
     private JdbcTemplate jdbcTemplate;
     private int batchSize;
@@ -75,7 +75,7 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
         Object[] args = sqlFragmentHolder.getArguments();
         int count = 0;
         try {
-            count = jdbcTemplate.queryForInt(sql, args);
+            count = jdbcTemplate.queryForObject(sql, args, Integer.class);
         // Oracle seems to throw SQLSyntaxErrorException whereas MS-SQL throws SQLException, 
         // that is the root of discrepancy in the Spring SQL error exception translator to throw
         // BadSqlGrammarException vs. DataIntegrityViolationException            

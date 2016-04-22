@@ -18,7 +18,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -311,7 +311,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("WHERE YPO.PaObjectId").eq(endPointId);
         sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
         
-        return jdbcTemplate.query(sql, RowMapper.INTEGER);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
     
     @Override
@@ -326,7 +326,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("WHERE YPO.PaObjectId").eq(gatewayId);
         sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
         
-        return jdbcTemplate.query(sql, RowMapper.INTEGER);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
     
     @Override
