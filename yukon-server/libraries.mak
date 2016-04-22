@@ -6,8 +6,8 @@ copy:
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 
         -@if not exist $(YUKONOUTPUT)\$(DBGHELP_DLL)       copy $(DBGHELP_BIN)\$(DBGHELP_DLL)         $(YUKONOUTPUT)
-        -@if not exist $(YUKONOUTPUT)\$(MICROSOFT_VCP_DLL) copy $(MICROSOFT_VC)\$(MICROSOFT_VCP_DLL)   $(YUKONOUTPUT)
-        -@if not exist $(YUKONOUTPUT)\vc_redist.x86.exe    copy $(MICROSOFT)\vc\14.0\vc_redist.x86.exe   $(YUKONOUTPUT)
+        -@if not exist $(YUKONOUTPUT)\$(MICROSOFT_VCP_DLL) copy $(MICROSOFT_VC)\$(MICROSOFT_VCP_DLL)  $(YUKONOUTPUT)
+        if not exist $(YUKONOUTPUT)\$(MICROSOFT_RT_DLL)  copy $(MICROSOFT_VC)\$(MICROSOFT_RT_DLL)   $(YUKONOUTPUT)
         -@if not exist $(YUKONOUTPUT)\$(MICROSOFT_SQL_DLL) copy $(MICROSOFT_SQL)\$(MICROSOFT_SQL_DLL) $(YUKONOUTPUT)
 
         -@if not exist $(YUKONOUTPUT)\$(XERCES_DLL) copy $(XERCES_BIN)\$(XERCES_DLL) $(YUKONOUTPUT)
