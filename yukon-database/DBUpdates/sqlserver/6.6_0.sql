@@ -198,7 +198,11 @@ ALTER TABLE UserSystemMetric
 /* Start YUK-15251 */
 UPDATE UserPage
 SET PagePath = '/capcontrol/substations/' + SUBSTRING(PagePath, 39, LEN(PagePath)-38)
-WHERE PageName = 'substation.VIEW';
+WHERE PageName = 'substation';
+
+UPDATE UserPage
+SET PageName = 'substation.VIEW'
+WHERE PageName = 'substation';
 /* End YUK-15251 */
 
 /* Start YUK-15268 */
