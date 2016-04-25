@@ -33,6 +33,7 @@ WHERE ItemName = 'localTime';
 /* End YUK-15216 */
 
 /* Start YUK-15201 */
+/* @start-block */
 DECLARE 
     v_sql VARCHAR2(1024);
     v_count NUMBER;
@@ -50,6 +51,7 @@ BEGIN
     END IF;
 END;
 /
+/* @end-block */
 /* End YUK-15201 */
 
 /* Start YUK-15280 */
