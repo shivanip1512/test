@@ -35,4 +35,6 @@ public interface RfnMeterDataSimulatorService {
      * Get data simulator status for existing devices if the simulator has been running.
      */
     RfnDataSimulatorStatus getStatus();
+
+    void testSimulator(SimulatorSettings settings);
 }

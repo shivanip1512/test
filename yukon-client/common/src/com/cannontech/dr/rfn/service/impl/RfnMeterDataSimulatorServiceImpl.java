@@ -117,6 +117,12 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     }
     
     @Override
+    public void testSimulator(SimulatorSettings settings) {
+        log.debug("Testing simulator");
+        genarateAndSendArchiveRequest(rfnDeviceDao.getDeviceForId(settings.getDeviceId()));
+    }
+    
+    @Override
     public void stopSimulator() {
         log.debug("Stopping RFN Meter Simulator");
         status.setStopTime(new Instant());
@@ -135,20 +141,24 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             }
             for (RfnDevice meter : devices) {
                 try {
-                    List<RfnMeterReadingArchiveRequest> meterReadingData = generateMeterReadingData(meter);
-                    log.debug("Sending requests: " + meterReadingData.size() + " on queue "
-                        + meterReadingArchiveRequestQueueName);
-                    for (RfnMeterReadingArchiveRequest meterArchiveRequest : meterReadingData) {
-                        sendArchiveRequest(meterArchiveRequest);
-                        if (needsDuplicate()) {
-                            log.debug("Sending duplicate read request for " + meter.getRfnIdentifier());
-                            sendArchiveRequest(meterArchiveRequest);
-                        }
-                    }
+                    genarateAndSendArchiveRequest(meter);
                 } catch (Exception e) {
                     log.error(e);
                     status.getFailure().incrementAndGet();
                 }
+            }
+        }
+    }
+    
+    private void genarateAndSendArchiveRequest(RfnDevice meter){
+        List<RfnMeterReadingArchiveRequest> meterReadingData = generateMeterReadingData(meter);
+        log.debug("Sending requests: " + meterReadingData.size() + " on queue "
+            + meterReadingArchiveRequestQueueName);
+        for (RfnMeterReadingArchiveRequest meterArchiveRequest : meterReadingData) {
+            sendArchiveRequest(meterArchiveRequest);
+            if (needsDuplicate()) {
+                log.debug("Sending duplicate read request for " + meter.getRfnIdentifier());
+                sendArchiveRequest(meterArchiveRequest);
             }
         }
     }
@@ -166,7 +176,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private List<RfnMeterReadingArchiveRequest> generateMeterReadingData(RfnDevice device) {
 
         DateTime now = DateTime.now();
-        log.info("Generating meter reading data for "+ device);
+        log.debug("Generating meter reading data for "+ device);
         
         List<RfnMeterReadingArchiveRequest> requests = Lists.newArrayList();
 
@@ -247,7 +257,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
                 channelData.setStatus(ChannelDataStatus.OK);
                 channelData.setUnitOfMeasure(mapper.getUom());
                 channelData.setValue(timestampValue.getValue());
-
+                
                 Set<String> modifiers = null;
                 for (ModifiersMatcher match : mapper.getModifiersMatchers()) {
                     modifiers = match.getModifiers();
@@ -259,10 +269,10 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
                     datedChannelData.setBaseChannelData(channelData);
                     datedChannelData.setTimeStamp(timestampValue.getTimestamp().getMillis());
                     datedChannelDataList.add(datedChannelData);
-                    log.debug("----pointName="+pointName+" datedChannelData= "+datedChannelData);
+                    log.debug("----pointName='"+pointName+"' datedChannelData= "+datedChannelData);
                 } else {
                     channelDataList.add(channelData);
-                    log.debug("----pointName="+pointName+" channelData= "+channelData);
+                    log.debug("----pointName='"+pointName+"' channelData= "+channelData);
                 }
             }
         }

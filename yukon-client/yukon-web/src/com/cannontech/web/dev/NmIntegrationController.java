@@ -593,6 +593,18 @@ public class NmIntegrationController {
         }
     }
     
+    @RequestMapping("testMeterArchiveRequest")
+    public void testMeterArchiveRequest(SimulatorSettings settings, FlashScope flash) {
+        try {
+            simulatorsCommunicationService.sendRequest(new RfnMeterDataSimulatorStartRequest(settings, true),
+                SimulatorResponseBase.class);
+        } catch (Exception e) {
+            log.error(e);
+            flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                "Unable to send message to Simulator Service: " + e.getMessage()));
+        }
+    }
+    
     @RequestMapping("existing-rfnMetersimulator-status")
     @ResponseBody
     public Map<String, Object> existingrfnMeterSimulatorStatus(YukonUserContext userContext) {

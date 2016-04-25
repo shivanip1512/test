@@ -16,6 +16,9 @@ public class SimulatorSettings implements Serializable{
     //% of duplicates to generate
     private int percentOfDuplicates;
     
+    //used for testing simulator
+    private int deviceId;
+    
     public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int percentOfDuplicates) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
@@ -28,7 +31,9 @@ public class SimulatorSettings implements Serializable{
         this.paoType = paoType;
         this.percentOfDuplicates =  percentOfDuplicates;
     }
-    
+    public SimulatorSettings(int deviceId) {
+        this.setDeviceId(deviceId);
+    }
     public SimulatorSettings() {
     }
     
@@ -69,5 +74,13 @@ public class SimulatorSettings implements Serializable{
 
     public void setPaoType(String paoType) {
         this.paoType = paoType;
+    }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
     }
 }

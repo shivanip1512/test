@@ -41,8 +41,20 @@
                     });
                 _checkExistingDeviceStatus(true);
             };
-            $(this).hide();
-            $(this).siblings('button').show();
+            
+            if($(this).attr('id') === 'send-test') {
+            	var formData = $('#formData').serialize();
+                $.ajax({
+                    url: yukon.url('/dev/rfn/testMeterArchiveRequest'),
+                    type: 'POST',
+                    data: formData 
+               });
+            };
+            
+            if ($(this).attr('id') !== 'send-test') {
+                $(this).hide();
+                $(this).siblings('button').show();
+            }
         },
         
         _checkExistingDeviceStatus = function(extraCheck) {
@@ -90,7 +102,7 @@
         mod = {
             init : function() {
                 if (_initialized) return;
-                $('#send-message, #stop-send-message').click(_sendMessageButtonClick);
+                $('#send-test, #send-message, #stop-send-message').click(_sendMessageButtonClick);
                 _checkExistingDeviceStatus();
                 _initialized = true;
             },
@@ -125,6 +137,19 @@
                         <cti:button id="send-message" nameKey="sendRfnMeterMessages" />
                         <cti:button id="stop-send-message" nameKey="stopSendingRfnMeterMessages"
                             classes="dn" />
+                    </div>
+                </tags:sectionContainer2>
+                <tags:sectionContainer2 nameKey="rfnMeterSimulatorTest">
+                    <div id='rfnMeterForm'>
+                        <tags:nameValueContainer2>
+                            <tags:nameValue2 nameKey=".rfnMeterSimulator.deviceId">
+                                <input id="deviceId"" name="deviceId"" type="text" value=${currentSettings.deviceId}> 
+                            </tags:nameValue2>
+                        </tags:nameValueContainer2>
+                    </div>
+                    <div>
+                        <br />
+                        <cti:button  id="send-test" nameKey="testMetersArchiveRequest" />
                     </div>
                 </tags:sectionContainer2>
             </form>

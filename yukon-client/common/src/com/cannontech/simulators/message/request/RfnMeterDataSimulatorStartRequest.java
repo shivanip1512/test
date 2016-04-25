@@ -6,9 +6,15 @@ import com.cannontech.simulators.SimulatorType;
 public class RfnMeterDataSimulatorStartRequest implements SimulatorRequest {
 
     private SimulatorSettings settings;
+    private boolean isTest = false;
 
     public RfnMeterDataSimulatorStartRequest(SimulatorSettings settings) {
         this.settings = settings;
+    }
+    
+    public RfnMeterDataSimulatorStartRequest(SimulatorSettings settings, boolean isTest) {
+        this.settings = settings;
+        this.isTest = true;
     }
 
     @Override
@@ -18,5 +24,9 @@ public class RfnMeterDataSimulatorStartRequest implements SimulatorRequest {
 
     public SimulatorSettings getSettings() {
         return settings;
+    }
+    
+    public boolean isTest(){
+        return isTest;
     }
 }

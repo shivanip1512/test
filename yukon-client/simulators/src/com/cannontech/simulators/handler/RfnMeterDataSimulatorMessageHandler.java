@@ -30,7 +30,11 @@ public class RfnMeterDataSimulatorMessageHandler extends SimulatorMessageHandler
 
             if (simulatorRequest instanceof RfnMeterDataSimulatorStartRequest) {
                 RfnMeterDataSimulatorStartRequest request = (RfnMeterDataSimulatorStartRequest) simulatorRequest;
-                rfnMeterDataSimulatorService.startSimulator(request.getSettings());
+                if(request.isTest()){
+                    rfnMeterDataSimulatorService.testSimulator(request.getSettings());
+                }else{
+                    rfnMeterDataSimulatorService.startSimulator(request.getSettings());
+                }
                 return new SimulatorResponseBase(true);
             } else if (simulatorRequest instanceof RfnMeterDataSimulatorStopRequest) {
                 rfnMeterDataSimulatorService.stopSimulator();
