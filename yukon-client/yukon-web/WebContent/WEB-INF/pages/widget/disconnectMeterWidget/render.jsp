@@ -45,7 +45,7 @@
                 </c:when>
                 <c:when test="${disconnectAddress == null}">
                     <tags:nameValue2 nameKey=".disconnectAddress">
-                    <cti:msg2 key=".notConfigured"></cti:msg2>
+                    <span class="fl"><cti:msg2 key=".notConfigured"></cti:msg2></span>
                     <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
                         <cti:button nameKey="edit" renderMode="buttonImage" icon="icon-pencil" data-popup="#disconnect-meter-popup"/>
                     </cti:checkRolesAndProperties>
