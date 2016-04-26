@@ -28,7 +28,7 @@ SocketException::SocketException(const std::string& desc) :
 }
 
 SocketException::SocketException(const std::string& desc, int errorCode) :
-    _desc(desc + ": " + boost::lexical_cast<std::string>(errorCode) + " -> " + getSystemErrorMessage(errorCode)),
+    _desc(desc + ": " + std::to_string(errorCode) + " -> " + getSystemErrorMessage(errorCode)),
     _errorCode(errorCode)
 {
 }
