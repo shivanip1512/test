@@ -36,6 +36,8 @@ public:
 
    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
+   boost::optional<std::string> getTransactionReport() override;
+
    enum CommandState
    {
        Normal=0,
@@ -110,7 +112,6 @@ private:
 
     std::string _transaction_report;
 
-    boost::optional<std::string> getTransactionReport() override;
     void updateTransactionReport(std::string reportUpdate);
 
 };
