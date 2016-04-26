@@ -1267,7 +1267,10 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                                 DisplayTraceList(Port, traceList, true);
                             }
 
-                            CTILOG_INFO(Port->getPortLog(), ds->getTransactionReport());
+                            if (auto transactionReport = ds->getTransactionReport())
+                            {
+                                CTILOG_INFO(Port->getPortLog(), *transactionReport);
+                            }
                             
                             //  send real pointdata messages here
                             ds->sendDispatchResults(VanGoghConnection);

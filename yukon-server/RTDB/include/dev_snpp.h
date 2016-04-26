@@ -36,10 +36,6 @@ public:
 
    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
-   std::string getTransactionReport() override;
-
-   void updateTransactionReport(std::string reportUpdate);
-
    enum CommandState
    {
        Normal=0,
@@ -94,8 +90,8 @@ private:
     static const char *_command_hold;
     static const char *_command_caller_id;
     static const char *_command_subject;
-    //static const char *_command_message;
-    //static const char *_command_reset;
+    //static const char *_command_message; //  These are defined in dev_snpp.cpp, but are unused in our implementation.
+    //static const char *_command_reset;   //  I am leaving these here in the event that these commands are used sometime in the future.
     static const char *_command_data;
     static const char *_command_send;
     static const char *_command_quit;
@@ -112,7 +108,11 @@ private:
     std::string getPagePass();
     std::string getPageNumber();
 
-    std::string TransactionReport;
+    std::string _transaction_report;
+
+    boost::optional<std::string> getTransactionReport() override;
+    void updateTransactionReport(std::string reportUpdate);
+
 };
 /*
 #define CHAR_CR         0x0D

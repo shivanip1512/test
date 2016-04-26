@@ -48,8 +48,8 @@ const char *CtiDeviceSnppPagingTerminal::_command_coverage    = "cove";
 const char *CtiDeviceSnppPagingTerminal::_command_hold        = "hold";
 const char *CtiDeviceSnppPagingTerminal::_command_caller_id   = "call";
 const char *CtiDeviceSnppPagingTerminal::_command_subject     = "subj";
-//const char *CtiDeviceSnppPagingTerminal::_command_message   = "mess";  These commands are not used anywhere within dev_snpp.
-//const char *CtiDeviceSnppPagingTerminal::_command_reset     = "rese";  I'm leaving them here in the event that they're used in the future.
+//const char *CtiDeviceSnppPagingTerminal::_command_message   = "mess";  // These commands are not used anywhere within dev_snpp.
+//const char *CtiDeviceSnppPagingTerminal::_command_reset     = "rese";  // I'm leaving them here in the event that they're used in the future.
 const char *CtiDeviceSnppPagingTerminal::_command_data        = "data";
 const char *CtiDeviceSnppPagingTerminal::_command_send        = "send";
 const char *CtiDeviceSnppPagingTerminal::_command_quit        = "quit";
@@ -158,9 +158,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                         std::string transReportMessage((char*)xfer.getInBuffer(), xfer.getInCountActual());
                         std::string responseCode((char*)xfer.getInBuffer(), 3);
 
-                        boost::optional<std::string> status = Cti::mapFind(SNPPResponseCodes, responseCode);
-
-                        if ( status ) 
+                        if (const auto status = Cti::mapFind(SNPPResponseCodes, responseCode))
                         {
                             transReportMessage += *status;
                         }
@@ -748,12 +746,12 @@ void CtiDeviceSnppPagingTerminal::getVerificationObjects(queue< CtiVerificationB
     }
 }
 
-std::string CtiDeviceSnppPagingTerminal::getTransactionReport()
+boost::optional<std::string> CtiDeviceSnppPagingTerminal::getTransactionReport()
 {
-    return TransactionReport;
+    return _transaction_report;
 }
 
 void CtiDeviceSnppPagingTerminal::updateTransactionReport(std::string reportUpdate)
 {
-    TransactionReport = TransactionReport + reportUpdate;
+    _transaction_report.append(reportUpdate);
 }

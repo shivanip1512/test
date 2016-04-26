@@ -1932,9 +1932,9 @@ void CtiDeviceSingle::decrementGroupMessageCount( long userID, Cti::ConnectionHa
     }
 }
 
-std::string CtiDeviceSingle::getTransactionReport()
+boost::optional<std::string> CtiDeviceSingle::getTransactionReport()
 {
-    return "";
+    return boost::none;
 }
 
 unsigned CtiDeviceSingle::intervalsPerDay( unsigned intervalLength )
