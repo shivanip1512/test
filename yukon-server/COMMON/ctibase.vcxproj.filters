@@ -255,6 +255,9 @@
     <ClCompile Include="boost_assert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="socket_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AttributeService.h">

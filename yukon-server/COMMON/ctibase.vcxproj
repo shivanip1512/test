@@ -485,6 +485,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="sema.cpp">
     </ClCompile>
     <ClCompile Include="GlobalSettings.cpp" />
+    <ClCompile Include="socket_helper.cpp" />
     <ClCompile Include="stdexcepthdlr.cpp">
     </ClCompile>
     <ClCompile Include="streamBuffer.cpp">

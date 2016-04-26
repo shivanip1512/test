@@ -461,7 +461,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\millisecond_timer.h" />
     <ClInclude Include="include\module_util.h" />
     <ClInclude Include="include\mutex.h" />
-    <ClInclude Include="include\netports.h" />
     <ClInclude Include="include\numstr.h" />
     <ClInclude Include="include\observe.h" />
     <ClInclude Include="include\optional.h" />
