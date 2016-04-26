@@ -1932,6 +1932,11 @@ void CtiDeviceSingle::decrementGroupMessageCount( long userID, Cti::ConnectionHa
     }
 }
 
+std::string CtiDeviceSingle::getTransactionReport()
+{
+    return "";
+}
+
 unsigned CtiDeviceSingle::intervalsPerDay( unsigned intervalLength )
 {
     //  TODO: Perhaps it's more appropriate to throw an exception here?

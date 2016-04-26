@@ -48,13 +48,44 @@ const char *CtiDeviceSnppPagingTerminal::_command_coverage    = "cove";
 const char *CtiDeviceSnppPagingTerminal::_command_hold        = "hold";
 const char *CtiDeviceSnppPagingTerminal::_command_caller_id   = "call";
 const char *CtiDeviceSnppPagingTerminal::_command_subject     = "subj";
-const char *CtiDeviceSnppPagingTerminal::_command_message     = "mess";
-const char *CtiDeviceSnppPagingTerminal::_command_reset       = "rese";
+//const char *CtiDeviceSnppPagingTerminal::_command_message   = "mess";  These commands are not used anywhere within dev_snpp.
+//const char *CtiDeviceSnppPagingTerminal::_command_reset     = "rese";  I'm leaving them here in the event that they're used in the future.
 const char *CtiDeviceSnppPagingTerminal::_command_data        = "data";
 const char *CtiDeviceSnppPagingTerminal::_command_send        = "send";
 const char *CtiDeviceSnppPagingTerminal::_command_quit        = "quit";
 
 const char *CtiDeviceSnppPagingTerminal::_char_cr_lf          = "\r\n";
+
+const std::map<std::string, std::string>  SNPPResponseCodes{
+
+    { "214", " <Help Text>" },
+    { "220", " <SNPP Gateway Ready>"},
+    { "221", " <Quit Successful>" },
+    { "250", " <Success>" },
+    { "354", " <Begin Input>" },
+    { "421", " <Error - Service Unavailable / Too Many Errors>" },
+    { "500", " <Error - Command Not Implemented>" },
+    { "502", " <Error - Duplicate MCResponse>" },
+    { "503", " <Error - Repeat Or Incomplete Message>" },
+    { "550", " <Error - Invalid Message>" },
+    { "552", " <Error - Max Recipients Exceeded>" },
+    { "554", " <Error - Technical Failure>" },
+    { "750", " <Unit Offline>" },
+    { "780", " <Message Expired Before Delivery>" },
+    { "820", " <Unit On System, This Area>" },
+    { "821", " <Unit On System, No Location Information Available>" },
+    { "850", " <Success>" },
+    { "860", " <Message Delivered, Awaiting Read Confirmation>" },
+    { "861", " <Message Delivered, Awaiting Reply(MCR)>" },
+    { "870", " <Message Delivered And Read, Awaiting Reply (MCR)>" },
+    { "880", " <Message Delivered>" },
+    { "881", " <Message Delivered And Read>" },
+    { "888", " <MCR Reply Received>" },
+    { "889", " <Response Text Received>" },
+    { "920", " <Unit Offline, But Can Queue Message>" },
+    { "950", " <Unit Offline, Message Queued>" },
+    { "960", " <Message Queued For Delivery>" }
+};
 
 CtiDeviceSnppPagingTerminal::CtiDeviceSnppPagingTerminal()
 {
@@ -64,6 +95,8 @@ CtiDeviceSnppPagingTerminal::CtiDeviceSnppPagingTerminal()
 YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t commReturnValue)
 {
     YukonError_t status = commReturnValue;
+
+    std::string timeStamp = CtiTime::now().asString();
 
     try
     {
@@ -122,6 +155,18 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                             status = NORMAL;  // Make sure the portfield loop is not compromised!
                         }*/ //Dont think this is needed
 
+                        std::string transReportMessage((char*)xfer.getInBuffer(), xfer.getInCountActual());
+                        std::string responseCode((char*)xfer.getInBuffer(), 3);
+
+                        boost::optional<std::string> status = Cti::mapFind(SNPPResponseCodes, responseCode);
+
+                        if ( status ) 
+                        {
+                            transReportMessage += *status;
+                        }
+
+                        updateTransactionReport(timeStamp + " <DVRT> Device Return        : " + transReportMessage + "\n");
+
                         setCurrentState(StateGenerateReadTextString);
                     }
                     else
@@ -172,6 +217,9 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
 {
     YukonError_t status = ClientErrors::None;
+
+    std::string timeStamp = CtiTime::now().asString();
+
     try
     {
         switch( getCurrentState() )
@@ -227,6 +275,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
 
+                    updateTransactionReport(timeStamp + " <LOGI> Login Name           : " + getLoginName() + "\n");
+
                     setPreviousState(StateSendLevelNumber);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -247,6 +297,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
 
+                    updateTransactionReport(timeStamp + " <LEVE> New Service Level    : " + getLevelNumber() + "\n");
+
                     setPreviousState(StateSendAlertNumber);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -265,6 +317,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
 
+                    updateTransactionReport(timeStamp + " <ALER> Alert ID             : " + getAlertNumber() + "\n");
+
                     setPreviousState(StateSendCoverageNumber);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -281,6 +335,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
+
+                    updateTransactionReport(timeStamp + " <COVE> Coverage Override ID : " + getCoverageNumber() + "\n");
 
                     setPreviousState(StateSendHoldTime);
                     setCurrentState(StateDecodeSetupReadResponse);
@@ -299,6 +355,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
+
+                    updateTransactionReport(timeStamp + " <HOLD> Holding Message Until: " + getHoldTime() + "\n");
 
                     setPreviousState(StateSendPageWithPass);
                     setCurrentState(StateDecodeSetupReadResponse);
@@ -320,6 +378,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
 
+                    updateTransactionReport(timeStamp + " <PAGE> Page Number          : " + getPageNumber() + "\n");
+
                     setPreviousState(StateSendCallerID);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -334,6 +394,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
+
+                updateTransactionReport(timeStamp + " <PAGE> Page Number          : " + getPageNumber() + "\n");
 
                 setPreviousState(StateSendCallerID);
                 setCurrentState(StateDecodeSetupReadResponse);//Not sure if this is what I want
@@ -350,6 +412,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
+
+                    updateTransactionReport(timeStamp + " <CALL> Caller ID            : " + getCallerID() + "\n");
 
                     setPreviousState(StateSendSubject);
                     setCurrentState(StateDecodeSetupReadResponse);
@@ -368,6 +432,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
+
+                    updateTransactionReport(timeStamp + " <SUBJ> Message Subject      : " + getSubject() + "\n");
 
                     setPreviousState(StateSendDataCommand);
                     setCurrentState(StateDecodeSetupReadResponse);
@@ -395,6 +461,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
 
+                updateTransactionReport(timeStamp + " <DATA> Message              : " + reinterpret_cast<char *>(_outMessage.Buffer.OutMessage) + "\n");
+
                 setPreviousState(StateSendSend);
                 setCurrentState(StateDecodeSetupReadResponse);
                 break;
@@ -405,6 +473,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
+
+                updateTransactionReport(timeStamp + " <SEND> Send Request Received: OK \n");
 
                 setPreviousState(StateSendQuit);
                 setCurrentState(StateDecodeSetupReadResponse);
@@ -426,6 +496,8 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
+
+                updateTransactionReport(timeStamp + " <QUIT> Quit Request Received: OK \n");
 
                 setPreviousState(StateEnd);
                 setCurrentState(StateDecodeSetupReadResponse);
@@ -674,4 +746,14 @@ void CtiDeviceSnppPagingTerminal::getVerificationObjects(queue< CtiVerificationB
 
         _verification_objects.pop();
     }
+}
+
+std::string CtiDeviceSnppPagingTerminal::getTransactionReport()
+{
+    return TransactionReport;
+}
+
+void CtiDeviceSnppPagingTerminal::updateTransactionReport(std::string reportUpdate)
+{
+    TransactionReport = TransactionReport + reportUpdate;
 }
