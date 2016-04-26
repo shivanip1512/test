@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -35,9 +36,8 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
-import com.cannontech.database.TypeRowMapper;
-import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -405,22 +405,14 @@ public class MeterDaoImpl implements MeterDao {
      * @param mctID
      * @return address
      */
-    /**
-     * Returns disconnect address if the DeviceMCT400Series table has a row returned for mctID or else return null
-     * 
-     * @param mctID
-     * @return address
-     */
     public Integer getDisconnectAddress(Integer mctID) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DisconnectAddress FROM DeviceMCT400Series");
         sql.append("WHERE DeviceId").eq(mctID);
-        Integer address = null;
         try {
-            address = jdbcTemplate.queryForObject(sql.getSql(), sql.getArguments(),Integer.class);
+            return jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
-            // if no results, then it doesn't exist return null;
+           return null;
         }
-        return address;
     }
 }

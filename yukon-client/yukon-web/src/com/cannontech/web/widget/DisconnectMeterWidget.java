@@ -288,6 +288,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     }
 
     private void initModel(ModelMap model, YukonUserContext userContext, YukonMeter meter) {
+        boolean isDisconnectStatusFound = true;
         try {
             LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
             model.addAttribute("pointId", litePoint.getPointID());
@@ -297,26 +298,33 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("pointId", litePoint.getLiteID());
             boolean is410Supported = paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_410);
             model.addAttribute("is410Supported", is410Supported);
-
             boolean is310Supported = paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_310);
             model.addAttribute("is310Supported", is310Supported);
-
             boolean is213Supported = paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_213);
             model.addAttribute("is213Supported", is213Supported);
         } catch (IllegalUseOfAttribute e) {
             model.addAttribute("isConfigured", false);
+            isDisconnectStatusFound = false;
         }
-        Integer disconnectAddress = meterDao.getDisconnectAddress(meter.getDeviceId());
         boolean isDisconnectCollarSupported =
             paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
         model.addAttribute("isDisconnectCollarSupported", isDisconnectCollarSupported);
         boolean supportsArm = disconnectService.supportsArm(Lists.newArrayList(new SimpleDevice(meter)));
         model.addAttribute("device", meter);
         model.addAttribute("supportsArm", supportsArm);
+        if (isDisconnectCollarSupported) {
+            Integer disconnectAddress = meterDao.getDisconnectAddress(meter.getDeviceId());
+            model.addAttribute("showActions", disconnectAddress != null);
+            model.addAttribute("disconnectAddress", disconnectAddress);
+            model.addAttribute("isConfigured", disconnectAddress != null && isDisconnectStatusFound);
+            CollarAddressEditorBean addressEditorBean =
+                new CollarAddressEditorBean(meter.getDeviceId(), disconnectAddress);
+            model.addAttribute("addressEditorBean", addressEditorBean);
+        } else {
+            model.addAttribute("disconnectAddress", null);
+            model.addAttribute("showActions", true);
+        }
         model.addAttribute("attribute", BuiltInAttribute.DISCONNECT_STATUS);
-        CollarAddressEditorBean addressEditorBean = new CollarAddressEditorBean(meter.getDeviceId(), disconnectAddress);
-        model.addAttribute("addressEditorBean", addressEditorBean);
-        model.addAttribute("disconnectAddress", disconnectAddress);
         if (meter.getPaoType().isRfn()) {
             model.addAttribute("supportsQuery", true);
         } else {
@@ -361,8 +369,8 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             @ModelAttribute("disconnectAddress") Integer disconnectAddress,
             @ModelAttribute("deviceId") Integer deviceId, BindingResult result, ModelMap model, FlashScope flash,
             LiteYukonUser user) throws Exception {
-        YukonMeter meterDB = meterDao.getForId(deviceId);
-        SimpleDevice device = SimpleDevice.of(meterDB.getPaoIdentifier());
+        YukonMeter meter = meterDao.getForId(deviceId);
+        SimpleDevice device = SimpleDevice.of(meter.getPaoIdentifier());
         try {
             meterService.removeDisconnectAddress(device);
         } catch (IllegalArgumentException | TransactionException | IllegalUseOfAttribute e) {
