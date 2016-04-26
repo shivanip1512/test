@@ -26,18 +26,20 @@
                         <td>${fn:escapeXml(point.pointName)}</td>
                         <td class="state-indicator">
                             <c:set var="rendered" value="${false}"/>
-                            <c:if test="${format == '{rawValue|lastControlReason}'}">
+                            <c:choose>
+                                <c:when test="${format == '{rawValue|lastControlReason}'}">
+                                    <c:set var="rendered" value="${true}"/>
+                                    <cti:pointStatus pointId="${point.pointID}" format="{rawValue|lastControlReasonColor}"/>
+                                </c:when>
+                                <c:when test="${format == '{rawValue|ignoredControlReason}'}">
                                 <c:set var="rendered" value="${true}"/>
+                                    <cti:pointStatus pointId="${point.pointID}" format="{rawValue|ignoredControlReasonColor}"/>
+                                </c:when>
+                                <c:when test="${!rendered && point.stateGroupID != 0}">
+                                    <c:set var="rendered" value="${true}"/>
                                     <cti:pointStatus pointId="${point.pointID}" />
-                            </c:if>
-                            <c:if test="${format == '{rawValue|ignoredControlReason}'}">
-                                <c:set var="rendered" value="${true}"/>
-                                    <cti:pointStatus pointId="${point.pointID}" />
-                            </c:if>
-                            <c:if test="${!rendered && point.stateGroupID != 0}">
-                                <c:set var="rendered" value="${true}"/>
-                                <cti:pointStatus pointId="${point.pointID}" />
-                            </c:if>
+                               </c:when>
+                            </c:choose>
                         </td>
                         <td>
                             <cti:pointValue pointId="${point.pointID}" format="${format}"/>

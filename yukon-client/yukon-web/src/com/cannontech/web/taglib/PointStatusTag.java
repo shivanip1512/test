@@ -85,7 +85,11 @@ public class PointStatusTag extends YukonTagSupport {
     public void setRawState(int rawState) {
         this.rawState = rawState;
     }
-    
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
     public void setClasses(String classes) {
         this.classes = classes;
     }

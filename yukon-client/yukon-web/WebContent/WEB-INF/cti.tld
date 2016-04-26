@@ -610,6 +610,12 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
+      <name>format</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Commonly used for non-status points having defined state group. Must use valid specialConverters in SimpleTemplateProcessor.</description>
+    </attribute>
+    <attribute>
       <name>rawState</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
