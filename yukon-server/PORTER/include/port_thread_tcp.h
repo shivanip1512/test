@@ -25,7 +25,7 @@ private:
 
     Connections::SocketAddress getDeviceSocketAddress( const long device_id ) const;
 
-    void updateDeviceCommStatus(const long device_id, int status);
+    void updateDeviceCommStatus(const long device_id, YukonError_t status);
 
     packet *findPacket( const long device_id, Protocols::PacketFinder &pf );
 

@@ -99,7 +99,7 @@ bool TcpPortHandler::manageConnections( void )
 }
 
 
-void TcpPortHandler::updateDeviceCommStatus(const long device_id, int status)
+void TcpPortHandler::updateDeviceCommStatus(const long device_id, YukonError_t status)
 {
     device_record *dr = getDeviceRecordById(device_id);
 
@@ -288,6 +288,8 @@ YukonError_t TcpPortHandler::sendOutbound( device_record &dr )
     }
     catch( TcpConnectionManager::not_connected &ex )
     {
+        updateDeviceCommStatus(dr.device->getID(), ClientErrors::DeviceNotConnected);
+
         return ClientErrors::DeviceNotConnected;
     }
     catch( TcpConnectionManager::write_error &ex )

@@ -199,8 +199,6 @@ public:
 
     YukonError_t checkForInhibitedDevice(CtiMessageList &retList, const OUTMESS *OutMessage);
 
-    INT             getCommFailCount() const;
-    CtiDeviceBase&  setCommFailCount(const INT i);
     INT             getAttemptCount() const;
     CtiDeviceBase&  setAttemptCount(const INT i);
     INT             getAttemptFailCount() const;
@@ -370,7 +368,6 @@ inline LONG   CtiDeviceBase::getDemandInterval()                { return LONG_MA
 inline void   CtiDeviceBase::invalidateScanRates()              { }
 inline void   CtiDeviceBase::deleteNonUpdatedScanRates()        { }
 
-inline INT  CtiDeviceBase::getCommFailCount() const         { CtiLockGuard<CtiMutex> guard(_classMutex); return _commFailCount;}
 inline INT  CtiDeviceBase::getAttemptCount() const          { CtiLockGuard<CtiMutex> guard(_classMutex); return _attemptCount;}
 inline INT  CtiDeviceBase::getAttemptFailCount() const      { CtiLockGuard<CtiMutex> guard(_classMutex); return _attemptFailCount;}
 inline INT  CtiDeviceBase::getAttemptRetryCount() const     { CtiLockGuard<CtiMutex> guard(_classMutex); return _attemptRetryCount;}

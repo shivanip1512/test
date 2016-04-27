@@ -522,8 +522,12 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
         return handleDeviceError(om, ClientErrors::RequestExpired);
     }
 
-    if( isDeviceDisconnected(dr->device->getID()) )
+    const long device_id = dr->device->getID();
+
+    if( isDeviceDisconnected(device_id) )
     {
+        processCommStatus(ClientErrors::DeviceNotConnected, device_id, device_id, false, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+
         return handleDeviceError(om, ClientErrors::DeviceNotConnected);
     }
 

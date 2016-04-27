@@ -558,17 +558,6 @@ void CtiDeviceBase::setLogOnNeeded(bool b)
 }
 
 
-CtiDeviceBase& CtiDeviceBase::setCommFailCount(const INT i)
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    if(i < 0)
-        _commFailCount = INT_MAX;               // Never ever roll over into negative numbers...
-    else
-        _commFailCount = i;
-
-    return  *this;
-}
-
 CtiDeviceBase& CtiDeviceBase::setAttemptCount(const INT i)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
