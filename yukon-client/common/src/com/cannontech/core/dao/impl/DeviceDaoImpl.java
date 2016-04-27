@@ -293,8 +293,12 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public int getRouteDeviceCount(int routeId) {
-        String sql = "SELECT COUNT(*) FROM DeviceRoutes WHERE RouteId = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[] { routeId }, Integer.class);
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM DeviceRoutes");
+        sql.append("WHERE RouteId").eq(routeId);
+
+        return jdbcTemplate.queryForInt(sql);
     }
 
     @Override

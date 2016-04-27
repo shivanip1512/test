@@ -30,7 +30,7 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
         sql.append("SELECT COUNT(*) ");
         sql.append("FROM " + ImportData.TABLE_NAME);
 
-        int count = jdbcTemplate.queryForObject(sql.toString(), Integer.class);
+        int count = jdbcTemplate.queryForInt(sql);
         return count;
     }
     

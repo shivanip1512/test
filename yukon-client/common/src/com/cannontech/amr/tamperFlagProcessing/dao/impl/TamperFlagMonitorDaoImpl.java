@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.database.FieldMapper;
@@ -41,7 +42,7 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao  {
     	selectAllSql = "SELECT * FROM TamperFlagMonitor";
 
 		selectById = selectAllSql + " WHERE TamperFlagMonitorId = ?";
-		selectCountByName = "SELECT COUNT(*) FROM TamperFlagMonitor WHERE TamperFlagMonitorName = ?";
+        selectCountByName = "SELECT COUNT(*) FROM TamperFlagMonitor WHERE TamperFlagMonitorName";
 		
 		deleteById = "DELETE FROM TamperFlagMonitor WHERE TamperFlagMonitorId = ?";
 		
@@ -72,8 +73,9 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao  {
     }
     
     public boolean processorExistsWithName(String name) {
-
-        int c = yukonJdbcTemplate.queryForObject(selectCountByName, Integer.class, name);
+        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountByName);
+        sql.eq(name);
+        int c = yukonJdbcTemplate.queryForInt(sql);
 
         return c > 0;
     }

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.LMDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -72,7 +73,12 @@ public final class LMDaoImpl implements LMDao {
     
     @Override
     public int getStartingGearForScenarioAndProgram(int programId, int scenarioId) {
-        String sql = "select startgear from lmcontrolscenarioprogram where programid = ? and scenarioid = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[] { programId, scenarioId }, Integer.class);
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT startgear");
+        sql.append("FROM lmcontrolscenarioprogram");
+        sql.append("WHERE programid").eq(programId);
+        sql.append(  "AND scenarioid").eq(scenarioId);
+
+        return jdbcTemplate.queryForInt(sql);
     }
 }

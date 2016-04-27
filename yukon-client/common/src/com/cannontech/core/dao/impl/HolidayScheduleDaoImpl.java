@@ -88,12 +88,13 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
     
     @Override
     public Integer getStrategyForPao(int paoId) {
-        
-        String sql = "Select StrategyId " + 
-        "From CCHolidayStrategyAssignment " +
-        "Where PaobjectId = " + paoId;
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT StrategyId");
+        sql.append("FROM CCHolidayStrategyAssignment");
+        sql.append("WHERE PaobjectId").eq(paoId);
+       
         try {
-            Integer strategyId = jdbcTemplate.queryForObject(sql, Integer.class);
+            Integer strategyId = jdbcTemplate.queryForInt(sql);
             return strategyId;
         } catch (EmptyResultDataAccessException e) {
             return -1;

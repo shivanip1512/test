@@ -89,19 +89,20 @@ public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
 		}
 	}
 	
-	@Override
-	public Integer findIdForStrategyAndSubstation(String strategyName, String substationName) {
-		try {
-            String sql = "SELECT MspLmInterfaceMappingId " +
-                         " FROM " + TABLENAME +
-                         " WHERE StrategyName = ? " + 
-                         " AND SubstationName = ? ";
-			
-            return jdbcTemplate.queryForObject(sql, new Object[] { strategyName, substationName }, Integer.class);
-		} catch (IncorrectResultSizeDataAccessException e) {
-			return null;
-		}
-	}
+    @Override
+    public Integer findIdForStrategyAndSubstation(String strategyName, String substationName) {
+        try {
+            final SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT MspLmInterfaceMappingId");
+            sql.append("FROM " + TABLENAME);
+            sql.append("WHERE StrategyName").eq(strategyName);
+            sql.append("  AND SubstationName").eq(substationName);
+
+            return jdbcTemplate.queryForInt(sql);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
+    }
 
 	@Override
 	public List<MspLmMapping> getAllMappings() {

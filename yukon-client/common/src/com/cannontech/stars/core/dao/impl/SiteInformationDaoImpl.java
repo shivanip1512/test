@@ -96,9 +96,11 @@ public class SiteInformationDaoImpl implements SiteInformationDao {
     @Override
     public int getSubstationIdByName(String subName) throws NotFoundException{
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT SubstationId FROM Substation WHERE SubstationName = ?");
+        sql.append("SELECT SubstationId");
+        sql.append("FROM Substation");
+        sql.append("WHERE SubstationName").eq(subName);
         try {
-            int subId = yukonJdbcTemplate.queryForObject(sql.toString(), Integer.class, subName);
+            int subId = yukonJdbcTemplate.queryForInt(sql);
             return subId;
         }catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unable to find SubstationId for name: " + subName);

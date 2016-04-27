@@ -22,10 +22,10 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderSqlBase {
         // is this device scanning? if so, it belongs to the base group
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) AS c");
-        sql.append("FROM (" , scanIndicatingDevice.getDeviceIdSql(), ") ypo ");
-        sql.append("WHERE ypo.deviceid = ").appendArgument(device.getPaoIdentifier().getPaoId());
+        sql.append("FROM (" , scanIndicatingDevice.getDeviceIdSql(), ") ypo");
+        sql.append("WHERE ypo.deviceid").eq(device.getPaoIdentifier().getPaoId());
         
-        Integer deviceCount = jdbcTemplate.queryForObject(sql.getSql(), sql.getArguments(), Integer.class);
+        Integer deviceCount = jdbcTemplate.queryForInt(sql);
         
         return deviceCount > 0;
     }

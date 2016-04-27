@@ -15,6 +15,7 @@ import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -223,15 +224,14 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
      */
     @Override
     public boolean isFormatNameUnique(DynamicFormat format) {
-        
-        String sql = "SELECT COUNT(*) "
-                + " FROM BillingFileFormats BFF "
-                + " WHERE BFF.formatType = ? "
-                + " AND BFF.formatId != ? ";
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM BillingFileFormats BFF");
+        sql.append("WHERE BFF.formatType").eq(format.getName());
+        sql.append(  "AND BFF.formatId").neq(format.getFormatId());
 
-        int resultCount =
-            jdbcTemplate.queryForObject(sql, new Object[] { format.getName(), format.getFormatId() }, Integer.class);
-        
+        int resultCount = jdbcTemplate.queryForInt(sql);
+
         if (resultCount == 0) {
             return true;
         }

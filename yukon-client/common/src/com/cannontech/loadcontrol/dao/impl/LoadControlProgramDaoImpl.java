@@ -33,12 +33,12 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
     public int getProgramIdByProgramName(String programName) throws NotFoundException {
 
         try {
-            String sql = "SELECT ypo.PAObjectID" +
-                  " FROM YukonPaObject ypo" +
-                  " INNER JOIN LMPROGRAM lmp ON (ypo.PAObjectID = lmp.DEVICEID)" +
-                  " WHERE ypo.PAOName = ?";
-
-            return jdbcTemplate.queryForObject(sql, Integer.class, programName);
+            final SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT ypo.PAObjectID");
+            sql.append("FROM YukonPaObject ypo");
+            sql.append("  INNER JOIN LMPROGRAM lmp ON (ypo.PAObjectID = lmp.DEVICEID)");
+            sql.append("WHERE ypo.PAOName").eq(programName);
+            return jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No program named " + programName);
         }
@@ -48,11 +48,13 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
     public int getScenarioIdForScenarioName(String scenarioName) throws NotFoundException {
 
         try {
-            String sql = "SELECT ypo.PAObjectID" +
-                        " FROM YukonPaObject ypo" +
-                        " WHERE ypo.PAOName = ? AND ypo.Type = 'LMSCENARIO'";
+            final SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT ypo.PAObjectID");
+            sql.append("FROM YukonPaObject ypo");
+            sql.append("WHERE ypo.PAOName").eq(scenarioName);
+            sql.append("  AND ypo.Type = 'LMSCENARIO'");
 
-            return jdbcTemplate.queryForObject(sql, Integer.class, scenarioName);
+            return jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No scenario named " + scenarioName);
         }
@@ -82,12 +84,13 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 
     @Override
     public int getStartingGearForScenarioAndProgram(int programId, int scenarioId) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT lmcsp.StartGear");
+        sql.append("FROM LMControlScenarioProgram lmcsp");
+        sql.append("WHERE lmcsp.programid").eq(programId);
+        sql.append("  AND lmcsp.scenarioid").eq(scenarioId);
 
-        String sql = "SELECT lmcsp.StartGear" +
-                    " FROM LMControlScenarioProgram lmcsp" +
-                    " WHERE lmcsp.programid = ? AND lmcsp.scenarioid = ?";
-
-        return jdbcTemplate.queryForObject(sql, new Object[] { programId, scenarioId }, Integer.class);
+        return jdbcTemplate.queryForInt(sql);
     }
 
     @Override
@@ -292,17 +295,18 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
     @Override
     public int getGearNumberForGearName(int programId, String gearName) throws NotFoundException {
 
-    	try {
-    		String sql = "SELECT lmpdg.GEARNUMBER" +
-	        " FROM LMPROGRAMDIRECTGEAR lmpdg" +
-	        " INNER JOIN LMPROGRAM lmp ON (lmp.DEVICEID = lmpdg.DEVICEID)" +
-	        " WHERE lmpdg.GEARNAME = ?" +
-	        " AND lmp.DEVICEID = ?";
+        try {
+            final SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT lmpdg.GEARNUMBER");
+            sql.append("FROM LMPROGRAMDIRECTGEAR lmpdg");
+            sql.append("  INNER JOIN LMPROGRAM lmp ON (lmp.DEVICEID = lmpdg.DEVICEID)");
+            sql.append("WHERE lmpdg.GEARNAME").eq(gearName);
+            sql.append("  AND lmp.DEVICEID").eq(programId);
 
-            return jdbcTemplate.queryForObject(sql, new Object[] { gearName, programId }, Integer.class);
+            return jdbcTemplate.queryForInt(sql);
 
-    	} catch (IncorrectResultSizeDataAccessException e) {
-    		throw new NotFoundException("Gear not found (programId = " + programId + ", gearName = " + gearName + ")");
-    	}
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Gear not found (programId = " + programId + ", gearName = " + gearName + ")");
+        }
     }
 }

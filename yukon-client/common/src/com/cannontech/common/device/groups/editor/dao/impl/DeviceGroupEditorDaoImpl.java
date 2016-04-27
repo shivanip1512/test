@@ -226,10 +226,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     public boolean isChildDevice(StoredDeviceGroup group, int paoId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select count(*)");
-        sql.append("from DeviceGroupMember dgm");
-        sql.append("where dgm.devicegroupid = ? and dgm.yukonpaoid = ?");
-        int count = jdbcTemplate.queryForObject(sql.toString(), new Object[] { group.getId(), paoId }, Integer.class);
+        sql.append("SELECT count(*)");
+        sql.append("FROM DeviceGroupMember dgm");
+        sql.append("WHERE dgm.devicegroupid").eq(group.getId());
+        sql.append(  "AND dgm.yukonpaoid").eq(paoId);
+
+        int count = jdbcTemplate.queryForInt(sql);
         return count > 0;
     }
 

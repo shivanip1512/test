@@ -37,14 +37,10 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
     private SimpleTableAccessTemplate<CommandRequestUnsupported> unsupportedTemplate;
 
     private final static String selectCountById;
-    private final static String selectSuccessCountById;
-    private final static String selectFailCountById;
 
     static {
         selectCountById =
-            "SELECT COUNT(CRER.CommandRequestExecResultId) AS CrerCount FROM CommandRequestExecResult CRER WHERE CRER.CommandRequestExecId = ?";
-        selectSuccessCountById = selectCountById + " AND CRER.ErrorCode = 0";
-        selectFailCountById = selectCountById + " AND CRER.ErrorCode > 0";
+            "SELECT COUNT(CRER.CommandRequestExecResultId) AS CrerCount FROM CommandRequestExecResult CRER WHERE CRER.CommandRequestExecId";
 
         rowAndFieldMapper = new CommandRequestExecutionResultsRowAndFieldMapper();
 
@@ -94,17 +90,25 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 
     @Override
     public int getCountByExecutionId(int commandRequestExecutionId) {
-        return jdbcTemplate.queryForObject(selectCountById, Integer.class, commandRequestExecutionId);
+        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountById);
+        sql.eq(commandRequestExecutionId);
+        return jdbcTemplate.queryForInt(sql);
     }
 
     @Override
     public int getSucessCountByExecutionId(int commandRequestExecutionId) {
-        return jdbcTemplate.queryForObject(selectSuccessCountById, Integer.class, commandRequestExecutionId);
+        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountById);
+        sql.eq(commandRequestExecutionId);
+        sql.append("AND CRER.ErrorCode = 0");
+        return jdbcTemplate.queryForInt(sql);
     }
 
     @Override
     public int getFailCountByExecutionId(int commandRequestExecutionId) {
-        return jdbcTemplate.queryForObject(selectFailCountById, Integer.class, commandRequestExecutionId);
+        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountById);
+        sql.eq(commandRequestExecutionId);
+        sql.append("AND CRER.ErrorCode > 0");
+        return jdbcTemplate.queryForInt(sql);
     }
 
     @Override

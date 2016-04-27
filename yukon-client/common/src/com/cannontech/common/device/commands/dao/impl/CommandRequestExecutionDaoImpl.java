@@ -135,9 +135,14 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     @Override
     public int getRequestCountByCreId(int commandRequestExecutionId) {
 
-        String sql = "SELECT CRE.RequestCount FROM CommandRequestExec CRE WHERE CRE.CommandRequestExecId = ?";
-        Integer requestCount = yukonJdbcTemplate.queryForObject(sql, Integer.class, commandRequestExecutionId);
-        return requestCount != null ? requestCount.intValue() : 0;
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CRE.RequestCount");
+        sql.append("FROM CommandRequestExec CRE");
+        sql.append("WHERE CRE.CommandRequestExecId").eq(
+            commandRequestExecutionId);
+        Integer requestCount = yukonJdbcTemplate.queryForInt(sql);
+
+        return requestCount;
     }
     
     // IS COMPLETE

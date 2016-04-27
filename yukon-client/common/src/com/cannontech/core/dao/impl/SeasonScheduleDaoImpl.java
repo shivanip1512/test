@@ -97,13 +97,16 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao {
         SeasonSchedule schedule = getScheduleForPao(paoId);
         List<Season> seasons = getSeasonsForSchedule(schedule.getScheduleId());
         for(Season season : seasons) {
-            String sql = "Select StrategyId From CCSeasonStrategyAssignment Where PaobjectId = ? And SeasonScheduleId = ? " 
-                + " And SeasonName = ?" ;
+            final SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT StrategyId");
+            sql.append("FROM CCSeasonStrategyAssignment");
+            sql.append("WHERE PaobjectId").eq(paoId);
+            sql.append(  "AND SeasonScheduleId").eq(season.getScheduleId());
+            sql.append(  "AND SeasonName").eq(season.getSeasonName());
+
             int strategyId;
             try {
-                strategyId =
-                    jdbcTemplate.queryForObject(sql,
-                        new Object[] { paoId, season.getScheduleId(), season.getSeasonName() }, Integer.class);
+                strategyId = jdbcTemplate.queryForInt(sql);
             } catch (EmptyResultDataAccessException e) {
                 strategyId = -1;
             }

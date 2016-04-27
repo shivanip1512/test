@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.database.FieldMapper;
@@ -42,7 +43,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao  {
     	selectAllSql = "SELECT * FROM " + TABLE_NAME;
 
 		selectById = selectAllSql + " WHERE OutageMonitorId = ?";
-		selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE OutageMonitorName = ?";
+        selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE OutageMonitorName";
 		
 		deleteById = "DELETE FROM " + TABLE_NAME + " WHERE OutageMonitorId = ?";
 		
@@ -72,8 +73,10 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao  {
     }
     
     public boolean processorExistsWithName(String name) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountByName);
+        sql.eq(name);
 
-        int c = yukonJdbcTemplate.queryForObject(selectCountByName, Integer.class, name);
+        int c = yukonJdbcTemplate.queryForInt(sql);
 
         return c > 0;
     }

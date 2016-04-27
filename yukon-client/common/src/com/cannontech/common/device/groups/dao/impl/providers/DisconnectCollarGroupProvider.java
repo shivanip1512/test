@@ -19,12 +19,12 @@ public class DisconnectCollarGroupProvider extends DeviceGroupProviderSqlBase {
     @Override
     public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) AS c ");
-        sql.append("FROM YukonPAObject ypo ");
-        sql.append("JOIN DeviceMCT400Series d ON ypo.PAObjectID = d.DEVICEID ");
-        sql.append("WHERE ypo.PAObjectID = ").appendArgument(device.getPaoIdentifier().getPaoId());
-        
-        Integer deviceCount = jdbcTemplate.queryForObject(sql.getSql(), sql.getArguments(), Integer.class);
+        sql.append("SELECT COUNT(*) AS c");
+        sql.append("FROM YukonPAObject ypo");
+        sql.append("  JOIN DeviceMCT400Series d ON ypo.PAObjectID = d.DEVICEID");
+        sql.append("WHERE ypo.PAObjectID").eq(device.getPaoIdentifier().getPaoId());
+
+        Integer deviceCount = jdbcTemplate.queryForInt(sql);
         return deviceCount > 0;
     }
 

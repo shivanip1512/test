@@ -28,20 +28,18 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
  
         List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY));
         primaryKeyColumnNames.remove(missingPrimaryKeyName);
-        List<Object> whereClauseValues = Lists.newArrayList();
         
         // Generating the sql statement for the missing primaryKey
         SqlStatementBuilder selectMaxSQL = new SqlStatementBuilder();
         selectMaxSQL.append("SELECT MAX(" + missingPrimaryKeyName + ")");
         selectMaxSQL.append("FROM " + tableDefinition.getTable());
         if (primaryKeyColumnNames.size() > 0) {
-            selectMaxSQL.append("WHERE " + primaryKeyColumnNames.get(0) + " = ?");
-            whereClauseValues.add(columnValueMap.get(primaryKeyColumnNames.get(0)));
+            selectMaxSQL.append("WHERE").append(primaryKeyColumnNames.get(0)).eq(
+                columnValueMap.get(primaryKeyColumnNames.get(0)));
         }
-        
         try {
             Integer maxPrimaryKeyValue =
-                jdbcTemplate.queryForObject(selectMaxSQL.getSql(), whereClauseValues.toArray(), Integer.class);
+                    yukonJdbcTemplate.queryForInt(selectMaxSQL);
             return ++maxPrimaryKeyValue;
         } catch (IncorrectResultSizeDataAccessException e) {
             // A value does not exist for this column.  Using the default of 0.
