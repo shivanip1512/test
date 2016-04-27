@@ -84,7 +84,7 @@
         <cti:param name="shortName" value="disconnectMeterWidget"/>
     </cti:url>
     <%-- Edit Popup --%>
-    <div id="disconnect-meter-popup" 
+    <div id="disconnect-meter-popup" data-dialog
         data-event="yukon:widget:meter:disconnectInfo:edit"
         data-width="500"
         data-title="<cti:msg2 key=".configure" />"

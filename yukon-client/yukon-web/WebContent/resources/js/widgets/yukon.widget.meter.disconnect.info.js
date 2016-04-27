@@ -3,7 +3,7 @@ yukon.namespace('yukon.widget.disconnectInfo');
 /**
  * Module for the meter disconnnect info widget.
  * 
- * @module yukon.widget.meterInfo
+ * @module yukon.widget.meter.disconnectInfo
  * @requires JQUERY
  * @requires yukon
  */
@@ -23,7 +23,7 @@ yukon.widget.disconnectInfo = (function () {
         init: function () {
             if (_initialized) return;
             $(document)
-                .on('click','#edit-btn',function (ev) {
+                .on('yukon:widget:meter:disconnectInfo:edit',function (ev) {
                         var popup = $('#disconnect-meter-popup'), btns = popup
                             .closest('.ui-dialog').find('.ui-dialog-buttonset'), primary = btns
                             .find('.js-primary-action'), secondary = btns

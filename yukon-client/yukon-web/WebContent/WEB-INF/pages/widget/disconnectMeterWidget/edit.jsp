@@ -17,11 +17,7 @@
     <tags:nameValueContainer2 naturalWidth="false"
         tableClass="with-form-controls">
         <tags:inputNameValue nameKey=".disconnectAddress" path="disconnectAddress" valueClass="full-width" maxlength="7"
-            size="18" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" />
+            size="7" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" />
     </tags:nameValueContainer2>
-    <div class="page-action-area">
-        <cti:button nameKey="save" id="edit-btn" classes="primary action" busy="true" />
-        <cti:button nameKey="cancel" id="cancel-btn" classes="primary action" />
-    </div>
 </form:form>
 </cti:msgScope>
