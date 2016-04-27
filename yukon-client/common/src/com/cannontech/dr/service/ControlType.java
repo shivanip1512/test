@@ -5,8 +5,8 @@ package com.cannontech.dr.service;
  * @see ControlHistoryService
  */
 public enum ControlType {
-    DIGI("Digi Control"),
-    ECOBEE("Ecobee Control"),
+    DIGI("Digi Cycle"),
+    ECOBEE("Ecobee Cycle"),
     TERMINATE("Control terminate"), //Used for restore
     ;
     

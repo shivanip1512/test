@@ -17,7 +17,7 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
     @Autowired private IServerConnection dispatchConnection;
-    
+     
     @Override
     public void sendControlHistoryShedMessage(int groupId, Instant startTime, ControlType controlType,
                                               Integer associationId, int controlDurationSeconds, int reductionRatio) {
@@ -37,6 +37,15 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
             controlHistoryMessage.setControlDuration(ControlHistoryMessage.CONTROL_RESTORE_DURATION);
         }
         
+        if (controlType == ControlType.ECOBEE) {
+            int cyclePercent = 100 - reductionRatio;
+            controlHistoryMessage.setControlType(controlType.toString() + " " + cyclePercent + "%");
+        } else if (controlType == ControlType.DIGI) {
+            controlHistoryMessage.setControlType(controlType.toString() + " " + reductionRatio + "%");
+        } else {
+            controlHistoryMessage.setControlType(controlType.toString());
+        }
+
         dispatchConnection.queue(controlHistoryMessage);
     }
     
@@ -64,7 +73,6 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         controlHistoryMessage.setPaoId(groupId);
         controlHistoryMessage.setPointId(point.getLiteID());
         controlHistoryMessage.setStartTime(time.toDate());
-        controlHistoryMessage.setControlType(controlType.toString());
         controlHistoryMessage.setControlPriority(0);
         
         if (associationId == null) {
