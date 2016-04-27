@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
@@ -173,7 +174,19 @@ public class PointValidator extends SimpleValidator<PointModel> {
             YukonValidationUtils.checkRange(errors, "pointBase.pointLimitsMap[2].limitDuration", 
                 limitTwo.getLimitDuration(), 0, 99999999, true);
         }
-        
+        if (scalar.getPointUnit() != null) {
+            Double highReasonabilityLimit = scalar.getPointUnit().getHighReasonabilityLimit();
+            Double lowReasonabilityLimit = scalar.getPointUnit().getLowReasonabilityLimit();
+            if (highReasonabilityLimit < lowReasonabilityLimit) {
+                errors.rejectValue("pointBase.pointUnit.lowReasonabilityLimit", baseKey + ".reasonability");
+            }
+            if (highReasonabilityLimit != CtiUtilities.INVALID_MAX_DOUBLE)
+                YukonValidationUtils.checkRange(errors, "pointBase.pointUnit.highReasonabilityLimit",
+                    highReasonabilityLimit, -999999.999999, 999999.999999, true);
+            if (lowReasonabilityLimit != CtiUtilities.INVALID_MIN_DOUBLE)
+                YukonValidationUtils.checkRange(errors, "pointBase.pointUnit.lowReasonabilityLimit",
+                    lowReasonabilityLimit, -999999.999999, 999999.999999, true);
+        }
         YukonValidationUtils.checkRange(errors, "staleData.time", 
             model.getStaleData().getTime(), 0, 99999999, model.getStaleData().isEnabled());
     }
