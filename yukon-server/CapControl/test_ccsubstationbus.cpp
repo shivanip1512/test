@@ -1,5 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
+#include "boost_test_helpers.h"
+
 #include "ccsubstationbus.h"
 #include "ccsubstationbusstore.h"
 #include "mgr_paosched.h"
@@ -15,6 +17,7 @@ using namespace Cti::Test::CapControl;
 
 extern unsigned long _MAX_KVAR;
 extern unsigned long _SEND_TRIES;
+extern unsigned long _RATE_OF_CHANGE_DEPTH;
 
 BOOST_AUTO_TEST_SUITE( test_ccsubstationbus )
 
@@ -468,6 +471,306 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     BOOST_CHECK_EQUAL(  bus1->getVerificationFlag(), false);
     BOOST_CHECK_EQUAL(feed11->getVerificationFlag(), false);
     BOOST_CHECK_EQUAL(cap11a->getVerificationFlag(), false);
+
+    store->deleteInstance();
+
+    delete station;
+    delete area;
+}
+
+BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction )
+{
+    _RATE_OF_CHANGE_DEPTH = 5;      // this shows up in the regressions: getRegDepth()
+
+    CtiCCSubstationBus  bus;
+
+    BOOST_CHECK_EQUAL(  false, bus.getSwitchOverStatus() );
+    BOOST_CHECK_EQUAL(  false, bus.getPrimaryBusFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getDualBusEnable() );
+    BOOST_CHECK_EQUAL(  false, bus.getMultiMonitorFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getNewPointDataReceivedFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getBusUpdatedFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getPeakTimeFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getWaiveControlFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getLikeDayControlFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getPerformingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getVerificationDoneFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getOverlappingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getPreOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getOperationSentWaitFlag() );;
+    BOOST_CHECK_EQUAL(  false, bus.getPostOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getReEnableBusFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getWaitForReCloseDelayFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getWaitToFinishRegularControlFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getMaxDailyOpsHitFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getCorrectionNeededNoBankAvailFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getSendMoreTimeControlledCommandsFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getVerificationDisableOvUvFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getUsePhaseData() );
+    BOOST_CHECK_EQUAL(   true, bus.isDirty() );             // <--- why?? it's not dirty yet...
+
+    BOOST_CHECK_EQUAL(      0, bus.getParentId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVarLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentWattLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVoltLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getAltDualSubId() );
+    BOOST_CHECK_EQUAL(      0, bus.getSwitchOverPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getEventSequence() );
+    BOOST_CHECK_EQUAL(      0, bus.getDecimalPlaces() );
+    BOOST_CHECK_EQUAL(      0, bus.getEstimatedVarLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getDailyOperationsAnalogPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getEstimatedPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentDailyOperations() );
+    BOOST_CHECK_EQUAL(      0, bus.getLastFeederControlledPAOId() );
+    BOOST_CHECK_EQUAL(      0, bus.getLastFeederControlledPosition() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVoltPointQuality() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationFeederId() );
+    BOOST_CHECK_EQUAL(      0, bus.getVoltReductionControlId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationCapBankOrigState() );
+    BOOST_CHECK_EQUAL(      0, bus.getCapBankInactivityTime() );
+    BOOST_CHECK_EQUAL(      0, bus.getDisplayOrder() );
+    BOOST_CHECK_EQUAL(      0, bus.getIVCount() );
+    BOOST_CHECK_EQUAL(      0, bus.getIWCount() );
+    BOOST_CHECK_EQUAL(      0, bus.getPhaseBId() );
+    BOOST_CHECK_EQUAL(      0, bus.getPhaseCId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCommsStatePointId() );
+
+    BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentVarLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentWattLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getCurrentvoltloadpointvalue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getAltSubControlValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedVarLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getVarValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getKVARSolution() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getTargetVarValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getAltSubVoltVal() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getAltSubVarVal() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getAltSubWattVal() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getIVControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getIWControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getIVControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getIWControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseAValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseBValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseCValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseAValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseBValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseCValueBeforeControl() );
+
+    BOOST_CHECK_EQUAL(     "", bus.getMapLocationId() );
+    BOOST_CHECK_EQUAL(     "", bus.getSolution() );
+    BOOST_CHECK_EQUAL(     "", bus.getParentControlUnits() );
+    BOOST_CHECK_EQUAL(     "", bus.getParentName() );
+
+    BOOST_CHECK_EQUAL(      0, bus.getCCFeeders().size() );
+    BOOST_CHECK_EQUAL(      0, bus.getMultipleMonitorPoints().size() );
+    BOOST_CHECK_EQUAL(      0, bus.getAllMonitorPoints().size() );
+
+    BOOST_CHECK_EQUAL( CtiPAOScheduleManager::AllBanks, bus.getVerificationStrategy() );
+
+    BOOST_CHECK_EQUAL(      0, bus.getRegression().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, bus.getRegression().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, bus.getRegressionA().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, bus.getRegressionA().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, bus.getRegressionB().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, bus.getRegressionB().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, bus.getRegressionC().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, bus.getRegressionC().getRegDepth() );
+
+// This guy is uninitialised in the default constructor
+//
+//    BOOST_CHECK_EQUAL(       , bus.getDisableBusPointId() );
+
+// These 5 timestamps default to current time
+//
+//    BOOST_CHECK_EQUAL(       , bus.getNextCheckTime() );
+//    BOOST_CHECK_EQUAL(       , bus.getLastCurrentVarPointUpdateTime() );
+//    BOOST_CHECK_EQUAL(       , bus.getLastOperationTime() );
+//    BOOST_CHECK_EQUAL(       , bus.getLastWattPointTime() );
+//    BOOST_CHECK_EQUAL(       , bus.getLastVoltPointTime() );
+}
+
+BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_manager )
+{
+    _RATE_OF_CHANGE_DEPTH = 5;      // this shows up in the regressions: getRegDepth()
+
+    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+
+    CtiCCSubstationBus  bus( &_strategyManager );
+
+    BOOST_CHECK_EQUAL(  false, bus.getSwitchOverStatus() );
+    BOOST_CHECK_EQUAL(  false, bus.getPrimaryBusFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getDualBusEnable() );
+    BOOST_CHECK_EQUAL(  false, bus.getMultiMonitorFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getNewPointDataReceivedFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getBusUpdatedFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getPeakTimeFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getWaiveControlFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getLikeDayControlFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getPerformingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getVerificationDoneFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getOverlappingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getPreOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getOperationSentWaitFlag() );;
+    BOOST_CHECK_EQUAL(  false, bus.getPostOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getReEnableBusFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getWaitForReCloseDelayFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getWaitToFinishRegularControlFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getMaxDailyOpsHitFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getCorrectionNeededNoBankAvailFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getSendMoreTimeControlledCommandsFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getVerificationDisableOvUvFlag() );
+    BOOST_CHECK_EQUAL(  false, bus.getUsePhaseData() );
+    BOOST_CHECK_EQUAL(   true, bus.isDirty() );             // <--- why?? it's not dirty yet...
+
+    BOOST_CHECK_EQUAL(      0, bus.getParentId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVarLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentWattLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVoltLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getAltDualSubId() );
+    BOOST_CHECK_EQUAL(      0, bus.getSwitchOverPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getEventSequence() );
+    BOOST_CHECK_EQUAL(      0, bus.getDecimalPlaces() );
+    BOOST_CHECK_EQUAL(      0, bus.getEstimatedVarLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getDailyOperationsAnalogPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getEstimatedPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentDailyOperations() );
+    BOOST_CHECK_EQUAL(      0, bus.getLastFeederControlledPAOId() );
+    BOOST_CHECK_EQUAL(      0, bus.getLastFeederControlledPosition() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVoltPointQuality() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationFeederId() );
+    BOOST_CHECK_EQUAL(      0, bus.getVoltReductionControlId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationCapBankOrigState() );
+    BOOST_CHECK_EQUAL(      0, bus.getCapBankInactivityTime() );
+    BOOST_CHECK_EQUAL(      0, bus.getDisplayOrder() );
+    BOOST_CHECK_EQUAL(      0, bus.getIVCount() );
+    BOOST_CHECK_EQUAL(      0, bus.getIWCount() );
+    BOOST_CHECK_EQUAL(      0, bus.getPhaseBId() );
+    BOOST_CHECK_EQUAL(      0, bus.getPhaseCId() );
+    BOOST_CHECK_EQUAL(      0, bus.getCommsStatePointId() );
+
+    BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentVarLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentWattLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getCurrentvoltloadpointvalue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getAltSubControlValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedVarLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getVarValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getKVARSolution() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getTargetVarValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getAltSubVoltVal() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getAltSubVarVal() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getAltSubWattVal() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getIVControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getIWControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getIVControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getIWControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseAValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseBValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseCValue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseAValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseBValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getPhaseCValueBeforeControl() );
+
+    BOOST_CHECK_EQUAL(     "", bus.getMapLocationId() );
+    BOOST_CHECK_EQUAL(     "", bus.getSolution() );
+    BOOST_CHECK_EQUAL(     "", bus.getParentControlUnits() );
+    BOOST_CHECK_EQUAL(     "", bus.getParentName() );
+
+    BOOST_CHECK_EQUAL(      0, bus.getCCFeeders().size() );
+    BOOST_CHECK_EQUAL(      0, bus.getMultipleMonitorPoints().size() );
+    BOOST_CHECK_EQUAL(      0, bus.getAllMonitorPoints().size() );
+
+    BOOST_CHECK_EQUAL( CtiPAOScheduleManager::AllBanks, bus.getVerificationStrategy() );
+
+    BOOST_CHECK_EQUAL(      0, bus.getRegression().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, bus.getRegression().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, bus.getRegressionA().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, bus.getRegressionA().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, bus.getRegressionB().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, bus.getRegressionB().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, bus.getRegressionC().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, bus.getRegressionC().getRegDepth() );
+
+// This guy is uninitialised in the default constructor
+//
+//    BOOST_CHECK_EQUAL(       , bus.getDisableBusPointId() );
+
+// These 5 timestamps default to current time
+//
+//    BOOST_CHECK_EQUAL(       , bus.getNextCheckTime() );
+//    BOOST_CHECK_EQUAL(       , bus.getLastCurrentVarPointUpdateTime() );
+//    BOOST_CHECK_EQUAL(       , bus.getLastOperationTime() );
+//    BOOST_CHECK_EQUAL(       , bus.getLastWattPointTime() );
+//    BOOST_CHECK_EQUAL(       , bus.getLastVoltPointTime() );
+}
+
+BOOST_AUTO_TEST_CASE( test_ccSubstationBus_replication )
+{
+    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
+    CtiCCSubstationBusStore::setInstance( store );
+
+    CtiCCAreaPtr            area    = create_object<CtiCCArea>( 1, "Area-1" );
+    CtiCCSubstationPtr      station = create_object<CtiCCSubstation>( 2, "Substation-A" );
+    CtiCCSubstationBusPtr   bus1    = create_object<CtiCCSubstationBus>( 3, "SubBus-A1" );
+    CtiCCFeederPtr          feed11  = create_object<CtiCCFeeder>( 11, "Feeder11" );
+    CtiCCFeederPtr          feed12  = create_object<CtiCCFeeder>( 12, "Feeder12" );
+    CtiCCFeederPtr          feed13  = create_object<CtiCCFeeder>( 13, "Feeder13" );
+
+    initialize_area( store, area );
+    initialize_station( store, station, area );
+    initialize_bus( store, bus1, station );
+    initialize_feeder( store, feed11, bus1, 1 );
+    initialize_feeder( store, feed12, bus1, 2 );
+    initialize_feeder( store, feed13, bus1, 3 );
+
+    BOOST_CHECK_EQUAL(    3, bus1->getCCFeeders().size() );
+
+    CtiCCSubstationBusPtr   clone = bus1->replicate();
+
+    BOOST_CHECK_EQUAL(    3, clone->getCCFeeders().size() );
+
+    for ( auto feeder : clone->getCCFeeders() ) 
+    {
+        feeder->setPaoName( feeder->getPaoName() + "-clone" );
+    }
+
+    // validate the original feeders names haven't been changed -- feeders were 'deep' copied.
+
+    CtiFeeder_vec & original = bus1->getCCFeeders();
+
+    BOOST_CHECK_EQUAL(          3, original.size() );
+    BOOST_CHECK_EQUAL( "Feeder11", original[ 0 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Feeder12", original[ 1 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Feeder13", original[ 2 ]->getPaoName() );
+
+    CtiFeeder_vec & clonedFeeder = clone->getCCFeeders();
+
+    BOOST_CHECK_EQUAL(                3, clonedFeeder.size() );
+    BOOST_CHECK_EQUAL( "Feeder11-clone", clonedFeeder[ 0 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Feeder12-clone", clonedFeeder[ 1 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Feeder13-clone", clonedFeeder[ 2 ]->getPaoName() );
+
+    delete clone;
 
     store->deleteInstance();
 
