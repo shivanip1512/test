@@ -10105,15 +10105,15 @@
     </pao> 
 
     <pao id="RFN520FAX" inherits="RFN520_BASE">
-        <displayName>RFN-510fAX</displayName>
+        <displayName>RFN-520fAX</displayName>
     </pao>
 
     <pao id="RFN520FRX" inherits="RFN520_BASE, RFN520_REACTIVE">
-        <displayName>RFN-510fRX</displayName>
+        <displayName>RFN-520fRX</displayName>
     </pao>
 
     <pao id="RFN520FAXD" inherits="RFN520_BASE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
-        <displayName>RFN-510fAXD</displayName>
+        <displayName>RFN-520fAXD</displayName>
     </pao>
 
     <pao id="RFN520FRXD" inherits="RFN520_BASE, RFN520_REACTIVE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
@@ -11544,7 +11544,7 @@
     </pao>
     
     <pao id="RFN530S4ERD" inherits="RFN530_BASE">
-        <displayName>RFN-500S4eRD</displayName>
+        <displayName>RFN-530S4eRD</displayName>
         <points>
             <point type="Analog" offset="215">
                 <name>Sum kVArh</name>
