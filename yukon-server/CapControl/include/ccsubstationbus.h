@@ -365,8 +365,8 @@ public:
 
 protected:
 
-    CtiCCSubstationBus( const CtiCCSubstationBus & bus );
-    CtiCCSubstationBus & operator=( const CtiCCSubstationBus & right );
+    CtiCCSubstationBus( const CtiCCSubstationBus & bus ) = default;
+    CtiCCSubstationBus & operator=( const CtiCCSubstationBus & right ) = delete;
 
 private:
 

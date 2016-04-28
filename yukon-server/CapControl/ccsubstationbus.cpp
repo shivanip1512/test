@@ -148,13 +148,6 @@ CtiCCSubstationBus::CtiCCSubstationBus(Cti::RowReader& rdr, StrategyManager * st
     regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
-CtiCCSubstationBus::CtiCCSubstationBus(const CtiCCSubstationBus& sub)
-    : Controllable(sub)
-{
-    operator=(sub);
-
-}
-
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/
@@ -8403,141 +8396,6 @@ int CtiCCSubstationBus::getAlterateBusIdForPrimary() const
     return paoId;
 }
 
-
-/*---------------------------------------------------------------------------
-    operator=
----------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& right)
-{
-    Controllable::operator=(right);
-
-    if( this != &right )
-    {
-        _parentId = right._parentId;
-        _parentName = right._parentName;
-
-        _currentvarloadpointid = right._currentvarloadpointid;
-        _currentvarloadpointvalue = right._currentvarloadpointvalue;
-        _currentwattloadpointid = right._currentwattloadpointid;
-        _currentvoltloadpointvalue = right._currentwattloadpointvalue;
-        _currentvoltloadpointid = right._currentvoltloadpointid;
-        _currentwattloadpointvalue = right._currentvoltloadpointvalue;
-        _maplocationid = right._maplocationid;
-        _decimalplaces = right._decimalplaces;
-        _nextchecktime = right._nextchecktime;
-        _newpointdatareceivedflag = right._newpointdatareceivedflag;
-        _busupdatedflag = right._busupdatedflag;
-        _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
-        _estimatedvarloadpointid = right._estimatedvarloadpointid;
-        _estimatedvarloadpointvalue = right._estimatedvarloadpointvalue;
-        _dailyoperationsanalogpointid = right._dailyoperationsanalogpointid;
-        _powerfactorpointid = right._powerfactorpointid;
-        _estimatedpowerfactorpointid = right._estimatedpowerfactorpointid;
-        _currentdailyoperations = right._currentdailyoperations;
-        _peaktimeflag = right._peaktimeflag;
-        _recentlycontrolledflag = right._recentlycontrolledflag;
-        _lastoperationtime = right._lastoperationtime;
-        _varvaluebeforecontrol = right._varvaluebeforecontrol;
-        _lastfeedercontrolledpaoid = right._lastfeedercontrolledpaoid;
-        _lastfeedercontrolledposition = right._lastfeedercontrolledposition;
-        _powerfactorvalue = right._powerfactorvalue;
-        _kvarsolution = right._kvarsolution;
-        _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
-        _currentvarpointquality = right._currentvarpointquality;
-        _currentwattpointquality = right._currentwattpointquality;
-        _currentvoltpointquality = right._currentvoltpointquality;
-        _waivecontrolflag = right._waivecontrolflag;
-        _additionalFlags = right._additionalFlags;
-        _currentVerificationCapBankId = right._currentVerificationCapBankId;
-        _currentVerificationFeederId = right._currentVerificationFeederId;
-        _verificationStrategy = right._verificationStrategy;
-        _disableOvUvVerificationFlag = right._disableOvUvVerificationFlag;
-        _capBankToVerifyInactivityTime = right._capBankToVerifyInactivityTime;
-        _verificationFlag = right._verificationFlag;
-        delete_container(_ccfeeders);
-        _performingVerificationFlag = right._performingVerificationFlag;
-        _verificationDoneFlag = right._verificationDoneFlag;
-        _overlappingSchedulesVerificationFlag = right._overlappingSchedulesVerificationFlag;
-        _preOperationMonitorPointScanFlag = right._preOperationMonitorPointScanFlag;
-        _operationSentWaitFlag = right._operationSentWaitFlag;
-        _postOperationMonitorPointScanFlag = right._postOperationMonitorPointScanFlag;
-        _reEnableBusFlag = right._reEnableBusFlag;
-        _waitForReCloseDelayFlag = right._waitForReCloseDelayFlag;
-        _waitToFinishRegularControlFlag = right._waitToFinishRegularControlFlag;
-        _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
-        _ovUvDisabledFlag = right._ovUvDisabledFlag;
-        _correctionNeededNoBankAvailFlag = right._correctionNeededNoBankAvailFlag;
-        _likeDayControlFlag = right._likeDayControlFlag;
-        _voltReductionFlag = right._voltReductionFlag;
-        _voltReductionControlId = right._voltReductionControlId;
-        _disableBusPointId = right._disableBusPointId;
-        _sendMoreTimeControlledCommandsFlag = right._sendMoreTimeControlledCommandsFlag;
-
-        _altDualSubId = right._altDualSubId;
-        _switchOverPointId = right._switchOverPointId;
-        _dualBusEnable = right._dualBusEnable;
-        _switchOverStatus = right._switchOverStatus;
-        _primaryBusFlag = right._primaryBusFlag;
-        _altSubControlValue = right._altSubControlValue;
-        _eventSeq = right._eventSeq;
-        _multiMonitorFlag = right._multiMonitorFlag;
-
-        _altSubVoltVal = right._altSubVoltVal;
-        _altSubVarVal  = right._altSubVarVal;
-        _altSubWattVal = right._altSubWattVal;
-        _lastVerificationCheck = right._lastVerificationCheck;
-
-        _solution = right._solution;
-        _targetvarvalue = right._targetvarvalue;
-        _iVControlTot = right._iVControlTot;
-        _iVCount = right._iVCount;
-        _iWControlTot = right._iWControlTot;
-        _iWCount = right._iWCount;
-
-        _iVControl = right._iVControl;
-        _iWControl = right._iWControl;
-
-        _usePhaseData = right._usePhaseData;
-        _phaseBid = right._phaseBid;
-        _phaseCid = right._phaseCid;
-        _totalizedControlFlag = right._totalizedControlFlag;
-        _phaseAvalue = right._phaseAvalue;
-        _phaseBvalue = right._phaseBvalue;
-        _phaseCvalue = right._phaseCvalue;
-        _phaseAvalueBeforeControl = right._phaseAvalueBeforeControl;
-        _phaseBvalueBeforeControl = right._phaseBvalueBeforeControl;
-        _phaseCvalueBeforeControl = right._phaseCvalueBeforeControl;
-
-        _lastWattPointTime = right._lastWattPointTime;
-        _lastVoltPointTime = right._lastVoltPointTime;
-
-        _displayOrder = right._displayOrder;
-
-        _ccfeeders.clear();
-        long i=0;
-        for(i=0;i<right._ccfeeders.size();i++)
-        {
-            _ccfeeders.push_back(((CtiCCFeeder*)right._ccfeeders.at(i))->replicate());
-        }
-
-        _percentToClose = right._percentToClose;
-
-        regression = right.regression;
-        regressionA = right.regressionA;
-        regressionB = right.regressionB;
-        regressionC = right.regressionC;
-
-        _monitorPoints = right._monitorPoints;
-        _pointResponses = right._pointResponses;
-
-        _insertDynamicDataFlag = right._insertDynamicDataFlag;
-        _dirty = right._dirty;
-
-        _commsStatePointId = right._commsStatePointId;
-    }
-    return *this;
-}
-
 /*---------------------------------------------------------------------------
     replicate
 
@@ -8545,7 +8403,20 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus* CtiCCSubstationBus::replicate() const
 {
-    return(new CtiCCSubstationBus(*this));
+    CtiCCSubstationBusPtr newBus = new CtiCCSubstationBus( *this );
+
+    // The feeders are currently owned by both busses due to the shallow
+    //  default copy semantics. We need to replicate the feeders in the new
+    //  bus and overwrite the contents of the collection.
+
+    std::transform( newBus->_ccfeeders.begin(), newBus->_ccfeeders.end(),
+                    newBus->_ccfeeders.begin(),
+                    [ & ]( auto feeder )
+                    {
+                        return feeder->replicate();
+                    } ); 
+
+    return newBus;
 }
 
 /*---------------------------------------------------------------------------
