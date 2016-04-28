@@ -35,10 +35,8 @@ class CtiCCSubstationBus : public Controllable
 public:
     DECLARE_COLLECTABLE( CtiCCSubstationBus );
 
-    CtiCCSubstationBus();
-    CtiCCSubstationBus(StrategyManager * strategyManager);
-    CtiCCSubstationBus(Cti::RowReader& rdr, StrategyManager * strategyManager);
-    CtiCCSubstationBus(const CtiCCSubstationBus& bus);
+    CtiCCSubstationBus( StrategyManager * strategyManager = nullptr );
+    CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * strategyManager );
 
     virtual ~CtiCCSubstationBus();
 
@@ -354,12 +352,8 @@ public:
 
     std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
-    CtiCCSubstationBus& operator=(const CtiCCSubstationBus& right);
 
     CtiCCSubstationBus* replicate() const;
-
-    //static int PeakState;
-    //static int OffPeakState;
 
     // Added for serialization
     double getAltSubVoltVal() const;
@@ -368,6 +362,11 @@ public:
     double getCurrentvoltloadpointvalue() const;
     double getCurrentvarloadpointvalue() const;
     double getCurrentwattloadpointvalue() const;
+
+protected:
+
+    CtiCCSubstationBus( const CtiCCSubstationBus & bus );
+    CtiCCSubstationBus & operator=( const CtiCCSubstationBus & right );
 
 private:
 
