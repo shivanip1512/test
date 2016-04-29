@@ -298,8 +298,8 @@ public:
     void incrementGroupMessageCount(long userID, Cti::ConnectionHandle client, int entries = 1);
     void decrementGroupMessageCount(long userID, Cti::ConnectionHandle client, int entries = 1);
 
-    virtual boost::optional<std::string> CtiDeviceSingle::getTransactionReport();
-    virtual void CtiDeviceSingle::clearTransactionReport();
+    virtual boost::optional<std::string> getTransactionReport();
+    virtual void clearTransactionReport();
 
 };
 

@@ -1937,9 +1937,9 @@ boost::optional<std::string> CtiDeviceSingle::getTransactionReport()
     return boost::none;
 }
 
-void CtiDeviceSingle::clearTransactionReport()
-{
-}
+// This is here so that SNPP transactions can override this function to clear the transaction report variable 
+// while doing nothing in the event that some other transaction calls this function.
+void CtiDeviceSingle::clearTransactionReport() { }
 
 unsigned CtiDeviceSingle::intervalsPerDay( unsigned intervalLength )
 {
