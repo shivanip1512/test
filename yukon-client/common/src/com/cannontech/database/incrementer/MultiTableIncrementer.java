@@ -36,7 +36,7 @@ public class MultiTableIncrementer {
     private String incrementSql;
     private boolean dirty = false;
     private Exception initializationException = null;
-    // Store identity Column only in the case of exception and remove after successful initiation in second attempt
+    // Store identity Column only in the case of exception and remove after successful initialization in second attempt
     private ConcurrentMap<String, String> tableIdentityColumnInfo = new ConcurrentHashMap<>();
 
     public MultiTableIncrementer(DataSource dataSource) {
