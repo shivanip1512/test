@@ -1937,6 +1937,10 @@ boost::optional<std::string> CtiDeviceSingle::getTransactionReport()
     return boost::none;
 }
 
+void CtiDeviceSingle::clearTransactionReport()
+{
+}
+
 unsigned CtiDeviceSingle::intervalsPerDay( unsigned intervalLength )
 {
     //  TODO: Perhaps it's more appropriate to throw an exception here?

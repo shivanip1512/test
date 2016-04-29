@@ -37,6 +37,7 @@ public:
    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
    boost::optional<std::string> getTransactionReport() override;
+   void clearTransactionReport() override;
 
    enum CommandState
    {

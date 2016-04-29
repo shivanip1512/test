@@ -1269,7 +1269,10 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
 
                             if (auto transactionReport = ds->getTransactionReport())
                             {
+                                *transactionReport = "SNPP Transaction Report Start \n" + *transactionReport;
+                                *transactionReport += "SNPP Transaction Report End \n";
                                 CTILOG_INFO(Port->getPortLog(), *transactionReport);
+                                ds->clearTransactionReport();
                             }
                             
                             //  send real pointdata messages here

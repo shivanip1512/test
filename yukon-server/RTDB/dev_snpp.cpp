@@ -751,6 +751,11 @@ boost::optional<std::string> CtiDeviceSnppPagingTerminal::getTransactionReport()
     return _transaction_report;
 }
 
+void CtiDeviceSnppPagingTerminal::clearTransactionReport()
+{
+    _transaction_report.clear();
+}
+
 void CtiDeviceSnppPagingTerminal::updateTransactionReport(std::string reportUpdate)
 {
     _transaction_report.append(reportUpdate);
