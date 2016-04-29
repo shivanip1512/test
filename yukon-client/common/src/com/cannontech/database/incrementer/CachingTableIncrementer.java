@@ -12,9 +12,9 @@ public class CachingTableIncrementer extends MultiTableIncrementer {
     }
     
     @Override
-    public synchronized int getNextValue() {
+    public synchronized int getNextValue(String tableName) {
         if (++current > currentMax) {
-            currentMax = super.getNextValue(incrementBy);
+            currentMax = super.getNextValue(incrementBy, tableName);
             current = currentMax - incrementBy + 1;
         }
         return current;

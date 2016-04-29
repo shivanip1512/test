@@ -126,7 +126,7 @@ public class XmlIncrementer implements KeyedIncrementer {
             throw initializationException;
         }
         MultiTableIncrementer incrementer = getIncrementerForTable(tableName);
-        return incrementer.getNextValue();
+        return incrementer.getNextValue(tableName);
     }
     
 

@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.sql.DataSource;
 
@@ -34,7 +36,9 @@ public class MultiTableIncrementer {
     private String incrementSql;
     private boolean dirty = false;
     private Exception initializationException = null;
-    
+    // Store identity Column only in the case of exception and remove after successful initiation in second attempt
+    private ConcurrentMap<String, String> tableIdentityColumnInfo = new ConcurrentHashMap<>();
+
     public MultiTableIncrementer(DataSource dataSource) {
         this.dataSource = dataSource;
     }
@@ -56,13 +60,20 @@ public class MultiTableIncrementer {
         }
     }
     
-    public int getNextValue() {
-        return getNextValue(1);
+    public int getNextValue(String tableName) {
+        return getNextValue(1, tableName);
     }
     
-    protected int getNextValue(int incrementBy) {
-        if (initializationException != null) {
-            throw new RuntimeException("Exception during initialization.", initializationException);
+    protected int getNextValue(int incrementBy, String tableName) {
+        String identityColumn = tableIdentityColumnInfo.get(tableName);
+
+        if (identityColumn != null) {
+            initializationException = null;
+            initializeSequence(tableName, identityColumn);
+            if (initializationException != null) {
+                throw new RuntimeException("Exception during initialization.", initializationException);
+            }
+            tableIdentityColumnInfo.remove(tableName);
         }
         initializeSql();
         Connection con = null;
@@ -150,6 +161,7 @@ public class MultiTableIncrementer {
             });
         } catch (Exception e) {
             initializationException = e;
+            tableIdentityColumnInfo.put(tableName, identityColumn);
             CTILogger.warn("Unable to initialize " + sequenceKey + " sequence: " + e.getMessage() + 
                            ". An exception will be thrown if this sequence is used.");
         }
