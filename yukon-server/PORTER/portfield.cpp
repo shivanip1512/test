@@ -1269,9 +1269,9 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
 
                             if (auto transactionReport = ds->getTransactionReport())
                             {
-                                *transactionReport = "SNPP Transaction Report Start \n" + *transactionReport;
-                                *transactionReport += "SNPP Transaction Report End \n";
-                                CTILOG_INFO(Port->getPortLog(), *transactionReport);
+                                CTILOG_INFO(Port->getPortLog(), "SNPP Transaction Report Start" << endl << 
+                                                                *transactionReport <<
+                                                                "SNPP Transaction Report End" );
                                 ds->clearTransactionReport();
                             }
                             
