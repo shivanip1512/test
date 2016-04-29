@@ -37,7 +37,7 @@ public class MultiTableIncrementer {
     private boolean dirty = false;
     private Exception initializationException = null;
     // Store identity Column only in the case of exception and remove after successful initialization in second attempt
-    private ConcurrentMap<String, String> tableIdentityColumnInfo = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, String> uninitializedTableIdentityColumn = new ConcurrentHashMap<>();
 
     public MultiTableIncrementer(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -65,15 +65,16 @@ public class MultiTableIncrementer {
     }
     
     protected int getNextValue(int incrementBy, String tableName) {
-        String identityColumn = tableIdentityColumnInfo.get(tableName);
+        String identityColumn = uninitializedTableIdentityColumn.get(tableName);
 
         if (identityColumn != null) {
             initializationException = null;
             initializeSequence(tableName, identityColumn);
             if (initializationException != null) {
-                throw new RuntimeException("Exception during initialization.", initializationException);
+                throw new RuntimeException("Exception during initialization of identity value for table " + tableName
+                    + ".", initializationException);
             }
-            tableIdentityColumnInfo.remove(tableName);
+            uninitializedTableIdentityColumn.remove(tableName);
         }
         initializeSql();
         Connection con = null;
@@ -161,9 +162,10 @@ public class MultiTableIncrementer {
             });
         } catch (Exception e) {
             initializationException = e;
-            tableIdentityColumnInfo.put(tableName, identityColumn);
-            CTILogger.warn("Unable to initialize " + sequenceKey + " sequence: " + e.getMessage() + 
-                           ". An exception will be thrown if this sequence is used.");
+            uninitializedTableIdentityColumn.put(tableName, identityColumn);
+            CTILogger.warn("Unable to initialize " + sequenceKey + " sequence: " + e.getMessage()
+                + ". An attempt to reinitialize will occur if the sequence is attempted to be used. "
+                + "If unable to initialize, an exception will be thrown if this sequence is used.");
         }
     }
     
