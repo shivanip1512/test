@@ -178,7 +178,8 @@ public class PointValidator extends SimpleValidator<PointModel> {
             Double highReasonabilityLimit = scalar.getPointUnit().getHighReasonabilityLimit();
             Double lowReasonabilityLimit = scalar.getPointUnit().getLowReasonabilityLimit();
             if (highReasonabilityLimit < lowReasonabilityLimit) {
-                errors.rejectValue("pointBase.pointUnit.lowReasonabilityLimit", baseKey + ".reasonability");
+                YukonValidationUtils.rejectValues(errors, baseKey + ".reasonability",
+                    "pointBase.pointUnit.highReasonabilityLimit", "pointBase.pointUnit.lowReasonabilityLimit");
             }
             if (highReasonabilityLimit != CtiUtilities.INVALID_MAX_DOUBLE)
                 YukonValidationUtils.checkRange(errors, "pointBase.pointUnit.highReasonabilityLimit",

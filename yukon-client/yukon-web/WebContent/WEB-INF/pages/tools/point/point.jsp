@@ -389,7 +389,7 @@
                                 toggleGroup="highReasonability" toggleAction="hide" inputClass="js-reasonability"/>
 
                             <%-- All readings exceeding this value are ignored --%>
-                            <tags:input path="pointBase.pointUnit.highReasonabilityLimit" size="6"
+                            <tags:input path="pointBase.pointUnit.highReasonabilityLimit" size="6" maxlength="14"
                                 toggleGroup="highReasonability"/>
                         </tags:nameValue2>
 
@@ -398,7 +398,7 @@
                                 toggleGroup="lowReasonability" toggleAction="hide" inputClass="js-reasonability"/>
 
                             <%-- All readings less than this value are ignored --%>
-                            <tags:input path="pointBase.pointUnit.lowReasonabilityLimit" size="6"
+                            <tags:input path="pointBase.pointUnit.lowReasonabilityLimit" size="6" maxlength="14"
                                 toggleGroup="lowReasonability"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
