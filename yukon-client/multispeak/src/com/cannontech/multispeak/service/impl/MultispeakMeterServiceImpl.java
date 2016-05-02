@@ -692,7 +692,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             ODEventNotificationResponse odEventNotificationResponse =
                 oaClient.odEventNotification(mspVendor, responseUrl, odEventNotification);
             List<ErrorObject> errObjects = null;
-            if (odEventNotificationResponse != null) {
+            if (odEventNotificationResponse != null && odEventNotificationResponse.getODEventNotificationResult() != null) {
                 List<ErrorObject> responseErrorObjects = odEventNotificationResponse.getODEventNotificationResult().getErrorObject();
                 errObjects = responseErrorObjects;
             }
