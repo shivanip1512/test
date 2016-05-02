@@ -210,6 +210,25 @@ yukon.da.common = (function () {
                 });
             });
             
+            /** User clicked User Per Phase; clear out phase b and phase c points and change label. */
+            $(document).on('click', '.js-per-phase', function () {
+                
+                var toggle = $(this),
+                    perPhaseRow = toggle.closest('tr'),
+                    active = perPhaseRow.find('.switch-btn-checkbox').prop('checked'),
+                    varText = document.getElementById('varLabel').innerText,
+                    phaseAText = document.getElementById('phaseALabel').innerText;
+
+                if (!active) {
+                    $('#varPointLabel').find('td:first').text(varText);
+                    yukon.pickers['phaseBPointPicker'].removeEvent();
+                    yukon.pickers['phaseCPointPicker'].removeEvent();
+                } else {
+                    $('#varPointLabel').find('td:first').text(phaseAText);
+                }
+
+            });
+            
             /** Bank Move */
             $(document).on('click', 'li.toggle', function (ev) {
                 

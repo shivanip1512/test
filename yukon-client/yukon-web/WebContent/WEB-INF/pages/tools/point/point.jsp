@@ -73,7 +73,7 @@
                                 inputClass="js-archive-type" />
                             <span class="js-archive-interval">
                                 <c:if test="${viewMode}">(</c:if>
-                                <tags:intervalStepper path="pointBase.point.archiveInterval" intervals="${archiveIntervals}" />
+                                <tags:intervalDropdown path="pointBase.point.archiveInterval" intervals="${archiveIntervals}" />
                                 <c:if test="${viewMode}">)</c:if>
                             </span>
                         </tags:nameValue2>
@@ -84,7 +84,7 @@
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".digits">
-                            <tags:stepperWithItems items="${decimalDigits}" path="pointBase.pointUnit.decimalPlaces"/>
+                            <tags:selectWithItems items="${decimalDigits}" path="pointBase.pointUnit.decimalPlaces"/>
                         </tags:nameValue2>
             
                         <tags:nameValue2 nameKey=".stateGroup">
@@ -134,7 +134,7 @@
                             <tags:selectWithItems path="pointBase.calcBase.updateType" items="${pointUpdateTypes}" 
                                 itemValue="databaseRepresentation" inputClass="js-calc-update-type"/>
                             <span class="js-calc-period">
-                                <tags:intervalStepper path="pointBase.calcBase.periodicRate" 
+                                <tags:intervalDropdown path="pointBase.calcBase.periodicRate" 
                                     intervals="${archiveIntervals}"/>
                             </span>
                         </tags:nameValue2>
@@ -162,7 +162,7 @@
                                 inputClass="js-archive-type" />
                             <span class="js-archive-interval">
                                 <c:if test="${viewMode}">(</c:if>
-                                <tags:intervalStepper path="pointBase.point.archiveInterval" intervals="${archiveIntervals}" />
+                                <tags:intervalDropdown path="pointBase.point.archiveInterval" intervals="${archiveIntervals}" />
                                 <c:if test="${viewMode}">)</c:if>
                             </span>
                         </tags:nameValue2>

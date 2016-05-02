@@ -177,7 +177,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             
             /* Class */
             StringBuilder classes = new StringBuilder().append("button");
-            if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE) {
+            if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE || mode == RenderMode.LABEL) {
                 classes.append(" naked");
             }
             if (StringUtils.isNotBlank(this.classes)) {
@@ -270,7 +270,8 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
         IMAGE("image"),
         LABELED_IMAGE("labeledImage"),
         BUTTON_IMAGE("buttonImage"),
-        BUTTON("button");
+        BUTTON("button"),
+        LABEL("label");
 
         private String attributeValue;
 

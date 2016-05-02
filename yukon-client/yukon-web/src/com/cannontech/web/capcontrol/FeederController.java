@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -41,7 +42,6 @@ import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.web.PageEditMode;
@@ -90,10 +90,17 @@ public class FeederController {
 
     @RequestMapping("feeders/create")
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String create(ModelMap model, LiteYukonUser user) {
+    public String create(ModelMap model, LiteYukonUser user, HttpServletRequest request) {
 
         CapControlFeeder feeder = new CapControlFeeder();
         model.addAttribute("mode",  PageEditMode.CREATE);
+        
+        //check for parentId to assign to
+        String parentId = request.getParameter("parentId");
+        if (parentId != null) {
+            LiteYukonPAObject parent = dbCache.getAllPaosMap().get(Integer.parseInt(parentId));
+            model.addAttribute("parent", parent);
+        }
 
         return setUpModel(model, feeder, user);
     }
@@ -150,10 +157,10 @@ public class FeederController {
                 model.addAttribute("substationName", substation.getCcName());
 
                 int areaId = ccCache.getParentAreaId(feeder.getId());
-                Area area = ccCache.getArea(areaId);
+                LiteYukonPAObject area = dbCache.getAllPaosMap().get(areaId);
 
-                model.addAttribute("areaId", area.getCcId());
-                model.addAttribute("areaName", area.getCcName());
+                model.addAttribute("areaId", area.getLiteID());
+                model.addAttribute("areaName", area.getPaoName());
                 
                 SubBus bus = ccCache.getParentSubBus(feeder.getId());
                 model.addAttribute("busId", bus.getCcId());
@@ -173,7 +180,7 @@ public class FeederController {
             @ModelAttribute("feeder") CapControlFeeder feeder,
             BindingResult result,
             RedirectAttributes redirectAttributes,
-            FlashScope flash) {
+            FlashScope flash, HttpServletRequest request) {
         
         validator.validate(feeder, result);
 
@@ -190,6 +197,12 @@ public class FeederController {
             redirectAttributes.addFlashAttribute("error", e);
             log.error("Error saving feeder:", e);
             return bindAndForward(feeder, result, redirectAttributes);
+        }
+        
+        //assign to parent if parentId is there
+        String parentId = request.getParameter("parentId");
+        if (parentId != null) {
+            feederDao.assignFeeder(Integer.parseInt(parentId), id);
         }
         
         // Success
@@ -243,6 +256,8 @@ public class FeederController {
 
         List<CapBankAssignment> unassigned = feederService.getUnassignedCapBanks();
         model.addAttribute("unassigned", unassigned);
+        
+        model.addAttribute("createUrl", "/capcontrol/capbanks/create?parentId=" + feederId);
 
         return "assignment-popup-feeder.jsp";
     }

@@ -38,7 +38,7 @@
                 <tags:sectionContainer title="${generalTab}">
                     <tags:nameValueContainer2 tableClass="natural-width">
                         <tags:nameValue2 nameKey=".name">
-                            <tags:input path="name" size="25" />
+                            <tags:input path="name" size="25" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".type">
                             <cti:displayForPageEditModes modes="CREATE">
@@ -108,12 +108,12 @@
                             <tags:switchButton path="editingIntegrity" toggleGroup="integrity" toggleAction="hide"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".interval" data-toggle-group="integrity">
-                            <tags:intervalStepper path="deviceScanRateMap['Integrity'].intervalRate"
+                            <tags:intervalDropdown path="deviceScanRateMap['Integrity'].intervalRate"
                                 intervals="${timeIntervals}"
                                 id="scan1" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".altInterval" data-toggle-group="integrity">
-                            <tags:intervalStepper path="deviceScanRateMap['Integrity'].alternateRate"
+                            <tags:intervalDropdown path="deviceScanRateMap['Integrity'].alternateRate"
                                 intervals="${timeIntervals}" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".scanGroup" data-toggle-group="integrity">
@@ -136,11 +136,11 @@
                             <tags:switchButton path="editingException" toggleGroup="exception" toggleAction="hide"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".interval" data-toggle-group="exception">
-                            <tags:intervalStepper path="deviceScanRateMap['Exception'].intervalRate"
+                            <tags:intervalDropdown path="deviceScanRateMap['Exception'].intervalRate"
                                 intervals="${timeIntervals}" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".altInterval" data-toggle-group="exception">
-                            <tags:intervalStepper path="deviceScanRateMap['Exception'].alternateRate"
+                            <tags:intervalDropdown path="deviceScanRateMap['Exception'].alternateRate"
                                 intervals="${timeIntervals}" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".scanGroup" data-toggle-group="exception">
@@ -178,6 +178,7 @@
                     </cti:checkRolesAndProperties>
                 </tags:sectionContainer2>
 
+            <c:if test="${not empty dnpConfig}">
                 <tags:sectionContainer2 nameKey="dnpConfiguration" styleClass="stacked-lg ${twoWayClass}">
                     <tags:nameValueContainer2 tableClass="natural-width">
                         <tags:nameValue2 nameKey=".dnpConfig">
@@ -225,6 +226,8 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
+            </c:if>
+
             </div>
             </cti:displayForPageEditModes>
         </div>

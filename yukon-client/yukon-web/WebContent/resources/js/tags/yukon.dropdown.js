@@ -133,7 +133,18 @@ $(function() {
     if (!yg.dev_mode) {
         $(document).on('contextmenu', '.has-actions tr', function(event) {
             event.preventDefault();
-            $(this).find('.dropdown-trigger').trigger('click');
+            var trigger = $(this).find('.dropdown-trigger');
+            var menu = trigger.find('.dropdown-menu');
+            
+            if (menu.length == 0)
+                menu = trigger.data('menu');
+
+            trigger.trigger('click');
+            
+            menu.removeAttr('style');
+            menu.css({top:event.pageY, left:event.pageX});
+            menu.toggle();
+            
         });
     }
     

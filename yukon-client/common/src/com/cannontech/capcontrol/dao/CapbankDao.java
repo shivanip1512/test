@@ -103,4 +103,14 @@ public interface CapbankDao {
      */
     boolean assignAndOrderCapbank(YukonPao feeder, YukonPao capbank, float controlOrder, float closeOrder, float tripOrder);
 
+    /**
+     * Assigns a capbank to a feeder and processes the necessary dbchange
+     * messages.
+     * @param feederId the id of the feeder being assigned to
+     * @param capbankId the id of the capbank being assigned
+     * @return true if the assignment occurred with only one row in the db
+     *         updated, false otherwise.
+     */
+    boolean assignCapbank(int feederId, int capbankId);
+
 }

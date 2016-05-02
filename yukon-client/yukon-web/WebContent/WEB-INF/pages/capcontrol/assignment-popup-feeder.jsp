@@ -35,6 +35,16 @@ $(function() {
 <cti:msgScope paths="yukon.web.modules.capcontrol">
 
 <div class="column-12-12 clearfix select-box">
+
+    <c:if test="${not empty createUrl}">
+        <div class="column-12-12 clearfix">
+            <span class="fr">
+                <cti:url var="createAssignmentUrl" value="${createUrl}"/>
+                <cti:button nameKey="create" icon="icon-add" href="${createAssignmentUrl}"/>
+            </span>
+        </div>
+    </c:if>
+    
     <div id="unassigned" class="column one select-box-available" style="min-height:150px;">
         <h3><i:inline key="yukon.common.available"/></h3>
         <c:forEach var="item" items="${unassigned}">

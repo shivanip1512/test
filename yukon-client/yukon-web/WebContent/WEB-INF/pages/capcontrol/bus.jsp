@@ -35,10 +35,16 @@
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/buses/${bus.id}/edit" />
         <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+        <cm:dropdownOption key=".edit.feeders" icon="icon-add-remove" data-popup=".js-edit-feeders-popup" />
     </cti:checkRolesAndProperties>
 </div>
 
 <cti:url var="action" value="/capcontrol/buses"/>
+<cti:displayForPageEditModes modes="CREATE">
+    <c:if test="${not empty parent}">
+        <cti:url var="action" value="/capcontrol/buses?parentId=${parent.liteID}"/>
+    </c:if>
+</cti:displayForPageEditModes>
 <form:form commandName="bus" action="${action}" method="POST">
     <cti:csrfToken/>
     <div class="column-12-12">
@@ -51,7 +57,7 @@
                             <tags:switchButton path="capControlSubstationBus.multiMonitorControlBoolean" classes="dn"/>
                             <form:hidden path="pAOStatistics"/>
                             <form:hidden path="id"/>
-                            <tags:input path="name"/>
+                            <tags:input path="name" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".status">
                             <tags:switchButton path="disabled" inverse="${true}"
@@ -136,7 +142,7 @@
                                 <tags:pickerDialog
                                     id="voltReductionPointPicker"
                                     type="pointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="volt-reduction-bus-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -155,7 +161,7 @@
                                 <tags:pickerDialog
                                     id="disableBusPointPicker"
                                     type="pointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="disable-bus-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -170,21 +176,27 @@
                             </tags:nameValue2>
     
                             <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
-                                <tags:switchButton path="capControlSubstationBus.usePhaseDataBoolean" 
+                                <tags:switchButton id="perPhaseChecked" path="capControlSubstationBus.usePhaseDataBoolean" 
                                     toggleGroup="perPhase" toggleAction="hide" classes="js-per-phase"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
                                 <tags:switchButton path="capControlSubstationBus.controlFlagBoolean"/>
                             </tags:nameValue2>
-    
-                            <%-- Var point when not per phase --%>
-                            <%-- Phase A when not per phase --%>
-                            <tags:nameValue2 nameKey=".points.varPhaseA">
+                            
+                            <!-- If Use Per Phase Data is On, label should be Phase A otherwise label should be Var Point -->
+                            <span id="phaseALabel" class="dn"><i:inline key=".points.phaseA"/></span>
+                            <span id="varLabel" class="dn"><i:inline key=".points.var"/></span>
+                            <c:set var="varPointDefaultLabel" value=".points.var"/>
+                            <c:if test="${bus.capControlSubstationBus.usePhaseDataBoolean}">
+                                <c:set var="varPointDefaultLabel" value=".points.phaseA"/>
+                            </c:if>
+                            
+                            <tags:nameValue2 id="varPointLabel" nameKey="${varPointDefaultLabel}">                                    
                                 <form:hidden id="var-point-input" path="capControlSubstationBus.currentVarLoadPointID"/>
                                 <tags:pickerDialog
                                     id="varPointPicker"
                                     type="pointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="var-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -192,17 +204,18 @@
                                     includeRemoveButton="${true}"
                                     removeValue="0" />
                                 <cti:displayForPageEditModes modes="VIEW">
-                                    <c:if test="${empty bus.capControlSubstationBus.currentVarLoadPointID}">
+                                    <c:if test="${empty bus.capControlSubstationBus.currentVarLoadPointID || bus.capControlSubstationBus.currentVarLoadPointID == 0}">
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                     </c:if>
                                 </cti:displayForPageEditModes>
                             </tags:nameValue2>
+
                             <tags:nameValue2 nameKey=".points.phaseB" data-toggle-group="perPhase">
                                 <form:hidden id="phase-b-point-input" path="capControlSubstationBus.phaseB"/>
                                 <tags:pickerDialog
                                     id="phaseBPointPicker"
                                     type="pointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="phase-b-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -220,7 +233,7 @@
                                 <tags:pickerDialog
                                     id="phaseCPointPicker"
                                     type="pointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="phase-c-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -239,7 +252,7 @@
                                 <tags:pickerDialog
                                     id="wattPointPicker"
                                     type="pointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="watt-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -258,7 +271,7 @@
                                 <tags:pickerDialog
                                     id="voltPointPicker"
                                     type="pointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="volt-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -295,7 +308,7 @@
                                 <tags:pickerDialog
                                     id="altBusPicker"
                                     type="capControlSubstationBusPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoName"
                                     destinationFieldId="switch-alt-bus-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -313,7 +326,7 @@
                                 <tags:pickerDialog
                                     id="switchPointPicker"
                                     type="pointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="switch-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -356,7 +369,7 @@
     </div>
     
     <cti:displayForPageEditModes modes="EDIT,VIEW">
-        <tags:boxContainer2 nameKey="feedersSection">
+        <tags:sectionContainer2 nameKey="feedersSection">
             <c:if test="${empty feederList}">
                 <span class="empty-list"><i:inline key=".bus.noAssignedFeeders"/></span>
             </c:if>
@@ -380,14 +393,7 @@
                 </c:if>
             </c:if>
             
-            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <div class="action-area">
-                    <cti:button nameKey="edit.feeders" icon="icon-pencil"
-                        data-popup=".js-edit-feeders-popup" data-popup-toggle=""/>
-                </div>
-            </cti:checkRolesAndProperties>
-            
-        </tags:boxContainer2>    
+        </tags:sectionContainer2>    
             
     </cti:displayForPageEditModes>
 

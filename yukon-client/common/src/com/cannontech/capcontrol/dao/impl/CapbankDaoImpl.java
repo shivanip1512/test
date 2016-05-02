@@ -28,12 +28,15 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class CapbankDaoImpl implements CapbankDao {
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDao paoDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private IDatabaseCache dbCache;
+
     
     private static final YukonRowMapper<CapbankAdditional> capBankAdditionalRowMapper = new YukonRowMapper<CapbankAdditional>() {
         @Override
@@ -202,6 +205,13 @@ public class CapbankDaoImpl implements CapbankDao {
         }
 
         return result;
+    }
+    
+    @Override
+    public boolean assignCapbank(int feederId, int capbankId) {
+        YukonPao feeder = dbCache.getAllPaosMap().get(feederId);
+        YukonPao capbank = dbCache.getAllPaosMap().get(capbankId);
+        return assignCapbank(feeder, capbank);
     }
     
     @Override

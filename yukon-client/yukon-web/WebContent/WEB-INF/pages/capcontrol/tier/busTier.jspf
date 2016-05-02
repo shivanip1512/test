@@ -188,15 +188,7 @@
         </c:forEach>
     </table>
     </c:if>
-    
-    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <c:if test="${fn:length(subBusList) < 2}">
-            <span class="fr">
-                <cti:button nameKey="edit.buses" icon="icon-pencil" 
-                    data-popup=".js-edit-buses-popup" data-popup-toggle=""/>
-            </span>
-        </c:if>
-    </cti:checkRolesAndProperties>
+
 </tags:boxContainer2>
     <c:if test="${fn:length(subBusList) > 1}"> 
         <tags:boxContainerFooter>
@@ -207,12 +199,6 @@
                    <option value="${sub.ccId}">${fn:escapeXml(sub.ccName)}</option>
                 </c:forEach>
             </select>
-            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <span class="fr">
-                    <cti:button nameKey="edit.buses" icon="icon-pencil" 
-                        data-popup=".js-edit-buses-popup" data-popup-toggle=""/>
-                </span>
-            </cti:checkRolesAndProperties>
         </tags:boxContainerFooter>
     </c:if> 
     

@@ -10,7 +10,17 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="strategy.${mode}">
-        
+
+<%@ include file="/capcontrol/capcontrolHeader.jspf" %>
+
+    <div class="js-page-additional-actions dn">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <li class="divider" />
+            <cti:url var="editUrl" value="/capcontrol/strategies/${strategy.id}/edit" />
+            <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+        </cti:checkRolesAndProperties>
+    </div>
+
     <tags:setFormEditMode mode="${mode}" />
 
     <cti:url var="action" value="/capcontrol/strategies" />
@@ -44,12 +54,15 @@
                                 inputClass="with-option-hiding" />
                         </tags:nameValue2>
                         
+                        <cti:default var="format" value="DHMS_REDUCED"/>
+                        
+                        
                         <tags:nameValue2 nameKey=".controlInterval" rowClass="js-not-time-of-day">
-                            <tags:intervalStepper path="controlInterval" intervals="${analysisIntervals}" noneKey=".newDataOnly"/>
+                            <tags:intervalDropdown path="controlInterval" intervals="${analysisIntervals}" />
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".minResponseTime">
-                            <tags:intervalStepper path="minResponseTime" intervals="${analysisIntervals}" />
+                            <tags:intervalDropdown path="minResponseTime" intervals="${analysisIntervals}" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".minConfirmPercent">
                             <tags:input path="minConfirmPercent" size="3"/>
@@ -66,7 +79,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".controlDelayTime" rowClass="js-not-time-of-day">
-                            <tags:intervalStepper path="controlDelayTime" intervals="${analysisIntervals}" />
+                            <tags:intervalDropdown path="controlDelayTime" intervals="${analysisIntervals}" />
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".integrateControl" rowClass="js-not-time-of-day">
@@ -76,7 +89,7 @@
                                         toggleGroup="integrateControl" toggleAction="hide" color="${not viewMode}" />
                                 </c:if>
                                 <c:if test="${not viewMode or status.value}">
-                                    <tags:intervalStepper path="integratePeriod"  classes="vat"
+                                    <tags:intervalDropdown path="integratePeriod"  classes="vat"
                                         intervals="${integrateIntervals}" toggleGroup="integrateControl" />
                                 </c:if>
                             </spring:bind>
@@ -288,13 +301,6 @@
         </div>
         
         <div class="page-action-area">
-            
-            <cti:displayForPageEditModes modes="VIEW">
-            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <cti:url var="editUrl" value="/capcontrol/strategies/${strategy.id}/edit" />
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-            </cti:checkRolesAndProperties>
-            </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action"/>

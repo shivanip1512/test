@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -41,7 +42,6 @@ import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -49,6 +49,7 @@ import com.cannontech.web.capcontrol.models.Assignment;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.service.BusService;
 import com.cannontech.web.capcontrol.service.StrategyService;
+import com.cannontech.web.capcontrol.service.SubstationService;
 import com.cannontech.web.capcontrol.validators.BusValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
@@ -71,6 +72,7 @@ public class BusController {
     @Autowired private StrategyService strategyService;
     @Autowired private SubstationBusDao busDao;
     @Autowired private PaoScheduleDao paoScheduleDao;
+    @Autowired private SubstationService substationService;
 
     private Logger log = YukonLogManager.getLogger(getClass());
 
@@ -99,10 +101,17 @@ public class BusController {
 
     @RequestMapping("buses/create")
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String create(ModelMap model, LiteYukonUser user) {
+    public String create(ModelMap model, LiteYukonUser user, HttpServletRequest request) {
 
         CapControlSubBus bus = new CapControlSubBus();
         model.addAttribute("mode",  PageEditMode.CREATE);
+
+        //check for parentId to assign to
+        String parentId = request.getParameter("parentId");
+        if (parentId != null) {
+            LiteYukonPAObject parent = dbCache.getAllPaosMap().get(Integer.parseInt(parentId));
+            model.addAttribute("parent", parent);
+        }
 
         return setUpModel(model, bus, user);
     }
@@ -158,10 +167,10 @@ public class BusController {
                 model.addAttribute("substationName", substation.getCcName());
 
                 int areaId = ccCache.getParentAreaId(bus.getId());
-                Area area = ccCache.getArea(areaId);
+                LiteYukonPAObject area = dbCache.getAllPaosMap().get(areaId);
 
-                model.addAttribute("areaId", area.getCcId());
-                model.addAttribute("areaName", area.getCcName());
+                model.addAttribute("areaId", area.getLiteID());
+                model.addAttribute("areaName", area.getPaoName());
 
             } catch (NotFoundException e) {
                 model.addAttribute("orphan", true);
@@ -184,7 +193,7 @@ public class BusController {
             @ModelAttribute("bus") CapControlSubBus bus,
             BindingResult result,
             RedirectAttributes redirectAttributes,
-            FlashScope flash) {
+            FlashScope flash, HttpServletRequest request) {
 
         validator.validate(bus, result);
 
@@ -199,6 +208,12 @@ public class BusController {
             redirectAttributes.addFlashAttribute("error", e);
             log.error("Error saving bus:", e);
             return bindAndForward(bus, result, redirectAttributes);
+        }
+        
+        //assign to parent if parentId is there
+        String parentId = request.getParameter("parentId");
+        if (parentId != null) {
+            substationService.assignBus(Integer.parseInt(parentId), id);
         }
 
         // Success
@@ -249,6 +264,8 @@ public class BusController {
         List<Assignment> unassigned = busService.getUnassignedFeeders();
 
         model.addAttribute("unassigned", unassigned);
+        
+        model.addAttribute("createUrl", "/capcontrol/feeders/create?parentId=" + busId);
 
         return "assignment-popup.jsp";
     }

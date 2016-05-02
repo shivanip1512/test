@@ -39,7 +39,6 @@ import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
@@ -198,10 +197,10 @@ public class CbcController {
                     model.addAttribute("substationName", substation.getCcName());
 
                     int areaId = ccCache.getParentAreaId(capbankId);
-                    Area area = ccCache.getArea(areaId);
+                    LiteYukonPAObject area = dbCache.getAllPaosMap().get(areaId);
 
-                    model.addAttribute("areaId", area.getCcId());
-                    model.addAttribute("areaName", area.getCcName());
+                    model.addAttribute("areaId", area.getLiteID());
+                    model.addAttribute("areaName", area.getPaoName());
                     
                     int busId = ccCache.getParentSubBusId(capbankId);
                     SubBus bus = ccCache.getSubBus(busId);

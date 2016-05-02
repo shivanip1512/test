@@ -23,12 +23,15 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class FeederDaoImpl implements FeederDao {
     
     @Autowired private PaoDao paoDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private IDatabaseCache dbCache;
+
     
     @Override
     public List<LiteYukonPAObject> getUnassignedFeeders() {
@@ -141,6 +144,13 @@ public class FeederDaoImpl implements FeederDao {
         }
 
         return result;
+    }
+    
+    @Override
+    public boolean assignFeeder(int substationBusId, int feederId) {
+        YukonPao substationBus = dbCache.getAllPaosMap().get(substationBusId);
+        YukonPao feeder = dbCache.getAllPaosMap().get(feederId);
+        return assignFeeder(substationBus, feeder);
     }
 
     @Override

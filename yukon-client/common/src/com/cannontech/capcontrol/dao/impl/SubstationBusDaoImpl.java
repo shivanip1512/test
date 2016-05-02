@@ -36,12 +36,14 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
     
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ZoneDao zoneDao;
+    @Autowired private IDatabaseCache dbCache;
     
     private static final RowMapper<SubstationBus> rowMapper = new RowMapper<SubstationBus>() {
         @Override
@@ -330,6 +332,13 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         };
 
         template.update(generator, busIds);
+    }
+    
+    @Override
+    public boolean assignBus(int substationId, int busId) {
+        YukonPao substation = dbCache.getAllPaosMap().get(substationId);
+        YukonPao bus = dbCache.getAllPaosMap().get(busId);
+        return assignSubstationBus(substation, bus);
     }
 
     @Override

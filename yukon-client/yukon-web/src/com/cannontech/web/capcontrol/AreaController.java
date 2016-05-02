@@ -307,6 +307,8 @@ public class AreaController {
         });
         model.addAttribute("unassigned", unassigned);
         
+        model.addAttribute("createUrl", "/capcontrol/substations/create?parentId=" + areaId);
+        
         return "assignment-popup.jsp";
     }
     

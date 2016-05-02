@@ -284,6 +284,7 @@ public class PointDaoImpl implements PointDao {
         sql.append("SELECT POINTID,POINTTYPE,POINTNAME,PAObjectID");
         sql.append(" FROM Point");
         sql.append(" WHERE PAObjectID").eq(paobjectId);
+        sql.append(" ORDER BY POINTNAME");
 
         List<PointInfo> points = jdbcTemplate.query(sql, rowMapper);
 

@@ -88,4 +88,12 @@ public interface FeederDao {
      * @return
      */
     public PointIdContainer getFeederPointIds(int feederId);
+    /**
+     * This method assigns a feeder to a subbus
+     * @param substationBusId the id of the bus being assigned to
+     * @param feederId the id of the feeder to assign
+     * @return true if the assignment occurred and only updated one row in the
+     *         db, false otherwise.
+     */
+    boolean assignFeeder(int substationBusId, int feederId);
 }

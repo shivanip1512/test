@@ -63,5 +63,7 @@ public interface SubstationService {
      * @return All capbanks, as {@link ViewableCapBank}s, attached to the feeders.
      */
     List<ViewableCapBank> getCapBanksForFeeders(List<ViewableFeeder> feeders);
+
+    void assignBus(int substationId, int busId);
     
 }

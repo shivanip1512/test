@@ -3,6 +3,8 @@ package com.cannontech.capcontrol.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.common.pao.YukonPao;
@@ -83,4 +85,17 @@ public interface SubstationDao {
 
     /** Returns substations that are not assigned to the specified area. */
     List<LiteCapControlObject> getSubstationsNotInSpecialArea(int areaId);
+
+    /**
+     * This method assigns a {@link Substation} to an Area.  Works for both Areas and Special Areas.
+     * @param areaId the id of the {@link Area} being assigned.
+     * @param substationId the id of the {@link Substation} being assigned.
+     * @return true if the assignment occurred and only one row in the db was
+     *         updated, false otherwise.
+     */
+    boolean assignSubstation(int areaId, int substationId);
+    /**
+     * @return the id of the parent area or <code>null</code> if it is not attached.
+     */
+    Integer getParentAreaID(int id) throws EmptyResultDataAccessException;
 }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CapControlUtils;
@@ -64,6 +65,7 @@ public class SubstationController {
     @Autowired private SubstationValidator validator;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private CapControlCache ccCache;
+    @Autowired private SubstationDao substationDao;
 
     private static final Logger log = YukonLogManager.getLogger(SubstationController.class);
     
@@ -71,10 +73,18 @@ public class SubstationController {
     
     @RequestMapping("substations/create")
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String create(ModelMap model, LiteYukonUser user, FlashScope flashScope) {
+    public String create(ModelMap model, LiteYukonUser user, FlashScope flashScope, HttpServletRequest request) {
 
         CapControlSubstation substation = new CapControlSubstation();
         model.addAttribute("mode",  PageEditMode.CREATE);
+        model.addAttribute("orphan", true);
+
+        //check for parentId to assign to
+        String parentId = request.getParameter("parentId");
+        if (parentId != null) {
+            LiteYukonPAObject parent = dbCache.getAllPaosMap().get(Integer.parseInt(parentId));
+            model.addAttribute("parent", parent);
+        }
 
         return setUpModel(model, substation, user, flashScope);
     }
@@ -138,7 +148,20 @@ public class SubstationController {
 
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(substationId);
             model.addAttribute("points", points);
-
+            
+            Integer areaId = substationDao.getParentAreaID(substationId);
+            if (areaId != null) {
+                model.addAttribute("areaId", areaId);
+                LiteYukonPAObject area = dbCache.getAllPaosMap().get(areaId);
+                String areaName = area.getPaoName();
+                //String areaName = ccCache.getObject(areaId).getCcName();
+                model.addAttribute("areaName", areaName);
+                LiteYukonPAObject parent = dbCache.getAllPaosMap().get(areaId);
+                model.addAttribute("parent", parent);
+                model.addAttribute("orphan", false);
+            } else {
+                model.addAttribute("orphan", true);
+            }
             
             SubStation cachedSubstation = null;
             try {
@@ -148,19 +171,7 @@ public class SubstationController {
             }
             
             if (cachedSubstation != null) {
-                int areaId = cachedSubstation.getParentID();
-                if (areaId > 0) {
-                    model.addAttribute("areaId", areaId);
-                    String areaName = ccCache.getObject(areaId).getCcName();
-                    model.addAttribute("areaName", areaName);
-                    LiteYukonPAObject parent = dbCache.getAllPaosMap().get(areaId);
-                    model.addAttribute("parent", parent);
-                    model.addAttribute("orphan", false);
-                } else {
-                    model.addAttribute("orphan", true);
 
-                }
-                
                 model.addAttribute("specialAreaId", cachedSubstation.getSpecialAreaId());
                 
                 for (ViewableSubBus bus : subBuses) {
@@ -204,7 +215,7 @@ public class SubstationController {
             @ModelAttribute("substation") CapControlSubstation substation,
             BindingResult result,
             RedirectAttributes redirectAttributes,
-            FlashScope flash) {
+            FlashScope flash, HttpServletRequest request) {
         
         validator.validate(substation, result);
 
@@ -219,6 +230,12 @@ public class SubstationController {
             redirectAttributes.addFlashAttribute("error", e);
             log.error("Error saving substation:", e);
             return bindAndForward(substation, result, redirectAttributes);
+        }
+        
+        //assign to parent if parentId is there
+        String parentId = request.getParameter("parentId");
+        if (parentId != null) {
+            substationDao.assignSubstation(Integer.parseInt(parentId), id);
         }
         
         // Success
@@ -270,6 +287,8 @@ public class SubstationController {
 
         model.addAttribute("unassigned", unassigned);
         model.addAttribute("assigned", assigned);
+        
+        model.addAttribute("createUrl", "/capcontrol/buses/create?parentId=" + substationId);
 
         return "assignment-popup.jsp";
     }

@@ -34,10 +34,16 @@
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/capbanks/${capbank.id}/edit" />
         <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+        <cm:dropdownOption key=".edit.points" icon="icon-add-remove" data-popup=".js-edit-points-popup" />
     </cti:checkRolesAndProperties>
 </div>
 
     <cti:url var="action" value="/capcontrol/capbanks" />
+    <cti:displayForPageEditModes modes="CREATE">
+    <c:if test="${not empty parent}">
+        <cti:url var="action" value="/capcontrol/capbanks?parentId=${parent.liteID}"/>
+    </c:if>
+</cti:displayForPageEditModes>
     <form:form id="capbank-edit-form" commandName="capbank" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="id" />
@@ -48,7 +54,7 @@
                     <cti:tab title="${infoTab}">
                         <tags:nameValueContainer2 tableClass="natural-width">
                             <tags:nameValue2 nameKey=".name">
-                                <tags:input path="name" size="25" />
+                                <tags:input path="name" size="25" autofocus="autofocus"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".status">
                                 <tags:switchButton path="disabled" inverse="${true}"
@@ -57,6 +63,17 @@
                         </tags:nameValueContainer2>
                             
                         <cti:displayForPageEditModes modes="CREATE">
+                           <tags:nameValueContainer2 tableClass="natural-width">
+                               <tags:nameValue2 nameKey=".parent">
+                                    <c:if test="${empty parent }">
+                                        <span class="empty-list"><i:inline key="yukon.common.none"/></span>
+                                    </c:if>
+                                    <c:if test="${not empty parent}">
+                                        <cti:url var="editParent" value="/capcontrol/feeders/${parent.liteID}"/>
+                                            <a href="${editParent}">${fn:escapeXml(parent.paoName)}</a>
+                                    </c:if>
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>
                             <tags:sectionContainer2 nameKey="cbcControllerSection">
                                 <tags:nameValueContainer2 tableClass="natural-width">
                                     <tags:nameValue2 nameKey=".createCBC">
@@ -120,16 +137,20 @@
                                         <i:inline key=".custom"/><input id="customSizeCheckbox" type="checkbox" class="js-custom-bankSize" <c:if test="${capbank.capBank.customBankSize}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".recloseDelay" data-toggle-group="integrity">
-                                        <tags:intervalStepper path="CapBank.recloseDelay"
+                                        <tags:intervalDropdown path="CapBank.recloseDelay"
                                             intervals="${timeIntervals}"
                                             id="scan1" />
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".maxDailyOperations">
+                                        <tags:switchButton path="CapBank.maxOperationDisabled" toggleGroup="maxOperation" toggleAction="hide"/>
+                                        <tags:input path="CapBank.maxDailyOps" size="5" toggleGroup="maxOperation"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".controlDevicePoint">
                                         <form:hidden id="switch-control-point-input" path="CapBank.controlDeviceID"/>
                                         <tags:pickerDialog
                                             id="cbcOrphanPicker"
                                             type="capControlCBCOrphanPicker"
-                                            linkType="selection"
+                                            linkType="selectionLabel"
                                             selectionProperty="paoName"
                                             destinationFieldId="switch-control-point-input"
                                             viewOnlyMode="${mode == 'VIEW'}"
@@ -142,17 +163,6 @@
                                                 <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                             </c:if>
                                         </cti:displayForPageEditModes>
-                                    </tags:nameValue2>
-                                </tags:nameValueContainer2>
-                            </tags:sectionContainer2>
-                            <tags:sectionContainer2 nameKey="operationsSection">
-                               <tags:nameValueContainer2 tableClass="natural-width">
-                                    <tags:nameValue2 nameKey=".maxDailyOperations">
-                                        <tags:input path="CapBank.maxDailyOps" size="5"/>
-                                        <i:inline key=".unlimitedText"/>
-                                    </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".disableMaxOps">
-                                        <tags:switchButton path="CapBank.maxOperationDisabled" offNameKey=".no.label" onNameKey=".yes.label"/>
                                     </tags:nameValue2>
                                 </tags:nameValueContainer2>
                             </tags:sectionContainer2>
@@ -341,7 +351,7 @@
         <cti:displayForPageEditModes modes="EDIT,VIEW">
 
             <div class="column-12-12 clearfix">
-                <tags:boxContainer2 nameKey="assignedPointsSection">
+                <tags:sectionContainer2 nameKey="assignedPointsSection">
                 <table class="compact-results-table row-highlighting">
                     <tr>
                         <th><i:inline key=".assignedPoints.point"/></th>
@@ -388,14 +398,7 @@
                         </c:forEach>
                 </table>        
                 
-                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                    <div class="action-area">
-                        <cti:button nameKey="edit.points" icon="icon-pencil"
-                            data-popup=".js-edit-points-popup" data-popup-toggle=""/>
-                    </div>
-                </cti:checkRolesAndProperties>
-                
-             </tags:boxContainer2>    
+             </tags:sectionContainer2>    
                 
             </div>
             

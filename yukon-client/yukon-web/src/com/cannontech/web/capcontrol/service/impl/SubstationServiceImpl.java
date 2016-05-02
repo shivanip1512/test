@@ -192,6 +192,12 @@ public class SubstationServiceImpl implements SubstationService {
             throw new NotFoundException("No substation with id " + id + " found.");
         }
     }
+    
+    @Override
+    public void assignBus(int substationId, int busId) {
+        busDao.assignBus(substationId, busId);
+        dbChangeManager.processPaoDbChange(PaoIdentifier.of(substationId, PaoType.CAP_CONTROL_SUBSTATION), DbChangeType.UPDATE);
+    }
 
     @Override
     public void assignBuses(int substationId, Iterable<Integer> busIds) {

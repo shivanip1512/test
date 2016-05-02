@@ -21,6 +21,7 @@
 <%@ attribute name="readonly" %>
 <%@ attribute name="size" %>
 <%@ attribute name="tabindex" %>
+<%@ attribute name="autofocus" %>
 <%@ attribute name="password" type="java.lang.Boolean" description="If true, a password field is used. Default: false." %>
 
 <cti:default var="password" value="${false}"/>
@@ -57,6 +58,7 @@
             onchange="${pageScope.onchange}"
             onblur="${pageScope.onblur}"
             tabindex="${pageScope.tabindex}"
+            autofocus="${pageScope.autofocus}"
             data-toggle-group="${pageScope.toggleGroup}"
             placeholder="${pageScope.placeholder}"/>
     </c:when>
@@ -73,6 +75,7 @@
             onchange="${pageScope.onchange}"
             onblur="${pageScope.onblur}"
             tabindex="${pageScope.tabindex}"
+            autofocus="${pageScope.autofocus}"
             data-toggle-group="${pageScope.toggleGroup}"
             placeholder="${pageScope.placeholder}"/>
     </c:otherwise>

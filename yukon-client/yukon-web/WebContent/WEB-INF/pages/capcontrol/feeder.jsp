@@ -36,10 +36,16 @@
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/feeders/${feeder.id}/edit" />
         <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+        <cm:dropdownOption key=".edit.capbanks" icon="icon-add-remove" data-popup=".js-edit-capbanks-popup" />
     </cti:checkRolesAndProperties>
 </div>
 
 <cti:url var="action" value="/capcontrol/feeders"/>
+<cti:displayForPageEditModes modes="CREATE">
+    <c:if test="${not empty parent}">
+        <cti:url var="action" value="/capcontrol/feeders?parentId=${parent.liteID}"/>
+    </c:if>
+</cti:displayForPageEditModes>
 <form:form commandName="feeder" action="${action}" method="POST">
     <cti:csrfToken/>
     <div class="column-12-12">
@@ -51,7 +57,7 @@
                         <tags:nameValue2 nameKey=".name">
                             <form:hidden path="pAOStatistics"/>
                             <form:hidden path="id"/>
-                            <tags:input path="name"/>
+                            <tags:input path="name" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".status">
                             <tags:switchButton path="disabled" inverse="${true}"
@@ -90,13 +96,21 @@
                             <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
                                 <tags:switchButton path="capControlFeeder.controlFlagBoolean"/>
                             </tags:nameValue2>
-                    
-                                <tags:nameValue2 nameKey=".points.varPhaseA">
+                            
+                            <!-- If Use Per Phase Data is On, label should be Phase A otherwise label should be Var Point -->
+                            <span id="phaseALabel" class="dn"><i:inline key=".points.phaseA"/></span>
+                            <span id="varLabel" class="dn"><i:inline key=".points.var"/></span>
+                            <c:set var="varPointDefaultLabel" value=".points.var"/>
+                            <c:if test="${feeder.capControlFeeder.usePhaseDataBoolean}">
+                                <c:set var="varPointDefaultLabel" value=".points.phaseA"/>
+                            </c:if>
+                            
+                            <tags:nameValue2 id="varPointLabel" nameKey="${varPointDefaultLabel}">  
                                     <form:hidden id="var-point-input" path="capControlFeeder.currentVarLoadPointID" />
                                     <tags:pickerDialog
                                         id="varPointPicker"
                                         type="varPointPicker"
-                                        linkType="selection"
+                                        linkType="selectionLabel"
                                         selectionProperty="paoPoint"
                                         destinationFieldId="var-point-input"
                                         viewOnlyMode="${mode == 'VIEW'}"
@@ -118,7 +132,7 @@
                                     <tags:pickerDialog
                                         id="phaseBPointPicker"
                                         type="varPointPicker"
-                                        linkType="selection"
+                                        linkType="selectionLabel"
                                         selectionProperty="paoPoint"
                                         destinationFieldId="phase-b-point-input"
                                         viewOnlyMode="${mode == 'VIEW'}"
@@ -137,7 +151,7 @@
                                     <tags:pickerDialog
                                         id="phaseCPointPicker"
                                         type="varPointPicker"
-                                        linkType="selection"
+                                        linkType="selectionLabel"
                                         selectionProperty="paoPoint"
                                         destinationFieldId="phase-c-point-input"
                                         viewOnlyMode="${mode == 'VIEW'}"
@@ -156,7 +170,7 @@
                                 <tags:pickerDialog
                                     id="wattPointPicker"
                                     type="wattPointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="watt-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -175,7 +189,7 @@
                                 <tags:pickerDialog
                                     id="voltPointPicker"
                                     type="voltPointPicker"
-                                    linkType="selection"
+                                    linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="volt-point-input"
                                     viewOnlyMode="${mode == 'VIEW'}"
@@ -229,7 +243,7 @@
     </div>
                 
      <cti:displayForPageEditModes modes="EDIT,VIEW">   
-        <tags:boxContainer2 nameKey="capBanksSection">
+        <tags:sectionContainer2 nameKey="capBanksSection">
             <c:if test="${empty capBankList}">
                 <span class="empty-list"><i:inline key=".feeder.noAssignedCapBanks"/></span>
             </c:if>
@@ -243,20 +257,14 @@
                     <ul class="striped-list simple-list">
                         <c:forEach var="capBank" items="${capBankList}">
                         <li>
-                            <cti:url var="capBankUrl" value="/capcontrol/cbc/${capBank.ccId}"/>
+                            <cti:url var="capBankUrl" value="/capcontrol/capbanks/${capBank.ccId}"/>
                             <a href="${capBankUrl}">${capBank.ccName}</a>
                         </li>
                         </c:forEach>
                     </ul>
                 </c:if>
             </c:if>
-            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <div class="action-area">
-                    <cti:button nameKey="edit.capbanks" icon="icon-pencil"
-                        data-popup=".js-edit-capbanks-popup" data-popup-toggle=""/>
-                </div>
-            </cti:checkRolesAndProperties>
-        </tags:boxContainer2>
+        </tags:sectionContainer2>
     </cti:displayForPageEditModes>
 
 </form:form>

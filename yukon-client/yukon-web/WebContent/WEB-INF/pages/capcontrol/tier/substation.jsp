@@ -76,6 +76,7 @@ $(function() {
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/substations/${substationId}/edit" />
         <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+        <cm:dropdownOption key=".edit.buses" icon="icon-add-remove" data-popup=".js-edit-buses-popup" />
     </cti:checkRolesAndProperties>
 </div>
 
@@ -85,6 +86,11 @@ $(function() {
 
 <tags:setFormEditMode mode="${mode}"/>
 <cti:url var="action" value="/capcontrol/substations"/>
+<cti:displayForPageEditModes modes="CREATE">
+    <c:if test="${not empty parent}">
+        <cti:url var="action" value="/capcontrol/substations?parentId=${parent.liteID}"/>
+    </c:if>
+</cti:displayForPageEditModes>
 <form:form commandName="substation" action="${action}" method="POST">
     <form:hidden path="id"/>
     <cti:csrfToken/>
@@ -96,7 +102,7 @@ $(function() {
                 <div class="column one">
                     <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".name" valueClass="wbba">
-                            <tags:input path="name"/>
+                            <tags:input path="name" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".geoName" valueClass="wbba">
                             <tags:input path="geoAreaName"/>
@@ -122,12 +128,12 @@ $(function() {
                 <div class="column two nogutter">
                     <tags:nameValueContainer2 tableClass="name-collapse">
                        <tags:nameValue2 nameKey=".parent">
-                            <c:if test="${empty areaId}">
+                            <c:if test="${empty parent}">
                                 <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                             </c:if>
-                            <c:if test="${not empty areaId}">
-                                <cti:url var="editParent" value="/capcontrol/areas/${areaId}"/>
-                                    <a href="${editParent}">${areaName}</a>
+                            <c:if test="${not empty parent}">
+                                <cti:url var="editParent" value="/capcontrol/areas/${parent.liteID}"/>
+                                    <a href="${editParent}">${parent.paoName}</a>
                             </c:if>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".state">
@@ -141,7 +147,7 @@ $(function() {
                             <tags:pickerDialog
                                 id="varPointPicker"
                                 type="voltReductionPointPicker"
-                                linkType="selection"
+                                linkType="selectionLabel"
                                 selectionProperty="pointName"
                                 destinationFieldId="var-point-input"
                                 buttonStyleClass="js-picker-btn ${not active ? 'dn' : ''}"
@@ -246,7 +252,7 @@ $(function() {
         <%@ include file="bankTier.jspf"%>
     </div>
 </cti:displayForPageEditModes>
-
+    
 <%-- EDIT BUSES POPUP --%>
 <div class="dn js-edit-buses-popup"
     data-dialog

@@ -10,6 +10,8 @@
 <cti:msg2 var="strategyTab" key=".strategyTab"/>
 <cti:tab title="${strategyTab}">
 
+<div class="borderedTab">
+
     <%-- SEASON SCHEDULE --%>
     <tags:nameValueContainer2 tableClass="stacked">
         <tags:nameValue2 nameKey=".schedule.season">
@@ -65,4 +67,6 @@
                 data-popup-toggle="" />
         </div>
     </cti:checkRolesAndProperties>
+    
+    </div>
 </cti:tab>

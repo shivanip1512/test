@@ -78,7 +78,12 @@ public class StrategyDaoImpl implements StrategyDao {
             p.addValue("MaxDailyOperation", o.getMaxDailyOperation());
             p.addValue("MaxOperationDisableFlag", !o.isMaxOperationEnabled());
             p.addValue("PeakStartTime", o.getPeakStartTime().getMillisOfDay() / 1000);
-            p.addValue("PeakStopTime", o.getPeakStopTime().getMillisOfDay() / 1000);
+            LocalTime stopTime = o.getPeakStopTime();
+            if (stopTime.equals(LocalTime.MIDNIGHT)) {
+                p.addValue("PeakStopTime", 86400);
+            } else {
+                p.addValue("PeakStopTime", o.getPeakStopTime().getMillisOfDay() / 1000);
+            }
             p.addValue("ControlInterval", o.getControlInterval());
             p.addValue("MinResponseTime", o.getMinResponseTime());
             p.addValue("MinConfirmPercent", o.getMinConfirmPercent());
@@ -266,9 +271,6 @@ public class StrategyDaoImpl implements StrategyDao {
             strategy.setPeakStartTime(peakStart);
             
             int peakStopSeconds = rs.getInt("PeakStopTime");
-            if (peakStopSeconds > CapControlStrategy.MAX_TIME.getMillisOfDay() / 1000) {
-                peakStopSeconds = CapControlStrategy.MAX_TIME.getMillisOfDay() / 1000;
-            }
             LocalTime peakStop = LocalTime.fromMillisOfDay(peakStopSeconds * 1000);
             strategy.setPeakStopTime(peakStop);
             

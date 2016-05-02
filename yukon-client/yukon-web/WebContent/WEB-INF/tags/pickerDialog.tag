@@ -43,14 +43,17 @@
 <%@ attribute name="includeRemoveButton" description="Adds a red x next to the picker to clear out the selected item" %>
 <%@ attribute name="removeValue" description="Value to set the item to when cleared.  Default will be blank" %>
 
+
 <cti:default var="linkType" value="normal"/>
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
 <cti:msg2 var="cancelText" key="yukon.common.cancel"/>
 <cti:msg2 var="noneSelectedText" key="yukon.web.components.button.selectionPicker.label"/>
 
-<c:if test="${linkType != 'selection' && !empty pageScope.selectionProperty}">
+<c:if test="${!empty pageScope.selectionProperty}">
+    <c:if test="${linkType != 'selection' && linkType != 'selectionLabel'}">
     <span class="error">The "selectionProperty" attribute is
-        only valid when using "selection" linkType on tags:pickerDialog.</span>
+        only valid when using "selection" or "selectionLabel" linkType on tags:pickerDialog.</span>
+        </c:if>
 </c:if>
 
 <c:if test="${linkType == 'selection'}">
@@ -110,11 +113,35 @@
                         <c:set var="nameKey" value="selectionPicker"/>
                     </c:if>
                     <c:set var="icon" value="${empty pageScope.icon ? 'icon-database-add' : icon}"/>
+                    <c:set var="icon" value="${noIcon ? '' : icon}"/>
                     <cti:button id="picker-${id}-btn" 
                                 data-picker-id="${id}"
                                 nameKey="${pageScope.nameKey}" 
                                 classes="picker-button noSelectionPickerLabel ${pageScope.buttonStyleClass}" 
                                 renderMode="labeledImage" 
+                                icon="${icon}"
+                                onclick="${id}.show.call(${id})"/>
+                    <c:if test="${pageScope.multiSelectMode}">
+                        <cti:icon id="picker-${id}-show-selected-icon" 
+                                  href="javascript:${id}.showSelected.call(${id})" 
+                                  nameKey="zoom" 
+                                  icon="icon-magnifier"/>
+                    </c:if>
+                </c:when>
+                <c:when test="${linkType == 'selectionLabel'}">
+                    <c:if test="${empty pageScope.selectionProperty}">
+                        <span class="error">The "selectionProperty" attribute is
+                            required when using "selection" linkType on tags:pickerDialog.</span>
+                    </c:if>
+                    <c:if test="${empty pageScope.nameKey}">
+                        <c:set var="nameKey" value="selectionPicker"/>
+                    </c:if>
+                    <c:set var="icon" value="${empty pageScope.icon ? '' : icon}"/>
+                    <cti:button id="picker-${id}-btn" 
+                                data-picker-id="${id}"
+                                nameKey="${pageScope.nameKey}" 
+                                classes="picker-button noSelectionPickerLabel ${pageScope.buttonStyleClass}" 
+                                renderMode="label" 
                                 icon="${icon}"
                                 onclick="${id}.show.call(${id})"/>
                     <c:if test="${pageScope.multiSelectMode}">
@@ -214,6 +241,9 @@
             picker.extraArgs = '<spring:escapeBody javaScriptEscape="true">${extraArgs}</spring:escapeBody>';
         }
         if ('${pageScope.selectionProperty}' !== '' && '${pageScope.linkType}' === 'selection') {
+            picker.selectionProperty = '${selectionProperty}';
+        }
+        if ('${pageScope.selectionProperty}' !== '' && '${pageScope.linkType}' === 'selectionLabel') {
             picker.selectionProperty = '${selectionProperty}';
         }
         picker.allowEmptySelection = '${pageScope.allowEmptySelection}' === 'true';

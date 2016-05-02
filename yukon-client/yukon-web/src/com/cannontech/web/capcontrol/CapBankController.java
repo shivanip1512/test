@@ -7,9 +7,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -28,7 +30,9 @@ import com.cannontech.capcontrol.CapBankConfig;
 import com.cannontech.capcontrol.CapBankPointPhase;
 import com.cannontech.capcontrol.CapBankPotentialTransformer;
 import com.cannontech.capcontrol.CapBankSize;
+import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -40,7 +44,6 @@ import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
@@ -69,6 +72,8 @@ public class CapBankController {
     @Autowired private CapBankValidator capBankValidator;
     @Autowired private CbcServiceImpl cbcService;
     @Autowired private PaoDao paoDao;
+    @Autowired private CapbankDao capbankDao;
+
 
     private static final String baseKey = "yukon.web.modules.capcontrol.capbank";
 
@@ -88,9 +93,15 @@ public class CapBankController {
 
     @RequestMapping(value = "capbanks/create", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String create(ModelMap model, YukonUserContext userContext) {
+    public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         CapBank capbank = new CapBank();
         model.addAttribute("mode", PageEditMode.CREATE);
+        //check for parentId to assign to
+        String parentId = request.getParameter("parentId");
+        if (parentId != null) {
+            LiteYukonPAObject parent = dbCache.getAllPaosMap().get(Integer.parseInt(parentId));
+            model.addAttribute("parent", parent);
+        }
         return setUpModel(model, capbank, userContext);
     }
 
@@ -100,14 +111,20 @@ public class CapBankController {
             @ModelAttribute("capbank") CapBank capbank, 
             BindingResult result, 
             RedirectAttributes redirectAttributes,
-            FlashScope flash) {
+            FlashScope flash, HttpServletRequest request) {
 
         capBankValidator.validate(capbank, result);
 
         if (result.hasErrors()) {
             return bindAndForward(capbank, result, redirectAttributes);
         }
-        capbankService.save(capbank);
+        int id = capbankService.save(capbank);
+        
+        //assign to parent if parentId is there
+        String parentId = request.getParameter("parentId");
+        if (parentId != null) {
+            capbankDao.assignCapbank(Integer.parseInt(parentId), id);
+        }
 
         // Success
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".updated"));
@@ -156,25 +173,19 @@ public class CapBankController {
             int parentId = 0;
             try {
                 parentId = ccCache.getParentFeederId(capBankId);
-            } catch (NotFoundException e){
-                model.addAttribute("orphan", true);
-            }
-            
-            if(parentId > 0) {
                 LiteYukonPAObject parent = dbCache.getAllPaosMap().get(parentId);
                 model.addAttribute("orphan", false);
                 model.addAttribute("parent", parent);
 
-                
                 SubStation substation = ccCache.getParentSubstation(capBankId);
                 model.addAttribute("substationId", substation.getCcId());
                 model.addAttribute("substationName", substation.getCcName());
 
                 int areaId = ccCache.getParentAreaId(capBankId);
-                Area area = ccCache.getArea(areaId);
+                LiteYukonPAObject area = dbCache.getAllPaosMap().get(areaId);
 
-                model.addAttribute("areaId", area.getCcId());
-                model.addAttribute("areaName", area.getCcName());
+                model.addAttribute("areaId", area.getLiteID());
+                model.addAttribute("areaName", area.getPaoName());
                 
                 int busId = ccCache.getParentSubBusId(capBankId);
                 SubBus bus = ccCache.getSubBus(busId);
@@ -187,8 +198,18 @@ public class CapBankController {
 
                 model.addAttribute("feederId", feeder.getCcId());
                 model.addAttribute("feederName", feeder.getCcName());
+            } catch (NotFoundException e){
+                model.addAttribute("orphan", true);
+                //not found in cache so try accessing database
+                try {
+                    PaoIdentifier paoId = capbankDao.getParentFeederIdentifier(capBankId);
+                    parentId = paoId.getPaoId();
+                    LiteYukonPAObject parent = dbCache.getAllPaosMap().get(parentId);
+                    model.addAttribute("parent", parent);
+                } catch (EmptyResultDataAccessException er) {
+                    model.addAttribute("orphan", true);
+                }            
             }
-
             
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(capBankId);
             model.addAttribute("points", points);

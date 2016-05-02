@@ -116,4 +116,9 @@ public interface SubstationBusDao {
      */
     void assignBuses(int substationId, Iterable<Integer> busIds);
 
+    /**
+     * Assigns the given busId to the substation.
+     */
+    boolean assignBus(int substationId, int busId);
+
 }

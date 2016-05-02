@@ -39,7 +39,8 @@
     </cti:checkRolesAndProperties>
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/areas/${areaId}/edit" />
-        <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+        <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+        <cm:dropdownOption key=".edit.stations" icon="icon-add-remove" data-popup=".js-edit-stations-popup" />        
     </cti:checkRolesAndProperties>
 </div>
 
@@ -108,7 +109,7 @@
                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                     <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                         <tags:nameValue2 nameKey="yukon.common.name">
-                            <tags:input path="name" size="35" maxlength="60"/>
+                            <tags:input path="name" size="35" maxlength="60" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.common.type">
                             <i:inline key="${area.type}"/>
@@ -127,7 +128,7 @@
                             <tags:pickerDialog type="voltReductionPointPicker" id="voltReduction" allowEmptySelection="true"
                                 destinationFieldName="voltReductionPoint" initialId="${initial}" 
                                 buttonStyleClass="js-picker-btn ${not active ? 'dn' : ''}"
-                                linkType="selection" selectionProperty="pointName"/>
+                                linkType="selectionLabel" selectionProperty="pointName"/>
                         </tags:nameValue2>
                      </tags:nameValueContainer2>
                     <div class="page-action-area">
@@ -212,7 +213,7 @@
 
 <cti:displayForPageEditModes modes="EDIT,VIEW">
 
-    <tags:boxContainer2 nameKey="substationsContainer" arguments="${areaName}">
+    <tags:sectionContainer2 nameKey="substationsContainer" arguments="${areaName}">
            
         <table id="subTable" class="compact-results-table has-alerts dashed row-highlighting has-actions">
             <thead>
@@ -297,14 +298,7 @@
             
         </table>
 
-        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-             <div class="action-area">
-                <cti:button nameKey="edit.stations" icon="icon-pencil" 
-                    data-popup=".js-edit-stations-popup" data-popup-toggle="" />
-              </div>
-        </cti:checkRolesAndProperties>
-        
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
 
 </cti:displayForPageEditModes>
     

@@ -16,13 +16,13 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
  */
 public class CapControlStrategy {
     
-    public static final LocalTime MAX_TIME = LocalTime.MIDNIGHT.withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59);
+    public static final LocalTime MAX_TIME = LocalTime.MIDNIGHT;
 
     private Integer id = null;
     private String name = null;
     private ControlMethod controlMethod = ControlMethod.INDIVIDUAL_FEEDER;
     private int maxDailyOperation = 0;
-    private boolean maxOperationEnabled = true;
+    private boolean maxOperationEnabled = false;
     private LocalTime peakStartTime = LocalTime.MIDNIGHT;
     private LocalTime peakStopTime = MAX_TIME;
     private int controlInterval = Minutes.minutes(15).toStandardSeconds().getSeconds();

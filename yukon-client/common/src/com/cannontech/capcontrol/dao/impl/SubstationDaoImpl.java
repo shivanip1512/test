@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
@@ -63,6 +64,38 @@ public class SubstationDaoImpl implements SubstationDao {
         return jdbcTemplate.queryForObject(sql, mapper);
     }
     
+    /**
+     * This method returns the Area ID that owns the given substation ID.
+     */
+    @Override
+    public Integer getParentAreaID( int id ) throws EmptyResultDataAccessException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT AreaID");
+        sql.append("FROM CCSubAreaAssignment");
+        sql.append("WHERE SubstationBusId").eq(id);
+        
+        Integer parentId;
+        try {
+            parentId = jdbcTemplate.queryForObject(sql, TypeRowMapper.INTEGER);
+        } catch (EmptyResultDataAccessException e) {
+            //check for special area
+            sql = new SqlStatementBuilder();
+            
+            sql.append("SELECT AreaID");
+            sql.append("FROM CCSubSpecialAreaAssignment");
+            sql.append("WHERE SubstationBusId").eq(id);
+            
+            try {
+                parentId = jdbcTemplate.queryForObject(sql, TypeRowMapper.INTEGER);
+            } catch (EmptyResultDataAccessException er) {
+                parentId = null;
+            }
+
+        }
+        return parentId;
+    }
+    
     @Override
     public List<Substation> getSubstationsByArea(final int areaId) {
         
@@ -114,6 +147,13 @@ public class SubstationDaoImpl implements SubstationDao {
         }
 
         return result;
+    }
+    
+    @Override
+    public boolean assignSubstation(int areaId, int substationId) {
+        YukonPao area = dbCache.getAllPaosMap().get(areaId);
+        YukonPao substation = dbCache.getAllPaosMap().get(substationId);
+        return assignSubstation(area, substation);
     }
     
     @Override

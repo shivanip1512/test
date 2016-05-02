@@ -71,19 +71,6 @@ yukon.da.bus = (function () {
 
             });
             
-            /** User clicked User Per Phase; clear out phase b and phase c points. */
-            $(document).on('click', '.js-per-phase', function () {
-                
-                var toggle = $(this),
-                    perPhaseRow = toggle.closest('tr'),
-                    active = perPhaseRow.find('.switch-btn-checkbox').prop('checked');
-
-                if (!active) {
-                    yukon.pickers['phaseBPointPicker'].removeEvent();
-                    yukon.pickers['phaseCPointPicker'].removeEvent();
-                }
-
-            });
         }
     };
 

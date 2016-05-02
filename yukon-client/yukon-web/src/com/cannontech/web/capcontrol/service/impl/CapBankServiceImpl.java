@@ -136,9 +136,13 @@ public class CapBankServiceImpl implements CapBankService {
         }
         
         if (fdrId != 0) {
-            Feeder feeder = ccCache.getFeeder(fdrId);
-            monitorPoint.setLowerBandwidth((float)feeder.getPeakLag());
-            monitorPoint.setUpperBandwidth((float)feeder.getPeakLead());
+            try {
+                Feeder feeder = ccCache.getFeeder(fdrId);
+                monitorPoint.setLowerBandwidth((float)feeder.getPeakLag());
+                monitorPoint.setUpperBandwidth((float)feeder.getPeakLead());
+            } catch (NotFoundException e) {
+                CTILogger.debug("Feeder " + fdrId + " not found. Capbank may be orphaned.");
+            }
         }
     }
 
