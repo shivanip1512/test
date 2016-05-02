@@ -154,7 +154,6 @@ public class SubstationController {
                 model.addAttribute("areaId", areaId);
                 LiteYukonPAObject area = dbCache.getAllPaosMap().get(areaId);
                 String areaName = area.getPaoName();
-                //String areaName = ccCache.getObject(areaId).getCcName();
                 model.addAttribute("areaName", areaName);
                 LiteYukonPAObject parent = dbCache.getAllPaosMap().get(areaId);
                 model.addAttribute("parent", parent);

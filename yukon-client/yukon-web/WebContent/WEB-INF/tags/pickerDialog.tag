@@ -113,7 +113,6 @@
                         <c:set var="nameKey" value="selectionPicker"/>
                     </c:if>
                     <c:set var="icon" value="${empty pageScope.icon ? 'icon-database-add' : icon}"/>
-                    <c:set var="icon" value="${noIcon ? '' : icon}"/>
                     <cti:button id="picker-${id}-btn" 
                                 data-picker-id="${id}"
                                 nameKey="${pageScope.nameKey}" 
