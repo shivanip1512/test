@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/22/2016 9:23:17 AM                         */
+/* Created on:     5/2/2016 4:24:46 PM                          */
 /*==============================================================*/
 
 
@@ -7962,42 +7962,18 @@ create table RAWPOINTHISTORY (
    QUALITY              numeric              not null,
    VALUE                float                not null,
    millis               smallint             not null,
-   constraint PK_RawPointHistory primary key nonclustered (CHANGEID)
+   constraint PKC_RawPointHistory primary key (CHANGEID)
 )
 go
 
 /*==============================================================*/
-/* Index: Index_PointID                                         */
+/* Index: Indx_RawPointHistory_PtId_Ts                          */
 /*==============================================================*/
-create index Index_PointID on RAWPOINTHISTORY (
-POINTID ASC
-)
-go
-
-/*==============================================================*/
-/* Index: Indx_TimeStamp                                        */
-/*==============================================================*/
-create index Indx_TimeStamp on RAWPOINTHISTORY (
-TIMESTAMP ASC
-)
-go
-
-/*==============================================================*/
-/* Index: Indx_RwPtHisPtIDTst                                   */
-/*==============================================================*/
-create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
+create index Indx_RawPointHistory_PtId_Ts on RAWPOINTHISTORY (
 POINTID ASC,
 TIMESTAMP ASC
 )
-go
-
-/*==============================================================*/
-/* Index: Indx_RwPtHisTstPtId                                   */
-/*==============================================================*/
-create index Indx_RwPtHisTstPtId on RAWPOINTHISTORY (
-TIMESTAMP ASC,
-POINTID ASC
-)
+include (QUALITY,VALUE)
 go
 
 /*==============================================================*/

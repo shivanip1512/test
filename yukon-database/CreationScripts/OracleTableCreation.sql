@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/22/2016 9:21:45 AM                         */
+/* Created on:     5/2/2016 4:25:33 PM                          */
 /*==============================================================*/
 
 
@@ -7506,37 +7506,15 @@ create table RAWPOINTHISTORY  (
    QUALITY              NUMBER                          not null,
    VALUE                FLOAT                           not null,
    millis               SMALLINT                        not null,
-   constraint PK_RawPointHistory primary key (CHANGEID)
+   constraint PKC_RawPointHistory primary key (CHANGEID)
 );
 
 /*==============================================================*/
-/* Index: Index_PointID                                         */
+/* Index: Indx_RawPointHistory_PtId_Ts                          */
 /*==============================================================*/
-create index Index_PointID on RAWPOINTHISTORY (
-   POINTID ASC
-);
-
-/*==============================================================*/
-/* Index: Indx_TimeStamp                                        */
-/*==============================================================*/
-create index Indx_TimeStamp on RAWPOINTHISTORY (
-   TIMESTAMP ASC
-);
-
-/*==============================================================*/
-/* Index: Indx_RwPtHisPtIDTst                                   */
-/*==============================================================*/
-create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
+create index Indx_RawPointHistory_PtId_Ts on RAWPOINTHISTORY (
    POINTID ASC,
    TIMESTAMP ASC
-);
-
-/*==============================================================*/
-/* Index: Indx_RwPtHisTstPtId                                   */
-/*==============================================================*/
-create index Indx_RwPtHisTstPtId on RAWPOINTHISTORY (
-   TIMESTAMP ASC,
-   POINTID ASC
 );
 
 /*==============================================================*/
