@@ -46337,7 +46337,27 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
-            <string>PK_RAWPOINTHISTORY</string>
+            <string>INDX_RAWPOINTHISTORY_PTID_TS</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>RAWPOINTHISTORY</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>POINTID</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>RAWPOINTHISTORY</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>TIMESTAMP</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>INDX_RAWPOINTHISTORY_PTID_TS</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
+            <string>PKC_RAWPOINTHISTORY</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -46347,75 +46367,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>PK_RAWPOINTHISTORY</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>INDEX_POINTID</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>RAWPOINTHISTORY</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>POINTID</i__columnName>
-                  <i__nonNonUnique>true</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>INDEX_POINTID</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>INDX_RWPTHISPTIDTST</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>RAWPOINTHISTORY</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>POINTID</i__columnName>
-                  <i__nonNonUnique>true</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>RAWPOINTHISTORY</i__tableName>
-                  <i__ordinalPosition>2</i__ordinalPosition>
-                  <i__columnName>TIMESTAMP</i__columnName>
-                  <i__nonNonUnique>true</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>INDX_RWPTHISPTIDTST</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>INDX_RWPTHISTSTPTID</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>RAWPOINTHISTORY</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>TIMESTAMP</i__columnName>
-                  <i__nonNonUnique>true</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>RAWPOINTHISTORY</i__tableName>
-                  <i__ordinalPosition>2</i__ordinalPosition>
-                  <i__columnName>POINTID</i__columnName>
-                  <i__nonNonUnique>true</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>INDX_RWPTHISTSTPTID</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>INDX_TIMESTAMP</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>RAWPOINTHISTORY</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>TIMESTAMP</i__columnName>
-                  <i__nonNonUnique>true</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>INDX_TIMESTAMP</indexName>
+              <indexName>PKC_RAWPOINTHISTORY</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
