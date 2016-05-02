@@ -110,7 +110,7 @@ public class AssetReportServiceImpl implements AssetReportService {
     }
 
     @Override
-    public void queueAssetReportDevices(int ecId, List<Integer> assetIds, BlockingQueue<AssetReportDevice> q,
+    public void queueAssetReportDevices(int ecId, List<Integer> assetIds, BlockingQueue<AssetReportDevice> queue,
             AtomicBoolean isCompleted) {
         boolean starsMetering = ecSettingsDao.getEnum(meteringType, MeteringType.class, ecId) == MeteringType.stars;
 
@@ -168,7 +168,7 @@ public class AssetReportServiceImpl implements AssetReportService {
                 device.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
 
                 try {
-                    q.put(device);
+                    queue.put(device);
                 } catch (InterruptedException e) {
                     log.error("Error while queuing data " + e);
                 }
@@ -177,7 +177,7 @@ public class AssetReportServiceImpl implements AssetReportService {
             }
 
         });
-        if (q.isEmpty()) {
+        if (queue.isEmpty()) {
             isCompleted.set(true);
         }
 

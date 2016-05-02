@@ -132,10 +132,14 @@ public class AssetReportController {
 
                             if (device.getDeviceId() > 0) {
                                 row.add(device.getName());
+                            } else {
+                                row.add("");
                             }
                             row.add(device.getLabel());
                             if (device.getAccountId() > 0) {
                                 row.add(device.getAccountNo());
+                            } else {
+                                row.add("");
                             }
                             String[] dataRows = new String[row.size()];
                             dataRows = row.toArray(dataRows);
