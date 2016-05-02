@@ -16,7 +16,20 @@
         <cti:param name="${parm.key}" value="${parm.value}"/>
     </c:forEach>
 </cti:url>
-<cti:button nameKey="download" icon="icon-page-white-excel" href="${url}"/>
+
+<script type="text/javascript">
+function disableDownload(){
+    var url = "${url}";
+    window.location = url;
+    $('#downloadBtn').attr("disabled","disabled");
+    //disable download button for a while
+    setTimeout(function() {
+        $("#downloadBtn").removeAttr("disabled");      
+    }, 5000); 
+}
+</script>
+
+<cti:button nameKey="download" id="downloadBtn" icon="icon-page-white-excel" href="${url}" onclick="disableDownload();"/>
 </div>
 
 <div class="stacked-md">

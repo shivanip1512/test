@@ -3,11 +3,15 @@ package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.inventory.InventoryIdentifierMapper;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -25,6 +29,7 @@ import com.cannontech.web.stars.dr.operator.inventory.service.AssetReportService
 public class AssetReportServiceImpl implements AssetReportService {
     
     private static final EnergyCompanySettingType meteringType = EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION;
+    private static final Logger log = YukonLogManager.getLogger(AssetReportServiceImpl.class);
     
     @Autowired private EnergyCompanySettingDao ecSettingsDao;
     @Autowired private InventoryIdentifierMapper identifierMapper;
@@ -102,6 +107,80 @@ public class AssetReportServiceImpl implements AssetReportService {
         }, devices);
         
         return devices;
+    }
+
+    @Override
+    public void queueAssetReportDevices(int ecId, List<Integer> assetIds, BlockingQueue<AssetReportDevice> q,
+            AtomicBoolean isCompleted) {
+        boolean starsMetering = ecSettingsDao.getEnum(meteringType, MeteringType.class, ecId) == MeteringType.stars;
+
+        chunkyTemplate.query(new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ib.InventoryId, ib.AccountId, ib.DeviceId, ib.DeviceLabel,");
+                sql.append("ca.AccountNumber,");
+                sql.append("ypo.PAOName, ypo.Type, ypo.PAObjectId,");
+                if (starsMetering) {
+                    sql.append("mhb.MeterNumber, mhb.MeterTypeId,");
+                } else {
+                    sql.append("dmg.MeterNumber,");
+                }
+                sql.append("lhb.ManufacturerSerialNumber, lhb.LmHardwareTypeId,");
+                sql.append("ecti.EnergyCompanyId");
+
+                sql.append("FROM InventoryBase ib");
+                sql.append("JOIN CustomerAccount ca ON ca.AccountId = ib.AccountId");
+                sql.append("LEFT JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
+                if (starsMetering) {
+                    sql.append("LEFT JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
+                } else {
+                    sql.append("LEFT JOIN DeviceMeterGroup dmg ON dmg.DeviceId = ib.DeviceId");
+                }
+                sql.append("LEFT JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
+                sql.append("LEFT JOIN EcToInventoryMapping ecti ON ecti.InventoryId = ib.InventoryId");
+
+                sql.append("WHERE ecti.EnergyCompanyId").eq(ecId);
+                sql.append("AND ib.InventoryId").in(subList);
+
+                System.out.println("out  getAssetReportDevices   ::::: ");
+                return sql;
+            }
+        }, assetIds, new YukonRowMapper<AssetReportDevice>() {
+            @Override
+            public AssetReportDevice mapRow(YukonResultSet rs) throws SQLException {
+
+                AssetReportDevice device = new AssetReportDevice();
+                device.setInventoryIdentifier(identifierMapper.mapRow(rs));
+                int deviceId = rs.getInt("DeviceId");
+                device.setDeviceId(deviceId);
+                if (deviceId > 0) {
+                    // This is actually a pao
+                    device.setPaoIdentifier(rs.getPaoIdentifier());
+                }
+                device.setName(rs.getString("PAOName"));
+                device.setMeterNumber(rs.getString("MeterNumber"));
+                device.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
+                device.setLabel(rs.getString("DeviceLabel"));
+                device.setAccountId(rs.getInt("AccountId"));
+                device.setAccountNo(rs.getString("AccountNumber"));
+                device.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
+
+                try {
+                    q.put(device);
+                } catch (InterruptedException e) {
+                    log.error("Error while queuing data " + e);
+                }
+
+                return null;
+            }
+
+        });
+        if (q.isEmpty()) {
+            isCompleted.set(true);
+        }
+
     }
 
 }
