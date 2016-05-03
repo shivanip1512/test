@@ -13,7 +13,13 @@ yukon.tools.trends = (function () {
         init: function (trendId) {
             
             var trendList;
-            
+            var selectedOption;
+            $.ajax({
+                url: yukon.url('/tools/trends/getZoom'),
+                type: 'get'
+            }).done(function (data) {
+                selectedOption=data.prefZoom;
+            });
             Highcharts.setOptions(yg.highcharts_options);
             yukon.ui.block('[data-trend]');
             
@@ -76,35 +82,44 @@ yukon.tools.trends = (function () {
                         buttons: [{
                             type: 'day',
                             count: 1,
-                            text: labels.day
+                            text: labels.day,
+                            value: 0
                         }, {
                             type: 'week',
                             count: 1,
-                            text: labels.week
+                            text: labels.week,
+                            value: 1
                         }, {
                             type: 'month',
                             count: 1,
-                            text: labels.month
+                            text: labels.month,
+                            value: 2
                         }, {
                             type: 'month',
                             count: 3,
-                            text: labels.threeMonths
+                            text: labels.threeMonths,
+                            value: 3
                         }, {
                             type: 'month',
                             count: 6,
-                            text: labels.sixMonths
+                            text: labels.sixMonths,
+                            value: 4
                         }, {
                             type: 'ytd',
-                            text: labels.ytd
+                            text: labels.ytd,
+                            value: 5
                         }, {
                             type: 'year',
                             count: 1,
-                            text: labels.year
+                            text: labels.year,
+                            value: 6
                         }, {
                             type: 'all',
-                            text: labels.all
+                            text: labels.all,
+                            value: 7
                         }],
-                        selected : 2
+                        
+                        selected : selectedOption
                     },
                     
                     series : trend.series,

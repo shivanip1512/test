@@ -9,6 +9,7 @@ import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.core.users.dao.UserPreferenceDao;
 import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
+import com.cannontech.core.users.model.PreferenceTrendZoomOption;
 import com.cannontech.core.users.model.UserPreference;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -88,6 +89,13 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
     
     @Override
+    public PreferenceTrendZoomOption getDefaultZoomType(LiteYukonUser user) {
+        String graphTypeString = this.getPreference(user, UserPreferenceName.TREND_ZOOM);
+        PreferenceTrendZoomOption prefType = PreferenceTrendZoomOption.valueOf(graphTypeString);
+        return prefType;
+    }
+
+    @Override
     public PreferenceGraphVisualTypeOption updatePreferenceGraphType(GraphType newValue, LiteYukonUser user) {
         if (newValue == null) {
             throw new IllegalArgumentException("Cannot set preference to NULL");
@@ -111,5 +119,18 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
         }
         this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.name());
         return prefType.getChartPeriod();
+    }
+
+    @Override
+    public PreferenceTrendZoomOption updatePreferenceZoomType(Integer newValue, LiteYukonUser user) {
+        if (newValue == null) {
+            throw new IllegalArgumentException("Cannot set preference to NULL");
+        }
+        PreferenceTrendZoomOption prefType = PreferenceTrendZoomOption.fromZoomPeriod(newValue);
+        if (prefType == null) {
+            throw new IllegalArgumentException("Unknown ZoomType [" + newValue + "]");
+        }
+        this.savePreference(user, UserPreferenceName.TREND_ZOOM, prefType.name());
+        return prefType;
     }
 }

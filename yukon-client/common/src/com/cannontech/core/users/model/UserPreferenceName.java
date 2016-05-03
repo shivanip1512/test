@@ -17,6 +17,8 @@ public enum UserPreferenceName implements DisplayableEnum {
         PreferenceGraphTimeDurationOption.getDefault().name()),
     GRAPH_DISPLAY_VISUAL_TYPE(InputTypeFactory.enumType(PreferenceGraphVisualTypeOption.class),
         PreferenceGraphVisualTypeOption.getDefault().name()),
+    TREND_ZOOM(InputTypeFactory.enumType(PreferenceTrendZoomOption.class),
+               PreferenceTrendZoomOption.getDefault().name()),
     ALERT_FLASH(InputTypeFactory.enumType(OnOff.class),
             OnOff.ON.name()),
     ALERT_SOUND(InputTypeFactory.enumType(OnOff.class),

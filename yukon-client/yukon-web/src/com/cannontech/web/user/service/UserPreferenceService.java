@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
+import com.cannontech.core.users.model.PreferenceTrendZoomOption;
 import com.cannontech.core.users.model.UserPreference;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -45,5 +46,23 @@ public interface UserPreferenceService {
             throws IllegalArgumentException;
 
     public ChartPeriod updatePreferenceChartPeriod(ChartPeriod period, LiteYukonUser user)
+            throws IllegalArgumentException;
+
+    /**
+     * If there is no saved preference, the default one which is 3m is returned.
+     * 
+     * @param user LiteYukonUser
+     * @return PreferenceTrendZoomOption enum value.
+     */
+    public PreferenceTrendZoomOption getDefaultZoomType(LiteYukonUser user);
+
+    /**
+     * If there is no saved preference, the default one which is 3m is returned.
+     * 
+     * @param newValue new Trend Zoom value to be updated
+     * @param user LiteYukonUser
+     * @return PreferenceTrendZoomOption enum value.
+     */   
+    public PreferenceTrendZoomOption updatePreferenceZoomType(Integer newValue, LiteYukonUser user)
             throws IllegalArgumentException;
 }

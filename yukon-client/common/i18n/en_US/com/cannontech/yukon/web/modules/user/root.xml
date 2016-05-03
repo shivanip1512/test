@@ -56,19 +56,34 @@
     <entry key="yukon.web.modules.user.profile.EDIT.FAIL.cannotEditOtherUser">You are not allowed to edit that user's profile.</entry>
     <entry key="yukon.web.modules.user.profile.EDIT.FAIL.databaseProblem">There was an internal error.  Please try again later or contact support.</entry>
 
-    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION">Graph Time Duration</entry>
-    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.DAY_1">1 Day</entry>
-    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.WEEK_1">1 Wk</entry>
-    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_1">1 Mo</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION">Meter Trend Time</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.DAY_1">1d</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.WEEK_1">1w</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_1">1m</entry>
     <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_1.tooltip">1 Month</entry>
-    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_3">3 Mo</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_3">3m</entry>
     <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_3.tooltip">3 Months</entry>
-    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.YEAR_1">1 Year</entry>
-    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE">Graph Visual Type</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.YEAR_1">1y</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE">Meter Trend Style</entry>
     <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE.BAR">Bar</entry>
     <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE.LINE">Line</entry>
     <entry key="yukon.web.modules.user.preferences.ALERT_FLASH">Alert Flash</entry>
     <entry key="yukon.web.modules.user.preferences.ALERT_SOUND">Alert Sound</entry>
+    
+    <!-- Trend Zoom -->
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM">Trend Zoom</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.DAY_1">1d</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.WEEK_1">1w</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.MONTH_1">1m</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.MONTH_1.tooltip">1 Month</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.MONTH_3">3m</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.MONTH_3.tooltip">3 Months</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.MONTH_6">6m</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.MONTH_6.tooltip">6 Months</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.YTD">YTD</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.YEAR_1">1y</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.YEAR_1.tooltip">1 Year</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.ALL">ALL</entry>
     
     <entry key="yukon.web.modules.user.preferences.ERROR_PAGE_SHOW_DETAILS">Error Page Details</entry>
     <!-- Unfortunately these 2 are used when defaults.  See the enum strings below -->

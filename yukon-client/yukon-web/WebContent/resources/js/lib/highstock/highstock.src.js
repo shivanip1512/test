@@ -20311,11 +20311,21 @@ RangeSelector.prototype = {
 			date = new Date(newMax),
 			type = rangeOptions.type,
 			count = rangeOptions.count,
+			value = rangeOptions.value,
 			baseXAxisOptions,
 			range = rangeOptions._range,
 			rangeMin,
 			year,
 			timeName;
+
+			paramObj = {
+				'value': value
+			};
+			$.ajax({
+					url: yukon.url('/tools/trends/updateZoom'),
+					method: 'post',
+					data: paramObj
+			});
 
 		if (dataMin === null || dataMax === null || // chart has no data, base series is removed
 				i === rangeSelector.selected) { // same button is clicked twice

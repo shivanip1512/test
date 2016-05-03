@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.ReadableInstant;
@@ -26,6 +28,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
@@ -37,6 +40,7 @@ import com.cannontech.web.tools.trends.data.TrendType;
 import com.cannontech.web.tools.trends.data.TrendType.GraphType;
 import com.cannontech.web.tools.trends.data.error.GraphDataError;
 import com.cannontech.web.tools.trends.service.TrendDataService;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.google.common.collect.ImmutableMap;
 
 @Controller
@@ -49,6 +53,7 @@ public class TrendDataController {
     @Autowired private GraphDao graphDao;
     @Autowired private TrendDataService trendDataService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private UserPreferenceService userPreferenceService;
 
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
 
@@ -272,6 +277,23 @@ public class TrendDataController {
             boolean isRight = (Integer) serieData.get("yAxis") == 1;
             serieData.put("name", serieData.get("name") + " - " + (isRight ? right : left));
         }
+    }
+
+    @RequestMapping("/trends/updateZoom")
+    public void updateZoom(LiteYukonUser user, HttpServletRequest request) {
+        Integer trendZoom = new Integer(request.getParameter("value"));
+        if (trendZoom != null) {
+            userPreferenceService.updatePreferenceZoomType(trendZoom, user);
+        }
+    }
+
+    @RequestMapping("/trends/getZoom")
+    @ResponseBody
+    public Map<String, Object> getZoom(LiteYukonUser user, HttpServletRequest request) {
+        Map<String, Object> json = new HashMap<>();
+        Integer trendZoom = userPreferenceService.getDefaultZoomType(user).getZoomPeriod();
+        json.put("prefZoom", trendZoom);
+        return json;
     }
 
 }
