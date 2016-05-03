@@ -6,8 +6,8 @@ import com.google.common.collect.ImmutableSet;
 
 public enum YukonImage {
     
-    DEFAULT_LOGO (1, "logos", "eaton_logo.png", "classpath:com/cannontech/web/common/resources/eaton_logo.png"),
-    DEFAULT_BACKGROUND (2, "backgrounds", "yukon_background.jpg", "classpath:com/cannontech/web/common/resources/yukon_background.jpg");
+    DEFAULT_LOGO (-1, "logos", "eaton_logo.png", "classpath:com/cannontech/web/common/resources/eaton_logo.png"),
+    DEFAULT_BACKGROUND (-2, "backgrounds", "yukon_background.jpg", "classpath:com/cannontech/web/common/resources/yukon_background.jpg");
     
     private final int id;
     private final String category;

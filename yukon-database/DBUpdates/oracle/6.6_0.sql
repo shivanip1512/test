@@ -144,6 +144,20 @@ END;
 /* @end-block */
 /* End YUK-15173 */
 
+/* Start YUK-15217 */
+UPDATE YukonImage 
+SET ImageId = -1 
+WHERE ImageId = 1
+  AND ImageCategory = 'logos'
+  AND ImageName = 'eaton_logo.png';
+
+UPDATE YukonImage 
+SET ImageId = -2 
+WHERE ImageId = 2
+  AND ImageCategory = 'backgrounds'
+  AND ImageName = 'yukon_background.jpg';
+/* End YUK-15217 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
