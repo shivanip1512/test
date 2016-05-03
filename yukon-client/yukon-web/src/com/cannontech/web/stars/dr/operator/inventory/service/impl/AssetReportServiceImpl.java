@@ -144,7 +144,6 @@ public class AssetReportServiceImpl implements AssetReportService {
                 sql.append("WHERE ecti.EnergyCompanyId").eq(ecId);
                 sql.append("AND ib.InventoryId").in(subList);
 
-                System.out.println("out  getAssetReportDevices   ::::: ");
                 return sql;
             }
         }, assetIds, new YukonRowMapper<AssetReportDevice>() {
