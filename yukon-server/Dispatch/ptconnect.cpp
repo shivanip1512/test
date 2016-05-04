@@ -47,7 +47,9 @@ void CtiPointConnection::AddConnectionManager(CtiServer::ptr_type &cm)
    auto rc = ConnectionManagerCollection.insert(cm);
    CTILOG_DEBUG(dout, cm->getClientName() << " " << reinterpret_cast<size_t>(cm.get()) << " use_count=" << cm.use_count() << " ret=" << rc.second);
 }
-void CtiPointConnection::RemoveConnectionManager(CtiServer::ptr_type &cm)
+
+/** Remove a specific Connection Manager from the point infered by this CtiPointConnection */
+void CtiPointConnection::removeConnectionManagersFromPoint(CtiServer::ptr_type &cm)
 {
    CtiLockGuard<CtiMutex> guard(_classMutex);
    bool present = false;

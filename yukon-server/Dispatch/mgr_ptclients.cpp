@@ -479,7 +479,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
     ConnectionMgrPointMap::iterator conIter = _conMgrPointMap.end();
 
     if(!(aReg.getFlags() & (REG_ADD_POINTS | REG_REMOVE_POINTS)) )     // If add/remove is set, we are augmenting or removing an existing registration (Not the whole thing).
-        RemoveConnectionManager(CM);
+        removePointsFromConnectionManager( CM );
 
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
@@ -544,7 +544,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
                         PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
                         if(iter != _pointConnectionMap.end())
                         {
-                            iter->second.RemoveConnectionManager(CM);
+                            iter->second.removeConnectionManagersFromPoint( CM );
                             if(iter->second.IsEmpty())
                             {
                                 _pointConnectionMap.erase(iter);
@@ -594,7 +594,8 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
     return nRet;
 }
 
-int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type &CM, DebugPrint debugprint)
+/** Remove all points from the specified ConnectionManager */
+int CtiPointClientManager::removePointsFromConnectionManager(CtiServer::ptr_type &CM, DebugPrint debugprint)
 {
     int nRet = 0;
     CTILOG_ENTRY_RC(dout, "CM=" << reinterpret_cast<size_t>(CM.get()), nRet);
@@ -622,7 +623,7 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type &CM, Debu
                     {
                         CTILOG_DEBUG(dout, "Removing CM " << reinterpret_cast<size_t>(CM.get()) << " from pointid " << pointID);
                     }
-                    iter->second.RemoveConnectionManager(CM);
+                    iter->second.removeConnectionManagersFromPoint( CM );
                     if(iter->second.IsEmpty())
                     {
                         _pointConnectionMap.erase(iter);
@@ -1215,10 +1216,10 @@ void CtiPointClientManager::erase(long pid)
         CtiPointConnection::CollectionType connectionManagers = pointConIter->second.getManagerList();
         for( auto cm : connectionManagers )
         {
-            CTILOG_INFO( dout, "Pre removePoint " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
-            RemoveConnectionManager( cm );
+            CTILOG_INFO( dout, "Pre Remove Point " << pid << " from " << cm->getClientName() << " " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
+            pointConIter->second.removeConnectionManagersFromPoint( cm );
             // Warning: RemoveConnectionManager could modify _pointConnectionMap so as of this point, pointConIter is invalid.
-            CTILOG_INFO( dout, "Post removePoint " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
+            CTILOG_INFO( dout, "Post Remove Point " << pid << " from " << cm->getClientName() << " " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
         }
     }
 

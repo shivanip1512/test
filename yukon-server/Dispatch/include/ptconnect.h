@@ -24,7 +24,10 @@ public:
    CtiPointConnection(const CtiPointConnection& aRef);
    virtual ~CtiPointConnection();
    void AddConnectionManager(CtiServer::ptr_type &cm);
-   void RemoveConnectionManager(CtiServer::ptr_type &cm);
+
+   /** Remove a specific Connection Manager from the point infered by this CtiPointConnection */
+   void removeConnectionManagersFromPoint( CtiServer::ptr_type &cm );
+
    bool HasConnection(const CtiServer::ptr_type &cm);
    bool CtiPointConnection::IsEmpty();
    CtiPointConnection& operator=(const CtiPointConnection &aRef);

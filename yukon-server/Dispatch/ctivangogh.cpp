@@ -1220,7 +1220,7 @@ void CtiVanGogh::clientShutdown(CtiServer::ptr_type &CM)
         }
 
         CTILOG_INFO(dout, "Pre Point Mgr Remove pCM->getConnectionId()=" << CM->getConnectionId() << ", use_count=" << CM.use_count());
-        PointMgr.RemoveConnectionManager(CM,
+        PointMgr.removePointsFromConnectionManager( CM,
             ((gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION) ?
             CtiPointClientManager::DebugPrint::True :
             CtiPointClientManager::DebugPrint::False));

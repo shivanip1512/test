@@ -112,7 +112,10 @@ public:
    };
 
    int InsertConnectionManager(CtiServer::ptr_type &CM, const CtiPointRegistrationMsg &aReg, DebugPrint debugprint = DebugPrint::False);
-   int RemoveConnectionManager(CtiServer::ptr_type &CM, DebugPrint debugprint = DebugPrint::False);
+
+   /** Remove all points from the specified ConnectionManager */
+   int removePointsFromConnectionManager( CtiServer::ptr_type &CM, DebugPrint debugprint = DebugPrint::False );
+
    bool pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn);
 
    CtiTime findNextNearestArchivalTime();
