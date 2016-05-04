@@ -39,10 +39,12 @@
                 <td></td>
                 <td></td>
                 <td>
-                    <cti:button icon="icon-cross" classes="js-remove fr M0" renderMode="buttonImage"/>
-                    <cti:button icon="icon-pencil" classes="js-edit fr" renderMode="buttonImage"/>
-                    <cti:button icon="icon-bullet-go-up" classes="js-up right fr M0" renderMode="buttonImage"/>
-                    <cti:button icon="icon-bullet-go-down" classes="js-down left fr M0" renderMode="buttonImage"/>
+                    <div class="button-group fr wsnw oh">
+                        <cti:button icon="icon-cross" classes="js-remove fn M0" renderMode="buttonImage" />
+                        <cti:button icon="icon-pencil" classes="js-edit fn" renderMode="buttonImage" />
+                        <cti:button icon="icon-bullet-go-up" classes="js-up right fn M0" renderMode="buttonImage" />
+                        <cti:button icon="icon-bullet-go-down" classes="js-down left fn M0" renderMode="buttonImage" />
+                    </div>
                 </td>
             </tr>
         </table>
@@ -180,7 +182,7 @@
                                 </span>
                             </td>
                             <td>
-                                <span class="wsp">${fn:escapeXml(exportField.pattern)}</span>
+                                <span style="width: 200px;" class="db wrbw wsn">${fn:escapeXml(exportField.pattern)}</span>
                             </td>
                             <td>
                                 <span>
@@ -194,12 +196,16 @@
                                 <span><cti:msg2 key="${exportField.padSide}"/>&nbsp;&nbsp;${exportField.padChar}</span>
                             </td>
                             <td>
-                                <cti:button icon="icon-cross" classes="js-remove fr M0" renderMode="buttonImage"/>
-                                <cti:button icon="icon-pencil" classes="js-edit fr" renderMode="buttonImage"/>
-                                <c:set var="disableUp" value="${row.first}"/>
-                                <c:set var="disableDown" value="${row.last}"/>
-                                <cti:button icon="icon-bullet-go-up" classes="js-up right fr M0" renderMode="buttonImage" disabled="${disableUp}"/>
-                                <cti:button icon="icon-bullet-go-down" classes="js-down left fr M0" renderMode="buttonImage" disabled="${disableDown}"/>
+                                <div class="button-group fr wsnw oh">
+                                    <cti:button icon="icon-cross" classes="js-remove fn M0" renderMode="buttonImage" />
+                                    <cti:button icon="icon-pencil" classes="js-edit fn" renderMode="buttonImage" />
+                                    <c:set var="disableUp" value="${row.first}" />
+                                    <c:set var="disableDown" value="${row.last}" />
+                                    <cti:button icon="icon-bullet-go-up" classes="js-up right fn M0"
+                                        renderMode="buttonImage" disabled="${disableUp}" />
+                                    <cti:button icon="icon-bullet-go-down" classes="js-down left fn M0"
+                                        renderMode="buttonImage" disabled="${disableDown}" />
+                                </div>
                             </td>
                         </tr>
                     </c:forEach>
