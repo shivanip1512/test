@@ -306,20 +306,22 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("isConfigured", false);
             isDisconnectStatusFound = false;
         }
-        boolean isDisconnectCollarSupported =
-            paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
-        model.addAttribute("isDisconnectCollarSupported", isDisconnectCollarSupported);
-        boolean supportsArm = disconnectService.supportsArm(Lists.newArrayList(new SimpleDevice(meter)));
+        
         model.addAttribute("device", meter);
+        
+        boolean supportsArm = disconnectService.supportsArm(Lists.newArrayList(new SimpleDevice(meter)));
         model.addAttribute("supportsArm", supportsArm);
+        
+        boolean isDisconnectCollarSupported = paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
+        model.addAttribute("isDisconnectCollarSupported", isDisconnectCollarSupported);
         if (isDisconnectCollarSupported) {
             Integer disconnectAddress = meterDao.getDisconnectAddress(meter.getDeviceId());
-            model.addAttribute("showActions", disconnectAddress != null);
             model.addAttribute("disconnectAddress", disconnectAddress);
-            model.addAttribute("isConfigured", disconnectAddress != null && isDisconnectStatusFound);
-            CollarAddressEditorBean addressEditorBean =
-                new CollarAddressEditorBean(meter.getDeviceId(), disconnectAddress);
+            CollarAddressEditorBean addressEditorBean = new CollarAddressEditorBean(meter.getDeviceId(), disconnectAddress);
             model.addAttribute("addressEditorBean", addressEditorBean);
+            
+            model.addAttribute("showActions", disconnectAddress != null);
+            model.addAttribute("isConfigured", disconnectAddress != null && isDisconnectStatusFound);
         } else {
             model.addAttribute("disconnectAddress", null);
             model.addAttribute("showActions", true);
