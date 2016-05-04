@@ -43,7 +43,7 @@ public class StarsLMDetailModel extends ReportModelBase<StarsLMDetail>
 
 	/** String values for column representation */
 	public final static String GROUP_NAME_STRING = "Group Name";
-	public final static String GROUP_CAPACITY_STRING = "Group\r\nCapacity";
+	public final static String GROUP_CAPACITY_STRING = "Group Capacity";
 	public final static String ACCOUNT_NUMBER_STRING = "Account #";
 	public final static String CONTACT_LAST_NAME_STRING = "Last Name";
 	public final static String CONTACT_FIRST_NAME_STRING = "First Name";
