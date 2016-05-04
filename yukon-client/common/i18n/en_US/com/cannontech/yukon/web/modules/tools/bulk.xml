@@ -465,6 +465,7 @@
     <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.noteText">Select the Device Type you wish to change selected devices to.</entry>
     
     <entry key="yukon.web.modules.tools.bulk.changeDeviceTypeChoose.change.label">Change Device Type</entry>
+    <entry key="yukon.web.modules.tools.bulk.changeDeviceTypeChoose.noDeviceTypes">No valid Device Types exist.</entry>
     
     <!-- changeDeviceTypeResults.jsp -->
     <entry key="yukon.web.modules.tools.bulk.changeDeviceTypeResults.pageName">Change Device Type Results</entry>
