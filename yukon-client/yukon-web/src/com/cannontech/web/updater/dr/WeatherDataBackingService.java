@@ -77,10 +77,13 @@ public class WeatherDataBackingService implements UpdateBackingService {
             break;
         case TIMESTAMP:
             Instant timestamp = weatherObs.getTimestamp();
-            String localTimestamp = dateFormattingService.format(timestamp,
-                                                                 DateFormattingService.DateFormatEnum.BOTH,
-                                                                 userContext);
-            value = messageAccessor.getMessage(baseKey + "timestamp", localTimestamp);
+            if (timestamp != null) {
+                String localTimestamp =
+                    dateFormattingService.format(timestamp, DateFormattingService.DateFormatEnum.BOTH, userContext);
+                value = messageAccessor.getMessage(baseKey + "timestamp", localTimestamp);
+            } else {
+                value = messageAccessor.getMessage(baseKey + "noData");
+            }
             break;
         case JSON_META_DATA:
             Map<String, String> metaData = new HashMap<>();
@@ -98,7 +101,9 @@ public class WeatherDataBackingService implements UpdateBackingService {
                  metaData.put("humidity", "valid");
              }
 
-            if (weatherObs.getTimestamp().isBefore(Instant.now().minus(weatherDataValidDuration))) {
+            if (weatherObs.getTimestamp() == null) {
+                metaData.put("timestamp", "nodata");
+            } else if (weatherObs.getTimestamp().isBefore(Instant.now().minus(weatherDataValidDuration))) {
                 metaData.put("timestamp", "old");
             } else {
                 metaData.put("timestamp", "valid");

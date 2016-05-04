@@ -121,7 +121,7 @@
     <entry key="yukon.web.modules.adminSetup.config.weather.weatherInputs">Weather Inputs</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.weatherInput.fahrenheit">{0} &#176;F</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.weatherInput.humidity">{0} %</entry>
-    <entry key="yukon.web.modules.adminSetup.config.weather.weatherInput.noData">(no data)</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.weatherInput.noData">Not Configured</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.weatherInput.timestamp">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.weatherStation.milesUnit">m</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.weatherStations">Weather Stations</entry>

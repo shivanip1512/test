@@ -18,6 +18,7 @@ import com.cannontech.common.pao.PaoInfo;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.model.CompleteWeatherLocation;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.point.PointQuality;
@@ -63,22 +64,28 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 
     @Override
     public WeatherObservation getCurrentWeatherObservation(WeatherLocation weatherLocation) {
-        PointValueQualityHolder tempertureValue = asyncDynamicDataSource.getPointValue(weatherLocation.getTempPoint().getLiteID());
-        PointValueQualityHolder humidityValue = asyncDynamicDataSource.getPointValue(weatherLocation.getHumidityPoint().getLiteID());
+        Double temperature = null;
+        Double humidity = null;
+        Instant timestamp = null;
 
-        Double temperature = tempertureValue.getValue();
-        Double humidity = humidityValue.getValue();
-
-        Instant timestamp = new Instant(tempertureValue.getPointDataTimeStamp());
-
-        if (tempertureValue.getPointQuality() != PointQuality.Normal
+        if (weatherLocation.getTempPoint() != null) {
+            PointValueQualityHolder tempertureValue =
+                asyncDynamicDataSource.getPointValue(weatherLocation.getTempPoint().getLiteID());
+            temperature = tempertureValue.getValue();
+            timestamp = new Instant(tempertureValue.getPointDataTimeStamp());
+            if (tempertureValue.getPointQuality() != PointQuality.Normal
                 && tempertureValue.getPointQuality() != PointQuality.Manual) {
-            temperature = null;
+                temperature = null;
+            }
         }
-
-        if (humidityValue.getPointQuality() != PointQuality.Normal
+        if (weatherLocation.getHumidityPoint() != null) {
+            PointValueQualityHolder humidityValue =
+                asyncDynamicDataSource.getPointValue(weatherLocation.getHumidityPoint().getLiteID());
+            humidity = humidityValue.getValue();
+            if (humidityValue.getPointQuality() != PointQuality.Normal
                 && humidityValue.getPointQuality() != PointQuality.Manual) {
-            humidity = null;
+                humidity = null;
+            }
         }
 
         return new WeatherObservation(weatherLocation.getStationId(),
@@ -163,8 +170,19 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
 
-        LitePoint temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
-        LitePoint humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
+        LitePoint temperaturePoint = null;
+        LitePoint humidityPoint = null;
+        try {
+            temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
+        } catch (IllegalUseOfAttribute e) {
+            log.error("Unable to get temperature attribute");
+        }
+
+        try {
+            humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
+        } catch (IllegalUseOfAttribute e) {
+            log.error("Unable to get humidity attribute");
+        }
 
         WeatherLocation weatherLocation
             = new WeatherLocation(paoIdentifier, temperaturePoint, humidityPoint, name, stationId, coordinate);
