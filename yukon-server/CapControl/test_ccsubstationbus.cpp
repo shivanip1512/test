@@ -1,6 +1,9 @@
 #include <boost/test/unit_test.hpp>
 
+#include <boost/ptr_container/ptr_map.hpp>
+
 #include "boost_test_helpers.h"
+#include "test_reader.h"
 
 #include "ccsubstationbus.h"
 #include "ccsubstationbusstore.h"
@@ -490,7 +493,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction )
     BOOST_CHECK_EQUAL(  false, bus.getMultiMonitorFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getNewPointDataReceivedFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getBusUpdatedFlag() );
-    BOOST_CHECK_EQUAL(  false, bus.getPeakTimeFlag() );
+    BOOST_CHECK_EQUAL(   true, bus.getPeakTimeFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getRecentlyControlledFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getWaiveControlFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getLikeDayControlFlag() );
@@ -511,7 +514,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction )
     BOOST_CHECK_EQUAL(  false, bus.getSendMoreTimeControlledCommandsFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getVerificationDisableOvUvFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getUsePhaseData() );
-    BOOST_CHECK_EQUAL(   true, bus.isDirty() );             // <--- why?? it's not dirty yet...
+    BOOST_CHECK_EQUAL(  false, bus.isDirty() );
 
     BOOST_CHECK_EQUAL(      0, bus.getParentId() );
     BOOST_CHECK_EQUAL(      0, bus.getCurrentVarLoadPointId() );
@@ -528,20 +531,22 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction )
     BOOST_CHECK_EQUAL(      0, bus.getCurrentDailyOperations() );
     BOOST_CHECK_EQUAL(      0, bus.getLastFeederControlledPAOId() );
     BOOST_CHECK_EQUAL(      0, bus.getLastFeederControlledPosition() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentVarPointQuality() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentWattPointQuality() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentVoltPointQuality() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationCapBankId() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationFeederId() );
+    BOOST_CHECK_EQUAL(     -1, bus.getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(     -1, bus.getCurrentVerificationFeederId() );
     BOOST_CHECK_EQUAL(      0, bus.getVoltReductionControlId() );
     BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationCapBankOrigState() );
-    BOOST_CHECK_EQUAL(      0, bus.getCapBankInactivityTime() );
+    BOOST_CHECK_EQUAL(     -1, bus.getCapBankInactivityTime() );
     BOOST_CHECK_EQUAL(      0, bus.getDisplayOrder() );
     BOOST_CHECK_EQUAL(      0, bus.getIVCount() );
     BOOST_CHECK_EQUAL(      0, bus.getIWCount() );
     BOOST_CHECK_EQUAL(      0, bus.getPhaseBId() );
     BOOST_CHECK_EQUAL(      0, bus.getPhaseCId() );
     BOOST_CHECK_EQUAL(      0, bus.getCommsStatePointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getDisableBusPointId() );
+
+    BOOST_CHECK_EQUAL( NormalQuality, bus.getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, bus.getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, bus.getCurrentVoltPointQuality() );
 
     BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentWattLoadPointValue() );
@@ -549,9 +554,9 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction )
     BOOST_CHECK_EQUAL(    0.0, bus.getAltSubControlValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getVarValueBeforeControl() );
-    BOOST_CHECK_EQUAL(    0.0, bus.getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, bus.getPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getKVARSolution() );
-    BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, bus.getEstimatedPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getTargetVarValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getAltSubVoltVal() );
     BOOST_CHECK_EQUAL(    0.0, bus.getAltSubVarVal() );
@@ -568,15 +573,15 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction )
     BOOST_CHECK_EQUAL(    0.0, bus.getPhaseCValueBeforeControl() );
 
     BOOST_CHECK_EQUAL(     "", bus.getMapLocationId() );
-    BOOST_CHECK_EQUAL(     "", bus.getSolution() );
+    BOOST_CHECK_EQUAL( "IDLE", bus.getSolution() );
     BOOST_CHECK_EQUAL(     "", bus.getParentControlUnits() );
-    BOOST_CHECK_EQUAL(     "", bus.getParentName() );
+    BOOST_CHECK_EQUAL( "none", bus.getParentName() );
 
     BOOST_CHECK_EQUAL(      0, bus.getCCFeeders().size() );
     BOOST_CHECK_EQUAL(      0, bus.getMultipleMonitorPoints().size() );
     BOOST_CHECK_EQUAL(      0, bus.getAllMonitorPoints().size() );
 
-    BOOST_CHECK_EQUAL( CtiPAOScheduleManager::AllBanks, bus.getVerificationStrategy() );
+    BOOST_CHECK_EQUAL( CtiPAOScheduleManager::Undefined, bus.getVerificationStrategy() );
 
     BOOST_CHECK_EQUAL(      0, bus.getRegression().getCurDepth() );
     BOOST_CHECK_EQUAL(      5, bus.getRegression().getRegDepth() );
@@ -587,17 +592,10 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction )
     BOOST_CHECK_EQUAL(      0, bus.getRegressionC().getCurDepth() );
     BOOST_CHECK_EQUAL(      5, bus.getRegressionC().getRegDepth() );
 
-// This guy is uninitialised in the default constructor
-//
-//    BOOST_CHECK_EQUAL(       , bus.getDisableBusPointId() );
-
-// These 5 timestamps default to current time
-//
-//    BOOST_CHECK_EQUAL(       , bus.getNextCheckTime() );
-//    BOOST_CHECK_EQUAL(       , bus.getLastCurrentVarPointUpdateTime() );
-//    BOOST_CHECK_EQUAL(       , bus.getLastOperationTime() );
-//    BOOST_CHECK_EQUAL(       , bus.getLastWattPointTime() );
-//    BOOST_CHECK_EQUAL(       , bus.getLastVoltPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , bus.getLastCurrentVarPointUpdateTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , bus.getLastOperationTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , bus.getLastWattPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , bus.getLastVoltPointTime() );
 }
 
 BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_manager )
@@ -614,7 +612,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_ma
     BOOST_CHECK_EQUAL(  false, bus.getMultiMonitorFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getNewPointDataReceivedFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getBusUpdatedFlag() );
-    BOOST_CHECK_EQUAL(  false, bus.getPeakTimeFlag() );
+    BOOST_CHECK_EQUAL(   true, bus.getPeakTimeFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getRecentlyControlledFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getWaiveControlFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getLikeDayControlFlag() );
@@ -635,7 +633,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_ma
     BOOST_CHECK_EQUAL(  false, bus.getSendMoreTimeControlledCommandsFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getVerificationDisableOvUvFlag() );
     BOOST_CHECK_EQUAL(  false, bus.getUsePhaseData() );
-    BOOST_CHECK_EQUAL(   true, bus.isDirty() );             // <--- why?? it's not dirty yet...
+    BOOST_CHECK_EQUAL(  false, bus.isDirty() );
 
     BOOST_CHECK_EQUAL(      0, bus.getParentId() );
     BOOST_CHECK_EQUAL(      0, bus.getCurrentVarLoadPointId() );
@@ -652,20 +650,22 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_ma
     BOOST_CHECK_EQUAL(      0, bus.getCurrentDailyOperations() );
     BOOST_CHECK_EQUAL(      0, bus.getLastFeederControlledPAOId() );
     BOOST_CHECK_EQUAL(      0, bus.getLastFeederControlledPosition() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentVarPointQuality() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentWattPointQuality() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentVoltPointQuality() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationCapBankId() );
-    BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationFeederId() );
+    BOOST_CHECK_EQUAL(     -1, bus.getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(     -1, bus.getCurrentVerificationFeederId() );
     BOOST_CHECK_EQUAL(      0, bus.getVoltReductionControlId() );
     BOOST_CHECK_EQUAL(      0, bus.getCurrentVerificationCapBankOrigState() );
-    BOOST_CHECK_EQUAL(      0, bus.getCapBankInactivityTime() );
+    BOOST_CHECK_EQUAL(     -1, bus.getCapBankInactivityTime() );
     BOOST_CHECK_EQUAL(      0, bus.getDisplayOrder() );
     BOOST_CHECK_EQUAL(      0, bus.getIVCount() );
     BOOST_CHECK_EQUAL(      0, bus.getIWCount() );
     BOOST_CHECK_EQUAL(      0, bus.getPhaseBId() );
     BOOST_CHECK_EQUAL(      0, bus.getPhaseCId() );
     BOOST_CHECK_EQUAL(      0, bus.getCommsStatePointId() );
+    BOOST_CHECK_EQUAL(      0, bus.getDisableBusPointId() );
+
+    BOOST_CHECK_EQUAL( NormalQuality, bus.getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, bus.getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, bus.getCurrentVoltPointQuality() );
 
     BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentWattLoadPointValue() );
@@ -673,9 +673,9 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_ma
     BOOST_CHECK_EQUAL(    0.0, bus.getAltSubControlValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getVarValueBeforeControl() );
-    BOOST_CHECK_EQUAL(    0.0, bus.getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, bus.getPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getKVARSolution() );
-    BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, bus.getEstimatedPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getTargetVarValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getAltSubVoltVal() );
     BOOST_CHECK_EQUAL(    0.0, bus.getAltSubVarVal() );
@@ -692,15 +692,15 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_ma
     BOOST_CHECK_EQUAL(    0.0, bus.getPhaseCValueBeforeControl() );
 
     BOOST_CHECK_EQUAL(     "", bus.getMapLocationId() );
-    BOOST_CHECK_EQUAL(     "", bus.getSolution() );
+    BOOST_CHECK_EQUAL( "IDLE", bus.getSolution() );
     BOOST_CHECK_EQUAL(     "", bus.getParentControlUnits() );
-    BOOST_CHECK_EQUAL(     "", bus.getParentName() );
+    BOOST_CHECK_EQUAL( "none", bus.getParentName() );
 
     BOOST_CHECK_EQUAL(      0, bus.getCCFeeders().size() );
     BOOST_CHECK_EQUAL(      0, bus.getMultipleMonitorPoints().size() );
     BOOST_CHECK_EQUAL(      0, bus.getAllMonitorPoints().size() );
 
-    BOOST_CHECK_EQUAL( CtiPAOScheduleManager::AllBanks, bus.getVerificationStrategy() );
+    BOOST_CHECK_EQUAL( CtiPAOScheduleManager::Undefined, bus.getVerificationStrategy() );
 
     BOOST_CHECK_EQUAL(      0, bus.getRegression().getCurDepth() );
     BOOST_CHECK_EQUAL(      5, bus.getRegression().getRegDepth() );
@@ -711,17 +711,10 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_ma
     BOOST_CHECK_EQUAL(      0, bus.getRegressionC().getCurDepth() );
     BOOST_CHECK_EQUAL(      5, bus.getRegressionC().getRegDepth() );
 
-// This guy is uninitialised in the default constructor
-//
-//    BOOST_CHECK_EQUAL(       , bus.getDisableBusPointId() );
-
-// These 5 timestamps default to current time
-//
-//    BOOST_CHECK_EQUAL(       , bus.getNextCheckTime() );
-//    BOOST_CHECK_EQUAL(       , bus.getLastCurrentVarPointUpdateTime() );
-//    BOOST_CHECK_EQUAL(       , bus.getLastOperationTime() );
-//    BOOST_CHECK_EQUAL(       , bus.getLastWattPointTime() );
-//    BOOST_CHECK_EQUAL(       , bus.getLastVoltPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , bus.getLastCurrentVarPointUpdateTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , bus.getLastOperationTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , bus.getLastWattPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , bus.getLastVoltPointTime() );
 }
 
 BOOST_AUTO_TEST_CASE( test_ccSubstationBus_replication )
@@ -776,6 +769,504 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_replication )
 
     delete station;
     delete area;
+}
+
+struct test_CtiCCSubstationBus : CtiCCSubstationBus
+{
+    test_CtiCCSubstationBus()
+        :   CtiCCSubstationBus()
+    {
+
+    }
+
+    test_CtiCCSubstationBus( Cti::RowReader & rdr )
+        :   CtiCCSubstationBus( rdr, nullptr )
+    {
+
+    }
+};
+
+BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_no_dynamic_data )
+{
+    boost::ptr_map< long, test_CtiCCSubstationBus > busses;
+
+    {   // Core bus object initialization
+
+        using CCBusRow     = Cti::Test::StringRow<21>;
+        using CCBusReader  = Cti::Test::TestReader<CCBusRow>;
+
+        CCBusRow columnNames =
+        {
+            "PAObjectID",
+            "Category",
+            "PAOClass",
+            "PAOName",
+            "Type",
+            "Description",
+            "DisableFlag",
+            "CurrentVarLoadPointID",
+            "CurrentWattLoadPointID",
+            "MapLocationID",
+            "CurrentVoltLoadPointID",
+            "AltSubID",
+            "SwitchPointID",
+            "DualBusEnabled",
+            "MultiMonitorControl",
+            "usephasedata",
+            "phaseb",
+            "phasec",
+            "ControlFlag",
+            "VoltReductionPointId",
+            "DisableBusPointId"
+        };
+
+        std::vector<CCBusRow> rowVec
+        {
+            {
+                "4",
+                "CAPCONTROL",
+                "CAPCONTROL",
+                "GL Bus 10",
+                "CCSUBBUS",
+                "NV",
+                "Y",
+                "101",
+                "102",
+                "10",
+                "103",
+                "104",
+                "105",
+                "Y",
+                "Y",
+                "Y",
+                "106",
+                "107",
+                "Y",
+                "108",
+                "109"
+            }
+        };
+
+        CCBusReader reader( columnNames, rowVec );
+
+        while ( reader() )
+        {
+            long    paoID;
+
+            reader[ "PAObjectID" ] >> paoID;
+
+            busses.insert( paoID, new test_CtiCCSubstationBus( reader ) );
+        }
+    }
+
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getSwitchOverStatus() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPrimaryBusFlag() );
+    BOOST_CHECK_EQUAL(   true, busses[ 4 ].getDualBusEnable() );
+    BOOST_CHECK_EQUAL(   true, busses[ 4 ].getMultiMonitorFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getNewPointDataReceivedFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getBusUpdatedFlag() );
+    BOOST_CHECK_EQUAL(   true, busses[ 4 ].getPeakTimeFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getWaiveControlFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getLikeDayControlFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPerformingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getVerificationDoneFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getOverlappingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPreOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getOperationSentWaitFlag() );;
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPostOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getReEnableBusFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getWaitForReCloseDelayFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getWaitToFinishRegularControlFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getMaxDailyOpsHitFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getCorrectionNeededNoBankAvailFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getSendMoreTimeControlledCommandsFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getVerificationDisableOvUvFlag() );
+    BOOST_CHECK_EQUAL(   true, busses[ 4 ].getUsePhaseData() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].isDirty() );
+
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getParentId() );
+    BOOST_CHECK_EQUAL(    101, busses[ 4 ].getCurrentVarLoadPointId() );
+    BOOST_CHECK_EQUAL(    102, busses[ 4 ].getCurrentWattLoadPointId() );
+    BOOST_CHECK_EQUAL(    103, busses[ 4 ].getCurrentVoltLoadPointId() );
+    BOOST_CHECK_EQUAL(    104, busses[ 4 ].getAltDualSubId() );
+    BOOST_CHECK_EQUAL(    105, busses[ 4 ].getSwitchOverPointId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getEventSequence() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getDecimalPlaces() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getEstimatedVarLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getDailyOperationsAnalogPointId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getEstimatedPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getCurrentDailyOperations() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getLastFeederControlledPAOId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getLastFeederControlledPosition() );
+    BOOST_CHECK_EQUAL(     -1, busses[ 4 ].getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(     -1, busses[ 4 ].getCurrentVerificationFeederId() );
+    BOOST_CHECK_EQUAL(    108, busses[ 4 ].getVoltReductionControlId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getCurrentVerificationCapBankOrigState() );
+    BOOST_CHECK_EQUAL(     -1, busses[ 4 ].getCapBankInactivityTime() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getDisplayOrder() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getIVCount() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getIWCount() );
+    BOOST_CHECK_EQUAL(    106, busses[ 4 ].getPhaseBId() );
+    BOOST_CHECK_EQUAL(    107, busses[ 4 ].getPhaseCId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getCommsStatePointId() );
+    BOOST_CHECK_EQUAL(    109, busses[ 4 ].getDisableBusPointId() );
+
+    BOOST_CHECK_EQUAL( NormalQuality, busses[ 4 ].getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, busses[ 4 ].getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, busses[ 4 ].getCurrentVoltPointQuality() );
+
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getRawCurrentVarLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getRawCurrentWattLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getCurrentvoltloadpointvalue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getAltSubControlValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getEstimatedVarLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getVarValueBeforeControl() );
+    BOOST_CHECK_EQUAL(   -1.0, busses[ 4 ].getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getKVARSolution() );
+    BOOST_CHECK_EQUAL(   -1.0, busses[ 4 ].getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getTargetVarValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getAltSubVoltVal() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getAltSubVarVal() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getAltSubWattVal() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getIVControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getIWControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getIVControl() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getIWControl() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseAValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseBValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseCValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseAValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseBValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseCValueBeforeControl() );
+
+    BOOST_CHECK_EQUAL(   "10", busses[ 4 ].getMapLocationId() );
+    BOOST_CHECK_EQUAL( "IDLE", busses[ 4 ].getSolution() );
+    BOOST_CHECK_EQUAL(     "", busses[ 4 ].getParentControlUnits() );
+    BOOST_CHECK_EQUAL( "none", busses[ 4 ].getParentName() );
+
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getCCFeeders().size() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getMultipleMonitorPoints().size() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getAllMonitorPoints().size() );
+
+    BOOST_CHECK_EQUAL( CtiPAOScheduleManager::Undefined, busses[ 4 ].getVerificationStrategy() );
+
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getRegression().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, busses[ 4 ].getRegression().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getRegressionA().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, busses[ 4 ].getRegressionA().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getRegressionB().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, busses[ 4 ].getRegressionB().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getRegressionC().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, busses[ 4 ].getRegressionC().getRegDepth() );
+
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastCurrentVarPointUpdateTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastOperationTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastWattPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastVoltPointTime() );
+}
+
+BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dynamic_data )
+{
+    boost::ptr_map< long, test_CtiCCSubstationBus > busses;
+
+    {   // Core bus object initialization
+
+        using CCBusRow     = Cti::Test::StringRow<21>;
+        using CCBusReader  = Cti::Test::TestReader<CCBusRow>;
+
+        CCBusRow columnNames =
+        {
+            "PAObjectID",
+            "Category",
+            "PAOClass",
+            "PAOName",
+            "Type",
+            "Description",
+            "DisableFlag",
+            "CurrentVarLoadPointID",
+            "CurrentWattLoadPointID",
+            "MapLocationID",
+            "CurrentVoltLoadPointID",
+            "AltSubID",
+            "SwitchPointID",
+            "DualBusEnabled",
+            "MultiMonitorControl",
+            "usephasedata",
+            "phaseb",
+            "phasec",
+            "ControlFlag",
+            "VoltReductionPointId",
+            "DisableBusPointId"
+        };
+
+        std::vector<CCBusRow> rowVec
+        {
+            {
+                "4",
+                "CAPCONTROL",
+                "CAPCONTROL",
+                "GL Bus 10",
+                "CCSUBBUS",
+                "NV",
+                "Y",
+                "101",
+                "102",
+                "10",
+                "103",
+                "104",
+                "105",
+                "Y",
+                "Y",
+                "Y",
+                "106",
+                "107",
+                "Y",
+                "108",
+                "109"
+            }
+        };
+
+        CCBusReader reader( columnNames, rowVec );
+
+        while ( reader() )
+        {
+            long    paoID;
+
+            reader[ "PAObjectID" ] >> paoID;
+
+            busses.insert( paoID, new test_CtiCCSubstationBus( reader ) );
+        }
+    }
+
+    {   // Dynamic data portion of the loading
+
+        using CCBusRow     = Cti::Test::StringRow<44>;
+        using CCBusReader  = Cti::Test::TestReader<CCBusRow>;
+
+        CCBusRow columnNames =
+        {
+            "SubstationBusID",
+            "CurrentVarPointValue",
+            "CurrentWattPointValue",
+            "NextCheckTime",
+            "NewPointDataReceivedFlag",
+            "BusUpdatedFlag",
+            "LastCurrentVarUpdateTime",
+            "EstimatedVarPointValue",
+            "CurrentDailyOperations",
+            "PeakTimeFlag",
+            "RecentlyControlledFlag",
+            "LastOperationTime",
+            "VarValueBeforeControl",
+            "LastFeederPAOid",
+            "LastFeederPosition",
+            "PowerFactorValue",
+            "KvarSolution",
+            "EstimatedPFValue",
+            "CurrentVarPointQuality",
+            "WaiveControlFlag",
+            "AdditionalFlags",
+            "CurrVerifyCBId",
+            "CurrVerifyFeederId",
+            "CurrVerifyCBOrigState",
+            "VerificationStrategy",
+            "CbInactivityTime",
+            "CurrentVoltPointValue",
+            "SwitchPointStatus",
+            "AltSubControlValue",
+            "EventSeq",
+            "CurrentWattPointQuality",
+            "CurrentVoltPointQuality",
+            "iVControlTot",
+            "iVCount",
+            "iWControlTot",
+            "iWCount",
+            "phaseavalue",
+            "phasebvalue",
+            "phasecvalue",
+            "LastWattPointTime",
+            "LastVoltPointTime",
+            "PhaseAValueBeforeControl",
+            "PhaseBValueBeforeControl",
+            "PhaseCValueBeforeControl"
+        };
+
+        std::vector<CCBusRow> rowVec
+        {
+            {
+                "4",
+                "550",
+                "2200",
+                "2016-04-26 13:00:00.000",
+                "N",
+                "N",
+                "2016-04-15 09:57:32.000",
+                "550",
+                "0",
+                "N",
+                "N",
+                "2016-02-10 18:41:44.000",
+                "700",
+                "5",
+                "0",
+                "0.970142500145332",
+                "-550",
+                "0.970142500145332",
+                "4",
+                "N",
+                "NNNNNNNNNNNYNNNNNNNN",
+                "-1",
+                "-1",
+                "0",
+                "-1",
+                "-1",
+                "119",
+                "N",
+                "0",
+                "7",
+                "4",
+                "4",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "2016-04-15 09:57:28.000",
+                "2015-12-07 17:17:18.000",
+                "0",
+                "0",
+                "0"
+            }
+        };
+
+        CCBusReader reader( columnNames, rowVec );
+
+        while ( reader() )
+        {
+            busses[ 4 ].setDynamicData( reader );
+        }
+    }
+
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getSwitchOverStatus() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPrimaryBusFlag() );
+    BOOST_CHECK_EQUAL(   true, busses[ 4 ].getDualBusEnable() );
+    BOOST_CHECK_EQUAL(   true, busses[ 4 ].getMultiMonitorFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getNewPointDataReceivedFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getBusUpdatedFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPeakTimeFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getWaiveControlFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getLikeDayControlFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPerformingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getVerificationDoneFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getOverlappingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPreOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getOperationSentWaitFlag() );;
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPostOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getReEnableBusFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getWaitForReCloseDelayFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getWaitToFinishRegularControlFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getMaxDailyOpsHitFlag() );
+    BOOST_CHECK_EQUAL(   true, busses[ 4 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getCorrectionNeededNoBankAvailFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getVoltReductionFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getSendMoreTimeControlledCommandsFlag() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].getVerificationDisableOvUvFlag() );
+    BOOST_CHECK_EQUAL(   true, busses[ 4 ].getUsePhaseData() );
+    BOOST_CHECK_EQUAL(  false, busses[ 4 ].isDirty() );
+
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getParentId() );
+    BOOST_CHECK_EQUAL(    101, busses[ 4 ].getCurrentVarLoadPointId() );
+    BOOST_CHECK_EQUAL(    102, busses[ 4 ].getCurrentWattLoadPointId() );
+    BOOST_CHECK_EQUAL(    103, busses[ 4 ].getCurrentVoltLoadPointId() );
+    BOOST_CHECK_EQUAL(    104, busses[ 4 ].getAltDualSubId() );
+    BOOST_CHECK_EQUAL(    105, busses[ 4 ].getSwitchOverPointId() );
+    BOOST_CHECK_EQUAL(      7, busses[ 4 ].getEventSequence() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getDecimalPlaces() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getEstimatedVarLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getDailyOperationsAnalogPointId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getEstimatedPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getCurrentDailyOperations() );
+    BOOST_CHECK_EQUAL(      5, busses[ 4 ].getLastFeederControlledPAOId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getLastFeederControlledPosition() );
+    BOOST_CHECK_EQUAL(     -1, busses[ 4 ].getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(     -1, busses[ 4 ].getCurrentVerificationFeederId() );
+    BOOST_CHECK_EQUAL(    108, busses[ 4 ].getVoltReductionControlId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getCurrentVerificationCapBankOrigState() );
+    BOOST_CHECK_EQUAL(     -1, busses[ 4 ].getCapBankInactivityTime() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getIVCount() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getIWCount() );
+    BOOST_CHECK_EQUAL(    106, busses[ 4 ].getPhaseBId() );
+    BOOST_CHECK_EQUAL(    107, busses[ 4 ].getPhaseCId() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getCommsStatePointId() );
+    BOOST_CHECK_EQUAL(    109, busses[ 4 ].getDisableBusPointId() );
+
+    BOOST_CHECK_EQUAL( ManualQuality, busses[ 4 ].getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL( ManualQuality, busses[ 4 ].getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL( ManualQuality, busses[ 4 ].getCurrentVoltPointQuality() );
+
+    BOOST_CHECK_EQUAL(  550.0, busses[ 4 ].getRawCurrentVarLoadPointValue() );
+    BOOST_CHECK_EQUAL( 2200.0, busses[ 4 ].getRawCurrentWattLoadPointValue() );
+    BOOST_CHECK_EQUAL(  119.0, busses[ 4 ].getCurrentvoltloadpointvalue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getAltSubControlValue() );
+    BOOST_CHECK_EQUAL(  550.0, busses[ 4 ].getEstimatedVarLoadPointValue() );
+    BOOST_CHECK_EQUAL(  700.0, busses[ 4 ].getVarValueBeforeControl() );
+    BOOST_CHECK_EQUAL( -550.0, busses[ 4 ].getKVARSolution() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getTargetVarValue() );
+    BOOST_CHECK_EQUAL(  119.0, busses[ 4 ].getAltSubVoltVal() );
+    BOOST_CHECK_EQUAL(  550.0, busses[ 4 ].getAltSubVarVal() );
+    BOOST_CHECK_EQUAL( 2200.0, busses[ 4 ].getAltSubWattVal() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getIVControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getIWControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getIVControl() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getIWControl() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseAValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseBValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseCValue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseAValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseBValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getPhaseCValueBeforeControl() );
+
+    BOOST_CHECK_CLOSE( 0.970142500145332, busses[ 4 ].getPowerFactorValue(),          1e-6 );
+    BOOST_CHECK_CLOSE( 0.970142500145332, busses[ 4 ].getEstimatedPowerFactorValue(), 1e-6 );
+
+    BOOST_CHECK_EQUAL(   "10", busses[ 4 ].getMapLocationId() );
+    BOOST_CHECK_EQUAL( "IDLE", busses[ 4 ].getSolution() );
+    BOOST_CHECK_EQUAL(     "", busses[ 4 ].getParentControlUnits() );
+    BOOST_CHECK_EQUAL( "none", busses[ 4 ].getParentName() );
+
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getCCFeeders().size() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getMultipleMonitorPoints().size() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getAllMonitorPoints().size() );
+
+    BOOST_CHECK_EQUAL( CtiPAOScheduleManager::Undefined, busses[ 4 ].getVerificationStrategy() );
+
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getRegression().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, busses[ 4 ].getRegression().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getRegressionA().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, busses[ 4 ].getRegressionA().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getRegressionB().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, busses[ 4 ].getRegressionB().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getRegressionC().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, busses[ 4 ].getRegressionC().getRegDepth() );
+
+//  Cti::Test::TestReader returns CtiTime::now() for all timestamps extracted
+//      so we can't test those...  It's relatively trivial to change the reader to parse the input
+//      and return a time, BUT we run into all sorts of DST and TZ issues.  Maybe someday we can fix it...
+
+//    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastCurrentVarPointUpdateTime() );
+//    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastOperationTime() );
+//    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastWattPointTime() );
+//    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastVoltPointTime() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

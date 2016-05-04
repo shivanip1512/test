@@ -4870,7 +4870,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                                "DSB.busupdatedflag, DSB.lastcurrentvarupdatetime, DSB.estimatedvarpointvalue, "
                                                "DSB.currentdailyoperations, DSB.peaktimeflag, DSB.recentlycontrolledflag, "
                                                "DSB.lastoperationtime, DSB.varvaluebeforecontrol, DSB.lastfeederpaoid, "
-                                               "DSB.lastfeederposition, DSB.ctitimestamp, DSB.powerfactorvalue, "
+                                               "DSB.lastfeederposition, DSB.powerfactorvalue, "
                                                "DSB.kvarsolution, DSB.estimatedpfvalue, DSB.currentvarpointquality, "
                                                "DSB.waivecontrolflag, DSB.additionalflags, DSB.currverifycbid, "
                                                "DSB.currverifyfeederid, DSB.currverifycborigstate, DSB.verificationstrategy, "

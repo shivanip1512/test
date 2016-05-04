@@ -412,7 +412,6 @@ private:
     long _currentvoltpointquality;
     bool _waivecontrolflag;
 
-    std::string _additionalFlags;
     long _currentVerificationCapBankId;
     long _currentVerificationFeederId;
     std::vector <CtiCCFeeder*> _ccfeeders;
