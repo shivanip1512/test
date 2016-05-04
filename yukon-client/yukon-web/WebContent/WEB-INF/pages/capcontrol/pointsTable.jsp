@@ -21,7 +21,6 @@
                             <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
                         </td>
                         <td class="state-indicator">
-                            <cti:pointStatus pointId="${point.pointId}" statusPointOnly="${true}"/>
                             <c:choose>
                                 <c:when test="${point.format == '{rawValue|lastControlReason}'}">
                                     <cti:pointStatus pointId="${point.pointId}" format="{rawValue|lastControlReasonColor}"/>
@@ -29,6 +28,9 @@
                                 <c:when test="${point.format == '{rawValue|ignoredControlReason}'}">
                                     <cti:pointStatus pointId="${point.pointId}" format="{rawValue|ignoredControlReasonColor}"/>
                                 </c:when>
+                                <c:otherwise>
+                                    <cti:pointStatus pointId="${point.pointId}" statusPointOnly="${true}"/>
+                                </c:otherwise>
                             </c:choose>
                         </td>
                         <td class="wsnw">

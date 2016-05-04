@@ -28,17 +28,14 @@
                             <c:set var="rendered" value="${false}"/>
                             <c:choose>
                                 <c:when test="${format == '{rawValue|lastControlReason}'}">
-                                    <c:set var="rendered" value="${true}"/>
                                     <cti:pointStatus pointId="${point.pointID}" format="{rawValue|lastControlReasonColor}"/>
                                 </c:when>
                                 <c:when test="${format == '{rawValue|ignoredControlReason}'}">
-                                <c:set var="rendered" value="${true}"/>
                                     <cti:pointStatus pointId="${point.pointID}" format="{rawValue|ignoredControlReasonColor}"/>
                                 </c:when>
-                                <c:when test="${!rendered && point.stateGroupID != 0}">
-                                    <c:set var="rendered" value="${true}"/>
+                                <c:when test="${point.stateGroupID != 0}">
                                     <cti:pointStatus pointId="${point.pointID}" />
-                               </c:when>
+                                </c:when>
                             </c:choose>
                         </td>
                         <td>
