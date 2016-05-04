@@ -44,19 +44,18 @@ public class DeviceTypeGroupProvider extends CompleteBinningDeviceGroupProviderB
 
     @Override
     protected SqlFragmentSource getChildSqlSelectForBin(String bin) {
+        PaoType paoType = PaoType.getForDbString(bin);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid");
         sql.append("FROM Device d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("WHERE ypo.type = ");
-        sql.appendArgument(bin);
+        sql.append("WHERE ypo.type").eq_k(paoType);
         return sql;
     }
     
     @Override
     protected Set<String> getBinsForDevice(YukonDevice device) {
-        LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
-        String type = devicePao.getPaoType().getDbString();
+        String type = device.getPaoIdentifier().getPaoType().getDbString(); 
         return Collections.singleton(type);
     }
 }

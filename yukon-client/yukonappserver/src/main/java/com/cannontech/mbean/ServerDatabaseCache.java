@@ -8,11 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.SimpleMeter;
@@ -87,6 +85,7 @@ import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache {
     
@@ -998,12 +997,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     private synchronized Set<PaoType> getPaoTypesSet() {
         if (allPaoTypes.isEmpty()) {
-            allPaoTypes = getAllPaosMap().values().stream().map(new Function<LiteYukonPAObject, PaoType>() {
-                @Override
-                public PaoType apply(LiteYukonPAObject pao) {
-                    return pao.getPaoType();
-                }
-            }).collect(Collectors.toSet());
+            allPaoTypes = Sets.newHashSet(paoDao.getExistingPaoTypes());
         }
         return allPaoTypes;
     }
