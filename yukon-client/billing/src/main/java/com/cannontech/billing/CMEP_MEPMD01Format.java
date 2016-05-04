@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.transaction.NotSupportedException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
@@ -24,6 +22,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
@@ -110,7 +109,7 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
                 }
                 
             // The user is trying to generate a billing file for a CMEP unit that we do not currently use in Yukon.  Log the error and move on.
-            } catch (NotSupportedException e) {
+            } catch (IllegalUseOfAttribute e) {
                 CTILogger.error(e);
             }
         }

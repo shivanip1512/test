@@ -1,9 +1,8 @@
 package com.cannontech.billing.model;
 
-import javax.transaction.NotSupportedException;
-
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 
 public enum CMEPUnitEnum {
     KWHREG(BuiltInAttribute.USAGE), // Meter dial or register readings for printing on monthly bill. 
@@ -43,9 +42,9 @@ public enum CMEPUnitEnum {
         this.attribute = attribute;
     }
     
-    public Attribute getAttribute() throws NotSupportedException {
+    public Attribute getAttribute() throws IllegalUseOfAttribute {
         if (attribute == null) {
-            throw new NotSupportedException("The unit "+name()+" is not currently supported by Yukon");
+            throw new IllegalUseOfAttribute("The unit "+name()+" is not currently supported by Yukon");
         }
         return attribute;
     }

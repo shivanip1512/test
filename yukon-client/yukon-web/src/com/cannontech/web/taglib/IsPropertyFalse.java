@@ -55,7 +55,6 @@ public class IsPropertyFalse extends BodyTagSupport
 	}
 	
 	/**
-	 * Fix for JRun3.1 tags
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	 */
 	public int doEndTag() throws JspException {		

@@ -9,7 +9,6 @@ import java.sql.Connection;
 import java.util.concurrent.Semaphore;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.NotSupportedException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -30,6 +29,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.dr.hardware.service.NotSupportedException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.outageProcessing.OutageMonitorEditorController;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -135,7 +135,7 @@ public class DatabaseValidationController implements ResourceLoaderAware {
      * @throws NotSupportedException
      * @throws MetaDataAccessException
      */
-    private Resource getDatabaseXMLFile(final YukonUserContext context) throws NotSupportedException, MetaDataAccessException  {
+    private Resource getDatabaseXMLFile(final YukonUserContext context) throws UnsupportedOperationException, MetaDataAccessException  {
         String databaseProductName = (String)JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), "getDatabaseProductName");
         
         if (databaseProductName.contains("SQL Server")) {
@@ -146,7 +146,7 @@ public class DatabaseValidationController implements ResourceLoaderAware {
         }
         
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-        throw new NotSupportedException(messageSourceAccessor.getMessage("yukon.web.modules.support.databaseValidate.msgError.valitationNotSupported"));
+        throw new UnsupportedOperationException(messageSourceAccessor.getMessage("yukon.web.modules.support.databaseValidate.msgError.valitationNotSupported"));
     }
     
     /**
