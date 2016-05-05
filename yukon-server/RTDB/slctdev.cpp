@@ -251,6 +251,16 @@ const DeviceLookup deviceFactory = boost::assign::map_list_of
     (TYPE_RFN430SL2,    MakeDeviceFunc(makeDevice<Rfn430sl2Device>))
     (TYPE_RFN430SL3,    MakeDeviceFunc(makeDevice<Rfn430sl3Device>))
     (TYPE_RFN430SL4,    MakeDeviceFunc(makeDevice<Rfn430sl4Device>))
+    (TYPE_RFN510FL,     MakeDeviceFunc(makeDevice<Rfn510flDevice>))
+    (TYPE_RFN520FAX,    MakeDeviceFunc(makeDevice<Rfn520faxDevice>))
+    (TYPE_RFN520FRX,    MakeDeviceFunc(makeDevice<Rfn520frxDevice>))
+    (TYPE_RFN520FAXD,   MakeDeviceFunc(makeDevice<Rfn520faxdDevice>))
+    (TYPE_RFN520FRXD,   MakeDeviceFunc(makeDevice<Rfn520frxdDevice>))
+    (TYPE_RFN530S4X,    MakeDeviceFunc(makeDevice<Rfn530s4xDevice>))
+    (TYPE_RFN530S4EAD,  MakeDeviceFunc(makeDevice<Rfn530s4eadDevice>))
+    (TYPE_RFN530S4EAT,  MakeDeviceFunc(makeDevice<Rfn530s4eatDevice>))
+    (TYPE_RFN530S4ERD,  MakeDeviceFunc(makeDevice<Rfn530s4erdDevice>))
+    (TYPE_RFN530S4ERT,  MakeDeviceFunc(makeDevice<Rfn530s4ertDevice>))
     //  RF DA devices
     (TYPE_RFN1200,      MakeDeviceFunc(makeDevice<RfDaDevice>))
     //  Electronic meters

@@ -244,6 +244,7 @@ static const std::map<std::string, int> device_lookups
     { "rfn-410fl",          TYPE_RFN410FL },
     { "rfn-410fx",          TYPE_RFN410FX },
     { "rfn-410fd",          TYPE_RFN410FD },
+    { "rfn-510fl",          TYPE_RFN510FL },
 
     { "rfn-420fl",          TYPE_RFN420FL },
     { "rfn-420fx",          TYPE_RFN420FX },
@@ -251,6 +252,10 @@ static const std::map<std::string, int> device_lookups
 
     { "rfn-420frx",         TYPE_RFN420FRX },
     { "rfn-420frd",         TYPE_RFN420FRD },
+    { "rfn-520fax",         TYPE_RFN520FAX },
+    { "rfn-520frx",         TYPE_RFN520FRX },
+    { "rfn-520faxd",        TYPE_RFN520FAXD },
+    { "rfn-520frxd",        TYPE_RFN520FRXD },
 
     { "rfn-410cl",          TYPE_RFN410CL },
     { "rfn-420cl",          TYPE_RFN420CL },
@@ -268,6 +273,12 @@ static const std::map<std::string, int> device_lookups
     { "rfn-430sl2",         TYPE_RFN430SL2 },
     { "rfn-430sl3",         TYPE_RFN430SL3 },
     { "rfn-430sl4",         TYPE_RFN430SL4 },
+
+    { "rfn-530s4x",         TYPE_RFN530S4X },
+    { "rfn-530s4ead",       TYPE_RFN530S4EAD },
+    { "rfn-530s4eat",       TYPE_RFN530S4EAT },
+    { "rfn-530s4erd",       TYPE_RFN530S4ERD },
+    { "rfn-530s4ert",       TYPE_RFN530S4ERT },
 
     //  --- RF DA nodes ---
     { "rfn-1200",           TYPE_RFN1200 },
@@ -683,6 +694,16 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_RFN430SL2,
         TYPE_RFN430SL3,
         TYPE_RFN430SL4,
+        TYPE_RFN510FL,
+        TYPE_RFN520FAX,
+        TYPE_RFN520FRX,
+        TYPE_RFN520FAXD,
+        TYPE_RFN520FRXD,
+        TYPE_RFN530S4X,
+        TYPE_RFN530S4EAD,
+        TYPE_RFN530S4EAT,
+        TYPE_RFN530S4ERD,
+        TYPE_RFN530S4ERT,
         TYPELCR3102,
         TYPE_LOAD_TAP_CHANGER,
         TYPE_GANG_OPERATED_REGULATOR,

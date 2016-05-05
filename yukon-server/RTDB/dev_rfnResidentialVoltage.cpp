@@ -59,7 +59,12 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
         { TYPE_RFN420FD,  Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN420FRX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN420FRD, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_RFN420FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL }
+        { TYPE_RFN520FAX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
+        { TYPE_RFN520FRX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
+        { TYPE_RFN520FAXD,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
+        { TYPE_RFN520FRXD,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
+        { TYPE_RFN420FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL },
+        { TYPE_RFN510FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL }
     };
 
     if ( auto meterId = mapFind( DeviceTypeToMeterId, deviceType ) )
