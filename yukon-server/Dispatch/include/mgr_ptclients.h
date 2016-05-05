@@ -80,6 +80,9 @@ private:
 
 protected:  //  for unit test access
 
+   // Used for unit tests
+   void refreshPoints( std::set<long> &pointIdsFound, Cti::RowReader& rdr );
+
    std::vector<std::string> generateSqlStatements(const std::set<long> &pointIds);
 
    void addAlarming(CtiTablePointAlarming &table);
