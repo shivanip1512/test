@@ -129,7 +129,6 @@
     <bean id="disabledMeterGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.DisabledMeterGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
-        <property name="paoDao" ref="paoDao"/>
     </bean>
 
     <bean id="disconnectCollarGroupProvider"

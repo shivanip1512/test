@@ -15,15 +15,12 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
 
 public class DeviceTypeGroupProvider extends CompleteBinningDeviceGroupProviderBase<String> {
     
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private PaoDao paoDao;
 
     @Override
     protected List<String> getAllBins() {
