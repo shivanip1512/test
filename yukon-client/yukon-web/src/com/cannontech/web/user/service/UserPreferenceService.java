@@ -59,10 +59,10 @@ public interface UserPreferenceService {
     /**
      * If there is no saved preference, the default one which is 3m is returned.
      * 
-     * @param newValue new Trend Zoom value to be updated
+     * @param prefType new Trend Zoom value to be updated
      * @param user LiteYukonUser
      * @return PreferenceTrendZoomOption enum value.
      */   
-    public PreferenceTrendZoomOption updatePreferenceZoomType(Integer newValue, LiteYukonUser user)
+    public PreferenceTrendZoomOption updatePreferenceZoomType(PreferenceTrendZoomOption prefType, LiteYukonUser user)
             throws IllegalArgumentException;
 }

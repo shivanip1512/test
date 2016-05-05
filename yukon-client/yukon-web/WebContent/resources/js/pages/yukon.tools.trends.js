@@ -13,12 +13,41 @@ yukon.tools.trends = (function () {
         init: function (trendId) {
             
             var trendList;
-            var selectedOption;
+            var selectedOption,
+                prefZoom;
             $.ajax({
                 url: yukon.url('/tools/trends/getZoom'),
                 type: 'get'
             }).done(function (data) {
-                selectedOption=data.prefZoom;
+                prefZoom=data.prefZoom;
+                switch (prefZoom) {
+                case 'DAY_1':
+                    selectedOption = 0;
+                    break;
+                case 'WEEK_1':
+                    selectedOption = 1;
+                    break;
+                case 'MONTH_1':
+                    selectedOption = 2;
+                    break;
+                case 'MONTH_3':
+                    selectedOption = 3;
+                    break;
+                case 'MONTH_6':
+                    selectedOption = 4;
+                    break;
+                case 'YTD':
+                    selectedOption = 5;
+                    break;
+                case 'YEAR_1':
+                    selectedOption = 6;
+                    break;
+                case 'ALL':
+                    selectedOption = 7;
+                    break;
+                default:
+                    selectedOption = 3;
+                }
             });
             Highcharts.setOptions(yg.highcharts_options);
             yukon.ui.block('[data-trend]');
@@ -83,40 +112,40 @@ yukon.tools.trends = (function () {
                             type: 'day',
                             count: 1,
                             text: labels.day,
-                            value: 0
+                            value: 'DAY_1'
                         }, {
                             type: 'week',
                             count: 1,
                             text: labels.week,
-                            value: 1
+                            value: 'WEEK_1'
                         }, {
                             type: 'month',
                             count: 1,
                             text: labels.month,
-                            value: 2
+                            value: 'MONTH_1'
                         }, {
                             type: 'month',
                             count: 3,
                             text: labels.threeMonths,
-                            value: 3
+                            value: 'MONTH_3'
                         }, {
                             type: 'month',
                             count: 6,
                             text: labels.sixMonths,
-                            value: 4
+                            value: 'MONTH_6'
                         }, {
                             type: 'ytd',
                             text: labels.ytd,
-                            value: 5
+                            value: 'YTD'
                         }, {
                             type: 'year',
                             count: 1,
                             text: labels.year,
-                            value: 6
+                            value: 'YEAR_1'
                         }, {
                             type: 'all',
                             text: labels.all,
-                            value: 7
+                            value: 'ALL'
                         }],
                         
                         selected : selectedOption

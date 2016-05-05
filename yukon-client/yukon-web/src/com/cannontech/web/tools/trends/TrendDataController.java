@@ -27,6 +27,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DurationFormattingService;
+import com.cannontech.core.users.model.PreferenceTrendZoomOption;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
@@ -281,18 +282,16 @@ public class TrendDataController {
 
     @RequestMapping("/trends/updateZoom")
     public void updateZoom(LiteYukonUser user, HttpServletRequest request) {
-        Integer trendZoom = new Integer(request.getParameter("value"));
-        if (trendZoom != null) {
-            userPreferenceService.updatePreferenceZoomType(trendZoom, user);
-        }
+        PreferenceTrendZoomOption trendZoom = PreferenceTrendZoomOption.valueOf(request.getParameter("value"));
+        userPreferenceService.updatePreferenceZoomType(trendZoom, user);
     }
 
     @RequestMapping("/trends/getZoom")
     @ResponseBody
     public Map<String, Object> getZoom(LiteYukonUser user, HttpServletRequest request) {
         Map<String, Object> json = new HashMap<>();
-        Integer trendZoom = userPreferenceService.getDefaultZoomType(user).getZoomPeriod();
-        json.put("prefZoom", trendZoom);
+        PreferenceTrendZoomOption trendZoom = userPreferenceService.getDefaultZoomType(user);
+        json.put("prefZoom", trendZoom.name());
         return json;
     }
 

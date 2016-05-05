@@ -122,13 +122,9 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
-    public PreferenceTrendZoomOption updatePreferenceZoomType(Integer newValue, LiteYukonUser user) {
-        if (newValue == null) {
-            throw new IllegalArgumentException("Cannot set preference to NULL");
-        }
-        PreferenceTrendZoomOption prefType = PreferenceTrendZoomOption.fromZoomPeriod(newValue);
+    public PreferenceTrendZoomOption updatePreferenceZoomType(PreferenceTrendZoomOption prefType, LiteYukonUser user) {
         if (prefType == null) {
-            throw new IllegalArgumentException("Unknown ZoomType [" + newValue + "]");
+            throw new IllegalArgumentException("Unknown ZoomType [" + prefType + "]");
         }
         this.savePreference(user, UserPreferenceName.TREND_ZOOM, prefType.name());
         return prefType;

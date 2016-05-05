@@ -71,7 +71,7 @@
     <entry key="yukon.web.modules.user.preferences.ALERT_SOUND">Alert Sound</entry>
     
     <!-- Trend Zoom -->
-    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM">Trend Zoom</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_ZOOM">Trends Zoom</entry>
     <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.DAY_1">1d</entry>
     <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.WEEK_1">1w</entry>
     <entry key="yukon.web.modules.user.preferences.TREND_ZOOM.MONTH_1">1m</entry>
