@@ -111,8 +111,6 @@ begin
 		MessageBox("Unable to set YUKON_BASE environment variable.", WARNING);
 	endif;
 	
-	SetServiceTimeOut();
-
 	//broadcast notification of environment variable change so it is visible
 	//to other programs
 	sEnv = "Environment";
@@ -400,7 +398,6 @@ begin
 	RegDBSetItem(REGDB_UNINSTALL_MINOR_VERSION, sVTemp);
 	NumToStr(sVTemp, nNewVersion);
 	RegDBSetItem(REGDB_UNINSTALL_VERSION, sVTemp); 
-	SetServiceTimeOut();
 	//reapply old settings to newly updated services
 	LoadServiceSettings();
 	
@@ -776,7 +773,6 @@ begin
         LoadServiceSettings();
     endif;
  	
- 	SetServiceTimeOut();
  	if (FeatureIsItemSelected(MEDIA, "Yukon Server") && (!BATCH_INSTALL)) then
  		bOptYes = TRUE;
  		AskOptions(EXCLUSIVE,
