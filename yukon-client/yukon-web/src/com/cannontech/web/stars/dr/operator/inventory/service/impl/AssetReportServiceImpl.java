@@ -44,47 +44,38 @@ public class AssetReportServiceImpl implements AssetReportService {
     
     @Override
     public List<AssetReportDevice> getAssetReportDevices(int ecId, List<Integer> assetIds) {
-        
+
         List<AssetReportDevice> devices = new ArrayList<>();
-        
+
+        boolean starsMetering = needStarsMetering(ecId);
+
+        chunkyTemplate.queryInto(getSqlFragmentGenerator(starsMetering, ecId), assetIds, getYukonRowMapper(null),
+            devices);
+
+        return devices;
+    }
+
+    @Override
+    public void queueAssetReportDevices(int ecId, List<Integer> assetIds, BlockingQueue<AssetReportDevice> queue,
+            AtomicBoolean isCompleted) {
+        boolean starsMetering = needStarsMetering(ecId);
+
+        chunkyTemplate.query(getSqlFragmentGenerator(starsMetering, ecId), assetIds, getYukonRowMapper(queue));
+        if (queue.isEmpty()) {
+            isCompleted.set(true);
+        }
+    }
+
+    private boolean needStarsMetering(int ecId) {
         boolean starsMetering = ecSettingsDao.getEnum(meteringType, MeteringType.class, ecId) == MeteringType.stars;
-        
-        chunkyTemplate.queryInto(new SqlFragmentGenerator<Integer>() {
-            @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-                
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT ib.InventoryId, ib.AccountId, ib.DeviceId, ib.DeviceLabel,");
-                sql.append("ca.AccountNumber,");
-                sql.append("ypo.PAOName, ypo.Type, ypo.PAObjectId,");
-                if (starsMetering) {
-                    sql.append("mhb.MeterNumber, mhb.MeterTypeId,");
-                } else {
-                    sql.append("dmg.MeterNumber,");
-                }
-                sql.append("lhb.ManufacturerSerialNumber, lhb.LmHardwareTypeId,"); 
-                sql.append("ecti.EnergyCompanyId");
-                
-                sql.append("FROM InventoryBase ib");
-                sql.append("JOIN CustomerAccount ca ON ca.AccountId = ib.AccountId");
-                sql.append("LEFT JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
-                if (starsMetering) {
-                    sql.append("LEFT JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
-                } else {
-                    sql.append("LEFT JOIN DeviceMeterGroup dmg ON dmg.DeviceId = ib.DeviceId");
-                }
-                sql.append("LEFT JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
-                sql.append("LEFT JOIN EcToInventoryMapping ecti ON ecti.InventoryId = ib.InventoryId");
-                
-                sql.append("WHERE ecti.EnergyCompanyId").eq(ecId);
-                sql.append("AND ib.InventoryId").in(subList);
-                
-                return sql;
-            }
-        }, assetIds, new YukonRowMapper<AssetReportDevice>() {
+        return starsMetering;
+    }
+
+    private YukonRowMapper<AssetReportDevice> getYukonRowMapper(BlockingQueue<AssetReportDevice> queue) {
+        return new YukonRowMapper<AssetReportDevice>() {
             @Override
             public AssetReportDevice mapRow(YukonResultSet rs) throws SQLException {
-                
+
                 AssetReportDevice device = new AssetReportDevice();
                 device.setInventoryIdentifier(identifierMapper.mapRow(rs));
                 int deviceId = rs.getInt("DeviceId");
@@ -100,21 +91,22 @@ public class AssetReportServiceImpl implements AssetReportService {
                 device.setAccountId(rs.getInt("AccountId"));
                 device.setAccountNo(rs.getString("AccountNumber"));
                 device.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
-                
+
+                try {
+                    if (queue != null) {
+                        queue.put(device);
+                    }
+                } catch (InterruptedException e) {
+                    log.error("Error while queuing data " + e);
+                }
+
                 return device;
             }
-            
-        }, devices);
-        
-        return devices;
+        };
     }
 
-    @Override
-    public void queueAssetReportDevices(int ecId, List<Integer> assetIds, BlockingQueue<AssetReportDevice> queue,
-            AtomicBoolean isCompleted) {
-        boolean starsMetering = ecSettingsDao.getEnum(meteringType, MeteringType.class, ecId) == MeteringType.stars;
-
-        chunkyTemplate.query(new SqlFragmentGenerator<Integer>() {
+    private SqlFragmentGenerator<Integer> getSqlFragmentGenerator(boolean starsMetering, int ecId) {
+        return new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
 
@@ -146,40 +138,7 @@ public class AssetReportServiceImpl implements AssetReportService {
 
                 return sql;
             }
-        }, assetIds, new YukonRowMapper<AssetReportDevice>() {
-            @Override
-            public AssetReportDevice mapRow(YukonResultSet rs) throws SQLException {
-
-                AssetReportDevice device = new AssetReportDevice();
-                device.setInventoryIdentifier(identifierMapper.mapRow(rs));
-                int deviceId = rs.getInt("DeviceId");
-                device.setDeviceId(deviceId);
-                if (deviceId > 0) {
-                    // This is actually a pao
-                    device.setPaoIdentifier(rs.getPaoIdentifier());
-                }
-                device.setName(rs.getString("PAOName"));
-                device.setMeterNumber(rs.getString("MeterNumber"));
-                device.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
-                device.setLabel(rs.getString("DeviceLabel"));
-                device.setAccountId(rs.getInt("AccountId"));
-                device.setAccountNo(rs.getString("AccountNumber"));
-                device.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
-
-                try {
-                    queue.put(device);
-                } catch (InterruptedException e) {
-                    log.error("Error while queuing data " + e);
-                }
-
-                return null;
-            }
-
-        });
-        if (queue.isEmpty()) {
-            isCompleted.set(true);
-        }
-
+        };
     }
 
 }
