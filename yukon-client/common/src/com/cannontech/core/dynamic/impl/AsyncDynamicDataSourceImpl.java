@@ -481,9 +481,9 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
         // Request to dispatch for the rest
         if (notCachedPointIds.size() > 0) {
-            // break the request into partitions of 10000 so we reduce the risk of the request timing out
+            // break the request into partitions of 1000 so we reduce the risk of the request timing out
             List<List<Integer>> notCachedPointIdsPartitioned =
-                Lists.partition(Lists.newArrayList(notCachedPointIds), 10000);
+                Lists.partition(Lists.newArrayList(notCachedPointIds), 1000);
             for (List<Integer> notCachedPointIdsPartition : notCachedPointIdsPartitioned) {
                 Set<LitePointData> retrievedPointData =
                     dispatchProxy.getPointData(Sets.newHashSet(notCachedPointIdsPartition));
