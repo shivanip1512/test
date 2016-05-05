@@ -15,9 +15,11 @@ BEGIN
         v_newLine := CHR(13) || CHR(10);
         v_errorText := 'Indexes on RawPointHistory are being modified to improve system performance.' || v_newLine
             || 'Setup has detected that these indexes have not yet been updated on this system.' || v_newLine
-            || 'Because this can potentially be a long-running task it is not included in the normal DBToolsFrame update process,' || v_newLine
-            || 'and some downtime should be scheduled in order to complete this update with minimal system impact.' || v_newLine
-            || 'The SQL for the update can be found in YUK-15173. ';
+            || 'This can potentially be a long-running task so it is not included in the normal DBToolsFrame update process,' || v_newLine
+            || 'some downtime should be scheduled in order to complete this update with minimal system impact.' || v_newLine
+            || 'More information can be found in YUK-15173.' || v_newLine
+            || 'The SQL for the index update can be found in the file:' || v_newLine
+            || '~\YukonMisc\YukonDatabase\Oracle\RPH_Index_Modification.sql';
         RAISE_APPLICATION_ERROR(-20001, v_errorText);
     END IF;
 END;

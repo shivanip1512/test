@@ -134,14 +134,34 @@ BEGIN
         v_newLine := CHR(13) || CHR(10);
         v_errorText := 'Indexes on RawPointHistory are being modified to improve system performance.' || v_newLine
             || 'Setup has detected that these indexes have not yet been updated on this system.' || v_newLine
-            || 'Because this can potentially be a long-running task it is not included in the normal DBToolsFrame update process,' || v_newLine
-            || 'and some downtime should be scheduled in order to complete this update with minimal system impact.' || v_newLine
-            || 'The SQL for the update can be found in YUK-15173. ';
+            || 'This may take up to a few hours to complete depending on available system resources and the table size.' || v_newLine
+            || 'More information can be found in YUK-15173.'
         RAISE_APPLICATION_ERROR(-20001, v_errorText);
     END IF;
 END;
 /
 /* @end-block */
+
+/* @start-block */
+DECLARE
+    v_count NUMBER := 0;
+    v_newLine VARCHAR2(2);
+    v_errorText VARCHAR2(512);
+BEGIN
+    SELECT count(*) INTO v_count FROM USER_INDEXES WHERE INDEX_NAME = 'PKC_RAWPOINTHISTORY';
+    IF v_count = 0 THEN
+        EXECUTE IMMEDIATE 'DROP INDEX INDEX_POINTID';
+        EXECUTE IMMEDIATE 'DROP INDEX INDX_TIMESTAMP';
+        EXECUTE IMMEDIATE 'DROP INDEX INDX_RWPTHISTSTPTID';
+        EXECUTE IMMEDIATE 'DROP INDEX INDX_RWPTHISPTIDTST';
+        EXECUTE IMMEDIATE 'CREATE INDEX INDX_RAWPOINTHISTORY_PTID_TS ON RAWPOINTHISTORY (POINTID ASC, TIMESTAMP DESC)';
+        EXECUTE IMMEDIATE 'ALTER TABLE RAWPOINTHISTORY RENAME CONSTRAINT PK_RAWPOINTHISTORY TO PKC_RAWPOINTHISTORY';
+        EXECUTE IMMEDIATE 'ALTER INDEX PK_RAWPOINTHISTORY RENAME TO PKC_RAWPOINTHISTORY';
+    END IF;
+END;
+/
+/* @end-block */
+
 /* End YUK-15173 */
 
 /* Start YUK-15217 */

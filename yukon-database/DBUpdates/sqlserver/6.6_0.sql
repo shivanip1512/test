@@ -243,9 +243,11 @@ BEGIN
     DECLARE @NewLine CHAR(2) = CHAR(13) + CHAR(10);
     DECLARE @ErrorText VARCHAR(512) = 'Indexes on RawPointHistory are being modified to improve system performance.' + @NewLine
         + 'Setup has detected that these indexes have not yet been updated on this system.' + @NewLine
-        + 'Because this can potentially be a long-running task it is not included in the normal DBToolsFrame update process,' + @NewLine
+        + 'This can potentially be a long-running task so it is not included in the normal DBToolsFrame update process,' + @NewLine
         + 'and some downtime should be scheduled in order to complete this update with minimal system impact.' + @NewLine
-        + 'The SQL for the update can be found in YUK-15173. ';
+        + 'More information can be found in YUK-15173.' + @NewLine
+        + 'The SQL for the index update can be found in the file:' + @NewLine
+        + '~\YukonMisc\YukonDatabase\SqlServer\RPH_Index_Modification.sql';
     RAISERROR(@ErrorText, 16, 1);
 END;
 /* @end-block */
