@@ -45,7 +45,7 @@ public:
 
     boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> getConnection() const;
 
-    std::auto_ptr<cms::Destination> getClientReplyDest() const;
+    virtual std::auto_ptr<cms::Destination> getClientReplyDest() const;
 
     std::string who() const;
     std::string getServerQueueName() const;

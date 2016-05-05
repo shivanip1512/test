@@ -29,9 +29,6 @@ private:
     lru_timeslice_map     _lru_timeslices;
     pointid_timeslice_map _lru_points;
 
-    //  returns true if it encounters any reader errors occur during point loading
-    bool refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr);
-
     void updateAccess(long pointid);
 
     struct pao_offset_t
@@ -61,6 +58,9 @@ private:
     void removePoint(ptr_type pTempCtiPoint);
 
 protected:
+    //  returns true if it encounters any reader errors occur during point loading
+    bool refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr);
+
 
     //ONLY used by unit test.
     void setAllPointsLoaded(bool isLoaded) { _all_paoids_loaded = isLoaded; }

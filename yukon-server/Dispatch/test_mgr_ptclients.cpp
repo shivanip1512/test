@@ -8,6 +8,7 @@
 #include "rtdb_test_helpers.h"
 
 #include <boost/assign/list_of.hpp>
+#include <cms/Destination.h>
 
 struct Test_CtiPointClientManager : CtiPointClientManager
 {
@@ -233,6 +234,340 @@ BOOST_AUTO_TEST_CASE(test_generate_sql_statements)
         "31869,31898,31933,31991,32011,32037,32039,32076,32118,32135,32171,32248,32257,32286,32385,"
         "32400,32409,32421,32428,32438,32442,32479,32536,32540,32551,32554,32597,32645,32653,32662,"
         "32663,32681,32759)");
+}
+
+struct Test_CtiPointClientManager2 : CtiPointClientManager
+{
+    using CtiPointClientManager::erase;
+    using CtiPointClientManager::InsertConnectionManager;
+    using CtiPointClientManager::removePointsFromConnectionManager;
+    using CtiPointClientManager::pointHasConnection;
+
+    typedef Cti::Test::TestReader<std::vector<std::string>> PointManagerReader;
+
+    Test_CtiPointClientManager2()
+    {
+        // Create 4 test DB records.  Order is important.  Simulates:
+        //    " PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, PT.pointoffset,"
+        //    " PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, PT.archiveinterval,"
+        //    " UNT.uomid, UNT.decimalplaces, UNT.decimaldigits,"
+        //    " UM.calctype,"
+        //    " ALG.multiplier, ALG.dataoffset, ALG.deadband,"
+        //    " PC.controloffset, PC.controlinhibit"
+
+        PointManagerReader reader( {
+            { "pointid", "1001", "1002", "1003", "1004" },
+            { "pointname", "w", "x", "y", "z" },
+            { "pointtype", "Analog", "Analog", "Analog", "Analog" },
+            { "paobjectid", "100", "100", "100", "100" },
+            { "stategroupid", "-1", "-1", "-1", "-1" },
+            { "pointoffset", "1", "2", "3", "4" },
+            { "serviceflag", "N", "N", "N", "N" },
+            { "alarminhibit", "N", "N", "N", "N" },
+            { "pseudoflag", "R", "R", "R", "R" },
+            { "archivetype", "None", "None", "None", "None" },
+            { "archiveinterval", "0", "0", "0", "0" },
+            { "uomid", "0", "0", "0", "0" },
+            { "decimalplaces", "0", "0", "0", "0" },
+            { "decimaldigits", "0", "0", "0", "0" },
+            { "calctype", "0", "0", "0", "0" },
+            { "multiplier", "0", "0", "0", "0" },
+            { "dataoffset", "0", "0", "0", "0" },
+            { "deadband", "0", "0", "0", "0" },
+            { "controloffset", "0", "0", "0", "0" },
+            { "controlinhibit", "0", "0", "0", "0" },
+        } );
+
+        std::set<long> pointIdsFound;
+
+        CtiPointManager::refreshPoints( pointIdsFound, reader );
+    }
+
+};
+
+struct Test_CtiPointConnection : CtiPointConnection
+{
+    using CtiPointConnection::AddConnectionManager;
+    using CtiPointConnection::removeConnectionManagersFromPoint;
+    using CtiPointConnection::HasConnection;
+};
+
+struct Test_CtiListenerConnection : CtiListenerConnection
+{
+    Test_CtiListenerConnection() :CtiListenerConnection( "test" )
+    {
+    }
+
+    std::auto_ptr<cms::Destination> getClientReplyDest() const
+    {
+        std::auto_ptr<cms::Destination> d;
+        return d;
+    }
+};
+
+
+BOOST_AUTO_TEST_CASE( test_erase )
+{
+    Test_CtiPointClientManager2 manager;
+    Test_CtiPointConnection connection;
+
+    CtiListenerConnection lc1( "test1" );
+    CtiListenerConnection lc2( "test2" );
+
+    boost::shared_ptr<CtiConnectionManager> cm1( new CtiConnectionManager(lc1) );
+    boost::shared_ptr<CtiConnectionManager> cm2( new CtiConnectionManager(lc2) );
+
+    CtiPointRegistrationMsg aReg1( REG_ADD_POINTS );
+    CtiPointRegistrationMsg aReg2( REG_ADD_POINTS );
+    aReg1.insert( 1001 );
+    aReg1.insert( 1002 );
+    aReg2.insert( 1003 );
+    aReg1.insert( 1004 );       // This point is on both connections
+    aReg2.insert( 1004 );
+
+    connection.AddConnectionManager( cm1 );
+    connection.AddConnectionManager( cm2 );
+
+    // We now have 2 cm's
+    BOOST_CHECK_EQUAL( connection.getManagerList().size(), 2 );
+
+    manager.InsertConnectionManager( cm1, aReg1 );
+    manager.InsertConnectionManager( cm2, aReg2 );
+
+    // Happy tests.  Make sure everything is as it should be.
+    BOOST_CHECK_EQUAL( manager.entries(), 4);
+
+    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
+    // and that our points are on that map.
+
+    auto map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 3 );
+    BOOST_CHECK( map.find( 1001 ) != map.end() );
+    BOOST_CHECK( map.find( 1002 ) != map.end() );
+    BOOST_CHECK( map.find( 1003 ) == map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 2 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) == map.end() );
+    BOOST_CHECK( map.find( 1003 ) != map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    BOOST_CHECK( manager.getPoint( 1001, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+
+    // Now we erase a point
+    manager.erase( 1001 );
+
+    // We removed the point
+    BOOST_CHECK_EQUAL(manager.entries(), 3);
+
+    map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 2 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) != map.end() );
+    BOOST_CHECK( map.find( 1003 ) == map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 2 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) == map.end() );
+    BOOST_CHECK( map.find( 1003 ) != map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    BOOST_CHECK( !manager.getPoint( 1001, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+
+    // Now we erase the last point.  Should also remove the 
+    manager.erase( 1002 );
+
+    // We removed the point
+    BOOST_CHECK_EQUAL(manager.entries(), 2);
+
+    map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 1 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) == map.end() );
+    BOOST_CHECK( map.find( 1003 ) == map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 2 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) == map.end() );
+    BOOST_CHECK( map.find( 1003 ) != map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    BOOST_CHECK( !manager.getPoint( 1001, 100 ) );
+    BOOST_CHECK( !manager.getPoint( 1002, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_removePointsFromConnectionManager )
+{
+    Test_CtiPointClientManager2 manager;
+    Test_CtiPointConnection connection;
+
+    CtiListenerConnection lc1( "test1" );
+    CtiListenerConnection lc2( "test2" );
+
+    boost::shared_ptr<CtiConnectionManager> cm1( new CtiConnectionManager( lc1 ) );
+    boost::shared_ptr<CtiConnectionManager> cm2( new CtiConnectionManager( lc2 ) );
+
+    CtiPointRegistrationMsg aReg1( REG_ADD_POINTS );
+    CtiPointRegistrationMsg aReg2( REG_ADD_POINTS );
+    aReg1.insert( 1001 );
+    aReg1.insert( 1002 );
+    aReg2.insert( 1003 );
+    aReg1.insert( 1004 );
+    aReg2.insert( 1004 );
+
+    connection.AddConnectionManager( cm1 );
+    connection.AddConnectionManager( cm2 );
+
+    // We now have 2 cm's
+    BOOST_CHECK_EQUAL( connection.getManagerList().size(), 2 );
+
+    manager.InsertConnectionManager( cm1, aReg1 );
+    manager.InsertConnectionManager( cm2, aReg2 );
+
+    // Happy tests.  Make sure everything is as it should be.
+    BOOST_CHECK_EQUAL( manager.entries(), 4 );
+
+    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
+    // and that our points are on that map.
+
+    auto map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 3 );
+    BOOST_CHECK( map.find( 1001 ) != map.end() );
+    BOOST_CHECK( map.find( 1002 ) != map.end() );
+    BOOST_CHECK( map.find( 1003 ) == map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 2 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) == map.end() );
+    BOOST_CHECK( map.find( 1003 ) != map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    BOOST_CHECK( manager.getPoint( 1001, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+
+    manager.removePointsFromConnectionManager( cm1 );
+
+    // We've removed the connection, not the point so this doesn't change
+    BOOST_CHECK_EQUAL( manager.entries(), 4 );
+
+    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
+    // and that our points are on that map.
+    map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 0 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) == map.end() );
+    BOOST_CHECK( map.find( 1003 ) == map.end() );
+    BOOST_CHECK( map.find( 1004 ) == map.end() );
+
+    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 2 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) == map.end() );
+    BOOST_CHECK( map.find( 1003 ) != map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );   // Removing cm1 shouldn't change this
+
+    BOOST_CHECK( manager.getPoint( 1001, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_expire )
+{
+    Test_CtiPointClientManager2 manager;
+    Test_CtiPointConnection connection;
+
+    CtiListenerConnection lc1( "test1" );
+    CtiListenerConnection lc2( "test2" );
+
+    boost::shared_ptr<CtiConnectionManager> cm1( new CtiConnectionManager( lc1 ) );
+    boost::shared_ptr<CtiConnectionManager> cm2( new CtiConnectionManager( lc2 ) );
+
+    CtiPointRegistrationMsg aReg1( REG_ADD_POINTS );
+    CtiPointRegistrationMsg aReg2( REG_ADD_POINTS );
+    aReg1.insert( 1001 );
+    aReg1.insert( 1002 );
+    aReg2.insert( 1003 );
+    aReg1.insert( 1004 );
+    aReg2.insert( 1004 );
+
+    connection.AddConnectionManager( cm1 );
+    connection.AddConnectionManager( cm2 );
+
+    // We now have 2 cm's
+    BOOST_CHECK_EQUAL( connection.getManagerList().size(), 2 );
+
+    manager.InsertConnectionManager( cm1, aReg1 );
+    manager.InsertConnectionManager( cm2, aReg2 );
+
+    // Happy tests.  Make sure everything is as it should be.
+    BOOST_CHECK_EQUAL( manager.entries(), 4 );
+
+    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
+    // and that our points are on that map.
+
+    auto map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 3 );
+    BOOST_CHECK( map.find( 1001 ) != map.end() );
+    BOOST_CHECK( map.find( 1002 ) != map.end() );
+    BOOST_CHECK( map.find( 1003 ) == map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 2 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) == map.end() );
+    BOOST_CHECK( map.find( 1003 ) != map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    BOOST_CHECK( manager.getPoint( 1001, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+
+    manager.expire( 1001 );
+
+    // We've removed the point
+    BOOST_CHECK_EQUAL( manager.entries(), 3 );
+
+    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
+    // and that our points are on that map.
+    map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 3 );
+    BOOST_CHECK( map.find( 1001 ) != map.end() );   // Doesn't remove the point, just the cache
+    BOOST_CHECK( map.find( 1002 ) != map.end() );
+    BOOST_CHECK( map.find( 1003 ) == map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );
+
+    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
+    BOOST_CHECK_EQUAL( map.size(), 2 );
+    BOOST_CHECK( map.find( 1001 ) == map.end() );
+    BOOST_CHECK( map.find( 1002 ) == map.end() );
+    BOOST_CHECK( map.find( 1003 ) != map.end() );
+    BOOST_CHECK( map.find( 1004 ) != map.end() );   // Removing cm1 shouldn't change this
+
+    BOOST_CHECK( !manager.getPoint( 1001, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
+    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

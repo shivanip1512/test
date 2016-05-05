@@ -34,7 +34,10 @@ CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerC
     _connection = listenerConnection.getConnection();
 
     // set the outbound destination physical name
-    _peerName = destPhysicalName(*_replyDest);
+    if( _replyDest.get())
+    {
+        _peerName = destPhysicalName( *_replyDest );
+    }
 
     setName(listenerConnection.getServerQueueName()+_peerName);
 
