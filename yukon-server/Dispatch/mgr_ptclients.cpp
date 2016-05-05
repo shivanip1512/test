@@ -468,23 +468,6 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
     }
 }
 
-/* Insert a connection manager and register points for that connecton.
- *
- *   If the registration is a refresh (ADD and REMOVE), we remove the points from the Connection Manager.
- *   If the Connection Manager is not in _conMgrPointMap, insert it.
- *   For each point:
- *     If the registration is to REMOVE the points
- *       If the point is in _pointConnectionMap
- *         Call removeConnectionManagersFromPoint to remove the point from the CtiPointConnection::ConnectionManagerCollection map
- *         If this is the last point in _pointConnectionMap remove the CtiPointConnection from that map
- *       Remove the point from the WeakPointMap pointed to by the _conMgrPointMap entry
- *     If the registration is an ADD
- *       Add the CtiPointConnection for the point to the _pointConnectionMap
- *       Call AddConnectionManager to add the point to the CtiPointConnection::ConnectionManagerCollection map
- *       Add the point tp the WeakPointMap pointed to by the _conMgrPointMap entry
- *    Go home exausted.
- *         
- */
 int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, const CtiPointRegistrationMsg &aReg, DebugPrint debugprint)
 {
     int nRet = 0;
@@ -1235,24 +1218,8 @@ void CtiPointClientManager::erase(long pid)
         {
             CTILOG_INFO( dout, "Pre Remove Point " << pid << " from " << cm->getClientName() << " " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
             pointConIter->second.removeConnectionManagersFromPoint( cm );
-
-            auto pointMapIter=_conMgrPointMap.find( cm->hash( *cm.get() ) );
-            if( pointMapIter != _conMgrPointMap.end() )
-            {
-                pointMapIter->second.erase( pid );
-            }
-
             // Warning: RemoveConnectionManager could modify _pointConnectionMap so as of this point, pointConIter is invalid.
             CTILOG_INFO( dout, "Post Remove Point " << pid << " from " << cm->getClientName() << " " << reinterpret_cast<size_t>( cm.get() ) << ", use_count=" << cm.use_count() );
-        }
-    }
-
-    PointConnectionMap::iterator iter = _pointConnectionMap.find( pid );
-    if( iter != _pointConnectionMap.end() )
-    {
-        if( iter->second.IsEmpty() )
-        {
-            _pointConnectionMap.erase( iter );
         }
     }
 
@@ -1560,9 +1527,4 @@ void CtiPointClientManager::addAlarming(CtiTablePointAlarming &table)
 void CtiPointClientManager::removeAlarming(unsigned long pointID)
 {
     _alarming.erase(pointID);
-}
-
-void CtiPointClientManager::refreshPoints( std::set<long> &pointIdsFound, Cti::RowReader& rdr )
-{
-    Inherited::refreshPoints( pointIdsFound, rdr );
 }

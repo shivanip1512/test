@@ -35,8 +35,6 @@ private:
 
     int _currentRow;
     int _currentColumn;
-    int _rowLength;
-    int _columnLength; 
 
 public:
 
@@ -45,8 +43,6 @@ public:
      */
     TestReader(T &columnNames, std::vector<T> &values)
     {
-        _columnLength = 0;
-        _rowLength = 0;
         _currentColumn = 0;
         _currentRow = -1;
 
@@ -54,7 +50,6 @@ public:
         for(int i = 0; i < columnNames.size(); ++i)
         {
             _columnNames.push_back(columnNames[i]);
-            _columnLength++;
         }
 
         for(int i = 0; i < values.size(); ++i)
@@ -65,7 +60,6 @@ public:
                 newVec.push_back(values[i][j]);
             }
             _values.push_back(newVec);
-            _rowLength++;
         }
     }
 
@@ -86,61 +80,42 @@ public:
      */
     TestReader(std::initializer_list<std::vector<std::string>> rows)
     {
-        _columnLength = 0;
-        _rowLength = 0;
+        int columnLength = 0;
         _currentColumn = 0;
-        _currentRow = -1;
+        _currentRow = 0;
         _columnNames = std::vector<std::string>();
         _values = std::vector<std::vector<std::string>>();
+        _values.push_back(std::vector<std::string>());
 
-        for( int index = 0; index < rows.begin()->size(); ++index )
-        {
-            _values.push_back( std::vector<std::string>() );
-        }
-
+        int index = 0;
         for(std::vector<std::string> row : rows)
         {
-            if(_rowLength == 0)
+            index++;
+            if(columnLength == 0)
             {
-                _rowLength = row.size()-1;
+                columnLength = row.size();
             }
             else
             {
-                if(_rowLength != row.size()-1)
+                if(columnLength != row.size())
                 {
-                    throw std::logic_error("Column size " + std::to_string(row.size()-1) +
-                        ", expected " + std::to_string( _columnLength ) + " in row " + std::to_string( _rowLength ) );
+                    throw std::logic_error("Column size " + std::to_string(row.size()) +
+                        ", expected " + std::to_string(columnLength) + " in row " + std::to_string(index));
                 }
             }
 
             auto row_itr = row.begin();
+            auto value_itr = _values.begin();
 
             // Grab the first string as the row name
             _columnNames.push_back(*row_itr++);
 
             // The rest are values
-            int index = 0;
             while(row_itr != row.end())
             {
-                _values[index++].push_back( *row_itr++ );
+                (*value_itr++).push_back(*row_itr++);
             }
-            _columnLength++;
         }
-
-        //for( int column = 0; column < _columnLength; column++ )
-        //{
-        //    std::cout << _columnNames[column] << ", ";
-        //}
-        //std::cout << std::endl;
-
-        //for( int row = 0; row < _rowLength; ++row )
-        //{
-        //    for( int column = 0; column < _columnLength; column++ )
-        //    {
-        //        std::cout << _values[row][column] << ", ";
-        //    }
-        //    std::cout << std::endl;
-        //}
     }
 
     ~TestReader() { }
@@ -179,7 +154,7 @@ public:
     {
         _currentColumn = 0;
         _currentRow ++;
-        return _currentRow < _rowLength;
+        return _currentRow < _values.size();
     }
 
     /**
@@ -197,7 +172,7 @@ public:
     {
         bool found = false;
 
-        if( _currentRow < _rowLength )
+        if( _currentRow < _values.size() )
         {
             for( int i=0; i < _columnNames.size(); i++ )
             {
