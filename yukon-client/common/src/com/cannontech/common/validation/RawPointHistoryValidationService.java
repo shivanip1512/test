@@ -132,6 +132,9 @@ public class RawPointHistoryValidationService {
                     maxRphChangeId = jdbcTemplate.queryForLong(sql1);
                 } catch (EmptyResultDataAccessException e) {
                     // maxRphChangeId = 0;
+                } catch (Exception e) {
+                    log.error("Unable to validate raw point history", e);
+                    return;
                 }
                 do {
                     long newLast;
@@ -158,7 +161,7 @@ public class RawPointHistoryValidationService {
                         persistedSystemValueDao.setValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID, lastChangeIdProcessed);
                         lastChunkCommitted.set(lastChangeIdProcessed);
                     } catch (Exception e) {
-                        log.info("Unable to process from " + startingIdForLoggingPurposes + ", sleeping", e);
+                        log.error("Unable to process from " + startingIdForLoggingPurposes + ", sleeping", e);
                         didSomething = false;
                     }
                 } while (didSomething);
