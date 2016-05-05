@@ -32558,6 +32558,15 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_PTTRIGGERVERIF_PT</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>VERIFICATIONID</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_PTTRIGGER_PT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
@@ -32570,15 +32579,6 @@
             <i__foreignKeyName>FK_PTTRIGGERTRIGGERPT_PT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>TRIGGERID</i__columnName>
-            <i__foreignColumnName>POINTID</i__foreignColumnName>
-            <i__foreignTableName>POINT</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_PTTRIGGERVERIF_PT</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>VERIFICATIONID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -46349,7 +46349,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>RAWPOINTHISTORY</i__tableName>
                   <i__ordinalPosition>2</i__ordinalPosition>
-                  <i__columnName>TIMESTAMP</i__columnName>
+                  <i__columnName>SYS_NC00007$</i__columnName>
                   <i__nonNonUnique>true</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
