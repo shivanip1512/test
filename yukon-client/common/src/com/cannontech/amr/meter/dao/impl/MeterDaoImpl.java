@@ -33,16 +33,14 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
-import com.cannontech.database.TransactionType;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.util.NaturalOrderComparator;
@@ -56,8 +54,8 @@ import com.google.common.collect.Maps;
 public class MeterDaoImpl implements MeterDao {
     
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Autowired private MeterRowMapper meterRowMapper;
@@ -124,7 +122,7 @@ public class MeterDaoImpl implements MeterDao {
             // do nothing special
         }
         
-        sendDBChangeMessage(meter);
+        dbChangeManager.processPaoDbChange(meter, DbChangeType.UPDATE);
     }
     
     @Override
@@ -390,12 +388,6 @@ public class MeterDaoImpl implements MeterDao {
         };
         List<Integer> deviceIds = template.query(sqlGenerator, ids, TypeRowMapper.INTEGER);
         return deviceIds;
-    }
-    
-    private void sendDBChangeMessage(YukonMeter meter) {
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(meter.getDeviceId());
-        YukonPAObject yukonPaobject = (YukonPAObject) dbPersistentDao.retrieveDBPersistent(liteYukonPAO);
-        dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE);
     }
     
     /**

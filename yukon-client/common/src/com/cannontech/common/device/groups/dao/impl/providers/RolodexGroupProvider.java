@@ -12,13 +12,14 @@ import org.springframework.jdbc.core.RowMapper;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.Device;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class RolodexGroupProvider extends CompleteBinningDeviceGroupProviderBase<Character> {
-    private PaoDao paoDao;
 
+    @Autowired IDatabaseCache dbCache;
+    
     @Override
     protected List<Character> getAllBins() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -48,14 +49,8 @@ public class RolodexGroupProvider extends CompleteBinningDeviceGroupProviderBase
     
     @Override
     protected Set<Character> getBinsForDevice(YukonDevice device) {
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
+        LiteYukonPAObject liteYukonPAO = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
         Character firstLetter = liteYukonPAO.getPaoName().toUpperCase().charAt(0);
         return Collections.singleton(firstLetter);
     }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
 }

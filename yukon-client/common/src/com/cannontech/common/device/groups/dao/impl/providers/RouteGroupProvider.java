@@ -1,6 +1,5 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -11,20 +10,20 @@ import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * In this class, the "bin" is the LiteYukonPAObject for the route.
  *
  */
 public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukonPAObject> {
-    private PaoDao paoDao;
+    @Autowired private IDatabaseCache dbCache;
     
     @Override
     protected List<LiteYukonPAObject> getAllBins() {
-        LiteYukonPAObject[] allLiteRoutes = paoDao.getAllLiteRoutes();
-        return Arrays.asList(allLiteRoutes);
+        List<LiteYukonPAObject> allLiteRoutes = dbCache.getAllRoutes();
+        return allLiteRoutes;
     }
     
     @Override
@@ -33,7 +32,7 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
         sql.append("SELECT d.deviceid");
         sql.append("FROM Device d");
         sql.append("JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
-        sql.append("WHERE dr.routeid = ").appendArgument(bin.getLiteID());
+        sql.append("WHERE dr.routeid").eq(bin.getLiteID());
         return sql;
     }
     
@@ -49,10 +48,10 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
     
     @Override
     protected Set<LiteYukonPAObject> getBinsForDevice(YukonDevice device) {
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
+        LiteYukonPAObject liteYukonPAO = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
         int routeID = liteYukonPAO.getRouteID();
         if (routeID > 0) {
-            LiteYukonPAObject routePao = paoDao.getLiteYukonPAO(routeID);
+            LiteYukonPAObject routePao = dbCache.getAllPaosMap().get(routeID);
             return Collections.singleton(routePao);
         } else {
             return Collections.emptySet();
@@ -64,10 +63,4 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
         String groupName = DeviceGroupUtil.removeInvalidDeviceGroupNameCharacters(bin.getPaoName());
         return groupName;
     }
-
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
 }
