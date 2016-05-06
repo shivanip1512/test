@@ -86,6 +86,9 @@ public class WeatherDataServiceImpl implements WeatherDataService {
                 && humidityValue.getPointQuality() != PointQuality.Manual) {
                 humidity = null;
             }
+            if (timestamp == null) {
+                timestamp = new Instant(humidityValue.getPointDataTimeStamp());
+            }
         }
 
         return new WeatherObservation(weatherLocation.getStationId(),
@@ -175,13 +178,13 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         try {
             temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
         } catch (IllegalUseOfAttribute e) {
-            log.error("Unable to get temperature attribute");
+            log.error("Unable to get temperature attribute", e);
         }
 
         try {
             humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
         } catch (IllegalUseOfAttribute e) {
-            log.error("Unable to get humidity attribute");
+            log.error("Unable to get humidity attribute", e);
         }
 
         WeatherLocation weatherLocation

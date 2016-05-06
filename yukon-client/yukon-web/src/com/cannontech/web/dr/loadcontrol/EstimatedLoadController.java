@@ -674,8 +674,12 @@ public class EstimatedLoadController {
         // so instead of 'Temperature' we will display 'Temperature - Minneapolis' for example
         List<WeatherLocation> weatherLocations = weatherDataService.getAllWeatherLocations();
         for (WeatherLocation weatherLoc : weatherLocations) {
-            pointNames.put(weatherLoc.getTempPoint().getPointID(), weatherLoc.getName());
-            pointNames.put(weatherLoc.getHumidityPoint().getPointID(), weatherLoc.getName());
+            if (weatherLoc.getTempPoint() != null) {
+                pointNames.put(weatherLoc.getTempPoint().getPointID(), weatherLoc.getName());
+            }
+            if (weatherLoc.getHumidityPoint() != null) {
+                pointNames.put(weatherLoc.getHumidityPoint().getPointID(), weatherLoc.getName());
+            }
         }
         return pointNames;
     }

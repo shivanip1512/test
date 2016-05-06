@@ -37,6 +37,11 @@
                         </td>
                         <td>${fn:escapeXml(weatherStations[weatherLocation.stationId].stationDesc)}</td>
                         <td>
+                        <c:if test="${empty fn:escapeXml(weatherLocation.tempPoint)}">
+	                        <i:inline key=".weatherInput.notConfigured"/>
+                        </c:if>
+
+                        <c:if test="${not empty fn:escapeXml(weatherLocation.tempPoint)}">
                             <cti:dataUpdaterCallback
                              function="yukon.weather.updateWeatherInputFields"
                              initialize="true"
@@ -44,11 +49,18 @@
                             <span id="temperatureField_${weatherLocation.paoIdentifier.paoId}" class="js-formula-temperature-field">
                                 <cti:dataUpdaterValue identifier="${weatherLocation.paoIdentifier.paoId}/TEMPERATURE" type="WEATHER_STATION"/>
                             </span>
+                        </c:if>
                         </td>
+                        
                         <td>
+                        <c:if test="${empty fn:escapeXml(weatherLocation.humidityPoint)}">
+	                        <i:inline key=".weatherInput.notConfigured"/>
+                        </c:if>
+                        <c:if test="${not empty fn:escapeXml(weatherLocation.humidityPoint)}">
                             <span id="humidityField_${weatherLocation.paoIdentifier.paoId}" class="js-formula-humidity-field">
                                 <cti:dataUpdaterValue identifier="${weatherLocation.paoIdentifier.paoId}/HUMIDITY" type="WEATHER_STATION"/>
                             </span>
+                        </c:if>
                         </td>
                         <td>
                             <span id="timestampField_${weatherLocation.paoIdentifier.paoId}" class="js-formula-timestamp-field">
