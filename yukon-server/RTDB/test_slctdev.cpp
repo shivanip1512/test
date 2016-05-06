@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::RfnResidentialVoltageDevice")
         ("class Cti::Devices::RfnResidentialVoltageDevice")
         ("class Cti::Devices::RfnResidentialVoltageDevice")
-        ("class Cti::Devices::RfnMeterDevice")
+        ("class Cti::Devices::RfnResidentialVoltageDevice")
         ("class Cti::Devices::RfnResidentialVoltageDevice")
         //  60
         ("class Cti::Devices::RfnResidentialVoltageDevice")
