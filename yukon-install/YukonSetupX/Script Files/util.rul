@@ -15,6 +15,9 @@
 #define JVM_MX			"JvmMx"
 #define JVM_OPTIONS		"Options"
 #define JAVA_CALC_HIST  "CalcHist"
+#define IncludeLogs		1303
+#define DirectoryName	715
+#include "BackupSelectionDialog.rul"
 
 //global variable used to store service settings across the upgrade process
 string sServiceSettings(11);
@@ -412,19 +415,230 @@ begin
 end;
 
 //------------------------------------------------------------
+// Helper function that copies all the files from srcDir 
+// except for logs folder/files to the specified targetDir
+//------------------------------------------------------------
+export prototype CopyFiles(string, string);
+function CopyFiles(srcDir, targetDir)
+NUMBER nResult, searchString, nFound;
+STRING sDirectory, logFile, svSubStr, copyDir,compareLogName, clientlog;
+LIST listDirs, listID; 
+begin
+	listDirs = ListCreate (STRINGLIST);
+	nResult = FindAllDirs ( srcDir, INCLUDE_SUBDIR, listDirs );
+	
+	if (nResult == 0) then
+		 nResult = ListGetFirstString (listDirs, sDirectory);
+			while (nResult != END_OF_LIST)	
+			copyDir = "";
+			clientlog = srcDir ^ "\Client\\Log\\";
+				if(sDirectory == srcDir ^ "\Client\\Log\\" ||
+				sDirectory == srcDir ^ "\Server\\Log\\" ||
+				sDirectory == srcDir ^ "\Server\\Log\\Comm\\" ||
+				sDirectory == srcDir ^ "\Server\\Log\\Debug\\" ||
+				sDirectory == srcDir ^ "\Server\\web\\logs\\" ) then
+					// Do not copy as it is log folder
+				else			
+					StrSub(svSubStr, sDirectory, 3,StrLength(sDirectory));
+					copyDir = targetDir ^ svSubStr;
+					XCopyFile(sDirectory ^ "*.*", copyDir, EXCLUDE_SUBDIR);
+				endif;
+				nResult = ListGetNextString (listDirs, sDirectory);
+			endwhile;
+	endif;
+end;
+
+//------------------------------------------------------------
+// Helper function checks if the date of file is less than
+// the input date.
+//------------------------------------------------------------
+export prototype BOOL compareDates(string, string);
+function BOOL compareDates(fileDate, inputDate) 
+  NUMBER nResultFile, nResultInput, i, nFileDay, nInputDay, nFileYear, nInputYear, nFileMonth, nInputMonth; 
+  STRING sFileDay, sInputDay, sFileYear, sInputYear, sFileMonth, sInputMonth;
+  LIST fileDateTokens, inputDateTokens;
+ 
+begin
+	
+	fileDateTokens = ListCreate (STRINGLIST);
+	StrGetTokens(fileDateTokens, fileDate, "\\" );
+	
+	inputDateTokens = ListCreate (STRINGLIST);
+	StrGetTokens(inputDateTokens, inputDate, "\\" );
+	
+	nResultFile = ListGetFirstString (fileDateTokens, sFileYear);
+	nResultInput = ListGetFirstString (inputDateTokens, sInputYear);
+	i = 0;
+	while(nResultFile != END_OF_LIST || nResultInput != END_OF_LIST) 
+		nResultFile = ListGetNextString (fileDateTokens, sFileDay);
+		nResultInput = ListGetNextString (inputDateTokens, sInputDay);	
+			
+		if(i == 0) then
+			sFileMonth = sFileDay;
+			sInputMonth = sInputDay;
+			i++;
+		endif;
+	endwhile;
+		
+		StrToNum(nInputYear, sInputYear);
+		StrToNum(nInputMonth, sInputMonth);
+		StrToNum(nInputDay, sInputDay);	
+		StrToNum(nFileYear, sFileYear);
+		StrToNum(nFileMonth, sFileMonth);
+		StrToNum(nFileDay, sFileDay);	
+	
+	
+		
+	if(nFileYear < nInputYear) then
+		return FALSE;
+	elseif (nFileYear > nInputYear) then
+		return TRUE;
+	endif;
+	
+	if(nFileMonth < nInputMonth) then
+		return FALSE;
+	elseif (nFileMonth > nInputMonth) then
+		return TRUE;
+	endif;
+	
+	if(nFileDay >= nInputDay) then
+		return TRUE;
+	else
+		return FALSE;
+	endif;	
+	
+	return TRUE;	
+end;
+
+
+//------------------------------------------------------------
+// Helper function copies log files created before the 
+// selected date.
+//------------------------------------------------------------
+export prototype CopyLogs(string, string, string);
+function CopyLogs(srcDirectory, targetDirectory, sDateString)
+ NUMBER nvDummy, nRes, dateRes;
+ STRING sFile, sFileDate;
+begin
+
+	nRes = FindAllFiles ( srcDirectory , "*.*" , sFile , RESET );
+	while (nRes == 0)
+		dateRes = GetFileInfo ( sFile , FILE_DATE , nvDummy , sFileDate );
+		if(dateRes == 0) then 
+			if(compareDates(sFileDate, sDateString)) then
+				XCopyFile(sFile, targetDirectory, EXCLUDE_SUBDIR);
+			endif;
+		endif;
+		nRes = FindAllFiles ( srcDirectory , "*.*" , sFile , CONTINUE );			
+	endwhile;
+end;
+
+//------------------------------------------------------------
+// Helper function to find the numeric date from the 
+// string date passed.
+//------------------------------------------------------------
+export prototype number getSelectedValueInDays(string);
+function number getSelectedValueInDays(selectedDate) 
+NUMBER nDays, position;
+STRING sDays;
+begin
+	position = StrFindEx(selectedDate, "Days", 0);
+	StrSub (sDays, selectedDate, 0, position);
+	StrToNum(nDays, sDays);
+	return nDays;
+
+end;
+
+//------------------------------------------------------------
+// Helper function that returns no of days in a given month.
+//------------------------------------------------------------
+export prototype  number noOfDaysForMonth(number);
+function number noOfDaysForMonth(month)
+begin
+	switch (month)
+	case 1: return 31;
+	case 2: return 28;
+	case 3: return 31;
+	case 4: return 30;
+	case 5: return 31;
+	case 6: return 30;
+	case 7: return 31;
+	case 8: return 31;
+	case 9: return 30;
+	case 10: return 31;
+	case 11: return 30;
+	case 12: return 31;
+	endswitch;
+end;
+	
+
+//------------------------------------------------------------
+// Helper function that calculates the date to be used
+// for copying the log files.
+//------------------------------------------------------------
+export prototype string getLogDate(number);
+function string getLogDate(selectedDays) 
+number nResult, i;
+string sDateString, tempYear, tempMonth, tempDay, sMonth, sDay, sYear,selectDate ;
+number systemMonth, systemDay, systemYear, selectMonth, selectDay, selectYear;
+LIST systemDateTokens;
+
+begin
+	selectedDays = selectedDays - 1;
+	GetSystemInfo(DATE, nResult, sDateString);
+
+	systemDateTokens = ListCreate (STRINGLIST);
+	StrGetTokens(systemDateTokens, sDateString, "-" );
+	nResult = ListGetFirstString (systemDateTokens, sMonth);
+	i = 0; 
+	while (nResult != END_OF_LIST)
+	  nResult = ListGetNextString(systemDateTokens, sYear);
+	  if(i=0) then
+		sDay = sYear;
+	  endif;
+	  i = i+1;
+    endwhile;
+	
+	StrToNum(systemDay, sDay);
+	StrToNum(systemMonth, sMonth);
+	StrToNum(systemYear, sYear);
+
+	if((systemDay - selectedDays) <= 0) then
+			selectMonth = systemMonth - 1;
+			selectDay = noOfDaysForMonth(selectMonth) + (systemDay - selectedDays);
+	else 
+		selectDay = systemDay - selectedDays;
+		selectMonth = systemMonth;
+	endif;
+	
+	if(selectMonth == 0) then
+		selectMonth = 12;
+		selectYear = systemYear - 1;
+	else 
+		selectYear = systemYear;
+	endif;
+
+	NumToStr(tempYear, selectYear);
+	NumToStr(tempMonth, selectMonth);
+	NumToStr(tempDay, selectDay);	 
+	selectDate = tempYear ^ "\\" ^ tempMonth ^ "\\" ^ tempDay;
+	return selectDate;
+end;
+
+//------------------------------------------------------------
 // Helper function that creates a backup of the current
 // TARGETDIR in a location chosen by the user.
 //------------------------------------------------------------
 export prototype BackupTargetDir();
 function BackupTargetDir()
-string sDir, sDateString, sTimeString;
-number nResult;
+string sDir, sDateString, sTimeString, svCurSel, logDate;
+number nResult, nState, nDays;
+BOOL bDone;
 begin
-	sDir = "C:\\YukonBackups";
-	nResult = SdAskDestPath("Select backup location.",
-							"Select a location to store the backup file."
-							+ " Note that log files will not be copied.",
-							sDir, 0);
+    nResult = BackupSelectionDialog( );
+    nState = CtrlGetState("BackupSelectionDialog", IncludeLogs);
+	CtrlGetText("BackupSelectionDialog", DirectoryName , sDir);
+	
 	if(nResult = NEXT) then
 		//disable cancel, because documentation says bad things can happen 
 		//if you cancel in the middle of copying
@@ -438,18 +652,26 @@ begin
 		sDir = sDir + "\\YukonBackup" + sDateString + "_" + sTimeString;
 		SdShowMsg("Backing up Yukon files. This may take a while.", TRUE);
 		CreateDir(sDir);
-		XCopyFile("*.*", sDir, INCLUDE_SUBDIR);
-		//delete backup log folders, these tend to take up too much space
-		DeleteDir(sDir ^ "Client\\Log", ALLCONTENTS);
-		DeleteDir(sDir ^ "Server\\Log", ALLCONTENTS);
-		DeleteDir(sDir ^ "Server\\web\\logs", ALLCONTENTS);
+		CopyFiles(SRCDIR, sDir);
+		if(nState == BUTTON_CHECKED) then
+			CtrlGetCurSel ("BackupSelectionDialog", Duration, svCurSel);
+			nDays = getSelectedValueInDays(svCurSel);
+			logDate = getLogDate(nDays);
+			CopyLogs(SRCDIR ^ "Client\\Log", sDir ^ "Yukon\\Client\\Log", logDate);
+			CopyLogs(SRCDIR ^ "Server\\Log", sDir ^ "Yukon\\Server\\Log", logDate);
+			CopyLogs(SRCDIR ^ "Server\\web\\logs", sDir ^ "Yukon\\Server\\web\\logs", logDate);
+			CopyLogs(SRCDIR ^ "Server\\Log\\Comm", sDir ^ "Yukon\\Server\\Log\\Comm", logDate);
+			CopyLogs(SRCDIR ^ "Server\\Log\\Debug", sDir ^ "Yukon\\Server\\Log\\Debug", logDate);
+		endif;
 		//this could be improved by zipping the backup
 		SdShowMsg("", FALSE);
 		Enable(LOGGING);
 		Enable(CANCELBUTTON);
 		return NEXT;
+	elseif(nResult = CANCEL) then
+	    return CANCEL;
 	else
-	    return BACK;
+	return BACK;
 	endif;
 end;
 

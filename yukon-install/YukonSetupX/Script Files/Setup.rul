@@ -301,7 +301,8 @@ begin
 	Dialog_Backup:
 	bOptYes = TRUE;
 	nResult = AskOptions(EXCLUSIVE,
-			   "Would you like to make a backup of the Yukon directory first?",
+			   "Would you like to make a backup of the Yukon directory first?" 
+			   +"\n(You will be able to choose log file backup options before starting the backup process.)",
 			   "Yes", bOptYes,
 			   "No", bOptNo);
 	if(nResult = BACK) then
@@ -558,7 +559,8 @@ begin
     Dialog_Backup:
     bOptNo = TRUE;
 	AskOptions(EXCLUSIVE,
-			   "Would you like to make a backup of the Yukon data first?",
+			   "Would you like to make a backup of the Yukon directory first?" 
+			   +"\n(You will be able to choose log file backup options before starting the backup process.)",
 			   "Yes", bOptYes,
 			   "No", bOptNo);
 	if(bOptYes) then
@@ -687,7 +689,8 @@ Dlg_ObjDialogs:
 			Dialog_UninstBackup:
 			bOptYes = TRUE;
 			nResult = AskOptions(EXCLUSIVE,
-					   "Would you like to make a backup of the Yukon directory first?",
+					   "Would you like to make a backup of the Yukon directory first?" 
+						+"\n(You will be able to choose log file backup options before starting the backup process.)",
 					   "Yes", bOptYes,
 					   "No", bOptNo);
 			if(nResult = BACK) then

@@ -1,0 +1,94 @@
+// This is a custom dialog for Backup Settings.
+#define BUTTON_NEXT    1
+#define BUTTON_BACK   12
+#define Duration 1305
+#define BTN_CANCEL 9
+#define BROWSE 196
+#define BTN_CLOSE 2
+
+prototype NUMBER BackupSelectionDialog();
+function NUMBER BackupSelectionDialog()
+BOOL bDone;
+NUMBER nControl, nReturn, nDlgHandler, nresult,nDurationDropdown, nResult;
+LIST listDuration;
+STRING sTitle, sFolderName;
+
+begin
+nresult = EzDefineDialog(
+  "BackupSelectionDialog", 
+  ISUSER,         
+  "BackupSelectionDialog", 
+  0);    
+
+bDone = FALSE;
+
+while (!bDone)
+ 
+nControl = WaitOnDialog("BackupSelectionDialog");
+ 
+switch (nControl)
+ 
+    case DLG_INIT:
+        nDlgHandler = CmdGetHwndDlg("BackupSelectionDialog");
+        SdGeneralInit("BackupSelectionDialog", nDlgHandler, 0, "");
+        
+        listDuration = ListCreate(STRINGLIST);
+        ListAddString(listDuration, "2 Days", AFTER);
+        ListAddString(listDuration, "7 Days", AFTER);
+        ListAddString(listDuration, "30 Days", AFTER);
+        ListAddString(listDuration, "60 Days", AFTER);
+        ListAddString(listDuration, "90 Days", AFTER);
+		
+		CtrlSetList("BackupSelectionDialog", Duration, listDuration);
+		CtrlSetCurSel("BackupSelectionDialog",Duration,"2 Days");
+		
+		nDurationDropdown = GetDlgItem(nDlgHandler, Duration);
+		EnableWindow(nDurationDropdown, FALSE);
+		
+    case DLG_ERR:
+		bDone = TRUE;
+ 
+    case BUTTON_BACK:
+        nReturn = BUTTON_BACK;
+        bDone = TRUE;
+        EndDialog("BackupSelectionDialog");   
+		ReleaseDialog("BackupSelectionDialog");
+
+ 
+    case BUTTON_NEXT:
+        nReturn = BUTTON_NEXT;
+        bDone = TRUE;
+        
+    case BTN_CLOSE:
+		 EndDialog("BackupSelectionDialog");   
+		 ReleaseDialog("BackupSelectionDialog");
+		 Do (EXIT);    
+	
+	case BTN_CANCEL:  
+		EndDialog("BackupSelectionDialog");   
+		ReleaseDialog("BackupSelectionDialog");
+		Do(EXIT);	 
+	 
+    case BROWSE: // Browse button
+		sTitle = "Choose Folder";
+		CtrlGetText("BackupSelectionDialog", DirectoryName , sFolderName);
+		nResult = (SelectDirEx (sTitle, "Please select the backup folder", "", "",
+         BIF_RETURNONLYFSDIRS | BIF_EDITBOX, sFolderName ) < 0) ;
+         
+		if (nResult == 0) then
+		nResult = CtrlSetText ( "BackupSelectionDialog" , DirectoryName , sFolderName );
+		endif;    
+		
+    default:
+        if (CtrlGetState("BackupSelectionDialog", IncludeLogs) == BUTTON_CHECKED) then
+		EnableWindow(nDurationDropdown, TRUE);
+		else
+		EnableWindow(nDurationDropdown, FALSE);
+		CtrlSetCurSel("BackupSelectionDialog",Duration,"2 Days");
+        endif;
+
+endswitch;
+endwhile;
+return nReturn;
+
+end;
