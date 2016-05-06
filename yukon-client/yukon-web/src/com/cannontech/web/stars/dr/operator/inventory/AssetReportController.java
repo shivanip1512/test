@@ -145,9 +145,6 @@ public class AssetReportController {
                             dataRows = row.toArray(dataRows);
                             csvWriter.writeNext(dataRows);
                         }
-                        if (queue.size() == 0) {
-                            break;
-                        }
                     }
                 } else {
                     break;

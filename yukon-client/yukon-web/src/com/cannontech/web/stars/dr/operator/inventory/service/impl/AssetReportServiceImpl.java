@@ -49,8 +49,8 @@ public class AssetReportServiceImpl implements AssetReportService {
 
         boolean starsMetering = needStarsMetering(ecId);
 
-        chunkyTemplate.queryInto(getSqlFragmentGenerator(starsMetering, ecId), assetIds, getYukonRowMapper(null),
-            devices);
+        chunkyTemplate.queryInto(getSqlFragmentGenerator(starsMetering, ecId), assetIds,
+            getYukonRowMapper(null, new AtomicBoolean(), 0), devices);
 
         return devices;
     }
@@ -59,11 +59,8 @@ public class AssetReportServiceImpl implements AssetReportService {
     public void queueAssetReportDevices(int ecId, List<Integer> assetIds, BlockingQueue<AssetReportDevice> queue,
             AtomicBoolean isCompleted) {
         boolean starsMetering = needStarsMetering(ecId);
-
-        chunkyTemplate.query(getSqlFragmentGenerator(starsMetering, ecId), assetIds, getYukonRowMapper(queue));
-        if (queue.isEmpty()) {
-            isCompleted.set(true);
-        }
+        chunkyTemplate.query(getSqlFragmentGenerator(starsMetering, ecId), assetIds,
+            getYukonRowMapper(queue, isCompleted, assetIds.size()));
     }
 
     private boolean needStarsMetering(int ecId) {
@@ -71,11 +68,13 @@ public class AssetReportServiceImpl implements AssetReportService {
         return starsMetering;
     }
 
-    private YukonRowMapper<AssetReportDevice> getYukonRowMapper(BlockingQueue<AssetReportDevice> queue) {
+    private YukonRowMapper<AssetReportDevice> getYukonRowMapper(BlockingQueue<AssetReportDevice> queue,
+            AtomicBoolean isCompleted, int size) {
         return new YukonRowMapper<AssetReportDevice>() {
+            private int count;
+
             @Override
             public AssetReportDevice mapRow(YukonResultSet rs) throws SQLException {
-
                 AssetReportDevice device = new AssetReportDevice();
                 device.setInventoryIdentifier(identifierMapper.mapRow(rs));
                 int deviceId = rs.getInt("DeviceId");
@@ -95,6 +94,13 @@ public class AssetReportServiceImpl implements AssetReportService {
                 try {
                     if (queue != null) {
                         queue.put(device);
+                        synchronized (AssetReportServiceImpl.class) {
+                            count++;
+                        }
+                        if (count == size) {
+                            isCompleted.set(true);
+                            count = 0;
+                        }
                     }
                 } catch (InterruptedException e) {
                     log.error("Error while queuing data " + e);
