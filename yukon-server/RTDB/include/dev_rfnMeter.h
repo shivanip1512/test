@@ -88,7 +88,6 @@ public:
 };
 
 typedef RfnMeterDevice Rfn410flDevice;  //  kWh only
-typedef RfnMeterDevice Rfn510flDevice;
 
 }
 }
