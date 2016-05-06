@@ -291,7 +291,7 @@ public class TrendDataController {
     public Map<String, Object> getZoom(LiteYukonUser user, HttpServletRequest request) {
         Map<String, Object> json = new HashMap<>();
         PreferenceTrendZoomOption trendZoom = userPreferenceService.getDefaultZoomType(user);
-        json.put("prefZoom", trendZoom.name());
+        json.put("prefZoom", trendZoom.ordinal());
         return json;
     }
 

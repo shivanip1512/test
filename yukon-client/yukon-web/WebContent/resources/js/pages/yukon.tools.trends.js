@@ -13,41 +13,12 @@ yukon.tools.trends = (function () {
         init: function (trendId) {
             
             var trendList;
-            var selectedOption,
-                prefZoom;
+            var selectedOption;
             $.ajax({
                 url: yukon.url('/tools/trends/getZoom'),
                 type: 'get'
             }).done(function (data) {
-                prefZoom=data.prefZoom;
-                switch (prefZoom) {
-                case 'DAY_1':
-                    selectedOption = 0;
-                    break;
-                case 'WEEK_1':
-                    selectedOption = 1;
-                    break;
-                case 'MONTH_1':
-                    selectedOption = 2;
-                    break;
-                case 'MONTH_3':
-                    selectedOption = 3;
-                    break;
-                case 'MONTH_6':
-                    selectedOption = 4;
-                    break;
-                case 'YTD':
-                    selectedOption = 5;
-                    break;
-                case 'YEAR_1':
-                    selectedOption = 6;
-                    break;
-                case 'ALL':
-                    selectedOption = 7;
-                    break;
-                default:
-                    selectedOption = 3;
-                }
+                selectedOption=data.prefZoom;
             });
             Highcharts.setOptions(yg.highcharts_options);
             yukon.ui.block('[data-trend]');
