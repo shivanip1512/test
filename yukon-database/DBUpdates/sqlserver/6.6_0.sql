@@ -241,7 +241,7 @@ WHERE RolePropertyId =  -20211;
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'PKC_RawPointHistory')
 BEGIN
     DECLARE @NewLine CHAR(2) = CHAR(13) + CHAR(10);
-    DECLARE @ErrorText VARCHAR(512) = 'Indexes on RawPointHistory are being modified to improve system performance.' + @NewLine
+    DECLARE @ErrorText VARCHAR(1024) = 'Indexes on RawPointHistory are being modified to improve system performance.' + @NewLine
         + 'Setup has detected that these indexes have not yet been updated on this system.' + @NewLine
         + 'This can potentially be a long-running task so it is not included in the normal DBToolsFrame update process,' + @NewLine
         + 'and some downtime should be scheduled in order to complete this update with minimal system impact.' + @NewLine

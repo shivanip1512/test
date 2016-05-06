@@ -145,8 +145,6 @@ END;
 /* @start-block */
 DECLARE
     v_count NUMBER := 0;
-    v_newLine VARCHAR2(2);
-    v_errorText VARCHAR2(512);
 BEGIN
     SELECT count(*) INTO v_count FROM USER_INDEXES WHERE INDEX_NAME = 'PKC_RAWPOINTHISTORY';
     IF v_count = 0 THEN
