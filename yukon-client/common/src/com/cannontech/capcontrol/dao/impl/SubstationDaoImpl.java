@@ -87,7 +87,8 @@ public class SubstationDaoImpl implements SubstationDao {
             sql.append("WHERE SubstationBusId").eq(id);
             
             try {
-                parentId = jdbcTemplate.queryForObject(sql, TypeRowMapper.INTEGER);
+                List<Integer> parentIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+                parentId = parentIds.get(0);
             } catch (EmptyResultDataAccessException er) {
                 parentId = null;
             }
