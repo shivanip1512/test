@@ -182,7 +182,7 @@
                                 </span>
                             </td>
                             <td>
-                                <span style="width: 200px;" class="db wrbw wsn">${fn:escapeXml(exportField.pattern)}</span>
+                                <span style="max-width: 200px;" class="db wrbw wsn">${fn:escapeXml(exportField.pattern)}</span>
                             </td>
                             <td>
                                 <span>

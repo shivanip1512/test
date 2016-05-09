@@ -200,7 +200,7 @@ yukon.tools.dataExporterFormat = (function () {
                         daysPrevious.append('<span>' + data.text.daysPrevious + '</span>');
                         missingValue.append('<span>' + data.text.missingAttribute + '</span>');
                         rounding.append('<span>' + data.text.roundingMode + '</span>');
-                        pattern.append('<span class="wsp">').find('span').text(data.text.pattern);
+                        pattern.append('<span style="max-width: 200px;" class="db wrbw wsn">').find('span').text(data.text.pattern);
                         fieldSize.append('<span>' + data.text.maxLength + '</span>');
                         padding.append('<span>' + data.text.padding + '</span>');
                         
