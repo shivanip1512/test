@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/5/2016 4:59:00 PM                          */
+/* Created on:     5/10/2016 11:42:57 AM                        */
 /*==============================================================*/
 
 
@@ -7961,16 +7961,11 @@ create table RAWPOINTHISTORY (
    TIMESTAMP            datetime             not null,
    QUALITY              numeric              not null,
    VALUE                float                not null,
-   millis               smallint             not null
+   millis               smallint             not null,
+   constraint PKC_RawPointHistory primary key (CHANGEID)
 )
 go
 
-alter table RawPointHistory add constraint PKC_RawPointHistory primary key clustered 
-(
-       ChangeId DESC
-) with (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, 
-        ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON);
-go
 /*==============================================================*/
 /* Index: Indx_RawPointHistory_PtId_Ts                          */
 /*==============================================================*/

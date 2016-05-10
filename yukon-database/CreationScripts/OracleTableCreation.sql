@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/5/2016 4:56:32 PM                          */
+/* Created on:     5/10/2016 11:37:55 AM                        */
 /*==============================================================*/
 
 
@@ -7505,11 +7505,10 @@ create table RAWPOINTHISTORY  (
    TIMESTAMP            DATE                            not null,
    QUALITY              NUMBER                          not null,
    VALUE                FLOAT                           not null,
-   millis               SMALLINT                        not null
+   millis               SMALLINT                        not null,
+   constraint PKC_RawPointHistory primary key (CHANGEID)
 );
 
-alter table RAWPOINTHISTORY
-    add constraint PKC_RAWPOINTHISTORY primary key (CHANGEID);
 /*==============================================================*/
 /* Index: Indx_RawPointHistory_PtId_Ts                          */
 /*==============================================================*/
