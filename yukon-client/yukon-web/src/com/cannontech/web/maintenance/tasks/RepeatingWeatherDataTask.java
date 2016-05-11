@@ -83,8 +83,11 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
     private boolean shouldUpdateWeatherPoints(int weatherLocationPaoId) {
         WeatherLocation weatherLocation = weatherDataService.findWeatherLocationForPao(weatherLocationPaoId);
         WeatherObservation weatherObs = weatherDataService.getCurrentWeatherObservation(weatherLocation);
-        Instant updateTime = weatherObs.getTimestamp().plus(oldWeatherDataDuration);
-        return Instant.now().isAfter(updateTime);
+        if (weatherObs.getTimestamp() != null) {
+            Instant updateTime = weatherObs.getTimestamp().plus(oldWeatherDataDuration);
+            return Instant.now().isAfter(updateTime);
+        }
+        return false;
     }
     /**
      * Update weather points for any weather location

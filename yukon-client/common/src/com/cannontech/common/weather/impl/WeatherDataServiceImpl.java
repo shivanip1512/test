@@ -209,20 +209,36 @@ public class WeatherDataServiceImpl implements WeatherDataService {
                      + weatherLocation.getStationId(), e);
         }
     }
-    
+
     @Override
     @Transactional
-     public void updateWeatherPoints(WeatherObservation weatherObservation, int paoId) {
+    public void updateWeatherPoints(WeatherObservation weatherObservation, int paoId) {
 
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
         if (weatherObservation.getHumidity() != null) {
-            LitePoint humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
-            pointAccessDao.setPointValue(humidityPoint, weatherObservation.getTimestamp(), weatherObservation.getHumidity());
+            try {
+                LitePoint humidityPoint =
+                    attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
+                pointAccessDao.setPointValue(humidityPoint, weatherObservation.getTimestamp(),
+                    weatherObservation.getHumidity());
+            } catch (IllegalUseOfAttribute e) {
+                log.error("Unable to get humidity attribute for paoIdentifier: " + paoIdentifier
+                    + ". Resolve this error by adding the humidity point to this weather station.");
+            }
+
         }
 
         if (weatherObservation.getTemperature() != null) {
-            LitePoint temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
-            pointAccessDao.setPointValue(temperaturePoint, weatherObservation.getTimestamp(), weatherObservation.getTemperature());
+            try {
+                LitePoint temperaturePoint =
+                    attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
+                pointAccessDao.setPointValue(temperaturePoint, weatherObservation.getTimestamp(),
+                    weatherObservation.getTemperature());
+            } catch (IllegalUseOfAttribute e) {
+                log.error("Unable to get temperature attribute for paoIdentifier: " + paoIdentifier
+                    + ". Resolve this error by adding the temperature point to this weather station.");
+            }
+
         }
     }
 }
