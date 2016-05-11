@@ -178,13 +178,15 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         try {
             temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
         } catch (IllegalUseOfAttribute e) {
-            log.error("Unable to get temperature attribute", e);
+            log.error("Unable to get temperature attribute for paoIdentifier: " + paoIdentifier
+                + ". Resolve this error by adding the temperature point to this weather station.");
         }
 
         try {
             humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
         } catch (IllegalUseOfAttribute e) {
-            log.error("Unable to get humidity attribute", e);
+            log.error("Unable to get humidity attribute for paoIdentifier: " + paoIdentifier
+                + ". Resolve this error by adding the humidity point to this weather station.");
         }
 
         WeatherLocation weatherLocation
