@@ -38,7 +38,6 @@ CtiFDR_LodeStarImportBase::CtiFDR_LodeStarImportBase(string &aInterface)
     CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
     getReceiveFromList().setPointList (recList);
     recList = NULL;
-    init();
 }
 
 #pragma warning(pop)
