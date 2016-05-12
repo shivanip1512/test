@@ -34,8 +34,7 @@ class CtiCCFeeder : public Controllable
 public:
     DECLARE_COLLECTABLE( CtiCCFeeder );
 
-    CtiCCFeeder();
-    CtiCCFeeder(StrategyManager * strategyManager);
+    CtiCCFeeder( StrategyManager * strategyManager = nullptr );
     CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager);
 
     virtual ~CtiCCFeeder();
