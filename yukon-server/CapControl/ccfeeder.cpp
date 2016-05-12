@@ -73,9 +73,9 @@ CtiCCFeeder::CtiCCFeeder()
       _powerfactorvalue(0),
       _kvarsolution(0),
       _estimatedpowerfactorvalue(0),
-      _currentvarpointquality(0),
-      _currentwattpointquality(0),
-      _currentvoltpointquality(0),
+      _currentvarpointquality(UnintializedQuality),
+      _currentwattpointquality(UnintializedQuality),
+      _currentvoltpointquality(UnintializedQuality),
       _waivecontrolflag(false),
       _decimalPlaces(0),
       _peakTimeFlag(false),
@@ -111,14 +111,15 @@ CtiCCFeeder::CtiCCFeeder()
       _phaseBvalueBeforeControl(0),
       _phaseCvalueBeforeControl(0),
       _retryIndex(0),
+      _likeDayControlFlag(false),
+      _porterRetFailFlag(false),
+      regression( _RATE_OF_CHANGE_DEPTH ),
+      regressionA( _RATE_OF_CHANGE_DEPTH ),
+      regressionB( _RATE_OF_CHANGE_DEPTH ),
+      regressionC( _RATE_OF_CHANGE_DEPTH ),
       _insertDynamicDataFlag(true),
       _dirty(true)
 {
-    _porterRetFailFlag = false;
-    regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-    regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-    regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-    regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
 CtiCCFeeder::CtiCCFeeder(StrategyManager * strategyManager)
@@ -147,9 +148,9 @@ CtiCCFeeder::CtiCCFeeder(StrategyManager * strategyManager)
       _powerfactorvalue(0),
       _kvarsolution(0),
       _estimatedpowerfactorvalue(0),
-      _currentvarpointquality(0),
-      _currentwattpointquality(0),
-      _currentvoltpointquality(0),
+      _currentvarpointquality(UnintializedQuality),
+      _currentwattpointquality(UnintializedQuality),
+      _currentvoltpointquality(UnintializedQuality),
       _waivecontrolflag(false),
       _decimalPlaces(0),
       _peakTimeFlag(false),
@@ -185,14 +186,15 @@ CtiCCFeeder::CtiCCFeeder(StrategyManager * strategyManager)
       _phaseBvalueBeforeControl(0),
       _phaseCvalueBeforeControl(0),
       _retryIndex(0),
+      _likeDayControlFlag(false),
+      _porterRetFailFlag(false),
+      regression( _RATE_OF_CHANGE_DEPTH ),
+      regressionA( _RATE_OF_CHANGE_DEPTH ),
+      regressionB( _RATE_OF_CHANGE_DEPTH ),
+      regressionC( _RATE_OF_CHANGE_DEPTH ),
       _insertDynamicDataFlag(true),
       _dirty(true)
 {
-    _porterRetFailFlag = false;
-    regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-    regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-    regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-    regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
 CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)

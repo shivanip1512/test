@@ -37,7 +37,6 @@ public:
     CtiCCFeeder();
     CtiCCFeeder(StrategyManager * strategyManager);
     CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager);
-    CtiCCFeeder(const CtiCCFeeder& feeder);
 
     virtual ~CtiCCFeeder();
 
@@ -112,7 +111,6 @@ public:
     double getPhaseAValueBeforeControl() const;
     double getPhaseBValueBeforeControl() const;
     double getPhaseCValueBeforeControl() const;
-    const CtiTime& getLastVarPointTime() const;
     const CtiTime& getLastWattPointTime() const;
     const CtiTime& getLastVoltPointTime() const;
     long getRetryIndex() const;
@@ -302,8 +300,6 @@ public:
     bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
-    CtiCCFeeder& operator=(const CtiCCFeeder& right);
-
     CtiCCFeeder* replicate() const;
 
     void setDynamicData(Cti::RowReader& rdr);
@@ -320,6 +316,11 @@ public:
     std::string getPhaseIndicatorString(long capState, double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
     std::string getQuestionablePhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
     std::string getFailedPhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
+
+//protected:    // gah... see (broken) CtiCCSubstationBus::getMonitorPointParentBankAndFeeder()
+
+    CtiCCFeeder(const CtiCCFeeder& feeder);
+    CtiCCFeeder& operator=(const CtiCCFeeder& right);
 
 private:
 
