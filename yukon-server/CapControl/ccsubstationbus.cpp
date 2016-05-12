@@ -7129,26 +7129,22 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
     }
 }
 
-
-CtiCCCapBank* CtiCCSubstationBus::getMonitorPointParentBankAndFeeder(const CtiCCMonitorPoint & point, CtiCCFeeder *feed)
+CtiCCCapBankPtr CtiCCSubstationBus::getMonitorPointParentBankAndFeeder( const CtiCCMonitorPoint & point,
+                                                                        CtiCCFeederPtr          & feeder )
 {
-
-    for (long h = 0; h < _ccfeeders.size();h++)
+    for ( CtiCCFeederPtr currentFeeder : _ccfeeders )
     {
-        CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[h];
-        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-        for (long i = 0; i < ccCapBanks.size(); i++)
+        for ( CtiCCCapBankPtr currentBank : currentFeeder->getCCCapBanks() )
         {
-            CtiCCCapBankPtr cap = (CtiCCCapBankPtr)ccCapBanks[i];
-            if (point.getDeviceId() == cap->getPaoId())
+            if ( point.getDeviceId() == currentBank->getPaoId() )
             {
-                feed = currentFeeder;
-                return cap;
+                feeder = currentFeeder;
+                return currentBank;
             }
         }
     }
-    return NULL;
+
+    return nullptr;
 }
 
 bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
@@ -7310,7 +7306,8 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
         if (getCurrentVarLoadPointId() > 0)
         {
 
-            CtiCCFeeder parentFeeder;
+            CtiCCFeederPtr  parentFeeder = nullptr;
+
             double lagLevel = (isPeakTime(currentDateTime)?getStrategy()->getPeakVARLag():getStrategy()->getOffPeakVARLag());
             double leadLevel = (getPeakTimeFlag()?getStrategy()->getPeakVARLead():getStrategy()->getOffPeakVARLead());
             if( !_IGNORE_NOT_NORMAL_FLAG ||
@@ -7324,7 +7321,7 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                     for (int i = 0; i < monPoints.size(); i++)
                     {
                         CtiCCMonitorPoint & pt = *monPoints[i];
-                        CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(pt, &parentFeeder);
+                        CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(pt, parentFeeder);
 
                         if (bank->getControlStatus() == CtiCCCapBank::Open ||
                             bank->getControlStatus() == CtiCCCapBank::OpenQuestionable )
@@ -7346,8 +7343,8 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                                     if (areOtherMonitorPointResponsesOk(pt.getPointId(), bank, CtiCCCapBank::Close))
                                     {
                                         double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                        string text = parentFeeder.createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
-                                        request =  parentFeeder.createDecreaseVarRequest(bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
+                                        string text = parentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
+                                        request =  parentFeeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                                         updatePointResponsePreOpValues(bank);
                                     }
@@ -7371,7 +7368,7 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                     for (int i = 0; i < monPoints.size(); i++)
                     {
                         CtiCCMonitorPoint & pt = *monPoints[i];
-                        CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(pt, &parentFeeder);
+                        CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(pt, parentFeeder);
 
                         if (bank->getControlStatus() == CtiCCCapBank::Close ||
                             bank->getControlStatus() == CtiCCCapBank::CloseQuestionable )
@@ -7394,8 +7391,8 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                                     if (areOtherMonitorPointResponsesOk(pt.getPointId(), bank, CtiCCCapBank::Open))
                                     {
                                         double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                        string text = parentFeeder.createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
-                                        request = parentFeeder.createIncreaseVarRequest(bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
+                                        string text = parentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+                                        request = parentFeeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                                         updatePointResponsePreOpValues(bank);
                                     }
@@ -7454,7 +7451,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
     CtiRequestMsg* request = NULL;
 
     CtiCCCapBank* bestBank = NULL;
-    CtiCCFeeder parentFeeder;
+    CtiCCFeederPtr  parentFeeder = nullptr;
    //Check for undervoltage condition first.
    try
    {
@@ -7464,7 +7461,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
             double bestDelta = 0;
 
             //1.  First check this point's parent bank to see if we can close it.
-            parentBank = getMonitorPointParentBankAndFeeder(point, &parentFeeder);
+            parentBank = getMonitorPointParentBankAndFeeder(point, parentFeeder);
             if (parentBank != NULL)
             {
                 if (parentBank->getControlStatus() == CtiCCCapBank::Open ||
@@ -7478,7 +7475,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                               point.getValue() + pResponse.getDelta() >= point.getLowerBandwidth() ) ||
                               point.getValue() + pResponse.getDelta() < point.getUpperBandwidth() )
                         {
-                            CTILOG_INFO(dout, "Attempting to Increase Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<parentBank->getPaoName());
+                            CTILOG_INFO(dout, "Attempting to Increase Voltage on Feeder: "<<parentFeeder->getPaoName()<<" CapBank: "<<parentBank->getPaoName());
                             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                             {
                                 CTILOG_DEBUG(dout, "MULTIVOLT: Monitorpoint.bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Close");
@@ -7487,10 +7484,10 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                             if (areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Close))
                             {
                                 double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                double monitorValue =  parentFeeder.getCurrentVarLoadPointValue();
-                                double phaseAValue = parentFeeder.getPhaseAValue();
-                                double phaseBValue = parentFeeder.getPhaseBValue();
-                                double phaseCValue = parentFeeder.getPhaseCValue();
+                                double monitorValue =  parentFeeder->getCurrentVarLoadPointValue();
+                                double phaseAValue = parentFeeder->getPhaseAValue();
+                                double phaseBValue = parentFeeder->getPhaseBValue();
+                                double phaseCValue = parentFeeder->getPhaseCValue();
                                 if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
                                 {
                                     monitorValue = getCurrentVarLoadPointValue();
@@ -7499,8 +7496,8 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                                     phaseCValue = getPhaseCValue();
 
                                 }
-                                string text = parentFeeder.createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, monitorValue);
-                                request = parentFeeder.createDecreaseVarRequest(parentBank, pointChanges, ccEvents, text, monitorValue, phaseAValue, phaseBValue,phaseCValue);
+                                string text = parentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, monitorValue);
+                                request = parentFeeder->createDecreaseVarRequest(parentBank, pointChanges, ccEvents, text, monitorValue, phaseAValue, phaseBValue,phaseCValue);
 
                                 updatePointResponsePreOpValues(parentBank);
                                 bestBank = parentBank;
@@ -7551,7 +7548,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                                           pResponse.getDelta() == 0 ||
                                           point.getValue() + pResponse.getDelta() < point.getUpperBandwidth() )
                                     {
-                                        CTILOG_INFO(dout, "Attempting to Increase Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<currentCapBank->getPaoName());
+                                        CTILOG_INFO(dout, "Attempting to Increase Voltage on Feeder: "<<currentFeeder->getPaoName()<<" CapBank: "<<currentCapBank->getPaoName());
                                         if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                                         {
                                             CTILOG_DEBUG(dout, "MULTIVOLT: Monitorpoint.bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<currentCapBank->getPaoName() <<" selected to Close");
@@ -7560,10 +7557,10 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                                         if (areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Close))
                                         {
                                             double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                            double monitorValue =  parentFeeder.getCurrentVarLoadPointValue();
-                                            double phaseAValue = parentFeeder.getPhaseAValue();
-                                            double phaseBValue = parentFeeder.getPhaseBValue();
-                                            double phaseCValue = parentFeeder.getPhaseCValue();
+                                            double monitorValue =  currentFeeder->getCurrentVarLoadPointValue();
+                                            double phaseAValue = currentFeeder->getPhaseAValue();
+                                            double phaseBValue = currentFeeder->getPhaseBValue();
+                                            double phaseCValue = currentFeeder->getPhaseCValue();
                                             if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
                                             {
                                                 monitorValue = getCurrentVarLoadPointValue();
@@ -7577,7 +7574,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
 
                                             updatePointResponsePreOpValues(currentCapBank);
                                             bestBank = currentCapBank;
-                                            parentFeeder = *currentFeeder;
+                                            parentFeeder = currentFeeder;
                                         }
                                     }
                                 }
@@ -7591,14 +7588,14 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                         if (request != NULL)
                         {
                             bestBank = currentCapBank;
-                            parentFeeder = *currentFeeder;
+                            parentFeeder = currentFeeder;
                             break;
                         }
                     }
                     if (request != NULL)
                     {
                         //bestBank = currentCapBank;
-                        parentFeeder = *currentFeeder;
+                        parentFeeder = currentFeeder;
                         break;
                     }
                 }
@@ -7616,7 +7613,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
             double bestDelta = 0;
 
             //1.  First check this point's parent bank to see if we can open it.
-            parentBank = getMonitorPointParentBankAndFeeder(point, &parentFeeder);
+            parentBank = getMonitorPointParentBankAndFeeder(point, parentFeeder);
             if (parentBank != NULL)
             {
                 if (parentBank->getControlStatus() == CtiCCCapBank::Close ||
@@ -7631,7 +7628,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                               //pRespone.getDelta() == 0 ||
                               point.getValue() - pResponse.getDelta() > point.getLowerBandwidth() )
                         {
-                            CTILOG_INFO(dout, "Attempting to Decrease Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<parentBank->getPaoName());
+                            CTILOG_INFO(dout, "Attempting to Decrease Voltage on Feeder: "<<parentFeeder->getPaoName()<<" CapBank: "<<parentBank->getPaoName());
                             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                             {
                                 CTILOG_DEBUG(dout, "MULTIVOLT: Monitorpoint.bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Open");
@@ -7640,10 +7637,10 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                             if (areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Open))
                             {
                                 double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                double monitorValue =  parentFeeder.getCurrentVarLoadPointValue();
-                                double phaseAValue = parentFeeder.getPhaseAValue();
-                                double phaseBValue = parentFeeder.getPhaseBValue();
-                                double phaseCValue = parentFeeder.getPhaseCValue();
+                                double monitorValue =  parentFeeder->getCurrentVarLoadPointValue();
+                                double phaseAValue = parentFeeder->getPhaseAValue();
+                                double phaseBValue = parentFeeder->getPhaseBValue();
+                                double phaseCValue = parentFeeder->getPhaseCValue();
                                 if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
                                 {
                                     monitorValue = getCurrentVarLoadPointValue();
@@ -7652,8 +7649,8 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                                     phaseCValue = getPhaseCValue();
 
                                 }
-                                string text = parentFeeder.createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, monitorValue);
-                                request = parentFeeder.createIncreaseVarRequest(parentBank, pointChanges, ccEvents, text, monitorValue, phaseAValue, phaseBValue,phaseCValue);
+                                string text = parentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, monitorValue);
+                                request = parentFeeder->createIncreaseVarRequest(parentBank, pointChanges, ccEvents, text, monitorValue, phaseAValue, phaseBValue,phaseCValue);
 
                                 updatePointResponsePreOpValues(parentBank);
                                 bestBank = parentBank;
@@ -7705,7 +7702,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                                           pResponse.getDelta() == 0 ||
                                           point.getValue() - pResponse.getDelta() > point.getUpperBandwidth() )
                                     {
-                                        CTILOG_INFO(dout, "Attempting to Decrease Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<currentCapBank->getPaoName());
+                                        CTILOG_INFO(dout, "Attempting to Decrease Voltage on Feeder: "<<currentFeeder->getPaoName()<<" CapBank: "<<currentCapBank->getPaoName());
                                         if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                                         {
                                             CTILOG_DEBUG(dout, "MULTIVOLT: Monitorpoint.bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<currentCapBank->getPaoName() <<" selected to Open");
@@ -7731,7 +7728,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
 
                                             updatePointResponsePreOpValues(currentCapBank);
                                             bestBank = currentCapBank;
-                                            parentFeeder = *currentFeeder;
+                                            parentFeeder = currentFeeder;
                                         }
                                     }
                                 }
@@ -7745,14 +7742,14 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                         if (request != NULL)
                         {
                             bestBank = currentCapBank;
-                            parentFeeder = *currentFeeder;
+                            parentFeeder = currentFeeder;
                             break;
                         }
                     }
                     if (request != NULL)
                     {
                         //bestBank = currentCapBank;
-                        parentFeeder = *currentFeeder;
+                        parentFeeder = currentFeeder;
                         break;
                     }
                 }
@@ -7769,11 +7766,11 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
             pilMessages.push_back(request);
            //setLastOperationTime(currentDateTime);
             setOperationSentWaitFlag(true);
-            setLastFeederControlled( parentFeeder.getPaoId());
-            parentFeeder.setLastCapBankControlledDeviceId( bestBank->getPaoId());
-            parentFeeder.setRecentlyControlledFlag(true);
-            parentFeeder.setVarValueBeforeControl(parentFeeder.getCurrentVarLoadPointValue());
-            setVarValueBeforeControl(getCurrentVarLoadPointValue(), parentFeeder.getOriginalParent().getOriginalParentId());
+            setLastFeederControlled( parentFeeder->getPaoId());
+            parentFeeder->setLastCapBankControlledDeviceId( bestBank->getPaoId());
+            parentFeeder->setRecentlyControlledFlag(true);
+            parentFeeder->setVarValueBeforeControl(parentFeeder->getCurrentVarLoadPointValue());
+            setVarValueBeforeControl(getCurrentVarLoadPointValue(), parentFeeder->getOriginalParent().getOriginalParentId());
             setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
@@ -8910,16 +8907,19 @@ std::vector <long> CtiCCSubstationBus::getAllMonitorPointIds()
 
 std::vector <CtiCCMonitorPointPtr> CtiCCSubstationBus::getAllCapBankMonitorPoints()
 {
-    std::vector<CtiCCMonitorPointPtr> points;
-    for each (const map<long, CtiCCMonitorPointPtr>::value_type & entry in _monitorPoints)
+    std::vector<CtiCCMonitorPointPtr>   points;
+
+    for ( auto & entry : _monitorPoints )
     {
+        CtiCCFeederPtr  ignored;
         CtiCCMonitorPointPtr mPoint = entry.second;
-        CtiCCFeederPtr feed = NULL;
-        if (CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(*mPoint, feed))
+
+        if ( CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder( *mPoint, ignored ) )
         {
-             points.push_back(mPoint);
+             points.push_back( mPoint );
         }
     }
+
     return points;
 }
 

@@ -283,7 +283,7 @@ public:
     bool isBusAnalysisNeeded(const CtiTime& currentDateTime);
     bool isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime);
     bool areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPoint);
-    CtiCCCapBank* getMonitorPointParentBankAndFeeder(const CtiCCMonitorPoint & point, CtiCCFeeder* feed);
+    CtiCCCapBankPtr getMonitorPointParentBankAndFeeder( const CtiCCMonitorPoint & point, CtiCCFeederPtr & feeder );
     bool voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec &pilMessages);
     bool areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* potentialCap, int action);
     bool analyzeBusForVarImprovement(CtiMultiMsg_vec &pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec &pilMessages);
