@@ -13,11 +13,16 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface DeviceDao {
+    
+    /**
+     * Returns a SimpleDevice loaded from ServerDatabaseCache
+     */
     SimpleDevice getYukonDevice(int paoId);
 
+    /**
+     * Helper method to translate a LiteYukonPaobject to SimpleDevice.
+     */
     SimpleDevice getYukonDevice(LiteYukonPAObject pao);
-
-    SimpleDevice getYukonDeviceObjectById(int deviceId);
 
     /**
      * This will fail for paos that have the same name;
@@ -108,9 +113,13 @@ public interface DeviceDao {
     /**
      * Method to get the name of a device. If device is a Meter, meterDao
      * is used to get formatted name. PaoName otherwise.
+     * Database hit is required to determine if deviceId is for a Meter.
      */
     String getFormattedName(int deviceId);
 
+    /** 
+     * Helper method to translate DeviceBase object to SimpleDevice
+     */
     SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice);
 
     PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader();

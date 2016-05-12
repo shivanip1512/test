@@ -574,7 +574,7 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
         } else if (selectedObject instanceof DeviceMeterGroupBase) {
             DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
             int deviceId = ((DeviceMeterGroupBase) selectedObject).getDeviceMeterGroup().getDeviceID();
-            SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
+            SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
             type = device.getDeviceType().getPaoTypeName();
             currentType = device.getType();
@@ -704,7 +704,7 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
                 showChangeTypeWizardPanel(new DeviceChangeTypeWizardPanel(userObject));
             } else if (userObject instanceof DeviceMeterGroupBase) {
                 int deviceId = ((DeviceMeterGroupBase) userObject).getDeviceMeterGroup().getDeviceID();
-                SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
+                SimpleDevice device = deviceDao.getYukonDevice(deviceId);
                 if (paoDefinitionService.isPaoTypeChangeable(device)) {
                     YukonPAObject yukonPAObject = PAOFactory.createPAObject(deviceId);
                     showChangeTypeWizardPanel(new DeviceChangeTypeWizardPanel(yukonPAObject));

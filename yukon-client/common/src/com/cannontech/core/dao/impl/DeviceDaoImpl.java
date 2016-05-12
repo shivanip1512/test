@@ -127,17 +127,6 @@ public final class DeviceDaoImpl implements DeviceDao {
         return devices;
     }
 
-    /**
-     * A leaner version of getYukonDevice()
-     */
-    @Override
-    public SimpleDevice getYukonDeviceObjectById(int deviceId) {    //TODO can this use cache?
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.PAObjectID, ypo.Type FROM YukonPaObject ypo WHERE ypo.PAObjectID").eq(deviceId);
-        SimpleDevice device = jdbcTemplate.queryForObject(sql, deviceRowMapper);
-        return device;
-    }
-
     @Override
     public SimpleDevice getYukonDeviceObjectByName(String name) {
         ImmutableSet<PaoClass> allowedClasses =
@@ -354,7 +343,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     public String getFormattedName(int deviceId) {
         try {
             YukonMeter meter = meterDao.getForId(deviceId);
-            return meterDao.getFormattedDeviceName(meter);  //TODO can we avoid this Database Hit?
+            return meterDao.getFormattedDeviceName(meter);
         } catch (NotFoundException e) {
             LiteYukonPAObject paoObj = cache.getAllPaosMap().get(deviceId);
             return paoObj.getPaoName();

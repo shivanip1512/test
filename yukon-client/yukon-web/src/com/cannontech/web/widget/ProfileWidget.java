@@ -647,7 +647,7 @@ public class ProfileWidget extends WidgetControllerBase {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
-        SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         LitePoint point = null;
         try {
             point = attributeService.getPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);

@@ -24,11 +24,6 @@ public class MockDeviceDao implements DeviceDao {
     }
 
     @Override
-    public SimpleDevice getYukonDeviceObjectById(int deviceId) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public SimpleDevice getYukonDeviceObjectByName(String name) {
         throw new MethodNotImplementedException();
     }
