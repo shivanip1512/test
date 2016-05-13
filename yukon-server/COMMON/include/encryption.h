@@ -33,6 +33,9 @@ namespace Encryption
 
     IM_EX_CTIBASE void initialize( const std::string & yukonBase );
 
+    // Cleanup per https://wiki.openssl.org/index.php/Library_Initialization#Cleanup
+    IM_EX_CTIBASE void cleanup();
+
     IM_EX_CTIBASE Buffer encrypt( const EncryptionType type, const Buffer & plainText );
 
     IM_EX_CTIBASE Buffer decrypt( const EncryptionType type, const Buffer & cipherText );

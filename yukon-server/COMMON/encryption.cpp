@@ -5,9 +5,10 @@
 #include "mutex.h"
 #include "guard.h"
 
-#include <openssl\aes.h>
-#include <openssl\evp.h>
-#include <openssl\hmac.h>
+#include <openssl/aes.h>
+#include <openssl/evp.h>
+#include <openssl/hmac.h>
+#include <openssl/err.h>
 
 #include <cstdio>
 #include <map>
@@ -232,8 +233,20 @@ namespace
 IM_EX_CTIBASE void initialize( const std::string & yukonBase )
 {
     _yukonBase = yukonBase;
+    ERR_load_crypto_strings();
 }
 
+
+// Cleanup per https://wiki.openssl.org/index.php/Library_Initialization#Cleanup
+// This overwrites memory and frees it.  
+IM_EX_CTIBASE void cleanup()
+{
+    FIPS_mode_set(0);
+    EVP_cleanup();
+    CRYPTO_cleanup_all_ex_data();
+    ERR_remove_thread_state(NULL);
+    ERR_free_strings();
+}
 
 IM_EX_CTIBASE Buffer decrypt( const EncryptionType type, const Buffer & input )
 {

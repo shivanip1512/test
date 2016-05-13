@@ -1,6 +1,10 @@
 #include <boost/test/unit_test.hpp>
 
 #include "encryption.h"
+#include <openssl\aes.h>
+#include <openssl\evp.h>
+#include <openssl\hmac.h>
+#include <openssl/err.h>
 
 
 
@@ -86,6 +90,8 @@ BOOST_AUTO_TEST_CASE(test_encryption)
     // Re-enable the real ecryption file
 
     Cti::Encryption::unseedFileData( Cti::Encryption::MasterCfg );
+
+    Cti::Encryption::cleanup();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
