@@ -316,7 +316,7 @@ public:
     std::string getQuestionablePhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
     std::string getFailedPhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
 
-//protected:    // gah... see (broken) CtiCCSubstationBus::getMonitorPointParentBankAndFeeder()
+protected:
 
     CtiCCFeeder(const CtiCCFeeder& feeder);
     CtiCCFeeder& operator=(const CtiCCFeeder& right);
