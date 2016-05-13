@@ -1,10 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include "encryption.h"
-#include <openssl\aes.h>
-#include <openssl\evp.h>
-#include <openssl\hmac.h>
-#include <openssl/err.h>
 
 
 
