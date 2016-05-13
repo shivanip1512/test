@@ -1078,4 +1078,69 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
 //    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastVoltPointTime() );
 }
 
+BOOST_AUTO_TEST_CASE( test_ccFeeder_replication )
+{
+    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
+    CtiCCSubstationBusStore::setInstance( store );
+
+    CtiCCAreaPtr            area    = create_object<CtiCCArea>( 1, "Area-1" );
+    CtiCCSubstationPtr      station = create_object<CtiCCSubstation>( 2, "Substation-A" );
+    CtiCCSubstationBusPtr   bus     = create_object<CtiCCSubstationBus>( 3, "SubBus-A1" );
+    CtiCCFeederPtr          feeder  = create_object<CtiCCFeeder>( 11, "Feeder1" );
+    CtiCCCapBankPtr         bank1   = create_object<CtiCCCapBank>(101, "Bank1");
+    CtiCCCapBankPtr         bank2   = create_object<CtiCCCapBank>(102, "Bank2");
+    CtiCCCapBankPtr         bank3   = create_object<CtiCCCapBank>(103, "Bank3");
+    CtiCCCapBankPtr         bank4   = create_object<CtiCCCapBank>(104, "Bank4");
+
+    initialize_area( store, area );
+    initialize_station( store, station, area );
+    initialize_bus( store, bus, station );
+    initialize_feeder( store, feeder, bus, 1 );
+    initialize_bank( bank1, 0, 3 );
+    initialize_bank( bank2, 1, 2 );
+    initialize_bank( bank3, 2, 1 );
+    initialize_bank( bank4, 3, 0 );
+
+    feeder->getCCCapBanks().insert( bank1 );
+    feeder->getCCCapBanks().insert( bank2 );
+    feeder->getCCCapBanks().insert( bank3 );
+    feeder->getCCCapBanks().insert( bank4 );
+
+    BOOST_CHECK_EQUAL( 4, feeder->getCCCapBanks().size() );
+
+    CtiCCFeederPtr  clone = feeder->replicate();
+
+    BOOST_CHECK_EQUAL( 4, clone->getCCCapBanks().size() );
+
+    for ( auto clonedBank : clone->getCCCapBanks() ) 
+    {
+        clonedBank->setPaoName( clonedBank->getPaoName() + "-clone" );
+    }
+
+    // validate the original banks names haven't been changed -- banks were 'deep' copied.
+
+    CtiCCCapBank_SVector & original = feeder->getCCCapBanks();
+
+    BOOST_CHECK_EQUAL(       4, original.size() );
+    BOOST_CHECK_EQUAL( "Bank1", original[ 0 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Bank2", original[ 1 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Bank3", original[ 2 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Bank4", original[ 3 ]->getPaoName() );
+
+    CtiCCCapBank_SVector & clonedBanks = clone->getCCCapBanks();
+
+    BOOST_CHECK_EQUAL(             4, clonedBanks.size() );
+    BOOST_CHECK_EQUAL( "Bank1-clone", clonedBanks[ 0 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Bank2-clone", clonedBanks[ 1 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Bank3-clone", clonedBanks[ 2 ]->getPaoName() );
+    BOOST_CHECK_EQUAL( "Bank4-clone", clonedBanks[ 3 ]->getPaoName() );
+
+    delete clone;
+
+    store->deleteInstance();
+
+    delete station;
+    delete area;
+}
+
 BOOST_AUTO_TEST_SUITE_END()
