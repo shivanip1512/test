@@ -121,17 +121,17 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                     if (!isWorkingOnObject) {
                         pending.put(monitor.getId(), monitor);
                         recalculateViolations(monitor);
+                        Iterator<DeviceDataMonitor> iterator = pending.values().iterator();
+                        while (iterator.hasNext()) {
+                            DeviceDataMonitor ddm = iterator.next();
+                            if (ddm.getId() == monitor.getId()) {
+                                iterator.remove();
+                                break;
+                            }
+                        }
                     }
                 } catch (Exception e) {
                     log.error(monitor, e);
-                }
-                Iterator<DeviceDataMonitor> iterator = pending.values().iterator();
-                while (iterator.hasNext()) {
-                    DeviceDataMonitor ddm = iterator.next();
-                    if (ddm.getId() == monitor.getId()) {
-                        iterator.remove();
-                        break;
-                    }
                 }
             }
         });
