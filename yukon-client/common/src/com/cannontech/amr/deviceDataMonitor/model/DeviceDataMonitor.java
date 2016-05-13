@@ -168,8 +168,8 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     @Override
     public String toString() {
         return String
-                .format("DeviceDataMonitor [id=%s, name=%s, groupName=%s, enabled=%s, processors=%s]",
-                        id, name, groupName, enabled, processors);
+                .format("DeviceDataMonitor [id=%s, name=%s, groupName=%s, enabled=%s]",
+                        id, name, groupName, enabled);
     }
     
 }

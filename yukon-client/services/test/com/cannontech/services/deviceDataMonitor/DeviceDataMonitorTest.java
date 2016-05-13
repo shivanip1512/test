@@ -490,52 +490,6 @@ public class DeviceDataMonitorTest {
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 1);
     }
-
-    @Test
-    public void should_not_update_violations_group_with_equal_monitors() {
-        Assert.assertFalse(deviceDataMonitorCalculationService.shouldUpdateViolationsGroupNameBeforeSave(monitor1, monitor1));
-    }
-    
-    @Test
-    public void should_update_violations_group_with_monitors_with_diff_names() {
-        Assert.assertTrue(deviceDataMonitorCalculationService.shouldUpdateViolationsGroupNameBeforeSave(monitor1, monitor1WithNameChanged));
-    }
-    
-    @Test
-    public void should_not_recalculate_violations_before_save_with_equal_monitors() {
-        Assert.assertFalse(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1));
-    }
-    
-    @Test
-    public void should_not_recalculate_violations_before_save_with_no_processors() {
-        Assert.assertFalse(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1WithNoProcessors, monitor1));
-    }
-    
-    @Test
-    public void should_not_recalculate_violations_before_save_with_disabled_monitor() {
-        Assert.assertFalse(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1Disabled, monitor1));
-    }
-    
-    @Test
-    public void should_recalculate_violations_before_save_with_null_old_monitor() {
-        Assert.assertTrue(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, null));
-    }
-    
-    @Test
-    public void should_recalculate_violations_before_save_with_changed_monitoring_group() {
-        Assert.assertTrue(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1WithGroupChanged));
-    }
-    
-    @Test
-    public void should_recalculate_violations_before_save_with_changed_processors() {
-        Assert.assertTrue(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1WithProcessorsChanged));
-    }
-    
-    @Test
-    public void should_recalculate_violations_before_save_with_enabling_existing_monitor() {
-        Assert.assertTrue(deviceDataMonitorCalculationService.shouldFindViolatingPaosBeforeSave(monitor1, monitor1Disabled));
-    }
-    
     
     private DeviceDataMonitorProcessor getProcessor(Attribute attribute, LiteStateGroup stateGroup, LiteState state) {
         return new DeviceDataMonitorProcessor(null, null, attribute, stateGroup, state);

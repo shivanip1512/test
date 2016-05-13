@@ -9,23 +9,6 @@ import com.cannontech.core.dao.NotFoundException;
 public interface DeviceDataMonitorService {
     
     /**
-     * This method should be the only way a caller should save a DeviceDataMonitor. Do not directly call DeviceDataMonitorDao.save.
-     * 
-     * This method does a few things (in this order):
-     *  1) Looks in the database for an existing monitor (using the passed in monitor.id)
-     *  2) Adds the passed in monitor and the existing monitor (if it exists, null otherwise) to our
-     *     asynchronous worker queue that will
-     *     a) Create the violations device group if it doesn't exist
-     *     b) Recalculate the "violating" devices (if need be)
-     *     c) Add any found violating devices to our violation device group. More specifically, this step will
-     *        ensure the violation device group contains only the devices found in step 1 above. So, if no devices
-     *        are found, then this step will clear out any existing devices in this group.
-     *  3) Saves our passed in monitor using DeviceDataMonitorDao.save
-     *  4) Returns our saved monitor  
-     */
-    DeviceDataMonitor saveAndProcess(DeviceDataMonitor monitor) throws DuplicateException;
-    
-    /**
      * Returns a boolean indicating whether or not a worker is currently "working"
      * on calculating violations for a monitor
      * @throws ExecutionException 
@@ -46,4 +29,36 @@ public interface DeviceDataMonitorService {
      * @throws NotFoundException
      */
     boolean toggleEnabled(int monitorId) throws NotFoundException;
+
+    /**
+     * This method should be the only way a caller should delete a DeviceDataMonitor. Do not directly call DeviceDataMonitorDao.deleteMonitor
+     *  1) Deletes meter from the database
+     *  2) Sends message to Service Manager to remove the monitor from the pending for recalculation queue. 
+     */
+    
+    void delete(DeviceDataMonitor monitor);
+    
+    /**
+     * This method should be the only way a caller should create a DeviceDataMonitor. Do not directly call DeviceDataMonitorDao.save.
+     *  1) Creates a new DeviceDataMonitor
+     *  2) Sends message to Service Manager
+     *  3) Service Manager creates a violation group
+     *  4) Service Manager adds monitor to pending for recalculation queue
+     */
+    
+    DeviceDataMonitor create(DeviceDataMonitor monitor) throws DuplicateException;
+    
+    /**
+     * This method should be the only way a caller should update a DeviceDataMonitor. Do not directly call DeviceDataMonitorDao.save.
+     *  1) Updates DeviceDataMonitor
+     *  2) Sends message to Service Manager
+     *  3) Service Manager updates a violation group name if the monitoring group name was changed
+     *  4) Service Manager adds monitor to pending for recalculation queue
+     */
+    DeviceDataMonitor update(DeviceDataMonitor monitor) throws DuplicateException;
+
+    /**
+     * Sends message to Service Manager to recalculate monitor
+     */
+    void recaclulate(DeviceDataMonitor monitor);
 }

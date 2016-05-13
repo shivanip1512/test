@@ -13,6 +13,7 @@ import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorService;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage;
+import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage.Action;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusRequest;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusResponse;
 import com.cannontech.clientutils.YukonLogManager;
@@ -25,8 +26,12 @@ import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.util.jms.RequestTemplateImpl;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
+    
     
     @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
@@ -39,13 +44,34 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     private static final String statusRequestQueueName = "yukon.qr.obj.amr.dataDeviceMonitor.RecalculateStatus";
     
     private RequestTemplateImpl<DeviceDataMonitorStatusResponse> statusRequestTemplate;
+    @Autowired private DbChangeManager dbChangeManager;
         
     @Override
-    public DeviceDataMonitor saveAndProcess(DeviceDataMonitor monitor) throws DuplicateException {
-        DeviceDataMonitor existingMonitor = monitor.getId() != null ? deviceDataMonitorDao.getMonitorById(monitor.getId()) : null;
-        asyncRecalculateViolatingPaosForMonitorBeforeSave(monitor, existingMonitor);
+    public DeviceDataMonitor create(DeviceDataMonitor monitor) throws DuplicateException {
         deviceDataMonitorDao.save(monitor);
+        jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, null, Action.CREATE));
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR, monitor.getId());
         return monitor;
+    }
+    
+    @Override
+    public DeviceDataMonitor update(DeviceDataMonitor monitor) throws DuplicateException {
+        DeviceDataMonitor existingMonitor = deviceDataMonitorDao.getMonitorById(monitor.getId());
+        deviceDataMonitorDao.save(monitor);
+        jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, existingMonitor,  Action.UPDATE));
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, monitor.getId());
+        return monitor;
+    }
+    
+    @Override
+    public void delete(DeviceDataMonitor monitor) {
+        deviceDataMonitorDao.deleteMonitor(monitor.getId());
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, monitor.getId());
+    }
+    
+    @Override
+    public void recaclulate(DeviceDataMonitor monitor) {
+        jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, null, Action.RECALCULATE));
     }
     
     @Override
@@ -61,8 +87,9 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
         boolean newStatus = !monitor.isEnabled();
         monitor.setEnabled(newStatus);
-
-        saveAndProcess(monitor);
+        Action action = monitor.isEnabled()? Action.ENABLE : Action.DISABLE;
+        deviceDataMonitorDao.save(monitor);
+        jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, action));
         log.info("Updated deviceDataMonitor enabled status: status=" + newStatus + ", deviceDataMonitor=" + monitor);
         return newStatus;
     }
@@ -89,11 +116,6 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         }
     }
 
-    private void asyncRecalculateViolatingPaosForMonitorBeforeSave(DeviceDataMonitor updatedMonitor, DeviceDataMonitor existingMonitor) {
-        jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(updatedMonitor, existingMonitor));
-    }
-    
-    
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);

@@ -3,25 +3,26 @@ package com.cannontech.amr.monitors.message;
 import java.io.Serializable;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
-import com.cannontech.amr.worker.ServiceWorkerQueueObject;
 
-public class DeviceDataMonitorMessage implements Serializable, ServiceWorkerQueueObject {
+public class DeviceDataMonitorMessage implements Serializable{
     private static final long serialVersionUID = 1L;
+
+    public enum Action {
+        CREATE, UPDATE, DISABLE, ENABLE, RECALCULATE
+    }
 
     private final DeviceDataMonitor updatedMonitor;
     private final DeviceDataMonitor oldMonitor;
-    private final boolean isBeforeSave;
+    private final Action action;
 
-    public DeviceDataMonitorMessage(DeviceDataMonitor updatedMonitor) {
-        this.updatedMonitor = updatedMonitor;
-        this.oldMonitor = null;
-        this.isBeforeSave = false;
+    public DeviceDataMonitorMessage(DeviceDataMonitor updatedMonitor, Action action) {
+        this(updatedMonitor, null, action);
     }
 
-    public DeviceDataMonitorMessage(DeviceDataMonitor updatedMonitor, DeviceDataMonitor oldMonitor) {
+    public DeviceDataMonitorMessage(DeviceDataMonitor updatedMonitor, DeviceDataMonitor oldMonitor, Action action) {
         this.updatedMonitor = updatedMonitor;
         this.oldMonitor = oldMonitor;
-        this.isBeforeSave = true;
+        this.action = action;
     }
 
     public DeviceDataMonitor getUpdatedMonitor() {
@@ -32,18 +33,17 @@ public class DeviceDataMonitorMessage implements Serializable, ServiceWorkerQueu
         return oldMonitor;
     }
 
-    public boolean isBeforeSave() {
-        return isBeforeSave;
-    }
-
     @Override
     public String toString() {
-        return "DeviceDataMonitorMessage [updatedMonitor=" + updatedMonitor + ", oldMonitor="
-               + oldMonitor + ", isBeforeSave=" + isBeforeSave + "]";
+        return "DeviceDataMonitorMessage [action=" + action + " updatedMonitor=" + updatedMonitor + ", oldMonitor="
+            + oldMonitor + "]";
     }
 
-    @Override
     public Integer getId() {
         return updatedMonitor.getId();
+    }
+
+    public Action getAction() {
+        return action;
     }
 }
