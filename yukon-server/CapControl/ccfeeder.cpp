@@ -134,12 +134,6 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
     regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
-CtiCCFeeder::CtiCCFeeder(const CtiCCFeeder& feeder)
-    : Controllable(feeder)
-{
-    operator=(feeder);
-}
-
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/
@@ -5671,119 +5665,26 @@ void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTi
 }
 
 /*---------------------------------------------------------------------------
-    operator=
----------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
-{
-    Controllable::operator=(right);
-
-    if( this != &right )
-    {
-        _parentId = right._parentId;
-
-        _currentvarloadpointid = right._currentvarloadpointid;
-        _currentvarloadpointvalue = right._currentvarloadpointvalue;
-        _currentwattloadpointid = right._currentwattloadpointid;
-        _currentwattloadpointvalue = right._currentwattloadpointvalue;
-        _currentvoltloadpointid = right._currentvoltloadpointid;
-        _currentvoltloadpointvalue = right._currentvoltloadpointvalue;
-        _maplocationid = right._maplocationid;
-        _displayorder = right._displayorder;
-
-        _newpointdatareceivedflag = right._newpointdatareceivedflag;
-        _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
-        _estimatedvarloadpointid = right._estimatedvarloadpointid;
-        _estimatedvarloadpointvalue = right._estimatedvarloadpointvalue;
-        _dailyoperationsanalogpointid = right._dailyoperationsanalogpointid;
-        _powerfactorpointid = right._powerfactorpointid;
-        _estimatedpowerfactorpointid = right._estimatedpowerfactorpointid;
-        _currentdailyoperations = right._currentdailyoperations;
-        _recentlycontrolledflag = right._recentlycontrolledflag;
-        _lastoperationtime = right._lastoperationtime;
-        _varvaluebeforecontrol = right._varvaluebeforecontrol;
-        _lastcapbankcontrolleddeviceid = right._lastcapbankcontrolleddeviceid;
-        _powerfactorvalue = right._powerfactorvalue;
-        _kvarsolution = right._kvarsolution;
-        _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
-        _currentvarpointquality = right._currentvarpointquality;
-        _currentwattpointquality = right._currentwattpointquality;
-        _currentvoltpointquality = right._currentvoltpointquality;
-        _waivecontrolflag = right._waivecontrolflag;
-        _additionalFlags = right._additionalFlags;
-        _parentControlUnits = right._parentControlUnits;
-        _parentName = right._parentName;
-        _decimalPlaces = right._decimalPlaces;
-        _peakTimeFlag = right._peakTimeFlag;
-        _eventSeq = right._eventSeq;
-        _multiMonitorFlag = right._multiMonitorFlag;
-
-        _verificationFlag = right._verificationFlag;
-        _performingVerificationFlag = right._performingVerificationFlag;
-        _verificationDoneFlag = right._verificationDoneFlag;
-        _porterRetFailFlag = right._porterRetFailFlag;
-        _currentVerificationCapBankId = right._currentVerificationCapBankId;
-        _currentCapBankToVerifyAssumedOrigState = right._currentCapBankToVerifyAssumedOrigState;
-
-        _preOperationMonitorPointScanFlag = right._preOperationMonitorPointScanFlag;
-        _operationSentWaitFlag = right._operationSentWaitFlag;
-        _postOperationMonitorPointScanFlag = right._postOperationMonitorPointScanFlag;
-        _waitForReCloseDelayFlag = right._waitForReCloseDelayFlag;
-        _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
-        _ovUvDisabledFlag = right._ovUvDisabledFlag;
-        _correctionNeededNoBankAvailFlag = right._correctionNeededNoBankAvailFlag;
-        _likeDayControlFlag = right._likeDayControlFlag;
-        _lastVerificationMsgSentSuccessful = right._lastVerificationMsgSentSuccessful;
-
-        _targetvarvalue = right._targetvarvalue;
-        _solution = right._solution;
-        _iVControlTot = right._iVControlTot;
-        _iVCount = right._iVCount;
-        _iWControlTot = right._iWControlTot;
-        _iWCount = right._iWCount;
-        _iVControl = right._iVControl;
-        _iWControl = right._iWControl;
-
-        _usePhaseData = right._usePhaseData;
-        _phaseBid = right._phaseBid;
-        _phaseCid = right._phaseCid;
-        _totalizedControlFlag = right._totalizedControlFlag;
-        _phaseAvalue = right._phaseAvalue;
-        _phaseBvalue = right._phaseBvalue;
-        _phaseCvalue = right._phaseCvalue;
-        _phaseAvalueBeforeControl = right._phaseAvalueBeforeControl;
-        _phaseBvalueBeforeControl = right._phaseBvalueBeforeControl;
-        _phaseCvalueBeforeControl = right._phaseCvalueBeforeControl;
-
-         _lastWattPointTime = right._lastWattPointTime;
-         _lastVoltPointTime = right._lastVoltPointTime;
-         _retryIndex = right._retryIndex;
-        regression = right.regression;
-        regressionA = right.regressionA;
-        regressionB = right.regressionB;
-        regressionC = right.regressionC;
-        delete_container(_cccapbanks);
-        _cccapbanks.clear();
-        for(long i=0;i<right._cccapbanks.size();i++)
-        {
-            _cccapbanks.insert(((CtiCCCapBank*)right._cccapbanks[i])->replicate());
-        }
-
-        _originalParent = right._originalParent;
-        _insertDynamicDataFlag = right._insertDynamicDataFlag;
-        _dirty = right._dirty;
-    }
-
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
     replicate
 
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiCCFeeder* CtiCCFeeder::replicate() const
 {
-    return(new CtiCCFeeder(*this));
+    CtiCCFeederPtr newFeeder = new CtiCCFeeder( *this );
+
+    // The banks are currently owned by both feeders due to the shallow
+    //  default copy semantics. We need to replicate the banks in the new
+    //  feeder and overwrite the contents of the collection.
+
+    std::transform( newFeeder->_cccapbanks.begin(), newFeeder->_cccapbanks.end(),
+                    newFeeder->_cccapbanks.begin(),
+                    [ & ]( auto bank )
+                    {
+                        return bank->replicate();
+                    } ); 
+
+    return newFeeder;
 }
 
 /*---------------------------------------------------------------------------

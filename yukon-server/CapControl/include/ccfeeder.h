@@ -318,8 +318,8 @@ public:
 
 protected:
 
-    CtiCCFeeder(const CtiCCFeeder& feeder);
-    CtiCCFeeder& operator=(const CtiCCFeeder& right);
+    CtiCCFeeder( const CtiCCFeeder & feeder ) = default;
+    CtiCCFeeder & operator=( const CtiCCFeeder & right ) = delete;
 
 private:
 
