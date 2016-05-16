@@ -21,8 +21,8 @@
                     <tags:input path="password1" password="true" inputClass="js-new-password" maxlength="64" 
                             autocomplete="off"/>
                 </tags:nameValue2>
-                <tags:nameValue2 excludeColon="true">
-                    <cti:msg2 var="placeholder" key=".confirm"/>
+                
+                <tags:nameValue2 nameKey="yukon.web.modules.adminSetup.auth.user.confirmPassword">
                     <tags:input path="password2" password="true" inputClass="js-confirm-password" maxlength="64" 
                             autocomplete="off" placeholder="${placeholder}"/>
                 </tags:nameValue2>

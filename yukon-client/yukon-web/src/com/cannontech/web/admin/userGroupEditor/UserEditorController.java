@@ -215,14 +215,14 @@ public class UserEditorController {
         model.clear();
         return "redirect:/admin/users/" + userId + "";
     }
-    
-    @RequestMapping(value = "users/{userId}/change-password", method = RequestMethod.GET)
-    public String changePassword(ModelMap model, LiteYukonUser user) {
 
+    @RequestMapping(value = "users/{userId}/change-password", method = RequestMethod.GET)
+    public String changePassword(ModelMap model, @PathVariable int userId) {
+        LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         Password password = new Password();
         model.addAttribute("password", password);
-        model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(user));
-        model.addAttribute("userId", user.getUserID());
+        model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(yukonUser));
+        model.addAttribute("userId", yukonUser.getUserID());
         return "userGroupEditor/userChangePasswordPopup.jsp";
     }
 

@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 
-<cti:msgScope paths="modules.adminSetup.auth.user">
+<cti:msgScope paths="changelogin">
 
     <div class="column-12-12">
         <div class="column one">
@@ -18,10 +18,10 @@
                     <tags:nameValue2 nameKey=".oldPassword">
                         <tags:password path="oldPassword" autocomplete="off" />
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".password">
+                    <tags:nameValue2 nameKey=".newPassword">
                         <tags:password path="password" cssClass="js-new-password" autocomplete="off" />
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".confirmPassword">
+                    <tags:nameValue2 nameKey="yukon.web.modules.adminSetup.auth.user.confirmPassword">
                         <tags:password path="confirmPassword" cssClass="js-confirm-password" autocomplete="off" />
                     </tags:nameValue2>
                     <tags:nameValue2 excludeColon="true">

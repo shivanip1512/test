@@ -114,7 +114,7 @@
                             data-ok-class="js-save-pw-btn"
                             data-ok-disabled
                             data-width="750"
-                            data-url="<cti:url value="/admin/users/{userId}/change-password"/>"></div>
+                            data-url="<cti:url value="/admin/users/${user.userId}/change-password"/>"></div>
                         </c:if>
                         
                         <cti:url var="url" value="/admin/users/${user.userId}/unlock"/>
