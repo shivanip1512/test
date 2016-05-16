@@ -9,12 +9,12 @@
 prototype NUMBER BackupSelectionDialog();
 function NUMBER BackupSelectionDialog()
 BOOL bDone;
-NUMBER nControl, nReturn, nDlgHandler, nresult,nDurationDropdown, nResult;
+NUMBER nControl, nReturn, nDlgHandler, loadDialogResult,nDurationDropdown, nResult;
 LIST listDuration;
 STRING sTitle, sFolderName;
 
 begin
-nresult = EzDefineDialog(
+loadDialogResult = EzDefineDialog(
   "BackupSelectionDialog", 
   ISUSER,         
   "BackupSelectionDialog", 
@@ -40,7 +40,7 @@ switch (nControl)
         ListAddString(listDuration, "90 Days", AFTER);
 		
 		CtrlSetList("BackupSelectionDialog", Duration, listDuration);
-		CtrlSetCurSel("BackupSelectionDialog",Duration,"2 Days");
+		CtrlSetCurSel("BackupSelectionDialog", Duration, "2 Days");
 		
 		nDurationDropdown = GetDlgItem(nDlgHandler, Duration);
 		EnableWindow(nDurationDropdown, FALSE);

@@ -421,7 +421,7 @@ end;
 export prototype CopyFiles(string, string);
 function CopyFiles(srcDir, targetDir)
 NUMBER nResult, searchString, nFound;
-STRING sDirectory, logFile, svSubStr, copyDir,compareLogName, clientlog;
+STRING sDirectory, logFile, svSubStr, copyDir,compareLogName, clientLog;
 LIST listDirs, listID; 
 begin
 	listDirs = ListCreate (STRINGLIST);
@@ -431,7 +431,7 @@ begin
 		 nResult = ListGetFirstString (listDirs, sDirectory);
 			while (nResult != END_OF_LIST)	
 			copyDir = "";
-			clientlog = srcDir ^ "\Client\\Log\\";
+			clientLog = srcDir ^ "\Client\\Log\\";
 				if(sDirectory == srcDir ^ "\Client\\Log\\" ||
 				sDirectory == srcDir ^ "\Server\\Log\\" ||
 				sDirectory == srcDir ^ "\Server\\Log\\Comm\\" ||
@@ -668,8 +668,6 @@ begin
 		Enable(LOGGING);
 		Enable(CANCELBUTTON);
 		return NEXT;
-	elseif(nResult = CANCEL) then
-	    return CANCEL;
 	else
 	return BACK;
 	endif;
