@@ -24,7 +24,6 @@ public class YukonImage extends DBPersistent implements com.cannontech.database.
    public static final int MIN_USER_DEFINED_IMAGE_ID = 100000;
    
    public static final int NONE_IMAGE_ID = 0;
-   public static final int FUNCTION_IMAGE_ID = 1;
    
    public static final String SETTER_COLUMNS[] = 
    { 

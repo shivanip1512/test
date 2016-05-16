@@ -174,6 +174,16 @@ SET ImageId = -2
 WHERE ImageId = 2
   AND ImageCategory = 'backgrounds'
   AND ImageName = 'yukon_background.jpg';
+
+UPDATE ThemeProperty 
+SET Value = -2 
+WHERE Value = 2 
+  AND Property = 'LOGIN_BACKGROUND';
+
+UPDATE ThemeProperty 
+SET Value = -1 
+WHERE Value = 1 
+  AND Property = 'LOGO';
 /* End YUK-15217 */
 
 /**************************************************************/

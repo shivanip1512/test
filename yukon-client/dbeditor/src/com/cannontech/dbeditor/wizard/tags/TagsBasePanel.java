@@ -722,7 +722,7 @@ public void setValue(Object o)
 	if(youAreIt.getImageID() != null)
 	{
 		int yukImgID = youAreIt.getImageID().intValue();
-		if( yukImgID > com.cannontech.database.db.state.YukonImage.NONE_IMAGE_ID )
+		if( yukImgID != com.cannontech.database.db.state.YukonImage.NONE_IMAGE_ID )
 		{
 			IDatabaseCache cache = 
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();

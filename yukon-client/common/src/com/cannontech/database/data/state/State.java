@@ -75,7 +75,7 @@ public void retrieve() throws java.sql.SQLException
 
    setImageID( getState().getImageID() );
    
-   if( getState().getImageID().intValue() > YukonImage.NONE_IMAGE_ID )
+   if( getState().getImageID().intValue() != YukonImage.NONE_IMAGE_ID )
    {      
       getStateImage().retrieve();
    }
@@ -129,7 +129,7 @@ public String toString()
  */
 public void update() throws java.sql.SQLException 
 {	
-   if( getState().getImageID().intValue() > YukonImage.NONE_IMAGE_ID
+   if( getState().getImageID().intValue() != YukonImage.NONE_IMAGE_ID
        && !YukonImage.imageIDExists(getState().getImageID(), getDbConnection()) )       
    {
       //delete( IMAGE_TABLE_NAME, "ImageID", getState().getImageID() );

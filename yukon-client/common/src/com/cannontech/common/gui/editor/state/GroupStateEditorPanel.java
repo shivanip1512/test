@@ -709,7 +709,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
 
             // set up all the Images for each state that has one
             int yukImgID = statesVector.get(i).getState().getImageID().intValue();
-            if (yukImgID > YukonImage.NONE_IMAGE_ID) {
+            if (yukImgID != YukonImage.NONE_IMAGE_ID) {
                 IDatabaseCache cache = DefaultDatabaseCache.getInstance();
                 LiteYukonImage liteYukImg = cache.getImages().get(yukImgID);
                 // be sure we have found a matching LiteYukonImage

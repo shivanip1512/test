@@ -19,6 +19,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.TagDao;
 import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteTag;
+import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.TDCMainFrame;
@@ -56,7 +57,7 @@ public class TagWizardPanel extends ManualEntryJPanel implements RowEditorDialog
             if( value instanceof LiteTag )
             {
                 LiteTag tag = (LiteTag)value;
-                if( tag.getImageId() > CtiUtilities.NONE_ZERO_ID )
+                if( tag.getImageId() != YukonImage.NONE_IMAGE_ID )
                 {
                     setIcon( 
                         new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(

@@ -181,7 +181,7 @@ public final class YukonImageDaoImpl implements YukonImageDao {
     public List<LiteYukonImage> load() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder(select);
-        sql.append("where ImageId").gt(YukonImage.NONE_IMAGE_ID);
+        sql.append("where ImageId").neq(YukonImage.NONE_IMAGE_ID);
         
         return template.query(sql, mapper);
     }

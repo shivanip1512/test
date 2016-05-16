@@ -58,6 +58,7 @@ import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -2842,7 +2843,7 @@ private void addTagMenuItems( int selRow )
 		mi.putClientProperty( "tdc_tag_row", new Integer(i++) );
 
 		//mi.setForeground( Colors.getColor(liteTag.getColorID()) );
-		if( liteTag.getImageId() > CtiUtilities.NONE_ZERO_ID )
+		if( liteTag.getImageId() != YukonImage.NONE_IMAGE_ID )
 			mi.setIcon( 
 				new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
 					YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(liteTag.getImageId()).getImageValue()) ) );
