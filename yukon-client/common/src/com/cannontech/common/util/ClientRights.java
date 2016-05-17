@@ -24,5 +24,4 @@ public interface ClientRights
    
    /* miscellaneous params */
    public static final int HIDE_ALARM_COLORS	= 0x80000000;
-   public static final int ENABLE_DEVICE_CONFIGURATION = 0x40000000;
 }
