@@ -27,13 +27,13 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDao {
 
-	private static final RowAndFieldMapper<CommandRequestExecution> rowAndFieldMapper;
+    private static final RowAndFieldMapper<CommandRequestExecution> rowAndFieldMapper;
     @Autowired YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<CommandRequestExecution> template;
     
     static {
-		rowAndFieldMapper = new CommandRequestExecutionRowAndFieldMapper();
+        rowAndFieldMapper = new CommandRequestExecutionRowAndFieldMapper();
     }
     
     // SAVE OR UPDATE
@@ -50,14 +50,13 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CRE.* FROM CommandRequestExec CRE WHERE CommandRequestExecId = ").appendArgument(commandRequestExecutionId);
         
-    	CommandRequestExecution commandRequestExecution = yukonJdbcTemplate.queryForObject(sql, rowAndFieldMapper);
+        CommandRequestExecution commandRequestExecution = yukonJdbcTemplate.queryForObject(sql, rowAndFieldMapper);
         return commandRequestExecution;
     }
     
     // BY CONTEXTID
     public List<CommandRequestExecution> getCresByContextId(int commandRequestExecutionContextId) {
-    	
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CRE.* FROM CommandRequestExec CRE");
         sql.append("WHERE CRE.CommandRequestExecContextId =").append(commandRequestExecutionContextId);
         
@@ -67,11 +66,9 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     // IN_PROGRESS CRES
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CommandRequestExecution> getAllByStatus(CommandRequestExecutionStatus commandRequestExecutionStatus) {
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CRE.* FROM CommandRequestExec CRE WHERE ExecutionStatus = ").appendArgument(commandRequestExecutionStatus);
-        
-    	List<CommandRequestExecution> cres = yukonJdbcTemplate.query(sql, rowAndFieldMapper);
+        List<CommandRequestExecution> cres = yukonJdbcTemplate.query(sql, rowAndFieldMapper);
         return cres;
     }
     
@@ -148,34 +145,31 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     // IS COMPLETE
     @Override
     public boolean isComplete(int commandRequestExecutionId) {
-    	
-    	Date stopTime = queryForStopTime(commandRequestExecutionId);
-    	if (stopTime == null) {
-    		return false;
-    	}
-    	
-    	return true;
+        Date stopTime = queryForStopTime(commandRequestExecutionId);
+        if (stopTime == null) {
+            return false;
+        }
+        return true;
     }
     
     // STOP TIME
     @Override
     public Date getStopTime(int commandRequestExecutionId) {
-    	
-    	return queryForStopTime(commandRequestExecutionId);
+        return queryForStopTime(commandRequestExecutionId);
     }
     
     private Date queryForStopTime(int commandRequestExecutionId) {
-    	
-    	String sql = "SELECT CRE.StopTime FROM CommandRequestExec CRE WHERE CRE.CommandRequestExecId = ?";
-    	return yukonJdbcTemplate.queryForObject(sql, new DateRowMapper(), commandRequestExecutionId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CRE.StopTime FROM CommandRequestExec CRE WHERE CRE.CommandRequestExecId").eq(commandRequestExecutionId);
+        return yukonJdbcTemplate.queryForObject(sql, new DateRowMapper());
     }
     
     @PostConstruct
     public void init() throws Exception {
-    	template = new SimpleTableAccessTemplate<CommandRequestExecution>(yukonJdbcTemplate, nextValueHelper);
-    	template.setTableName("CommandRequestExec");
-    	template.setPrimaryKeyField("CommandRequestExecId");
-    	template.setFieldMapper(rowAndFieldMapper); 
+        template = new SimpleTableAccessTemplate<CommandRequestExecution>(yukonJdbcTemplate, nextValueHelper);
+        template.setTableName("CommandRequestExec");
+        template.setPrimaryKeyField("CommandRequestExecId");
+        template.setFieldMapper(rowAndFieldMapper);
     }
     
     @Override
@@ -196,5 +190,4 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         saveOrUpdate(execution);
         return execution;
     }
-	
 }

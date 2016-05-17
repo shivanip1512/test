@@ -36,11 +36,7 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
     private final static FieldMapper<CommandRequestUnsupported> unsupportedRowMapper;
     private SimpleTableAccessTemplate<CommandRequestUnsupported> unsupportedTemplate;
 
-    private final static String selectCountById;
-
     static {
-        selectCountById =
-            "SELECT COUNT(CRER.CommandRequestExecResultId) AS CrerCount FROM CommandRequestExecResult CRER WHERE CRER.CommandRequestExecId";
 
         rowAndFieldMapper = new CommandRequestExecutionResultsRowAndFieldMapper();
 
@@ -90,23 +86,29 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 
     @Override
     public int getCountByExecutionId(int commandRequestExecutionId) {
-        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountById);
-        sql.eq(commandRequestExecutionId);
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(CRER.CommandRequestExecResultId) AS CrerCount");
+        sql.append("FROM CommandRequestExecResult CRER");
+        sql.append("WHERE CRER.CommandRequestExecId").eq(commandRequestExecutionId);
         return jdbcTemplate.queryForInt(sql);
     }
 
     @Override
     public int getSucessCountByExecutionId(int commandRequestExecutionId) {
-        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountById);
-        sql.eq(commandRequestExecutionId);
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(CRER.CommandRequestExecResultId) AS CrerCount");
+        sql.append("FROM CommandRequestExecResult CRER");
+        sql.append("WHERE CRER.CommandRequestExecId").eq(commandRequestExecutionId);
         sql.append("AND CRER.ErrorCode = 0");
         return jdbcTemplate.queryForInt(sql);
     }
 
     @Override
     public int getFailCountByExecutionId(int commandRequestExecutionId) {
-        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountById);
-        sql.eq(commandRequestExecutionId);
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(CRER.CommandRequestExecResultId) AS CrerCount");
+        sql.append("FROM CommandRequestExecResult CRER");
+        sql.append("WHERE CRER.CommandRequestExecId").eq(commandRequestExecutionId);
         sql.append("AND CRER.ErrorCode > 0");
         return jdbcTemplate.queryForInt(sql);
     }

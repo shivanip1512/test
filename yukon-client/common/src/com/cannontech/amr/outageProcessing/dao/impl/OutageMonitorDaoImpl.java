@@ -25,89 +25,75 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class OutageMonitorDaoImpl implements OutageMonitorDao  {
+public class OutageMonitorDaoImpl implements OutageMonitorDao {
 
-    private static final RowMapper<OutageMonitor> rowMapper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<OutageMonitor> template;
-    
-    private static final String selectAllSql;
-    private static final String selectById;
-    private static final String selectCountByName;
-    private static final String deleteById;
-    private static final String TABLE_NAME = "OutageMonitor";
-    
+    private static final RowMapper<OutageMonitor> rowMapper;
     static {
-        
-    	selectAllSql = "SELECT * FROM " + TABLE_NAME;
-
-		selectById = selectAllSql + " WHERE OutageMonitorId = ?";
-        selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE OutageMonitorName";
-		
-		deleteById = "DELETE FROM " + TABLE_NAME + " WHERE OutageMonitorId = ?";
-		
         rowMapper = OutageMonitorDaoImpl.createRowMapper();
     }
-    
+
     public void saveOrUpdate(OutageMonitor outageMonitor) {
-    	try {
-    		template.save(outageMonitor);
-    	} catch (DataIntegrityViolationException e) {
-    		throw new DuplicateException("Unable to save outage processor.", e);
-    	}
+        try {
+            template.save(outageMonitor);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to save outage processor.", e);
+        }
     }
-    
+
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public OutageMonitor getById(final int outageMonitorId) throws OutageMonitorNotFoundException {
-    	
-    	OutageMonitor outageMonitor = null;
-    	
-    	try {
-    		outageMonitor = yukonJdbcTemplate.queryForObject(selectById, rowMapper, outageMonitorId);
-    	} catch (EmptyResultDataAccessException e) {
-    		throw new OutageMonitorNotFoundException();
-    	}
-    	
-    	return outageMonitor;
+
+        OutageMonitor outageMonitor = null;
+
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT * FROM OutageMonitor WHERE OutageMonitorId").eq_k(outageMonitorId);
+            outageMonitor = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            throw new OutageMonitorNotFoundException();
+        }
+
+        return outageMonitor;
     }
-    
+
     public boolean processorExistsWithName(String name) {
-        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountByName);
-        sql.eq(name);
-
-        int c = yukonJdbcTemplate.queryForInt(sql);
-
-        return c > 0;
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM OutageMonitor WHERE OutageMonitorName").eq(name);
+        return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
-    
+
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<OutageMonitor> getAll() {
-        return yukonJdbcTemplate.query(selectAllSql, rowMapper);
+        final SqlStatementBuilder sql = new SqlStatementBuilder("SELECT * FROM OutageMonitor");
+        return yukonJdbcTemplate.query(sql, rowMapper);
     }
-    
+
     public boolean delete(int outageMonitorId) {
-    	
-    	return yukonJdbcTemplate.update(deleteById, outageMonitorId) > 0;
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM OutageMonitor WHERE OutageMonitorId").eq(outageMonitorId);
+        return yukonJdbcTemplate.update(sql) > 0;
     }
-    
+
     private static final RowMapper<OutageMonitor> createRowMapper() {
         final RowMapper<OutageMonitor> rowMapper = new RowMapper<OutageMonitor>() {
             public OutageMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
-            	OutageMonitor outageMonitor = new OutageMonitor();
-            	
-            	outageMonitor.setOutageMonitorId(rs.getInt("OutageMonitorId"));
-            	outageMonitor.setOutageMonitorName(rs.getString("OutageMonitorName"));
-            	outageMonitor.setGroupName(rs.getString("GroupName"));
-            	outageMonitor.setTimePeriodDays(rs.getInt("TimePeriod"));
-            	outageMonitor.setNumberOfOutages(rs.getInt("NumberOfOutages"));
-            	outageMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
+                OutageMonitor outageMonitor = new OutageMonitor();
+
+                outageMonitor.setOutageMonitorId(rs.getInt("OutageMonitorId"));
+                outageMonitor.setOutageMonitorName(rs.getString("OutageMonitorName"));
+                outageMonitor.setGroupName(rs.getString("GroupName"));
+                outageMonitor.setTimePeriodDays(rs.getInt("TimePeriod"));
+                outageMonitor.setNumberOfOutages(rs.getInt("NumberOfOutages"));
+                outageMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
                 return outageMonitor;
             }
         };
         return rowMapper;
     }
-    
+
     private FieldMapper<OutageMonitor> outageMonitorFieldMapper = new FieldMapper<OutageMonitor>() {
         public void extractValues(MapSqlParameterSource p, OutageMonitor outageMonitor) {
             p.addValue("OutageMonitorName", outageMonitor.getOutageMonitorName());
@@ -115,30 +101,23 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao  {
             p.addValue("TimePeriod", outageMonitor.getTimePeriodDays());
             p.addValue("NumberOfOutages", outageMonitor.getNumberOfOutages());
             p.addValue("EvaluatorStatus", outageMonitor.getEvaluatorStatus().name());
-            
+
         }
+
         public Number getPrimaryKey(OutageMonitor outageMonitor) {
             return outageMonitor.getOutageMonitorId();
         }
+
         public void setPrimaryKey(OutageMonitor outageMonitor, int value) {
-        	outageMonitor.setOutageMonitorId(value);
+            outageMonitor.setOutageMonitorId(value);
         }
     };
-    
+
     @PostConstruct
     public void init() throws Exception {
         template = new SimpleTableAccessTemplate<OutageMonitor>(yukonJdbcTemplate, nextValueHelper);
-        template.setTableName(TABLE_NAME);
+        template.setTableName("OutageMonitor");
         template.setPrimaryKeyField("OutageMonitorId");
-        template.setFieldMapper(outageMonitorFieldMapper); 
+        template.setFieldMapper(outageMonitorFieldMapper);
     }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
 }

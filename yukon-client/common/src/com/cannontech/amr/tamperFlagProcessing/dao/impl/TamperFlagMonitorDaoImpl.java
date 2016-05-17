@@ -25,115 +25,94 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao  {
+public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
 
-    private static final RowMapper<TamperFlagMonitor> rowMapper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<TamperFlagMonitor> template;
-    
-    private static final String selectAllSql;
-    private static final String selectById;
-    private static final String selectCountByName;
-    private static final String deleteById;
-    
-    static {
-        
-    	selectAllSql = "SELECT * FROM TamperFlagMonitor";
+    private static final RowMapper<TamperFlagMonitor> rowMapper;
 
-		selectById = selectAllSql + " WHERE TamperFlagMonitorId = ?";
-        selectCountByName = "SELECT COUNT(*) FROM TamperFlagMonitor WHERE TamperFlagMonitorName";
-		
-		deleteById = "DELETE FROM TamperFlagMonitor WHERE TamperFlagMonitorId = ?";
-		
+    static {
         rowMapper = TamperFlagMonitorDaoImpl.createRowMapper();
     }
-    
+
     public void saveOrUpdate(TamperFlagMonitor tamperFlagMonitor) {
-    	try {
-    		template.save(tamperFlagMonitor);
-    	} catch (DataIntegrityViolationException e) {
-    		throw new DuplicateException("Unable to save tamper flag monitor.", e);
-    	}
+        try {
+            template.save(tamperFlagMonitor);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to save tamper flag monitor.", e);
+        }
     }
-    
+
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public TamperFlagMonitor getById(final int tamperFlagMonitorId) throws TamperFlagMonitorNotFoundException {
-    	
-    	TamperFlagMonitor tamperFlagMonitor = null;
-    	
-    	try {
-    		tamperFlagMonitor = 
-    		    yukonJdbcTemplate.queryForObject(selectById, rowMapper, tamperFlagMonitorId);
-    	} catch (EmptyResultDataAccessException e) {
-    		throw new TamperFlagMonitorNotFoundException();
-    	}
-    	
-    	return tamperFlagMonitor;
-    }
-    
-    public boolean processorExistsWithName(String name) {
-        final SqlStatementBuilder sql = new SqlStatementBuilder(selectCountByName);
-        sql.eq(name);
-        int c = yukonJdbcTemplate.queryForInt(sql);
 
-        return c > 0;
+        TamperFlagMonitor tamperFlagMonitor = null;
+
+        try {
+            final SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT * FROM TamperFlagMonitor WHERE TamperFlagMonitorId").eq_k(tamperFlagMonitorId);
+            tamperFlagMonitor = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            throw new TamperFlagMonitorNotFoundException();
+        }
+
+        return tamperFlagMonitor;
     }
-    
+
+    public boolean processorExistsWithName(String name) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM TamperFlagMonitor WHERE TamperFlagMonitorName").eq(name);
+        return yukonJdbcTemplate.queryForInt(sql) > 0;
+    }
+
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<TamperFlagMonitor> getAll() {
-        return yukonJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+        final SqlStatementBuilder sql = new SqlStatementBuilder("SELECT * FROM TamperFlagMonitor");
+        return yukonJdbcTemplate.query(sql, rowMapper);
     }
-    
+
     public boolean delete(int tamperFlagMonitorId) {
-    	
-    	return yukonJdbcTemplate.update(deleteById, tamperFlagMonitorId) > 0;
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM TamperFlagMonitor WHERE TamperFlagMonitorId").eq(tamperFlagMonitorId);
+        return yukonJdbcTemplate.update(sql) > 0;
     }
-    
+
     private static final RowMapper<TamperFlagMonitor> createRowMapper() {
         final RowMapper<TamperFlagMonitor> rowMapper = new RowMapper<TamperFlagMonitor>() {
             public TamperFlagMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
-            	TamperFlagMonitor tamperFlagMonitor = new TamperFlagMonitor();
-            	tamperFlagMonitor.setTamperFlagMonitorId(rs.getInt("TamperFlagMonitorId"));
-            	tamperFlagMonitor.setTamperFlagMonitorName(rs.getString("TamperFlagMonitorName"));
-            	tamperFlagMonitor.setGroupName(rs.getString("GroupName"));
-            	tamperFlagMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
+                TamperFlagMonitor tamperFlagMonitor = new TamperFlagMonitor();
+                tamperFlagMonitor.setTamperFlagMonitorId(rs.getInt("TamperFlagMonitorId"));
+                tamperFlagMonitor.setTamperFlagMonitorName(rs.getString("TamperFlagMonitorName"));
+                tamperFlagMonitor.setGroupName(rs.getString("GroupName"));
+                tamperFlagMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
                 return tamperFlagMonitor;
             }
         };
         return rowMapper;
     }
-    
+
     private FieldMapper<TamperFlagMonitor> tamperFlagMonitorFieldMapper = new FieldMapper<TamperFlagMonitor>() {
         public void extractValues(MapSqlParameterSource p, TamperFlagMonitor tamperFlagMonitor) {
             p.addValue("TamperFlagMonitorName", tamperFlagMonitor.getTamperFlagMonitorName());
             p.addValue("GroupName", tamperFlagMonitor.getGroupName());
             p.addValue("EvaluatorStatus", tamperFlagMonitor.getEvaluatorStatus().name());
-            
         }
+
         public Number getPrimaryKey(TamperFlagMonitor tamperFlagMonitor) {
             return tamperFlagMonitor.getTamperFlagMonitorId();
         }
+
         public void setPrimaryKey(TamperFlagMonitor tamperFlagMonitor, int value) {
-        	tamperFlagMonitor.setTamperFlagMonitorId(value);
+            tamperFlagMonitor.setTamperFlagMonitorId(value);
         }
     };
-    
+
     @PostConstruct
     public void init() throws Exception {
-        template = 
-           new SimpleTableAccessTemplate<TamperFlagMonitor>(yukonJdbcTemplate, nextValueHelper);
+        template = new SimpleTableAccessTemplate<TamperFlagMonitor>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("TamperFlagMonitor");
         template.setPrimaryKeyField("TamperFlagMonitorId");
-        template.setFieldMapper(tamperFlagMonitorFieldMapper); 
+        template.setFieldMapper(tamperFlagMonitorFieldMapper);
     }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
 }
