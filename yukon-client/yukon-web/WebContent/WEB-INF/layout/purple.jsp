@@ -46,7 +46,9 @@
 
 <body id="PurplePageBody" class="Background" text="#000000" leftmargin="0" topmargin="0"
 	link="#000000" vlink="#000000" alink="#000000" onload="init()">
-<cti:outputContent writable="${bodyContent}"/>
+    <cti:csrfToken var="csrfToken"/>
+    <input type="hidden" id="ajax-csrf-token" name="com.cannontech.yukon.request.csrf.token" value="${csrfToken}">
+    <cti:outputContent writable="${bodyContent}"/>
 </body>
 
 </html>

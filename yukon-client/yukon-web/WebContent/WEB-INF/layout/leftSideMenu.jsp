@@ -112,6 +112,9 @@ function hideRevealSectionSetup(showElement, hideElement, clickableElement,
 </head>
 
 <body class="<c:out value="${module.moduleName}"/>_module">
+    <cti:csrfToken var="csrfToken"/>
+    <input type="hidden" id="ajax-csrf-token" name="com.cannontech.yukon.request.csrf.token" value="${csrfToken}">
+    
     <div id="modal-glass" style="display: none;">
         <div class="tint"></div>
         <div class="loading">
