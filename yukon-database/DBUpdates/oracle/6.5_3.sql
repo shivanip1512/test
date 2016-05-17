@@ -19,7 +19,7 @@ BEGIN
             || 'some downtime should be scheduled in order to complete this update with minimal system impact.' || v_newLine
             || 'More information can be found in YUK-15173.' || v_newLine
             || 'The SQL for the index update can be found in the file:' || v_newLine
-            || '~\YukonMisc\YukonDatabase\Oracle\RPH_Index_Modification.sql';
+            || '~\YukonMisc\YukonDatabase\DatabaseUpdates\Oracle\RPH_Index_Modification.sql';
         RAISE_APPLICATION_ERROR(-20001, v_errorText);
     END IF;
 END;

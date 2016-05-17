@@ -14,7 +14,7 @@ BEGIN
         + 'and some downtime should be scheduled in order to complete this update with minimal system impact.' + @NewLine
         + 'More information can be found in YUK-15173.' + @NewLine
         + 'The SQL for the index update can be found in the file:' + @NewLine
-        + '~\YukonMisc\YukonDatabase\SqlServer\RPH_Index_Modification.sql';
+        + '~\YukonMisc\YukonDatabase\DatabaseUpdates\SqlServer\RPH_Index_Modification.sql';
     RAISERROR(@ErrorText, 16, 1);
 END;
 /* @end-block */
