@@ -2,6 +2,8 @@ package com.cannontech.dr.rfn.model;
 
 import java.io.Serializable;
 
+import org.joda.time.Hours;
+
 public class SimulatorSettings implements Serializable{
     
     //lcr data simulator
@@ -19,17 +21,21 @@ public class SimulatorSettings implements Serializable{
     //used for testing simulator
     private int deviceId;
     
-    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int percentOfDuplicates) {
+    private int controlInterval = Hours.hours(1).toStandardSeconds().getSeconds();
+    
+    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int percentOfDuplicates, int controlInterval) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
         this.lcr6600serialFrom = lcr6600serialFrom;
         this.lcr6600serialTo = lcr6600serialTo;
         this.percentOfDuplicates =  percentOfDuplicates;
+        this.controlInterval = controlInterval;
     }
     
-    public SimulatorSettings(String paoType, int percentOfDuplicates) {
+    public SimulatorSettings(String paoType, int percentOfDuplicates, int controlInterval) {
         this.paoType = paoType;
         this.percentOfDuplicates =  percentOfDuplicates;
+        this.controlInterval = controlInterval;
     }
     public SimulatorSettings(int deviceId) {
         this.setDeviceId(deviceId);
@@ -82,5 +88,13 @@ public class SimulatorSettings implements Serializable{
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public int getControlInterval() {
+        return controlInterval;
+    }
+
+    public void setControlInterval(int controlInterval) {
+        this.controlInterval = controlInterval;
     }
 }

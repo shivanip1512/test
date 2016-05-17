@@ -72,6 +72,7 @@ import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -617,11 +618,12 @@ public class NmIntegrationController {
     
     @RequestMapping("viewRfnMeterSimulator")
     public String viewRfnMeterSimulator(ModelMap model) {
-        SimulatorSettings currentSettings  = new SimulatorSettings("ALL RFN Type", 10);
+        SimulatorSettings currentSettings  = new SimulatorSettings("ALL RFN Type", 10, 3600);
         model.addAttribute("currentSettings", currentSettings);
         
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
         model.addAttribute("paoTypes", paoTypes);
+        model.addAttribute("rfnMeterReportingIntervals", TimeIntervals.getRfnMeterReportingIntervals());
         
         RfnMeterDataSimulatorStatusResponse response = getRfnMeterSimulatorStatusResponse().response;
         if(response == null){
@@ -630,7 +632,7 @@ public class NmIntegrationController {
         if (response.getStatus().isRunning().get()) {
             model.addAttribute("currentSettings", response.getSettings());
         }
-        
+
         model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(response.getStatus()));
         return "rfn/rfnMeterSimulator.jsp";
     }
@@ -639,7 +641,7 @@ public class NmIntegrationController {
     @RequestMapping("viewLcrDataSimulator")
     public String viewLcrDataSimulator(ModelMap model) {
         
-        SimulatorSettings currentSettings  = new SimulatorSettings(100000, 200000, 300000, 320000, 10);
+        SimulatorSettings currentSettings  = new SimulatorSettings(100000, 200000, 300000, 320000, 10, 60);
         model.addAttribute("currentSettings", currentSettings);
         
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse().response;

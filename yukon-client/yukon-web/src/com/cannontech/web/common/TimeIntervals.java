@@ -36,6 +36,7 @@ public enum TimeIntervals {
     MINUTES_30(Duration.standardMinutes(30)),
     HOURS_1(Duration.standardHours(1)),
     HOURS_2(Duration.standardHours(2)),
+    HOURS_4(Duration.standardHours(4)),
     HOURS_6(Duration.standardHours(6)),
     HOURS_12(Duration.standardHours(12)),
     DAYS_1(Duration.standardDays(1)), 
@@ -177,5 +178,17 @@ public enum TimeIntervals {
      */
     public static Set<TimeIntervals> getCapControlIntervals() {
         return capControlIntervals;
+    }
+    
+    private static final Set<TimeIntervals> rfnMeterReportingIntervals = ImmutableSet.of(
+        HOURS_1,
+        HOURS_4,
+        DAYS_1);
+    
+    /**
+     * Used forCapControl CBC Setup
+     */
+    public static Set<TimeIntervals> getRfnMeterReportingIntervals() {
+        return rfnMeterReportingIntervals;
     }
 }

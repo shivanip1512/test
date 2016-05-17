@@ -70,6 +70,9 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005")) / 1000;
     
     private static final int INTERVAL_HOURS = 24;
+    public final static int CONTROL_INTERVAL_1_HOUR = 1;
+    public final static int CONTROL_INTERVAL_4_HOURS = 4;
+    public final static int CONTROL_INTERVAL_24_HOURS = 24;
     
     @Override
     @PostConstruct
@@ -96,13 +99,34 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
                 // user selected all rfn types;
                 devices.addAll(rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfMeterTypes()));
             }
-
+            
             for (RfnDevice device : devices) {
-                try {
-                    int minuteOfTheDay = getMinuteOfTheDay(device.getRfnIdentifier().getSensorSerialNumber());
-                    meters.put(minuteOfTheDay, device);
-                } catch (NumberFormatException e) {
-                    // serial number is not an integer, skip
+
+                int minuteOfTheDay = 0;
+                switch (settings.getControlInterval() / 3600) {
+                case CONTROL_INTERVAL_1_HOUR: // Hourly data interval
+                    for (int i = 1; i <= 24; i++) {
+                        meters.put(minuteOfTheDay, device);
+                        minuteOfTheDay += i * 60;
+                    }
+
+                    break;
+                case CONTROL_INTERVAL_4_HOURS: // 4 hour Interval
+                    for (int i = 1; i <= 6; i++) {
+                        meters.put(minuteOfTheDay, device);
+                        minuteOfTheDay += i * 4 * 60;
+                    }
+                    break;
+                case CONTROL_INTERVAL_24_HOURS: // daily
+                    try {
+                        minuteOfTheDay = getMinuteOfTheDay(device.getRfnIdentifier().getSensorSerialNumber());
+                        meters.put(minuteOfTheDay, device);
+                    } catch (NumberFormatException e) {
+                        // serial number is not an integer, skip
+                    }
+                    break;
+                default:
+                    break;// Do nothing;
                 }
             }
 
@@ -176,6 +200,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private List<RfnMeterReadingArchiveRequest> generateMeterReadingData(RfnDevice device) {
 
         DateTime now = DateTime.now();
+        DateTime intervalTime = null;
         log.debug("Generating meter reading data for "+ device);
         
         List<RfnMeterReadingArchiveRequest> requests = Lists.newArrayList();
@@ -186,21 +211,34 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         // getting midnight in local time, then removing DST compensation by finding the active offset
         // and the normal offset and doing some awesome math.
         DateTime billingGenerationTime = now.withTimeAtStartOfDay()
-                                                         .plusMillis(now.getZone().getOffset(now.withTimeAtStartOfDay()))
-                                                         .minusMillis (now.getZone().getStandardOffset(now.withTimeAtStartOfDay().getMillis()));
+                             .plusMillis(now.getZone().getOffset(now.withTimeAtStartOfDay()))
+                             .minusMillis (now.getZone().getStandardOffset(now.withTimeAtStartOfDay().getMillis()));
 
         if (now.minusHours(INTERVAL_HOURS).isBefore(billingGenerationTime)) {
             createAndAddArchiveRequest(device, billingGenerationTime, RfnMeterReadingType.BILLING, now, requests);
         }
-
-        // Example with 4 hour reporting interval: 6:45 (-:45) -> 6 (-4 +1 ) -> 3 ---- Generate time for 3, 4, 5, 6
-        DateTime intervalTime = now.withTime(now.getHourOfDay(), 0, 0, 0).minusHours(INTERVAL_HOURS - 1);
-
-        while (intervalTime.isBefore(now) || intervalTime.isEqual(now)) {
-            createAndAddArchiveRequest(device, intervalTime, RfnMeterReadingType.INTERVAL, now, requests);
-            intervalTime = intervalTime.plusHours(1);
+        if (settings != null) {
+            // Example with 4 hour reporting interval: 6:45 (-:45) -> 6 (-4 +1 ) -> 3 -- Generate time for 3, 4, 5, 6
+            if (settings.getControlInterval() / 3600 == 24) {
+                // generate only 1 data point for 1 day
+                intervalTime = now.withTime(now.getHourOfDay(), 0, 0, 0);
+                createAndAddArchiveRequest(device, intervalTime, RfnMeterReadingType.INTERVAL, now, requests);
+            } else {
+                // Generate data point as per the interval mentioned 4 hr / 1 hr
+                intervalTime =
+                    now.withTime(now.getHourOfDay(), 0, 0, 0).minusHours(settings.getControlInterval() / (60 * 60) - 1);
+                while (intervalTime.isBefore(now) || intervalTime.isEqual(now)) {
+                    createAndAddArchiveRequest(device, intervalTime, RfnMeterReadingType.INTERVAL, now, requests);
+                    intervalTime = intervalTime.plusHours(1);
+                }
+            }
+        } else {
+            intervalTime = now.withTime(now.getHourOfDay(), 0, 0, 0).minusHours(INTERVAL_HOURS - 1);
+            while (intervalTime.isBefore(now) || intervalTime.isEqual(now)) {
+                createAndAddArchiveRequest(device, intervalTime, RfnMeterReadingType.INTERVAL, now, requests);
+                intervalTime = intervalTime.plusHours(1);
+            }
         }
-
         return requests;
     }
     
