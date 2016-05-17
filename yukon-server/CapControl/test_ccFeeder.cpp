@@ -1,5 +1,8 @@
 #include <boost/test/unit_test.hpp>
 
+#include "boost_test_helpers.h"
+#include "test_reader.h"
+
 #include "ccfeeder.h"
 #include "ccsubstationbus.h"
 #include "ccsubstationbusstore.h"
@@ -1141,6 +1144,453 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_replication )
 
     delete station;
     delete area;
+}
+
+struct test_CtiCCFeeder : CtiCCFeeder
+{
+    test_CtiCCFeeder()
+        :   CtiCCFeeder()
+    {
+
+    }
+
+    test_CtiCCFeeder( Cti::RowReader & rdr )
+        :   CtiCCFeeder( rdr, nullptr )
+    {
+
+    }
+};
+
+BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_no_dynamic_data )
+{
+    _RATE_OF_CHANGE_DEPTH = 5;      // this shows up in the regressions: getRegDepth()
+
+    boost::ptr_map< long, test_CtiCCFeeder > feeders;
+
+    {   // Core bus object initialization
+
+        using CCFeederRow     = Cti::Test::StringRow<16>;
+        using CCFeederReader  = Cti::Test::TestReader<CCFeederRow>;
+
+        CCFeederRow columnNames =
+        {
+            "PAObjectID",
+            "Category",
+            "PAOClass",
+            "PAOName",
+            "Type",
+            "Description",
+            "DisableFlag",
+            "CurrentVarLoadPointID",
+            "CurrentWattLoadPointID",
+            "MapLocationID",
+            "CurrentVoltLoadPointID",
+            "MultiMonitorControl",
+            "usephasedata",
+            "phaseb",
+            "phasec",
+            "ControlFlag"
+        };
+
+        std::vector<CCFeederRow> rowVec
+        {
+            {
+                "5",
+                "CAPCONTROL",
+                "CAPCONTROL",
+                "A Feeder",
+                "CCFEEDER",
+                "(none)",
+                "N",
+                "190",
+                "191",
+                "42",
+                "193",
+                "Y",
+                "Y",
+                "195",
+                "196",
+                "Y"
+            }
+        };
+
+        CCFeederReader reader( columnNames, rowVec );
+
+        while ( reader() )
+        {
+            long    paoID;
+
+            reader[ "PAObjectID" ] >> paoID;
+
+            feeders.insert( paoID, new test_CtiCCFeeder( reader ) );
+        }
+    }
+
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getMultiMonitorFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getNewPointDataReceivedFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPeakTimeFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getWaiveControlFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLikeDayControlFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPerformingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getVerificationDoneFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPreOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getOperationSentWaitFlag() );;
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPostOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getWaitForReCloseDelayFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getMaxDailyOpsHitFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getCorrectionNeededNoBankAvailFlag() );
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getUsePhaseData() );
+//    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPorterRetFailFlag() ); // uninitialized...
+//    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLastVerificationMsgSentSuccessfulFlag() ); // uninitialized...
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getTotalizedControlFlag() );
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].isDirty() );
+
+//    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getParentId() );  // uninitialized...
+    BOOST_CHECK_EQUAL(    190, feeders[ 5 ].getCurrentVarLoadPointId() );
+    BOOST_CHECK_EQUAL(    191, feeders[ 5 ].getCurrentWattLoadPointId() );
+    BOOST_CHECK_EQUAL(    193, feeders[ 5 ].getCurrentVoltLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getEstimatedVarLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getDailyOperationsAnalogPointId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getEstimatedPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getCurrentDailyOperations() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getLastCapBankControlledDeviceId() );
+    BOOST_CHECK_EQUAL(      1, feeders[ 5 ].getBusOptimizedVarCategory() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getDecimalPlaces() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getEventSequence() );
+    BOOST_CHECK_EQUAL(     -1, feeders[ 5 ].getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getCurrentVerificationCapBankOrigState() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getIVCount() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getIWCount() );
+    BOOST_CHECK_EQUAL(    195, feeders[ 5 ].getPhaseBId() );
+    BOOST_CHECK_EQUAL(    196, feeders[ 5 ].getPhaseCId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRetryIndex() );
+
+    BOOST_CHECK_EQUAL( NormalQuality, feeders[ 5 ].getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, feeders[ 5 ].getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, feeders[ 5 ].getCurrentVoltPointQuality() );
+
+    BOOST_CHECK_EQUAL(   0.0f, feeders[ 5 ].getDisplayOrder() );
+
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getCurrentVarLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getCurrentWattLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getCurrentVoltLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getEstimatedVarLoadPointValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getVarValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getBusOptimizedVarOffset() );
+    BOOST_CHECK_EQUAL( -1000000.0, feeders[ 5 ].getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getKVARSolution() );
+    BOOST_CHECK_EQUAL( -1000000.0, feeders[ 5 ].getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getTargetVarValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getIVControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getIWControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getIVControl() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getIWControl() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getPhaseAValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getPhaseBValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getPhaseCValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getPhaseAValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getPhaseBValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getPhaseCValueBeforeControl() );
+
+    BOOST_CHECK_EQUAL(   "42", feeders[ 5 ].getMapLocationId() );
+    BOOST_CHECK_EQUAL( "IDLE", feeders[ 5 ].getSolution() );
+    BOOST_CHECK_EQUAL(     "", feeders[ 5 ].getParentControlUnits() );
+    BOOST_CHECK_EQUAL(     "", feeders[ 5 ].getParentName() );
+
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getCCCapBanks().size() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getMultipleMonitorPoints().size() );
+
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRegression().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, feeders[ 5 ].getRegression().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRegressionA().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, feeders[ 5 ].getRegressionA().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRegressionB().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, feeders[ 5 ].getRegressionB().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRegressionC().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, feeders[ 5 ].getRegressionC().getRegDepth() );
+
+    BOOST_CHECK_EQUAL( gInvalidCtiTime, feeders[ 5 ].getLastCurrentVarPointUpdateTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime, feeders[ 5 ].getLastOperationTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime, feeders[ 5 ].getLastWattPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime, feeders[ 5 ].getLastVoltPointTime() );
+}
+
+BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_data )
+{
+    _RATE_OF_CHANGE_DEPTH = 5;      // this shows up in the regressions: getRegDepth()
+
+    boost::ptr_map< long, test_CtiCCFeeder > feeders;
+
+    {   // Core bus object initialization
+
+        using CCFeederRow     = Cti::Test::StringRow<16>;
+        using CCFeederReader  = Cti::Test::TestReader<CCFeederRow>;
+
+        CCFeederRow columnNames =
+        {
+            "PAObjectID",
+            "Category",
+            "PAOClass",
+            "PAOName",
+            "Type",
+            "Description",
+            "DisableFlag",
+            "CurrentVarLoadPointID",
+            "CurrentWattLoadPointID",
+            "MapLocationID",
+            "CurrentVoltLoadPointID",
+            "MultiMonitorControl",
+            "usephasedata",
+            "phaseb",
+            "phasec",
+            "ControlFlag"
+        };
+
+        std::vector<CCFeederRow> rowVec
+        {
+            {
+                "5",
+                "CAPCONTROL",
+                "CAPCONTROL",
+                "A Feeder",
+                "CCFEEDER",
+                "(none)",
+                "N",
+                "190",
+                "191",
+                "42",
+                "193",
+                "Y",
+                "Y",
+                "195",
+                "196",
+                "Y"
+            }
+        };
+
+        CCFeederReader reader( columnNames, rowVec );
+
+        while ( reader() )
+        {
+            long    paoID;
+
+            reader[ "PAObjectID" ] >> paoID;
+
+            feeders.insert( paoID, new test_CtiCCFeeder( reader ) );
+        }
+    }
+
+    {   // Dynamic Data initialization
+
+        using CCFeederRow     = Cti::Test::StringRow<43>;
+        using CCFeederReader  = Cti::Test::TestReader<CCFeederRow>;
+
+        CCFeederRow columnNames =
+        {
+            "FeederID",
+            "CurrentVarPointValue",
+            "CurrentWattPointValue",
+            "NewPointDataReceivedFlag",
+            "LastCurrentVarUpdateTime",
+            "EstimatedVarPointValue",
+            "CurrentDailyOperations",
+            "RecentlyControlledFlag",
+            "LastOperationTime",
+            "VarValueBeforeControl",
+            "LastCapBankDeviceID",
+            "BusOptimizedVarCategory",
+            "BusOptimizedVarOffset",
+            "CTITimeStamp",
+            "PowerFactorValue",
+            "KvarSolution",
+            "EstimatedPFValue",
+            "CurrentVarPointQuality",
+            "WaiveControlFlag",
+            "AdditionalFlags",
+            "CurrentVoltPointValue",
+            "EventSeq",
+            "CurrVerifyCBId",
+            "CurrVerifyCBOrigState",
+            "CurrentWattPointQuality",
+            "CurrentVoltPointQuality",
+            "iVControlTot",
+            "iVCount",
+            "iWControlTot",
+            "iWCount",
+            "phaseavalue",
+            "phasebvalue",
+            "phasecvalue",
+            "LastWattPointTime",
+            "LastVoltPointTime",
+            "retryIndex",
+            "PhaseAValueBeforeControl",
+            "PhaseBValueBeforeControl",
+            "PhaseCValueBeforeControl",
+            "OriginalParentId",
+            "OriginalSwitchingOrder",
+            "OriginalCloseOrder",
+            "OriginalTripOrder"
+        };
+
+        std::vector<CCFeederRow> rowVec
+        {
+            {
+                "5",
+                "-400",
+                "1300",
+                "N",
+                "2016-05-04 18:08:14.000",
+                "-400",
+                "1",
+                "Y",
+                "2016-02-10 18:41:44.000",
+                "-600",
+                "364",
+                "2",
+                "1",
+                "2016-05-06 12:46:55.000",
+                "1.1",
+                "10",
+                "1.2",
+                "4",
+                "Y",
+                "NNNNNNNNNYNNNNNNNNNN",
+                "121",
+                "46",
+                "-1",
+                "0",
+                "4",
+                "4",
+                "10",
+                "6",
+                "11",
+                "7",
+                "100",
+                "200",
+                "300",
+                "2016-05-04 18:08:01.000",
+                "2016-05-04 18:08:22.000",
+                "0",
+                "110",
+                "210",
+                "310",
+                "0",
+                "0",
+                "0",
+                "0"
+            }
+        };
+
+        CCFeederReader reader( columnNames, rowVec );
+
+        while ( reader() )
+        {
+            long    paoID;
+
+            reader[ "FeederID" ] >> paoID;
+
+            feeders[ paoID ].setDynamicData( reader );
+        }
+    }
+
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getMultiMonitorFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getNewPointDataReceivedFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPeakTimeFlag() );
+    BOOST_CHECK_EQUAL(  true, feeders[ 5 ].getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(  true, feeders[ 5 ].getWaiveControlFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLikeDayControlFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPerformingVerificationFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getVerificationDoneFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPreOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getOperationSentWaitFlag() );;
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPostOperationMonitorPointScanFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getWaitForReCloseDelayFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getMaxDailyOpsHitFlag() );
+    BOOST_CHECK_EQUAL( true, feeders[ 5 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getCorrectionNeededNoBankAvailFlag() );
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getUsePhaseData() );
+//    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPorterRetFailFlag() ); // uninitialized...
+//    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLastVerificationMsgSentSuccessfulFlag() ); // uninitialized...
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getTotalizedControlFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].isDirty() );
+
+//    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getParentId() );  // uninitialized...
+    BOOST_CHECK_EQUAL(    190, feeders[ 5 ].getCurrentVarLoadPointId() );
+    BOOST_CHECK_EQUAL(    191, feeders[ 5 ].getCurrentWattLoadPointId() );
+    BOOST_CHECK_EQUAL(    193, feeders[ 5 ].getCurrentVoltLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getEstimatedVarLoadPointId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getDailyOperationsAnalogPointId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getEstimatedPowerFactorPointId() );
+    BOOST_CHECK_EQUAL(      1, feeders[ 5 ].getCurrentDailyOperations() );
+    BOOST_CHECK_EQUAL(    364, feeders[ 5 ].getLastCapBankControlledDeviceId() );
+    BOOST_CHECK_EQUAL(      2, feeders[ 5 ].getBusOptimizedVarCategory() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getDecimalPlaces() );
+    BOOST_CHECK_EQUAL(     46, feeders[ 5 ].getEventSequence() );
+    BOOST_CHECK_EQUAL(     -1, feeders[ 5 ].getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getCurrentVerificationCapBankOrigState() );
+    BOOST_CHECK_EQUAL(      6, feeders[ 5 ].getIVCount() );
+    BOOST_CHECK_EQUAL(      7, feeders[ 5 ].getIWCount() );
+    BOOST_CHECK_EQUAL(    195, feeders[ 5 ].getPhaseBId() );
+    BOOST_CHECK_EQUAL(    196, feeders[ 5 ].getPhaseCId() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRetryIndex() );
+
+    BOOST_CHECK_EQUAL( ManualQuality, feeders[ 5 ].getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL( ManualQuality, feeders[ 5 ].getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL( ManualQuality, feeders[ 5 ].getCurrentVoltPointQuality() );
+
+    BOOST_CHECK_EQUAL(   0.0f, feeders[ 5 ].getDisplayOrder() );
+
+    BOOST_CHECK_EQUAL( -400.0, feeders[ 5 ].getCurrentVarLoadPointValue() );
+    BOOST_CHECK_EQUAL( 1300.0, feeders[ 5 ].getCurrentWattLoadPointValue() );
+    BOOST_CHECK_EQUAL(  121.0, feeders[ 5 ].getCurrentVoltLoadPointValue() );
+    BOOST_CHECK_EQUAL( -400.0, feeders[ 5 ].getEstimatedVarLoadPointValue() );
+    BOOST_CHECK_EQUAL( -600.0, feeders[ 5 ].getVarValueBeforeControl() );
+    BOOST_CHECK_EQUAL(    1.0, feeders[ 5 ].getBusOptimizedVarOffset() );
+    BOOST_CHECK_EQUAL(    1.1, feeders[ 5 ].getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   10.0, feeders[ 5 ].getKVARSolution() );
+    BOOST_CHECK_EQUAL(    1.2, feeders[ 5 ].getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getTargetVarValue() );
+    BOOST_CHECK_EQUAL(   10.0, feeders[ 5 ].getIVControlTot() );
+    BOOST_CHECK_EQUAL(   11.0, feeders[ 5 ].getIWControlTot() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getIVControl() );
+    BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getIWControl() );
+    BOOST_CHECK_EQUAL(  100.0, feeders[ 5 ].getPhaseAValue() );
+    BOOST_CHECK_EQUAL(  200.0, feeders[ 5 ].getPhaseBValue() );
+    BOOST_CHECK_EQUAL(  300.0, feeders[ 5 ].getPhaseCValue() );
+    BOOST_CHECK_EQUAL(  110.0, feeders[ 5 ].getPhaseAValueBeforeControl() );
+    BOOST_CHECK_EQUAL(  210.0, feeders[ 5 ].getPhaseBValueBeforeControl() );
+    BOOST_CHECK_EQUAL(  310.0, feeders[ 5 ].getPhaseCValueBeforeControl() );
+
+    BOOST_CHECK_EQUAL(   "42", feeders[ 5 ].getMapLocationId() );
+    BOOST_CHECK_EQUAL( "IDLE", feeders[ 5 ].getSolution() );
+    BOOST_CHECK_EQUAL(     "", feeders[ 5 ].getParentControlUnits() );
+    BOOST_CHECK_EQUAL(     "", feeders[ 5 ].getParentName() );
+
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getCCCapBanks().size() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getMultipleMonitorPoints().size() );
+
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRegression().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, feeders[ 5 ].getRegression().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRegressionA().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, feeders[ 5 ].getRegressionA().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRegressionB().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, feeders[ 5 ].getRegressionB().getRegDepth() );
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getRegressionC().getCurDepth() );
+    BOOST_CHECK_EQUAL(      5, feeders[ 5 ].getRegressionC().getRegDepth() );
+
+//  Cti::Test::TestReader returns CtiTime::now() for all timestamps extracted
+//      so we can't test those...
+
+//    BOOST_CHECK_EQUAL( gInvalidCtiTime, feeders[ 5 ].getLastCurrentVarPointUpdateTime() );
+//    BOOST_CHECK_EQUAL( gInvalidCtiTime, feeders[ 5 ].getLastOperationTime() );
+//    BOOST_CHECK_EQUAL( gInvalidCtiTime, feeders[ 5 ].getLastWattPointTime() );
+//    BOOST_CHECK_EQUAL( gInvalidCtiTime, feeders[ 5 ].getLastVoltPointTime() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
