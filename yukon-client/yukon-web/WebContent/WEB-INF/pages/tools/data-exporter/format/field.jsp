@@ -142,7 +142,7 @@
                         </c:forEach>
                     </form:select>
                     <c:set var="classes" value="${exportField.missingAttribute == 'FIXED_VALUE' ? '' : 'dn'}"/>
-                    <tags:input id="fixed-value" path="missingAttributeValue" size="10" maxlength="30" inputClass="${classes}"/>
+                    <tags:input id="fixed-value" path="missingAttributeValue" size="10" maxlength="20" inputClass="${classes}"/>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
