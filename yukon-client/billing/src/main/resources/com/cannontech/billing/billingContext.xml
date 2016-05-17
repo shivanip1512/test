@@ -7,22 +7,8 @@
         <property name="dynamicBillingFileDao" ref="dynamicBillingFileDao" />
     </bean>
     
-    <bean id="itronClient"
-        class="com.cannontech.billing.format.itron.ItronClientImpl">
-        <property name="endPoint">
-            <value>http://itron.com/webservices/</value>
-        </property>
-        <property name="operationName">
-            <value>Import</value>
-        </property>
-        <property name="service">
-            <bean class="org.apache.axis.client.Service" />
-        </property>
-    </bean>
-    
-    <bean id="itronClientHandler" class="com.cannontech.billing.format.itron.ItronClientHandler">
-        <property name="itronClient"><ref bean="itronClient"/></property>
-    </bean>
+    <bean id="itronClientHandler" class="com.cannontech.billing.format.itron.ItronClientHandler"/>
+        
   
     <bean id="curtailmentEventsItronFormat" class="com.cannontech.billing.format.simple.CurtailmentEventsItronFormat" scope="prototype"/>
     

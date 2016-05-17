@@ -10,11 +10,6 @@ import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.BillingFormatterBase;
 
 public class ItronClientHandler extends BillingFormatterBase {
-	private ItronClient client;
-
-    public void setItronClient(final ItronClient client) {
-        this.client = client;
-    }
 
     @Override
     public String dataToString(BillableDevice device) {
@@ -25,8 +20,6 @@ public class ItronClientHandler extends BillingFormatterBase {
         try {
             ItronXmlBuilder builder = new ItronXmlBuilderImpl();
             Document doc = builder.buildDocument(deviceList);
-            String docString = builder.documentToString(doc);
-            client.invoke(new Object[]{docString});
             return doc.getRootElement().getChild("Channels").getChildren().size();  
         } catch (Exception e) {
             throw new IOException("Unable to create XML file: " + e);
