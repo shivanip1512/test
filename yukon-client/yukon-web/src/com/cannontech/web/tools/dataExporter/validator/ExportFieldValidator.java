@@ -28,8 +28,8 @@ public class ExportFieldValidator extends SimpleValidator<ExportField> {
             errors.rejectValue("exportField.maxLength", DataExporterFormatController.BASE_KEY + "formatError.lessThanZero.fieldSize");
         }
 
-        YukonValidationUtils.checkExceedsMaxLength(errors, "exportField.padChar", field.getPadChar(), 1);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "exportField.missingAttributeValue", field.getMissingAttributeValue(), 20);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "padChar", field.getPadChar(), 1);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "missingAttributeValue", field.getMissingAttributeValue(), 20);
         
         if (field.isTimestamp()) {
             {
