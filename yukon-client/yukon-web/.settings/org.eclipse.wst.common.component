@@ -184,6 +184,9 @@
         <dependent-module archiveName="lucene-queryparser-6.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/lucene-queryparser-6.0.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="apache-log4j-extras-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/apache-log4j-extras-1.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/yukon-web/build/classes"/>
         <property name="context-root" value="yukon"/>
     </wb-module>

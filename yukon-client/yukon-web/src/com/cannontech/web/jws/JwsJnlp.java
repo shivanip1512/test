@@ -94,6 +94,7 @@ public enum JwsJnlp {
                 "jtds-1.3.0.jar",
                 "libthrift-0.9.0.jar",
                 "log4j-1.2.17.jar",
+                "apache-log4j-extras-1.0.jar",
                 "lucene-analyzers-common-6.0.0.jar",
                 "lucene-core-6.0.0.jar",
                 "lucene-queryparser-6.0.0.jar",
