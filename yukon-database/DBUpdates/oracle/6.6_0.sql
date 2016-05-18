@@ -135,7 +135,7 @@ BEGIN
         v_errorText := 'Indexes on RawPointHistory are being modified to improve system performance.' || v_newLine
             || 'Setup has detected that these indexes have not yet been updated on this system.' || v_newLine
             || 'This may take up to a few hours to complete depending on available system resources and the table size.' || v_newLine
-            || 'More information can be found in YUK-15173.'
+            || 'More information can be found in YUK-15173.';
         RAISE_APPLICATION_ERROR(-20001, v_errorText);
     END IF;
 END;
