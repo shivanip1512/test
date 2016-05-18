@@ -418,10 +418,10 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify_missing
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         Cti::Test::msgsEqual( returnMsgs, ClientErrors::ConfigNotCurrent, {
-            "Midnight channel config probably not supported by meter.  Meter is missing NET_KWH, DEMAND",
+            "Midnight channel config possibly not supported by meter.  Meter is missing NET_KWH, DEMAND",
             "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND",
             "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH",
-            "Interval channel config probably not supported by meter.  Meter is missing DEMAND",
+            "Interval channel config possibly not supported by meter.  Meter is missing DEMAND",
             "Config: SUM_KWH, NET_KWH, DEMAND",
             "Meter: SUM_KWH, NET_KWH",
             "Config channelconfig is NOT current."
@@ -462,10 +462,10 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_extra)
         BOOST_REQUIRE_EQUAL(0, rfnRequests.size());
 
         Cti::Test::msgsEqual(returnMsgs, ClientErrors::ConfigNotCurrent, {
-            "Midnight channel program mismatch.  Configuration is missing PEAK_DEMAND_FROZEN",
+            "Midnight channel program mismatch.  Meter also contains PEAK_DEMAND_FROZEN",
             "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND",
             "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND, PEAK_DEMAND_FROZEN",
-            "Interval channel program mismatch.  Configuration is missing DELIVERED_KWH, RECEIVED_KWH, PEAK_DEMAND_FROZEN",
+            "Interval channel program mismatch.  Meter also contains DELIVERED_KWH, RECEIVED_KWH, PEAK_DEMAND_FROZEN",
             "Config: SUM_KWH, NET_KWH, DEMAND",
             "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND, PEAK_DEMAND_FROZEN",
             "Config channelconfig is NOT current.",

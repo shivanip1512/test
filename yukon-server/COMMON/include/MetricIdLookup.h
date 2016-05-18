@@ -10,7 +10,7 @@ class IM_EX_CTIBASE MetricIdLookup
 {
 public:
     using MetricId = unsigned short;
-    using  MetricIds = std::set<MetricId>;
+    using MetricIds = std::set<MetricId>;
     using attribute_bimap = boost::bimap< Attribute, MetricId >;
     using position = attribute_bimap::value_type;
 

@@ -567,7 +567,7 @@ YukonError_t RfnMeterDevice::compareChannels(
                 std::string msg;
 
                 msg = prefix + " channel config possibly not supported by meter.  "
-                    "Configuration also contains " + join(cfgOnly | transformed(metric_to_string), ", ");
+                    "Meter is missing " + join(cfgOnly | transformed(metric_to_string), ", ");
                 reportConfigDetails(msg, pReq, returnMsgs);
 
                 msg = "Config: " + join(cfgMetrics | transformed(metric_to_string), ", ");
