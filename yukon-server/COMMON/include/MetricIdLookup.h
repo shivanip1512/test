@@ -11,6 +11,8 @@ class IM_EX_CTIBASE MetricIdLookup
 public:
     typedef unsigned short MetricId;
     typedef std::set<MetricId> MetricIds;
+    typedef boost::bimap< Attribute, MetricId > attribute_bimap;
+    typedef attribute_bimap::value_type position;
 
     static void AddMetricForAttribute(const Attribute & attrib, const MetricId metric);
 
@@ -20,8 +22,7 @@ public:
     static std::string getName(const MetricId metric);
 
 private:
-    static std::map<Attribute, MetricId> attributes2Metrics;
-    static std::map<MetricId, Attribute> metrics2Attributes;
+    static attribute_bimap attributes;
 };
 
 }

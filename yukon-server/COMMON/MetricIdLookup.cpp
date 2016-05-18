@@ -4,25 +4,25 @@
 #include "PointAttribute.h"
 #include "std_helper.h"
 
+#include <boost/bimap.hpp>
+
 namespace Cti {
 
-std::map<Attribute, MetricIdLookup::MetricId> MetricIdLookup::attributes2Metrics;
-std::map<MetricIdLookup::MetricId, Attribute> MetricIdLookup::metrics2Attributes;
+MetricIdLookup::attribute_bimap MetricIdLookup::attributes;
 
 void MetricIdLookup::AddMetricForAttribute(const Attribute &attrib, const MetricId metric)
 {
-    attributes2Metrics[attrib] = metric;
-    metrics2Attributes.emplace(metric, attrib);
+    attributes.insert(position(attrib, metric));
 }
 
 MetricIdLookup::MetricId MetricIdLookup::GetForAttribute(const Attribute &attrib)
 {
-    return attributes2Metrics[attrib];
+    return attributes.left.at(attrib);
 }
 
 std::string Cti::MetricIdLookup::getName(const MetricId metric)
 {
-    auto found = Cti::mapFind(metrics2Attributes, metric);
+    auto found = Cti::mapFind(attributes.right, metric);
     if (found)
     {
         return found->getName();
