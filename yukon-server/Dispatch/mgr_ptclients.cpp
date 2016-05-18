@@ -330,19 +330,11 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
 
     if(!pointIds.empty())
     {
-        ostringstream in_list;
-
-        csv_output_iterator<long, ostringstream> csv_out(in_list);
-
-        in_list << "(";
-
-        copy(pointIds.begin(), pointIds.end(), csv_out);
-
-        in_list << ")";
-
         sql += ((!pntID && !paoID) ? " WHERE" : " AND");
         sql += " PPV.pointid IN ";
-        sql += in_list.str();
+        sql += "(";
+        sql += Cti::join(pointIds, ",");
+        sql += ")";
     }
 
     Cti::Database::DatabaseConnection connection;
@@ -416,18 +408,11 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
 
     if(!pointIds.empty())
     {
-        ostringstream in_list;
-
-        csv_output_iterator<long, ostringstream> csv_out(in_list);
-
-        in_list << "(";
-
-        copy(pointIds.begin(), pointIds.end(), csv_out);
-
-        in_list << ")";
 
         sql += " AND point.pointid in ";
-        sql += in_list.str();
+        sql += "(";
+        sql += Cti::join(pointIds, ",");
+        sql += ")";
     }
 
     DatabaseConnection conn;
@@ -940,17 +925,10 @@ vector<string> CtiPointClientManager::generateSqlStatements(const set<long> &poi
         advance(subset_end, subset_size);
         Cti::Database::id_set pointid_subset(pointid_itr, subset_end);
 
-        std::ostringstream in_list;
-        csv_output_iterator<long, std::ostringstream> csv_itr(in_list);
-
-        in_list << "(";
-
-        copy(pointid_subset.begin(), pointid_subset.end(), csv_itr);
-
-        in_list << ")";
-
         chunk += " WHERE DPD.pointid IN ";
-        chunk += in_list.str();
+        chunk += "(";
+        chunk += Cti::join(pointid_subset, ",");
+        chunk += ")";
 
         // Sql is completed.
         queries.push_back(chunk);
@@ -1063,14 +1041,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     else if(!pointIds.empty())
     {
         sql += " AND pointid in (";
-
-        ostringstream in_list;
-        csv_output_iterator<long, ostringstream> csv_out(in_list);
-
-        copy(pointIds.begin(), pointIds.end(), csv_out);
-
-        sql += in_list.str();
-
+        sql += Cti::join(pointIds, ",");
         sql += ")";
     }
     else

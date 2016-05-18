@@ -82,10 +82,8 @@ void PaoStatistics::buildDatabaseReader(Database::DatabaseReader &rdr, const Cti
 
     std::ostringstream in_list;
 
-    std::copy(id_begin, id_end, csv_output_iterator<long, std::ostringstream>(in_list));
-
     sql += "(";
-    sql += in_list.str();
+    sql += Cti::join(std::set<long>(id_begin, id_end), ",");
     sql += ")";
 
     rdr.setCommandText(sql);

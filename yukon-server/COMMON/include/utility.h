@@ -13,6 +13,9 @@
 #include <algorithm>
 #include <vector>
 
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/algorithm/string/join.hpp>
+
 #if (_MSC_VER < 1900)
 #define STRING2(x) #x
 #define STRING(x) STRING2(x)
@@ -288,28 +291,34 @@ inline bool list_contains( const std::list<T> &V, T x )
    return false;
 }
 
-
-//  generates a comma-separated list of values, i.e. 1,2,3,4,5
-//  usage is as an output iterator - e.g.
-//  vector<long> source;
-//  ostringstream output;
-//  csv_output_iterator<long, ostringstream> csv_itr(output);  //  OR csv_itr<long, CtiLogger>(dout)>
-//    ...
-//  std::copy(source.begin(), source.end(), csv_itr);
-template <class Numeric, class Stream>
-struct csv_output_iterator : public std::iterator<std::output_iterator_tag, void, void, void, void>
+namespace Cti
 {
-    Stream *s;
-    bool first;
-    Numeric num;
+    using boost::adaptors::transformed;
 
-    csv_output_iterator(Stream &s_) : s(&s_), first(true) {}
+    template <class T>
+    inline std::string join(const std::set<T> &V, std::string sep)
+    {
+        return boost::algorithm::join(V | transformed(static_cast<std::string(*)(T)>(std::to_string)), sep);
+    }
 
-    csv_output_iterator &operator*()  {  return *this;  }
-    csv_output_iterator &operator=(Numeric num_)  {  num = num_;  return *this;  }
-    csv_output_iterator &operator++()  { (first?(first = false, *s):(*s << ",")) << num;  return *this;  }
-};
+    template <>
+    inline std::string join(const std::set<std::string> &V, std::string sep)
+    {
+        return boost::algorithm::join(V, sep);
+    }
 
+    template <class T>
+    inline std::string join(const std::vector<T> &V, std::string sep)
+    {
+        return boost::algorithm::join(V | transformed(static_cast<std::string(*)(T)>(std::to_string)), sep);
+    }
+
+    template <>
+    inline std::string join(const std::vector<std::string> &V, std::string sep)
+    {
+        return boost::algorithm::join(V, sep);
+    }
+}
 
 template <class T>
 struct priority_sort : public std::binary_function<T, T, bool>

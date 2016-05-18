@@ -131,9 +131,7 @@ std::string createIdSqlClause(const id_set &paoids, const std::string &table, co
     else
     {
         sql << " IN (";
-
-        std::copy(paoids.begin(), paoids.end(), csv_output_iterator<long, Cti::StreamBuffer>(sql));
-
+        sql << Cti::join(paoids, ",");
         sql << ")";
     }
 

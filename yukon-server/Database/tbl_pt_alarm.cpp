@@ -187,10 +187,7 @@ void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID, const 
     else if( !pointIds.empty() )
     {
         sql_stream << " AND pointid in (";
-
-        csv_output_iterator<long, ostringstream> csv_out(sql_stream);
-        copy(pointIds.begin(), pointIds.end(), csv_out);
-
+        sql_stream << Cti::join(pointIds, ",");
         sql_stream << ")";
     }
 

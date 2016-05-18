@@ -96,9 +96,7 @@ string CtiTableDeviceScanRate::addIDSQLClause(const Cti::Database::id_set &paoid
         else
         {
             in_list << "(";
-
-            copy(paoids.begin(), paoids.end(), csv_output_iterator<long, std::ostringstream>(in_list));
-
+            in_list << Cti::join(paoids, ",");
             in_list << ")";
 
             sqlIDs += "AND DV.deviceid IN " + in_list.str();

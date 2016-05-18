@@ -195,9 +195,7 @@ BOOST_AUTO_TEST_CASE(test_csv_output_iterator)
     source.push_back(5);
     source.push_back(8);
 
-    csv_output_iterator<long, std::ostringstream> csv_itr(ostr);
-
-    std::copy(source.begin(), source.end(), csv_itr);
+    ostr << Cti::join(source, ",");
 
     BOOST_CHECK_EQUAL(ostr.str(), "1,1,2,3,5,8");
 }

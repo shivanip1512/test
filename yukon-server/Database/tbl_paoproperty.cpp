@@ -48,9 +48,7 @@ string PaoPropertyTable::addIDSQLClause(const set<long> &deviceids)
         else
         {
             in_list << "(";
-
-            copy(deviceids.begin(), deviceids.end(), csv_output_iterator<long, ostringstream>(in_list));
-
+            in_list << Cti::join(deviceids, ",");
             in_list << ")";
 
             sqlIDs += "AND PPR.paobjectid IN " + in_list.str();

@@ -416,7 +416,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
                 sb << "Excluded portids (" << gSimulatedPorts.size() << "):\n";
             }
 
-            std::copy(gSimulatedPorts.begin(), gSimulatedPorts.end(), csv_output_iterator<long, Cti::StreamBuffer>(sb));
+            sb << Cti::join(gSimulatedPorts, ",");
         }
 
         CTILOG_TRACE(dout, sb);
