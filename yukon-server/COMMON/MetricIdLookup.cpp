@@ -2,19 +2,35 @@
 
 #include "MetricIdLookup.h"
 #include "PointAttribute.h"
+#include "std_helper.h"
 
 namespace Cti {
 
-std::map<Attribute, MetricIdLookup::MetricId> MetricIdLookup::metrics;
+std::map<Attribute, MetricIdLookup::MetricId> MetricIdLookup::attributes2Metrics;
+std::map<MetricIdLookup::MetricId, Attribute> MetricIdLookup::metrics2Attributes;
 
 void MetricIdLookup::AddMetricForAttribute(const Attribute &attrib, const MetricId metric)
 {
-    metrics[attrib] = metric;
+    attributes2Metrics[attrib] = metric;
+    metrics2Attributes.emplace(metric, attrib);
 }
 
 MetricIdLookup::MetricId MetricIdLookup::GetForAttribute(const Attribute &attrib)
 {
-    return metrics[attrib];
+    return attributes2Metrics[attrib];
+}
+
+std::string Cti::MetricIdLookup::getName(const MetricId metric)
+{
+    auto found = Cti::mapFind(metrics2Attributes, metric);
+    if (found)
+    {
+        return found->getName();
+    }
+    else
+    {
+        return std::to_string(metric);
+    }
 }
 
 MetricIdLookup::MetricIds MetricIdLookup::GetForAttributes(const std::set<Attribute> & attribs)
@@ -29,5 +45,6 @@ MetricIdLookup::MetricIds MetricIdLookup::GetForAttributes(const std::set<Attrib
 
     return result;
 }
+
 
 }

@@ -19,6 +19,7 @@
 #include "prot_base.h"
 #include "desolvers.h"
 #include "config_exceptions.h"
+#include "MetricIdLookup.h"
 
 using namespace std;
 
@@ -724,12 +725,7 @@ std::string CtiDeviceSingle::eWordReport( const ESTRUCT &ESt, Cti::Optional<repe
     if( !diagnostics.empty() )
     {
         report << "E word diagnostics: ";
-
-        std::copy(
-            diagnostics.begin(),
-            diagnostics.end(),
-            csv_output_iterator<string, ostringstream>( report ) );
-
+        report << Cti::join(diagnostics , "," );
         report << endl;
     }
 
@@ -2280,7 +2276,7 @@ void CtiDeviceSingle::reportConfigMismatchDetails(
 {
     std::string msg( "Config " + setting + " did not match. Config: " +
         ( configSetting ? "True" : "False" ) +
-        ", Device: " +
+        ", Meter: " +
         ( deviceSetting ? ( deviceSetting.get() ? "True" : "False" ) : "Uninitialized" ) );
 
     reportConfigDetails( msg, pReq, returnMsgs );
@@ -2305,7 +2301,7 @@ void CtiDeviceSingle::reportConfigMismatchDetails(
 {
     std::string msg( "Config " + setting + " did not match. Config: " +
         std::to_string( configSetting ) +
-        ", Device: " +
+        ", Meter: " +
         ( deviceSetting ? std::to_string( deviceSetting.get() ) : "Uninitialized" ) );
 
     reportConfigDetails( msg, pReq, returnMsgs );
@@ -2330,47 +2326,8 @@ void CtiDeviceSingle::reportConfigMismatchDetails(
 {
     std::string msg( "Config " + setting + " did not match. Config: " +
         CtiNumStr( configSetting, 1 ) +
-        ", Device: " +
+        ", Meter: " +
         ( deviceSetting ? std::string( CtiNumStr( deviceSetting.get(), 1 ) ) : "Uninitialized" ) );
-
-    reportConfigDetails( msg, pReq, returnMsgs );
-}
-
-/**
-* Report a configuration mismatch to the client.
-*
-* @param setting Setting title
-* @param deviceSetting Device setting value
-* @param configSetting Config setting value
-* @param pReg pointer to Request Message
-* @param returnMsgs list of messages to return to the client.
-*/
-template <>
-void CtiDeviceSingle::reportConfigMismatchDetails(
-    std::string setting,
-    const std::vector<unsigned long> configSetting,
-    const boost::optional<std::vector<unsigned long>> deviceSetting,
-    CtiRequestMsg *pReq,
-    CtiDeviceSingle::ReturnMsgList &returnMsgs )
-{
-    using boost::adaptors::transformed;
-    using boost::algorithm::join;
-
-    auto unsigned_long_to_string = static_cast<std::string( *)( unsigned long )>( std::to_string );
-
-    std::string config = "(" + join( configSetting | transformed( unsigned_long_to_string ), ", " ) + ")";
-
-    std::string device;
-    if( deviceSetting )
-    {
-        device = "(" + join( deviceSetting.get() | transformed( unsigned_long_to_string ), ", " ) + ")";
-    }
-    else
-    {
-        device = "Uninitialized";
-    }
-
-    std::string msg( "Config " + setting + " did not match. Config: " + config + ", Device: " + device );
 
     reportConfigDetails( msg, pReq, returnMsgs );
 }

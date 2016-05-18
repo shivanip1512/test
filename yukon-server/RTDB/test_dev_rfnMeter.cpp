@@ -351,26 +351,8 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_temperaturealarm_unsup
     }
 }
 
-/**
-This test does a "putconfig install channelconfig verify" and checks that it properly notices that the 
-device configuration is missing several midnight and interval channel settings.
-*/
-BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify )
+void config_a_meter(Cti::Test::test_DeviceConfig &cfg)
 {
-    test_RfnMeterDevice dut;
-
-    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
-
-    /* Device settings */
-    std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3 };
-    std::vector<unsigned long> paoIntervalMetrics = { 3, 4 };
-
-    dut.setID( 1234 );
-    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics );
-    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics );
-    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
-    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60 );
-
     /* Configuration settings */
     const std::map<std::string, std::string> configItems = boost::assign::map_list_of
         ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "5" )
@@ -401,6 +383,31 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify )
         Cti::Config::Category::ConstructCategory(
         "rfnChannelConfiguration",
         configItems ) );
+}
+
+/**
+Device is a subset of the configuration.
+
+This test does a "putconfig install channelconfig verify" and checks that it properly notices that the 
+device configuration is missing several midnight and interval channel settings.
+*/
+BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify_missing )
+{
+    test_RfnMeterDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    /* Device settings */
+    std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3 };
+    std::vector<unsigned long> paoIntervalMetrics = { 3, 4 };
+
+    dut.setID( 1234 );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60 );
+
+    config_a_meter(cfg);
 
     /* And now we run the command. */
     {
@@ -411,14 +418,173 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify )
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         Cti::Test::msgsEqual( returnMsgs, ClientErrors::ConfigNotCurrent, {
-            "Config Midnight Channel Metrics did not match. Config: (1, 2, 3, 4, 5), Device: (1, 2, 3)",
-            "The meter device is missing 2 midnight channels which suggests the meter may not be configured for them.",
-            "Config Interval Channel Metrics did not match. Config: (3, 4, 5), Device: (3, 4)",
-            "The meter device is missing 1 interval channels which suggests the meter may not be configured for them.",
+            "Midnight channel config probably not supported by meter.  Meter is missing NET_KWH, DEMAND",
+            "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND",
+            "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH",
+            "Interval channel config probably not supported by meter.  Meter is missing DEMAND",
+            "Config: SUM_KWH, NET_KWH, DEMAND",
+            "Meter: SUM_KWH, NET_KWH",
             "Config channelconfig is NOT current."
         } );
     }
+}
 
+/**
+Configuration is a subset of the Device.
+
+This test does a "putconfig install channelconfig verify" and checks that even though there
+are extra meter channels, this is ok.
+*/
+BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_extra)
+{
+    test_RfnMeterDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+                                                         /* Device settings */
+    std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3, 4, 5, 9 };
+    std::vector<unsigned long> paoIntervalMetrics = { 1, 2, 3, 4, 5, 9 };
+
+    dut.setID(1234);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60);
+
+    config_a_meter(cfg);
+
+    /* And now we run the command. */
+    {
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+
+        BOOST_REQUIRE_EQUAL(0, rfnRequests.size());
+
+        Cti::Test::msgsEqual(returnMsgs, ClientErrors::ConfigNotCurrent, {
+            "Midnight channel program mismatch.  Configuration is missing PEAK_DEMAND_FROZEN",
+            "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND",
+            "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND, PEAK_DEMAND_FROZEN",
+            "Interval channel program mismatch.  Configuration is missing DELIVERED_KWH, RECEIVED_KWH, PEAK_DEMAND_FROZEN",
+            "Config: SUM_KWH, NET_KWH, DEMAND",
+            "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND, PEAK_DEMAND_FROZEN",
+            "Config channelconfig is NOT current.",
+        });
+    }
+}
+
+/**
+This test does a "putconfig install channelconfig verify" and checks that it properly notices that the 
+device configuration is missing several midnight and interval channel settings.
+*/
+BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify_match )
+{
+    test_RfnMeterDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    /* Device settings */
+    std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3, 4, 5 };
+    std::vector<unsigned long> paoIntervalMetrics = { 3, 4, 5 };
+
+    dut.setID( 1234 );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60 );
+
+    config_a_meter(cfg);
+
+    /* And now we run the command. */
+    {
+        CtiCommandParser parse( "putconfig install channelconfig verify" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
+
+        BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+        Cti::Test::msgsEqual( returnMsgs, ClientErrors::None, {
+            "Config channelconfig is current."
+        } );
+    }
+}
+
+/**
+This test does a "putconfig install channelconfig verify" and checks that it properly notices that the 
+device configuration is missing several midnight and interval channel settings.
+*/
+BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_disjoint)
+{
+    test_RfnMeterDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    /* Device settings */
+    std::vector<unsigned long> paoMidnightMetrics = { 9, 11, 12 };
+    std::vector<unsigned long> paoIntervalMetrics = { 9, 11, 12 };
+
+    dut.setID(1234);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60);
+
+    config_a_meter(cfg);
+
+    /* And now we run the command. */
+    {
+        CtiCommandParser parse("putconfig install channelconfig verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+
+        BOOST_REQUIRE_EQUAL(0, rfnRequests.size());
+
+        Cti::Test::msgsEqual(returnMsgs, ClientErrors::ConfigNotCurrent, {
+            "Midnight channel program mismatch.",
+            "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND",
+            "Meter: PEAK_DEMAND_FROZEN, USAGE_FROZEN, RECEIVED_KWH_FROZEN",
+            "Interval channel program mismatch.",
+            "Config: SUM_KWH, NET_KWH, DEMAND",
+            "Meter: PEAK_DEMAND_FROZEN, USAGE_FROZEN, RECEIVED_KWH_FROZEN",
+            "Config channelconfig is NOT current."
+        });
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify_uninitialized )
+{
+    test_RfnMeterDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    /* Device settings */
+    //std::vector<unsigned long> paoMidnightMetrics = {};
+    //std::vector<unsigned long> paoIntervalMetrics = {};
+
+    dut.setID( 1234 );
+    ////dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics );
+    ////dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics );
+    //dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
+    //dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60 );
+
+    config_a_meter(cfg);
+
+    /* And now we run the command. */
+    {
+        CtiCommandParser parse( "putconfig install channelconfig verify" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
+
+        BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+        Cti::Test::msgsEqual( returnMsgs, ClientErrors::ConfigNotCurrent, {
+            "Midnight channel program mismatch.  Meter data is Empty.",
+            "Interval channel program mismatch.  Meter data is Empty.",
+            "Config Channel Recording Interval (sec) did not match. Config: 7380, Meter: Uninitialized",
+            "Config Channel Reporting Interval (sec) did not match. Config: 27360, Meter: Uninitialized",
+            "Config channelconfig is NOT current."
+        } );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

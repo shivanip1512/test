@@ -370,6 +370,11 @@ void msgsEqual(
     int status, 
     std::vector<std::string> oracleMsgs )
 {
+    for (auto returnMsg: returnMsgs)
+    {
+        BOOST_TEST_MESSAGE(returnMsg.ResultString());
+    }
+
     auto resultStrings = returnMsgs | boost::adaptors::transformed( []( const CtiReturnMsg &msg ){ return msg.ResultString(); } );
     auto resultStatuses = returnMsgs | boost::adaptors::transformed( []( const CtiReturnMsg &msg ){ return msg.Status(); } );
 

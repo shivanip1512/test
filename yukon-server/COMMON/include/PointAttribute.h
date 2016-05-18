@@ -193,6 +193,8 @@ public:
 
     static const Attribute & Lookup( const std::string & name );
 
+    std::string getName() { return _name; }
+
     bool operator==( const Attribute & rhs ) const;
 
     bool operator<( const Attribute & rhs ) const;

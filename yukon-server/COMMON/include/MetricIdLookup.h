@@ -17,8 +17,11 @@ public:
     static MetricId  GetForAttribute (const Attribute &attrib);
     static MetricIds GetForAttributes(const std::set<Attribute> & attribs);
 
+    static std::string getName(const MetricId metric);
+
 private:
-    static std::map<Attribute, MetricId> metrics;
+    static std::map<Attribute, MetricId> attributes2Metrics;
+    static std::map<MetricId, Attribute> metrics2Attributes;
 };
 
 }

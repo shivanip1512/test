@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dev_rfn.h"
-
+#include "cmd_rfn_ChannelConfiguration.h"
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/container/flat_map.hpp>
 
@@ -79,9 +79,18 @@ protected:
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand       & cmd ) override;
 
 private:
+    typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
+    typedef std::vector<unsigned long> PaoMetricIds;
 
     YukonError_t executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, bool readOnly );
     void executeConfigInstallSingle  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod );
+    YukonError_t compareChannels(
+        CtiRequestMsg    * pReq,
+        CtiCommandParser & parse,
+        ReturnMsgList    & returnMsgs,
+        std::string prefix, 
+        const PaoMetricIds &cfgMidnightMetrics, 
+        const boost::optional<PaoMetricIds> &paoMidnightMetrics);
 
 public:
     RfnMeterDevice() {};

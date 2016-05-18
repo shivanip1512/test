@@ -375,9 +375,6 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
     using Commands::RfnChannelConfigurationCommand;
     using Commands::RfnSetChannelSelectionCommand;
 
-    typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
-    typedef std::vector<unsigned long> PaoMetricIds;
-
     YukonError_t ret = ClientErrors::ConfigCurrent;
     try
     {
@@ -446,31 +443,7 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
             {
                 if( parse.isKeyValid( "verify" ) )
                 {
-                    reportConfigMismatchDetails<PaoMetricIds>( "Midnight Channel Metrics",
-                        cfgMidnightMetrics, paoMidnightMetrics,
-                        pReq, returnMsgs );
-
-                    /* 
-                     * If we have channels mismatched, it may be that the meter is not configured for them, 
-                     * in which case the device channels will contain a subset of the config channels. 
-                     */
-                    if( paoMidnightMetrics )
-                    {
-                        PaoMetricIds diff;
-
-                        std::set_difference( cfgMidnightMetrics.begin(), cfgMidnightMetrics.end(),
-                            paoMidnightMetrics.get().begin(), paoMidnightMetrics.get().end(),
-                            std::inserter( diff, diff.begin() ) );
-
-                        if( !diff.empty() )
-                        {
-                            std::string msg = "The meter device is missing " + std::to_string( diff.size() ) +
-                                " midnight channels which suggests the meter may not be configured for them.";
-                            reportConfigDetails( msg, pReq, returnMsgs );
-                        }
-                    }
-
-                    ret = ClientErrors::ConfigNotCurrent;
+                    ret = compareChannels(pReq, parse, returnMsgs, "Midnight", cfgMidnightMetrics, paoMidnightMetrics);
                 }
                 else
                 {
@@ -501,47 +474,22 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
             {
                 if( parse.isKeyValid( "verify" ) )
                 {
-                    if( cfgIntervalMetrics != paoIntervalMetrics )
+                    ret = compareChannels(pReq, parse, returnMsgs, "Interval", cfgIntervalMetrics, paoIntervalMetrics);
+
+                    if (cfgReportingIntervalSeconds != paoReportingIntervalSeconds)
                     {
-                        reportConfigMismatchDetails<PaoMetricIds>( "Interval Channel Metrics",
-                            cfgIntervalMetrics, paoIntervalMetrics,
-                            pReq, returnMsgs );
-
-                        /*
-                         * If we have channels mismatched, it may be that the meter is not configured for them,
-                         * in which case the device channels will contain a subset of the config channels.
-                         */
-                        if( paoIntervalMetrics )
-                        {
-                            PaoMetricIds diff;
-
-                            std::set_difference( cfgIntervalMetrics.begin(), cfgIntervalMetrics.end(),
-                                paoIntervalMetrics.get().begin(), paoIntervalMetrics.get().end(),
-                                std::inserter( diff, diff.begin() ) );
-
-                            if( !diff.empty() )
-                            {
-                                std::string msg = "The meter device is missing " + std::to_string( diff.size() ) +
-                                    " interval channels which suggests the meter may not be configured for them.";
-                                reportConfigDetails( msg, pReq, returnMsgs );
-                            }
-                        }
-
-                        if( cfgRecordingIntervalSeconds != paoRecordingIntervalSeconds )
-                        {
-                            reportConfigMismatchDetails<unsigned>( "Channel Recording Interval (sec)",
-                                cfgRecordingIntervalSeconds, paoRecordingIntervalSeconds,
-                                pReq, returnMsgs );
-                        }
-
-                        if( cfgReportingIntervalSeconds != paoReportingIntervalSeconds )
-                        {
-                            reportConfigMismatchDetails<unsigned>( "Channel Reporting Interval (sec)",
-                                cfgReportingIntervalSeconds, paoReportingIntervalSeconds,
-                                pReq, returnMsgs );
-                        }
-                        ret = ClientErrors::ConfigNotCurrent;
+                        reportConfigMismatchDetails<unsigned>("Channel Recording Interval (sec)",
+                            cfgRecordingIntervalSeconds, paoRecordingIntervalSeconds,
+                            pReq, returnMsgs);
                     }
+
+                    if (cfgReportingIntervalSeconds != paoReportingIntervalSeconds)
+                    {
+                        reportConfigMismatchDetails<unsigned>("Channel Reporting Interval (sec)",
+                            cfgReportingIntervalSeconds, paoReportingIntervalSeconds,
+                            pReq, returnMsgs);
+                    }
+                    ret = ClientErrors::ConfigNotCurrent;
                 }
                 else
                 {
@@ -568,6 +516,101 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
 
         return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
+}
+
+/**
+  * Compare the channel configuration between the PAO config and what is reported by the meter.
+  *
+  * At this point we know that the set's are not the same.
+  *
+  * If there are no PAO metrics, we simple state that it's empty.
+  * If the set of configuration channels contains more than meter channels, we suggest that 
+  *   they have the wrong config.
+  * If the set of meter channels contain more than the configuration, thel them there is a 
+  *   mismatch and say which channels.
+  * If the sets are totally or partially disjoint, then we just tell them what we have and 
+  *   let them figure it out.
+  * 
+  */
+YukonError_t RfnMeterDevice::compareChannels(
+    CtiRequestMsg    * pReq,
+    CtiCommandParser & parse,
+    ReturnMsgList    & returnMsgs,
+    std::string prefix,
+    const PaoMetricIds &cfgMetrics,
+    const boost::optional<PaoMetricIds> &paoMetrics)
+{
+    if (paoMetrics)
+    {
+        /* If we have device/config channels mismatched */
+
+        auto metric_to_string = [](const MetricIdLookup::MetricId i) { return MetricIdLookup::getName(i); };
+
+        PaoMetricIds cfgOnly, meterOnly;
+
+        std::set_difference(cfgMetrics.begin(), cfgMetrics.end(),
+            paoMetrics.get().begin(), paoMetrics.get().end(),
+            std::inserter(cfgOnly, cfgOnly.begin()));
+
+        std::set_difference(paoMetrics.get().begin(), paoMetrics.get().end(),
+            cfgMetrics.begin(), cfgMetrics.end(),
+            std::inserter(meterOnly, meterOnly.begin()));
+
+        if (cfgOnly.size() != 0 && meterOnly.size() == 0)
+        {
+            /* Configuration has channels that the meter does not.
+                * It may be that the meter is not configured for them.
+                */
+            if (std::includes(cfgMetrics.begin(), cfgMetrics.end(),
+                paoMetrics.get().begin(), paoMetrics.get().end()))
+            {
+                std::string msg;
+
+                msg = prefix + " channel config probably not supported by meter.  "
+                    "Meter is missing " + join(cfgOnly | transformed(metric_to_string), ", ");
+                reportConfigDetails(msg, pReq, returnMsgs);
+
+                msg = "Config: " + join(cfgMetrics | transformed(metric_to_string), ", ");
+                reportConfigDetails(msg, pReq, returnMsgs);
+
+                msg = "Meter: " + join(paoMetrics.get() | transformed(metric_to_string), ", ");
+                reportConfigDetails(msg, pReq, returnMsgs);
+            }
+        }
+        else if ((cfgOnly.size() == 0 && meterOnly.size() != 0))
+        {
+            /* The meter has channels the configuration does not. */
+            std::string msg;
+
+            msg = prefix + " channel program mismatch.  "
+                "Configuration is missing " + join(meterOnly | transformed(metric_to_string), ", ");
+            reportConfigDetails(msg, pReq, returnMsgs);
+
+            msg = "Config: " + join(cfgMetrics | transformed(metric_to_string), ", ");
+            reportConfigDetails(msg, pReq, returnMsgs);
+
+            msg = "Meter: " + join(paoMetrics.get() | transformed(metric_to_string), ", ");
+            reportConfigDetails(msg, pReq, returnMsgs);
+        }
+        else if ((cfgOnly.size() != 0 && meterOnly.size() != 0))
+        {
+            /* The meter is a total or partial (disjoint) mismatch */
+            std::string msg;
+            msg = prefix + " channel program mismatch.";
+            reportConfigDetails(msg, pReq, returnMsgs);
+
+            msg = "Config: " + join(cfgMetrics | transformed(metric_to_string), ", ");
+            reportConfigDetails(msg, pReq, returnMsgs);
+
+            msg = "Meter: " + join(paoMetrics.get() | transformed(metric_to_string), ", ");
+            reportConfigDetails(msg, pReq, returnMsgs);
+        }
+        return ClientErrors::ConfigNotCurrent;
+    }
+    std::string msg(prefix + " channel program mismatch.  Meter data is Empty.");
+
+    reportConfigDetails(msg, pReq, returnMsgs);
+    return ClientErrors::ConfigNotCurrent;
 }
 
 YukonError_t RfnMeterDevice::executeGetConfigInstallChannels( CtiRequestMsg    * pReq,
