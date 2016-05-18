@@ -114,6 +114,11 @@ void WorkerThread::join()
  */
 bool WorkerThread::tryJoinFor( const Timing::Chrono &duration )
 {
+    if (_thread.get_id() == boost::thread::id())
+    {
+        CTILOG_INFO(dout, "Thread " << _function._name << " no longer exists.");
+        return true;
+    }
     return _thread.try_join_for( boost::chrono::milliseconds( duration.milliseconds() ));
 }
 
