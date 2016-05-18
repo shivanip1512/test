@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <set>
 
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -295,22 +296,16 @@ namespace Cti
 {
     using boost::adaptors::transformed;
 
-    template <class T>
-    inline std::string join(const std::set<T> &V, std::string sep)
+    template <class Container>
+    inline std::string join(const Container &V, std::string sep)
     {
-        return boost::algorithm::join(V | transformed(static_cast<std::string(*)(T)>(std::to_string)), sep);
+        return boost::algorithm::join(V | transformed(static_cast<std::string(*)(Container::value_type)>(std::to_string)), sep);
     }
 
     template <>
     inline std::string join(const std::set<std::string> &V, std::string sep)
     {
         return boost::algorithm::join(V, sep);
-    }
-
-    template <class T>
-    inline std::string join(const std::vector<T> &V, std::string sep)
-    {
-        return boost::algorithm::join(V | transformed(static_cast<std::string(*)(T)>(std::to_string)), sep);
     }
 
     template <>
