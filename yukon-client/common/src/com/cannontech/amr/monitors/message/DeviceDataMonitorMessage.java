@@ -7,7 +7,7 @@ import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 public class DeviceDataMonitorMessage implements Serializable{
     private static final long serialVersionUID = 1L;
 
-    public enum Action {
+    public static enum Action {
         CREATE, UPDATE, DISABLE, ENABLE, RECALCULATE
     }
 

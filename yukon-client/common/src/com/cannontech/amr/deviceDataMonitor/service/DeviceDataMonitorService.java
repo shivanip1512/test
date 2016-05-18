@@ -32,10 +32,8 @@ public interface DeviceDataMonitorService {
 
     /**
      * This method should be the only way a caller should delete a DeviceDataMonitor. Do not directly call DeviceDataMonitorDao.deleteMonitor
-     *  1) Deletes meter from the database
-     *  2) Sends message to Service Manager to remove the monitor from the pending for recalculation queue. 
+     *  1) Deletes monitor from the database
      */
-    
     void delete(DeviceDataMonitor monitor);
     
     /**
@@ -45,7 +43,6 @@ public interface DeviceDataMonitorService {
      *  3) Service Manager creates a violation group
      *  4) Service Manager adds monitor to pending for recalculation queue
      */
-    
     DeviceDataMonitor create(DeviceDataMonitor monitor) throws DuplicateException;
     
     /**

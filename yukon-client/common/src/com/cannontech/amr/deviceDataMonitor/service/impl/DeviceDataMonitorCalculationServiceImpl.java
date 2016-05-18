@@ -86,24 +86,21 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
         log.info("Waiting " + MINUTES_TO_WAIT_TO_START_CALCULATION + " minutes to recalcutate");
 
-        scheduledExecutorService.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // wait for dispatch to be available
-                    dispatchConnection = connPool.getDefDispatchConn();
-                    if (!dispatchConnection.isValid()) {
-                        log.info("Waiting for dispatch to connect");
-                        dispatchConnection.waitForValidConnection();
-                    }
-
-                    deviceDataMonitorCacheService.getAllEnabledMonitors().forEach(monitor -> {
-                        startWork(monitor);
-                    });
-
-                } catch (Exception e) {
-                    log.error("Failed to start calculation", e);
+        scheduledExecutorService.schedule(() -> {
+            try {
+                // wait for dispatch to be available
+                dispatchConnection = connPool.getDefDispatchConn();
+                if (!dispatchConnection.isValid()) {
+                    log.info("Waiting for dispatch to connect");
+                    dispatchConnection.waitForValidConnection();
                 }
+
+                deviceDataMonitorCacheService.getAllEnabledMonitors().forEach(monitor -> {
+                    startWork(monitor);
+                });
+
+            } catch (Exception e) {
+                log.error("Failed to start calculation", e);
             }
         }, MINUTES_TO_WAIT_TO_START_CALCULATION, TimeUnit.MINUTES);
     }
@@ -113,26 +110,23 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      */
     private void startWork(DeviceDataMonitor monitor) {
         log.debug("Starting work " + monitor);
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    boolean isWorkingOnObject = pending.containsKey(monitor.getId());
-                    if (!isWorkingOnObject) {
-                        pending.put(monitor.getId(), monitor);
-                        recalculateViolations(monitor);
-                        Iterator<DeviceDataMonitor> iterator = pending.values().iterator();
-                        while (iterator.hasNext()) {
-                            DeviceDataMonitor ddm = iterator.next();
-                            if (ddm.getId() == monitor.getId()) {
-                                iterator.remove();
-                                break;
-                            }
+        executor.execute(() -> {
+            try {
+                boolean isWorkingOnObject = pending.containsKey(monitor.getId());
+                if (!isWorkingOnObject) {
+                    pending.put(monitor.getId(), monitor);
+                    recalculateViolations(monitor);
+                    Iterator<DeviceDataMonitor> iterator = pending.values().iterator();
+                    while (iterator.hasNext()) {
+                        DeviceDataMonitor ddm = iterator.next();
+                        if (ddm.getId() == monitor.getId()) {
+                            iterator.remove();
+                            break;
                         }
                     }
-                } catch (Exception e) {
-                    log.error(monitor, e);
                 }
+            } catch (Exception e) {
+                log.error(monitor, e);
             }
         });
     }
@@ -190,6 +184,9 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         }
     }
 
+    /**
+     * Updates violation group
+     */
     private void updateViolationGroup(DeviceDataMonitorMessage message) {
 
         String oldName = message.getOldMonitor() == null ? null : message.getOldMonitor().getGroupName();
@@ -202,16 +199,22 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             deviceGroupEditorDao.updateGroup(existingViolationStoredGroup);
         }
     }
-
+    
+    /**
+     * Creates violation group
+     */
     private void createViolationGroup(DeviceDataMonitor monitor) {
 
         log.debug("Creating new device group " + monitor);
         deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName(), true);
     }
 
+    /**
+     * Recalculates violations for monitor
+     */
     private void recalculateViolations(DeviceDataMonitor monitor) throws InterruptedException {
 
-        log.debug("Recalculating violations " + monitor);
+        log.info("Recalculating violations " + monitor);
         
         DeviceGroup monitorGroup = deviceGroupService.findGroupName(monitor.getGroupName());
         StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(monitorGroup);
@@ -241,9 +244,12 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                 deviceGroupMemberEditorDao.addDevices(violationsGroup, devicesInViolation);
             }
         }
-        log.debug("Recalculation done for " + monitor);
+        log.info("Recalculation done for " + monitor);
     }
 
+    /**
+     * Finds violations and returns violating devices
+     */
     private Set<PaoIdentifier> findViolations(Set<SimpleDevice> devicesInGroup, Set<Attribute> attributes,
             List<DeviceDataMonitorProcessor> processors) throws InterruptedException {
 
@@ -255,7 +261,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         identifiers.forEach(identifier -> {
             paoPointIdentifiers.addAll(identifier.getPaoPointIdentifiers().stream().filter(
                 (x) -> x.getPointIdentifier().getPointType() == PointType.Status
-                    || x.getPaoTypePointIdentifier().getPaoType().getPaoCategory() == PaoCategory.DEVICE).collect(
+                    && x.getPaoTypePointIdentifier().getPaoType().getPaoCategory() == PaoCategory.DEVICE).collect(
                         Collectors.toSet()));
         });
 
@@ -264,6 +270,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         Map<Integer, PointInfo> points =
             paoToPoint.entrySet().stream().collect(Collectors.toMap(e -> e.getValue().getPointId(), e -> e.getValue()));
 
+        //Gets point values from cache, if the points values are not available in cache, asks dispatch for the point data   
         Set<? extends PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointValues(points.keySet());
 
         Map<PointInfo, PaoPointIdentifier> pointToPao = HashBiMap.create(paoToPoint).inverse();
@@ -285,7 +292,6 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     public boolean isPointValueMatch(DeviceDataMonitorProcessor processor, PointValueHolder pointValue) {
 
         int processorPointValue = processor.getState().getStateRawState();
-        // Safety check for points that don't have a previous value yet in the database
         if (pointValue == null) {
             return false;
         }
