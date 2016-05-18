@@ -16,16 +16,6 @@ public class ItronClientHandler extends BillingFormatterBase {
         throw new java.lang.UnsupportedOperationException("method not supported");
     }
     
-    public int writeBillingFileToClient(final List<BillableDevice> deviceList) throws IOException {
-        try {
-            ItronXmlBuilder builder = new ItronXmlBuilderImpl();
-            Document doc = builder.buildDocument(deviceList);
-            return doc.getRootElement().getChild("Channels").getChildren().size();  
-        } catch (Exception e) {
-            throw new IOException("Unable to create XML file: " + e);
-        }
-    }
-    
     @Override
     public int writeBillingFile(final List<BillableDevice> deviceList, final OutputStream out) throws IOException {
         try {
