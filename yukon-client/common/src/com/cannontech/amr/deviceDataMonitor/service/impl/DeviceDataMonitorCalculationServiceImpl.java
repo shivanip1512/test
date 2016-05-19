@@ -166,6 +166,9 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                     case CREATE:
                         createViolationGroup(monitorMessage.getUpdatedMonitor());
                         startWork(monitorMessage.getUpdatedMonitor());
+                    case DISABLE:
+                        clearViolationGroup(monitorMessage.getUpdatedMonitor());
+                        break;
                     case ENABLE:
                     case RECALCULATE:
                         startWork(monitorMessage.getUpdatedMonitor());
@@ -182,6 +185,15 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                 log.error("Unable to extract message", e);
             }
         }
+    }
+    
+    /**
+     * Removes all devices from violation group
+     */
+    private void clearViolationGroup(DeviceDataMonitor monitor) {
+        StoredDeviceGroup violationsGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA,
+            monitor.getViolationsDeviceGroupName(), false);
+        deviceGroupMemberEditorDao.removeAllChildDevices(violationsGroup);
     }
 
     /**
