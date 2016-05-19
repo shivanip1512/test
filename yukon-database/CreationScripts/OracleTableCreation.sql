@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/10/2016 11:37:55 AM                        */
+/* Created on:     5/19/2016 11:56:08 AM                        */
 /*==============================================================*/
 
 
@@ -8421,11 +8421,11 @@ INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND', '#6e6d71');
 INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_FONT_COLOR', '#ffffff');
 INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_SHADOW', '#5a595d');
 INSERT INTO ThemeProperty VALUES (-1, 'PRIMARY_COLOR', '#0066cc');
-INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_BACKGROUND', '2');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_BACKGROUND', '-2');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_COLOR', '#ffffff');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_SHADOW', 'rgba(0,0,0,0.5)');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_TAGLINE_MARGIN', '35');
-INSERT INTO ThemeProperty VALUES (-1, 'LOGO', '1');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGO', '-1');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_LEFT', '0');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_TOP', '17');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_WIDTH', '163');
