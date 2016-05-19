@@ -43,7 +43,7 @@ Class-Path: ./
  asm-attrs.jar 
  antlr-2.7.6rc1.jar 
  log4j-1.2.17.jar 
- apache-log4j-extras-1.0.jar
+ apache-log4j-extras-1.0.jar 
  guava-13.0.1.jar 
  concurrentlinkedhashmap-lru-1.4.jar 
  SqlServer.jar 
