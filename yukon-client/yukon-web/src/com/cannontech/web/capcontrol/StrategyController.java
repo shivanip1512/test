@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
@@ -41,6 +43,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class StrategyController {
     
+    private static Logger log = YukonLogManager.getLogger(StrategyController.class);
     private static final String baseKey = "yukon.web.modules.capcontrol.strategies";
     
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
@@ -119,6 +122,7 @@ public class StrategyController {
     public String save(
             @ModelAttribute("strategy") CapControlStrategy strategy,
             BindingResult result,
+            FlashScope flash,
             RedirectAttributes redirectAttributes) {
         
         /*
@@ -144,11 +148,12 @@ public class StrategyController {
         try {
             id = strategyService.save(strategy);
         } catch (Exception e) {
-            //Something happened to make the config invalid since validation.
-            result.rejectValue("name", "Something Broke");
-            
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".updateFailed"));
+            log.error("Error saving strategy: " + e.getMessage());
             return bindAndForward(strategy, result, redirectAttributes);
         }
+        
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".updateSuccess"));
         
         return "redirect:strategies/" + id;
     }

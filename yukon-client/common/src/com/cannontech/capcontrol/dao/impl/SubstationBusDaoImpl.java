@@ -23,8 +23,7 @@ import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -33,10 +32,14 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
     
@@ -44,6 +47,13 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ZoneDao zoneDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    
+    private static final DatabaseVendor[] oracleTypes = {
+            DatabaseVendor.ORACLE10G,
+            DatabaseVendor.ORACLE11G,
+            DatabaseVendor.ORACLE12C
+        };
     
     private static final RowMapper<SubstationBus> rowMapper = new RowMapper<SubstationBus>() {
         @Override
@@ -279,27 +289,33 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("WHERE SubStationBusID").eq(busId);
 
         jdbcTemplate.update(sql);
+        
+        sql = new SqlStatementBuilder();
+        ArrayList<Integer> feederList = Lists.newArrayList(feederIds);
+        sql.append(insertFeeders(busId, feederList));
+        jdbcTemplate.update(sql);
+    }
+    
+    private SqlFragmentSource insertFeeders(int busId, ArrayList<Integer> feederList) {
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder oracleSql =
+            builder.buildFor(oracleTypes);
+        
+        SqlBuilder otherSql = builder.buildOther();
+        int displayOrder = 1;
+          
+        oracleSql.append("INSERT ALL");
+        for (Integer feederId : feederList) {
+            otherSql.append("INSERT INTO CCFeederSubAssignment");
+            otherSql.append(" values (").appendArgument(busId).append(", ").appendArgument(feederId).append(", ").appendArgument(displayOrder).append(")");
+            oracleSql.append("INTO CCFeederSubAssignment");
+            oracleSql.append(" values (").appendArgument(busId).append(", ").appendArgument(feederId).append(", ").appendArgument(displayOrder).append(")");
+            displayOrder++;
+        }
+        
+        oracleSql.append("SELECT 1 from dual");
 
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        template.setChunkSize(ChunkingSqlTemplate.DEFAULT_SIZE / 3);
-
-        SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
-
-            private Integer displayOrder = 1;
-
-            @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                for (Integer feederId : subList) {
-                    sql.append("INSERT INTO CCFeederSubAssignment");
-                    sql.values(busId, feederId, displayOrder);
-                    displayOrder++;
-                }
-                return sql;
-            }
-        };
-
-        template.update(generator, feederIds);
+        return builder;
     }
     
     @Override
@@ -311,27 +327,33 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("WHERE SubStationID").eq(substationId);
 
         jdbcTemplate.update(sql);
+        
+        sql = new SqlStatementBuilder();
+        ArrayList<Integer> busList = Lists.newArrayList(busIds);
+        sql.append(insertBuses(substationId, busList));
+        jdbcTemplate.update(sql);
+    }
+    
+    private SqlFragmentSource insertBuses(int substationId, ArrayList<Integer> busList) {
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder oracleSql =
+            builder.buildFor(oracleTypes);
+        
+        SqlBuilder otherSql = builder.buildOther();
+        int displayOrder = 1;
+          
+        oracleSql.append("INSERT ALL");
+        for (Integer busId : busList) {
+            otherSql.append("INSERT INTO CCSUBSTATIONSUBBUSLIST");
+            otherSql.append(" values (").appendArgument(substationId).append(", ").appendArgument(busId).append(", ").appendArgument(displayOrder).append(")");
+            oracleSql.append("INTO CCSUBSTATIONSUBBUSLIST");
+            oracleSql.append(" values (").appendArgument(substationId).append(", ").appendArgument(busId).append(", ").appendArgument(displayOrder).append(")");
+            displayOrder++;
+        }
+        
+        oracleSql.append("SELECT 1 from dual");
 
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        template.setChunkSize(ChunkingSqlTemplate.DEFAULT_SIZE / 3);
-
-        SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
-
-            private Integer displayOrder = 1;
-
-            @Override
-            public SqlFragmentSource generate(List<Integer> busList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                for (Integer busId : busList) {
-                    sql.append("INSERT INTO CCSUBSTATIONSUBBUSLIST");
-                    sql.values(substationId, busId, displayOrder);
-                    displayOrder++;
-                }
-                return sql;
-            }
-        };
-
-        template.update(generator, busIds);
+        return builder;
     }
     
     @Override

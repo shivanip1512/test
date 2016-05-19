@@ -22,6 +22,8 @@ import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.StrategyLimitsHolder;
+import com.cannontech.common.util.SqlBuilder;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -48,6 +50,9 @@ import com.cannontech.database.db.capcontrol.VoltViolationType;
 import com.cannontech.database.db.capcontrol.VoltageViolationSetting;
 import com.cannontech.database.db.capcontrol.VoltageViolationSettingType;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.google.common.collect.Lists;
 
 public class StrategyDaoImpl implements StrategyDao {
@@ -68,6 +73,15 @@ public class StrategyDaoImpl implements StrategyDao {
     
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    
+    private static final DatabaseVendor[] oracleTypes = {
+            DatabaseVendor.ORACLE10G,
+            DatabaseVendor.ORACLE11G,
+            DatabaseVendor.ORACLE12C
+        };
+        
+
     
     private FieldMapper<CapControlStrategy> strategyFieldMapper = new FieldMapper<CapControlStrategy>() {
 
@@ -338,11 +352,23 @@ public class StrategyDaoImpl implements StrategyDao {
     
     @Transactional
     private void savePeakSettings(CapControlStrategy strategy) {
-        
-        Map<TargetSettingType, PeakTargetSetting> targetSettings =
-            StrategyPeakSettingsHelper.getSettingDefaults(strategy.getAlgorithm());
         int strategyId = strategy.getId();
         
+        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+        deleteSql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
+        deleteSql.append("AND SettingType").in(Lists.newArrayList(PeaksTargetType.values()));
+        jdbcTemplate.update(deleteSql.getSql(), deleteSql.getArguments());
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(insertTargetSettings(strategy));
+        jdbcTemplate.update(sql);
+    }
+    
+    
+    private SqlFragmentSource insertTargetSettings(CapControlStrategy strategy) {
+        int strategyId = strategy.getId();
+        Map<TargetSettingType, PeakTargetSetting> targetSettings =
+                StrategyPeakSettingsHelper.getSettingDefaults(strategy.getAlgorithm());
         PeaksTargetType peak;
         PeaksTargetType offpeak;
         if(strategy.isTimeOfDay()){
@@ -352,26 +378,31 @@ public class StrategyDaoImpl implements StrategyDao {
             peak = PeaksTargetType.PEAK;
             offpeak = PeaksTargetType.OFFPEAK;
         }
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder oracleSql =
+            builder.buildFor(oracleTypes);
         
-        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-        deleteSql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
-        deleteSql.append("AND SettingType").in(Lists.newArrayList(PeaksTargetType.values()));
-        jdbcTemplate.update(deleteSql.getSql(), deleteSql.getArguments());
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlBuilder otherSql = builder.buildOther();
+          
+        oracleSql.append("INSERT ALL");
         for(Entry<TargetSettingType, PeakTargetSetting> targetSettingEntry : targetSettings.entrySet()) {
             PeakTargetSetting setting = strategy.getTargetSettings().get(targetSettingEntry.getKey());
             TargetSettingType type = targetSettingEntry.getKey();
-            
-            sql.append("INSERT INTO CCStrategyTargetSettings");
-            sql.values(strategyId, type, setting.getPeakValue(), peak);
-            sql.append(";");
-            
-            sql.append("INSERT INTO CCStrategyTargetSettings");
-            sql.values(strategyId, type, setting.getOffPeakValue(), offpeak);
-            sql.append(";");
+
+            otherSql.append("INSERT INTO CCStrategyTargetSettings");
+            otherSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getPeakValue()).append(", ").appendArgument(peak).append(")");
+            oracleSql.append("INTO CCStrategyTargetSettings");
+            oracleSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getPeakValue()).append(", ").appendArgument(peak).append(")");
+
+            otherSql.append("INSERT INTO CCStrategyTargetSettings");
+            otherSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getOffPeakValue()).append(", ").appendArgument(offpeak).append(")");
+            oracleSql.append("INTO CCStrategyTargetSettings");
+            oracleSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getOffPeakValue()).append(", ").appendArgument(offpeak).append(")");
         }
-        jdbcTemplate.update(sql);
+        
+        oracleSql.append("SELECT 1 from dual");
+
+        return builder;
     }
 
     @Transactional
@@ -386,28 +417,42 @@ public class StrategyDaoImpl implements StrategyDao {
         if (!strategy.isIvvc()) {
             return; // Don't save these IVVC-only settings if we aren't going to use them
         }
-
-        Map<VoltViolationType, VoltageViolationSetting> targetSettings = strategy.getVoltageViolationSettings();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(insertVoltageSettings(strategy));
+        jdbcTemplate.update(sql);
+
+    }
+    
+    private SqlFragmentSource insertVoltageSettings(CapControlStrategy strategy) {
+        int strategyId = strategy.getId();
+        Map<VoltViolationType, VoltageViolationSetting> targetSettings = strategy.getVoltageViolationSettings();
+
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder oracleSql =
+            builder.buildFor(oracleTypes);
+        
+        SqlBuilder otherSql = builder.buildOther();
+          
+        oracleSql.append("INSERT ALL");
         for (Entry<VoltViolationType, VoltageViolationSetting> entry : targetSettings.entrySet()) {
-            
             VoltViolationType type = entry.getKey();
             VoltageViolationSetting setting = entry.getValue();
-            
-            sql.append("INSERT INTO CCStrategyTargetSettings");
-            sql.values(strategyId, type, setting.getBandwidth(), VoltageViolationSettingType.BANDWIDTH);
-            sql.append(";");
 
-            sql.append("INSERT INTO CCStrategyTargetSettings");
-            sql.values(strategyId, type, setting.getCost(), VoltageViolationSettingType.COST);
-            sql.append(";");
-            
-            sql.append("INSERT INTO CCStrategyTargetSettings");
-            sql.values(strategyId, type, setting.getEmergencyCost(), VoltageViolationSettingType.EMERGENCY_COST);
-            sql.append(";");
+            otherSql.append("INSERT INTO CCStrategyTargetSettings");
+            otherSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getCost()).append(", ").appendArgument(VoltageViolationSettingType.COST).append(")");
+            oracleSql.append("INTO CCStrategyTargetSettings");
+            oracleSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getCost()).append(", ").appendArgument(VoltageViolationSettingType.COST).append(")");
+
+            otherSql.append("INSERT INTO CCStrategyTargetSettings");
+            otherSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getEmergencyCost()).append(", ").appendArgument(VoltageViolationSettingType.EMERGENCY_COST).append(")");
+            oracleSql.append("INTO CCStrategyTargetSettings");
+            oracleSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getEmergencyCost()).append(", ").appendArgument(VoltageViolationSettingType.EMERGENCY_COST).append(")");
         }
-        jdbcTemplate.update(sql);
+        
+        oracleSql.append("SELECT 1 from dual");
+
+        return builder;
     }
     
     @Transactional
@@ -428,29 +473,30 @@ public class StrategyDaoImpl implements StrategyDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         /* Bandwidth */
+        sql = new SqlStatementBuilder();
         sql.append("INSERT INTO CCStrategyTargetSettings");
         sql.values(strategyId,
                    PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION,
                    setting.getBandwidth(),
                    PowerFactorCorrectionSettingType.BANDWIDTH);
-        sql.append(";");
+        jdbcTemplate.update(sql);
 
         /* cost */
+        sql = new SqlStatementBuilder();
         sql.append("INSERT INTO CCStrategyTargetSettings");
         sql.values(strategyId,
                    PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION,
                    setting.getCost(),
                    PowerFactorCorrectionSettingType.COST);
-        sql.append(";");
+        jdbcTemplate.update(sql);
         
         /* max cost */
+        sql = new SqlStatementBuilder();
         sql.append("INSERT INTO CCStrategyTargetSettings");
         sql.values(strategyId,
                    PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION,
                    setting.getMaxCost(),
                    PowerFactorCorrectionSettingType.MAX_COST);
-        sql.append(";");
-
         jdbcTemplate.update(sql);
     }
     
@@ -472,29 +518,30 @@ public class StrategyDaoImpl implements StrategyDao {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         /* Banks */
+        sql = new SqlStatementBuilder();
         sql.append("INSERT INTO CCStrategyTargetSettings");
         sql.values(strategyId,
                    CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE,
                    setting.getBanksReportingRatio(),
                    CommReportingPercentageSettingType.CAPBANK);
-        sql.append(";");
+        jdbcTemplate.update(sql);
         
         /* Regulators */
+        sql = new SqlStatementBuilder();
         sql.append("INSERT INTO CCStrategyTargetSettings");
         sql.values(strategyId,
                    CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE,
                    setting.getRegulatorReportingRatio(),
                    CommReportingPercentageSettingType.REGULATOR);
-        sql.append(";");
+        jdbcTemplate.update(sql);
         
         /* Additional Points */
+        sql = new SqlStatementBuilder();
         sql.append("INSERT INTO CCStrategyTargetSettings");
         sql.values(strategyId,
                    CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE,
                    setting.getVoltageMonitorReportingRatio(),
                    CommReportingPercentageSettingType.VOLTAGE_MONITOR);
-        sql.append(";");
-
         jdbcTemplate.update(sql);
     }
 

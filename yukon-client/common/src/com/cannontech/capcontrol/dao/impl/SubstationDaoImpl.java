@@ -75,7 +75,7 @@ public class SubstationDaoImpl implements SubstationDao {
         sql.append("FROM CCSubAreaAssignment");
         sql.append("WHERE SubstationBusId").eq(id);
         
-        Integer parentId;
+        Integer parentId = null;
         try {
             parentId = jdbcTemplate.queryForObject(sql, TypeRowMapper.INTEGER);
         } catch (EmptyResultDataAccessException e) {
@@ -88,7 +88,8 @@ public class SubstationDaoImpl implements SubstationDao {
             
             try {
                 List<Integer> parentIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
-                parentId = parentIds.get(0);
+                if (parentIds.size() > 0)
+                    parentId = parentIds.get(0);
             } catch (EmptyResultDataAccessException er) {
                 parentId = null;
             }

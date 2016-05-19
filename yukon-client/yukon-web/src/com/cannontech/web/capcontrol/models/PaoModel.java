@@ -3,13 +3,14 @@ package com.cannontech.web.capcontrol.models;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.CtiUtilities;
 
 public abstract class PaoModel implements YukonPao {
     
     protected Integer id;
     protected PaoType type;
     protected String name;
-    protected String description;
+    protected String description = CtiUtilities.STRING_NONE;;
     protected boolean disabled;
     
     public Integer getId() {
