@@ -2,7 +2,9 @@ package com.cannontech.dr.rfn.model;
 
 import java.io.Serializable;
 
+import org.joda.time.Duration;
 import org.joda.time.Hours;
+import org.joda.time.Minutes;
 
 public class SimulatorSettings implements Serializable{
     
@@ -21,21 +23,49 @@ public class SimulatorSettings implements Serializable{
     //used for testing simulator
     private int deviceId;
     
-    private int controlInterval = Hours.hours(1).toStandardSeconds().getSeconds();
+    private int reportingInterval = ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS.getSeconds();
     
-    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int percentOfDuplicates, int controlInterval) {
+    public enum ReportingIntervalEnum {
+        REPORTING_INTERVAL_1_HOURS(Duration.standardHours(1)),
+        REPORTING_INTERVAL_4_HOURS(Duration.standardHours(4)),
+        REPORTING_INTERVAL_24_HOURS(Duration.standardDays(1)), 
+        ;
+
+        private Duration duration;
+
+        ReportingIntervalEnum(Duration duration) {
+            this.duration = duration;
+        }
+
+        public int getSeconds() {
+            return duration.toStandardSeconds().getSeconds();
+        }
+
+        public Duration getDuration() {
+            return duration;
+        }
+
+        public static ReportingIntervalEnum fromSeconds(int seconds) {
+            for (ReportingIntervalEnum interval : values()) {
+                if (interval.getSeconds() == seconds)
+                    return interval;
+            }
+            return null;
+        }
+    }
+    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int percentOfDuplicates, int reportingInterval) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
         this.lcr6600serialFrom = lcr6600serialFrom;
         this.lcr6600serialTo = lcr6600serialTo;
         this.percentOfDuplicates =  percentOfDuplicates;
-        this.controlInterval = controlInterval;
+        this.reportingInterval = reportingInterval;
     }
     
-    public SimulatorSettings(String paoType, int percentOfDuplicates, int controlInterval) {
+    public SimulatorSettings(String paoType, int percentOfDuplicates, int reportingInterval) {
         this.paoType = paoType;
         this.percentOfDuplicates =  percentOfDuplicates;
-        this.controlInterval = controlInterval;
+        this.reportingInterval = reportingInterval;
     }
     public SimulatorSettings(int deviceId) {
         this.setDeviceId(deviceId);
@@ -90,11 +120,21 @@ public class SimulatorSettings implements Serializable{
         this.deviceId = deviceId;
     }
 
-    public int getControlInterval() {
-        return controlInterval;
+    public int getReportingInterval() {
+        return reportingInterval;
     }
 
-    public void setControlInterval(int controlInterval) {
-        this.controlInterval = controlInterval;
+    public void setReportingInterval(int reportingInterval) {
+        this.reportingInterval = reportingInterval;
+    }
+    
+    public ReportingIntervalEnum getReportingIntervalEnum() {
+        if(reportingInterval == 3600){
+            return ReportingIntervalEnum.REPORTING_INTERVAL_1_HOURS;
+        } else if (reportingInterval == 14400){
+            return ReportingIntervalEnum.REPORTING_INTERVAL_4_HOURS;
+        } else{
+            return ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS;
+        }
     }
 }

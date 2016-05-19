@@ -179,16 +179,4 @@ public enum TimeIntervals {
     public static Set<TimeIntervals> getCapControlIntervals() {
         return capControlIntervals;
     }
-    
-    private static final Set<TimeIntervals> rfnMeterReportingIntervals = ImmutableSet.of(
-        HOURS_1,
-        HOURS_4,
-        DAYS_1);
-    
-    /**
-     * Used forCapControl CBC Setup
-     */
-    public static Set<TimeIntervals> getRfnMeterReportingIntervals() {
-        return rfnMeterReportingIntervals;
-    }
 }

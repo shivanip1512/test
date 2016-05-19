@@ -55,6 +55,7 @@ import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
+import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingIntervalEnum;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
@@ -618,13 +619,16 @@ public class NmIntegrationController {
     
     @RequestMapping("viewRfnMeterSimulator")
     public String viewRfnMeterSimulator(ModelMap model) {
-        SimulatorSettings currentSettings  = new SimulatorSettings("ALL RFN Type", 10, 3600);
+        SimulatorSettings currentSettings  = new SimulatorSettings("ALL RFN Type", 10, 
+                ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS.getSeconds());
         model.addAttribute("currentSettings", currentSettings);
         
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
         model.addAttribute("paoTypes", paoTypes);
-        model.addAttribute("rfnMeterReportingIntervals", TimeIntervals.getRfnMeterReportingIntervals());
-        
+        model.addAttribute("rfnMeterReportingIntervals",
+            ImmutableSet.of(ReportingIntervalEnum.REPORTING_INTERVAL_1_HOURS,
+                ReportingIntervalEnum.REPORTING_INTERVAL_4_HOURS, ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS));
+
         RfnMeterDataSimulatorStatusResponse response = getRfnMeterSimulatorStatusResponse().response;
         if(response == null){
             return "rfn/rfnMeterSimulator.jsp";
@@ -641,7 +645,8 @@ public class NmIntegrationController {
     @RequestMapping("viewLcrDataSimulator")
     public String viewLcrDataSimulator(ModelMap model) {
         
-        SimulatorSettings currentSettings  = new SimulatorSettings(100000, 200000, 300000, 320000, 10, 60);
+        SimulatorSettings currentSettings  = new SimulatorSettings(100000, 200000, 300000, 320000, 10, 
+                ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS.getSeconds());
         model.addAttribute("currentSettings", currentSettings);
         
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse().response;
