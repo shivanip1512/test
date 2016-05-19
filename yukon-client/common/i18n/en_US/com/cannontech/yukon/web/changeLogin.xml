@@ -4,7 +4,7 @@
 
     <entry key="yukon.web.changelogin.changeUsername">Change Username</entry>
     <entry key="yukon.web.changelogin.changePassword">Change Password</entry>
-
+    <entry key="yukon.web.changelogin.confirmPassword">Confirm Password</entry>
     <entry key="yukon.web.changelogin.username">New Username</entry>
     <entry key="yukon.web.changelogin.oldPassword">Current Password</entry>
     <entry key="yukon.web.changelogin.newPassword">New Password</entry>

@@ -21,7 +21,7 @@
                     <tags:nameValue2 nameKey=".newPassword">
                         <tags:password path="password" cssClass="js-new-password" autocomplete="off" />
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.adminSetup.auth.user.confirmPassword">
+                    <tags:nameValue2 nameKey=".confirmPassword">
                         <tags:password path="confirmPassword" cssClass="js-confirm-password" autocomplete="off" />
                     </tags:nameValue2>
                     <tags:nameValue2 excludeColon="true">

@@ -22,7 +22,7 @@
                             autocomplete="off"/>
                 </tags:nameValue2>
                 
-                <tags:nameValue2 nameKey="yukon.web.modules.adminSetup.auth.user.confirmPassword">
+                <tags:nameValue2 nameKey=".confirmPassword">
                     <tags:input path="password2" password="true" inputClass="js-confirm-password" maxlength="64" 
                             autocomplete="off" placeholder="${placeholder}"/>
                 </tags:nameValue2>
