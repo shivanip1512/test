@@ -340,6 +340,9 @@
         <copy todir="${temp.dir}/YukonInstall">
             <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/Release 1/Package" />
         </copy>
+        <zip destfile="${temp.dir}/YukonInstall/yukon-pdb.zip">
+          <fileset dir="${basedir}/yukon-server/pdb" />
+        </zip>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseValidation">
             <fileset dir="${basedir}/yukon-client/common/src/com/cannontech/database/snapshot" />
         </copy>
