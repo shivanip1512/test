@@ -119,6 +119,7 @@
         <div class="column one">
             <form id='formData'">
                 <cti:csrfToken />
+                <cti:msg2 key="yukon.web.modules.dev.rfnMeterSimulator.helpText" var="helpText"/>
                 <tags:sectionContainer2 nameKey="rfnMeterSimulator">
                     <div id='rfnMeterForm'>
                         <tags:nameValueContainer2>

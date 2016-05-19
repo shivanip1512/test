@@ -118,6 +118,8 @@
        </div>
         <div class="column one">
             <form id='highSpeedBulkPointInjection'>
+            <cti:msg2 key="yukon.web.modules.dev.highSpeedBulkPointInjection.helpText" var="helpText"/>
+            <tags:sectionContainer title="Settings" helpText="${helpText}" >
                 <tags:nameValueContainer2>
                     <tags:nameValue2 argument="Device Group" label="modules.dev.setupDatabase.setupDevDatabase.generic">
                         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
@@ -147,6 +149,7 @@
                        <input id="valueHigh" name="valueHigh" type="text" value="100.0" disabled>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
+            </tags:sectionContainer>
                 <div class="page-action-area">
                     <cti:button id="start-button" label="Start" classes="js-primary-action-start" disabled="true"/>
                     <cti:button id="stop-button" label="Stop" classes="js-primary-action-stop" disabled="true" />

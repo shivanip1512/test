@@ -14,6 +14,8 @@
 
     <form id="bulkImportFileGenerator" action="<cti:url value="/dev/bulkImportFileGenerator/fileGenerator"/>" method="post">
         <cti:csrfToken/>
+        <cti:msg2 key="yukon.web.modules.dev.bulkImportFileGenerator.helpText" var="helpText"/>
+        <tags:sectionContainer title="Settings" helpText="${helpText}" >
             <tags:nameValueContainer>
                 <tags:nameValue id="deviceGroups" name="Device Group" nameColumnWidth="250px">
                         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
@@ -24,6 +26,7 @@
                     <input type="text" name="appendedText">
                 </tags:nameValue>
             </tags:nameValueContainer>
+         </tags:sectionContainer>
     </form>
     <div class="page-action-area">
         <cti:button type="submit" name="buttonAction" classes="primary action" label="Download" onclick="$('#bulkImportFileGenerator').submit();"/>
