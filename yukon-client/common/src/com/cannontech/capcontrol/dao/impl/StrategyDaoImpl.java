@@ -74,15 +74,7 @@ public class StrategyDaoImpl implements StrategyDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    
-    private static final DatabaseVendor[] oracleTypes = {
-            DatabaseVendor.ORACLE10G,
-            DatabaseVendor.ORACLE11G,
-            DatabaseVendor.ORACLE12C
-        };
-        
 
-    
     private FieldMapper<CapControlStrategy> strategyFieldMapper = new FieldMapper<CapControlStrategy>() {
 
         @Override
@@ -380,7 +372,7 @@ public class StrategyDaoImpl implements StrategyDao {
         }
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder oracleSql =
-            builder.buildFor(oracleTypes);
+            builder.buildFor(DatabaseVendor.getOracleDatabases());
         
         SqlBuilder otherSql = builder.buildOther();
           
@@ -430,7 +422,7 @@ public class StrategyDaoImpl implements StrategyDao {
 
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder oracleSql =
-            builder.buildFor(oracleTypes);
+            builder.buildFor(DatabaseVendor.getOracleDatabases());
         
         SqlBuilder otherSql = builder.buildOther();
           
@@ -473,7 +465,6 @@ public class StrategyDaoImpl implements StrategyDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         /* Bandwidth */
-        sql = new SqlStatementBuilder();
         sql.append("INSERT INTO CCStrategyTargetSettings");
         sql.values(strategyId,
                    PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION,
@@ -518,7 +509,6 @@ public class StrategyDaoImpl implements StrategyDao {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         /* Banks */
-        sql = new SqlStatementBuilder();
         sql.append("INSERT INTO CCStrategyTargetSettings");
         sql.values(strategyId,
                    CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE,

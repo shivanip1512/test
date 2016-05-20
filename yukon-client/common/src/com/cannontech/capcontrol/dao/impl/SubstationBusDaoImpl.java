@@ -49,12 +49,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     
-    private static final DatabaseVendor[] oracleTypes = {
-            DatabaseVendor.ORACLE10G,
-            DatabaseVendor.ORACLE11G,
-            DatabaseVendor.ORACLE12C
-        };
-    
     private static final RowMapper<SubstationBus> rowMapper = new RowMapper<SubstationBus>() {
         @Override
         public SubstationBus mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -299,7 +293,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     private SqlFragmentSource insertFeeders(int busId, ArrayList<Integer> feederList) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder oracleSql =
-            builder.buildFor(oracleTypes);
+            builder.buildFor(DatabaseVendor.getOracleDatabases());
         
         SqlBuilder otherSql = builder.buildOther();
         int displayOrder = 1;
@@ -337,7 +331,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     private SqlFragmentSource insertBuses(int substationId, ArrayList<Integer> busList) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder oracleSql =
-            builder.buildFor(oracleTypes);
+            builder.buildFor(DatabaseVendor.getOracleDatabases());
         
         SqlBuilder otherSql = builder.buildOther();
         int displayOrder = 1;
