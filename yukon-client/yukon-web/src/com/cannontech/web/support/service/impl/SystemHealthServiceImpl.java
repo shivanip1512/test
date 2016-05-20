@@ -4,29 +4,42 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
-import com.cannontech.web.support.ExtendedQueueData;
-import com.cannontech.web.support.QueueData;
-import com.cannontech.web.support.SystemHealthMetric;
-import com.cannontech.web.support.SystemHealthMetricIdentifier;
-import com.cannontech.web.support.SystemHealthMetricType;
 import com.cannontech.web.support.dao.UserSystemMetricDao;
 import com.cannontech.web.support.service.SystemHealthService;
+import com.cannontech.web.support.systemMetrics.ExtendedQueueData;
+import com.cannontech.web.support.systemMetrics.MetricHealthCriteria;
+import com.cannontech.web.support.systemMetrics.MetricStatusWithMessages;
+import com.cannontech.web.support.systemMetrics.QueueData;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 public class SystemHealthServiceImpl implements SystemHealthService {
     
     private static final Logger log = YukonLogManager.getLogger(SystemHealthServiceImpl.class);
-    @Autowired private YsmJmxQueryService jmxQueryService;
+    @Autowired @Qualifier("main") private ScheduledExecutor executor;
+    @Autowired List<MetricHealthCriteria> metricHealthCriteria;
     @Autowired private UserSystemMetricDao userSystemMetricDao;
+    @Autowired private YsmJmxQueryService jmxQueryService;
+    private SystemHealthStatusHelper statusHelper;
+    
+    @PostConstruct
+    private void init() {
+        statusHelper = new SystemHealthStatusHelper(this, executor, metricHealthCriteria);
+    }
     
     @Override
     public SystemHealthMetric getMetric(SystemHealthMetricIdentifier metric) {
@@ -61,6 +74,16 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         return metrics;
     }
     
+    @Override 
+    public List<SystemHealthMetric> getAllMetrics() {
+        List<SystemHealthMetric> metrics = new ArrayList<>();
+        for (SystemHealthMetricIdentifier metricId : SystemHealthMetricIdentifier.values()) {
+            SystemHealthMetric metric = getMetric(metricId);
+            metrics.add(metric);
+        }
+        return metrics;
+    }
+    
     @Override
     public List<SystemHealthMetricIdentifier> getFavorites(LiteYukonUser user) {
         return userSystemMetricDao.getFavorites(user);
@@ -90,6 +113,8 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             Long queueSize = (Long) jmxQueryService.get(queueBean, "QueueSize");
             Double averageEnqueueTime = (Double) jmxQueryService.get(queueBean, "AverageEnqueueTime");
             
+            MetricStatusWithMessages status = statusHelper.getStatus(metric);
+            
             ExtendedQueueData data = new ExtendedQueueData(metric);
             data.setArchivedReadingsCount(archived);
             data.setArchiveRequestsProcessed(archiveRequestsProcessed);
@@ -97,6 +122,7 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             data.setDequeuedCount(dequeuedCount);
             data.setQueueSize(queueSize);
             data.setAverageEnqueueTime(averageEnqueueTime);
+            data.setStatus(status);
             
             return data;
         } catch (Exception e) {
@@ -115,11 +141,14 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             Long queueSize = (Long) jmxQueryService.get(bean, "QueueSize");
             Double averageEnqueueTime = (Double) jmxQueryService.get(bean, "AverageEnqueueTime");
             
+            MetricStatusWithMessages status = statusHelper.getStatus(metric);
+            
             QueueData data = new QueueData(metric);
             data.setEnqueuedCount(enqueueCount);
             data.setDequeuedCount(dequeueCount);
             data.setQueueSize(queueSize);
             data.setAverageEnqueueTime(averageEnqueueTime);
+            data.setStatus(status);
             
             return data;
         } catch (Exception e) {

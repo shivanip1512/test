@@ -1,4 +1,4 @@
-package com.cannontech.web.support;
+package com.cannontech.web.support.systemMetrics;
 
 import java.text.DecimalFormat;
 
@@ -19,15 +19,7 @@ public class QueueData implements SystemHealthMetric {
     private Long dequeuedCount;
     private String formattedAverageEnqueueMillis;
     private Long queueSize;
-    private MetricStatus status;
-    
-    //TODO: Algorithm to determine the 'healthiness' of a queue.
-    public static enum MetricStatus {
-        GOOD,
-        WARN,
-        BAD,
-        UNKNOWN;
-    }
+    private MetricStatusWithMessages status;
     
     public QueueData(SystemHealthMetricIdentifier metricIdentifier) {
         this.metricIdentifier = metricIdentifier;
@@ -77,11 +69,11 @@ public class QueueData implements SystemHealthMetric {
         this.queueSize = queueSize;
     }
 
-    public MetricStatus getStatus() {
+    public MetricStatusWithMessages getStatus() {
         return status;
     }
 
-    public void setStatus(MetricStatus status) {
+    public void setStatus(MetricStatusWithMessages status) {
         this.status = status;
     }
     

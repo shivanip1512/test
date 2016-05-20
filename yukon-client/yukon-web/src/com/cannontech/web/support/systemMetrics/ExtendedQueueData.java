@@ -1,4 +1,4 @@
-package com.cannontech.web.support;
+package com.cannontech.web.support.systemMetrics;
 
 /**
  * System metric for ActiveMQ queue data which includes additional fields vs. regular QueueData.

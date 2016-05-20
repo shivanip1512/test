@@ -3,7 +3,7 @@ package com.cannontech.web.support.dao;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.support.SystemHealthMetricIdentifier;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 
 /**
  * Dao to set and retrieve system metric favorites for users.

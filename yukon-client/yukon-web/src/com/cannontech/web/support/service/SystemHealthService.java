@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.support.SystemHealthMetric;
-import com.cannontech.web.support.SystemHealthMetricIdentifier;
-import com.cannontech.web.support.SystemHealthMetricType;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
 import com.google.common.collect.Multimap;
 
 /**
@@ -18,6 +18,11 @@ public interface SystemHealthService {
      * Retrieves the current data for the specified metric.
      */
     SystemHealthMetric getMetric(SystemHealthMetricIdentifier metric);
+    
+    /**
+     * Retrieves the current data for all metrics.
+     */
+    List<SystemHealthMetric> getAllMetrics();
     
     /**
      * Retrieves the current data for all metrics of the specified type.

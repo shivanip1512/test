@@ -15,7 +15,7 @@
                 <th class="tar"><i:inline key=".dequeuedCount"/></th>
                 <th class="tar"><i:inline key=".queueSize"/></th>
                 <th class="tar"><i:inline key=".averageEnqueueTime"/></th>
-                <%-- <th><i:inline key=".status"/></th> --%>
+                <th><i:inline key=".status"/></th>
             </thead>
             <tfoot></tfoot>
             <tbody>
@@ -45,7 +45,7 @@
                         <td class="tar" id="${queue.metricIdentifier}-deq">${queue.dequeuedCount}</td>
                         <td class="tar" id="${queue.metricIdentifier}-size">${queue.queueSize}</td>
                         <td class="tar" id="${queue.metricIdentifier}-avg">${queue.averageEnqueueTime}</td>
-                        <%-- <td id="${queue.metricIdentifier}-status">${queue.status}</td> --%>
+                        <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>
@@ -58,7 +58,7 @@
                 <th class="tar"><i:inline key=".dequeuedCount"/></th>
                 <th class="tar"><i:inline key=".queueSize"/></th>
                 <th class="tar"><i:inline key=".averageEnqueueTime"/></th>
-                <%-- <th><i:inline key=".status"/></th> --%>
+                <th><i:inline key=".status"/></th>
             </thead>
             <tfoot></tfoot>
             <tbody>
@@ -86,7 +86,7 @@
                         <td class="tar" id="${queue.metricIdentifier}-deq">${queue.dequeuedCount}</td>
                         <td class="tar" id="${queue.metricIdentifier}-size">${queue.queueSize}</td>
                         <td class="tar" id="${queue.metricIdentifier}-avg">${queue.averageEnqueueTime}</td>
-                        <%-- <td id="${queue.metricIdentifier}-status">${queue.status}</td> --%>
+                        <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>

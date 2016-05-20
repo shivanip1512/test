@@ -15,6 +15,4 @@
     <bean class="com.cannontech.simulators.handler.RfnLcrDataSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.RfnMeterDataSimulatorMessageHandler"/>
     
-    <!-- TODO: system metrics? Might be nice to have -->
-    
 </beans>

@@ -334,9 +334,11 @@
     <entry key="yukon.web.modules.support.systemHealth.metric.lcrReads">RFN LCR Archive Request</entry>
     <entry key="yukon.web.modules.support.systemHealth.metric.gatewayArchive">Gateway Archive Request</entry>
     <entry key="yukon.web.modules.support.systemHealth.metric.rfDa">RF DA Archive Request</entry>
-    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayArchiveRequest">Gateway Archive Request</entry>
     <entry key="yukon.web.modules.support.systemHealth.metric.gatewayDataRequest">Gateway Data Request</entry>
     <entry key="yukon.web.modules.support.systemHealth.metric.gatewayData">Gateway Data Response</entry>
+    
+    <entry key="yukon.web.modules.support.systemHealth.criteria.meterEnqueuedCount">The number of enqueued meter reading archive requests exceeds the total number of meters in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.lcrEnqueuedCount">The number of enqueued LCR reading archive requests exceeds the total number of LCRs in the system.</entry>
     
     <entry key="yukon.web.modules.support.systemHealth.favMetricButton.hoverText">Favorite this metric to display it on your Yukon dashboard.</entry>
     <entry key="yukon.web.modules.support.systemHealth.unfavMetricButton.hoverText">Un-favorite this metric to remove it from your Yukon dashboard.</entry>

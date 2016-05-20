@@ -33,7 +33,9 @@ yukon.support.systemHealth = (function() {
                 $('#' + id + '-deq').text(queue.dequeuedCount);
                 $('#' + id + '-size').text(queue.queueSize);
                 $('#' + id + '-avg').text(queue.averageEnqueueTime);
-                $('#' + id + '-status').text(queue.status);
+                $('#' + id + '-status i').removeClass()
+                                         .addClass('icon')
+                                         .addClass(queue.status.iconName);
             }
             
             for (var i in extendedQueueMetrics) {
@@ -43,7 +45,9 @@ yukon.support.systemHealth = (function() {
                 $('#' + id + '-deq').text(queue.dequeuedCount);
                 $('#' + id + '-size').text(queue.queueSize);
                 $('#' + id + '-avg').text(queue.averageEnqueueTime);
-                $('#' + id + '-status').text(queue.status);
+                $('#' + id + '-status i').removeClass()
+                                         .addClass('icon')
+                                         .addClass(queue.status.iconName);
                 $('#' + id + '-arc').text(queue.archivedReadingsCount !== null ? queue.archivedReadingsCount : '');
                 $('#' + id + '-arp').text(queue.archivedRequestsProcessed);
             }

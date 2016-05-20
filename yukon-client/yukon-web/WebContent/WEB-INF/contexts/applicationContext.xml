@@ -1247,5 +1247,10 @@
     
     <bean class="com.cannontech.web.support.service.impl.SystemHealthServiceImpl"/>
     <bean class="com.cannontech.web.support.dao.impl.UserSystemMetricDaoImpl"/>
+    <bean class="com.cannontech.web.support.dao.impl.SystemMetricCriteriaDaoImpl"/>
+    
+    <!-- System Metric Criteria -->
+    <bean class="com.cannontech.web.support.systemMetrics.LcrRequestsEnqueuedCriteria"/>
+    <bean class="com.cannontech.web.support.systemMetrics.MeterRequestsEnqueuedCriteria"/>
     
 </beans>

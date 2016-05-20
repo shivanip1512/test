@@ -11,8 +11,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.support.SystemHealthMetricIdentifier;
 import com.cannontech.web.support.dao.UserSystemMetricDao;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 
 public class UserSystemMetricDaoImpl implements UserSystemMetricDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
