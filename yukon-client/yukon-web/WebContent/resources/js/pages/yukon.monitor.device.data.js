@@ -546,8 +546,10 @@ yukon.ami.ddm = (function () {
                     missingCount++;
                 }
             });
-            
-            $('.js-save-monitor').prop('disabled', missingCount > 0 || procs.length < 1 ? true : false);
+
+            //only enable if not calculating
+            var enable = $('.js-calculating-warning').hasClass('dn') ? false : true;
+            $('.js-save-monitor').prop('disabled', missingCount > 0 || procs.length < 1 ? true : enable);
         },
         
         mod;
@@ -652,17 +654,23 @@ yukon.ami.ddm = (function () {
                 var value = data.value;
                 var count = +value;
                 $('.js-violations').addClass('dn');
+                $('.js-calculating-disable').removeAttr('disabled');
+                $('.js-calculating-warning').toggleClass('dn', true);
                 if (value === undefined || value === 'CALCULATING') {
                     $('.js-violations-calculating').removeClass('dn');
+                    $('.js-calculating-disable').attr('disabled', true);
+                    $('.js-calculating-warning').toggleClass('dn', false);
                 }
                 else if (value === 'NA') {
                     $('.js-violations-na').removeClass('dn');
+                    _validate_processors();
                 }
                 else {
                     $('.js-violations-count').removeClass('dn').text(count);
                     if (count > 0) {
                         $('.js-violations-exist').removeClass('dn');
                     }
+                    _validate_processors();
                 }
             });
         }

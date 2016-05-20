@@ -10,6 +10,10 @@
 
 <cti:standardPage module="amr" page="deviceDataMonitor.${mode}">
 
+    <div class="dn js-calculating-warning warning">
+        <i:inline key=".calculatingWarning"/>
+    </div>
+
     <%@ include file="shared.jspf"%>
 
     <form action="toggleEnabled" method="post" class="js-toggle-enabled-form">
@@ -237,12 +241,12 @@
         <cti:displayForPageEditModes modes="EDIT">
             <cti:button nameKey="update" classes="js-save-monitor primary action"/>
             <c:if test="${monitor.enabled}">
-                <cti:button classes="js-toggle-enabled" nameKey="disable"/>
+                <cti:button classes="js-toggle-enabled js-calculating-disable" nameKey="disable"/>
             </c:if>
             <c:if test="${!monitor.enabled}">
-                <cti:button classes="js-toggle-enabled" nameKey="enable"/>
+                <cti:button classes="js-toggle-enabled js-calculating-disable" nameKey="enable"/>
             </c:if>
-            <cti:button id="deleteButton" nameKey="delete" classes="delete"/>
+            <cti:button id="deleteButton" nameKey="delete" classes="delete js-calculating-disable"/>
             <d:confirm nameKey="deleteConfirmation" argument="${monitor.name}" on="#deleteButton"  />
             <cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
                 <cti:param name="monitorId" value="${monitor.id}" />

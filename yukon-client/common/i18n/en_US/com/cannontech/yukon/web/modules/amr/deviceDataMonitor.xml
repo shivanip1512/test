@@ -71,6 +71,7 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.state">State</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.addPoints.label">Add Points</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.calculating">Calculating...</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.calculatingWarning">Update functionality is disabled while calculating.</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.refreshViolations">Refresh Violations</entry>
 
     <entry key="yukon.web.modules.amr.deviceDataMonitor.missingOrNoStateGroup">Point Missing or no State Group</entry>

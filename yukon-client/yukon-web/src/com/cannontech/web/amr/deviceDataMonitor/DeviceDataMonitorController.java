@@ -13,10 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -280,6 +283,14 @@ public class DeviceDataMonitorController {
         }
         
         return Collections.singletonMap("stateGroups", jsonSGs);
+    }
+    
+    @RequestMapping(method = RequestMethod.GET, value = "deviceDataMonitor/recalculate")
+    public void recalculate(int monitorId, HttpServletResponse resp) {
+
+        DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
+        monitorService.recaclulate(monitor);
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
     private void setupDuplicateMonitorError(DeviceDataMonitor monitor, BindingResult result, FlashScope flash) {

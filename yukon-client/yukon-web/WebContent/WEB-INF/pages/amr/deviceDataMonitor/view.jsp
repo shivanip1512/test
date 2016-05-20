@@ -10,9 +10,14 @@
 
 <cti:standardPage module="amr" page="deviceDataMonitor.${mode}">
 
+    <div class="dn js-calculating-warning warning">
+        <i:inline key=".calculatingWarning"/>
+    </div>
+
     <%@ include file="shared.jspf"%>
     <cti:msgScope paths=",yukon.web.components.button">
     <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}">
+            
         <input type="hidden" id="monitor-id" value="${monitor.id}"/>
         <tags:nameValueContainer2 tableClass="has-actions">
             
@@ -126,8 +131,14 @@
         <cti:url value="/amr/deviceDataMonitor/editPage" var="editUrl">
             <cti:param name="monitorId" value="${monitor.id}"/>
         </cti:url>
-        <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+        <cti:button classes="js-calculating-disable" nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
         <cti:url var="startUrl" value="/meter/start"/>
+        
+        <cti:url value="/amr/deviceDataMonitor/recalculate" var="recalculateUrl">
+            <cti:param name="monitorId" value="${monitor.id}"/>
+        </cti:url>
+        <cti:button classes="js-calculating-disable" nameKey="recalculate" icon="icon-calculator" href="${recalculateUrl}"/>
+        
         <cti:button nameKey="back" href="${startUrl}"/>
     </div>
 
