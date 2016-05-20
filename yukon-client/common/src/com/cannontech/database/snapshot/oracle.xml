@@ -7483,9 +7483,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DUALSTAGE_STNENTRY</i__foreignKeyName>
+            <i__foreignKeyName>FK_DUALSTAGE_STGTWONTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>STAGEONETONNAGEID</i__columnName>
+            <i__columnName>STAGETWOTONNAGEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7501,9 +7501,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DUALSTAGE_STGTWONTRY</i__foreignKeyName>
+            <i__foreignKeyName>FK_DUALSTAGE_STNENTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>STAGETWOTONNAGEID</i__columnName>
+            <i__columnName>STAGEONETONNAGEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7825,27 +7825,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPIRR_YKLST5</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>SOILTYPEID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_APPIRR_YKLST1</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>METERVOLTAGEID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPIRR_YKLST3</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>IRRIGATIONTYPEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -7861,6 +7843,24 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_APPIRR_YKLST6</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>HORSEPOWERID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_APPIRR_YKLST3</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>IRRIGATIONTYPEID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_APPIRR_YKLST4</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ENERGYSOURCEID</i__columnName>
@@ -7870,9 +7870,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPIRR_YKLST6</i__foreignKeyName>
+            <i__foreignKeyName>FK_APPIRR_YKLST5</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>HORSEPOWERID</i__columnName>
+            <i__columnName>SOILTYPEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -9049,24 +9049,6 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_EXCAD_LMEXCM</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>FEEDERID</i__columnName>
-            <i__foreignColumnName>ADDRESSID</i__foreignColumnName>
-            <i__foreignTableName>LMGROUPEXPRESSCOMADDRESS</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_EXCSP_LMEXCM</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>SERVICEPROVIDERID</i__columnName>
-            <i__foreignColumnName>ADDRESSID</i__foreignColumnName>
-            <i__foreignTableName>LMGROUPEXPRESSCOMADDRESS</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_EXCG_LMEXCM</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>GEOID</i__columnName>
@@ -9079,6 +9061,24 @@
             <i__foreignKeyName>FK_EXCSB_LMEXCM</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SUBSTATIONID</i__columnName>
+            <i__foreignColumnName>ADDRESSID</i__foreignColumnName>
+            <i__foreignTableName>LMGROUPEXPRESSCOMADDRESS</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_EXCAD_LMEXCM</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>FEEDERID</i__columnName>
+            <i__foreignColumnName>ADDRESSID</i__foreignColumnName>
+            <i__foreignTableName>LMGROUPEXPRESSCOMADDRESS</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_EXCSP_LMEXCM</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>SERVICEPROVIDERID</i__columnName>
             <i__foreignColumnName>ADDRESSID</i__foreignColumnName>
             <i__foreignTableName>LMGROUPEXPRESSCOMADDRESS</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
