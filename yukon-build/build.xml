@@ -362,6 +362,19 @@
         <delete dir="${temp.dir}" />
     </target>
 
+    <target name="build-dist-pdb" depends="build-dist">
+        <mkdir dir="${temp.dir}" />
+
+        <zip destfile="${temp.dir}/YukonInstall/yukon-pdb.zip" update="true">
+          <fileset dir="${basedir}/yukon-server/pdb" />
+        </zip>
+        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}.zip" update="true">
+            <fileset dir="${temp.dir}" />
+        </zip>
+
+        <delete dir="${temp.dir}" />
+    </target>
+
     <target name="clean-dist">
         <delete dir="${dist.dir}" />
     </target>
