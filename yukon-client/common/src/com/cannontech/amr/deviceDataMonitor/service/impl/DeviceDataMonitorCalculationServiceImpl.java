@@ -198,6 +198,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
     /**
      * Updates violation group
+     * If the monitor's oldName is not equal to newName, then the device group's name is changed.
      */
     private void updateViolationGroup(DeviceDataMonitorMessage message) {
 
@@ -223,6 +224,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
     /**
      * Recalculates violations for monitor
+     * This method does FULL recalculation of violations
      */
     private void recalculateViolations(DeviceDataMonitor monitor) throws InterruptedException {
 
@@ -261,6 +263,8 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
     /**
      * Finds violations and returns violating devices
+     * This method analyzes the individual point data from dynamicDataCache.
+     * If the point data is not available in cache it will ask dispatch for it.
      */
     private Set<PaoIdentifier> findViolations(Set<SimpleDevice> devicesInGroup, Set<Attribute> attributes,
             List<DeviceDataMonitorProcessor> processors) throws InterruptedException {
@@ -291,7 +295,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         pointValues.forEach(value -> {
             PointInfo pointInfo = points.get(value.getId());
             processors.forEach(processor -> {
-                if (points.get(value.getId()).getStateGroupId() == processor.getStateGroup().getStateGroupID()
+                if (pointInfo.getStateGroupId() == processor.getStateGroup().getStateGroupID()
                     && isPointValueMatch(processor, value)) {
                     violatingDevices.add(pointToPao.get(pointInfo).getPaoIdentifier());
                 }
