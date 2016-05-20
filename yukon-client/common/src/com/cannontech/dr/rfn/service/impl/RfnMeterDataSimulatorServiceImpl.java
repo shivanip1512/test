@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Days;
-import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
-import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingIntervalEnum;
+import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -50,7 +49,7 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService implements RfnMeterDataSimulatorService {
-    
+
     private final Logger log = YukonLogManager.getLogger(RfnMeterDataSimulatorServiceImpl.class);
 
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
@@ -67,20 +66,20 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
 
     private Map<RfnDevice, Map<Attribute, TimestampValue>> billingStoredValue = new HashMap<>();
     private Map<RfnDevice, Map<Attribute, TimestampValue>> intervalStoredValue = new HashMap<>();
-    
+
     private final static int secondsPerYear = 31556926;
     private final static long epoch =
         (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005")) / 1000;
-    
+
     private static final int INTERVAL_HOURS = 24;
-    
+
     @Override
     @PostConstruct
     public void initialize() {
         super.initialize();
         pointMappers = unitOfMeasureToPointMapper.getPointMapper();
     }
-    
+
     @Override
     public synchronized void startSimulator(SimulatorSettings settings) {
         if (!status.isRunning().get()) {
@@ -103,26 +102,13 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             for (RfnDevice device : devices) {
                 try {
                     int minuteOffset = getMinuteOfTheDay(device.getRfnIdentifier().getSensorSerialNumber());
-                    switch (settings.getReportingIntervalEnum()) {
-                    case REPORTING_INTERVAL_1_HOURS: // Hourly data interval
-                        minuteOffset = minuteOffset / 24; // 24 intervals
-                        while (minuteOffset < Days.ONE.toStandardMinutes().getMinutes()) {
-                            meters.put(minuteOffset, device);
-                            minuteOffset = minuteOffset + Hours.ONE.toStandardMinutes().getMinutes();
-                        }
-                        break;
-                    case REPORTING_INTERVAL_4_HOURS: // 4 hour Interval
-                        minuteOffset = minuteOffset / 6; // 6 intervals
-                        while (minuteOffset < Days.ONE.toStandardMinutes().getMinutes()) {
-                            meters.put(minuteOffset, device);
-                            minuteOffset = minuteOffset + Hours.FOUR.toStandardMinutes().getMinutes();
-                        }
-                        break;
-                    case REPORTING_INTERVAL_24_HOURS: // daily
+                    ReportingInterval reportingInterval = settings.getReportingInterval();
+
+                    minuteOffset = minuteOffset / reportingInterval.getDailyIntervals();
+
+                    while (minuteOffset < Days.ONE.toStandardMinutes().getMinutes()) {
                         meters.put(minuteOffset, device);
-                        break;
-                    default:
-                        break;// Do nothing;
+                        minuteOffset = minuteOffset + reportingInterval.getDuration().toStandardMinutes().getMinutes();
                     }
                 } catch (NumberFormatException e) {
                     // serial number is not an integer, skip
@@ -137,13 +123,13 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             }
         }
     }
-    
+
     @Override
     public void testSimulator(SimulatorSettings settings) {
         log.debug("Testing simulator");
-        genarateAndSendArchiveRequest(rfnDeviceDao.getDeviceForId(settings.getDeviceId()));
+        generateAndSendArchiveRequest(rfnDeviceDao.getDeviceForId(settings.getDeviceId()));
     }
-    
+
     @Override
     public void stopSimulator() {
         log.debug("Stopping RFN Meter Simulator");
@@ -163,7 +149,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             }
             for (RfnDevice meter : devices) {
                 try {
-                    genarateAndSendArchiveRequest(meter);
+                    generateAndSendArchiveRequest(meter);
                 } catch (Exception e) {
                     log.error(e);
                     status.getFailure().incrementAndGet();
@@ -171,8 +157,8 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             }
         }
     }
-    
-    private void genarateAndSendArchiveRequest(RfnDevice meter){
+
+    private void generateAndSendArchiveRequest(RfnDevice meter){
         List<RfnMeterReadingArchiveRequest> meterReadingData = generateMeterReadingData(meter);
         log.debug("Sending requests: " + meterReadingData.size() + " on queue "
             + meterReadingArchiveRequestQueueName);
@@ -200,33 +186,33 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         DateTime now = DateTime.now();
         DateTime intervalTime = null;
         log.debug("Generating meter reading data for "+ device);
-        
+
         List<RfnMeterReadingArchiveRequest> requests = Lists.newArrayList();
 
         // Do Billing reading type if we have not reported since midnight today
-        
+
         // NOTE the real device does midnight but does not follow DST, so this is compensating by
         // getting midnight in local time, then removing DST compensation by finding the active offset
         // and the normal offset and doing some awesome math.
         DateTime billingGenerationTime = now.withTimeAtStartOfDay()
-                             .plusMillis(now.getZone().getOffset(now.withTimeAtStartOfDay()))
-                             .minusMillis (now.getZone().getStandardOffset(now.withTimeAtStartOfDay().getMillis()));
+                .plusMillis(now.getZone().getOffset(now.withTimeAtStartOfDay()))
+                .minusMillis (now.getZone().getStandardOffset(now.withTimeAtStartOfDay().getMillis()));
 
         if (now.minusHours(INTERVAL_HOURS).isBefore(billingGenerationTime)) {
             createAndAddArchiveRequest(device, billingGenerationTime, RfnMeterReadingType.BILLING, now, requests);
         }
-        
-        final ReportingIntervalEnum reportingIntervalEnum =
-            (settings == null ? ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS : settings.getReportingIntervalEnum());
-        if (reportingIntervalEnum == ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS) {
-         // generate only 1 data point for 1 day
+
+        final ReportingInterval reportingIntervalEnum =
+                (settings == null ? ReportingInterval.REPORTING_INTERVAL_24_HOURS : settings.getReportingInterval());
+        if (reportingIntervalEnum == ReportingInterval.REPORTING_INTERVAL_24_HOURS) {
+            // generate only 1 data point for 1 day
             intervalTime = now.withTime(now.getHourOfDay(), 0, 0, 0);
             createAndAddArchiveRequest(device, intervalTime, RfnMeterReadingType.INTERVAL, now, requests);
         } else {
             // Generate data point as per the interval mentioned 4 hr / 1 hr
             // Example with 4 hour reporting interval: 6:45 (-:45) -> 6 (-4 +1 ) -> 3 -- Generate time for 3, 4, 5, 6
-            intervalTime = now.withTime(now.getHourOfDay(), 0, 0, 0).minusHours( 
-                settings.getReportingInterval() / (60 * 60) - 1);
+            intervalTime = now.withTime(now.getHourOfDay(), 0, 0, 0).minusHours(
+                settings.getReportingInterval().getDuration().toStandardHours().getHours() - 1);
             while (intervalTime.isBefore(now) || intervalTime.isEqual(now)) {
                 createAndAddArchiveRequest(device, intervalTime, RfnMeterReadingType.INTERVAL, now, requests);
                 intervalTime = intervalTime.plusHours(1);
@@ -234,7 +220,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         }
         return requests;
     }
-    
+
     private void createAndAddArchiveRequest(RfnDevice device, DateTime time, RfnMeterReadingType type,
             DateTime currentTime, List<RfnMeterReadingArchiveRequest> requests) {
         log.debug("\n--Creating archive request for " + type + " device=" + device);
@@ -255,7 +241,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         }
         return null;
     }
-    
+
     private RfnMeterReadingData createReadingForType(RfnDevice device, DateTime time, RfnMeterReadingType type,
             DateTime currentTime) {
 
@@ -413,7 +399,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
 
         return roundToOneDecimalPlace(result);
     }
-    
+
     /*
      * Data from the real device returns value rounded to one decimal place.
      * Examples:

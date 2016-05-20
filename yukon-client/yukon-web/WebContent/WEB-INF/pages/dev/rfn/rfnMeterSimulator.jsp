@@ -131,9 +131,20 @@
                             <tags:nameValue2 nameKey=".lcrDataSimulator.duplicates">
                                  <input id="percentOfDuplicates" name="percentOfDuplicates" type="text" value=${currentSettings.percentOfDuplicates} maxlength="3" size="3"> %
                             </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".rfnMeterDataSimulator.reportingInterval" >
-                                <tags:intervalDropdown path="currentSettings.reportingInterval" intervals="${rfnMeterReportingIntervals}" />
-                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".rfnMeterDataSimulator.reportingInterval">
+                            <select name="reportingInterval">
+                                <c:forEach var="reportingInterval" items="${rfnMeterReportingIntervals}">
+                                    <c:choose>
+                                        <c:when test="${selectedReportingInterval.equals(reportingInterval)}">
+                                            <option value="${reportingInterval}" selected="selected"><cti:msg2 key="${reportingInterval}"/></option>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <option value="${reportingInterval}"><cti:msg2 key="${reportingInterval}"/></option>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:forEach>
+                            </select>
+                         </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </div>
                     <div>

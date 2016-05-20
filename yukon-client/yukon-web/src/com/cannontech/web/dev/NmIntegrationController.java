@@ -55,7 +55,7 @@ import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
-import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingIntervalEnum;
+import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
@@ -73,7 +73,6 @@ import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -96,7 +95,13 @@ public class NmIntegrationController {
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
-    
+
+    SimulatorSettings lcrCurrentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 10,
+        ReportingInterval.REPORTING_INTERVAL_24_HOURS);
+
+    SimulatorSettings rfnCurrentSettings = new SimulatorSettings("ALL RFN Type", 10,
+        ReportingInterval.REPORTING_INTERVAL_24_HOURS);
+
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
     private static final String meterReadServiceBean = "com.cannontech.yukon.ServiceManager:name=meterReadingArchiveRequestListener,type=MeterReadingArchiveRequestListener";
@@ -109,7 +114,7 @@ public class NmIntegrationController {
     private static final String gatewayDataQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayData";
     private static final String rfDaArchiveQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.da.rfn.RfDaArchiveRequest";
     private static final DecimalFormat df = new DecimalFormat("##,###.## ms");
-    
+
     @RequestMapping("viewBase")
     public String viewBase(ModelMap model) {
         
@@ -117,13 +122,13 @@ public class NmIntegrationController {
         
         return "rfn/viewBase.jsp";
     }
-    
+
     @RequestMapping("data")
     public @ResponseBody List<Map<String, Object>> data() {
         
         return getIntegrationData();
     }
-    
+
     private List<Map<String, Object>> getIntegrationData() {
         
         List<Map<String, Object>> data = new ArrayList<>();
@@ -249,7 +254,7 @@ public class NmIntegrationController {
         
         return data;
     }
-    
+
     @RequestMapping("gatewaySimulator")
     public String gatewaySimulator(ModelMap model, FlashScope flash) {
      // Enums for selects
@@ -281,7 +286,7 @@ public class NmIntegrationController {
         
         return "rfn/gatewayDataSimulator.jsp";
     }
-    
+
     @RequestMapping("createNewGateway")
     public String createNewGateway(@RequestParam String name, 
                                    @RequestParam String serial, 
@@ -293,7 +298,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("sendGatewayDataResponse")
     public String sendGatewayDataResponse(@RequestParam String serial,
             @RequestParam(defaultValue = "false") boolean isGateway2, FlashScope flash) {
@@ -304,7 +309,7 @@ public class NmIntegrationController {
 
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("enableAll")
     public String enableAllSimulators(FlashScope flash) {
         // Only start the threads that aren't already running. This lets the user specify non-default parameters for
@@ -361,7 +366,7 @@ public class NmIntegrationController {
         }
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("disableAll") 
     public String disableAllSimulators(FlashScope flash) {
 
@@ -372,7 +377,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("enableGatewayDataReply")
     public String enableGatewayDataReply(@RequestParam(defaultValue="false") boolean alwaysGateway2, FlashScope flash) {
         
@@ -385,7 +390,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("disableGatewayDataReply")
     public String disableGatewayDataReply(FlashScope flash) {
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
@@ -395,7 +400,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("enableGatewayUpdateReply")
     public String enableGatewayUpdateReply(@RequestParam GatewayUpdateResult createResult,
                                            @RequestParam GatewayUpdateResult editResult,
@@ -413,7 +418,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("disableGatewayUpdateReply")
     public String disableGatewayUpdateReply(FlashScope flash) {
         
@@ -424,7 +429,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("enableGatewayCertificateReply")
     public String enableGatewayCertificateReply(@RequestParam RfnGatewayUpgradeRequestAckType ackType,
                                                 @RequestParam GatewayCertificateUpdateStatus updateStatus,
@@ -440,7 +445,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("disableGatewayCertificateReply")
     public String disableGatewayCertificateReply(FlashScope flash) {
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
@@ -450,7 +455,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("enableGatewayFirmwareReply")
     public String enableGatewayFirmwareReply(@RequestParam GatewayFirmwareUpdateRequestResult updateResult,
                                              FlashScope flash) {
@@ -464,7 +469,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("disableGatewayFirmwareReply")
     public String disableGatewayFirmwareReply(FlashScope flash) {
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
@@ -474,7 +479,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("enableFirmwareVersionReply")
     public String enableFirmwareVersionReply(@RequestParam RfnUpdateServerAvailableVersionResult replyType,
                                              @RequestParam String version,
@@ -490,7 +495,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     @RequestMapping("disableFirmwareVersionReply")
     public String disableFirmwareVersionReply(FlashScope flash) {
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
@@ -500,7 +505,7 @@ public class NmIntegrationController {
         
         return "redirect:gatewaySimulator";
     }
-    
+
     /**
      * Sends a request to modify a gateway simulator.
      * @param request The request to start or stop simulators.
@@ -524,7 +529,7 @@ public class NmIntegrationController {
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
     }
-    
+
     @RequestMapping("viewMeterReadArchiveRequest")
     public String viewMeterReadArchiveRequest(ModelMap model) {
         
@@ -532,45 +537,45 @@ public class NmIntegrationController {
         
         return "rfn/viewMeterReadArchive.jsp";
     }
-    
+
     @RequestMapping("viewLocationArchiveRequest")
     public String viewLocationArchiveRequest() {
         return "rfn/viewLocationArchive.jsp";
     }
-    
+
     @RequestMapping("viewEventArchiveRequest")
     public String viewEventArchiveRequest(ModelMap model) {
         return setupEventAlarmAttributes(model, new RfnTestEvent());
     }
-    
+
     @RequestMapping("viewLcrReadArchiveRequest")
     public String viewLcrReadArchiveRequest(ModelMap model) {
         model.addAttribute("drReports", DRReport.values());
         return "rfn/viewLcrReadArchive.jsp";
     }
-    
+
     @RequestMapping("viewLcrArchiveRequest")
     public String viewLcrArchiveRequest() {
         return "rfn/viewLcrArchive.jsp";
     }
-    
+
     @RequestMapping("viewRfDaArchiveRequest")
     public String viewRfDaArchiveRequest() {
         return "rfn/viewRfDaArchive.jsp";
     }
-    
+
     @RequestMapping("viewGatewayDataSimulator")
     public String viewGatewayDataSimulator() {
         return "rfn/gatewayDataSimulator.jsp";
     }
-    
+
     @RequestMapping("sendPerformanceVerification")
     public String sendPerformanceVerification(ModelMap model) {
         model.addAttribute("drReports", DRReport.values());
         performanceVerificationService.sendPerformanceVerificationMessage();
         return "rfn/viewLcrReadArchive.jsp";
     }
-    
+
     @RequestMapping("stopMetersArchieveRequest")
     public void stopRfnMeterSimulator(FlashScope flash) {
         try {
@@ -594,7 +599,7 @@ public class NmIntegrationController {
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
     }
-    
+
     @RequestMapping("testMeterArchiveRequest")
     public void testMeterArchiveRequest(SimulatorSettings settings, FlashScope flash) {
         try {
@@ -606,7 +611,7 @@ public class NmIntegrationController {
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
     }
-    
+
     @RequestMapping("existing-rfnMetersimulator-status")
     @ResponseBody
     public Map<String, Object> existingrfnMeterSimulatorStatus(YukonUserContext userContext) {
@@ -616,18 +621,14 @@ public class NmIntegrationController {
         }
         return buildSimulatorStatusJson(status.response.getStatus());
     }
-    
+
     @RequestMapping("viewRfnMeterSimulator")
     public String viewRfnMeterSimulator(ModelMap model) {
-        SimulatorSettings currentSettings  = new SimulatorSettings("ALL RFN Type", 10, 
-                ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS.getSeconds());
-        model.addAttribute("currentSettings", currentSettings);
-        
+        model.addAttribute("currentSettings", rfnCurrentSettings);
+
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
         model.addAttribute("paoTypes", paoTypes);
-        model.addAttribute("rfnMeterReportingIntervals",
-            ImmutableSet.of(ReportingIntervalEnum.REPORTING_INTERVAL_1_HOURS,
-                ReportingIntervalEnum.REPORTING_INTERVAL_4_HOURS, ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS));
+        model.addAttribute("rfnMeterReportingIntervals",ReportingInterval.values());
 
         RfnMeterDataSimulatorStatusResponse response = getRfnMeterSimulatorStatusResponse().response;
         if(response == null){
@@ -635,20 +636,18 @@ public class NmIntegrationController {
         }
         if (response.getStatus().isRunning().get()) {
             model.addAttribute("currentSettings", response.getSettings());
+            model.addAttribute("selectedReportingInterval", response.getSettings().getReportingInterval());
         }
 
         model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(response.getStatus()));
         return "rfn/rfnMeterSimulator.jsp";
     }
-   
 
     @RequestMapping("viewLcrDataSimulator")
     public String viewLcrDataSimulator(ModelMap model) {
-        
-        SimulatorSettings currentSettings  = new SimulatorSettings(100000, 200000, 300000, 320000, 10, 
-                ReportingIntervalEnum.REPORTING_INTERVAL_24_HOURS.getSeconds());
-        model.addAttribute("currentSettings", currentSettings);
-        
+
+        model.addAttribute("currentSettings", lcrCurrentSettings);
+
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse().response;
         if(response == null){
             return "rfn/dataSimulator.jsp";
@@ -656,7 +655,7 @@ public class NmIntegrationController {
         if (response.getStatusByRange().isRunning().get()) {
             model.addAttribute("currentSettings", response.getSettings());
         }
-        
+
         model.addAttribute("dataSimulatorStatus", buildSimulatorStatusJson(response.getStatusByRange()));
         model.addAttribute("existingDataSimulatorStatus", buildSimulatorStatusJson(response.getAllDevicesStatus()));
         return "rfn/dataSimulator.jsp";
@@ -675,7 +674,7 @@ public class NmIntegrationController {
             return new LcrSimStatusResponseOrError(json);
         }
     }
-    
+
     private MeterSimStatusResponseOrError getRfnMeterSimulatorStatusResponse() {
         try {
             RfnMeterDataSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
@@ -782,7 +781,7 @@ public class NmIntegrationController {
         }
         return json;
     }
-    
+
 
     private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event) {
         List<RfnConditionType> rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
@@ -799,25 +798,25 @@ public class NmIntegrationController {
         rfnEventTestingService.sendMeterArchiveRequests(meterReading);
         return "redirect:viewMeterReadArchiveRequest";
     }
-    
+
     @RequestMapping("sendLcrReadArchiveRequest")
     public String sendLcrReadArchive(int serialFrom, int serialTo, int days, String drReport) throws IOException {
         rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, days, DRReport.valueOf(drReport));
         return "redirect:viewLcrReadArchiveRequest";
     }
-    
+
     @RequestMapping("sendLcrArchiveRequest")
     public String sendLcrArchive(int serialFrom, int serialTo, String manufacturer, String model) {
         rfnEventTestingService.sendLcrArchiveRequest(serialFrom, serialTo, manufacturer, model);
         return "redirect:viewLcrArchiveRequest";
     }
-    
+
     @RequestMapping("sendLocationArchiveRequest")
     public String sendLocationArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model, String latitude, String longitude) { 
         rfnEventTestingService.sendLocationResponse(serialFrom, serialTo, manufacturer, model, Double.parseDouble(latitude), Double.parseDouble(longitude));
         return "redirect:viewLocationArchiveRequest";
     }
-    
+
     @RequestMapping("sendEvent")
     public String sendEvent(@ModelAttribute RfnTestEvent event, ModelMap model, FlashScope flashScope) {
         int numEventsSent = rfnEventTestingService.sendEventsAndAlarms(event);
@@ -834,23 +833,23 @@ public class NmIntegrationController {
         
         return setupEventAlarmAttributes(model, event);
     }
-    
+
     @RequestMapping("sendRfDaArchiveRequest")
     public String sendRfDaArchiveRequest(int serial, String manufacturer, String model) {
         rfnEventTestingService.sendRfDaArchiveRequest(serial, manufacturer, model);
         return "redirect:viewRfDaArchiveRequest";
     }
-    
+
     @RequestMapping("calc-stress-test")
     public void calcStressTest() {
         rfnEventTestingService.calculationStressTest();
     }
-    
+
     @RequestMapping("clear-gateway-cache")
     public void clearGatewayCache() {
         gatewayCache.getCache().asMap().clear();
     }
-    
+
     @RequestMapping("resend-startup")
     public void startup(HttpServletResponse resp) {
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
@@ -861,7 +860,7 @@ public class NmIntegrationController {
             resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
-        
+
     @InitBinder
     public void setupBinder(WebDataBinder binder, YukonUserContext userContext) {
         
@@ -870,14 +869,14 @@ public class NmIntegrationController {
                 userContext, BlankMode.ERROR);
         binder.registerCustomEditor(Instant.class, instantEditor);
     }
-    
+
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
     }
-    
+
     private static class LcrSimStatusResponseOrError {
         public final RfnLcrSimulatorStatusResponse response;
         public final Map<String, Object> errorJson;
@@ -892,7 +891,7 @@ public class NmIntegrationController {
             this.errorJson = errorJson;
         }
     }
-    
+
     private static class MeterSimStatusResponseOrError {
         public final RfnMeterDataSimulatorStatusResponse response;
         public final Map<String, Object> errorJson;
@@ -907,5 +906,5 @@ public class NmIntegrationController {
             this.errorJson = errorJson;
         }
     }
-    
+
 }
