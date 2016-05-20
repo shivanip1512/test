@@ -479,6 +479,29 @@ BOOST_AUTO_TEST_CASE(test_resolveDBChanged)
     BOOST_CHECK_EQUAL(resolveDBChanged(40), " DATABASE");
 }
 
+BOOST_AUTO_TEST_CASE(test_resolveDBCategory)
+{
+    BOOST_CHECK_EQUAL(resolveDBCategory("invalid"),                         ChangeCategoryInvalid);
+    BOOST_CHECK_EQUAL(resolveDBCategory("energycompany"),                   ChangeCategoryEnergyCompany);
+    BOOST_CHECK_EQUAL(resolveDBCategory("energy_company_route"),            ChangeCategoryEnergyCompanyRoute);
+    BOOST_CHECK_EQUAL(resolveDBCategory("energy_company_substations"),      ChangeCategoryEnergyCompanySubstations);
+    BOOST_CHECK_EQUAL(resolveDBCategory("appliance"),                       ChangeCategoryAppliance);
+    BOOST_CHECK_EQUAL(resolveDBCategory("servicecompany"),                  ChangeCategoryServiceCompany);
+    BOOST_CHECK_EQUAL(resolveDBCategory("servicecompanydesignationcode"),   ChangeCategoryServiceCompanyDesignationCode);
+    BOOST_CHECK_EQUAL(resolveDBCategory("warehouse"),                       ChangeCategoryWarehouse);
+    BOOST_CHECK_EQUAL(resolveDBCategory("yukonselectionlist"),              ChangeCategoryYukonSelectionList);
+    BOOST_CHECK_EQUAL(resolveDBCategory("yukonlistentry"),                  ChangeCategoryYukonListEntry);
+    BOOST_CHECK_EQUAL(resolveDBCategory("porter_response_monitor"),         ChangeCategoryPorterResponseMonitor);
+    BOOST_CHECK_EQUAL(resolveDBCategory("device_data_monitor"),             ChangeCategoryDeviceDataMonitor);
+    BOOST_CHECK_EQUAL(resolveDBCategory("device_group_member"),             ChangeCategoryDeviceGroupMember);
+    BOOST_CHECK_EQUAL(resolveDBCategory("cc_monitor_bank_list"),            ChangeCategoryCCMonitorBankList);
+    BOOST_CHECK_EQUAL(resolveDBCategory("globalsetting"),                   ChangeCategoryGlobalSetting);
+    BOOST_CHECK_EQUAL(resolveDBCategory("energycompanysetting"),            ChangeCategoryEnergyCompanySetting);
+    BOOST_CHECK_EQUAL(resolveDBCategory("repeatingjob"),                    ChangeCategoryRepeatingJob);
+    BOOST_CHECK_EQUAL(resolveDBCategory("dataexportformat"),                ChangeCategoryDataExportFormat);
+    BOOST_CHECK_EQUAL(resolveDBCategory("monitor"),                         ChangeCategoryMonitor);
+}
+
 BOOST_AUTO_TEST_CASE(test_resolvePAOType)
 {
     BOOST_CHECK_EQUAL(resolvePAOType("breach", "tcp"),              0);

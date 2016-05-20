@@ -30,6 +30,7 @@
 #include "module_util.h"
 #include "amq_constants.h"
 #include "thread_monitor.h"
+#include "GlobalSettings.h"
 #include "win_helper.h"
 
 #include <time.h>
@@ -936,6 +937,10 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
                     CtiLMControlAreaStore::getInstance()->setWasControlAreaDeletedFlag(true);
                 }
                 CtiLMControlAreaStore::getInstance()->setValid(false);
+            }
+            if (resolveDBCategory(dbChange->getCategory()) == ChangeCategoryGlobalSetting)
+            {
+                GlobalSettings::reload();
             }
         }
         break;

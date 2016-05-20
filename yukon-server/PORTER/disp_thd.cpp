@@ -9,6 +9,7 @@
 #include "amq_constants.h"
 #include "thread_monitor.h"
 #include "portglob.h"
+#include "GlobalSettings.h"
 
 #include "unsolicited_handler.h"
 #include "StatisticsManager.h"
@@ -95,10 +96,14 @@ void DispatchMsgHandlerThread()
 
                         CTILOG_INFO(dout, "Porter has received a "<< dbchg->getCategory() <<" DBCHANGE message from Dispatch");
 
-                        if( dbchg->getCategory() == "DEVICE_GROUP_MEMBER" )
+                        if(resolveDBCategory(dbchg->getCategory()) == ChangeCategoryDeviceGroupMember)
                         {
                             //  Porter ignores DEVICE_GROUP_MEMBER dbchanges
                             continue;
+                        }
+                        if (resolveDBCategory(dbchg->getCategory()) == ChangeCategoryGlobalSetting)
+                        {
+                            GlobalSettings::reload();
                         }
 
                         break;

@@ -25,7 +25,6 @@
 #include "devicetypes.h"
 #include "resolvers.h"
 #include "ccoriginalparent.h"
-#include "mgr_paosched.h"
 #include "thread_monitor.h"
 #include "utility.h"
 #include "ctitime.h"
@@ -37,8 +36,10 @@
 #include "ccclientlistener.h"
 #include "millisecond_timer.h"
 #include "module_util.h"
+#include "GlobalSettings.h"
 #include "mgr_config.h"
 #include "mgr_holiday.h"
+#include "mgr_paosched.h"
 #include "mgr_season.h"
 #include "win_helper.h"
 
@@ -1945,6 +1946,10 @@ void CtiCapController::parseMessage(CtiMessage *message)
                             In the future it may be nice to schedule a reload of the objects that are tied to
                                 the particular schedule being reloaded.
                         */
+                    }
+                    if (resolveDBCategory(dbChange->getCategory()) == ChangeCategoryGlobalSetting)
+                    {
+                        GlobalSettings::reload();
                     }
                 }
                 break;

@@ -46,6 +46,7 @@ IM_EX_CTIBASE INT resolveAWordTime(INT Seconds);
 IM_EX_CTIBASE INT resolveAddressUsage           (const std::string& str, int type);
 IM_EX_CTIBASE std::string   resolveDBChanged(INT dbnum);
 IM_EX_CTIBASE std::string   resolveDBChangeType(INT type);
+IM_EX_CTIBASE INT resolveDBCategory             (const std::string& str);
 IM_EX_CTIBASE INT resolveSlaveAddress(const INT DeviceType, const std::string& str);
 IM_EX_CTIBASE CtiControlType_t  resolveControlType(const std::string& str);
 IM_EX_CTIBASE LONG resolveDeviceWindowType      (const std::string& str);

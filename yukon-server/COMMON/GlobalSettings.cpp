@@ -24,23 +24,7 @@ IM_EX_CTIBASE std::unique_ptr<GlobalSettings> gGlobalSettings;
 
 /** Private constructor for the getSingleton process */
 IM_EX_CTIBASE GlobalSettings::GlobalSettings() {
-    //  Load all settings to start
-    static const string sqlCore = "SELECT GS.NAME,GS.VALUE FROM GlobalSetting GS ";
-
-    Cti::Database::DatabaseConnection connection;
-    Cti::Database::DatabaseReader rdr( connection, sqlCore );
-
-    rdr.execute();
-
-    while( rdr() )
-    {
-
-        string name, value;
-        rdr["NAME"] >> name;
-        rdr["VALUE"] >> value;
-
-        _settingMap[name] = value;
-    }
+    reloadImpl();
 }
 
 /** Private static singleton constructor.  Reads settings from database. */
@@ -110,4 +94,35 @@ IM_EX_CTIBASE bool GlobalSettings::getBooleanImpl( const std::string &name, bool
     return true;
 }
 
+/** Public GlobalSetting table reload tool. */
+IM_EX_CTIBASE void GlobalSettings::reload()
+{
+    getSingleton().reloadImpl();
+}
 
+/** Public GlobalSetting table reload tool implementation. */
+IM_EX_CTIBASE void GlobalSettings::reloadImpl()
+{
+    //  Create temporary map to be swapped later
+    SettingMap _tempMap;
+
+    //  Load current settings
+    static const string sqlCore = "SELECT GS.NAME,GS.VALUE FROM GlobalSetting GS ";
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sqlCore);
+
+    rdr.execute();
+
+    while (rdr())
+    {
+        string name, value;
+        rdr["NAME"] >> name;
+        rdr["VALUE"] >> value;
+
+        _tempMap[name] = value;
+    }
+
+    CtiLockGuard<CtiMutex> guard(g_mux);
+    _settingMap.swap(_tempMap);
+}

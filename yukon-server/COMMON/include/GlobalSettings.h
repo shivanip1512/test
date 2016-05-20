@@ -23,6 +23,8 @@ private:
     int getIntegerImpl( const std::string &name, int default );
     /** Private bool accessor that initializes the singleton. */
     bool getBooleanImpl( const std::string &name, bool default );
+    /** Private GlobalSetting reload tool implementation. */
+    void reloadImpl();
 
 public:
 
@@ -32,6 +34,8 @@ public:
     static int getInteger( const std::string &name, int default );
     /** Public bool accessor. */
     static bool getBoolean( const std::string &name, bool default );
+    /** Public GlobalSetting reload tool. */
+    static void reload();
 };
 
 extern IM_EX_CTIBASE std::unique_ptr<GlobalSettings> gGlobalSettings;

@@ -969,6 +969,38 @@ string   resolveDBChanged(INT dbnum)
     return " DATABASE";
 }
 
+INT   resolveDBCategory(const string& category)
+{
+    static const std::map<std::string, CtiDBChangedCategory_t>  lookup
+    {
+        { "energycompany",                  ChangeCategoryEnergyCompany },
+        { "energy_company_route",           ChangeCategoryEnergyCompanyRoute },
+        { "energy_company_substations",     ChangeCategoryEnergyCompanySubstations },
+        { "appliance",                      ChangeCategoryAppliance },
+        { "servicecompany",                 ChangeCategoryServiceCompany },
+        { "servicecompanydesignationcode",  ChangeCategoryServiceCompanyDesignationCode },
+        { "warehouse",                      ChangeCategoryWarehouse },
+        { "yukonselectionlist",             ChangeCategoryYukonSelectionList },
+        { "yukonlistentry",                 ChangeCategoryYukonListEntry },
+        { "porter_response_monitor",        ChangeCategoryPorterResponseMonitor },
+        { "device_data_monitor",            ChangeCategoryDeviceDataMonitor },
+        { "device_group_member",            ChangeCategoryDeviceGroupMember },
+        { "cc_monitor_bank_list",           ChangeCategoryCCMonitorBankList },
+        { "globalsetting",                  ChangeCategoryGlobalSetting },
+        { "energycompanysetting",           ChangeCategoryEnergyCompanySetting },
+        { "repeatingjob",                   ChangeCategoryRepeatingJob },
+        { "dataexportformat",               ChangeCategoryDataExportFormat },
+        { "monitor",                        ChangeCategoryMonitor }
+    };
+
+    if (const auto result = Cti::mapFind(lookup, sanitizeInput(category)))
+    {
+        return *result;
+    }
+
+    return ChangeCategoryInvalid;
+}
+
 INT resolveSlaveAddress(const INT DeviceType, const string& _str)
 {
     INT slaveAddress = 0;

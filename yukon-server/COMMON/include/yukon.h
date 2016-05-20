@@ -506,6 +506,29 @@ enum CtiDBChangedType_t
 };
 
 
+enum CtiDBChangedCategory_t
+{
+    ChangeCategoryInvalid = -1,
+    ChangeCategoryEnergyCompany = 0,                // 0
+    ChangeCategoryEnergyCompanyRoute,
+    ChangeCategoryEnergyCompanySubstations,
+    ChangeCategoryAppliance,
+    ChangeCategoryServiceCompany,
+    ChangeCategoryServiceCompanyDesignationCode,    // 5
+    ChangeCategoryWarehouse,
+    ChangeCategoryYukonSelectionList,
+    ChangeCategoryYukonListEntry,
+    ChangeCategoryPorterResponseMonitor,
+    ChangeCategoryDeviceDataMonitor,                // 10
+    ChangeCategoryDeviceGroupMember,
+    ChangeCategoryCCMonitorBankList,
+    ChangeCategoryGlobalSetting,
+    ChangeCategoryEnergyCompanySetting,
+    ChangeCategoryRepeatingJob,                     // 15
+    ChangeCategoryDataExportFormat,
+    ChangeCategoryMonitor
+};
+
 enum CtiProtocol_t
 {
     ProtocolVersacomType,
