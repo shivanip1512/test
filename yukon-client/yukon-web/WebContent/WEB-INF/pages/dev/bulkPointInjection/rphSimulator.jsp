@@ -118,7 +118,7 @@
        </div>
         <div class="column one">
             <form id='highSpeedBulkPointInjection'>
-            <cti:msg2 key="yukon.web.modules.dev.highSpeedBulkPointInjection.helpText" var="helpText"/>
+            <cti:msg2 key="modules.dev.highSpeedBulkPointInjection.helpText" var="helpText"/>
             <tags:sectionContainer title="Settings" helpText="${helpText}" >
                 <tags:nameValueContainer2>
                     <tags:nameValue2 argument="Device Group" label="modules.dev.setupDatabase.setupDevDatabase.generic">

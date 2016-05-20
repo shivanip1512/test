@@ -381,19 +381,19 @@
     <entry key="yukon.web.modules.dev.email">Email</entry>
     
     <entry key="yukon.web.modules.dev.deviceGroupSimulator.pageName">Device Group Generator</entry>
-    <entry key="yukon.web.modules.dev.deviceGroupGenerator.helpText"><![CDATA[This tool generates device groups, based on some parameters.
+    <entry key="yukon.web.modules.dev.deviceGroupGenerator.helpText"><![CDATA[The Device Group Generator Tool generates device groups based on the below mentioned parameters:
     <ul>
-    <li>Number of device groups to create</li>
-    <li>Number of devices to place in each group</li>
-    <li>Nested groups required or not..??</li>
+    <li>Number of device groups to be created</li>
+    <li>Number of devices to be placed in each group</li>
+    <li>Whether nested groups are required(Yes/No) </li>
     <li>Group can contain either LCRs or MCT devices</li>
     </ul>
-    The nested groups option would simply create nested composed groups in the shape of a binary tree.]]></entry>
+    The nested groups option would simply create nested composed groups in the form of a binary tree.]]></entry>
     
-    <entry key="yukon.web.modules.dev.bulkImportFileGenerator.helpText"><![CDATA[This tool generates a set of file. 
+    <entry key="yukon.web.modules.dev.bulkImportFileGenerator.helpText"><![CDATA[Bulk Import File Generator tool generates two files based on selected group: 
     <ul>
-    <li>First having modification in Device name and Meter number as per Append text option.This file can be fed into the bulk importer for testing purposes.</li>
-    <li>Second file is having no changes in it. This file can be used to revert changes caused by above file.</li>
+    <li>First file contains modification in Device name and Meter number as per Append text input.This file can be used in bulk import for testing purposes. </li>
+    <li>Second file is having no changes in it. This file can be further used to revert changes caused by above file.</li>
     </ul>
      ]]></entry>
     

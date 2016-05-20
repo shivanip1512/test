@@ -14,7 +14,7 @@ function generateDeviceGroup(){
     <cti:dataGridCell> 
     <form id='deviceGroupGeneratorForm' action="generateDeviceGroups" method="post">
       <cti:csrfToken />
-        <cti:msg2 key="yukon.web.modules.dev.deviceGroupGenerator.helpText" var="helpText"/>
+        <cti:msg2 key="modules.dev.deviceGroupGenerator.helpText" var="helpText"/>
         <tags:sectionContainer title="Generate Device Groups" helpText="${helpText}" >
             <tags:nameValueContainer>
                 <tags:nameValue name="No Of Groups" >

@@ -14,7 +14,7 @@
 
     <form id="bulkImportFileGenerator" action="<cti:url value="/dev/bulkImportFileGenerator/fileGenerator"/>" method="post">
         <cti:csrfToken/>
-        <cti:msg2 key="yukon.web.modules.dev.bulkImportFileGenerator.helpText" var="helpText"/>
+        <cti:msg2 key="modules.dev.bulkImportFileGenerator.helpText" var="helpText"/>
         <tags:sectionContainer title="Settings" helpText="${helpText}" >
             <tags:nameValueContainer>
                 <tags:nameValue id="deviceGroups" name="Device Group" nameColumnWidth="250px">
