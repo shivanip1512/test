@@ -18,6 +18,7 @@
 #include "database_connection.h"
 #include "database_reader.h"
 #include "ThreadStatusKeeper.h"
+#include "GlobalSettings.h"
 #include "win_helper.h"
 
 #include "calclogicsvc.h"
@@ -675,6 +676,12 @@ void CtiCalcLogicService::_inputThread( void )
 
 void CtiCalcLogicService::handleDbChangeMsg( const CtiDBChangeMsg &dbChgMsg, CtiCalculateThread &thread )
 {
+    // In the event that a GlobalSetting has been updated, reload GlobalSettings.
+    if (resolveDBCategory(dbChgMsg.getCategory()) == CtiDBChangedCategory::GlobalSetting)
+    {
+        GlobalSettings::reload();
+    }
+
     // only reload on if a database change was made to a point
     if( dbChgMsg.getDatabase() != ChangePointDb)
     {

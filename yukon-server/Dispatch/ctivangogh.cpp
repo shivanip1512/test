@@ -59,6 +59,7 @@
 #include "debug_timer.h"
 #include "millisecond_timer.h"
 
+#include "GlobalSettings.h"
 #include "std_helper.h"
 #include "win_helper.h"
 #include "amq_constants.h"
@@ -1809,7 +1810,11 @@ void CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 messageDump(pMsg);
                 const CtiDBChangeMsg &aChg = *((CtiDBChangeMsg*)(pMsg));
                 postDBChange(aChg);
-
+                // In the event that a GlobalSetting has been updated, reload GlobalSettings.
+                if (resolveDBCategory(aChg.getCategory()) == CtiDBChangedCategory::GlobalSetting)
+                {
+                    GlobalSettings::reload();
+                }
                 break;
             }
         case MSG_PCRETURN:

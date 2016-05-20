@@ -506,27 +506,27 @@ enum CtiDBChangedType_t
 };
 
 
-enum CtiDBChangedCategory_t
+enum class CtiDBChangedCategory
 {
-    ChangeCategoryInvalid = -1,
-    ChangeCategoryEnergyCompany = 0,                // 0
-    ChangeCategoryEnergyCompanyRoute,
-    ChangeCategoryEnergyCompanySubstations,
-    ChangeCategoryAppliance,
-    ChangeCategoryServiceCompany,
-    ChangeCategoryServiceCompanyDesignationCode,    // 5
-    ChangeCategoryWarehouse,
-    ChangeCategoryYukonSelectionList,
-    ChangeCategoryYukonListEntry,
-    ChangeCategoryPorterResponseMonitor,
-    ChangeCategoryDeviceDataMonitor,                // 10
-    ChangeCategoryDeviceGroupMember,
-    ChangeCategoryCCMonitorBankList,
-    ChangeCategoryGlobalSetting,
-    ChangeCategoryEnergyCompanySetting,
-    ChangeCategoryRepeatingJob,                     // 15
-    ChangeCategoryDataExportFormat,
-    ChangeCategoryMonitor
+    Invalid = -1,
+    EnergyCompany = 0,                // 0
+    EnergyCompanyRoute,
+    EnergyCompanySubstations,
+    Appliance,
+    ServiceCompany,
+    ServiceCompanyDesignationCode,    // 5
+    Warehouse,
+    YukonSelectionList,
+    YukonListEntry,
+    PorterResponseMonitor,
+    DeviceDataMonitor,                // 10
+    DeviceGroupMember,
+    CCMonitorBankList,
+    GlobalSetting,
+    EnergyCompanySetting,
+    RepeatingJob,                     // 15
+    DataExportFormat,
+    Monitor
 };
 
 enum CtiProtocol_t

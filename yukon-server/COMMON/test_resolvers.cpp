@@ -481,25 +481,26 @@ BOOST_AUTO_TEST_CASE(test_resolveDBChanged)
 
 BOOST_AUTO_TEST_CASE(test_resolveDBCategory)
 {
-    BOOST_CHECK_EQUAL(resolveDBCategory("invalid"),                         ChangeCategoryInvalid);
-    BOOST_CHECK_EQUAL(resolveDBCategory("energycompany"),                   ChangeCategoryEnergyCompany);
-    BOOST_CHECK_EQUAL(resolveDBCategory("energy_company_route"),            ChangeCategoryEnergyCompanyRoute);
-    BOOST_CHECK_EQUAL(resolveDBCategory("energy_company_substations"),      ChangeCategoryEnergyCompanySubstations);
-    BOOST_CHECK_EQUAL(resolveDBCategory("appliance"),                       ChangeCategoryAppliance);
-    BOOST_CHECK_EQUAL(resolveDBCategory("servicecompany"),                  ChangeCategoryServiceCompany);
-    BOOST_CHECK_EQUAL(resolveDBCategory("servicecompanydesignationcode"),   ChangeCategoryServiceCompanyDesignationCode);
-    BOOST_CHECK_EQUAL(resolveDBCategory("warehouse"),                       ChangeCategoryWarehouse);
-    BOOST_CHECK_EQUAL(resolveDBCategory("yukonselectionlist"),              ChangeCategoryYukonSelectionList);
-    BOOST_CHECK_EQUAL(resolveDBCategory("yukonlistentry"),                  ChangeCategoryYukonListEntry);
-    BOOST_CHECK_EQUAL(resolveDBCategory("porter_response_monitor"),         ChangeCategoryPorterResponseMonitor);
-    BOOST_CHECK_EQUAL(resolveDBCategory("device_data_monitor"),             ChangeCategoryDeviceDataMonitor);
-    BOOST_CHECK_EQUAL(resolveDBCategory("device_group_member"),             ChangeCategoryDeviceGroupMember);
-    BOOST_CHECK_EQUAL(resolveDBCategory("cc_monitor_bank_list"),            ChangeCategoryCCMonitorBankList);
-    BOOST_CHECK_EQUAL(resolveDBCategory("globalsetting"),                   ChangeCategoryGlobalSetting);
-    BOOST_CHECK_EQUAL(resolveDBCategory("energycompanysetting"),            ChangeCategoryEnergyCompanySetting);
-    BOOST_CHECK_EQUAL(resolveDBCategory("repeatingjob"),                    ChangeCategoryRepeatingJob);
-    BOOST_CHECK_EQUAL(resolveDBCategory("dataexportformat"),                ChangeCategoryDataExportFormat);
-    BOOST_CHECK_EQUAL(resolveDBCategory("monitor"),                         ChangeCategoryMonitor);
+    BOOST_CHECK(resolveDBCategory("invalid")                                == CtiDBChangedCategory::Invalid);
+    BOOST_CHECK(resolveDBCategory("invalid")                          == CtiDBChangedCategory::Invalid);
+    BOOST_CHECK(resolveDBCategory("energycompany")                    == CtiDBChangedCategory::EnergyCompany);
+    BOOST_CHECK(resolveDBCategory("energy_company_route")             == CtiDBChangedCategory::EnergyCompanyRoute);
+    BOOST_CHECK(resolveDBCategory("energy_company_substations")       == CtiDBChangedCategory::EnergyCompanySubstations);
+    BOOST_CHECK(resolveDBCategory("appliance")                        == CtiDBChangedCategory::Appliance);
+    BOOST_CHECK(resolveDBCategory("servicecompany")                   == CtiDBChangedCategory::ServiceCompany);
+    BOOST_CHECK(resolveDBCategory("servicecompanydesignationcode")    == CtiDBChangedCategory::ServiceCompanyDesignationCode);
+    BOOST_CHECK(resolveDBCategory("warehouse")                        == CtiDBChangedCategory::Warehouse);
+    BOOST_CHECK(resolveDBCategory("yukonselectionlist")               == CtiDBChangedCategory::YukonSelectionList);
+    BOOST_CHECK(resolveDBCategory("yukonlistentry")                   == CtiDBChangedCategory::YukonListEntry);
+    BOOST_CHECK(resolveDBCategory("porter_response_monitor")          == CtiDBChangedCategory::PorterResponseMonitor);
+    BOOST_CHECK(resolveDBCategory("device_data_monitor")              == CtiDBChangedCategory::DeviceDataMonitor);
+    BOOST_CHECK(resolveDBCategory("device_group_member")              == CtiDBChangedCategory::DeviceGroupMember);
+    BOOST_CHECK(resolveDBCategory("cc_monitor_bank_list")             == CtiDBChangedCategory::CCMonitorBankList);
+    BOOST_CHECK(resolveDBCategory("globalsetting")                    == CtiDBChangedCategory::GlobalSetting);
+    BOOST_CHECK(resolveDBCategory("energycompanysetting")             == CtiDBChangedCategory::EnergyCompanySetting);
+    BOOST_CHECK(resolveDBCategory("repeatingjob")                     == CtiDBChangedCategory::RepeatingJob);
+    BOOST_CHECK(resolveDBCategory("dataexportformat")                 == CtiDBChangedCategory::DataExportFormat);
+    BOOST_CHECK(resolveDBCategory("monitor")                          == CtiDBChangedCategory::Monitor);
 }
 
 BOOST_AUTO_TEST_CASE(test_resolvePAOType)

@@ -40,6 +40,7 @@
 #include "database_connection.h"
 #include "database_transaction.h"
 #include "millisecond_timer.h"
+#include "GlobalSettings.h"
 #include "win_helper.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -1238,6 +1239,8 @@ void DispatchMsgHandlerThread(void *Arg)
     CtiTime         TimeNow;
     CtiTime         LastTime;
 
+    CtiDBChangeMsg* dbChange;
+
     ThreadStatusKeeper threadStatus("Scanner DispatchMsgHandlerThread");
 
     /* perform the wait loop forever */
@@ -1251,11 +1254,16 @@ void DispatchMsgHandlerThread(void *Arg)
             {
             case MSG_DBCHANGE:
                 {
+                    dbChange = (CtiDBChangeMsg*)MsgPtr;
                     // Refresh the scanner in memory database once every 5 minutes.
                     LoadScannableDevices((void*)MsgPtr->replicateMessage());
                     // Post the wakup to ensure that the main loop re-examines the devices.
                     SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
-
+                    // In the event that a GlobalSetting has been updated, reload GlobalSettings.
+                    if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangedCategory::GlobalSetting)
+                    {
+                        GlobalSettings::reload();
+                    }
                     break;
                 }
             case MSG_COMMAND:

@@ -938,7 +938,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
                 }
                 CtiLMControlAreaStore::getInstance()->setValid(false);
             }
-            if (resolveDBCategory(dbChange->getCategory()) == ChangeCategoryGlobalSetting)
+            if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangedCategory::GlobalSetting)
             {
                 GlobalSettings::reload();
             }

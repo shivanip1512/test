@@ -93,15 +93,16 @@ void DispatchMsgHandlerThread()
                 case MSG_DBCHANGE:
                     {
                         dbchg.reset(static_cast<const CtiDBChangeMsg *>(MsgPtr.release()));
+                        const auto dbCategory = resolveDBCategory(dbchg->getCategory());
 
                         CTILOG_INFO(dout, "Porter has received a "<< dbchg->getCategory() <<" DBCHANGE message from Dispatch");
 
-                        if(resolveDBCategory(dbchg->getCategory()) == ChangeCategoryDeviceGroupMember)
+                        if(dbCategory == CtiDBChangedCategory::DeviceGroupMember)
                         {
                             //  Porter ignores DEVICE_GROUP_MEMBER dbchanges
                             continue;
                         }
-                        if (resolveDBCategory(dbchg->getCategory()) == ChangeCategoryGlobalSetting)
+                        if (dbCategory == CtiDBChangedCategory::GlobalSetting)
                         {
                             GlobalSettings::reload();
                         }

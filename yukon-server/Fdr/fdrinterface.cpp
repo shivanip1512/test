@@ -15,6 +15,7 @@
 #include "fdrpoint.h"
 #include "mgr_fdrpoint.h"
 
+#include "GlobalSettings.h"
 #include "logger.h"
 #include "guard.h"
 #include "fdrpointlist.h"
@@ -840,6 +841,11 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                                 processFDRPointChange(pointId,false);//changeType tested to be true, so its not a delete
                             }
                         }
+                    }
+                    // In the event that a GlobalSetting has been updated, reload GlobalSettings.
+                    if (resolveDBCategory(dBChangeMsg->getCategory()) == CtiDBChangedCategory::GlobalSetting)
+                    {
+                        GlobalSettings::reload();
                     }
                     break;
 
