@@ -124,6 +124,8 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             data.setAverageEnqueueTime(averageEnqueueTime);
             data.setStatus(status);
             
+            log.debug("Loaded data for metric " + metric + ": " + data.toString());
+            
             return data;
         } catch (Exception e) {
             log.error("Couldn't load metric data.", e);
@@ -149,6 +151,8 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             data.setQueueSize(queueSize);
             data.setAverageEnqueueTime(averageEnqueueTime);
             data.setStatus(status);
+            
+            log.debug("Loaded data for metric " + metric + ": " + data.toString());
             
             return data;
         } catch (Exception e) {

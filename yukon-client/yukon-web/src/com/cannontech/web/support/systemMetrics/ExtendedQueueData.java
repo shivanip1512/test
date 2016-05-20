@@ -31,5 +31,11 @@ public class ExtendedQueueData extends QueueData implements SystemHealthMetric {
     public SystemHealthMetricType getType() {
         return SystemHealthMetricType.JMS_QUEUE_EXTENDED;
     }
+
+    @Override
+    public String toString() {
+        return "ExtendedQueueData [archivedReadingsCount=" + archivedReadingsCount + ", archiveRequestsProcessed="
+               + archiveRequestsProcessed + "]";
+    }
     
 }

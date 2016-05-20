@@ -69,10 +69,12 @@ public class QueueData implements SystemHealthMetric {
         this.queueSize = queueSize;
     }
 
+    @Override
     public MetricStatusWithMessages getStatus() {
         return status;
     }
 
+    @Override
     public void setStatus(MetricStatusWithMessages status) {
         this.status = status;
     }
@@ -86,4 +88,12 @@ public class QueueData implements SystemHealthMetric {
     public SystemHealthMetricIdentifier getMetricIdentifier() {
         return metricIdentifier;
     }
+
+    @Override
+    public String toString() {
+        return "QueueData [metricIdentifier=" + metricIdentifier + ", enqueuedCount=" + enqueuedCount
+               + ", dequeuedCount=" + dequeuedCount + ", formattedAverageEnqueueMillis="
+               + formattedAverageEnqueueMillis + ", queueSize=" + queueSize + ", status=" + status + "]";
+    }
+    
 }

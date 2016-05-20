@@ -6,6 +6,8 @@ package com.cannontech.web.support.systemMetrics;
  */
 public interface MetricHealthCriteria {
     
+    public static final String keyPrefix = "yukon.web.modules.support.systemHealth.criteria.";
+    
     /**
      * @return The identifier of the metric that this criteria pertains to.
      */

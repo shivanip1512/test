@@ -25,6 +25,7 @@ public class SystemMetricCriteriaDaoImpl implements SystemMetricCriteriaDao {
         return jdbcTemplate.queryForInt(sql);
     }
     
+    @Override
     public int getRfnLcrCount() {
         Set<PaoType> rfnLcrTypes = PaoType.getRfLcrTypes();
         

@@ -65,4 +65,13 @@ public class MetricStatusWithMessages {
         }
         return new MetricStatusWithMessages(metricStatus, mergedMessages);
     }
+
+    /**
+     * Used for debugging purposes. To get status or messages for display, use getMetricStatus(), getMessages() or 
+     * getAllMessages().
+     */
+    @Override
+    public String toString() {
+        return "MetricStatusWithMessages [metricStatus=" + metricStatus + ", messages=" + messages + "]";
+    }
 }

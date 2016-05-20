@@ -45,6 +45,7 @@ public class SystemHealthStatusHelper {
         }
         
         init();
+        log.debug("Initialized SystemHealthStatusHelper.");
     }
     
     /**
@@ -58,12 +59,17 @@ public class SystemHealthStatusHelper {
         }
         
         Runnable metricUpdater = () -> {
+            log.debug("Updating system health metric statuses.");
+            
             List<SystemHealthMetric> metrics = systemHealthService.getAllMetrics();
             for (SystemHealthMetric metric : metrics) {
                 MetricStatusWithMessages status = calculateStatus(metric);
                 metric.setStatus(status);
                 metricStatusCache.put(metric.getMetricIdentifier(), status);
                 //archivePointData(metric); //TODO: YUK-15285
+                
+                log.debug(metric.getType() + " status calculation complete.");
+                log.trace(metric.getType() + "Status: " + status);
             }
         };
         

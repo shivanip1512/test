@@ -1,52 +1,39 @@
 package com.cannontech.web.support.systemMetrics;
 
-import java.util.ArrayList;
-
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.support.dao.SystemMetricCriteriaDao;
-import com.google.common.collect.Lists;
 
 /**
  * System health criteria that checks to see if the number of LCR archive requests exceed the number of LCRs in the
  * system.
  */
-public class LcrRequestsEnqueuedCriteria implements MetricHealthCriteria {
-    private static final String warningKey = "yukon.web.modules.support.systemHealth.criteria.lcrEnqueuedCount";
+public class LcrRequestsEnqueuedCriteria extends MetricHealthCriteriaBase<ExtendedQueueData> {
+    private static final Logger log = YukonLogManager.getLogger(MetricHealthCriteria.class);
     @Autowired SystemMetricCriteriaDao systemMetricCriteriaDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    public LcrRequestsEnqueuedCriteria() {
+        super(ExtendedQueueData.class, "lcrEnqueuedCount", "");
+    }
     
     @Override
     public SystemHealthMetricIdentifier getPertainsTo() {
         return SystemHealthMetricIdentifier.RFN_LCR;
     }
-
-    @Override
-    public MetricStatusWithMessages checkMetric(SystemHealthMetric metric) {
-        if (metric instanceof ExtendedQueueData && metric.getMetricIdentifier() == getPertainsTo()) {
-            return doMetricCheck((ExtendedQueueData) metric);
-        } else {
-            throw new IllegalArgumentException("Criteria only supports " + getPertainsTo() + " metric");
-        }
-    }
     
-    private MetricStatusWithMessages doMetricCheck(ExtendedQueueData metric) {
-        
+    @Override
+    protected MetricStatus doMetricCheck(ExtendedQueueData metric) {
         int rfnLcrCount = systemMetricCriteriaDao.getRfnLcrCount();
         long enqueuedCount = metric.getEnqueuedCount();
         
-        MetricStatusWithMessages status;
-        if (enqueuedCount > rfnLcrCount) {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-            String message = accessor.getMessage(warningKey);
-            status = new MetricStatusWithMessages(MetricStatus.WARN, Lists.newArrayList(message));
-        } else {
-            status = new MetricStatusWithMessages(MetricStatus.GOOD, new ArrayList<>());
-        }
+        log.debug("Lcr Requests Enqueued Criteria checked. RfnLcrCount: " + rfnLcrCount + " enqueuedCount: " 
+                + enqueuedCount);
         
-        return status;
+        if (enqueuedCount > rfnLcrCount) {
+            return MetricStatus.WARN;
+        }
+        return MetricStatus.GOOD;
     }
 }
