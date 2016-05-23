@@ -2002,23 +2002,25 @@ bool CtiCCFeeder::isPeakTime(const CtiTime& currentDateTime)
 
 bool CtiCCFeeder::isControlPoint(long pointid)
 {
-    bool retVal = false;
-
     if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
-        if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit)  &&
-            getCurrentVoltLoadPointId() == pointid )
-            retVal = true;
-        else if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit)  &&
-            getCurrentVarLoadPointId() == pointid)
-            retVal = true;
-        else if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) &&
-                 (getCurrentVarLoadPointId() == pointid || getCurrentWattLoadPointId() == pointid) )
-            retVal = true;
-        else
-            retVal = false;
+        if ( getStrategy()->getUnitType() == ControlStrategy::Volts &&
+             getCurrentVoltLoadPointId() == pointid )
+        {
+            return true;
+        }
+        else if ( getStrategy()->getUnitType() == ControlStrategy::KVar &&
+                  getCurrentVarLoadPointId() == pointid )
+        {
+            return true;
+        }
+        else if ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar &&
+                  ( getCurrentVarLoadPointId() == pointid || getCurrentWattLoadPointId() == pointid ) )
+        {
+            return true;
+        }
     }
-    return retVal;
+    return false;
 }
 
 void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime)
@@ -2032,11 +2034,15 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
 
     if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
-        if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
+        if ( getStrategy()->getUnitType() == ControlStrategy::Volts )
+        {
             controlVvalue = getCurrentVoltLoadPointValue();
-        else if (ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit)||
-                 ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit))
+        }
+        else if ( getStrategy()->getUnitType() == ControlStrategy::KVar ||
+                  getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar )
+        {
             controlVvalue = getCurrentVarLoadPointValue();
+        }
         else
         {
             //integration not implemented.
@@ -3922,7 +3928,10 @@ CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& cur
     else
     {
         //check capbank reclose delay here...
-        double controlValue = (ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+        double controlValue = ( getStrategy()->getUnitType() == ControlStrategy::Volts )
+                                   ? getCurrentVoltLoadPointValue()
+                                   : getCurrentVarLoadPointValue();
+
         string text = createTextString(getStrategy()->getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
         bool flipFlag = _USE_FLIP_FLAG && stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701");
 
@@ -4928,7 +4937,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Close))
                             {
-                                double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
+                                                           ? getCurrentVoltLoadPointValue()
+                                                           : getCurrentVarLoadPointValue();
+
                                 string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
                                 request = createDecreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -4986,7 +4998,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Close))
                                     {
-                                        double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
+                                                                   ? getCurrentVoltLoadPointValue()
+                                                                   : getCurrentVarLoadPointValue();
+
                                         string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
                                         request = createDecreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -5043,7 +5058,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Open))
                             {
-                                double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
+                                                           ? getCurrentVoltLoadPointValue()
+                                                           : getCurrentVarLoadPointValue();
+
                                 string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
                                 request = createIncreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -5095,7 +5113,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Open))
                                     {
-                                        double controlValue = (!ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
+                                                                   ? getCurrentVoltLoadPointValue()
+                                                                   : getCurrentVarLoadPointValue();
+
                                         string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
                                         request = createIncreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
