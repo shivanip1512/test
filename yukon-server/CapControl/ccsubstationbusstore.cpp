@@ -4792,9 +4792,9 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     {
                         if (CtiCCSubstationBusPtr dualBus = findInMap(currentCCSubstationBus->getAltDualSubId(), paobject_subbus_map))
                         {
-                            if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-                                ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if ( currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::KVar ||
+                                 currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
+                                 currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
                             {
                                 if (dualBus->getCurrentVarLoadPointId() > 0)
                                 {
@@ -4807,7 +4807,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                                     "Alternate Sub: "<<dualBus->getPaoName()<<" does not have a VAR Point ID attached.");
                                 }
                             }
-                            else if(ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
+                            else if ( currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::Volts )
                             {
                                 if (dualBus->getCurrentVoltLoadPointId() > 0)
                                 {
@@ -7315,13 +7315,13 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(tempSubId);
                 if (tempSub != NULL)
                 {
-                    if (ciStringEqual(tempSub->getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit))
+                    if ( tempSub->getStrategy()->getUnitType() == ControlStrategy::KVar )
                     {
                         long pointid = subToDelete->getCurrentVarLoadPointId();
                         _pointid_subbus_map.erase(pointid);
                         tempSub->removePointId(pointid);
                     }
-                    else if (!ciStringEqual(tempSub->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit))
+                    else if ( tempSub->getStrategy()->getUnitType() != ControlStrategy::Volts )
                     {
                         long pointid = subToDelete->getCurrentVoltLoadPointId();
                         _pointid_subbus_map.erase(pointid);
