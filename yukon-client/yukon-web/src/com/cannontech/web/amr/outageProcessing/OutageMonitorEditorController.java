@@ -32,9 +32,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -52,7 +49,6 @@ public class OutageMonitorEditorController extends MultiActionController {
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired private DbChangeManager dbChangeManager;
     
     private static final String CRON_TAG_ID = "outageMonitor";
     private static final Attribute BLINK_COUNT_ATTRIBUTE = BuiltInAttribute.BLINK_COUNT;
@@ -122,7 +118,6 @@ public class OutageMonitorEditorController extends MultiActionController {
         mav.addObject("cronExpressionTagId", CRON_TAG_ID);
         CronExpressionTagState cronExpressionTagState = cronExpressionTagService.parse(expression, userContext);
         mav.addObject("cronExpressionTagState", cronExpressionTagState);
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR, outageMonitorId);
         return mav;
     }
     
@@ -253,10 +248,11 @@ public class OutageMonitorEditorController extends MultiActionController {
             outageMonitor.setTimePeriodDays(timePeriod);
             
             log.debug("Saving outageMonitor: isNewMonitor=" + isNewMonitor + ", outageMonitor=" + outageMonitor.toString());
-            outageMonitorDao.saveOrUpdate(outageMonitor);
-            outageMonitorId = outageMonitor.getOutageMonitorId();
-            // Process DBchange
-            dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, outageMonitorId);
+            if (isNewMonitor) {
+                outageMonitorService.create(outageMonitor);
+            } else {
+                outageMonitorService.update(outageMonitor);
+            }
             // redirect to edit page with processor
             return new ModelAndView("redirect:/meter/start");
         }
@@ -268,8 +264,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "deleteOutageMonitorId");
         
         try {
-            outageMonitorService.deleteOutageMonitor(outageMonitorId);
-            dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, outageMonitorId);
+            outageMonitorService.delete(outageMonitorId);
             return new ModelAndView("redirect:/meter/start");
         } catch (OutageMonitorNotFoundException e) {
             ModelAndView mav = new ModelAndView("redirect:edit");
@@ -294,5 +289,4 @@ public class OutageMonitorEditorController extends MultiActionController {
         
         return mav;
     }
-    
 }

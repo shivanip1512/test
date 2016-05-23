@@ -17,9 +17,6 @@ import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.common.validation.service.ValidationMonitorService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -31,7 +28,6 @@ public class ValidationMonitorEditorController {
     private final static Logger log = YukonLogManager.getLogger(ValidationMonitorEditorController.class);
     @Autowired private ValidationMonitorDao validationMonitorDao;
     @Autowired private ValidationMonitorService validationMonitorService;
-    @Autowired private DbChangeManager dbChangeManager;
 
     @RequestMapping("edit")
     public String edit(ModelMap model, Integer validationMonitorId, String editError, String name, String deviceGroupName, 
@@ -160,9 +156,11 @@ public class ValidationMonitorEditorController {
             validationMonitor.setQuestionableOnPeak(setQuestionable == null ? false : true);
             
             log.debug("Saving validationMonitor: isNewMonitor=" + isNewMonitor + ", validationMonitor=" + validationMonitor.toString());
-            validationMonitorDao.saveOrUpdate(validationMonitor);
-            validationMonitorId = validationMonitor.getValidationMonitorId();
-            dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, validationMonitorId);
+            if (isNewMonitor) {
+                validationMonitorService.create(validationMonitor);
+            } else {
+                validationMonitorService.update(validationMonitor);
+            }
             return "redirect:/meter/start";
         }
     }
@@ -170,11 +168,10 @@ public class ValidationMonitorEditorController {
     @RequestMapping(value="delete", method=RequestMethod.POST)
     public String delete(ModelMap model, int deleteValidationMonitorId) throws Exception, ServletException {
         
-        if(!validationMonitorDao.delete(deleteValidationMonitorId)){
+        if(!validationMonitorService.delete(deleteValidationMonitorId)){
             model.addAttribute("editError", "Could not delete validation monitor.  Monitor with id: " + deleteValidationMonitorId + " not found.");
             return "redirect:edit";
         }
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, deleteValidationMonitorId);
         return "redirect:/meter/start";
     }
     
@@ -189,6 +186,4 @@ public class ValidationMonitorEditorController {
         
         return "redirect:edit";
     }
-    
-    
 }

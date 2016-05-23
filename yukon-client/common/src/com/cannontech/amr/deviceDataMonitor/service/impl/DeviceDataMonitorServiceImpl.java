@@ -23,6 +23,8 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.jms.RequestTemplateImpl;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -37,6 +39,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private ConfigurationSource configSource;
+    @Autowired private UserSubscriptionDao userSubscriptionDao;
 
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorServiceImpl.class);
     private JmsTemplate jmsTemplate;
@@ -50,7 +53,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     public DeviceDataMonitor create(DeviceDataMonitor monitor) throws DuplicateException {
         deviceDataMonitorDao.save(monitor);
         jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, null, Action.CREATE));
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR, monitor.getId());
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
         return monitor;
     }
     
@@ -59,14 +62,15 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         DeviceDataMonitor existingMonitor = deviceDataMonitorDao.getMonitorById(monitor.getId());
         deviceDataMonitorDao.save(monitor);
         jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, existingMonitor,  Action.UPDATE));
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, monitor.getId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
         return monitor;
     }
     
     @Override
     public void delete(DeviceDataMonitor monitor) {
+        userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.DEVICE_DATA_MONITOR, monitor.getId());
         deviceDataMonitorDao.deleteMonitor(monitor.getId());
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, monitor.getId());
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
     }
     
     @Override
@@ -90,6 +94,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         Action action = monitor.isEnabled()? Action.ENABLE : Action.DISABLE;
         deviceDataMonitorDao.save(monitor);
         jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, action));
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
         log.info("Updated deviceDataMonitor enabled status: status=" + newStatus + ", deviceDataMonitor=" + monitor);
         return newStatus;
     }

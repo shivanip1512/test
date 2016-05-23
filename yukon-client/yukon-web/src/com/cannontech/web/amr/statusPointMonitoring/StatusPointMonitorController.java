@@ -45,9 +45,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -67,9 +64,8 @@ public class StatusPointMonitorController {
     @Autowired private StateDao stateDao;
     @Autowired private OutageEventLogService outageEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private DbChangeManager dbChangeManager;
     
-    private Validator createValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
+    private final Validator createValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
         @Override
         public void doValidation(StatusPointMonitor statusPointMonitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "statusPointMonitorName", baseKey + ".empty");
@@ -77,7 +73,7 @@ public class StatusPointMonitorController {
         }
     };
     
-    private Validator updateValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
+    private final Validator updateValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
         @Override
         public void doValidation(StatusPointMonitor statusPointMonitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "statusPointMonitorName", baseKey + ".empty");
@@ -135,7 +131,7 @@ public class StatusPointMonitorController {
         }
         
         try {
-            statusPointMonitorDao.save(statusPointMonitor);
+            statusPointMonitorService.create(statusPointMonitor);
         } catch (DuplicateException e) {
             bindingResult.rejectValue("statusPointMonitorName", baseKey + ".alreadyExists");
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
@@ -156,8 +152,6 @@ public class StatusPointMonitorController {
                                                         statusPointMonitor.getStateGroup().toString(), 
                                                         statusPointMonitor.getEvaluatorStatus().getDescription(), 
                                                         userContext.getYukonUser());
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR,
-            statusPointMonitor.getStatusPointMonitorId());
         return "redirect:/amr/statusPointMonitoring/editPage";
     }
     
@@ -178,7 +172,7 @@ public class StatusPointMonitorController {
         }
         
         try {
-            statusPointMonitorDao.save(statusPointMonitor);
+            statusPointMonitorService.update(statusPointMonitor);
         } catch (DuplicateException e) {
             bindingResult.rejectValue("statusPointMonitorName", baseKey + ".alreadyExists");
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
@@ -197,8 +191,6 @@ public class StatusPointMonitorController {
                                                         statusPointMonitor.getStateGroup().toString(), 
                                                         statusPointMonitor.getEvaluatorStatus().getDescription(), 
                                                         userContext.getYukonUser());
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR,
-            statusPointMonitor.getStatusPointMonitorId());
         modelMap.addAttribute("statusPointMonitorId", statusPointMonitor.getStatusPointMonitorId());
         return "redirect:viewPage";
     }
@@ -233,8 +225,6 @@ public class StatusPointMonitorController {
                                                         statusPointMonitor.getStateGroup().toString(), 
                                                         statusPointMonitor.getEvaluatorStatus().getDescription(), 
                                                         userContext.getYukonUser());
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR,
-            statusPointMonitor.getStatusPointMonitorId());
         return "redirect:/meter/start";
     }
     

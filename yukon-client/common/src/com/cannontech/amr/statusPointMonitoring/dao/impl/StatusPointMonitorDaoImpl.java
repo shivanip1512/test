@@ -34,9 +34,14 @@ import com.google.common.collect.Sets;
 
 public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
 
-    private StateDao stateDao;
-    private AttributeService attributeService;
+    @Autowired private StateDao stateDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    private SimpleTableAccessTemplate<StatusPointMonitor> statusPointMonitorTemplate;
+    private SimpleTableAccessTemplate<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorTemplate;
 
+    
     private final YukonRowMapper<StatusPointMonitor> statusPointMonitorRowMapper =
         new YukonRowMapper<StatusPointMonitor>() {
         @Override
@@ -67,12 +72,6 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
             return retVal;
         }
     };
-    
-    
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
-    private SimpleTableAccessTemplate<StatusPointMonitor> statusPointMonitorTemplate;
-    private SimpleTableAccessTemplate<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorTemplate;
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -192,6 +191,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
     }
     
     private FieldMapper<StatusPointMonitor> statusPointMonitorFieldMapper = new FieldMapper<StatusPointMonitor>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, StatusPointMonitor statusPointMonitor) {
             p.addValue("StatusPointMonitorName", statusPointMonitor.getStatusPointMonitorName());
             p.addValue("GroupName", statusPointMonitor.getGroupName());
@@ -199,24 +199,29 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
             p.addValue("StateGroupId", statusPointMonitor.getStateGroup().getStateGroupID());
             p.addValue("EvaluatorStatus", statusPointMonitor.getEvaluatorStatus());
         }
+        @Override
         public Number getPrimaryKey(StatusPointMonitor statusPointMonitor) {
             return statusPointMonitor.getStatusPointMonitorId();
         }
+        @Override
         public void setPrimaryKey(StatusPointMonitor statusPointMonitor, int value) {
         	statusPointMonitor.setStatusPointMonitorId(value);
         }
     };
     
     private FieldMapper<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorFieldMapper = new FieldMapper<StoredStatusPointMonitorProcessor>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, StoredStatusPointMonitorProcessor holder) {
             p.addValue("StatusPointMonitorId", holder.parent.getStatusPointMonitorId());
             p.addValue("PrevState", holder.statusPointMonitorProcessor.getPrevState());
             p.addValue("NextState", holder.statusPointMonitorProcessor.getNextState());
             p.addValue("ActionType", holder.statusPointMonitorProcessor.getActionTypeEnum().name());
         }
+        @Override
         public Number getPrimaryKey(StoredStatusPointMonitorProcessor holder) {
             return holder.statusPointMonitorProcessor.getStatusPointMonitorProcessorId();
         }
+        @Override
         public void setPrimaryKey(StoredStatusPointMonitorProcessor holder, int value) {
             holder.statusPointMonitorProcessor.setStatusPointMonitorProcessorId(value);
         }
@@ -238,24 +243,5 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
     private class StoredStatusPointMonitorProcessor {
         StatusPointMonitor parent;
         StatusPointMonitorProcessor statusPointMonitorProcessor;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
-    
-    @Autowired
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
     }
 }

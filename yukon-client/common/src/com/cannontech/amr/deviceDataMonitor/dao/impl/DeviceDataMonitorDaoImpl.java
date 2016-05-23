@@ -37,9 +37,6 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 
@@ -49,7 +46,6 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Autowired private StateDao stateDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorDaoImpl.class);
     
@@ -164,9 +160,6 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         log.info("Deleted device data monitor: " + monitor.getName());
         
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.DEVICE_DATA_MONITOR, monitorId);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, 
-                                        DbChangeCategory.DEVICE_DATA_MONITOR, 
-                                        monitorId);
         return rowsAffected > 0;
     }
 
@@ -175,9 +168,6 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     public void save(DeviceDataMonitor monitor) {
         try {
             monitorTemplate.save(monitor);
-            dbChangeManager.processDbChange(DbChangeType.UPDATE, 
-                                            DbChangeCategory.DEVICE_DATA_MONITOR, 
-                                            monitor.getId());
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save Device Data Monitor.", e);
         }
