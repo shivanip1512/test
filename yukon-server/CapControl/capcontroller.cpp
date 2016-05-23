@@ -582,8 +582,10 @@ void CtiCapController::controlLoop()
                         CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
 
                         //Bypass IVVC subbuses.  IVVC subbuses are analyzed in the IVVC Algorithm.
-                        if (currentSubstationBus->getStrategy()->getControlUnits() == ControlStrategy::IntegratedVoltVarControlUnit)
+                        if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+                        {
                             continue;
+                        }
 
                         CtiCCAreaPtr currentArea = NULL;
 
@@ -2065,7 +2067,7 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     if (currentBus->getAltDualSubId() == currentBus->getPaoId() )
     {
-        if (ciStringEqual(currentBus->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) )
+        if ( currentBus->getStrategy()->getUnitType() == ControlStrategy::Volts )
         {
             CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID(currentBus->getAltDualSubId());
             if (altSub != NULL)
@@ -2086,9 +2088,9 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
     CtiCCSubstationBusPtr primarySub = store->findSubBusByPAObjectID(currentBus->getAltDualSubId());
     if (primarySub != NULL)
     {
-        if( ciStringEqual(currentBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-            ciStringEqual(currentBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-            ciStringEqual(currentBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+        if ( currentBus->getStrategy()->getUnitType() == ControlStrategy::KVar ||
+             currentBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
+             currentBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
         {
             if (primarySub->getPrimaryBusFlag())
             {
@@ -2118,7 +2120,7 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
             primarySub->setBusUpdatedFlag(true);
             currentBus->setBusUpdatedFlag(true);
         }
-        else if (ciStringEqual(currentBus->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) )
+        else if ( currentBus->getStrategy()->getUnitType() == ControlStrategy::Volts )
         {
             if (currentBus->getSwitchOverStatus())
             {
@@ -2219,9 +2221,9 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                         else
                         {
                             text += " Alt Sub Enabled";
-                            if (ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-                                ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::KVar ||
+                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
+                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
                             {
 
                                 altSub->setPrimaryBusFlag(true);
@@ -2279,9 +2281,9 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                             altSub->setPrimaryBusFlag(false);
                             altSub->setBusUpdatedFlag(true);
                             text += " Alt Sub Not Enabled";
-                            if (ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-                                ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::KVar ||
+                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
+                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
                             {
 
                                 CtiFeeder_vec& ccFeeders = altSub->getCCFeeders();
@@ -2532,7 +2534,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
                         if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
                         {
-                            if( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
                             {
                                 currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentSubstationBus->getCurrentWattLoadPointValue()),timestamp);
                             }
@@ -2549,13 +2551,13 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                             }
                         }
-                        else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                    ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit)) )
+                        else if ( currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::KVar &&
+                                  currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::Volts )
                         {
                             CTILOG_ERROR(dout, "No Watt Point attached to bus: " << currentSubstationBus->getPaoName() <<", cannot calculate power factor");
                         }
 
-                        if (currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::IntegratedVoltVar)
+                        if ( currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::IntegratedVoltVar )
                         {
                             currentSubstationBus->figureAndSetTargetVarValue();
                         }
@@ -2567,7 +2569,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                     if( timestamp > currentSubstationBus->getLastWattPointTime() )
                     {
                         currentSubstationBus->setLastWattPointTime(timestamp);
-                        if (ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit))
+                        if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
                         {
                             double tempKQ = currentSubstationBus->convertKVARToKQ(value,currentSubstationBus->getCurrentWattLoadPointValue());
                             currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value),timestamp);
@@ -2600,7 +2602,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                             }
                         }
-                        else if( !ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
+                        else if ( currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::KVar )
                         {
                             CTILOG_ERROR(dout, "No Var Point attached to bus: " << currentSubstationBus->getPaoName() <<", cannot calculate power factor");
                         }
@@ -2697,9 +2699,9 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                     CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID((*it).second);
                     if (altSub != NULL)
                     {
-                        if( ciStringEqual(altSub->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                            ciStringEqual(altSub->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
-                            ciStringEqual(altSub->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                        if ( altSub->getStrategy()->getUnitType() == ControlStrategy::KVar ||
+                             altSub->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
+                             altSub->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
                         {
                             if (currentSubstationBus->getPrimaryBusFlag())
                             {
@@ -2866,7 +2868,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
 
                             if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                             {
-                                if( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                                if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
                                 {
                                     currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentFeeder->getCurrentWattLoadPointValue()), timestamp);
                                 }
@@ -2883,8 +2885,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                     sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                                 }
                             }
-                            else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-                                        ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ))
+                            else if ( currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::KVar &&
+                                      currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::Volts )
                             {
                                 CTILOG_ERROR(dout, "No Watt Point attached to feeder: " << currentFeeder->getPaoName() <<", cannot calculate power factor");
                             }
@@ -2896,7 +2898,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                         if( timestamp > currentFeeder->getLastWattPointTime() )
                         {
                             currentFeeder->setLastWattPointTime(timestamp);
-                            if( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                            if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
                             {
                                 double tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
                                 currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value),timestamp);
@@ -2925,7 +2927,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                     sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType), CALLSITE);
                                 }
                             }
-                            else if( !ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
+                            else if ( currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::KVar )
                             {
                                 CTILOG_ERROR(dout, "No Var Point attached to feeder: " << currentFeeder->getPaoName() <<", cannot calculate power factor");
                             }
