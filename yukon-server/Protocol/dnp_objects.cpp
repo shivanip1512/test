@@ -797,11 +797,6 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto,
                             pMsg->setId(pMsg->getId() + CounterFrozen::CounterFrozenOffset);
                         }
 
-                        if( gDNPVerbose )
-                        {
-                            CTILOG_INFO(dout, " Id="<< pMsg->getId());
-                        }
-
                         i_itr++;
                     }
 
