@@ -2307,10 +2307,11 @@ void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTE
     memset( &ep, 0, sizeof( ep ) );
 
     ep.ContextRecord = &c;
-    ep.ExceptionRecord = pExceptionPtrs->ExceptionRecord;
 
     if( pExceptionPtrs )
     {
+        ep.ExceptionRecord = pExceptionPtrs->ExceptionRecord;
+
         dumpInfo.ThreadId = GetCurrentThreadId();
         dumpInfo.ExceptionPointers = &ep;
         dumpInfo.ClientPointers = false;

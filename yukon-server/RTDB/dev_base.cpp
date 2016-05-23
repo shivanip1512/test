@@ -635,6 +635,9 @@ bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
         _lastReport = nextScheduledTimeAlignedOnRate(now, gConfigParms.getValueAsULong("COMM_FAIL_REPORT_TIME", 300));
     }
 
+    CTILOG_DEBUG(dout, "success=" << success << ", lastCommCount=" << lastCommCount << 
+        ", badtogood=" << badtogood << ", goodtobad=" << goodtobad << ", stateChange=" << bStateChange);
+
     return(bAdjust);
 }
 
