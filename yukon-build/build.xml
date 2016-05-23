@@ -55,7 +55,7 @@
     </target>
 
     <!-- build-release is now the only way to store symbols -->
-    <target name="build" depends="init,clean,svn-info-build,buildTarget,build-dist" />
+    <target name="build" depends="init,clean,svn-info-build,buildTarget,build-pdb" />
     <target name="build-release" depends="init,clean,svn-info-build,buildTarget,symstore,build-dist" />
 
     <target name="buildTarget" depends="build-client,build-server,build-install" />
