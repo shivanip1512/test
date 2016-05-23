@@ -1947,7 +1947,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                                 the particular schedule being reloaded.
                         */
                     }
-                    if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangedCategory::GlobalSetting)
+                    if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangeCategory::GlobalSetting)
                     {
                         GlobalSettings::reload();
                     }

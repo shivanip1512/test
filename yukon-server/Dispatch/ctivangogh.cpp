@@ -1811,7 +1811,7 @@ void CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 const CtiDBChangeMsg &aChg = *((CtiDBChangeMsg*)(pMsg));
                 postDBChange(aChg);
                 // In the event that a GlobalSetting has been updated, reload GlobalSettings.
-                if (resolveDBCategory(aChg.getCategory()) == CtiDBChangedCategory::GlobalSetting)
+                if (resolveDBCategory(aChg.getCategory()) == CtiDBChangeCategory::GlobalSetting)
                 {
                     GlobalSettings::reload();
                 }

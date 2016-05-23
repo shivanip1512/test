@@ -1260,7 +1260,7 @@ void DispatchMsgHandlerThread(void *Arg)
                     // Post the wakup to ensure that the main loop re-examines the devices.
                     SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
                     // In the event that a GlobalSetting has been updated, reload GlobalSettings.
-                    if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangedCategory::GlobalSetting)
+                    if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangeCategory::GlobalSetting)
                     {
                         GlobalSettings::reload();
                     }

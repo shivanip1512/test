@@ -506,7 +506,7 @@ enum CtiDBChangedType_t
 };
 
 
-enum class CtiDBChangedCategory
+enum class CtiDBChangeCategory
 {
     Invalid = -1,
     EnergyCompany = 0,                // 0

@@ -969,28 +969,28 @@ string   resolveDBChanged(INT dbnum)
     return " DATABASE";
 }
 
-CtiDBChangedCategory resolveDBCategory(const string& category)
+CtiDBChangeCategory resolveDBCategory(const string& category)
 {
-    static const std::map<std::string, CtiDBChangedCategory>  lookup
+    static const std::map<std::string, CtiDBChangeCategory>  lookup
     {
-        { "energycompany",                  CtiDBChangedCategory::EnergyCompany },
-        { "energy_company_route",           CtiDBChangedCategory::EnergyCompanyRoute },
-        { "energy_company_substations",     CtiDBChangedCategory::EnergyCompanySubstations },
-        { "appliance",                      CtiDBChangedCategory::Appliance },
-        { "servicecompany",                 CtiDBChangedCategory::ServiceCompany },
-        { "servicecompanydesignationcode",  CtiDBChangedCategory::ServiceCompanyDesignationCode },
-        { "warehouse",                      CtiDBChangedCategory::Warehouse },
-        { "yukonselectionlist",             CtiDBChangedCategory::YukonSelectionList },
-        { "yukonlistentry",                 CtiDBChangedCategory::YukonListEntry },
-        { "porter_response_monitor",        CtiDBChangedCategory::PorterResponseMonitor },
-        { "device_data_monitor",            CtiDBChangedCategory::DeviceDataMonitor },
-        { "device_group_member",            CtiDBChangedCategory::DeviceGroupMember },
-        { "cc_monitor_bank_list",           CtiDBChangedCategory::CCMonitorBankList },
-        { "globalsetting",                  CtiDBChangedCategory::GlobalSetting },
-        { "energycompanysetting",           CtiDBChangedCategory::EnergyCompanySetting },
-        { "repeatingjob",                   CtiDBChangedCategory::RepeatingJob },
-        { "dataexportformat",               CtiDBChangedCategory::DataExportFormat },
-        { "monitor",                        CtiDBChangedCategory::Monitor }
+        { "energycompany",                  CtiDBChangeCategory::EnergyCompany },
+        { "energy_company_route",           CtiDBChangeCategory::EnergyCompanyRoute },
+        { "energy_company_substations",     CtiDBChangeCategory::EnergyCompanySubstations },
+        { "appliance",                      CtiDBChangeCategory::Appliance },
+        { "servicecompany",                 CtiDBChangeCategory::ServiceCompany },
+        { "servicecompanydesignationcode",  CtiDBChangeCategory::ServiceCompanyDesignationCode },
+        { "warehouse",                      CtiDBChangeCategory::Warehouse },
+        { "yukonselectionlist",             CtiDBChangeCategory::YukonSelectionList },
+        { "yukonlistentry",                 CtiDBChangeCategory::YukonListEntry },
+        { "porter_response_monitor",        CtiDBChangeCategory::PorterResponseMonitor },
+        { "device_data_monitor",            CtiDBChangeCategory::DeviceDataMonitor },
+        { "device_group_member",            CtiDBChangeCategory::DeviceGroupMember },
+        { "cc_monitor_bank_list",           CtiDBChangeCategory::CCMonitorBankList },
+        { "globalsetting",                  CtiDBChangeCategory::GlobalSetting },
+        { "energycompanysetting",           CtiDBChangeCategory::EnergyCompanySetting },
+        { "repeatingjob",                   CtiDBChangeCategory::RepeatingJob },
+        { "dataexportformat",               CtiDBChangeCategory::DataExportFormat },
+        { "monitor",                        CtiDBChangeCategory::Monitor }
     };
 
     if (const auto result = Cti::mapFind(lookup, sanitizeInput(category)))
@@ -998,7 +998,7 @@ CtiDBChangedCategory resolveDBCategory(const string& category)
         return *result;
     }
 
-    return CtiDBChangedCategory::Invalid;
+    return CtiDBChangeCategory::Invalid;
 }
 
 INT resolveSlaveAddress(const INT DeviceType, const string& _str)

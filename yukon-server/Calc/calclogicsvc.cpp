@@ -677,7 +677,7 @@ void CtiCalcLogicService::_inputThread( void )
 void CtiCalcLogicService::handleDbChangeMsg( const CtiDBChangeMsg &dbChgMsg, CtiCalculateThread &thread )
 {
     // In the event that a GlobalSetting has been updated, reload GlobalSettings.
-    if (resolveDBCategory(dbChgMsg.getCategory()) == CtiDBChangedCategory::GlobalSetting)
+    if (resolveDBCategory(dbChgMsg.getCategory()) == CtiDBChangeCategory::GlobalSetting)
     {
         GlobalSettings::reload();
     }

@@ -843,7 +843,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                         }
                     }
                     // In the event that a GlobalSetting has been updated, reload GlobalSettings.
-                    if (resolveDBCategory(dBChangeMsg->getCategory()) == CtiDBChangedCategory::GlobalSetting)
+                    if (resolveDBCategory(dBChangeMsg->getCategory()) == CtiDBChangeCategory::GlobalSetting)
                     {
                         GlobalSettings::reload();
                     }
