@@ -406,6 +406,7 @@
     <li>Status</li>
     <li>KWh</li>
     </ul>
+    Period will divide the entire start-stop range into intervals. Value High/Low are upper and lower values for Analog points.
     ]]></entry>
     
     <entry key="yukon.web.modules.dev.rfnMeterSimulator.helpText"><![CDATA[RFN Meter Simulator tool generates the  read archive requests with the point data for the existing all RFN meter device types or the chosen RFN meter types, as per the Reporting interval selected.
