@@ -58,6 +58,9 @@ public class QueueData implements SystemHealthMetric {
     }
 
     public void setAverageEnqueueTime(Double averageEnqueueMillis) {
+        if (averageEnqueueMillis == null) {
+            averageEnqueueMillis = 0.0;
+        }
         formattedAverageEnqueueMillis = df.format(averageEnqueueMillis);
     }
 
