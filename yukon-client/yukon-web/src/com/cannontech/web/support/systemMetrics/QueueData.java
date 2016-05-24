@@ -39,7 +39,11 @@ public class QueueData implements SystemHealthMetric {
     }
 
     public void setEnqueuedCount(Long enqueuedCount) {
-        this.enqueuedCount = enqueuedCount;
+        if (enqueuedCount == null) {
+            this.enqueuedCount = 0L;
+        } else {
+            this.enqueuedCount = enqueuedCount;
+        }
     }
 
     public Long getDequeuedCount() {
@@ -47,7 +51,11 @@ public class QueueData implements SystemHealthMetric {
     }
 
     public void setDequeuedCount(Long dequeuedCount) {
-        this.dequeuedCount = dequeuedCount;
+        if (dequeuedCount == null) {
+            this.dequeuedCount = 0L;
+        } else {
+            this.dequeuedCount = dequeuedCount;
+        }
     }
     
     /**
