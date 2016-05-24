@@ -13,6 +13,7 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -318,7 +319,7 @@ private LiteStateGroup getLiteStateGroup()
 	if( lPoint == null || getPointType() == PointTypes.INVALID_POINT )
 		return null;
 	else
-		return YukonSpringHook.getBean(PointDao.class).getStateGroup( lPoint.getStateGroupID() );
+		return YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(lPoint.getStateGroupID());
 }
 
 /**

@@ -46,7 +46,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
@@ -57,7 +56,6 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.ArrayListMultimap;
@@ -70,7 +68,6 @@ import com.google.common.collect.SetMultimap;
 
 public class PointDaoImpl implements PointDao {
 
-    @Autowired private IDatabaseCache databaseCache;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -326,17 +323,6 @@ public class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public LitePointLimit getPointLimit(int pointId) {
-
-        LitePointLimit limit = databaseCache.getAllPointLimits().get(pointId);
-        if (limit != null) {
-            return limit;
-        }
-
-        throw new NotFoundException("PointLimit for point with id " + pointId + "cannot be found.");
-    }
-
-    @Override
     public List<LitePointLimit> getAllPointLimits() {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -381,11 +367,6 @@ public class PointDaoImpl implements PointDao {
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Pointunit for point with id " + pointId + " cannot be found.");
         }
-    }
-
-    @Override
-    public LiteStateGroup getStateGroup(int stateGroupId) {
-        return databaseCache.getAllStateGroups().get(stateGroupId);
     }
 
     @Override

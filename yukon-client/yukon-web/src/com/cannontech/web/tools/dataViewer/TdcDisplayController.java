@@ -54,6 +54,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.TagDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -93,6 +94,7 @@ public class TdcDisplayController {
     @Autowired private TdcService tdcService;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private StateDao stateDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private CommandService commandService;
@@ -326,7 +328,7 @@ public class TdcDisplayController {
         PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
         if (litePoint.getPointType() == PointTypes.STATUS_POINT
             || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
-            LiteStateGroup group = pointDao.getStateGroup(litePoint.getStateGroupID());
+            LiteStateGroup group = stateDao.getLiteStateGroup(litePoint.getStateGroupID());
             List<LiteState> stateList = group.getStatesList();
             model.put("stateList", stateList);
             backingBean.setStateId((int) pointValue.getValue());
@@ -389,7 +391,7 @@ public class TdcDisplayController {
             PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
             backingBean.setValue(pointValue.getValue());
         } else if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
-            LiteStateGroup group = pointDao.getStateGroup(litePoint.getStateGroupID());
+            LiteStateGroup group = stateDao.getLiteStateGroup(litePoint.getStateGroupID());
             // Filter out the negative control states - i.e. TwoStateStatus contains Any(-1)
             List<LiteState> stateList = group.getStatesList()
                     .stream()

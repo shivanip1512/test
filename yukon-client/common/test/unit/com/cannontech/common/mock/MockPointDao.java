@@ -18,7 +18,6 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
@@ -185,17 +184,7 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public LitePointLimit getPointLimit(int pointID) {
-        return null;
-    }
-
-    @Override
     public LitePointUnit getPointUnit(int pointID) {
-        return null;
-    }
-
-    @Override
-    public LiteStateGroup getStateGroup(int stateGroupID) {
         return null;
     }
 

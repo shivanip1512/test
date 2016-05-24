@@ -18,7 +18,6 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
@@ -157,17 +156,7 @@ public interface PointDao {
      */
     String getPointName(int id);
 
-    /**
-     * Finds the lite point limit given a point id
-     */
-    LitePointLimit getPointLimit(int pointId);
-
     LitePointUnit getPointUnit(int pointId);
-
-    /**
-     * Returns the LiteStateGroup for a certain point by a StateGroupId
-     */
-    LiteStateGroup getStateGroup(int stateGroupId);
 
     /**
      * Returns a point id (int), where deviceId is used to gain a collection of LitePoints.
