@@ -23,7 +23,6 @@ import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -33,8 +32,7 @@ import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.vendor.DatabaseVendor;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
@@ -47,7 +45,8 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ZoneDao zoneDao;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
+
     
     private static final RowMapper<SubstationBus> rowMapper = new RowMapper<SubstationBus>() {
         @Override
@@ -291,25 +290,29 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
     
     private SqlFragmentSource insertFeeders(int busId, ArrayList<Integer> feederList) {
-        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder oracleSql =
-            builder.buildFor(DatabaseVendor.getOracleDatabases());
-        
-        SqlBuilder otherSql = builder.buildOther();
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        boolean isOracle = databaseVendor.isOracle();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
         int displayOrder = 1;
-          
-        oracleSql.append("INSERT ALL");
+        
+        if (isOracle) {
+            sql.append("INSERT ALL");
+        }
         for (Integer feederId : feederList) {
-            otherSql.append("INSERT INTO CCFeederSubAssignment");
-            otherSql.append(" values (").appendArgument(busId).append(", ").appendArgument(feederId).append(", ").appendArgument(displayOrder).append(")");
-            oracleSql.append("INTO CCFeederSubAssignment");
-            oracleSql.append(" values (").appendArgument(busId).append(", ").appendArgument(feederId).append(", ").appendArgument(displayOrder).append(")");
+            if (!isOracle) {
+                sql.append("INSERT");
+            }
+            sql.append("INTO CCFeederSubAssignment");
+            sql.values(busId, feederId, displayOrder);
             displayOrder++;
         }
         
-        oracleSql.append("SELECT 1 from dual");
-
-        return builder;
+        if (isOracle) {
+            sql.append("SELECT 1 from dual");
+        }
+        
+        return sql;
     }
     
     @Override
@@ -329,25 +332,29 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
     
     private SqlFragmentSource insertBuses(int substationId, ArrayList<Integer> busList) {
-        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder oracleSql =
-            builder.buildFor(DatabaseVendor.getOracleDatabases());
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        boolean isOracle = databaseVendor.isOracle();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        SqlBuilder otherSql = builder.buildOther();
         int displayOrder = 1;
           
-        oracleSql.append("INSERT ALL");
+        if (isOracle) {
+            sql.append("INSERT ALL");
+        }        
         for (Integer busId : busList) {
-            otherSql.append("INSERT INTO CCSUBSTATIONSUBBUSLIST");
-            otherSql.append(" values (").appendArgument(substationId).append(", ").appendArgument(busId).append(", ").appendArgument(displayOrder).append(")");
-            oracleSql.append("INTO CCSUBSTATIONSUBBUSLIST");
-            oracleSql.append(" values (").appendArgument(substationId).append(", ").appendArgument(busId).append(", ").appendArgument(displayOrder).append(")");
+            if (!isOracle) {
+                sql.append("INSERT");
+            }
+            sql.append("INTO CCSUBSTATIONSUBBUSLIST");
+            sql.values(substationId, busId, displayOrder);
             displayOrder++;
         }
         
-        oracleSql.append("SELECT 1 from dual");
-
-        return builder;
+        if (isOracle) {
+            sql.append("SELECT 1 from dual");
+        }
+        
+        return sql;
     }
     
     @Override

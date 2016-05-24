@@ -22,7 +22,6 @@ import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.StrategyLimitsHolder;
-import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
@@ -51,8 +50,7 @@ import com.cannontech.database.db.capcontrol.VoltageViolationSetting;
 import com.cannontech.database.db.capcontrol.VoltageViolationSettingType;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.google.common.collect.Lists;
 
 public class StrategyDaoImpl implements StrategyDao {
@@ -73,7 +71,7 @@ public class StrategyDaoImpl implements StrategyDao {
     
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
 
     private FieldMapper<CapControlStrategy> strategyFieldMapper = new FieldMapper<CapControlStrategy>() {
 
@@ -370,31 +368,37 @@ public class StrategyDaoImpl implements StrategyDao {
             peak = PeaksTargetType.PEAK;
             offpeak = PeaksTargetType.OFFPEAK;
         }
-        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder oracleSql =
-            builder.buildFor(DatabaseVendor.getOracleDatabases());
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        boolean isOracle = databaseVendor.isOracle();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (isOracle) {
+            sql.append("INSERT ALL");
+        }
         
-        SqlBuilder otherSql = builder.buildOther();
-          
-        oracleSql.append("INSERT ALL");
         for(Entry<TargetSettingType, PeakTargetSetting> targetSettingEntry : targetSettings.entrySet()) {
             PeakTargetSetting setting = strategy.getTargetSettings().get(targetSettingEntry.getKey());
             TargetSettingType type = targetSettingEntry.getKey();
+            
+            if (!isOracle) {
+                sql.append("INSERT");
+            }
 
-            otherSql.append("INSERT INTO CCStrategyTargetSettings");
-            otherSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getPeakValue()).append(", ").appendArgument(peak).append(")");
-            oracleSql.append("INTO CCStrategyTargetSettings");
-            oracleSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getPeakValue()).append(", ").appendArgument(peak).append(")");
-
-            otherSql.append("INSERT INTO CCStrategyTargetSettings");
-            otherSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getOffPeakValue()).append(", ").appendArgument(offpeak).append(")");
-            oracleSql.append("INTO CCStrategyTargetSettings");
-            oracleSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getOffPeakValue()).append(", ").appendArgument(offpeak).append(")");
+            sql.append("INTO CCStrategyTargetSettings");
+            sql.values(strategyId, type, setting.getPeakValue(), peak);
+            
+            if (!isOracle) {
+                sql.append("INSERT");
+            }
+            
+            sql.append("INTO CCStrategyTargetSettings");
+            sql.values(strategyId, type, setting.getOffPeakValue(), offpeak);
         }
         
-        oracleSql.append("SELECT 1 from dual");
+        if (isOracle) {
+            sql.append("SELECT 1 from dual");
+        }
 
-        return builder;
+        return sql;
     }
 
     @Transactional
@@ -420,31 +424,42 @@ public class StrategyDaoImpl implements StrategyDao {
         int strategyId = strategy.getId();
         Map<VoltViolationType, VoltageViolationSetting> targetSettings = strategy.getVoltageViolationSettings();
 
-        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder oracleSql =
-            builder.buildFor(DatabaseVendor.getOracleDatabases());
-        
-        SqlBuilder otherSql = builder.buildOther();
-          
-        oracleSql.append("INSERT ALL");
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        boolean isOracle = databaseVendor.isOracle();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (isOracle) {
+            sql.append("INSERT ALL");
+        }
         for (Entry<VoltViolationType, VoltageViolationSetting> entry : targetSettings.entrySet()) {
             VoltViolationType type = entry.getKey();
             VoltageViolationSetting setting = entry.getValue();
+            
+            if (!isOracle) {
+                sql.append("INSERT");
+            }
 
-            otherSql.append("INSERT INTO CCStrategyTargetSettings");
-            otherSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getCost()).append(", ").appendArgument(VoltageViolationSettingType.COST).append(")");
-            oracleSql.append("INTO CCStrategyTargetSettings");
-            oracleSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getCost()).append(", ").appendArgument(VoltageViolationSettingType.COST).append(")");
+            sql.append("INTO CCStrategyTargetSettings");
+            sql.values(strategyId, type, setting.getBandwidth(), VoltageViolationSettingType.BANDWIDTH);
+            
+            if (!isOracle) {
+                sql.append("INSERT");
+            }
 
-            otherSql.append("INSERT INTO CCStrategyTargetSettings");
-            otherSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getEmergencyCost()).append(", ").appendArgument(VoltageViolationSettingType.EMERGENCY_COST).append(")");
-            oracleSql.append("INTO CCStrategyTargetSettings");
-            oracleSql.append(" values (").appendArgument(strategyId).append(", ").appendArgument(type).append(", ").appendArgument(setting.getEmergencyCost()).append(", ").appendArgument(VoltageViolationSettingType.EMERGENCY_COST).append(")");
+            sql.append("INTO CCStrategyTargetSettings");
+            sql.values(strategyId, type, setting.getCost(), VoltageViolationSettingType.COST);
+
+            if (!isOracle) {
+                sql.append("INSERT");
+            }
+            sql.append("INTO CCStrategyTargetSettings");
+            sql.values(strategyId, type, setting.getEmergencyCost(), VoltageViolationSettingType.EMERGENCY_COST);
         }
         
-        oracleSql.append("SELECT 1 from dual");
-
-        return builder;
+        if (isOracle) {
+            sql.append("SELECT 1 from dual");
+        }
+        
+        return sql;
     }
     
     @Transactional
