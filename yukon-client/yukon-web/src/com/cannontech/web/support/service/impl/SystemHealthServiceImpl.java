@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
@@ -141,7 +142,13 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             Long enqueueCount = (Long) jmxQueryService.get(bean, "EnqueueCount");
             Long dequeueCount = (Long) jmxQueryService.get(bean, "DequeueCount");
             Long queueSize = (Long) jmxQueryService.get(bean, "QueueSize");
-            Double averageEnqueueTime = (Double) jmxQueryService.get(bean, "AverageEnqueueTime");
+            Double averageEnqueueTime = 0.0;
+            try {
+                averageEnqueueTime = (Double) jmxQueryService.get(bean, "AverageEnqueueTime");
+            } catch (InstanceNotFoundException e) {
+                // No average is available yet. Use 0.0.
+                log.debug("Unable to load average enqueue time for " + beanName + ". Defaulting to 0.");
+            }
             
             MetricStatusWithMessages status = statusHelper.getStatus(metric);
             
