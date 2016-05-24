@@ -2002,7 +2002,7 @@ bool CtiCCFeeder::isPeakTime(const CtiTime& currentDateTime)
 
 bool CtiCCFeeder::isControlPoint(long pointid)
 {
-    if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
     {
         if ( getStrategy()->getUnitType() == ControlStrategy::Volts &&
              getCurrentVoltLoadPointId() == pointid )
@@ -2032,7 +2032,7 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
         return;
     }
 
-    if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
     {
         if ( getStrategy()->getUnitType() == ControlStrategy::Volts )
         {
@@ -2096,7 +2096,7 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
         return;
     }
 
-    if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
     {
         controlWvalue = getCurrentWattLoadPointValue();
         if (getStrategy()->getControlInterval() > 0)

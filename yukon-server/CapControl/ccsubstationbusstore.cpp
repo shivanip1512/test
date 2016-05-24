@@ -5272,11 +5272,11 @@ void CtiCCSubstationBusStore::assignStrategyAtBus(CtiCCSubstationBusPtr bus, lon
 
         bus->setStrategy(strategyID);
 
-        if (bus->getStrategy()->getUnitType() == ControlStrategy::None)
+        if ( bus->getStrategy()->getUnitType() == ControlStrategy::None)
         {
             cascadeAreaStrategySettings(findAreaByPAObjectID(currentStation->getParentId()));
         }
-        if (ciStringEqual(bus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+        if ( bus->getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod )
         {
             bus->figureNextCheckTime();
         }
@@ -6647,7 +6647,7 @@ bool CtiCCSubstationBusStore::loadCapBankMonitorPoint(CtiCCMonitorPointPtr curre
         return false;
     }
 
-    if(ciStringEqual(feederPtr->getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod))
+    if( feederPtr->getStrategy()->getMethodType() == ControlStrategy::SubstationBus )
     {
         //Get all banks on SubBus all Feeders.
         CtiCCSubstationBusPtr subBusPtr = findInMap(feederPtr->getParentId(), paobject_subbus_map);
@@ -7935,7 +7935,8 @@ void CtiCCSubstationBusStore::initializeAllPeakTimeFlagsAndMonitorPoints(bool se
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
             bool peakFlag = currentSubstationBus->isPeakTime(currentDateTime);
-            if (ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod)  &&
+
+            if ( currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder &&
                 !(ciStringEqual(currentFeeder->getStrategy()->getStrategyName(),"(none)"))  &&
                 (currentFeeder->getStrategy()->getPeakStartTime() > 0 && currentFeeder->getStrategy()->getPeakStopTime() > 0 ))
             {
@@ -9546,7 +9547,7 @@ void CtiCCSubstationBusStore::cascadeAreaStrategySettings(CtiCCAreaBasePtr objec
             {
                 currentCCSubstationBus->setStrategy(strategyID);
 
-                if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+                if ( currentCCSubstationBus->getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod )
                 {
                     currentCCSubstationBus->figureNextCheckTime();
                 }
