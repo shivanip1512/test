@@ -231,11 +231,10 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         log.info("Recalculating violations " + monitor);
         
         DeviceGroup monitorGroup = deviceGroupService.findGroupName(monitor.getGroupName());
-        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(monitorGroup);
-        
+
         Set<SimpleDevice> devicesInGroupAndSubgroups = new HashSet<SimpleDevice>();
         monitor.getProcessorAttributes().forEach(attribute -> {
-            devicesInGroupAndSubgroups.addAll(attributeService.getDevicesInGroupThatSupportAttribute(group, attribute));
+            devicesInGroupAndSubgroups.addAll(attributeService.getDevicesInGroupThatSupportAttribute(monitorGroup, attribute));
         });
 
         Set<PaoIdentifier> devicesInViolation =
