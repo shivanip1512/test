@@ -3891,7 +3891,31 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     }
                     else if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
+						boost::optional<long> preloadTags;
+
+						if( const auto pt = PointMgr.getCachedPoint(pChg->getId()) )
+						{
+							if( const auto dyn = PointMgr.getDynamic(*pt) )
+							{
+								preloadTags = dyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK;
+							}
+						}
+
                         PointMgr.updatePoints(pChg->getId(), 0, resolvePointType(pChg->getObjectType()) );
+
+						if( preloadTags )
+						{
+							if( const auto pt = PointMgr.getCachedPoint(pChg->getId()) )
+							{
+								if( const auto dyn = PointMgr.getDynamic(*pt) )
+								{
+									if( *preloadTags != (dyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) )
+									{
+										sendTagUpdate(dyn->getDispatch(), "Point tags change on DB reload", pChg->getUser());
+									}
+								}
+							}
+						}
                     }
                     else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeDelete)
                     {
@@ -4258,6 +4282,18 @@ std::string CtiVanGogh::displayConnections()
     return sb;
 }
 
+void CtiVanGogh::sendTagUpdate(const CtiTablePointDispatch &dispatch, const std::string &addnl, const std::string &user)
+{
+	CtiSignalMsg tagSig{ dispatch.getPointID(), 0, "Tag Update", addnl };
+	
+	tagSig.setPointValue(dispatch.getValue());
+	tagSig.setMessagePriority(15);
+	tagSig.setUser(user);
+	tagSig.setTags(dispatch.getTags() & ~SIGNAL_MANAGER_MASK);
+
+	postMessageToClients(&tagSig);
+}
+
 /********************
  *  This method uses the dynamic dispatch POINT settings to determine if the inbound setmask and tagmask indicate a change
  *  from the current settings.  If a change is indicated, the static tags of the point will be updated.
@@ -4327,15 +4363,7 @@ bool CtiVanGogh::ablementPoint(const CtiPointBase &point, bool &devicedifferent,
             pDyn->getDispatch().resetTags(tagmask);
             pDyn->getDispatch().setTags(newpttags);
 
-            {
-                CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(point.getID(), 0, "Tag Update", addnl);
-                pTagSig->setPointValue(pDyn->getDispatch().getValue());
-                pTagSig->setMessagePriority(15);
-                pTagSig->setUser(user);
-                pTagSig->setTags( pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK );
-                postMessageToClients(pTagSig);
-                delete pTagSig;
-            }
+			sendTagUpdate(pDyn->getDispatch(), addnl, user);
         }
     }
 
