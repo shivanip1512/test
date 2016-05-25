@@ -92,4 +92,10 @@ public enum DbChangeCategory {
         return categoryLookup.get(stringRepresentation);
     }
 
+    /**
+     * Helper to return a databaseId value that can be used with the legacy DBChangeMsg database Id values.
+     */
+    public int getDbChangeMsgDatabaseId() {
+        return DBChangeMsg.USES_NEW_CATEGORY_ENUM - this.ordinal();
+    }
 }

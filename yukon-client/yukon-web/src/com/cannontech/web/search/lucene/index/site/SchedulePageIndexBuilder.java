@@ -22,15 +22,11 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.web.search.lucene.index.AbstractIndexManager.IndexUpdateInfo;
 
 public class SchedulePageIndexBuilder extends DbPageIndexBuilder {
 
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private DbChangeManager dbChangeManager;
 
     private final static SqlFragmentSource baseQuery;
     private final static SqlFragmentSource queryTables;
@@ -61,7 +57,7 @@ public class SchedulePageIndexBuilder extends DbPageIndexBuilder {
     }
 
     protected SchedulePageIndexBuilder() {
-        super("jobs", DBChangeMsg.USES_NEW_CATEGORY_ENUM - REPEATING_JOB.ordinal(), "RepeatingJob");
+        super("jobs");
     }
 
     @Override
@@ -170,13 +166,15 @@ public class SchedulePageIndexBuilder extends DbPageIndexBuilder {
     }
 
     @Override
-    public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database,
-            String category) {
-        return super.processDBChange(dbChangeType, id, database, category);
-    }
-
-    @Override
     public boolean isAllowedToView(Document document, LiteYukonUser user) {
         return true;
+    }
+    
+    @Override
+    protected boolean isValidDbChange(DbChangeType dbChangeType, int id, int database, String category) {
+        if (database == REPEATING_JOB.getDbChangeMsgDatabaseId()) {
+            return true;
+        }
+        return false;
     }
 }

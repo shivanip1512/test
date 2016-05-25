@@ -25,6 +25,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
@@ -65,7 +66,7 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     protected InventoryPageIndexBuilder() {
-        super("inventory", CHANGE_INVENTORY_DB, null);
+        super("inventory");
     }
 
     @Override
@@ -182,5 +183,13 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
     @Override
     public boolean isAllowedToView(Document document, LiteYukonUser user) {
         return true;
+    }
+    
+    @Override
+    protected boolean isValidDbChange(DbChangeType dbChangeType, int id, int database, String category) {
+        if (database == CHANGE_INVENTORY_DB) {
+            return true;
+        }
+        return false;
     }
 }

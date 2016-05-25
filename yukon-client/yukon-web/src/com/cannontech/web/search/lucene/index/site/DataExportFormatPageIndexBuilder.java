@@ -12,15 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.web.search.lucene.index.AbstractIndexManager.IndexUpdateInfo;
 
 public class DataExportFormatPageIndexBuilder extends DbPageIndexBuilder {
 
@@ -42,7 +39,7 @@ public class DataExportFormatPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     protected DataExportFormatPageIndexBuilder() {
-        super("data-exporter", DBChangeMsg.USES_NEW_CATEGORY_ENUM - DATA_EXPORT_FORMAT.ordinal(), "DataExportFormat");
+        super("data-exporter");
     }
 
     @Override
@@ -90,13 +87,15 @@ public class DataExportFormatPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     @Override
-    public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database,
-            String category) {
-        return super.processDBChange(dbChangeType, id, database, category);
-    }
-
-    @Override
     public boolean isAllowedToView(Document document, LiteYukonUser user) {
         return true;
+    }
+    
+    @Override
+    protected boolean isValidDbChange(DbChangeType dbChangeType, int id, int database, String category) {
+        if (database == DATA_EXPORT_FORMAT.getDbChangeMsgDatabaseId()) {
+            return true;
+        }
+        return false;
     }
 }

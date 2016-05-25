@@ -1,6 +1,6 @@
 package com.cannontech.web.search.lucene.index.site;
 
-import static com.cannontech.message.dispatch.message.DBChangeMsg.*;
+import static com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_PAO_DB;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,9 +22,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.web.search.lucene.index.AbstractIndexManager.IndexUpdateInfo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -60,7 +58,7 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
 
     @Autowired
     public PaoPageIndexBuilder(List<PaoTypeHandler> handlers) {
-        super("pao", CHANGE_PAO_DB, null);
+        super("pao");
 
         this.handlers = handlers;
         Builder<PaoType, PaoTypeHandler> builder = ImmutableMap.builder();
@@ -153,19 +151,23 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     @Override
-    public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
+    protected boolean isValidDbChange(DbChangeType dbChangeType, int id, int database, String category) {
+        if (database != CHANGE_PAO_DB) {
+            return false;
+        }
+        
         // If it's a delete, we won't be able to get the type to know if we handle it or not.  That's okay though;
         // we'll just be asking Lucene to delete a non-existent row.
-        if (database == DBChangeMsg.CHANGE_PAO_DB && dbChangeType != DbChangeType.DELETE) {
+        if (dbChangeType != DbChangeType.DELETE) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("select type from yukonPaobject where paobjectId").eq(id);
             PaoType paoType = jdbcTemplate.queryForObject(sql, TypeRowMapper.PAO_TYPE);
             PaoTypeHandler handler = handlersByType.get(paoType);
             if (handler == null) {
                 // We don't handle this particular PAO type.
-                return null;
+                return false;
             }
         }
-        return super.processDBChange(dbChangeType, id, database, category);
+        return true;
     }
 }

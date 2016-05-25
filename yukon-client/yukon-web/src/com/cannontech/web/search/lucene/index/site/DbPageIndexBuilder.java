@@ -31,10 +31,6 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
 
     protected final String pageKeyBase;
 
-    // database and category of applicable DB change messages.  category can be null.
-    protected final int database;
-    protected final String category;
-
     /**
      * The "select ..." bit of the query.  This is used when rebuilding the index as well as when reading a single
      * item for a database update.
@@ -61,10 +57,8 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
             return createDocument(rs);
         }};
 
-    protected DbPageIndexBuilder(String pageKeyBase, int database, String category) {
+    protected DbPageIndexBuilder(String pageKeyBase) {
         this.pageKeyBase = pageKeyBase;
-        this.database = database;
-        this.category = category;
     }
 
     @Override
@@ -142,15 +136,27 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
      * pertinent.  Otherwise, they should return null.
      */
     protected abstract SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id);
-
+    
+    /**
+     * Override this method if you want to check if the dbChange should be processed or not.
+     * For example, the current architecture limits to only 1 "valid" db database/category. 
+     * Overriding this would give you a way to "check" based on an alternative set. 
+     * @param dbChangeType
+     * @param id - primary key id
+     * @param database - database id from DBChangeMsg 
+     * @param category - category from DBChangeMsg
+     * @return
+     */
+    protected abstract boolean isValidDbChange(DbChangeType dbChangeType, int id, int database, String category);
+    
     public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
-        if (database != this.database || this.category != null && !this.category.equalsIgnoreCase(category)) {
-            // This database change isn't applicable to this index builder.
+        boolean doProcess = isValidDbChange(dbChangeType, id, database, category);
+        if (!doProcess) {
             if (log.isTraceEnabled()) {
+                // This database change isn't applicable to this index builder.
                 log.trace("ignoring DB change not applicable to page index builder " + pageKeyBase + "(dbChangeType="
                     + dbChangeType + ", id=" + id +", database=" + database + ", category=" + category);
             }
-
             return null;
         }
 

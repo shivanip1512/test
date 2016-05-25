@@ -17,6 +17,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CustomerAccountPageIndexBuilder extends DbPageIndexBuilder {
     
@@ -37,7 +38,7 @@ public class CustomerAccountPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     protected CustomerAccountPageIndexBuilder() {
-        super("account", CHANGE_CUSTOMER_ACCOUNT_DB, CAT_CUSTOMER_ACCOUNT);
+        super("account");
     }
 
     @Override
@@ -90,5 +91,14 @@ public class CustomerAccountPageIndexBuilder extends DbPageIndexBuilder {
     @Override
     public boolean isAllowedToView(Document document, LiteYukonUser user) {
         return true;
+    }
+    
+    @Override
+    protected boolean isValidDbChange(DbChangeType dbChangeType, int id, int database, String category) {
+        if (database == CHANGE_CUSTOMER_ACCOUNT_DB &&
+                CAT_CUSTOMER_ACCOUNT.equalsIgnoreCase(category)) {
+            return true;
+        }
+        return false;
     }
 }
