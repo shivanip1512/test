@@ -139,13 +139,11 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
     
     /**
      * Override this method if you want to check if the dbChange should be processed or not.
-     * For example, the current architecture limits to only 1 "valid" db database/category. 
-     * Overriding this would give you a way to "check" based on an alternative set. 
+     * 
      * @param dbChangeType
      * @param id - primary key id
      * @param database - database id from DBChangeMsg 
      * @param category - category from DBChangeMsg
-     * @return
      */
     protected abstract boolean isValidDbChange(DbChangeType dbChangeType, int id, int database, String category);
     
