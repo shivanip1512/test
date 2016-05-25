@@ -3891,31 +3891,31 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     }
                     else if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
-						boost::optional<long> preloadTags;
+                        boost::optional<long> preloadTags;
 
-						if( const auto pt = PointMgr.getCachedPoint(pChg->getId()) )
-						{
-							if( const auto dyn = PointMgr.getDynamic(*pt) )
-							{
-								preloadTags = dyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK;
-							}
-						}
+                        if( const auto pt = PointMgr.getCachedPoint(pChg->getId()) )
+                        {
+                            if( const auto dyn = PointMgr.getDynamic(*pt) )
+                            {
+                                preloadTags = dyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK;
+                            }
+                        }
 
                         PointMgr.updatePoints(pChg->getId(), 0, resolvePointType(pChg->getObjectType()) );
 
-						if( preloadTags )
-						{
-							if( const auto pt = PointMgr.getCachedPoint(pChg->getId()) )
-							{
-								if( const auto dyn = PointMgr.getDynamic(*pt) )
-								{
-									if( *preloadTags != (dyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) )
-									{
-										sendTagUpdate(dyn->getDispatch(), "Point tags change on DB reload", pChg->getUser());
-									}
-								}
-							}
-						}
+                        if( preloadTags )
+                        {
+                            if( const auto pt = PointMgr.getCachedPoint(pChg->getId()) )
+                            {
+                                if( const auto dyn = PointMgr.getDynamic(*pt) )
+                                {
+                                    if( *preloadTags != (dyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) )
+                                    {
+                                        sendTagUpdate(dyn->getDispatch(), "Point tags change on DB reload", pChg->getUser());
+                                    }
+                                }
+                            }
+                        }
                     }
                     else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeDelete)
                     {
