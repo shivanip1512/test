@@ -118,7 +118,7 @@ private:
     void findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList);
     void groupControlStatusVerification(unsigned long pointID);
 
-	void sendTagUpdate(const CtiTablePointDispatch &dispatch, const std::string &addnl, const std::string &user);
+    void sendTagUpdate(const CtiTablePointDispatch &dispatch, const std::string &addnl, const std::string &user);
 
     CtiConnection* getNotificationConnection();
     CtiMultiMsg* resetControlHours();
