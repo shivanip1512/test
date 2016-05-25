@@ -1563,7 +1563,7 @@ void CtiCCSubstationBus::figureNextCheckTime()
     {
         _nextchecktime = CtiTime(currenttime.seconds() + 60);
     }
-    else if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
+    else if ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod )
     {
         if (getSendMoreTimeControlledCommandsFlag())
         {
@@ -1588,7 +1588,7 @@ void CtiCCSubstationBus::figureNextCheckTime()
     {
         if ( getStrategy()->getUnitType() == ControlStrategy::MultiVolt )
         {
-            if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod))
+            if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
             {
                 for (long i = 0; i < _ccfeeders.size(); i++)
                 {
@@ -1632,7 +1632,7 @@ void CtiCCSubstationBus::figureNextCheckTime()
     else
     {
         _nextchecktime = currenttime;
-        if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod))
+        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
         {
             for (long i = 0; i < _ccfeeders.size(); i++)
             {
@@ -2228,9 +2228,9 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
             bool peakFlag = isPeakTime(currentDateTime);
 
-            if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) &&
+            if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder &&
                  !(ciStringEqual(currentFeeder->getStrategy()->getStrategyName(),"(none)")) &&
-                (currentFeeder->getStrategy()->getPeakStartTime() > 0 && currentFeeder->getStrategy()->getPeakStopTime() > 0))
+                 (currentFeeder->getStrategy()->getPeakStartTime() > 0 && currentFeeder->getStrategy()->getPeakStopTime() > 0))
             {
                 currentFeeder->isPeakTime(currentDateTime);
             }
@@ -2241,7 +2241,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
         }
         if( currentDateTime.seconds() >= getLastOperationTime().seconds() + getStrategy()->getControlDelayTime() )
         {
-            if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+            if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
             {
                 for(long i=0;i<_ccfeeders.size();i++)
                 {
@@ -2261,7 +2261,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
                     }
                 }
             }
-            else if( !ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
+            else if ( getStrategy()->getMethodType() != ControlStrategy::ManualOnly ) 
             {
                 double lagLevel = (isPeakTime(currentDateTime)?getStrategy()->getPeakLag():getStrategy()->getOffPeakLag());
                 double leadLevel = (getPeakTimeFlag()?getStrategy()->getPeakLead():getStrategy()->getOffPeakLead());
@@ -2330,11 +2330,11 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
                              getIVControl() > lagLevel ||
                              getIVControl() < leadLevel )
                         {
-                            if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
+                            if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus )
                             {
                                 regularSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
-                            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
+                            else if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                             {
                                 optimizedSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
@@ -2358,7 +2358,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
                             (getCurrentVoltLoadPointValue() < lagLevel ||
                             getCurrentVoltLoadPointValue() > leadLevel) )
                         {
-                            if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
+                            if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus )
                             {
                                 if ((!_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality) &&
                                     getCurrentVarLoadPointId() > 0)
@@ -2368,7 +2368,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
                                     CTILOG_WARN(dout, "Substation Volt Control requires Var PointID.  Var PointID not found in sub bus: " << getPaoName());
                                 }
                             }
-                            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
+                            else if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                             {
                                 optimizedSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
@@ -2392,11 +2392,11 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
                         if (!_IGNORE_NOT_NORMAL_FLAG ||
                             (getCurrentVarPointQuality() == NormalQuality && getCurrentWattPointQuality() == NormalQuality) )
                         {
-                            if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
+                            if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus )
                             {
                                 regularSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
-                            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
+                            else if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                             {
                                 optimizedSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
@@ -3355,7 +3355,7 @@ bool CtiCCSubstationBus::isPeakTime(const CtiTime& currentDateTime)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBus::isControlPoint(long pointid)
 {
-    if (!ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if ( getStrategy()->getMethodType() != ControlStrategy::IndividualFeeder )
     {
         if ( getStrategy()->getUnitType() == ControlStrategy::Volts &&
              getCurrentVoltLoadPointId() == pointid )
@@ -3383,7 +3383,7 @@ void CtiCCSubstationBus::updateIntegrationVPoint(const CtiTime &currentDateTime)
     {
         return;
     }
-    if (!ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if ( getStrategy()->getMethodType() != ControlStrategy::IndividualFeeder )
     {
         if ( getStrategy()->getUnitType() == ControlStrategy::Volts )
         {
@@ -3440,7 +3440,7 @@ void CtiCCSubstationBus::updateIntegrationWPoint(const CtiTime &currentDateTime)
         return;
     }
 
-    if (!ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if ( getStrategy()->getMethodType() != ControlStrategy::IndividualFeeder )
     {
         controlWvalue = getCurrentWattLoadPointValue();
         if (getStrategy()->getControlInterval() > 0)
@@ -3501,8 +3501,8 @@ bool CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
 
     try
     {
-        if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ||
-            ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
+        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+             getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
         {
             long recentlyControlledFeeders = 0;
             for(long i=0;i<_ccfeeders.size();i++)
@@ -3558,8 +3558,8 @@ bool CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
             }
             figureEstimatedVarLoadPointValue();
         }
-        else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) ||
-                 ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
+        else if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus ||
+                  getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod )
         {
             CtiCCFeeder* currentFeeder = CtiCCSubstationBusStore::getInstance()->findFeederByPAObjectID(getLastFeederControlledPAOId());
 
@@ -3584,7 +3584,7 @@ bool CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 }
                 else
                 {
-                   if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
+                   if ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod &&
                         currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag() )
                    {
                        returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
@@ -3617,7 +3617,7 @@ bool CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 returnBoolean = false;
             }
         }
-        else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
+        else if ( getStrategy()->getMethodType() == ControlStrategy::ManualOnly )
         {
             long recentlyControlledFeeders = 0;
             for(long i=0;i<_ccfeeders.size();i++)
@@ -3742,9 +3742,9 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
     bool vResult = false; //fail
 
 
-    if ((!ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) &&
-         !ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) ) &&
-        getUsePhaseData() && !(getTotalizedControlFlag() || getPrimaryBusFlag())  )
+    if ( ( getStrategy()->getMethodType() != ControlStrategy::IndividualFeeder &&
+           getStrategy()->getMethodType() != ControlStrategy::BusOptimizedFeeder ) &&
+           getUsePhaseData() && !(getTotalizedControlFlag() || getPrimaryBusFlag())  )
     {
         returnBoolean = capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents);
     }
@@ -3764,10 +3764,10 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                     failPercent = currentFeeder->getStrategy()->getFailurePercent();
                 }
 
-                if( ((ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ||
-                     ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) ||
-                     ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod)) &&
-                     currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag() ) )
+                if( ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+                      getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder ||
+                      getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod ) &&
+                      currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag() )
                 {
                     returnBoolean = currentFeeder->capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents,
                                                                                            minConfirmPercent, failPercent);
@@ -3789,9 +3789,9 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                if( !_IGNORE_NOT_NORMAL_FLAG ||
                                    getCurrentVarPointQuality() == NormalQuality )
                                {
-                                   if( ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
-                                       ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
-                                       (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
+                                   if( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+                                       getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder ||
+                                       ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod &&
                                        currentFeeder->getCurrentVarLoadPointId() > 0 ) )
                                    {
                                        newValue =  currentFeeder->getCurrentVarLoadPointValue();
@@ -3919,9 +3919,9 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                if( !_IGNORE_NOT_NORMAL_FLAG ||
                                    getCurrentVarPointQuality() == NormalQuality )
                                {
-                                   if( ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
-                                       ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
-                                       (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
+                                   if( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+                                       getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder ||
+                                       ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod &&
                                        currentFeeder->getCurrentVarLoadPointId() > 0 ))
                                    {
                                        newValue =  currentFeeder->getCurrentVarLoadPointValue();
@@ -4223,7 +4223,7 @@ bool CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                 failPercent = currentFeeder->getStrategy()->getFailurePercent();
             }
 
-            if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
+            if ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod &&
                currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 &&
                currentFeeder->getPhaseCId() > 0 && currentFeeder->getTotalizedControlFlag())
             {
@@ -4254,11 +4254,11 @@ bool CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            if( !_IGNORE_NOT_NORMAL_FLAG ||
                                getCurrentVarPointQuality() == NormalQuality )
                            {
-                               if( ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
-                                   ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
-                                  (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
-                                    currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 &&
-                                    currentFeeder->getPhaseCId() > 0 )  )
+                               if( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+                                   getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder ||
+                                   ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod &&
+                                     currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 &&
+                                     currentFeeder->getPhaseCId() > 0 ) )
                                {
                                    varAValue = currentFeeder->getPhaseAValue();
                                    varBValue = currentFeeder->getPhaseBValue();
@@ -4439,9 +4439,9 @@ bool CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            if( !_IGNORE_NOT_NORMAL_FLAG ||
                                getCurrentVarPointQuality() == NormalQuality )
                            {
-                               if( ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
-                                   ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
-                                  (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
+                               if( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+                                   getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder ||
+                                  (getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod &&
                                     currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 &&
                                     currentFeeder->getPhaseCId() > 0 )  )
                                {
@@ -4710,7 +4710,7 @@ bool CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
 
         if( getStrategy()->getControlInterval() > 0 || getLikeDayControlFlag() )
         {
-            if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
+            if ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod &&
                 (getSendMoreTimeControlledCommandsFlag() && !getRecentlyControlledFlag()) )
             {
                 returnBoolean = true;
@@ -4722,7 +4722,7 @@ bool CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
         }
         else
         {
-            if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
+            if ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod )
             {
                 if( getSendMoreTimeControlledCommandsFlag() && !getRecentlyControlledFlag())
                 {
@@ -4733,7 +4733,7 @@ bool CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                     returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
                 }
             }
-            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
+            else if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -4831,7 +4831,7 @@ bool CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                     }
                 }
             }
-            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+            else if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -4865,14 +4865,14 @@ bool CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                     }
                 }
             }
-            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
+            else if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus )
             {
                 if( _ccfeeders.size() > 0 )
                 {
                     returnBoolean = _newpointdatareceivedflag;
                 }
             }
-            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
+            else if ( getStrategy()->getMethodType() == ControlStrategy::ManualOnly )
             {
                 if( _newpointdatareceivedflag )
                 {
@@ -4920,7 +4920,7 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
 
         if( getRecentlyControlledFlag() )
         {
-            if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
+            if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -4988,7 +4988,7 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
                     }
                 }
             }
-            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+            else if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5002,14 +5002,14 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
                     }
                 }
             }
-            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
+            else if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus )
             {
                 if( _ccfeeders.size() > 0 )
                 {
                     returnBoolean = _newpointdatareceivedflag;
                 }
             }
-            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
+            else if ( getStrategy()->getMethodType() == ControlStrategy::ManualOnly )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5027,7 +5027,7 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
                     }
                 }
             }
-            else if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+            else if ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5041,8 +5041,8 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
         }
         else if (getVerificationFlag())
         {
-            if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod)||
-                ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+            if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder ||
+                 getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5056,7 +5056,7 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
                     }
                 }
             }
-            else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
+            else if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5111,8 +5111,8 @@ bool CtiCCSubstationBus::isAlreadyControlled()
             return returnBoolean;
         }
 
-        if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ||
-            ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
+        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+             getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
         {
             if( minConfirmPercent <= 0 )
             {
@@ -5141,8 +5141,8 @@ bool CtiCCSubstationBus::isAlreadyControlled()
                 }
             }
         }
-        else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) ||
-                 ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+        else if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus ||
+                  getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod )
         {
             if( minConfirmPercent <= 0 )
             {
@@ -5182,7 +5182,7 @@ bool CtiCCSubstationBus::isAlreadyControlled()
             }
 
         }
-        else if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
+        else if ( getStrategy()->getMethodType() == ControlStrategy::ManualOnly )
         {
             if( minConfirmPercent <= 0 )
             {
@@ -5401,7 +5401,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                     double phaseBValue = currentFeeder->getPhaseBValue();
                     double phaseCValue = currentFeeder->getPhaseCValue();
 
-                    if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+                    if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
                     {
                         controlValue = ( getStrategy()->getUnitType() == ControlStrategy::Volts )
                                             ? currentFeeder->getCurrentVoltLoadPointValue()
@@ -5409,7 +5409,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
 
                         confirmValue = currentFeeder->getCurrentVarLoadPointValue();
                     }
-                    else if ( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
+                    else if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                     {
                         controlValue = ( getStrategy()->getUnitType() == ControlStrategy::Volts )
                                             ? getCurrentVoltLoadPointValue()
@@ -5618,7 +5618,7 @@ void CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTi
                     double phaseCValue = currentFeeder->getPhaseCValue();
 
 
-                    if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+                    if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
                     {
                         controlValue = ( getStrategy()->getUnitType() == ControlStrategy::Volts )
                                             ? currentFeeder->getCurrentVoltLoadPointValue()
@@ -5626,7 +5626,7 @@ void CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTi
 
                         confirmValue = currentFeeder->getCurrentVarLoadPointValue();
                     }
-                    else if ( ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod))
+                    else if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                     {
                         controlValue = ( getStrategy()->getUnitType() == ControlStrategy::Volts )
                                             ? getCurrentVoltLoadPointValue()
@@ -5715,9 +5715,9 @@ bool CtiCCSubstationBus::isVerificationAlreadyControlled()
 
     if( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality )
     {
-        if( (ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
-            ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod)) &&
-            _ALLOW_PARALLEL_TRUING )
+        if( ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+              getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder ) &&
+              _ALLOW_PARALLEL_TRUING )
         {
             if( minConfirmPercent <= 0 )
             {
@@ -5756,9 +5756,9 @@ bool CtiCCSubstationBus::isVerificationAlreadyControlled()
             }
 
         }
-        else if( ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) ||
-                 ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) ||
-                 !_ALLOW_PARALLEL_TRUING)
+        else if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus ||
+                  getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod ||
+                  !_ALLOW_PARALLEL_TRUING)
         {
             if( minConfirmPercent <= 0 )
             {
@@ -5789,11 +5789,11 @@ bool CtiCCSubstationBus::isVerificationAlreadyControlled()
                 {
                     minConfirmPercent = currentFeeder->getStrategy()->getMinConfirmPercent();
                 }
-                if( ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
-                    ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
-                    ( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
+                if( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+                    getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder ||
+                    ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod &&
                       currentFeeder->getCurrentVarLoadPointId() > 0 && !currentFeeder->getUsePhaseData() ) ||
-                    ( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
+                    ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod &&
                       currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 &&
                       currentFeeder->getPhaseCId() > 0 && currentFeeder->getUsePhaseData() ) )
                 {
@@ -5990,8 +5990,8 @@ bool CtiCCSubstationBus::isPastMaxConfirmTime(const CtiTime& currentDateTime)
     try
     {
 
-        if( ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) &&
-            _ALLOW_PARALLEL_TRUING)
+        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder &&
+             _ALLOW_PARALLEL_TRUING)
         {
             for(long i=0;i<_ccfeeders.size();i++)
             {
@@ -6045,7 +6045,7 @@ bool CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
     try
     {
 
-        if( ciStringEqual(getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) )
+        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
         {
             for(long i=0;i<_ccfeeders.size();i++)
             {
@@ -6409,9 +6409,9 @@ bool CtiCCSubstationBus::isVerificationPastMaxConfirmTime(const CtiTime& current
     bool returnBoolean = false;
 
 
-    if( (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) ||
-        ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ) &&
-        _ALLOW_PARALLEL_TRUING)
+    if ( ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder ||
+           getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ) &&
+           _ALLOW_PARALLEL_TRUING)
     {
          for(long i = 0; i < _ccfeeders.size(); i++)
          {
@@ -6736,7 +6736,7 @@ void CtiCCSubstationBus::updatePointResponseDeltas()
 {
     try
     {
-        if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
         {
             for (long i = 0; i < _ccfeeders.size();i++)
             {
@@ -6919,7 +6919,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
 {
     CtiCCMonitorPointPtr outOfRangeMonitorPoint;
 
-    if ( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
     {
         for (long i = 0; i < _ccfeeders.size();i++)
         {
@@ -7065,7 +7065,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
 {
     CtiCCMonitorPointPtr outOfRangeMonitorPoint;
 
-    if ( !ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if ( getStrategy()->getMethodType() != ControlStrategy::IndividualFeeder )
     {
         if (!getRecentlyControlledFlag() && !getPostOperationMonitorPointScanFlag())
         {
@@ -7214,7 +7214,7 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
     CtiRequestMsg* request = NULL;
     CtiTime currentDateTime;
 
-    if ( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
     {
         for (long i = 0; i < _ccfeeders.size();i++)
         {
@@ -7569,7 +7569,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                                 double phaseAValue = parentFeeder->getPhaseAValue();
                                 double phaseBValue = parentFeeder->getPhaseBValue();
                                 double phaseCValue = parentFeeder->getPhaseCValue();
-                                if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
+                                if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                                 {
                                     monitorValue = getCurrentVarLoadPointValue();
                                     phaseAValue = getPhaseAValue();
@@ -7645,7 +7645,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                                             double phaseAValue = currentFeeder->getPhaseAValue();
                                             double phaseBValue = currentFeeder->getPhaseBValue();
                                             double phaseCValue = currentFeeder->getPhaseCValue();
-                                            if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
+                                            if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                                             {
                                                 monitorValue = getCurrentVarLoadPointValue();
                                                 phaseAValue = getPhaseAValue();
@@ -7728,7 +7728,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                                 double phaseAValue = parentFeeder->getPhaseAValue();
                                 double phaseBValue = parentFeeder->getPhaseBValue();
                                 double phaseCValue = parentFeeder->getPhaseCValue();
-                                if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
+                                if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                                 {
                                     monitorValue = getCurrentVarLoadPointValue();
                                     phaseAValue = getPhaseAValue();
@@ -7805,7 +7805,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                                             double phaseAValue = currentFeeder->getPhaseAValue();
                                             double phaseBValue = currentFeeder->getPhaseBValue();
                                             double phaseCValue = currentFeeder->getPhaseCValue();
-                                            if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
+                                            if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                                             {
                                                 monitorValue = getCurrentVarLoadPointValue();
                                                 phaseAValue = getPhaseAValue();
@@ -7983,8 +7983,8 @@ bool CtiCCSubstationBus::isMultiVoltBusAnalysisNeeded(const CtiTime& currentDate
            getStrategy()->getUnitType() == ControlStrategy::MultiVoltVar ) &&
            ! getVerificationFlag() )
     {
-        if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ||
-            ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
+        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+             getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
         {
             for (long i = 0; i < _ccfeeders.size();i++)
             {
@@ -8275,7 +8275,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(const CtiTime& 
     if( !getDisableFlag() &&
         currentDateTime.seconds() >= getLastOperationTime().seconds() + getStrategy()->getControlDelayTime() )
     {
-        if( ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
         {
             for(long i=0;i<_ccfeeders.size();i++)
             {
@@ -8375,9 +8375,9 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
     {
 
         //This could be moved to happen when the control strategy is changed instead of running every cycle.
-        if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) ||
-            ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) ||
-            ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
+        if ( getStrategy()->getMethodType() == ControlStrategy::SubstationBus ||
+             getStrategy()->getMethodType() == ControlStrategy::ManualOnly ||
+             getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod )
         {
             for (long i = 0; i < _ccfeeders.size();i++)
             {
@@ -8391,7 +8391,7 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
             }
         }
 
-        if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod))
+        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
         {
             subBusFlag = performDataOldAndFallBackNecessaryCheckOnFeeders();
         }
@@ -8426,7 +8426,7 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
                     }
                 }
 
-                if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
+                if ( getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
                 {
                     performDataOldAndFallBackNecessaryCheckOnFeeders();
                 }
@@ -8714,8 +8714,8 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
         setSendMoreTimeControlledCommandsFlag(false);
     }
 
-    if (ciStringEqual(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod)||
-        _likeDayControlFlag)
+    if ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod ||
+         _likeDayControlFlag)
     {
         figureNextCheckTime();
     }
