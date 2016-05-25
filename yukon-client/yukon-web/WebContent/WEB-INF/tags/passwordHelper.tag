@@ -34,14 +34,14 @@
     <h4><i:inline key="${keyBase}requirements"/></h4>
     <ul class="rule-list">
         <li class="INVALID_PASSWORD_LENGTH">
-            <cti:icon icon="icon-tick vh"/>
+            <cti:icon icon=""/>
             <span><i:inline key="${keyBase}length.description" 
                 arguments="${passwordPolicy.minPasswordLength}"/>
             </span>
         </li>
         <c:if test="${passwordPolicy.passwordHistory > 0}">
             <li class="PASSWORD_USED_TOO_RECENTLY">
-                <cti:icon icon="icon-tick vh"/>
+                <cti:icon icon=""/>
                 <span><i:inline key="${keyBase}history.description" 
                     arguments="${passwordPolicy.passwordHistory}"/>
                 </span>

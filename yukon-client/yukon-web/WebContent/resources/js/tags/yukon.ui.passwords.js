@@ -17,12 +17,13 @@ yukon.ui.passwords = (function () {
         
         var errors = ['policy_errors', 'rule_errors'],
             validations = ['policy_validations', 'rule_validations'],
+            reqNames = ["PASSWORD_DOES_NOT_MEET_POLICY_QUALITY", "INVALID_PASSWORD_LENGTH", "PASSWORD_USED_TOO_RECENTLY"],
             i, j;
         for (i = 0; i < validations.length; i++) {
             if (data[validations[i]]) {
                 for (j = 0; j < data[validations[i]].length; j++) {
                     console.debug("validations:" + data[errors[i]][j]);
-                    if(data[validations[i]][j] === "PASSWORD_DOES_NOT_MEET_POLICY_QUALITY") {
+                    if ($.inArray(data[validations[i]][j], reqNames) > -1) {
                         $('.' + data[validations[i]][j] + ' .icon').addClass('icon-tick');
                         $('.' + data[validations[i]][j] + ' .icon').removeClass('icon-cross');
                     }
@@ -39,7 +40,7 @@ yukon.ui.passwords = (function () {
             if (data[errors[i]]) {
                 for (j = 0; j < data[errors[i]].length; j++) {
                     console.debug("Errors:" + data[errors[i]][j]);
-                    if(data[errors[i]][j] === "PASSWORD_DOES_NOT_MEET_POLICY_QUALITY") {
+                    if ($.inArray(data[errors[i]][j], reqNames) > -1) {
                         $('.' + data[errors[i]][j] + ' .icon').removeClass('icon-tick');
                         $('.' + data[errors[i]][j] + ' .icon').addClass('icon-cross');
                     }
@@ -82,18 +83,23 @@ yukon.ui.passwords = (function () {
                     dataType: 'json'
                 }).done(function (data) {
                     indicatePassFail(data);
+                    enableDisableSave();
                     return false;
                 }).fail(function (err) {
                     indicatePassFail($.parseJSON(err.responseText));
+                    enableDisableSave();
                     return false;
                 });
                 
                 return false;
             });
             
-            $(newPwSelector + ', ' + confirmPwSelector).keyup(function (ev) {
-                
-                var confirm = $(confirmPwSelector).val(),
+            $(confirmPwSelector).keyup(function (ev) {
+                enableDisableSave();
+            });
+            
+            function enableDisableSave () {
+                    var confirm = $(confirmPwSelector).val(),
                     password = $(newPwSelector).val(),
                     meetsRequirements = $('.password-manager ul > li > .icon-cross');
                 
@@ -105,8 +111,8 @@ yukon.ui.passwords = (function () {
                 } else {
                     $(saveButtonSelector).prop('disabled', true);
                 }
-            });
-            
+            }
+
             _initialized = true;
             
             $(newPwSelector).trigger('keyup');
