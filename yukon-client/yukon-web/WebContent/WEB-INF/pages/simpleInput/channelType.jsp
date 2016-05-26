@@ -47,8 +47,17 @@
                         <c:set var="clazz" value=" ${clazz} on" />
                     </c:if>
                     <cti:msg2 key="${readType}" var="readLabel" />
-                    <cti:button label="${readLabel}" classes="${clazz}" 
-                        data-channel="${loopStatus.index}" data-value="${readType}" />
+                    <c:choose>
+                        <c:when test="${input.attribute.intervalApplicable || readType != 'INTERVAL'}"> 
+                            <cti:button label="${readLabel}" classes="${clazz}" 
+                                data-channel="${loopStatus.index}" data-value="${readType}" />
+                        </c:when>
+                        <c:when test="${!input.attribute.intervalApplicable && readType == 'INTERVAL'}"> 
+                            <cti:msg2 var="addTitle" key=".rfnChannelConfiguration.disabledInterval.title"/>
+                            <cti:button label="${readLabel}" disabled="true" 
+                                data-channel="${loopStatus.index}" data-value="${readType}" title="${addTitle}"/>
+                        </c:when>
+                    </c:choose>
                 </c:forEach>
                 <spring:bind path="channelInputs[${loopStatus.index}].read" htmlEscape="true">
                     <input type="hidden" name="${status.expression}" data-channel-read value="${status.value}" data-input />

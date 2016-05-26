@@ -418,6 +418,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     private static Set<BuiltInAttribute> readableAttributes;
     
+    private static Set<BuiltInAttribute> nonIntervalAttributes;
+
     // The following maps and sets are used for displaying grouped attribute lists.
     private static Map<AttributeGroup, Set<BuiltInAttribute>> groupedDataAttributes;
 
@@ -497,6 +499,24 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 TEMPERATURE_DEVICE,
                 UNDER_VOLTAGE_MEASURED,
                 UNDER_VOLTAGE_THRESHOLD);
+
+        nonIntervalAttributes = ImmutableSet.of(
+                PEAK_DEMAND,
+                PEAK_DEMAND_FROZEN,
+                PEAK_DEMAND_FROZEN_RATE_A,
+                PEAK_DEMAND_FROZEN_RATE_B,
+                PEAK_DEMAND_FROZEN_RATE_C,
+                PEAK_DEMAND_FROZEN_RATE_D,
+                PEAK_DEMAND_RATE_A,
+                PEAK_DEMAND_RATE_B,
+                PEAK_DEMAND_RATE_C,
+                PEAK_DEMAND_RATE_D,
+                PEAK_KVAR,
+                PEAK_KVAR_COIN,
+                PEAK_KVAR_RATE_A,
+                PEAK_KVAR_RATE_B,
+                PEAK_KVAR_RATE_C,
+                PEAK_KVAR_RATE_D);
 
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
@@ -730,5 +750,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     public AttributeGroup getAttributeGroup() {
         return attributeGroup;
+    }
+
+    public boolean isIntervalApplicable() {
+        return !nonIntervalAttributes.contains(this);
     }
 }

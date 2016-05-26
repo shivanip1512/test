@@ -357,6 +357,7 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.reportingIntervalMinutes.description">Interval at which to report Interval data recorded in the meter.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.reportingExceeded">Maximum of 15 Reporting channels</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.midnightExceeded">Maximum of 80 Enabled channels</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.disabledInterval.title">Interval not Applicable for Peak Points.</entry>
 
     <entry key="yukon.web.modules.tools.configs.enum.read.INTERVAL">Interval</entry>
     <entry key="yukon.web.modules.tools.configs.enum.read.MIDNIGHT">Midnight</entry>

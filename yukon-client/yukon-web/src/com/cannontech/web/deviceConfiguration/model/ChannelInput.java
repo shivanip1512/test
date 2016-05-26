@@ -6,6 +6,7 @@ import com.cannontech.web.deviceConfiguration.enumeration.Read.ReadType;
 public class ChannelInput {
     private BuiltInAttribute attribute;
     private ReadType read;
+    private boolean intervalApplicable;
 
     public ChannelInput() {
     }
@@ -13,6 +14,7 @@ public class ChannelInput {
     public ChannelInput(BuiltInAttribute attribute, ReadType readType) {
         this.attribute = attribute;
         this.read = readType;
+        this.intervalApplicable = attribute.isIntervalApplicable();
     }
 
     public final BuiltInAttribute getAttribute() {
@@ -26,5 +28,9 @@ public class ChannelInput {
     }
     public final void setRead(ReadType read) {
         this.read = read;
+    }
+
+    public boolean isIntervalApplicable() {
+        return intervalApplicable;
     }
 }
