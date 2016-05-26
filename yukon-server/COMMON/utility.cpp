@@ -2264,6 +2264,8 @@ void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTE
 {
     /* Great info at http://www.debuginfo.com/articles/effminidumps.html */
 
+    assert(pExceptionPtrs != 0);
+
     ostringstream os;
 
     time_t now    =  time(0);
@@ -2285,40 +2287,23 @@ void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTE
     HANDLE outfile = CreateFile( os.str().c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, 
         CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 
-    if( ( outfile != NULL ) && ( outfile == INVALID_HANDLE_VALUE ) )
+    if( ( outfile == NULL ) || ( outfile == INVALID_HANDLE_VALUE ) )
     {
+        cerr << "Unable to create minidump file " << os.str().c_str() << endl;
         return;
     }
 
-    CONTEXT c;
+    // Used in passing info to MiniDumpWriteDump()
+    MINIDUMP_EXCEPTION_INFORMATION dumpInfo{};
 
-    memset( &c, 0, sizeof( c ) );
+    // We need to create a MINIDUMP_EXCEPTION_INFORMATION structure to pass to MiniDumpWriteDump.
+    dumpInfo.ThreadId = GetCurrentThreadId();
+    dumpInfo.ClientPointers = false;
+    dumpInfo.ExceptionPointers = pExceptionPtrs;
 
-    HANDLE hThread;
-    c.ContextFlags = CONTEXT_FULL;
-    hThread = OpenThread( THREAD_ALL_ACCESS, FALSE, GetCurrentThreadId() );
-
-    GetThreadContext( hThread, &c );
-
-    MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
-    memset( &dumpInfo, 0, sizeof( dumpInfo ) );
-
-    EXCEPTION_POINTERS ep;
-    memset( &ep, 0, sizeof( ep ) );
-
-    ep.ContextRecord = &c;
-
-    if( pExceptionPtrs )
-    {
-        ep.ExceptionRecord = pExceptionPtrs->ExceptionRecord;
-
-        dumpInfo.ThreadId = GetCurrentThreadId();
-        dumpInfo.ExceptionPointers = &ep;
-        dumpInfo.ClientPointers = false;
-    }
-
+    /* Generate mini-dump */
     if( !MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), outfile, 
-        MiniDumpWithFullMemory, ( pExceptionPtrs != 0 ) ? &dumpInfo : 0, NULL, NULL ) )
+        MiniDumpWithFullMemory, &dumpInfo, 0, 0 ) )
     {
         ostringstream os;
 

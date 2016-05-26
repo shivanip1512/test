@@ -45,7 +45,7 @@ int DispatchMainFunction(int argc, char **argv)
 
     if( ! VanGogh.join((gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300))*1000) )
     {
-        CreateMiniDump("dispatch");
+        RaiseException(0xe000002, 0 , 0, NULL);
 
         CTILOG_ERROR(dout, "Could not Join Dispatch - Terminating");
         VanGogh.terminateServerThread();
