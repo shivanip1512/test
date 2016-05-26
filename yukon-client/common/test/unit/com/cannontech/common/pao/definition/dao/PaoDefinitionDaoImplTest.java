@@ -1,6 +1,10 @@
 package com.cannontech.common.pao.definition.dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +34,7 @@ import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -61,7 +65,7 @@ public class PaoDefinitionDaoImplTest {
         URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
 
-        ReflectionTestUtils.setField(dao, "stateDao", new MockStateDao());
+        ReflectionTestUtils.setField(dao, "stateGroupDao", new MockStateGroupDao());
         ReflectionTestUtils.setField(dao, "unitMeasureDao", new MockUnitMeasureDao());
         dao.initialize();
 
@@ -445,7 +449,7 @@ public class PaoDefinitionDaoImplTest {
         URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
 
-        ReflectionTestUtils.setField(dao, "stateDao", new MockStateDao());
+        ReflectionTestUtils.setField(dao, "stateGroupDao", new MockStateGroupDao());
         ReflectionTestUtils.setField(dao, "unitMeasureDao", new MockUnitMeasureDao());
         final URL customFileUrl =
                 classLoader.getResource("com/cannontech/common/pao/definition/dao/testCustomPaoDefinition.xml");
@@ -640,7 +644,7 @@ public class PaoDefinitionDaoImplTest {
         
     }
     
-    private static class MockStateDao implements StateDao {
+    private static class MockStateGroupDao implements StateGroupDao {
         
         @Override
         public LiteState findLiteState(int stateGroupID, int rawState) {
@@ -648,22 +652,22 @@ public class PaoDefinitionDaoImplTest {
         }
 
         @Override
-        public LiteStateGroup getLiteStateGroup(int stateGroupID) {
+        public LiteStateGroup getStateGroup(int stateGroupID) {
             return new LiteStateGroup(0, "state0");
         }
 
         @Override
-        public LiteStateGroup getLiteStateGroup(String stateGroupName) {
+        public LiteStateGroup getStateGroup(String stateGroupName) {
             return new LiteStateGroup(0, "state0");
         }
 
         @Override
-        public LiteState[] getLiteStates(int stateGroupID) {
+        public List<LiteState> getLiteStates(int stateGroupID) {
             return null;
         }
 
         @Override
-        public LiteStateGroup[] getAllStateGroups() {
+        public List<LiteStateGroup> getAllStateGroups() {
             return null;
         }
         

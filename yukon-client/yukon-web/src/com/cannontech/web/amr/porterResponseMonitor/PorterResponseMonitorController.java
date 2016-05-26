@@ -49,7 +49,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteState;
@@ -80,13 +80,13 @@ public class PorterResponseMonitorController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PointService pointService;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitor";
     private final Logger log = YukonLogManager.getLogger(PorterResponseMonitorController.class);
     
-    private Validator nameValidator = new SimpleValidator<PorterResponseMonitor>(PorterResponseMonitor.class) {
+    private final Validator nameValidator = new SimpleValidator<PorterResponseMonitor>(PorterResponseMonitor.class) {
         @Override
         public void doValidation(PorterResponseMonitor monitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name","yukon.web.error.required");
@@ -94,7 +94,7 @@ public class PorterResponseMonitorController {
         }
     };
 
-    private Validator nameAndRulesValidator = new SimpleValidator<PorterResponseMonitor>(PorterResponseMonitor.class) {
+    private final Validator nameAndRulesValidator = new SimpleValidator<PorterResponseMonitor>(PorterResponseMonitor.class) {
         @Override
         public void doValidation(PorterResponseMonitor monitor, Errors errors) {
             
@@ -335,7 +335,7 @@ public class PorterResponseMonitorController {
 
     private void setupCreatePageModelMap(ModelMap model) {
         PorterResponseMonitor monitor = new PorterResponseMonitor();
-        LiteStateGroup outageStatusStageGroup = stateDao.getLiteStateGroup("Outage Status");
+        LiteStateGroup outageStatusStageGroup = stateGroupDao.getStateGroup("Outage Status");
         monitor.setStateGroup(outageStatusStageGroup);
         model.addAttribute("monitor", monitor);
         model.addAttribute("mode", PageEditMode.CREATE);
@@ -421,7 +421,7 @@ public class PorterResponseMonitorController {
         binder.registerCustomEditor(LiteStateGroup.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String group) throws IllegalArgumentException {
-                LiteStateGroup stateGroup = stateDao.getLiteStateGroup(group);
+                LiteStateGroup stateGroup = stateGroupDao.getStateGroup(group);
                 setValue(stateGroup);
             }
             @Override

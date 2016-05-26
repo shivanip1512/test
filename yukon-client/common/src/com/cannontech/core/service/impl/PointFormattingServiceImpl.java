@@ -17,7 +17,7 @@ import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -35,19 +35,19 @@ import com.cannontech.user.YukonUserContext;
 
 public class PointFormattingServiceImpl implements PointFormattingService {
     @Autowired private PointDao pointDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private TemplateProcessorFactory templateProcessorFactory;
     @Autowired private PointService pointService;
-    private Logger log = YukonLogManager.getLogger(PointFormattingServiceImpl.class);
+    private final Logger log = YukonLogManager.getLogger(PointFormattingServiceImpl.class);
 
     @Override
     public CachingPointFormattingService getCachedInstance() {
     	CachingPointFormattingService impl = new CachingPointFormattingService() {
             
-            private Map<Integer, LitePoint> litePointCache = new HashMap<Integer, LitePoint>();
-            private Map<Integer, LitePointUnit> pointUnitCache = new HashMap<Integer, LitePointUnit>();
+            private final Map<Integer, LitePoint> litePointCache = new HashMap<Integer, LitePoint>();
+            private final Map<Integer, LitePointUnit> pointUnitCache = new HashMap<Integer, LitePointUnit>();
 
             @Override
             public String getValueString(PointValueHolder data, String format, YukonUserContext userContext) {
@@ -84,7 +84,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                     LiteState liteState;
 
                     if (litePoint.getPointTypeEnum().isStatus()) {
-                        liteState = stateDao.findLiteState(litePoint.getStateGroupID(),(int)data.getValue());
+                        liteState = stateGroupDao.findLiteState(litePoint.getStateGroupID(),(int)data.getValue());
                     } else {
                         //For non-status points, state is determined by alarm conditions (signals)
                         liteState = pointService.getCurrentStateForNonStatusPoint(litePoint);

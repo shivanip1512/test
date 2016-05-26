@@ -291,36 +291,6 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
         }
 	}
 
-
-	/*
-	private String getTriggerString(com.cannontech.loadcontrol.data.LMControlAreaTrigger trigger) 
-	{
-		if( trigger == null )
-			return null;
-	
-		LitePoint point = DaoFactory.getPointDao().getLitePoint( trigger.getPointId().intValue() );
-	
-		if( trigger.getTriggerType().equalsIgnoreCase(
-			   com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
-		{
-			return DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() ).getStateText() +
-				" / " +
-				DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() ).getStateText();
-		}	
-		else
-		{
-			//com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_THRESHOLD
-			return numberFormatter.format(trigger.getPointValue()) +
-				" / " +
-				numberFormatter.format(trigger.getThreshold());
-			
-		}
-	
-	
-	}
-	*/
-
-	
 	/**
 	 * This method was created in VisualAge.
 	 * @return boolean

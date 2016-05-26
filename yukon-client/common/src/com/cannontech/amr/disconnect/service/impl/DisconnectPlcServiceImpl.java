@@ -28,7 +28,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -48,7 +48,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private AttributeService attributeService;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
     
     @Autowired
@@ -185,7 +185,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
             LitePoint litePoint =
                 attributeService.getPointForAttribute(command.getDevice(), BuiltInAttribute.DISCONNECT_STATUS);
             int stateGroupId = litePoint.getStateGroupID();
-            LiteState liteState = stateDao.findLiteState(stateGroupId, (int) value.getValue());
+            LiteState liteState = stateGroupDao.findLiteState(stateGroupId, (int) value.getValue());
             Disconnect410State disconnectState = Disconnect410State.getByRawState(liteState.getStateRawState());
             if (disconnectState == Disconnect410State.CONFIRMED_DISCONNECTED) {
                 callback.disconnected(command.getDevice(), new Instant(value.getPointDataTimeStamp()));

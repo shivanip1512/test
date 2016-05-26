@@ -1,7 +1,9 @@
 package com.cannontech.dbeditor.editor.point;
 
-import com.cannontech.core.dao.StateDao;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import java.util.List;
+
+import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.spring.YukonSpringHook;
@@ -29,6 +31,7 @@ public PointStatusBasePanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getStateTableComboBox()) 
 		connEtoC1(e);
@@ -174,6 +177,7 @@ private javax.swing.JLabel getStateTableLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) {
 	//Assume that defaultObject is an instance of com.cannontech.database.data.point.StatusPoint
 	com.cannontech.database.data.point.StatusPoint point = (com.cannontech.database.data.point.StatusPoint) val;
@@ -263,6 +267,7 @@ private void initialize() {
  * Creation date: (5/1/2001 9:11:36 AM)
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	return true;
@@ -271,6 +276,7 @@ public boolean isInputValid()
  * Method to handle events for the ItemListener interface.
  * @param e java.awt.event.ItemEvent
  */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	if (e.getSource() == getStateTableComboBox()) 
 		connEtoC5(e);
@@ -284,18 +290,13 @@ private void loadStateComboBoxes(int stateGroupID)
 	if( getInitialStateComboBox().getItemCount() > 0 )
 		getInitialStateComboBox().removeAllItems();
 
-	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{	
-		LiteStateGroup stateGroup = (LiteStateGroup)
-			cache.getAllStateGroups().get( new Integer(stateGroupID) );
+	LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get( new Integer(stateGroupID) );
 
-		java.util.List statesList = stateGroup.getStatesList();
-		for(int j=0;j<statesList.size();j++)
-		{
-			com.cannontech.database.data.lite.LiteState ls = ((com.cannontech.database.data.lite.LiteState)statesList.get(j));
-			getInitialStateComboBox().addItem(ls);
-		}
+	List<LiteState> statesList = stateGroup.getStatesList();
+	for(int j=0;j<statesList.size();j++)
+	{
+		LiteState ls = statesList.get(j);
+		getInitialStateComboBox().addItem(ls);
 	}
 }
 /**
@@ -310,7 +311,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aPointStatusBasePanel);
 		frame.setSize(aPointStatusBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -327,6 +329,7 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val)
 {
 	//Assume taht defaultObject is an instance of com.cannontech.database.data.point.StatusPoint
@@ -338,13 +341,11 @@ public void setValue(Object val)
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		LiteStateGroup[] allStateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
+		List<LiteStateGroup> allStateGroups = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups();
 
 		//Load the state table combo box
-		for(int i=0;i<allStateGroups.length;i++)
+		for (LiteStateGroup grp : allStateGroups)
 		{
-			LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
-
 			getStateTableComboBox().addItem( grp );
 			if( grp.getStateGroupID() == stateGroupID )
 				getStateTableComboBox().setSelectedItem( grp );

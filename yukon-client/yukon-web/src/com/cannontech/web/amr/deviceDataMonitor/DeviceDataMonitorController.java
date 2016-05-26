@@ -61,7 +61,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -91,7 +91,7 @@ public class DeviceDataMonitorController {
     @Autowired private PaoPopupHelper popupHelper;
     @Autowired private PointService pointService;
     @Autowired private StateIdPairingPropertyEditor stateIdPairingPropertyEditor;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorController.class);
@@ -104,7 +104,7 @@ public class DeviceDataMonitorController {
     
     private static final String baseKey = "yukon.web.modules.amr.deviceDataMonitor";
   
-    private Validator validator = new SimpleValidator<DeviceDataMonitor>(DeviceDataMonitor.class) {
+    private final Validator validator = new SimpleValidator<DeviceDataMonitor>(DeviceDataMonitor.class) {
         @Override
         public void doValidation(DeviceDataMonitor monitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", baseKey + ".empty");
@@ -256,7 +256,7 @@ public class DeviceDataMonitorController {
     @RequestMapping(method = RequestMethod.GET, value = "deviceDataMonitor/state-group-states")
     public @ResponseBody Map<String, ?> getStatesForGroup(int stateGroupId) {
         
-        LiteStateGroup stateGroup = stateDao.getLiteStateGroup(stateGroupId);
+        LiteStateGroup stateGroup = stateGroupDao.getStateGroup(stateGroupId);
         List<Object> states = new ArrayList<>();
         for (LiteState state : stateGroup.getStatesList()) {
             Map<String, Object> stateObj = Maps.newHashMapWithExpectedSize(3);
@@ -777,7 +777,7 @@ public class DeviceDataMonitorController {
                     setValue(null);
                     return;
                 }
-                LiteStateGroup stateGroup = stateDao.getLiteStateGroup(Integer.valueOf(groupId));
+                LiteStateGroup stateGroup = stateGroupDao.getStateGroup(Integer.valueOf(groupId));
                 setValue(stateGroup);
             }
             @Override

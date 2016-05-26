@@ -265,7 +265,7 @@ public class MenuController {
         model.addAttribute("showChangeOpState", true);
         model.addAttribute("changeOpState", CommandType.CHANGE_OP_STATE);
         
-        LiteState[] states = CapControlUtils.getCBCStateNames();
+        List<LiteState> states = CapControlUtils.getCBCStateNames();
         model.addAttribute("states", states);
 
         return "tier/popupmenu/menu.jsp";

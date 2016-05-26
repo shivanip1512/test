@@ -7,11 +7,13 @@ package com.cannontech.dbeditor.editor.point;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
@@ -31,7 +33,8 @@ public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util
 	private javax.swing.JLabel ivjJLabelNotifyOn = null;
 
 class IvjEventHandler implements java.awt.event.ActionListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == PointAlarmOptionsEditorPanel.this.getJCheckBoxDisableAllAlarms()) 
 				connEtoC1(e);
 			if (e.getSource() == PointAlarmOptionsEditorPanel.this.getJCheckBoxNotifyWhenAck()) 
@@ -51,6 +54,7 @@ public PointAlarmOptionsEditorPanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getJCheckBoxDisableAllAlarms()) 
 		connEtoC1(e);
@@ -341,6 +345,7 @@ private PointAlarmOptionsEditorTableModel getTableModel()
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {
 	//Consider commonObject an instance of com.cannontech.database.data.point.PointBase
@@ -541,7 +546,8 @@ private void initJTableCellComponents()
 		notifyCombo.setBackground(getJTableAlarmStates().getBackground());
 		combo.addActionListener( new java.awt.event.ActionListener()
 		{
-			public void actionPerformed(java.awt.event.ActionEvent e) 
+			@Override
+            public void actionPerformed(java.awt.event.ActionEvent e) 
 			{
 				fireInputUpdate();
 			}
@@ -549,7 +555,8 @@ private void initJTableCellComponents()
 		
 		notifyCombo.addActionListener( new java.awt.event.ActionListener()
 		{
-			public void actionPerformed(java.awt.event.ActionEvent e) 
+			@Override
+            public void actionPerformed(java.awt.event.ActionEvent e) 
 			{
 				fireInputUpdate();
 			}
@@ -573,6 +580,7 @@ private void initJTableCellComponents()
  * Creation date: (5/1/2001 9:11:36 AM)
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	return true;
@@ -605,6 +613,7 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) 
 {
 	
@@ -641,7 +650,7 @@ public void setValue(Object val)
 		{
 			String[] stateNames = null;
 
-			LiteStateGroup stateGroup = cache.getAllStateGroups().get( point.getPoint().getStateGroupID() );
+			LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get( point.getPoint().getStateGroupID() );
 
 			stateNames = new String[stateGroup.getStatesList().size()];
 

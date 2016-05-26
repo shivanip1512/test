@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -537,7 +537,7 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
         // Load all the state groups
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
-            LiteStateGroup[] allStateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
+            List<LiteStateGroup> allStateGroups = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups();
 
             // Load the state table combo box
             for (LiteStateGroup grp : allStateGroups) {

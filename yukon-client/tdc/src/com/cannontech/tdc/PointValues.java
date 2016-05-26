@@ -13,7 +13,7 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -130,7 +130,7 @@ public String getBackGroundColor(int i)
 		return String.valueOf( Colors.BLACK_ID );	
 	
 	return Colors.getColorString(
-					((LiteState)lpgrp.getStatesList().get(i)).getBgColor() );
+					lpgrp.getStatesList().get(i).getBgColor() );
 }
 /**
  * Insert the method's description here.
@@ -145,7 +145,7 @@ public String getColor(int i)
 
 
 	return Colors.getColorString( 
-					((LiteState)lpgrp.getStatesList().get(i)).getFgColor() );
+					lpgrp.getStatesList().get(i).getFgColor() );
 }
 
 /**
@@ -159,7 +159,7 @@ public int getYukonImageID(int i)
 	if( lpgrp == null )
 		return YukonImage.NONE_IMAGE_ID;	
 	
-	return ((LiteState)lpgrp.getStatesList().get(i)).getImageID();
+	return lpgrp.getStatesList().get(i).getImageID();
 }
 
 /**
@@ -268,7 +268,7 @@ public String getText(int rawState )
 		if( rawState >= 0 && rawState <= lpgrp.getStatesList().size() )		
 		{
 			previuosText = 
-					((LiteState)lpgrp.getStatesList().get(rawState)).getStateText();
+					lpgrp.getStatesList().get(rawState).getStateText();
 
 			return previuosText;
 		}		
@@ -319,7 +319,7 @@ private LiteStateGroup getLiteStateGroup()
 	if( lPoint == null || getPointType() == PointTypes.INVALID_POINT )
 		return null;
 	else
-		return YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(lPoint.getStateGroupID());
+		return YukonSpringHook.getBean(StateGroupDao.class).getStateGroup(lPoint.getStateGroupID());
 }
 
 /**
@@ -338,7 +338,7 @@ public void setCurrentRowColor( int value )
 
 	for( int i = 0; i < lpgrp.getStatesList().size(); i++ )
 	{
-		LiteState lState = (LiteState)lpgrp.getStatesList().get(i);
+		LiteState lState = lpgrp.getStatesList().get(i);
 		if( lState.getStateRawState() == value )
 		{
 			currentForegroundColor = new Integer( lState.getFgColor() ).intValue();
@@ -422,6 +422,7 @@ public void setPointState(String newPointState) {
  * Creation date: (8/15/00 5:14:11 PM)
  * @param newDeviceID java.lang.Object
  */
+@Override
 public String toString()
 {
 	return "PointID=" + getPointData().getId() + 

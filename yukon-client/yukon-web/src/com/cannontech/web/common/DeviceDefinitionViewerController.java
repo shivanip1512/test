@@ -32,7 +32,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
@@ -44,7 +44,7 @@ public class DeviceDefinitionViewerController {
 
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 	@Autowired private UnitMeasureDao unitMeasureDao;
-	@Autowired private StateDao stateDao;
+	@Autowired private StateGroupDao stateGroupDao;
     @Autowired private AttributeService attributeService;
 
 	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "RFMESH", "IPC", "Two Way LCR", "Demand Response", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", "Volt/Var", ""};
@@ -208,11 +208,11 @@ public class DeviceDefinitionViewerController {
 	
 	public class DeviceInfo {
 		
-		private PaoDefinition definition;
-		private List<PointTemplateWrapper> points;
-		private List<AttributeWrapper> attributes;
-		private List<CommandDefinitionWrapper> commands;
-		private Collection<PaoTagDefinition> tagDefinitions;
+		private final PaoDefinition definition;
+		private final List<PointTemplateWrapper> points;
+		private final List<AttributeWrapper> attributes;
+		private final List<CommandDefinitionWrapper> commands;
+		private final Collection<PaoTagDefinition> tagDefinitions;
 		
 		public DeviceInfo(PaoDefinition deviceDefiniton) {
 			
@@ -268,11 +268,11 @@ public class DeviceDefinitionViewerController {
 	
 	public class PointTemplateWrapper {
 		
-		private PointTemplate pointTemplate;
-		private PointType pointType;
+		private final PointTemplate pointTemplate;
+		private final PointType pointType;
 		private String uomString;
 		private String stateGroup;
-		private boolean init;
+		private final boolean init;
 		
 		public PointTemplateWrapper(PaoDefinition deviceDefiniton, PointTemplate pointTemplate) {
 			
@@ -285,7 +285,7 @@ public class DeviceDefinitionViewerController {
 				this.uomString = unitMeasureDao.getLiteUnitMeasure(pointTemplate.getUnitOfMeasure()).getUnitMeasureName();
 			} else {
 				int stateGroupId = pointTemplate.getStateGroupId();
-				LiteStateGroup liteStateGroup = stateDao.getLiteStateGroup(stateGroupId);
+				LiteStateGroup liteStateGroup = stateGroupDao.getStateGroup(stateGroupId);
 				this.stateGroup = liteStateGroup.getStateGroupName();
 			}
 			this.init = paoDefinitionDao.getInitPointTemplates(deviceDefiniton).contains(pointTemplate);
@@ -310,7 +310,7 @@ public class DeviceDefinitionViewerController {
 	
 	public class AttributeWrapper {
 		
-		private AttributeDefinition attribute;
+		private final AttributeDefinition attribute;
 		private PointTemplateWrapper pointTemplateWrapper;
 		
 		public AttributeWrapper(PaoDefinition deviceDefiniton, AttributeDefinition attribute) {
@@ -333,8 +333,8 @@ public class DeviceDefinitionViewerController {
 	
 	public class CommandDefinitionWrapper {
 		
-		private CommandDefinition commandDefinition;
-		private List<String> pointNames = new ArrayList<String>();
+		private final CommandDefinition commandDefinition;
+		private final List<String> pointNames = new ArrayList<String>();
 		
 		public CommandDefinitionWrapper(CommandDefinition commandDefinition, PaoDefinition deviceDefiniton) {
 			

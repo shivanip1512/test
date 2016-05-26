@@ -22,7 +22,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -34,7 +34,7 @@ import com.google.common.collect.Sets;
 
 public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
 
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private AttributeService attributeService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -54,7 +54,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
             String attributeKey = rs.getString("attribute");
             Attribute attribute = attributeService.resolveAttributeName(attributeKey);
             retVal.setAttribute(attribute);
-            retVal.setStateGroup(stateDao.getLiteStateGroup(rs.getInt("stateGroupId")));
+            retVal.setStateGroup(stateGroupDao.getStateGroup(rs.getInt("stateGroupId")));
             retVal.setEvaluatorStatus(rs.getEnum("evaluatorStatus", MonitorEvaluatorStatus.class));
             return retVal;
         }
@@ -190,7 +190,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
         return rowsAffected > 0;
     }
     
-    private FieldMapper<StatusPointMonitor> statusPointMonitorFieldMapper = new FieldMapper<StatusPointMonitor>() {
+    private final FieldMapper<StatusPointMonitor> statusPointMonitorFieldMapper = new FieldMapper<StatusPointMonitor>() {
         @Override
         public void extractValues(MapSqlParameterSource p, StatusPointMonitor statusPointMonitor) {
             p.addValue("StatusPointMonitorName", statusPointMonitor.getStatusPointMonitorName());
@@ -209,7 +209,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
         }
     };
     
-    private FieldMapper<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorFieldMapper = new FieldMapper<StoredStatusPointMonitorProcessor>() {
+    private final FieldMapper<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorFieldMapper = new FieldMapper<StoredStatusPointMonitorProcessor>() {
         @Override
         public void extractValues(MapSqlParameterSource p, StoredStatusPointMonitorProcessor holder) {
             p.addValue("StatusPointMonitorId", holder.parent.getStatusPointMonitorId());

@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -69,11 +69,11 @@ public class CapControlCbcFormatConverters {
 
         int rawState = value.intValue();
         YukonUserContextMessageSourceResolver messageResolver = YukonSpringHook.getBean(YukonUserContextMessageSourceResolver.class);
-        StateDao stateDao = YukonSpringHook.getBean(StateDao.class);
+        StateGroupDao stateGroupDao = YukonSpringHook.getBean(StateGroupDao.class);
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
 
-        LiteState state = stateDao.findLiteState(StateGroupUtils.STATEGROUP_LASTCONTROL_STATE, rawState);
+        LiteState state = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUP_LASTCONTROL_STATE, rawState);
 
         if (state == null) {
             return accessor.getMessage("yukon.web.modules.capcontrol.unknownState", rawState);
@@ -83,9 +83,9 @@ public class CapControlCbcFormatConverters {
     }
 
     public static String convertLastControlReasonColor(Double value) {
-        StateDao stateDao = YukonSpringHook.getBean(StateDao.class);
+        StateGroupDao stateGroupDao = YukonSpringHook.getBean(StateGroupDao.class);
 
-        LiteState liteState = stateDao.findLiteState(StateGroupUtils.STATEGROUP_LASTCONTROL_STATE, value.intValue());
+        LiteState liteState = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUP_LASTCONTROL_STATE, value.intValue());
 
         Color stateColor = liteState == null ? Color.WHITE : Colors.getColor(liteState.getFgColor());
 
@@ -102,14 +102,14 @@ public class CapControlCbcFormatConverters {
 
     public static String convertIgnoredControlReason(Double value) {
 
-        StateDao stateDao = YukonSpringHook.getBean(StateDao.class);
+        StateGroupDao stateGroupDao = YukonSpringHook.getBean(StateGroupDao.class);
         YukonUserContextMessageSourceResolver messageResolver = YukonSpringHook.getBean(YukonUserContextMessageSourceResolver.class);
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
 
         int rawState = value.intValue();
 
-        LiteState state = stateDao.findLiteState(StateGroupUtils.STATEGROUP_IGNORED_CONTROL, rawState);
+        LiteState state = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUP_IGNORED_CONTROL, rawState);
 
         if (state == null) {
             return accessor.getMessage("yukon.web.modules.capcontrol.unknownState", rawState);
@@ -119,9 +119,9 @@ public class CapControlCbcFormatConverters {
     }
 
     public static String convertIgnoredControlReasonColor(Double value) {
-        StateDao stateDao = YukonSpringHook.getBean(StateDao.class);
+        StateGroupDao stateGroupDao = YukonSpringHook.getBean(StateGroupDao.class);
 
-        LiteState liteState = stateDao.findLiteState(StateGroupUtils.STATEGROUP_IGNORED_CONTROL, value.intValue());
+        LiteState liteState = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUP_IGNORED_CONTROL, value.intValue());
 
         Color stateColor = liteState == null ? Color.WHITE : Colors.getColor(liteState.getFgColor());
 

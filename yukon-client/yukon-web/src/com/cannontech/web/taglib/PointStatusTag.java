@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.point.PointType;
@@ -30,7 +30,7 @@ public class PointStatusTag extends YukonTagSupport {
     
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private PointDao pointDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -65,7 +65,7 @@ public class PointStatusTag extends YukonTagSupport {
             if (p.getStateGroupID() == StateGroupUtils.SYSTEM_STATEGROUPID) {
                 color = "rgb(255,255,255)";
             } else {
-                LiteState s = stateDao.findLiteState(p.getStateGroupID(), rawState);
+                LiteState s = stateGroupDao.findLiteState(p.getStateGroupID(), rawState);
                 color = Colors.getColorString(s.getFgColor()).toLowerCase();
             }
         }

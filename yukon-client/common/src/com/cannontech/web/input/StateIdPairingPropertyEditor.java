@@ -4,7 +4,7 @@ import java.beans.PropertyEditorSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 
@@ -19,7 +19,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
  * state exists for an attribute (eg: no inputs).
  */
 public class StateIdPairingPropertyEditor extends PropertyEditorSupport {
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
 
     /**
      * @param stateGroupIdAndStateId String         [stateGroupId]:[stateId]        eg. 55:31
@@ -39,7 +39,7 @@ public class StateIdPairingPropertyEditor extends PropertyEditorSupport {
         final int iStateId = Integer.valueOf(stateId);
 
         // Try finding the correct State object per the 2 IDs
-        final LiteStateGroup stateGroup = stateDao.getLiteStateGroup(Integer.valueOf(stateGroupId));
+        final LiteStateGroup stateGroup = stateGroupDao.getStateGroup(Integer.valueOf(stateGroupId));
         for (LiteState state: stateGroup.getStatesList()) {
             if (iStateId == state.getLiteID()) {
                 setValue(state);

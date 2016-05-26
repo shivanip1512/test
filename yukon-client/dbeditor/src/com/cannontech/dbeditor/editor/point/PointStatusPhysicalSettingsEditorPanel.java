@@ -8,13 +8,13 @@ import javax.swing.JComboBox;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class PointStatusPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjPointOffsetLabel = null;
@@ -1323,23 +1323,18 @@ public void setValue(Object val)
 	//Load all the state groups
 	int stateGroupID = point.getPoint().getStateGroupID().intValue();
     
-    IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{
-		LiteStateGroup stateGroup = cache.getAllStateGroups().get( new Integer(stateGroupID) );
+	LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(stateGroupID);
 
-		List<LiteState> statesList = stateGroup.getStatesList();
-		
-		//Select the appropriate rawstate
-		for( int y = 0; y < statesList.size(); y++ )
-		{
-			if( statesList.get(y).getStateRawState() == 0 )
-				getJLabelControlZero().setText( statesList.get(y).getStateText() );
-				
-			if( statesList.get(y).getStateRawState() == 1 )
-				getJLabelControlOne().setText( statesList.get(y).getStateText() );
-		}
+	List<LiteState> statesList = stateGroup.getStatesList();
+	
+	//Select the appropriate rawstate
+	for( int y = 0; y < statesList.size(); y++ )
+	{
+		if( statesList.get(y).getStateRawState() == 0 )
+			getJLabelControlZero().setText( statesList.get(y).getStateText() );
+			
+		if( statesList.get(y).getStateRawState() == 1 )
+			getJLabelControlOne().setText( statesList.get(y).getStateText() );
 	}
 
 	

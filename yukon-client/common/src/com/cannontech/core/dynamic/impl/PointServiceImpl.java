@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.database.data.lite.LitePoint;
@@ -18,7 +18,7 @@ import com.cannontech.message.dispatch.message.Signal;
 public class PointServiceImpl implements PointService {
     
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     
     @Override
     public LiteState getCurrentStateForNonStatusPoint(LitePoint lp) {
@@ -55,11 +55,11 @@ public class PointServiceImpl implements PointService {
                 
             }
             
-            LiteState ls = stateDao.findLiteState(lp.getStateGroupID(), highestPriorityCondition + 1);
+            LiteState ls = stateGroupDao.findLiteState(lp.getStateGroupID(), highestPriorityCondition + 1);
             return ls;
             
         } else {
-            LiteState ls = stateDao.findLiteState(lp.getStateGroupID(), 0);
+            LiteState ls = stateGroupDao.findLiteState(lp.getStateGroupID(), 0);
             return ls;
         }
     }

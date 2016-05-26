@@ -22,7 +22,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SimpleTableAccessTemplate.CascadeMode;
@@ -36,7 +36,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
 
     @Autowired private AttributeService attributeService;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
 
@@ -51,7 +51,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
             retVal.setMonitorId(rs.getInt("monitorId"));
             retVal.setName(rs.getString("name"));
             retVal.setGroupName(rs.getString("groupName"));
-            retVal.setStateGroup(stateDao.getLiteStateGroup(rs.getInt("stateGroupId")));
+            retVal.setStateGroup(stateGroupDao.getStateGroup(rs.getInt("stateGroupId")));
             String attributeKey = rs.getString("attribute");
             Attribute attribute = attributeService.resolveAttributeName(attributeKey);
             retVal.setAttribute(attribute);

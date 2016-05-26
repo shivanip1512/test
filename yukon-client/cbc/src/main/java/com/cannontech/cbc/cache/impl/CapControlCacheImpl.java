@@ -27,7 +27,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -63,20 +63,20 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private static final int STARTUP_REF_RATE = 15 * 1000;
     private static final int NORMAL_REF_RATE = 30 * 60 * 1000; //30 minutes
     
-    private Map<Integer, Area> areas = new ConcurrentHashMap<>();
-    private Map<Integer, SpecialArea> specialAreas = new ConcurrentHashMap<>();
-    private Map<Integer, SubStation> substations = new ConcurrentHashMap<>();
-    private Map<Integer, SubBus> subbuses = new ConcurrentHashMap<>();
-    private Map<Integer, Feeder>  feeders = new ConcurrentHashMap<>();
-    private Map<Integer, CapBankDevice> banks = new ConcurrentHashMap<>();
-    private Map<Integer, VoltageRegulatorFlags> regulators = new ConcurrentHashMap<>();
+    private final Map<Integer, Area> areas = new ConcurrentHashMap<>();
+    private final Map<Integer, SpecialArea> specialAreas = new ConcurrentHashMap<>();
+    private final Map<Integer, SubStation> substations = new ConcurrentHashMap<>();
+    private final Map<Integer, SubBus> subbuses = new ConcurrentHashMap<>();
+    private final Map<Integer, Feeder>  feeders = new ConcurrentHashMap<>();
+    private final Map<Integer, CapBankDevice> banks = new ConcurrentHashMap<>();
+    private final Map<Integer, VoltageRegulatorFlags> regulators = new ConcurrentHashMap<>();
     
-    private Map<Integer, List<Integer>> subbusToBanks = new ConcurrentHashMap<>();
+    private final Map<Integer, List<Integer>> subbusToBanks = new ConcurrentHashMap<>();
     private CBCWebUpdatedObjectMap updatedObjects;
     
     private boolean systemStatusOn = true;
 
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired @Qualifier("cbc") private IServerConnection serverConnection;
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
 
@@ -402,7 +402,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     
     @Override
     public LiteState getCapBankState(int rawState) {
-        return stateDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, rawState);
+        return stateGroupDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, rawState);
     }
     
     @Override

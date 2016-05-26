@@ -23,7 +23,7 @@ import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -51,7 +51,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired private DBPersistentDao dBPersistentDao;
     @Autowired private PointDao pointDao;
     @Autowired private PointPropertyValueDao pointPropertyValueDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     protected static final Logger log = YukonLogManager.getLogger(PointEditorServiceImpl.class);
@@ -148,7 +148,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         if (ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT) {
             alarm_cats = IAlarmDefs.STATUS_ALARM_STATES;
         }
-        LiteStateGroup stateGroup = stateDao.getLiteStateGroup(pointBase.getPoint().getStateGroupID());
+        LiteStateGroup stateGroup = stateGroupDao.getStateGroup(pointBase.getPoint().getStateGroupID());
 
         String[] stateNames = new String[stateGroup.getStatesList().size()];
         for (int j = 0; j < stateGroup.getStatesList().size(); j++) {

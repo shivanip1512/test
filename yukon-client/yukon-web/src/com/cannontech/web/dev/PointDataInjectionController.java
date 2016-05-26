@@ -1,5 +1,7 @@
 package com.cannontech.web.dev;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -18,7 +20,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -41,7 +43,7 @@ public class PointDataInjectionController {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     private @Autowired DatePropertyEditorFactory datePropertyEditorFactory;
-    private @Autowired StateDao stateDao;
+    private @Autowired StateGroupDao stateGroupDao;
     
     @RequestMapping("main")
     public void main() { }
@@ -65,7 +67,7 @@ public class PointDataInjectionController {
         if (status) {
             LitePoint litePoint = pointDao.getLitePoint(pointId);
             int stateGroupID = litePoint.getStateGroupID();
-            LiteState[] liteStates = stateDao.getLiteStates(stateGroupID);
+            List<LiteState> liteStates = stateGroupDao.getLiteStates(stateGroupID);
             
             model.addAttribute("states", liteStates);
             model.addAttribute("statePointValue", (int)pointValue.getValue());

@@ -2,7 +2,6 @@ package com.cannontech.web.amr.statusPointMonitoring;
 
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -61,7 +60,7 @@ public class StatusPointMonitorController {
     @Autowired private StatusPointMonitorDao statusPointMonitorDao;
     @Autowired private StatusPointMonitorService statusPointMonitorService;
     @Autowired private AttributeService attributeService;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private OutageEventLogService outageEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
@@ -266,7 +265,7 @@ public class StatusPointMonitorController {
                 prevStateString = messageSourceAccessor.getMessage(processor.getPrevStateType());
             } else {
                 prevStateString =
-                    stateDao.findLiteState(statusPointMonitor.getStateGroup().getStateGroupID(),
+                    stateGroupDao.findLiteState(statusPointMonitor.getStateGroup().getStateGroupID(),
                         processor.transientGetPrevStateInt()).getStateText();
             }
             prevStateStrings.add(prevStateString);
@@ -277,7 +276,7 @@ public class StatusPointMonitorController {
                 nextStateString = messageSourceAccessor.getMessage(processor.getNextStateType());
             } else {
                 nextStateString =
-                    stateDao.findLiteState(statusPointMonitor.getStateGroup().getStateGroupID(),
+                    stateGroupDao.findLiteState(statusPointMonitor.getStateGroup().getStateGroupID(),
                         processor.transientGetNextStateInt()).getStateText();
             }
             nextStateStrings.add(nextStateString);
@@ -297,8 +296,7 @@ public class StatusPointMonitorController {
         modelMap.addAttribute("statusPointMonitor", statusPointMonitor);
         
         // state groups
-        LiteStateGroup[] allStateGroups = stateDao.getAllStateGroups();
-        List<LiteStateGroup> stateGroupList = Arrays.asList(allStateGroups);
+        List<LiteStateGroup> stateGroupList = stateGroupDao.getAllStateGroups();
         modelMap.addAttribute("stateGroups", stateGroupList);
     }
 
@@ -341,7 +339,7 @@ public class StatusPointMonitorController {
         binder.registerCustomEditor(LiteStateGroup.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String group) throws IllegalArgumentException {
-                LiteStateGroup stateGroup = stateDao.getLiteStateGroup(group);
+                LiteStateGroup stateGroup = stateGroupDao.getStateGroup(group);
                 setValue(stateGroup);
             }
             @Override

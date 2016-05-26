@@ -59,7 +59,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -87,7 +87,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ConfigurationSource configSource;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
 
@@ -676,7 +676,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             LitePoint litePoint = pointDao.getLitePoint(pointValueQualityHolder.getId());
             if (litePoint.getStateGroupID() != StateGroupUtils.SYSTEM_STATEGROUPID) {
                 LiteState liteState =
-                    stateDao.findLiteState(litePoint.getStateGroupID(), (int) pointValueQualityHolder.getValue());
+                    stateGroupDao.findLiteState(litePoint.getStateGroupID(), (int) pointValueQualityHolder.getValue());
                 if (liteState != null) {
                     return liteState.getStateText();
                 }

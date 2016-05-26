@@ -2,7 +2,6 @@ package com.cannontech.common.pao.attribute.service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,9 +51,9 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
-import com.cannontech.database.TypeRowMapper;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -88,7 +87,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private PointCreationService pointCreationService;
     @Autowired private PointDao pointDao;
     @Autowired private PointService pointService;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
@@ -451,7 +450,7 @@ public class AttributeServiceImpl implements AttributeService {
 
         List<LiteStateGroup> groups = new ArrayList<LiteStateGroup>();
         for (Integer groupId : groupIds) {
-            groups.add(stateDao.getLiteStateGroup(groupId));
+            groups.add(stateGroupDao.getStateGroup(groupId));
         }
 
         return groups;
@@ -534,9 +533,9 @@ public class AttributeServiceImpl implements AttributeService {
             sql.append("AND").appendFragment(orCollection);
         }
 
-        LiteStateGroup[] allStateGroups = stateDao.getAllStateGroups();
+        List<LiteStateGroup> allStateGroups = stateGroupDao.getAllStateGroups();
         final Map<Integer, LiteStateGroup> stateGroupsById =
-            Maps.uniqueIndex(Arrays.asList(allStateGroups), new Function<LiteStateGroup, Integer>() {
+            Maps.uniqueIndex(allStateGroups, new Function<LiteStateGroup, Integer>() {
                 @Override
                 public Integer apply(LiteStateGroup stateGroup) {
                     return stateGroup.getStateGroupID();

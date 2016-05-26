@@ -10,7 +10,7 @@ import java.awt.BorderLayout;
 import javax.swing.JTable;
 
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.dr.controlarea.model.TriggerType;
@@ -97,7 +97,8 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 		return ivjJLabelTrigger;
 	}
 	
-	public java.awt.Component getTableCellRendererComponent(final javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) 
+	@Override
+    public java.awt.Component getTableCellRendererComponent(final javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) 
 	{
 		javax.swing.table.TableModel model = table.getModel();
 		//removeAll();
@@ -213,8 +214,8 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 			
 				if( trigger.getTriggerType() == TriggerType.STATUS )
 				{
-					LiteState lsVal = YukonSpringHook.getBean(StateDao.class).findLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
-					LiteState lsThresh = YukonSpringHook.getBean(StateDao.class).findLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
+					LiteState lsVal = YukonSpringHook.getBean(StateGroupDao.class).findLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
+					LiteState lsThresh = YukonSpringHook.getBean(StateGroupDao.class).findLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
 					
 					strBuf.append(
 						(lsVal == null ? "(Unknown State)" : lsVal.getStateText()) +
@@ -343,7 +344,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 			for( int i = 0; i < value.getTriggerVector().size(); i++ )
 			{
 				com.cannontech.loadcontrol.data.LMControlAreaTrigger trigger = 
-						(com.cannontech.loadcontrol.data.LMControlAreaTrigger)value.getTriggerVector().get(i);
+						value.getTriggerVector().get(i);
 
 
 				if( trigger.getTriggerNumber().intValue() == 1 )
@@ -380,7 +381,8 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 	 * Creation date: (7/18/2001 10:49:47 AM)
 	 * @param frgnd java.awt.Color
 	 */
-	public void setFont(java.awt.Font font) 
+	@Override
+    public void setFont(java.awt.Font font) 
 	{
 		super.setFont( font );
 		for( int i = 0; i < getComponents().length; i++ )
@@ -395,7 +397,8 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 	 * Creation date: (7/18/2001 10:49:47 AM)
 	 * @param frgnd java.awt.Color
 	 */
-	public void setForeground(java.awt.Color frgnd) 
+	@Override
+    public void setForeground(java.awt.Color frgnd) 
 	{
 		super.setForeground( frgnd );
 		for( int i = 0; i < getComponents().length; i++ )

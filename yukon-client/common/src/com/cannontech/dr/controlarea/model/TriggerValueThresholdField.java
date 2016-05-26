@@ -7,15 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
 
 public class TriggerValueThresholdField extends TriggerBackingFieldBase {
-    private PointDao pointDao;
-    private StateDao stateDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private StateGroupDao stateGroupDao;
 
     @Override
     public String getFieldName() {
@@ -64,7 +64,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
         String result = null;
         LitePoint point = pointDao.getLitePoint( trigger.getPointId().intValue() );
         if (trigger.getTriggerType() == TriggerType.STATUS) {
-            LiteState state = stateDao.findLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
+            LiteState state = stateGroupDao.findLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
             result = (state == null ? "(Unknown State)" : state.getStateText());
         }
         return result;
@@ -74,19 +74,9 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
         String result = null;
         LitePoint point = pointDao.getLitePoint( trigger.getPointId().intValue() );
         if (trigger.getTriggerType() == TriggerType.STATUS) {
-            LiteState state = stateDao.findLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
+            LiteState state = stateGroupDao.findLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
             result = (state == null ? "(Unknown State)" : state.getStateText());
         }   
         return result;
-    }
-
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    @Autowired
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
     }
 }

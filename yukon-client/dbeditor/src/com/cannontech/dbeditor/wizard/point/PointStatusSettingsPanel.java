@@ -1,6 +1,8 @@
 package com.cannontech.dbeditor.wizard.point;
 
-import com.cannontech.core.dao.StateDao;
+import java.util.List;
+
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.spring.YukonSpringHook;
@@ -129,6 +131,7 @@ private javax.swing.JLabel getStateTableLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) {
 	
 	//Assuming commonObject is a StatusPoint
@@ -212,6 +215,7 @@ private void initialize() {
  * @param e java.awt.event.ItemEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	// user code begin {1}
 	// user code end
@@ -249,10 +253,9 @@ private void setInitialComboBoxes()
 		getJComboBoxInitialState().removeAllItems();
 	
 	//Load all the states for the stategroup
-	LiteState[] states = YukonSpringHook.getBean(StateDao.class).getLiteStates(stateGroupID);
-	for(int j=0;j<states.length;j++)
-	{				
-		getJComboBoxInitialState().addItem(states[j]);
+	List<LiteState> states = YukonSpringHook.getBean(StateGroupDao.class).getLiteStates(stateGroupID);
+	for (LiteState liteState : states) {
+		getJComboBoxInitialState().addItem(liteState);
 	}
 
 }
@@ -261,28 +264,29 @@ private void setInitialComboBoxes()
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) {
 	//Load all the state groups
 	if( getStateTableComboBox().getModel().getSize() > 0 )
 		getStateTableComboBox().removeAllItems();
 
 
-	LiteStateGroup[] allStateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
-	for(int i=0;i<allStateGroups.length;i++)
+	List<LiteStateGroup> allStateGroups = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups();
+	for (LiteStateGroup grp : allStateGroups)
 	{
-		LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
-
 		getStateTableComboBox().addItem( grp );
 	}
 
 	setInitialComboBoxes();
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getStateTableComboBox().requestFocus(); 

@@ -1,7 +1,7 @@
 package com.cannontech.clientutils.tags;
 
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.point.PointTypes;
@@ -43,7 +43,7 @@ public class AlarmUtils
 				else
 				{
 					//must be a state in the status point, (very fragile!!)
-					LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState( 
+					LiteState ls = YukonSpringHook.getBean(StateGroupDao.class).findLiteState( 
 						YukonSpringHook.getBean(PointDao.class).getLitePoint(ptID_).getStateGroupID(),
 						conditionID_ - IAlarmDefs.STATUS_ALARM_STATES.length );
 						

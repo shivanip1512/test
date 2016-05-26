@@ -1,6 +1,8 @@
 package com.cannontech.database.model;
 
-import com.cannontech.core.dao.StateDao;
+import java.util.List;
+
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.spring.YukonSpringHook;
@@ -23,6 +25,7 @@ public StateGroupTreeModel() {
  * Creation date: (4/22/2002 2:05:03 PM)
  * @return com.cannontech.database.data.lite.LiteBase[]
  */
+@Override
 public boolean isLiteTypeSupported( int liteType )
 {
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.STATEGROUP );
@@ -30,6 +33,7 @@ public boolean isLiteTypeSupported( int liteType )
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void update() {
 
 	IDatabaseCache cache =
@@ -37,15 +41,13 @@ public void update() {
 
 	synchronized(cache)
 	{
-		LiteStateGroup[] stateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
+		List<LiteStateGroup> stateGroups = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups();
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
 		
-		for( int i = 0; i < stateGroups.length; i++ )
+		for (LiteStateGroup grp : stateGroups)
 		{
-			LiteStateGroup grp = (LiteStateGroup)stateGroups[i];
-			
 			DBTreeNode stateGroupNode = new DBTreeNode( grp );				
 			
 			stateGroupNode.setIsSystemReserved( 

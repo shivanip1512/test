@@ -21,7 +21,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -153,7 +153,7 @@ public class UpdaterHelper {
     };
     
     @Autowired private AttributeService attributeService;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     private DateFormattingService dateFormattingService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private PaoLoadingService paoLoadingService;
@@ -195,7 +195,7 @@ public class UpdaterHelper {
                 PaoIdentifier pao = new PaoIdentifier(controlDeviceId, PaoType.getForDbString(capBank.getControlDeviceType()));
                 LitePoint ignoredControlReasonPoint = attributeService.findPointForAttribute(pao, BuiltInAttribute.IGNORED_CONTROL_REASON);
                 if (ignoredControlReasonPoint != null && ignoredControlReasonPoint.getStateGroupID() != StateGroupUtils.SYSTEM_STATEGROUPID) {
-                    LiteState liteState = stateDao.findLiteState(ignoredControlReasonPoint.getStateGroupID(), capBank.getIgnoreReason());
+                    LiteState liteState = stateGroupDao.findLiteState(ignoredControlReasonPoint.getStateGroupID(), capBank.getIgnoreReason());
                     if (liteState != null) {
                         ignoreReasonStr = liteState.getStateText();
                     }

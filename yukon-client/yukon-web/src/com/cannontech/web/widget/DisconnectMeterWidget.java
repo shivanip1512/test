@@ -51,7 +51,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -84,7 +84,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @Autowired private DisconnectService disconnectService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired MeterService meterService;
@@ -150,9 +150,9 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
 
         class WaitableCallback implements RfnMeterDisconnectCallback {
         	private final DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE);
-            private Logger log = YukonLogManager.getLogger(RfnMeterDisconnectCallback.class);
-            private CountDownLatch completeLatch = new CountDownLatch(1);
-            private Set<SpecificDeviceErrorDescription> errors = new HashSet<>();
+            private final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectCallback.class);
+            private final CountDownLatch completeLatch = new CountDownLatch(1);
+            private final Set<SpecificDeviceErrorDescription> errors = new HashSet<>();
 
             @Override
             public final void complete() {
@@ -293,7 +293,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
             model.addAttribute("pointId", litePoint.getPointID());
             model.addAttribute("isConfigured", true);
-            LiteState[] liteStates = stateDao.getLiteStates(litePoint.getStateGroupID());
+            List<LiteState> liteStates = stateGroupDao.getLiteStates(litePoint.getStateGroupID());
             model.addAttribute("stateGroups", liteStates);
             model.addAttribute("pointId", litePoint.getLiteID());
             boolean is410Supported = paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_410);

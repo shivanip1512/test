@@ -15,7 +15,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -66,7 +66,7 @@ public class ExportPAO {
 			dbPoints[i].setDbConnection(conn);
 			dbPoints[i].retrieve();
 			
-			LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(((PointBase)dbPoints[i]).getPoint().getStateGroupID().intValue());
+			LiteStateGroup lsg = YukonSpringHook.getBean(StateGroupDao.class).getStateGroup(((PointBase)dbPoints[i]).getPoint().getStateGroupID().intValue());
 			if(lsg != null) {				
 				stateGroupMap.put(new Integer(lsg.getStateGroupID()), LiteFactory.createDBPersistent(lsg));
 			}

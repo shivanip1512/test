@@ -1,21 +1,56 @@
 package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.google.common.collect.Lists;
 
 public class StateGroupDaoImpl implements StateGroupDao {
     
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    
+    private static final Logger log = YukonLogManager.getLogger(StateGroupDaoImpl.class);
+    private final Map<Integer, LiteStateGroup> stateGroupCache = new ConcurrentHashMap<>();
+    
+    private void createDatabaseChangeListener() {
+        asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
+            
+            @Override
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_STATE_GROUP_DB) {
+                    stateGroupCache.remove(dbChange.getId());
+                    
+                    if (dbChange.getDbChangeType() != DbChangeType.DELETE) {
+                        LiteStateGroup liteStateGroup = getStateGroup(dbChange.getId());
+                        stateGroupCache.put(liteStateGroup.getLiteID(), liteStateGroup);
+                    }
+                }
+            }
+        });
+    }
     
     private static final YukonRowMapper<LiteStateGroup> groupMapper = new YukonRowMapper<LiteStateGroup>() {
         @Override
@@ -38,51 +73,92 @@ public class StateGroupDaoImpl implements StateGroupDao {
             return state;
         }
     };
-        
     
     @Override
     public List<LiteStateGroup> getAllStateGroups() {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select StateGroupId, Name, GroupType");
-        sql.append("from StateGroup");
-        
-        List<LiteStateGroup> groups = jdbcTemplate.query(sql, groupMapper);
-        
-        for (LiteStateGroup group : groups) {
-            sql = new SqlStatementBuilder();
-            sql.append("select StateGroupId, RawState, Text, ForegroundColor, BackgroundColor, ImageId");
-            sql.append("from State");
-            sql.append("where StateGroupId").eq(group.getStateGroupID());
-            
-            List<LiteState> states = jdbcTemplate.query(sql, stateMapper);
-            
-            group.setStatesList(states);
-        }
-        
-        return groups;
+        List<LiteStateGroup> liteStateGroups = Lists.newArrayList(stateGroupCache.values());
+        Collections.sort(liteStateGroups, LiteComparators.liteStringComparator);
+        return liteStateGroups;
     }
     
     @Override
     public LiteStateGroup getStateGroup(int stateGroupId) {
         
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select StateGroupId, Name, GroupType");
-        sql.append("from StateGroup");
-        sql.append("where StateGroupId").eq(stateGroupId);
-        
-        LiteStateGroup group = jdbcTemplate.queryForObject(sql, groupMapper);
-        
-        sql = new SqlStatementBuilder();
-        sql.append("select StateGroupId, RawState, Text, ForegroundColor, BackgroundColor, ImageId");
-        sql.append("from State");
-        sql.append("where StateGroupId").eq(group.getStateGroupID());
-        
-        List<LiteState> states = jdbcTemplate.query(sql, stateMapper);
-        
-        group.setStatesList(states);
-        
-        return group;
+        LiteStateGroup liteStateGroup = stateGroupCache.get(stateGroupId);
+        if (liteStateGroup != null) {
+            return liteStateGroup;
+        } else {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT StateGroupId, Name, GroupType");
+            sql.append("FROM StateGroup");
+            sql.append("WHERE StateGroupId").eq(stateGroupId);
+            
+            liteStateGroup = jdbcTemplate.queryForObject(sql, groupMapper);
+            
+            sql = new SqlStatementBuilder();
+            sql.append("SELECT StateGroupId, RawState, Text, ForegroundColor, BackgroundColor, ImageId");
+            sql.append("FROM State");
+            sql.append("WHERE StateGroupId").eq(liteStateGroup.getStateGroupID());
+            
+            List<LiteState> states = jdbcTemplate.query(sql, stateMapper);
+            liteStateGroup.setStatesList(states);
+            stateGroupCache.put(liteStateGroup.getLiteID(), liteStateGroup);
+        }
+        return liteStateGroup;
     }
     
+    @Override
+    public List<LiteState> getLiteStates(int stateGroupId) {
+        LiteStateGroup liteStateGroup = getStateGroup(stateGroupId);
+        return liteStateGroup.getStatesList();
+    }
+
+    @Override
+    public LiteStateGroup getStateGroup(String stateGroupName) {
+        for(LiteStateGroup group : getAllStateGroups()){
+            if(stateGroupName.equals(group.getStateGroupName())){
+                return group;
+            }
+        }
+        throw new NotFoundException("State group '" + stateGroupName + "' doesn't exist");
+    }
+    
+    @Override
+    public LiteState findLiteState(int stateGroupId, int rawState) {
+        
+        LiteStateGroup stateGroup = getStateGroup(stateGroupId);
+        List<LiteState> stateList = stateGroup.getStatesList();
+        for (final LiteState state : stateList) {
+            if (rawState == state.getStateRawState()) return state;
+        }
+        
+        //this is a internal error
+        log.debug("Unable to find the state for StateGroupID = " + stateGroupId + " and rawState = " + rawState );
+        return null;
+    }
+ 
+    @PostConstruct
+    public void init() throws Exception {
+        createDatabaseChangeListener();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT StateGroupId, Name, GroupType");
+        sql.append("FROM StateGroup");
+        
+        List<LiteStateGroup> liteStateGroups = jdbcTemplate.query(sql, groupMapper);
+        
+        for (LiteStateGroup liteStateGroup : liteStateGroups) {
+            sql = new SqlStatementBuilder();
+            sql.append("SELECT StateGroupId, RawState, Text, ForegroundColor, BackgroundColor, ImageId");
+            sql.append("FROM State");
+            sql.append("WHERE StateGroupId").eq(liteStateGroup.getStateGroupID());
+        
+            List<LiteState> states = jdbcTemplate.query(sql, stateMapper);
+            liteStateGroup.setStatesList(states);
+            
+            stateGroupCache.put(liteStateGroup.getStateGroupID(),  liteStateGroup);
+        }
+ 
+        log.info("Initialized state group cache.");
+    }
 }

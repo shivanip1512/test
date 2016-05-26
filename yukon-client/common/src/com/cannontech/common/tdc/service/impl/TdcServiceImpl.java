@@ -40,7 +40,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -72,13 +72,13 @@ public class TdcServiceImpl implements TdcService {
     @Autowired private CommandService commandService;
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private DisplayDao displayDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private DisplayDataDao displayDataDao;
 
     private Map<Integer, String> stateColorMap;
     private final String defaultAlertStr = "alert"; // yukon.css 
     
-    private Comparator<DisplayData> sortByDate = new Comparator<DisplayData>() {
+    private final Comparator<DisplayData> sortByDate = new Comparator<DisplayData>() {
         @Override
         public int compare(DisplayData d1, DisplayData d2) {
             return -d1.getDate().compareTo(d2.getDate());
@@ -471,7 +471,7 @@ public class TdcServiceImpl implements TdcService {
        
     @PostConstruct
     public void init() {
-        LiteStateGroup states = stateDao.getLiteStateGroup(StateGroupUtils.STATEGROUP_ALARM);
+        LiteStateGroup states = stateGroupDao.getStateGroup(StateGroupUtils.STATEGROUP_ALARM);
         stateColorMap = Maps.newHashMap();
         for (LiteState state : states.getStatesList()) {
             String colorString;

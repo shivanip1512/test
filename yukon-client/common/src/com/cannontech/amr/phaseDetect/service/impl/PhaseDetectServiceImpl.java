@@ -50,7 +50,7 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -62,7 +62,7 @@ import com.google.common.collect.Sets;
 
 public class PhaseDetectServiceImpl implements PhaseDetectService {
 
-    private Logger log = YukonLogManager.getLogger(PhaseDetectService.class);
+    private final Logger log = YukonLogManager.getLogger(PhaseDetectService.class);
     
     /*
      *  Internal state for the one global phase detection process 
@@ -76,7 +76,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupProviderDao deviceGroupProviderDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
@@ -383,7 +383,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
         try {
             LitePoint phasePoint = attributeService.getPointForAttribute(device, BuiltInAttribute.PHASE);
             
-            LiteStateGroup phaseStateGroup = stateDao.getLiteStateGroup("PhaseStatus");
+            LiteStateGroup phaseStateGroup = stateGroupDao.getStateGroup("PhaseStatus");
             int rawState = 0;
             for (LiteState state : phaseStateGroup.getStatesList()) {
                 if (state.getStateText().equalsIgnoreCase(detectedPhase.name())) {

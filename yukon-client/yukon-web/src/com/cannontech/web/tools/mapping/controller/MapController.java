@@ -36,7 +36,7 @@ import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -69,7 +69,7 @@ public class MapController {
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private PointService pointService;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
@@ -203,7 +203,7 @@ public class MapController {
         for (PointValueQualityHolder pvqh : statusValues) {
             LitePoint lp = statusPoints.get(pvqh.getId());
             Group group = groups.get(lp.getStateGroupID());
-            LiteState state = stateDao.findLiteState(lp.getStateGroupID(), (int) pvqh.getValue());
+            LiteState state = stateGroupDao.findLiteState(lp.getStateGroupID(), (int) pvqh.getValue());
             if (state.getStateRawState() == group.getState()) {
                 results.put(points.get(lp).getPaoId(), true);
             } else {

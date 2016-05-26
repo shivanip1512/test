@@ -25,7 +25,7 @@ import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -74,7 +74,7 @@ public class PointController {
     @Autowired private PointEditorService pointEditorService;
     @Autowired private PointValidator pointValidator;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
@@ -162,7 +162,7 @@ public class PointController {
         model.addAttribute("statusControlTypes", StatusControlType.values());
         model.addAttribute("unitMeasures", unitMeasureDao.getLiteUnitMeasures());
         model.addAttribute("decimalDigits", ImmutableList.of(0, 1, 2, 3, 4, 5, 6, 7, 8));
-        model.addAttribute("stateGroups", stateDao.getAllStateGroups());
+        model.addAttribute("stateGroups", stateGroupDao.getAllStateGroups());
         model.addAttribute("initialStates", statesForGroup(pointModel.getPointBase().getPoint().getStateGroupID()));
         model.addAttribute("statusArchiveTypes", ImmutableList.of(PointArchiveType.NONE, PointArchiveType.ON_CHANGE));
         boolean calcAnalog = base instanceof CalculatedPoint && !(base instanceof CalcStatusPoint);
@@ -198,8 +198,8 @@ public class PointController {
     }
 
     @RequestMapping("/state-group/{id}/states")
-    public @ResponseBody LiteState[] statesForGroup(@PathVariable("id") int id) {
-        return stateDao.getLiteStates(id);
+    public @ResponseBody List<LiteState> statesForGroup(@PathVariable("id") int id) {
+        return stateGroupDao.getLiteStates(id);
 
     }
 

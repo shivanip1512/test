@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.PointFormattingService;
@@ -35,11 +35,11 @@ import com.google.common.collect.Maps;
 @CheckRole(YukonRole.INVENTORY)
 public class ZbProblemDevicesController {
     
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private InventoryDao inventoryDao;
-    private StateDao stateDao;
-    private CustomerAccountDao customerAccountDao;
-    private PointFormattingService pointFormattingService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private PointFormattingService pointFormattingService;
     
     @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext context) {
@@ -57,7 +57,7 @@ public class ZbProblemDevicesController {
                 customerAccountDao.getAccountNumbersByAccountIds(inventoryIdsToAccountIds.values());
         model.addAttribute("accountIdsToAccountNumbers", accountIdsToAccountNumbers);
         
-        LiteStateGroup states = stateDao.getLiteStateGroup(StateGroupUtils.STATEGROUP_COMMISSIONED_STATE);
+        LiteStateGroup states = stateGroupDao.getStateGroup(StateGroupUtils.STATEGROUP_COMMISSIONED_STATE);
         Map<Double, String> stateColorMap = Maps.newHashMap();
         for (LiteState state : states.getStatesList()) {
             String colorString;
@@ -107,30 +107,4 @@ public class ZbProblemDevicesController {
         
         return null;
     }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-    
-    @Autowired
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-    
-    @Autowired
-    public void setPointFormattingService(PointFormattingService pointFormattingService) {
-        this.pointFormattingService = pointFormattingService;
-    }
-    
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-    
 }

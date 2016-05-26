@@ -31,7 +31,6 @@ import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -76,7 +75,7 @@ import com.cannontech.common.pao.definition.model.jaxb.UpdateTypeType;
 import com.cannontech.common.util.SetUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.data.lite.LiteState;
@@ -132,7 +131,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private SetMultimap<PaoTypePointIdentifier, BuiltInAttribute> paoAndPointToAttribute;
     
     @Autowired private UnitMeasureDao unitMeasureDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private PointDao pointDao;
     @Autowired private DeviceDefinitionDao deviceDefinitionDao;
 
@@ -957,7 +956,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         if (stateGroupSet) {
             LiteStateGroup stateGroup = null;
             try {
-                stateGroup = stateDao.getLiteStateGroup(stateGroupName);
+                stateGroup = stateGroupDao.getStateGroup(stateGroupName);
             } catch (NotFoundException e) {
                 throw new NotFoundException("State group does not exist: " + stateGroupName + ". Check the paoDefinition.xml file ");
             }

@@ -22,8 +22,7 @@ import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -32,7 +31,6 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements ActionListener, PropertyChangeListener, CaretListener {
@@ -751,7 +749,7 @@ public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements A
         litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(litePoint.getPaobjectID());
 
         // set the states for the row
-        liteState = YukonSpringHook.getBean(StateDao.class).findLiteState(litePoint.getStateGroupID(),trigger.getNormalState().intValue());
+        liteState = YukonSpringHook.getBean(StateGroupDao.class).findLiteState(litePoint.getStateGroupID(),trigger.getNormalState().intValue());
 
         if (trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_STATUS)) {
             if (liteState == null) {
@@ -810,18 +808,14 @@ public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements A
 
         if (getJComboBoxNormalState().isVisible() && getJPanelTriggerID().getSelectedPoint() != null) {
             // set the states for the JCombobox
-            IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-            synchronized (cache) {
-                int stateGroupID = getJPanelTriggerID().getSelectedPoint().getStateGroupID();
+            int stateGroupID = getJPanelTriggerID().getSelectedPoint().getStateGroupID();
 
-                LiteStateGroup stateGroup = cache.getAllStateGroups().get(new Integer(stateGroupID));
+            LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(stateGroupID);
 
-                Iterator<LiteState> stateIterator = stateGroup.getStatesList().iterator();
-                while (stateIterator.hasNext()) {
-                    getJComboBoxNormalState().addItem(stateIterator.next());
-                }
+            Iterator<LiteState> stateIterator = stateGroup.getStatesList().iterator();
+            while (stateIterator.hasNext()) {
+                getJComboBoxNormalState().addItem(stateIterator.next());
             }
-
         }
 
         return;

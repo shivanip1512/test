@@ -30,7 +30,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -46,7 +46,7 @@ import com.google.common.collect.ListMultimap;
 public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.DisconnectRow> implements Comparator<DisconnectModel.DisconnectRow> {
 
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private PointDao pointDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
@@ -55,7 +55,7 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
         DISCONNECTED_STATE("Show All Disconnected"),
         ALL_STATES("Show All"),
         ;
-        private String displayName;
+        private final String displayName;
         DiscStatusStateFilter (String displayName) {
             this.displayName = displayName;
         }
@@ -73,7 +73,7 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
         STATE("Disconnect State"),
         ;
         
-        private String displayName;
+        private final String displayName;
         DiscStatusOrderByFilter (String displayName) {
             this.displayName = displayName;
         }
@@ -82,14 +82,14 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
             return displayName;
         }
     }
-    private Logger log = YukonLogManager.getLogger(DisconnectModel.class);
+    private final Logger log = YukonLogManager.getLogger(DisconnectModel.class);
 
 	/** A string for the title of the data */
 	private static String title = "Disconnect State Report";
     
     /** Class fields */
-    private List<DisconnectRow> data = new ArrayList<DisconnectRow>();
-    private Attribute attribute = BuiltInAttribute.DISCONNECT_STATUS;
+    private final List<DisconnectRow> data = new ArrayList<DisconnectRow>();
+    private final Attribute attribute = BuiltInAttribute.DISCONNECT_STATUS;
     private DiscStatusStateFilter discStateFilter = DiscStatusStateFilter.ALL_STATES;
     private DiscStatusOrderByFilter orderBy = DiscStatusOrderByFilter.DEVICE_NAME;
     private boolean showHistory = false;
@@ -187,7 +187,7 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
                 if (isIncluded((int)pointValueHolder.getValue())) {    //limit by disconnectStatus filter
                     DisconnectRow disconnect = new DisconnectRow();
             	    LitePoint litePoint = pointDao.getLitePoint(pointValueHolder.getId()); // THIS HITS THE DB!!!! If showHistory, may be cheaper outside the values for loop
-            	    LiteState liteState = stateDao.findLiteState(litePoint.getStateGroupID(), (int) pointValueHolder.getValue());
+            	    LiteState liteState = stateGroupDao.findLiteState(litePoint.getStateGroupID(), (int) pointValueHolder.getValue());
             	    disconnect.loadData(meter, pointValueHolder, liteState.getStateText());   //Adding meter again probably duplicates the memory footprint, need to cleanup.
             	    data.add(disconnect);
             	}

@@ -20,7 +20,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -46,9 +46,9 @@ import com.cannontech.util.CapControlConst;
 
 public final class CapControlUtils {
 
-    private static final CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
-    private static final StateDao stateDao = YukonSpringHook.getBean("stateDao", StateDao.class);
-    private static final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+    private static final CapControlCache ccCache = YukonSpringHook.getBean(CapControlCache.class);
+    private static final StateGroupDao stateGroupDao = YukonSpringHook.getBean(StateGroupDao.class);
+    private static final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
     private static final SeasonScheduleDao seasonScheduleDao = YukonSpringHook.getBean(SeasonScheduleDao.class);
     private static Map<String, List<String>> kvarPropertiesAsLists = new HashMap<>();
     private final static Logger log = YukonLogManager.getLogger(CapControlUtils.class);
@@ -187,7 +187,7 @@ public final class CapControlUtils {
     }
 
     private static String getCapControlStateText(final int index) throws NotFoundException {
-        final List<LiteState> stateList = stateDao.getLiteStateGroup(CapControlConst.CAPBANKSTATUS_STATEGROUP_ID).getStatesList();
+        final List<LiteState> stateList = stateGroupDao.getStateGroup(CapControlConst.CAPBANKSTATUS_STATEGROUP_ID).getStatesList();
 
         for (LiteState liteState : stateList) {
             if (liteState.getStateRawState() == index) {
@@ -508,8 +508,8 @@ public final class CapControlUtils {
      * The text of capbanks states. This can change since is based on a state
      * group
      */
-    public static LiteState[] getCBCStateNames() {
-        return stateDao.getLiteStates(StateGroupUtils.STATEGROUPID_CAPBANK);
+    public static List<LiteState> getCBCStateNames() {
+        return stateGroupDao.getLiteStates(StateGroupUtils.STATEGROUPID_CAPBANK);
     }
 
     /**
@@ -518,7 +518,7 @@ public final class CapControlUtils {
      * @return The LiteState corresponding to this raw state or null;
      */
     public static LiteState getCapBankState(int rawState) {
-        return stateDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, rawState);
+        return stateGroupDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, rawState);
     }
 
     public static boolean isStrategyAttachedToSubBusOrSubBusParentArea(SubBus subBus) {
@@ -586,12 +586,12 @@ public final class CapControlUtils {
         for (CapBankDevice capBank : feeder.getCcCapBanks()) {
 
             if (capBank.getControlStatus() == CapControlConst.BANK_CLOSE_PENDING) {
-                LiteState state = stateDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, 
+                LiteState state = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, 
                                                          CapControlConst.BANK_CLOSE_PENDING);
                 return state.getStateText();
             }
             if (capBank.getControlStatus() == CapControlConst.BANK_OPEN_PENDING) {
-                LiteState state = stateDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK,
+                LiteState state = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK,
                                                          CapControlConst.BANK_OPEN_PENDING);
                 return state.getStateText();
             }

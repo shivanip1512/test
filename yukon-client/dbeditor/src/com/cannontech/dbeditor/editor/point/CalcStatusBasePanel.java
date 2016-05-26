@@ -11,8 +11,7 @@ import javax.swing.border.TitledBorder;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.StateDao;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CalcStatusPoint;
@@ -26,7 +25,7 @@ public class CalcStatusBasePanel extends DataInputPanel implements ActionListene
     private JComboBox<LiteStateGroup> ivjStateTableComboBox = null;
     private JLabel ivjStateTableLabel = null;
     private JCheckBox ivjArchiveCheckBox = null;
-    private IvjEventHandler ivjEventHandler = new IvjEventHandler();
+    private final IvjEventHandler ivjEventHandler = new IvjEventHandler();
     private JComboBox<String> ivjPeriodicRateComboBox = null;
     private JLabel ivjPeriodicRateLabel = null;
     private JComboBox<String> ivjUpdateTypeComboBox = null;
@@ -397,16 +396,12 @@ public class CalcStatusBasePanel extends DataInputPanel implements ActionListene
             getInitialStateComboBox().removeAllItems();
         }
 
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        synchronized (cache) {
-            LiteStateGroup stateGroup = cache.getAllStateGroups().get(new Integer(stateGroupID));
+        LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(new Integer(stateGroupID));
 
-            List<LiteState> statesList = stateGroup.getStatesList();
-            for (LiteState ls : statesList) {
-                getInitialStateComboBox().addItem(ls);
-            }
+        List<LiteState> statesList = stateGroup.getStatesList();
+        for (LiteState ls : statesList) {
+            getInitialStateComboBox().addItem(ls);
         }
-
     }
 
     @Override
@@ -419,7 +414,7 @@ public class CalcStatusBasePanel extends DataInputPanel implements ActionListene
         // Load all the state groups
         IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
         synchronized (cache) {
-            LiteStateGroup[] allStateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
+            List<LiteStateGroup> allStateGroups = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups();
 
             // Load the state table combo box
             for (LiteStateGroup grp : allStateGroups) {

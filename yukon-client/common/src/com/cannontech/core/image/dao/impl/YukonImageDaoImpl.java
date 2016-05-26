@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -33,6 +34,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class YukonImageDaoImpl implements YukonImageDao {
@@ -100,12 +102,10 @@ public final class YukonImageDaoImpl implements YukonImageDao {
     @Override
     public String yukonImageUsage(int id) {
         
-        synchronized (cache) {
-            for (LiteStateGroup group : cache.getAllStateGroups().values()) {
-                for (LiteState state : group.getStatesList()) {
-                    if (state.getImageID() == id) {
-                        return group.getStateGroupName();
-                    }
+        for (LiteStateGroup group : YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups()) {
+            for (LiteState state : group.getStatesList()) {
+                if (state.getImageID() == id) {
+                    return group.getStateGroupName();
                 }
             }
         }

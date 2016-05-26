@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.datamodels;
  * Creation date: (7/25/2001 11:52:00 AM)
  * @author: 
  */
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.spring.YukonSpringHook;
@@ -34,7 +34,7 @@ public java.lang.String getCurrentValue()
 		//Returns the current value of the point
 		if( getLitePoint().getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 		{
-			currentValue = YukonSpringHook.getBean(StateDao.class).findLiteState(
+			currentValue = YukonSpringHook.getBean(StateGroupDao.class).findLiteState(
 					 			getLitePoint().getStateGroupID(), getTrigger().getPointValue().intValue() ).getStateText();
 		}
 		else
@@ -74,7 +74,7 @@ public java.lang.String getTriggerValue()
 		//Returns the value of the trigger
 		if( getTrigger().getTriggerType() == TriggerType.STATUS )
 		{
-			triggerValue = YukonSpringHook.getBean(StateDao.class).findLiteState( getLitePoint().getStateGroupID(), 
+			triggerValue = YukonSpringHook.getBean(StateGroupDao.class).findLiteState( getLitePoint().getStateGroupID(), 
 					getTrigger().getNormalState().intValue()).getStateText();
 		}
 		else if( getTrigger().getTriggerType() == TriggerType.THRESHOLD ||
@@ -151,6 +151,7 @@ public void setTrigger(com.cannontech.loadcontrol.data.LMControlAreaTrigger newT
  * Creation date: (7/25/2001 11:53:54 AM)
  * @return java.lang.String
  */
+@Override
 public String toString() 
 {
 	if( !isValidTrigger() )

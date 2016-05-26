@@ -13,7 +13,7 @@ import com.cannontech.analysis.report.SimpleYukonReportBase;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
@@ -205,7 +205,8 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if ( o instanceof CapControlStatusData)	//Integer is the PaobjectID
 		{
@@ -231,7 +232,7 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 				case STATUS_VALUE_COLUMN:
 					if( ccStatData.getEventType().intValue() == 4)//4 is for OpCount
 						return new String("OpCount: " + ccStatData.getControlStatus().toString());
-					return YukonSpringHook.getBean(StateDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
+					return YukonSpringHook.getBean(StateGroupDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
 					
 				case EVENT_TEXT_COLUMN:
 					return ccStatData.getEventText();
@@ -246,7 +247,8 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -265,7 +267,8 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -284,7 +287,8 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -303,7 +307,8 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title;
 	}
@@ -362,12 +367,12 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td class='title-header'>&nbsp;Ending Bank Status</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
-		LiteState [] liteStates = YukonSpringHook.getBean(StateDao.class).getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
-		for (int i = 0; i < liteStates.length; i++)
+		List<LiteState> liteStates = YukonSpringHook.getBean(StateGroupDao.class).getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
+		for (int i = 0; i < liteStates.size(); i++)
 		{
 			html += "        <tr>" + LINE_SEPARATOR;
 			html += "          <td><input type='checkbox' name='"+ATT_CAP_CONTROL_STATE +"' value='" + i + "' " + "' onclick='document.reportForm."+ATT_All_CAP_CONTROL_STATE+".checked = false;'" +  
-			 (i>3 && i < 6? "checked" : "") + ">" + liteStates[i].getStateText() + LINE_SEPARATOR;
+			 (i>3 && i < 6? "checked" : "") + ">" + liteStates.get(i).getStateText() + LINE_SEPARATOR;
 			html += "          </td>" + LINE_SEPARATOR;
 			html += "        </tr>" + LINE_SEPARATOR;
 		}

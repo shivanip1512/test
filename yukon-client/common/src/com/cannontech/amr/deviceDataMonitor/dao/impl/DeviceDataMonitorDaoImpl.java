@@ -26,7 +26,7 @@ import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SimpleTableAccessTemplate.CascadeMode;
@@ -43,7 +43,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
@@ -80,9 +80,9 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     private final YukonRowMapper<DeviceDataMonitorProcessor> processorRowMapper = new YukonRowMapper<DeviceDataMonitorProcessor>() {
         @Override
         public DeviceDataMonitorProcessor mapRow(YukonResultSet rs) throws SQLException {
-            LiteStateGroup stateGroup = stateDao.getLiteStateGroup(rs.getInt("stateGroupId"));
+            LiteStateGroup stateGroup = stateGroupDao.getStateGroup(rs.getInt("stateGroupId"));
             int rawState = rs.getInt("state");
-            LiteState liteState = stateDao.findLiteState(stateGroup.getStateGroupID(), rawState);
+            LiteState liteState = stateGroupDao.findLiteState(stateGroup.getStateGroupID(), rawState);
             if (liteState == null) throw new RuntimeException("could not find matching state of " + rawState + " within state group " + stateGroup.getStateGroupName());
             return new DeviceDataMonitorProcessor(rs.getInt("processorId"),
                                                   rs.getInt("monitorId"),

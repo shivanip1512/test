@@ -10,10 +10,10 @@ import javax.swing.JLabel;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.lm.LMGroupPoint;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -28,7 +28,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class LMGroupPointEditorPanel extends DataInputPanel implements
         java.awt.event.ActionListener {
     // localHashTable is used to store all status points with control by their respected PAObject
-    private Hashtable<LiteYukonPAObject, List<LitePoint>> localHashTable = new Hashtable<LiteYukonPAObject, List<LitePoint>>();
+    private final Hashtable<LiteYukonPAObject, List<LitePoint>> localHashTable = new Hashtable<LiteYukonPAObject, List<LitePoint>>();
 
     private JComboBox<LiteYukonPAObject> ivjJComboBoxControlDevice = null;
     private JComboBox<LitePoint> ivjJComboBoxControlPoint = null;
@@ -336,21 +336,16 @@ public class LMGroupPointEditorPanel extends DataInputPanel implements
     public void jComboBoxControlPoint_ActionPerformed(ActionEvent actionEvent) {
 
         if (getJComboBoxControlPoint().getSelectedItem() != null) {
-            IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+            getJComboBoxControlStartState().removeAllItems();
 
-            synchronized (cache) {
+            LitePoint point = (LitePoint)getJComboBoxControlPoint().getSelectedItem();
 
-                getJComboBoxControlStartState().removeAllItems();
+            LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(point.getStateGroupID());
 
-                LitePoint point = (LitePoint)getJComboBoxControlPoint().getSelectedItem();
-
-                LiteStateGroup stateGroup = cache.getAllStateGroups().get(point.getStateGroupID());
-
-                for (int j = 0; j < stateGroup.getStatesList().size(); j++) {
-                    // only add the first 2 states to the ComboBoxes
-                    if (j == 0 || j == 1) {
-                        getJComboBoxControlStartState().addItem(stateGroup.getStatesList().get(j));
-                    }
+            for (int j = 0; j < stateGroup.getStatesList().size(); j++) {
+                // only add the first 2 states to the ComboBoxes
+                if (j == 0 || j == 1) {
+                    getJComboBoxControlStartState().addItem(stateGroup.getStatesList().get(j));
                 }
             }
         }

@@ -8,7 +8,7 @@
     This file defines beans that live under the com.cannontech.core.dao
     package.
   </description>
-  <bean id="stateGroupDao" class="com.cannontech.core.dao.impl.StateGroupDaoImpl"/>
+  
   <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl"/>
   <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl"/> 
   <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl"/>
@@ -42,7 +42,7 @@
 
   <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl"/>
 
-  <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl"/>
+  <bean id="stateGroupDao" class="com.cannontech.core.dao.impl.StateGroupDaoImpl"/>
   <bean id="tagDao" class="com.cannontech.core.dao.impl.TagDaoImpl"/>
   <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoCache">
     <property name="delegate">

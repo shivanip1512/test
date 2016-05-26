@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,7 +14,7 @@ import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
@@ -83,12 +84,13 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	
 	/** A string for the title of the data */
 	private static String title = "Cap Control Current Status Report";
-	private RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+	private final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 	LiteYukonUser user = null;
 		
 	public Comparator ccStatusDataComparator = new java.util.Comparator()
 	{
-		public int compare(Object o1, Object o2){
+		@Override
+        public int compare(Object o1, Object o2){
 
 		    CapControlStatusData data1 = (CapControlStatusData)o1;
 		    CapControlStatusData data2 = (CapControlStatusData)o2;
@@ -122,8 +124,8 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
                 String val2 = data2.getOperationalState();
                 return (val1.compareToIgnoreCase(val2));
             }else if ( ORDER_TYPE_STRINGS[3].equals(getOrderBy()) ) {
-                String val1 = YukonSpringHook.getBean(StateDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data1.getControlStatus().intValue()).toString();
-                String val2 = YukonSpringHook.getBean(StateDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data2.getControlStatus().intValue()).toString();
+                String val1 = YukonSpringHook.getBean(StateGroupDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data1.getControlStatus().intValue()).toString();
+                String val2 = YukonSpringHook.getBean(StateGroupDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data2.getControlStatus().intValue()).toString();
                 return (val1.compareToIgnoreCase(val2));
             }else {
                 Date date1 = data1.getChangeDateTime();
@@ -131,7 +133,8 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
                 return (date1.compareTo(date2));
             }
 		}
-		public boolean equals(Object obj){
+		@Override
+        public boolean equals(Object obj){
 			return false;
 		}
 	};
@@ -330,7 +333,8 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if ( o instanceof CapControlStatusData)	//Integer is the PaobjectID
 		{
@@ -347,7 +351,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 					return ccStatData.getBankName();
 					
 				case CONTROL_STATUS_COLUMN:
-					return YukonSpringHook.getBean(StateDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
+					return YukonSpringHook.getBean(StateGroupDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
 
 				case LAST_STATUS_CHANGE_TIME_COLUMN:
 					return ccStatData.getChangeDateTime();
@@ -373,7 +377,8 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -398,7 +403,8 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -422,7 +428,8 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -446,7 +453,8 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title;
 	}
@@ -484,12 +492,12 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td class='title-header'>&nbsp;Control Status</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
-		LiteState [] liteStates = YukonSpringHook.getBean(StateDao.class).getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
-		for (int i = 0; i < liteStates.length; i++)
+		List<LiteState> liteStates = YukonSpringHook.getBean(StateGroupDao.class).getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
+		for (int i = 0; i < liteStates.size(); i++)
 		{
 			html += "        <tr>" + LINE_SEPARATOR;
 			html += "          <td><input type='checkbox' name='"+ATT_CAP_CONTROL_STATE +"' value='" + i + "' " + "' onclick='document.reportForm."+ATT_All_CAP_CONTROL_STATE+".checked = false;'" +  
-			 (i>1 && i < 6? "checked" : "") + ">" + liteStates[i].getStateText() + LINE_SEPARATOR;
+			 (i>1 && i < 6? "checked" : "") + ">" + liteStates.get(i).getStateText() + LINE_SEPARATOR;
 			html += "          </td>" + LINE_SEPARATOR;
 			html += "        </tr>" + LINE_SEPARATOR;
 		}

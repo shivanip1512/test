@@ -25,7 +25,6 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -117,9 +116,6 @@ public interface IDatabaseCache {
     /** Retuns a map of route id to route. */
     Map<Integer, LiteYukonPAObject> getAllRoutesMap();
     
-    /** A map of StateGroupId to LiteStateGroup */
-    Map<Integer, LiteStateGroup> getAllStateGroups();
-    
     List<LiteYukonPAObject> getAllYukonPAObjects();
 
     List<LiteYukonGroup> getAllYukonGroups();
@@ -178,8 +174,6 @@ public interface IDatabaseCache {
     void releaseAllNotificationGroups();
 
     void releaseAllCustomers();
-
-    void releaseAllStateGroups();
 
     void releaseAllYukonPAObjects();
 

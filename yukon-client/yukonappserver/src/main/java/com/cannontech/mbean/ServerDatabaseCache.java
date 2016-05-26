@@ -27,7 +27,6 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.image.dao.YukonImageDao;
@@ -51,7 +50,6 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -92,7 +90,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     // stores a soft reference to the cache
     private static ServerDatabaseCache cache;
     
-    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private CommandDao commandDao;
     @Autowired private ContactDao contactDao;
@@ -155,7 +152,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private Map<Integer, LiteDeviceTypeCommand> allDeviceTypeCommands;
     private Map<Integer, LiteCommand> allCommands;
     private Map<Integer, LiteYukonPAObject> allRoutes;
-    private Map<Integer, LiteStateGroup> allStateGroups;
     private Map<Integer, LiteContactNotification> allContactNotifsMap;
     
     private final Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<>(1000, .75f, 30);
@@ -651,21 +647,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     }
     
     @Override
-    public synchronized Map<Integer, LiteStateGroup> getAllStateGroups() {
-        
-        if (allStateGroups == null) {
-            allStateGroups = new ConcurrentHashMap<>();
-            
-            List<LiteStateGroup> groups = stateGroupDao.getAllStateGroups();
-            for (LiteStateGroup group : groups) {
-                allStateGroups.put(group.getStateGroupID(), group);
-            }
-        }
-        
-        return allStateGroups;
-    }
-    
-    @Override
     public synchronized List<LiteYukonGroup> getAllYukonGroups() {
         if (allYukonGroups == null) {
             allYukonGroups = new ArrayList<>();
@@ -916,8 +897,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             } else if (dbCategory.equalsIgnoreCase(PaoCategory.ROUTE.getDbString())) {
                 allRoutes = null;
             }
-        } else if (database == DBChangeMsg.CHANGE_STATE_GROUP_DB) {
-            retLBase = handleStateGroupChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB) {
             retLBase = handleAlarmCategoryChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_YUKON_IMAGE) {
@@ -1492,25 +1471,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return lBase;
     }
 
-    private synchronized LiteBase handleStateGroupChange(DbChangeType type, int id) {
-        
-        if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
-            
-            LiteStateGroup group = stateGroupDao.getStateGroup(id);
-            getAllStateGroups().put(group.getLiteID(), group);
-            
-            return group;
-        } else if (type == DbChangeType.DELETE) {
-            
-            LiteStateGroup group = getAllStateGroups().remove(id);
-            return group;
-        } else {
-            releaseAllStateGroups();
-            return null;
-        }
-        
-    }
-    
     private LiteBase handleCustomerChange(DbChangeType dbChangeType, int id, String dbCategory, boolean noObjectNeeded) {
         LiteBase lBase = null;
 
@@ -1680,7 +1640,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         
         releaseAllYukonPAObjects();
         allSystemPoints = null;
-        allStateGroups = null;
         allNotificationGroups = null;
         allContactNotifsMap = null;
         
@@ -1804,11 +1763,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     public synchronized void releaseAllYukonGroups() {
         allYukonGroups = null;
-    }
-
-    @Override
-    public synchronized void releaseAllStateGroups() {
-        allStateGroups = null;
     }
 
     @Override

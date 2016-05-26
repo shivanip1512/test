@@ -37,7 +37,7 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
-import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -58,17 +58,17 @@ import com.google.common.collect.Maps;
 
 @Endpoint
 public class ArchivedValuesRequestEndpoint {
-    private Logger log = YukonLogManager.getLogger(ArchivedValuesRequestEndpoint.class);
+    private final Logger log = YukonLogManager.getLogger(ArchivedValuesRequestEndpoint.class);
 
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
-    @Autowired private StateDao stateDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private PaoSelectionService paoSelectionService;
 
     private final static Namespace ns = YukonXml.getYukonNamespace();
 
-    private Map<PointSelector.Type, HistorySelector> historySelectorMap = Maps.newHashMap();
+    private final Map<PointSelector.Type, HistorySelector> historySelectorMap = Maps.newHashMap();
 
     public ArchivedValuesRequestEndpoint() {
         historySelectorMap.put(PointSelector.Type.ATTRIBUTE, new AttributeHistorySelector());
@@ -378,7 +378,7 @@ public class ArchivedValuesRequestEndpoint {
             Map<Integer, LiteState> retVal = statesByGroupIdAndRawState.get(stateGroupId);
             if (retVal == null) {
                 retVal = Maps.newHashMap();
-                LiteState[] liteStates = stateDao.getLiteStates(stateGroupId);
+                List<LiteState> liteStates = stateGroupDao.getLiteStates(stateGroupId);
                 for (LiteState liteState : liteStates) {
                     retVal.put(liteState.getStateRawState(), liteState);
                 }

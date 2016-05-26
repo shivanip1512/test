@@ -6,14 +6,13 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * @author: 
  */
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class ControlAreaTriggerJPanel extends com.cannontech.common.gui.util.ConfirmationJPanel implements java.awt.event.ActionListener, java.util.Observer {
 	private LMControlArea lmControlArea = null;
@@ -44,6 +43,7 @@ public ControlAreaTriggerJPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -614,7 +614,7 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	
 	for( int i = 0; i < getLmControlArea().getTriggerVector().size(); i++ )
 	{
-		LMControlAreaTrigger trigger = (LMControlAreaTrigger)getLmControlArea().getTriggerVector().get(i);
+		LMControlAreaTrigger trigger = getLmControlArea().getTriggerVector().get(i);
 
 		double threshValue = 0.0;
 		double restoreVal = 0.0;
@@ -706,7 +706,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aControlAreaTriggerJPanel);
 		frame.setSize(aControlAreaTriggerJPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -726,18 +727,10 @@ public static void main(java.lang.String[] args) {
  */
 private void setComboBoxText(int groupID, javax.swing.JComboBox jCombo ) 
 {
-	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	LiteStateGroup stateGroup = null;
-	
-	synchronized( cache )
-	{
-		stateGroup = (LiteStateGroup)
-			cache.getAllStateGroups().get( new Integer(groupID) );
-
-		for( int i = 0; i < stateGroup.getStatesList().size(); i++ )
+	LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(groupID);
+		for( int i = 0; i < stateGroup.getStatesList().size(); i++ ) {
 			jCombo.addItem( stateGroup.getStatesList().get(i) );
-		
-	}
+		}
 }
 
 /**
@@ -751,7 +744,7 @@ public void setLmControlArea(com.cannontech.loadcontrol.data.LMControlArea newLm
 
 	for( int i = 0; i < getLmControlArea().getTriggerVector().size(); i++ )
 	{
-		LMControlAreaTrigger trigger = (LMControlAreaTrigger)getLmControlArea().getTriggerVector().get(i);
+		LMControlAreaTrigger trigger = getLmControlArea().getTriggerVector().get(i);
 
 		//get the point used for this trigger
 		com.cannontech.database.data.lite.LitePoint point = YukonSpringHook.getBean(PointDao.class).getLitePoint(
@@ -870,6 +863,7 @@ private void setTrigger2Values(LMControlAreaTrigger trigger, com.cannontech.data
  * Insert the method's description here.
  * Creation date: (3/10/00 5:06:20 PM)
  */
+@Override
 public void update( java.util.Observable originator, Object newValue ) 
 {
 	// should be a value of com.cannontech.loadcontrol.data.LMControlArea;

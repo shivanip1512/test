@@ -26,7 +26,6 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -216,11 +215,6 @@ public class StubServerDatabaseCache implements IDatabaseCache {
     }
 
     @Override
-    public Map<Integer, LiteStateGroup> getAllStateGroups() {
-        throw new MethodNotImplementedException("Method not implemented yet.");
-    }
-
-    @Override
     public List<LiteYukonPAObject> getAllYukonPAObjects() {
         throw new MethodNotImplementedException("Method not implemented yet.");
     }
@@ -336,10 +330,6 @@ public class StubServerDatabaseCache implements IDatabaseCache {
 
     @Override
     public void releaseAllCustomers() {
-    }
-
-    @Override
-    public void releaseAllStateGroups() {
     }
 
     @Override
