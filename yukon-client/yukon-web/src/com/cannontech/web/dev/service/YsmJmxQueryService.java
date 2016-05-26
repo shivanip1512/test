@@ -54,6 +54,15 @@ public class YsmJmxQueryService {
         }
     }
     
+    public <T> T getTypedValue(ObjectName name, String attribute, T defaultValue, Class<T> returnType) throws Exception {
+        Object returnObject = get(name, attribute);
+        if (returnObject == null) {
+            return defaultValue;
+        } else {
+            return returnType.cast(returnObject);
+        }
+    }
+    
     @PostConstruct
     public void init() {
         if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {

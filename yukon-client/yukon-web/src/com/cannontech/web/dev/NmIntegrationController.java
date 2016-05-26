@@ -139,18 +139,18 @@ public class NmIntegrationController {
             ObjectName meterReadService = ObjectName.getInstance(meterReadServiceBean);
             meterData.put("meter-reads-archived", ImmutableMap.of(
                     "name", "Meter Reads Archived", 
-                    "value", jmxQueryService.get(meterReadService, "ArchivedReadings")));
+                    "value", jmxQueryService.getTypedValue(meterReadService, "ArchivedReadings", 0, Integer.class)));
             meterData.put("meter-reads-requests-processed", ImmutableMap.of(
                     "name", "Meter Reads Requests Processed", 
-                    "value", jmxQueryService.get(meterReadService, "ProcessedArchiveRequest")));
+                    "value", jmxQueryService.getTypedValue(meterReadService, "ProcessedArchiveRequest", 0, Integer.class)));
             ObjectName meterReadQueue = ObjectName.getInstance(meterReadQueueBean);
             meterData.put("meter-reads-enqueue-count", ImmutableMap.of(
                     "name", "Meter Reads Enqueue Count", 
-                    "value", jmxQueryService.get(meterReadQueue, "EnqueueCount")));
+                    "value", jmxQueryService.getTypedValue(meterReadQueue, "EnqueueCount", 0L, Long.class)));
             meterData.put("meter-reads-queue-size", ImmutableMap.of(
                     "name", "Meter Reads Queue Size", 
-                    "value", jmxQueryService.get(meterReadQueue, "QueueSize")));
-            Double mraet = (Double) jmxQueryService.get(meterReadQueue, "AverageEnqueueTime");
+                    "value", jmxQueryService.getTypedValue(meterReadQueue, "QueueSize", 0L, Long.class)));
+            Double mraet = jmxQueryService.getTypedValue(meterReadQueue, "AverageEnqueueTime", 0.0, Double.class);
             meterData.put("meter-reads-average-enqueue-time", ImmutableMap.of(
                     "name", "Meter Reads Average Enqueue Time", 
                     "value", df.format(mraet)));
@@ -161,18 +161,18 @@ public class NmIntegrationController {
             ObjectName lcrReadService = ObjectName.getInstance(lcrReadServiceBean);
             lcrData.put("lcr-reads-archived", ImmutableMap.of(
                     "name", "LCR Reads Archived", 
-                    "value", jmxQueryService.get(lcrReadService, "ArchivedReadings")));
+                    "value", jmxQueryService.getTypedValue(lcrReadService, "ArchivedReadings", 0, Integer.class)));
             lcrData.put("lcr-reads-requests-processed", ImmutableMap.of(
                     "name", "LCR Reads Requests Processed", 
-                    "value", jmxQueryService.get(lcrReadService, "ProcessedArchiveRequest")));
+                    "value", jmxQueryService.getTypedValue(lcrReadService, "ProcessedArchiveRequest", 0, Integer.class)));
             ObjectName lcrReadQueue = ObjectName.getInstance(lcrReadQueueBean);
             lcrData.put("lcr-reads-enqueue-count", ImmutableMap.of(
                     "name", "LCR Reads Enqueue Count", 
-                    "value", jmxQueryService.get(lcrReadQueue, "EnqueueCount")));
+                    "value", jmxQueryService.getTypedValue(lcrReadQueue, "EnqueueCount", 0L, Long.class)));
             lcrData.put("lcr-reads-queue-size", ImmutableMap.of(
                     "name", "LCR Reads Queue Size", 
-                    "value", jmxQueryService.get(lcrReadQueue, "QueueSize")));
-            Double lraet = (Double) jmxQueryService.get(lcrReadQueue, "AverageEnqueueTime");
+                    "value", jmxQueryService.getTypedValue(lcrReadQueue, "QueueSize", 0L, Long.class)));
+            Double lraet = jmxQueryService.getTypedValue(lcrReadQueue, "AverageEnqueueTime", 0.0, Double.class);
             lcrData.put("lcr-reads-average-enqueue-time", ImmutableMap.of(
                     "name", "LCR Reads Average Enqueue Time", 
                     "value", df.format(lraet)));
@@ -183,11 +183,11 @@ public class NmIntegrationController {
             ObjectName rfDaArchiveQueue = ObjectName.getInstance(rfDaArchiveQueueBean);
             rfDaData.put("rfda-archive-enqueue-count", ImmutableMap.of(
                     "name", "RF DA Archive Enqueue Count", 
-                    "value", jmxQueryService.get(rfDaArchiveQueue, "EnqueueCount")));
+                    "value", jmxQueryService.getTypedValue(rfDaArchiveQueue, "EnqueueCount", 0L, Long.class)));
             rfDaData.put("rfda-archive-queue-size", ImmutableMap.of(
                     "name", "RF DA Queue Size", 
-                    "value", jmxQueryService.get(rfDaArchiveQueue, "QueueSize")));
-            Double rfdaaet = (Double) jmxQueryService.get(rfDaArchiveQueue, "AverageEnqueueTime");
+                    "value", jmxQueryService.getTypedValue(rfDaArchiveQueue, "QueueSize", 0L, Long.class)));
+            Double rfdaaet = jmxQueryService.getTypedValue(rfDaArchiveQueue, "AverageEnqueueTime", 0.0, Double.class);
             rfDaData.put("rfda-archive-average-enqueue-time", ImmutableMap.of(
                     "name", "RF DA Average Enqueue Time", 
                     "value", df.format(rfdaaet)));
@@ -198,18 +198,18 @@ public class NmIntegrationController {
             ObjectName gatewayService = ObjectName.getInstance(gatewayServiceBean);
             gatewayArchiveData.put("gateway-archive-requests-processed", ImmutableMap.of(
                     "name", "Gateway Archive Requests Processed", 
-                    "value", jmxQueryService.get(gatewayService, "ProcessedArchiveRequest")));
+                    "value", jmxQueryService.getTypedValue(gatewayService, "ProcessedArchiveRequest", 0, Integer.class)));
             ObjectName gatewayQueue = ObjectName.getInstance(gatewayArchiveReqQueueBean);
             gatewayArchiveData.put("gateway-archive-enqueue-count", ImmutableMap.of(
                     "name", "Gateway Archive Enqueue Count", 
-                    "value", jmxQueryService.get(gatewayQueue, "EnqueueCount")));
+                    "value", jmxQueryService.getTypedValue(gatewayQueue, "EnqueueCount", 0L, Long.class)));
             gatewayArchiveData.put("gateway-archive-dequeue-count", ImmutableMap.of(
                     "name", "Gateway Archive Dequeue Count", 
-                    "value", jmxQueryService.get(gatewayQueue, "DequeueCount")));
+                    "value", jmxQueryService.getTypedValue(gatewayQueue, "DequeueCount", 0L, Long.class)));
             gatewayArchiveData.put("gateway-archive-queue-size", ImmutableMap.of(
                     "name", "Gateway Archive Queue Size", 
-                    "value", jmxQueryService.get(gatewayQueue, "QueueSize")));
-            Double gaaet = (Double) jmxQueryService.get(gatewayQueue, "AverageEnqueueTime");
+                    "value", jmxQueryService.getTypedValue(gatewayQueue, "QueueSize", 0L, Long.class)));
+            Double gaaet = jmxQueryService.getTypedValue(gatewayQueue, "AverageEnqueueTime", 0.0, Double.class);
             gatewayArchiveData.put("gateway-archive-average-enqueue-time", ImmutableMap.of(
                     "name", "Gateway Archive Average Enqueue Time", 
                     "value", df.format(gaaet)));
@@ -220,14 +220,14 @@ public class NmIntegrationController {
             gatewayQueue = ObjectName.getInstance(gatewayDataReqQueueBean);
             gatewayData.put("gateway-data-req-enqueue-count", ImmutableMap.of(
                     "name", "Gateway Data Request Enqueue Count", 
-                    "value", jmxQueryService.get(gatewayQueue, "EnqueueCount")));
+                    "value", jmxQueryService.getTypedValue(gatewayQueue, "EnqueueCount", 0L, Long.class)));
             gatewayData.put("gateway-data-req-dequeue-count", ImmutableMap.of(
                     "name", "Gateway Data Request Dequeue Count", 
-                    "value", jmxQueryService.get(gatewayQueue, "DequeueCount")));
+                    "value", jmxQueryService.getTypedValue(gatewayQueue, "DequeueCount", 0L, Long.class)));
             gatewayData.put("gateway-data-req-queue-size", ImmutableMap.of(
                     "name", "Gateway Data Request Queue Size", 
-                    "value", jmxQueryService.get(gatewayQueue, "QueueSize")));
-            Double gdaet = (Double) jmxQueryService.get(gatewayQueue, "AverageEnqueueTime");
+                    "value", jmxQueryService.getTypedValue(gatewayQueue, "QueueSize", 0L, Long.class)));
+            Double gdaet = jmxQueryService.getTypedValue(gatewayQueue, "AverageEnqueueTime", 0.0, Double.class);
             gatewayData.put("gateway-data-req-average-enqueue-time", ImmutableMap.of(
                     "name", "Gateway Data Request Average Enqueue Time", 
                     "value", df.format(gdaet)));
@@ -235,14 +235,14 @@ public class NmIntegrationController {
             gatewayQueue = ObjectName.getInstance(gatewayDataQueueBean);
             gatewayData.put("gateway-data-enqueue-count", ImmutableMap.of(
                     "name", "Gateway Data Enqueue Count", 
-                    "value", jmxQueryService.get(gatewayQueue, "EnqueueCount")));
+                    "value", jmxQueryService.getTypedValue(gatewayQueue, "EnqueueCount", 0L, Long.class)));
             gatewayData.put("gateway-data-dequeue-count", ImmutableMap.of(
                     "name", "Gateway Data Dequeue Count", 
-                    "value", jmxQueryService.get(gatewayQueue, "DequeueCount")));
+                    "value", jmxQueryService.getTypedValue(gatewayQueue, "DequeueCount", 0L, Long.class)));
             gatewayData.put("gateway-data-queue-size", ImmutableMap.of(
                     "name", "Gateway Data Queue Size", 
-                    "value", jmxQueryService.get(gatewayQueue, "QueueSize")));
-            Double gdraet = (Double) jmxQueryService.get(gatewayQueue, "AverageEnqueueTime");
+                    "value", jmxQueryService.getTypedValue(gatewayQueue, "QueueSize", 0L, Long.class)));
+            Double gdraet = jmxQueryService.getTypedValue(gatewayQueue, "AverageEnqueueTime", 0.0, Double.class);
             gatewayData.put("gateway-data-average-enqueue-time", ImmutableMap.of(
                     "name", "Gateway Data Average Enqueue Time", 
                     "value", df.format(gdraet)));
@@ -257,7 +257,7 @@ public class NmIntegrationController {
 
     @RequestMapping("gatewaySimulator")
     public String gatewaySimulator(ModelMap model, FlashScope flash) {
-     // Enums for selects
+        // Enums for selects
         model.addAttribute("ackTypes", RfnGatewayUpgradeRequestAckType.values());
         model.addAttribute("acceptedUpdateStatusTypes", SimulatedCertificateReplySettings.acceptedUpdateStatusTypes);
         model.addAttribute("firmwareVersionReplyTypes", RfnUpdateServerAvailableVersionResult.values());

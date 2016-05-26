@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
@@ -60,7 +59,9 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         List<SystemHealthMetric> metrics = new ArrayList<>();
         for (SystemHealthMetricIdentifier metricId : metricIds) {
             SystemHealthMetric metric = getMetric(metricId);
-            metrics.add(metric);
+            if (metric != null) {
+                metrics.add(metric);
+            }
         }
         return metrics;
     }
@@ -70,7 +71,9 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         Multimap<SystemHealthMetricType, SystemHealthMetric> metrics = ArrayListMultimap.create();
         for (SystemHealthMetricIdentifier metricId : metricIds) {
             SystemHealthMetric metric = getMetric(metricId);
-            metrics.put(metric.getType(), metric);
+            if (metric != null) {
+                metrics.put(metric.getType(), metric);
+            }
         }
         return metrics;
     }
@@ -80,7 +83,9 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         List<SystemHealthMetric> metrics = new ArrayList<>();
         for (SystemHealthMetricIdentifier metricId : SystemHealthMetricIdentifier.values()) {
             SystemHealthMetric metric = getMetric(metricId);
-            metrics.add(metric);
+            if (metric != null) {
+                metrics.add(metric);
+            }
         }
         return metrics;
     }
@@ -106,13 +111,13 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             String queueBeanName = SystemHealthMetricIdentifier.getExtendedJmsQueueBeans(metric).get(1);
             ObjectName queueBean = ObjectName.getInstance(queueBeanName);
             
-            Integer archived = (Integer) jmxQueryService.get(serviceBean, "ArchivedReadings");
-            Integer archiveRequestsProcessed = (Integer) jmxQueryService.get(serviceBean, "ProcessedArchiveRequest");
+            Integer archived = jmxQueryService.getTypedValue(serviceBean, "ArchivedReadings", 0, Integer.class);
+            Integer archiveRequestsProcessed = jmxQueryService.getTypedValue(serviceBean, "ProcessedArchiveRequest", 0, Integer.class);
             
-            Long enqueuedCount = (Long) jmxQueryService.get(queueBean, "EnqueueCount");
-            Long dequeuedCount = (Long) jmxQueryService.get(queueBean, "DequeueCount");
-            Long queueSize = (Long) jmxQueryService.get(queueBean, "QueueSize");
-            Double averageEnqueueTime = (Double) jmxQueryService.get(queueBean, "AverageEnqueueTime");
+            Long enqueuedCount = jmxQueryService.getTypedValue(queueBean, "EnqueueCount", 0L, Long.class);
+            Long dequeuedCount = jmxQueryService.getTypedValue(queueBean, "DequeueCount", 0L, Long.class);
+            Long queueSize = jmxQueryService.getTypedValue(queueBean, "QueueSize", 0L, Long.class);
+            Double averageEnqueueTime = jmxQueryService.getTypedValue(queueBean, "AverageEnqueueTime", 0.0, Double.class);
             
             MetricStatusWithMessages status = statusHelper.getStatus(metric);
             
@@ -139,16 +144,10 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         try {
             String beanName = SystemHealthMetricIdentifier.getJmsQueueBean(metric);
             ObjectName bean = ObjectName.getInstance(beanName);
-            Long enqueueCount = (Long) jmxQueryService.get(bean, "EnqueueCount");
-            Long dequeueCount = (Long) jmxQueryService.get(bean, "DequeueCount");
-            Long queueSize = (Long) jmxQueryService.get(bean, "QueueSize");
-            Double averageEnqueueTime = 0.0;
-            try {
-                averageEnqueueTime = (Double) jmxQueryService.get(bean, "AverageEnqueueTime");
-            } catch (InstanceNotFoundException e) {
-                // No average is available yet. Use 0.0.
-                log.debug("Unable to load average enqueue time for " + beanName + ". Defaulting to 0.");
-            }
+            Long enqueueCount = jmxQueryService.getTypedValue(bean, "EnqueueCount", 0L, Long.class);
+            Long dequeueCount = jmxQueryService.getTypedValue(bean, "DequeueCount", 0L, Long.class);
+            Long queueSize = jmxQueryService.getTypedValue(bean, "QueueSize", 0L, Long.class);
+            Double averageEnqueueTime = jmxQueryService.getTypedValue(bean, "AverageEnqueueTime", 0.0, Double.class);
             
             MetricStatusWithMessages status = statusHelper.getStatus(metric);
             

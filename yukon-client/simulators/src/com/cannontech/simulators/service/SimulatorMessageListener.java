@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.jms.ObjectMessage;
 
+import org.apache.activemq.DestinationDoesNotExistException;
 import org.apache.log4j.Logger;
 import org.springframework.jms.core.JmsTemplate;
 
@@ -50,11 +51,15 @@ public class SimulatorMessageListener {
                             SimulatorRequest simulatorRequest = (SimulatorRequest) request.getObject();
                             log.debug(simulatorRequest);
                             SimulatorResponse response = processRequest(simulatorRequest);
+                            log.debug(response);
                             if (response != null) {
                                 jmsTemplate.convertAndSend(request.getJMSReplyTo(), response);
                             }
                         }
                     } catch (Exception e) {
+                        if (e instanceof DestinationDoesNotExistException) {
+                            log.debug("No destination for simulator response.");
+                        }
                         log.error("Error processing simulator request message", e);
                     }
                 }
