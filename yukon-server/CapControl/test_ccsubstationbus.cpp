@@ -1154,6 +1154,77 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
         }
     }
 
+    {   // Decimal places
+
+        using CCBusRow     = Cti::Test::StringRow<2>;
+        using CCBusReader  = Cti::Test::TestReader<CCBusRow>;
+
+        CCBusRow columnNames =
+        {
+            "SubstationBusID",
+            "DECIMALPLACES"
+        };
+
+        std::vector<CCBusRow> rowVec
+        {
+            {
+                "4",
+                "2"
+            }
+        };
+
+        CCBusReader reader( columnNames, rowVec );
+
+        while ( reader() )
+        {
+            long decimalPlaces;
+
+            reader["DECIMALPLACES"] >> decimalPlaces;
+
+            busses[ 4 ].setDecimalPlaces( decimalPlaces );
+        }
+    }
+
+    //  These are the IDs that go in the objects pointID collection.
+
+    if ( busses[ 4 ].getCurrentVarLoadPointId() > 0 )
+    {
+        busses[ 4 ].addPointId( busses[ 4 ].getCurrentVarLoadPointId() );
+    }
+    if ( busses[ 4 ].getCurrentWattLoadPointId() > 0 )
+    {
+        busses[ 4 ].addPointId( busses[ 4 ].getCurrentWattLoadPointId() );
+    }
+    if ( busses[ 4 ].getCurrentVoltLoadPointId() > 0 )
+    {
+        busses[ 4 ].addPointId( busses[ 4 ].getCurrentVoltLoadPointId() );
+    }
+    if ( busses[ 4 ].getSwitchOverPointId() > 0 )
+    {
+        busses[ 4 ].addPointId( busses[ 4 ].getSwitchOverPointId() );
+    }
+    if ( busses[ 4 ].getUsePhaseData() )
+    {
+        if ( busses[ 4 ].getPhaseBId() > 0 )
+        {
+            busses[ 4 ].addPointId( busses[ 4 ].getPhaseBId() );
+        }
+        if ( busses[ 4 ].getPhaseCId() > 0 )
+        {
+            busses[ 4 ].addPointId( busses[ 4 ].getPhaseCId() );
+        }
+    }
+    if ( busses[ 4 ].getVoltReductionControlId() > 0 )
+    {
+        busses[ 4 ].addPointId( busses[ 4 ].getVoltReductionControlId() );
+    }
+    if ( busses[ 4 ].getDisableBusPointId() > 0 )
+    {
+        busses[ 4 ].addPointId( busses[ 4 ].getDisableBusPointId() );
+    }
+
+    // ** Validate...
+
     BOOST_CHECK_EQUAL(  false, busses[ 4 ].getSwitchOverStatus() );
     BOOST_CHECK_EQUAL(  false, busses[ 4 ].getPrimaryBusFlag() );
     BOOST_CHECK_EQUAL(   true, busses[ 4 ].getDualBusEnable() );
@@ -1190,7 +1261,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
     BOOST_CHECK_EQUAL(    104, busses[ 4 ].getAltDualSubId() );
     BOOST_CHECK_EQUAL(    105, busses[ 4 ].getSwitchOverPointId() );
     BOOST_CHECK_EQUAL(      7, busses[ 4 ].getEventSequence() );
-    BOOST_CHECK_EQUAL(      0, busses[ 4 ].getDecimalPlaces() );
+    BOOST_CHECK_EQUAL(      2, busses[ 4 ].getDecimalPlaces() );
     BOOST_CHECK_EQUAL(      0, busses[ 4 ].getEstimatedVarLoadPointId() );
     BOOST_CHECK_EQUAL(      0, busses[ 4 ].getDailyOperationsAnalogPointId() );
     BOOST_CHECK_EQUAL(      0, busses[ 4 ].getPowerFactorPointId() );
@@ -1267,6 +1338,18 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
 //    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastOperationTime() );
 //    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastWattPointTime() );
 //    BOOST_CHECK_EQUAL( gInvalidCtiTime , busses[ 4 ].getLastVoltPointTime() );
+
+    BOOST_CHECK_EQUAL(      8, busses[ 4 ].getPointIds()->size() );
+
+    // Validate the contents of the point ID collection
+    {
+        std::vector<long>   expected
+        {
+            101, 102, 103, 105, 106, 107, 108, 109
+        };
+
+        BOOST_CHECK_EQUAL_RANGES( expected, *busses[ 4 ].getPointIds() );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
