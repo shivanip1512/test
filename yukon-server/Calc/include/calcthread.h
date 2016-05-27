@@ -102,7 +102,7 @@ public:
     int outboxEntries( void )   {   return _outbox.entries( ); };
     CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };
 
-    std::set<long> getPointDependencies() const;
+    std::vector<long> getPointDependencies() const;
 
     void startThreads();
     void joinThreads();

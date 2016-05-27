@@ -26,7 +26,11 @@
 
 #include "amq_constants.h"
 
+#include <boost/range.hpp>
+
 #include <iostream>
+
+#include <experimental/generator>
 
 using namespace std;
 
@@ -1169,27 +1173,55 @@ void CtiCalcLogicService::updateCalcData()
     }
 }
 
+
+template <class Container>
+std::experimental::generator<boost::iterator_range<typename Container::const_iterator>> chop(Container& c, size_t chunkSize)
+{
+    auto chunks = c.size() / chunkSize;
+
+    auto itr = c.cbegin();
+    auto end = c.cend();
+
+    while( chunks-- )
+    {
+        yield boost::iterator_range<Container::const_iterator>(itr, itr + chunkSize);
+        itr += chunkSize;
+    }
+
+    yield boost::iterator_range<Container::const_iterator>(itr, end);
+}
+
+
 void CtiCalcLogicService::_registerForPoints()
 {
     try
     {
         //  iterate through the calc points' dependencies, adding them to the registration message
 
-        auto_ptr<CtiPointRegistrationMsg> msgPtReg( new CtiPointRegistrationMsg(0) );
+        const auto dependencies = calcThread->getPointDependencies();
 
-        for each( const long pointid in calcThread->getPointDependencies() )
+        auto msgPtReg = std::make_unique<CtiPointRegistrationMsg>(REG_NONE);  //  REG_ALL_CALCULATED if we can make getPointDependencies return only non-calc components
+        
+        msgPtReg->insert(ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc));
+
+        dispatchConnection->WriteConnQue(msgPtReg.release(), CALLSITE);
+
+        for( auto chunk : chop(dependencies, 10'000) )
         {
-            if( _CALC_DEBUG & CALC_DEBUG_DISPATCH_INIT )
+            msgPtReg = std::make_unique<CtiPointRegistrationMsg>(REG_ADD_POINTS);
+
+            for( const auto pointid : chunk )
             {
-                CTILOG_DEBUG(dout, "Registered for point id: " << pointid);
+                if( _CALC_DEBUG & CALC_DEBUG_DISPATCH_INIT )
+                {
+                    CTILOG_DEBUG(dout, "Registered for point id: " << pointid);
+                }
+
+                msgPtReg->insert(pointid);
             }
-            msgPtReg->insert(pointid);
+
+            dispatchConnection->WriteConnQue(msgPtReg.release(), CALLSITE);
         }
-
-        msgPtReg->insert( ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc) );
-        //  now send off the point registration
-
-        dispatchConnection->WriteConnQue( msgPtReg.release(), CALLSITE );
     }
     catch(...)
     {

@@ -1069,9 +1069,11 @@ void CtiCalculateThread::appendCalcPoint( long pointID )
     CtiPointStore::insert( pointID, 0, undefined );
 }
 
-std::set<long> CtiCalculateThread::getPointDependencies() const
+std::vector<long> CtiCalculateThread::getPointDependencies() const
 {
-    return CtiPointStore::getPointIds();
+    const auto &pointIds = CtiPointStore::getPointIds();
+
+    return { pointIds.cbegin(), pointIds.cend() };
 }
 
 void CtiCalculateThread::calcThread( void )
