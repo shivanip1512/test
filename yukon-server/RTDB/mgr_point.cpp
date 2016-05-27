@@ -25,6 +25,7 @@
 #include "std_helper.h"
 
 #include <boost/range/algorithm/find_if.hpp>
+#include <boost/range/algorithm/set_algorithm.hpp>
 
 using namespace std;
 
@@ -129,7 +130,7 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
         if(pntType == InvalidPointType || pntType == SystemPointType)
         {
             start = start.now();
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "Looking for System Points");
             }
@@ -163,14 +164,14 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
             {
                 CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
             }
-            else if( DebugLevel & 0x00010000 )
+            else if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
             }
 
             errors |= refreshPoints(pointIdsFound, rdr);
 
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "Done Looking for System Points");
             }
@@ -185,7 +186,7 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
         {
             start = start.now();
 
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "Looking for Status/Control");
             }
@@ -222,14 +223,14 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
             {
                 CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
             }
-            else if( DebugLevel & 0x00010000 )
+            else if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
             }
 
             errors |= refreshPoints(pointIdsFound, rdr);
 
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "Done Looking for Status/Control");
             }
@@ -244,7 +245,7 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
         {
             start = start.now();
 
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "Looking for Analogs");
             }
@@ -282,14 +283,14 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
             {
                 CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
             }
-            else if( DebugLevel & 0x00010000 )
+            else if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
             }
 
             errors |= refreshPoints(pointIdsFound, rdr);
 
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "DONE Looking for Analogs");
             }
@@ -304,7 +305,7 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
         {
             start = start.now();
 
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "Looking for Accum");
             }
@@ -338,14 +339,14 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
             {
                 CTILOG_ERROR(dout, "DB read failed for SQL query: " << rdr.asString());
             }
-            if( DebugLevel & 0x00010000 )
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "DB read: "<< rdr.asString());
             }
 
             errors |= refreshPoints(pointIdsFound, rdr);
 
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "DONE Looking for Accum");
             }
@@ -359,7 +360,7 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
         {
             start = start.now();
 
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "Looking for CALC");
             }
@@ -394,14 +395,14 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
             {
                 CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
             }
-            else if( DebugLevel & 0x00010000 )
+            else if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
             }
 
             errors |= refreshPoints(pointIdsFound, rdr);
 
-            if(DebugLevel & 0x00010000)
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
             {
                 CTILOG_DEBUG(dout, "DONE Looking for CALC");
             }
@@ -460,120 +461,106 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection);
 
-    int ids_per_select = min(static_cast<int>(id_list.size()), gConfigParms.getValueAsInt("MAX_IDS_PER_POINT_SELECT", 256));
+    const auto max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_POINT_SELECT", 256);
 
-    set<long> ids_to_load;
+    vector<long> ids_to_load;
 
     if( paoids )
     {
         coll_type::reader_lock_guard_t guard(_smartMap.getLock());
 
-        set_difference(id_list.begin(),
-                       id_list.end(),
-                       _paoids_loaded.begin(),
-                       _paoids_loaded.end(),
-                       inserter(ids_to_load, ids_to_load.begin()));
+        boost::range::set_difference(
+            id_list,
+            _paoids_loaded,
+            std::back_inserter(ids_to_load));
     }
     else
     {
         //  we will need to get smarter about what points are and aren't loaded
-        copy(id_list.begin(),
-             id_list.end(),
-             inserter(ids_to_load, ids_to_load.begin()));
+        ids_to_load.assign(id_list.begin(), id_list.end());
     }
 
     const string keyColString = paoids ? "paobjectid IN ":"pointid IN ";
 
-    //  ACCUMULATOR points
-    const string sql_accum  = CtiPointAccumulator::getSQLCoreStatement() + " AND PT.";
+    static const std::array<std::string, 5> baseLoadingSql{
+        //  ACCUMULATOR points
+        CtiPointAccumulator::getSQLCoreStatement()
+            + " AND PT.",
 
-    //  ANALOG points
-    const string sql_analog = CtiPointAnalog::getSQLCoreStatement() + " WHERE PT.";
+        //  ANALOG points
+        CtiPointAnalog::getSQLCoreStatement()
+            + " WHERE PT.",
 
-    //  CALC points
-    const string sql_calc   = CtiPointNumeric::getSQLCoreStatement() +
-                              " AND (upper (PT.pointtype) = 'CALCULATED' OR upper (PT.pointtype) = 'CALCANALOG')"
-                              " AND PT.";
+        //  CALC points
+        CtiPointNumeric::getSQLCoreStatement()
+            + " AND (upper (PT.pointtype) = 'CALCULATED' OR upper (PT.pointtype) = 'CALCANALOG')"
+                " AND PT.",
 
-    //  STATUS points
-    const string sql_status = CtiPointStatus::getSQLCoreStatement() +
-                              " WHERE"
-                                  " (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS') "
-                                  " AND PT.";
+        //  STATUS points
+        CtiPointStatus::getSQLCoreStatement()
+            + " WHERE"
+                " (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS') "
+                " AND PT.",
 
-    //  SYSTEM points
-    const string sql_system = CtiPointBase::getSQLCoreStatement() +
-                              " WHERE upper (PT.pointtype) = 'SYSTEM' AND PT.";
+        //  SYSTEM points
+        CtiPointBase::getSQLCoreStatement()
+            + " WHERE upper (PT.pointtype) = 'SYSTEM' AND PT."
+    };
 
-    set<long>::const_iterator   id_itr = ids_to_load.begin(),
-                                id_end = ids_to_load.end();
+    const auto buildInList = [](const size_t chunk_size) 
+    {
+        std::string in_list(chunk_size * 2 + 1, '?');  //  N '?' + N-1 ',' + '(' + ')' = N * 2 + 1
+
+        *in_list.begin() = '(';
+        *in_list.rbegin() = ')';
+
+        for( auto idx = 1; idx < chunk_size; ++idx )
+        {
+            in_list[idx * 2] = ',';  //  replace index 2, 4, 6, etc:  "(?,?,?,?..."
+        }
+
+        return in_list;
+    };
+
+    auto itr = ids_to_load.cbegin(),
+         end = ids_to_load.cend();
 
     bool errors = false;
 
-    while( id_itr != id_end )
+    auto full_chunks = ids_to_load.size() / max_ids_per_select;
+    
+    auto chunk_size = full_chunks ? max_ids_per_select : ids_to_load.size();
+    auto in_list_placeholders = buildInList(chunk_size);
+
+    while( itr != end )
     {
-        string in_list;
-
-        in_list.erase();
-
-        for( int i = 0; (i < ids_per_select) && (id_itr != id_end); i++, id_itr++ )
+        for( const auto &sql : baseLoadingSql )
         {
-            if( !in_list.empty() )
+            std::set<long> pointIdsFound;  //  placeholder
+
+            rdr.setCommandText(sql + keyColString + in_list_placeholders);
+
+            std::for_each(itr, itr + chunk_size, [&rdr](const long id) 
             {
-                in_list += ",";
+                rdr << id;
+            });
+
+            if( DebugLevel & DEBUGLEVEL_MGR_POINT )
+            {
+                CTILOG_DEBUG(dout, rdr.asString());
             }
 
-            in_list += CtiNumStr(*id_itr);
+            rdr.execute();
+            errors |= refreshPoints(pointIdsFound, rdr);
         }
 
-        in_list = "(" + in_list + ")";
+        itr += chunk_size;
 
-        std::stringstream ss_accum, ss_analog, ss_calc, ss_status, ss_system;
-
-        ss_accum    << sql_accum    << keyColString << in_list.c_str();
-        ss_analog   << sql_analog   << keyColString << in_list.c_str();
-        ss_calc     << sql_calc     << keyColString << in_list.c_str();
-        ss_status   << sql_status   << keyColString << in_list.c_str();
-        ss_system   << sql_system   << keyColString << in_list.c_str();
-
-        if( DebugLevel & 0x00010000 )
+        if( ! --full_chunks )
         {
-            string loggedSQLaccum  = ss_accum .str();
-            string loggedSQLanalog = ss_analog.str();
-            string loggedSQLcalc   = ss_calc  .str();
-            string loggedSQLstatus = ss_status.str();
-            string loggedSQLsystem = ss_system.str();
-
-            CTILOG_DEBUG(dout,
-                    endl << loggedSQLaccum  <<
-                    endl << loggedSQLanalog <<
-                    endl << loggedSQLcalc   <<
-                    endl << loggedSQLstatus <<
-                    endl << loggedSQLsystem
-                    );
+            chunk_size = ids_to_load.size() % max_ids_per_select;
+            in_list_placeholders = buildInList(chunk_size);
         }
-
-        std::set<long> pointIdsFound;  //  placeholder
-
-        rdr.setCommandText(ss_accum .str());
-        rdr.execute();
-        errors |= refreshPoints(pointIdsFound, rdr);
-
-        rdr.setCommandText(ss_analog.str());
-        rdr.execute();
-        errors |= refreshPoints(pointIdsFound, rdr);
-
-        rdr.setCommandText(ss_calc  .str());
-        rdr.execute();
-        errors |= refreshPoints(pointIdsFound, rdr);
-
-        rdr.setCommandText(ss_status.str());
-        rdr.execute();
-        errors |= refreshPoints(pointIdsFound, rdr);
-
-        rdr.setCommandText(ss_system.str());
-        rdr.execute();
-        errors |= refreshPoints(pointIdsFound, rdr);
     }
 
     //  No errors, so note down which PAOs were fully loaded
@@ -773,7 +760,7 @@ void CtiPointManager::loadPao(const long paoId, const Cti::CallSite cs)
         }
     }
 
-    if( DebugLevel & 0x00010000 )
+    if( DebugLevel & DEBUGLEVEL_MGR_POINT )
     {
         CTILOG_DEBUG(dout, "Called from " << cs.func << ":" << cs.file << ":" << cs.line << " - refreshing points for paoid " << paoId);
     }

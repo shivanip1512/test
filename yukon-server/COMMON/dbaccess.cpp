@@ -8,7 +8,6 @@
 #include "critical_section.h"
 
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/foreach.hpp>
 
 #include <SQLAPI.h>
 
@@ -81,7 +80,13 @@ std::string assignSQLPlaceholders(const std::string &sql)
 
     unsigned placeholder_chars = std::count(sql.begin(), sql.end(), '?');
 
-    if( placeholder_chars > 9 )
+    if( placeholder_chars > 99 )
+    {
+        //  each placeholder after 99 will require 3 chars
+        placeholder_chars *= 3;
+        placeholder_chars -= 99 + 9;
+    }
+    else if( placeholder_chars > 9 )
     {
         //  each placeholder after 9 will require 2 chars
         placeholder_chars *= 2;
@@ -106,8 +111,13 @@ std::string assignSQLPlaceholders(const std::string &sql)
         {
             result.push_back(':');
 
-            //  This only writes out 2 digits, so we can only support up to 99 placeholders.
-            if( offset > 9 )
+            //  This only writes out 3 digits, so we can only support up to 999 placeholders.
+            if( offset > 99 )
+            {
+                result.push_back('0' + offset / 100);
+                result.push_back('0' + offset / 10 % 10);
+            }
+            else if( offset > 9 )
             {
                 result.push_back('0' + offset / 10);
             }
@@ -165,9 +175,9 @@ SAConnection* getNewConnection()
 {
     CtiLockGuard<CtiCriticalSection> guard( DbMutex);
 
-    BOOST_FOREACH(DBConnectionHolder &connHolder, connectionList)
+    for( auto& connHolder : connectionList )
     {
-        if(!connHolder.inUse)
+        if( ! connHolder.inUse )
         {
             // If !inUse, this is ours. This block must return.
             connHolder.inUse = true;
@@ -204,7 +214,7 @@ void releaseDBConnection(SAConnection *connection)
 {
     CtiLockGuard<CtiCriticalSection> guard( DbMutex);
 
-    BOOST_FOREACH(DBConnectionHolder &connHolder, connectionList)
+    for( auto& connHolder : connectionList )
     {
         if(connHolder.connection == connection)
         {
