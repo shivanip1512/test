@@ -163,9 +163,9 @@ class DispatchProxy {
         }
         Multi m;
         try {
+            registerForPointIds(pointIds);
             Command cmd = makeCommandMsg(Command.POINT_DATA_REQUEST, pointIds);
             m = (Multi) makeRequest(cmd);
-            registerForPointIds(pointIds);
         } catch (DynamicDataAccessException e) {
             throw new DynamicDataAccessException("There was an error retreiving the value for pointIds: " + pointIds, e);
         }
