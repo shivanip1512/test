@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -78,6 +79,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             if (counts != null) {
                 reports.add(new PerformanceVerificationEventMessageStats(messageSent.getMessageId(),
                                                                  messageSent.getTimeMessageSent(),
+                                                                 Boolean.FALSE,
                                                                  counts.get(SUCCESS),
                                                                  counts.get(FAILURE),
                                                                  counts.get(UNKNOWN)));
@@ -109,7 +111,8 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             @Override
             public PerformanceVerificationEventMessage mapRow(YukonResultSet rs) throws SQLException {
                 return new PerformanceVerificationEventMessage(rs.getLong("RfnBroadcastEventId"),
-                                                                          rs.getInstant("EventSentTime"));
+                                                                          rs.getInstant("EventSentTime"),
+                                                                          Boolean.FALSE);
             }
         });
     }
@@ -278,7 +281,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         
         jdbcTemplate.update(sql);
         
-        return new PerformanceVerificationEventMessage(nextId, now);
+        return new PerformanceVerificationEventMessage(nextId, now, Boolean.FALSE);
     }
     
     @Override
@@ -364,4 +367,89 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     private Instant getCommunicationWindowEnd(Instant now) {
         return now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
     }
+    
+    @Override
+    public void archiveRfnBroadcastEventStatus(DateTime removeAfterDate) {
+        List<Long> rfnBroadcastEventId = new ArrayList<>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RfnBroadcastEventId FROM RfnBroadcastEvent");
+        sql.append("WHERE EventSentTime").lt(removeAfterDate);
+        sql.append("AND RfnBroadcastEventId NOT IN (");
+        sql.append("SELECT RfnBroadcastEventId FROM RfnBroadcastArchivedEventStatus)");
+
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                rfnBroadcastEventId.add(rs.getLong("RfnBroadcastEventId"));
+            }
+        });
+
+        for (Long eventId : rfnBroadcastEventId) {
+            SqlStatementBuilder insertSql = new SqlStatementBuilder();
+            insertSql.append("INSERT INTO RfnBroadcastArchivedEventStatus");
+            insertSql.append("(RfnBroadcastEventId, Success, SuccessUnenrolled, Failure, Unknown) VALUES (");
+            insertSql.append(eventId);
+            insertSql.append(",");
+            insertSql.append(" (SELECT COUNT(*) FROM RfnBroadcastEventDeviceStatus where RfnBroadcastEventId")
+                     .eq(eventId);
+            insertSql.append(" AND RfnBroadcastEventDeviceStatus.Result").eq_k(SUCCESS);
+            insertSql.append(" )");
+            insertSql.append(",");
+            insertSql.append(" (SELECT COUNT(*) FROM RfnBroadcastEventDeviceStatus where RfnBroadcastEventId")
+                     .eq(eventId);
+            insertSql.append(" AND RfnBroadcastEventDeviceStatus.Result").eq_k(SUCCESS_UNENROLLED);
+            insertSql.append(" )");
+            insertSql.append(",");
+            insertSql.append(" (SELECT COUNT(*) FROM RfnBroadcastEventDeviceStatus where RfnBroadcastEventId")
+                     .eq(eventId);
+            insertSql.append(" AND RfnBroadcastEventDeviceStatus.Result").eq_k(FAILURE);
+            insertSql.append(" )");
+            insertSql.append(",");
+            insertSql.append(" (SELECT COUNT(*) FROM RfnBroadcastEventDeviceStatus where RfnBroadcastEventId")
+                     .eq(eventId);
+            insertSql.append(" AND RfnBroadcastEventDeviceStatus.Result").eq_k(UNKNOWN);
+            insertSql.append(" ))");
+
+            jdbcTemplate.update(insertSql);
+
+        }
+    }
+    
+    @Override
+    public void removeOlderRfnBroadcastEventStatus(DateTime removeAfterDate) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM RfnBroadcastEventDeviceStatus ");
+        sql.append("WHERE RfnBroadcastEventId IN");
+        sql.append("(SELECT RfnBroadcastEventId");
+        sql.append(" FROM RfnBroadcastEvent");
+        sql.append(" WHERE EventSentTime").lt(removeAfterDate);
+        sql.append(")");
+
+        jdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public List<PerformanceVerificationEventMessageStats> getArchiveReports(Range<Instant> range) {
+        List<PerformanceVerificationEventMessageStats> reports = new ArrayList<>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT rbaes.RfnBroadcastEventId AS EventId, rbe.EventSentTime AS EventSentTime, Success, Failure, Unknown");
+        sql.append("FROM RfnBroadcastArchivedEventStatus rbaes");
+        sql.append("JOIN RfnBroadcastEvent rbe ON rbaes.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
+        sql.append("AND rbe.EventSentTime").gt(range.getMin());
+        sql.append("AND rbe.EventSentTime").lt(range.getMax());
+
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                reports.add(new PerformanceVerificationEventMessageStats(rs.getLong("EventId"),
+                                                                         rs.getInstant("EventSentTime"),
+                                                                         Boolean.TRUE,
+                                                                         rs.getInt("Success"),
+                                                                         rs.getInt("Failure"),
+                                                                         rs.getInt("Unknown")));
+            }
+        });
+        return reports;
+    }
 }
+
