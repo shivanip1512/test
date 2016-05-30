@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
@@ -87,7 +88,8 @@ import com.cannontech.yukon.IServerConnection;
         if (cachedPointData == null) {
             pointData.put(pd.getId(), LitePointData.of(pd));
         } else { 
-            if (pd.getPointDataTimeStamp().after(cachedPointData.getPointDataTimeStamp())) {
+            if (cachedPointData.getPointQuality() == PointQuality.Uninitialized
+                || pd.getPointDataTimeStamp().after(cachedPointData.getPointDataTimeStamp())) {
                 pointData.put(pd.getId(), LitePointData.of(pd));
             }
         }
