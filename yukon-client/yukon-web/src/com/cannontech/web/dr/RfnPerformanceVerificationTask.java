@@ -10,6 +10,7 @@ public class RfnPerformanceVerificationTask extends YukonTaskBase {
     
     @Override
     public void start() {
+        performanceVerificationService.archiveVerificationMessage();
         performanceVerificationService.sendPerformanceVerificationMessage();
     }
 }

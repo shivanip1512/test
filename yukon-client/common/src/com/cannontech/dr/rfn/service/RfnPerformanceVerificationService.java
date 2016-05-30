@@ -21,4 +21,11 @@ public interface RfnPerformanceVerificationService {
     void processVerificationMessages(YukonPao device, Map<Long, Instant> verificationMsgs, Range<Instant> range);
 
     PerformanceVerificationAverageReports getAverageReports();
+    
+    /**
+     * Make entry of RFN event status in table RfnBroadcastArchivedEventStatus
+     * for each day older than 180 days. Remove message from
+     * RfnBroadcastEventDeviceStatus that are older than 180 days.
+     */
+    void archiveVerificationMessage();
 }

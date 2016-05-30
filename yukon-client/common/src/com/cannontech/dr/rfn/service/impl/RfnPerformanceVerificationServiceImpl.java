@@ -1,12 +1,13 @@
 package com.cannontech.dr.rfn.service.impl;
 
-import static com.cannontech.system.GlobalSettingType.*;
+import static com.cannontech.system.GlobalSettingType.RF_BROADCAST_PERFORMANCE;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,5 +162,17 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
 
         return new PerformanceVerificationAverageReports(oneDayStats.getImmutable(), twoDaysStats.getImmutable(),
                                                          sevenDaysStats.getImmutable(), thirtyDaysStats.getImmutable());
+    }
+    
+    @Override
+    @Transactional
+    public void archiveVerificationMessage() {
+
+        // Insert into RfnBroadcastArchivedEventStatus event status older than
+        // 180 days.
+        DateTime removeAfterDate = new DateTime().plusDays(-180).withTimeAtStartOfDay();
+        performanceVerificationDao.archiveRfnBroadcastEventStatus(removeAfterDate);
+        performanceVerificationDao.removeOlderRfnBroadcastEventStatus(removeAfterDate);
+
     }
 }

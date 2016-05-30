@@ -2,6 +2,7 @@ package com.cannontech.web.dr;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
@@ -221,6 +223,15 @@ public class RfPerformanceController {
     
     private void detailsModel(ModelMap model, Instant from, Instant to) {
         List<PerformanceVerificationEventMessageStats> tests = rfPerformanceDao.getReports(Range.inclusiveExclusive(from, to));
+        
+        Instant afterDate = new DateTime().plusDays(-180).withTimeAtStartOfDay().toInstant();
+        if (from.isBefore(afterDate)) {
+            List<PerformanceVerificationEventMessageStats> report 
+                    = rfPerformanceDao.getArchiveReports(Range.inclusiveExclusive(from,to));
+            tests.addAll(report);
+        }
+        Collections.sort(tests,
+                         (t1, t2) -> t1.getTimeMessageSent().compareTo(t2.getTimeMessageSent()));
         model.addAttribute("tests", tests);
         
         int totalSuccess = 0;

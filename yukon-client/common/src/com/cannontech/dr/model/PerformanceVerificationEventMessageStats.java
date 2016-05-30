@@ -9,11 +9,12 @@ public final class PerformanceVerificationEventMessageStats {
 
     public PerformanceVerificationEventMessageStats(long messageId, 
                                                     Instant timeMessageSent, 
+                                                    Boolean isArchived,
                                                     int numSuccesses, 
                                                     int numFailures, 
                                                     int numUnknowns) {
         
-        eventMessage = new PerformanceVerificationEventMessage(messageId, timeMessageSent);
+        eventMessage = new PerformanceVerificationEventMessage(messageId, timeMessageSent,isArchived);
         eventStats = new PerformanceVerificationEventStats(numSuccesses, numFailures, numUnknowns);
     }
     
@@ -27,6 +28,10 @@ public final class PerformanceVerificationEventMessageStats {
 
     public Instant getTimeMessageSent() {
         return eventMessage.getTimeMessageSent();
+    }
+    
+    public PerformanceVerificationEventMessage getEventMessage() {
+        return eventMessage;
     }
 
     public int getNumSuccesses() {

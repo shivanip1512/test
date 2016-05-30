@@ -3,6 +3,7 @@ package com.cannontech.dr.rfn.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 import com.cannontech.common.model.PagingParameters;
@@ -91,5 +92,22 @@ public interface PerformanceVerificationDao {
      * Returns the event time for an event (messageId)
      */
     Instant getEventTime(long messageId);
+    
+    /**
+     * Archive event data older than 180 days from table RfnBroadcastEventDeviceStatus to RfnBroadcastArchivedEventStatus
+     * In the RfnBroadcastArchivedEventStatus only daily count of status is maintained.  
+     */
+    void archiveRfnBroadcastEventStatus(DateTime removeAfterDate);
+    
+    /**
+     * Delete event data older than 180 days from table RfnBroadcastEventDeviceStatus.  
+     */
+    void removeOlderRfnBroadcastEventStatus(DateTime removeAfterDate);
+    
+    /**
+     * Retrieve archive event data from table RfnBroadcastArchivedEventStatus.  
+     */
+    
+    List<PerformanceVerificationEventMessageStats> getArchiveReports(Range<Instant> range);
 
 }

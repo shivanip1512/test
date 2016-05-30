@@ -53,6 +53,7 @@
                     <td>
                         <dr:rfPerformanceStats test="${test.eventStats}"/>
                         <c:if test="${hasStats}">
+                            <c:if test = "${!test.eventMessage.isArchived}">
                             <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
                                 <c:if test="${test.numUnknowns > 0}">
                                     <cm:dropdownOption key=".showUnreported" classes="js-unknown" data-test="${test.messageId}"/>
@@ -64,6 +65,7 @@
                                     <cm:dropdownOption key=".showSuccess" classes="js-success" data-test="${test.messageId}"/>
                                 </c:if>
                             </cm:dropdown>
+                            </c:if>
                         </c:if>
                     </td>
                 </tr>
