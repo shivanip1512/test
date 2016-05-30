@@ -1,5 +1,9 @@
 package com.cannontech.multispeak.client;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -540,7 +544,7 @@ public class MultispeakFuncs {
      * @param services
      */
     public String getEndpointUrl(MultispeakVendor mspVendor, String services) {
-        return getResponseUrl(mspVendor, null, services);
+        return encodeURL(getResponseUrl(mspVendor, null, services));
     }
     
      /**
@@ -585,5 +589,27 @@ public class MultispeakFuncs {
             arrayOfString.getString().addAll(strings);
         }
         return arrayOfString;
+    }
+
+    /**
+     * Encodes the given url by replacing unsafe ASCII characters
+     * and converting them to a valid ASCII format
+     * 
+     * @param String - URL to be encoded
+     * @return encodedURL
+     */
+    public String encodeURL(String endpointUrl) {
+        try {
+            URL url = new URL(endpointUrl);
+            URI uri =
+                new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
+                    url.getQuery(), null);
+            endpointUrl = uri.toString();
+        } catch (MalformedURLException e) {
+            log.error("URL " + endpointUrl + " is a malformed URL");
+        } catch (URISyntaxException e) {
+            log.error("URI " + endpointUrl + " is a malformed URL");
+        }
+        return endpointUrl;
     }
 }
