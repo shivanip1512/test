@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.stars.endpoint.endpointMappers;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;

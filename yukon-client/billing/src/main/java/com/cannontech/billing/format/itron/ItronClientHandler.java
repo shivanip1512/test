@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.BillingFormatterBase;

@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.jdom.Element;
+import org.jdom2.Element;
 import org.w3c.dom.Node;
 
 import com.cannontech.capcontrol.creation.model.CbcImportCompleteDataResult;

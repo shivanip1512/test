@@ -7,7 +7,7 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.NotificationTypeChecker;

@@ -13,12 +13,13 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Content;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
 
@@ -118,7 +119,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
             String description = errorEl.getChildTextTrim("description");
             Validate.notEmpty(description, "Description for error " + errorCodeStr + " must not be blank");
             Element troubleEl = errorEl.getChild("troubleshooting");
-            List<?> troubleNodes = Collections.emptyList();
+            List<? extends Content> troubleNodes = Collections.emptyList();
             if (troubleEl != null) {
                 troubleNodes = troubleEl.getContent();
             }

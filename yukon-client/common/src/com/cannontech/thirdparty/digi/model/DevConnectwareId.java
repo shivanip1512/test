@@ -3,7 +3,7 @@ package com.cannontech.thirdparty.digi.model;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jdom.IllegalDataException;
+import org.jdom2.IllegalDataException;
 
 public class DevConnectwareId {
     

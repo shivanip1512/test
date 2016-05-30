@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;

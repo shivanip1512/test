@@ -15,8 +15,8 @@ import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
-import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.BootstrapUtils;

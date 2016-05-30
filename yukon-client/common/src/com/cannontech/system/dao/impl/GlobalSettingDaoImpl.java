@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.log4j.Logger;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 

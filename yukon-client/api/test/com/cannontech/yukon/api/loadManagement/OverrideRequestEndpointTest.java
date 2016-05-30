@@ -3,9 +3,9 @@ package com.cannontech.yukon.api.loadManagement;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import org.jdom.Attribute;
-import org.jdom.Element;
-import org.jdom.Namespace;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.junit.Before;

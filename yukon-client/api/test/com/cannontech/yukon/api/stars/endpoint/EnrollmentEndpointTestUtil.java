@@ -1,7 +1,7 @@
 package com.cannontech.yukon.api.stars.endpoint;
 
-import org.jdom.Element;
-import org.jdom.Namespace;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 import org.w3c.dom.Node;
 
 import com.cannontech.amr.meter.model.YukonMeter;

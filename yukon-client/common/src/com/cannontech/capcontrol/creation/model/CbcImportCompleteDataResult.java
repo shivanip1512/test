@@ -1,8 +1,8 @@
 package com.cannontech.capcontrol.creation.model;
 
 import org.apache.commons.lang3.Validate;
-import org.jdom.Element;
-import org.jdom.Namespace;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 
 import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.i18n.YukonMessageSourceResolvable;

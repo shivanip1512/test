@@ -4,9 +4,9 @@ import java.util.Properties;
 
 import javax.xml.transform.dom.DOMSource;
 
-import org.jdom.Element;
-import org.jdom.Namespace;
-import org.jdom.transform.JDOMSource;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+import org.jdom2.transform.JDOMSource;
 import org.w3c.dom.Node;
 
 

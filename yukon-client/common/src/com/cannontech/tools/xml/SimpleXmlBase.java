@@ -1,7 +1,7 @@
 package com.cannontech.tools.xml;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 public class SimpleXmlBase {
     

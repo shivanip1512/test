@@ -1,7 +1,7 @@
 package com.cannontech.capcontrol.creation.model;
 
-import org.jdom.Element;
-import org.jdom.Namespace;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 
 import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
 import com.cannontech.i18n.YukonMessageSourceResolvable;

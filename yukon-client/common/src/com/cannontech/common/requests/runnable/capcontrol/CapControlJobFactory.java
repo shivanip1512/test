@@ -1,6 +1,6 @@
 package com.cannontech.common.requests.runnable.capcontrol;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.creation.model.CbcImportCompleteDataResult;

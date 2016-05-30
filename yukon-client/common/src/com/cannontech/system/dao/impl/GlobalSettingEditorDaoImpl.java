@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.log4j.Logger;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;

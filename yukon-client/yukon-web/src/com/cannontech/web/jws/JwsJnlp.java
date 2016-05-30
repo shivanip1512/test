@@ -85,7 +85,6 @@ public enum JwsJnlp {
                 "jcfield401K.jar",
                 "jcommon.jar",
                 "jcpagelayout450K.jar",
-                "jdom-1.1.3.jar",
                 "jdom-2.0.2.jar",
                 "jfreechart.jar",
                 "jloox30.jar",

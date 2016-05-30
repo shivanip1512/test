@@ -11,9 +11,9 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.BadConfigurationException;

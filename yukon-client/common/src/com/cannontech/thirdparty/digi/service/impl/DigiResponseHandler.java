@@ -11,7 +11,7 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.jdom.Namespace;
+import org.jdom2.Namespace;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;

@@ -3,7 +3,7 @@ package com.cannontech.yukon.api.amr.endpoint.helper;
 import java.util.Map;
 import java.util.Set;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.PaoData;

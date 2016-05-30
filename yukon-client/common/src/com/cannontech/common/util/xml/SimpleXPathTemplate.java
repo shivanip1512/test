@@ -37,9 +37,9 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.transform.JDOMSource;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.transform.JDOMSource;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.xml.namespace.SimpleNamespaceContext;
@@ -430,7 +430,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
                 // parse into JDOM to allow reusability (because InputStream can't be read twice)
                 StreamSource stream = (StreamSource) context;
                 SAXBuilder builder = new SAXBuilder();
-                org.jdom.Document document;
+                org.jdom2.Document document;
                 if (stream.getInputStream() != null) {
                     document = builder.build(stream.getInputStream());
                 }
@@ -453,7 +453,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         StringReader reader = new StringReader(rawXml);
 
         SAXBuilder builder = new SAXBuilder();
-        org.jdom.Document document;
+        org.jdom2.Document document;
         
         try {
             document = builder.build(reader);

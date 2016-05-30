@@ -3,10 +3,10 @@ package com.cannontech.yukon.api.account;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.jdom.transform.JDOMSource;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.transform.JDOMSource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;

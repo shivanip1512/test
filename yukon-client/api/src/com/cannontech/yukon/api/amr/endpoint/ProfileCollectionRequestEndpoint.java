@@ -2,8 +2,8 @@ package com.cannontech.yukon.api.amr.endpoint;
 
 import java.util.Set;
 
-import org.jdom.Element;
-import org.jdom.Namespace;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Period;

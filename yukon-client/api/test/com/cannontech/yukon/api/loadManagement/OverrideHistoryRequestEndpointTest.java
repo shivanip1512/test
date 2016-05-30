@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

@@ -8,8 +8,8 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xerces.jaxp.validation.XMLSchemaFactory;
-import org.jdom.Element;
-import org.jdom.transform.JDOMSource;
+import org.jdom2.Element;
+import org.jdom2.transform.JDOMSource;
 import org.junit.Assert;
 import org.springframework.core.io.Resource;
 import org.xml.sax.ErrorHandler;

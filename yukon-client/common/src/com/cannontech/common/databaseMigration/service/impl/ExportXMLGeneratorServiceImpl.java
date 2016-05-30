@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.jdom.Element;
+import org.jdom2.Element;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.clientutils.YukonLogManager;

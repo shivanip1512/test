@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;

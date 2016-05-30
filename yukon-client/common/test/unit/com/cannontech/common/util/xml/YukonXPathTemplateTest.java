@@ -2,7 +2,7 @@ package com.cannontech.common.util.xml;
 
 import static org.junit.Assert.*;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.springframework.xml.xpath.XPathException;

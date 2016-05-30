@@ -3,10 +3,10 @@ package com.cannontech.tools.xml;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 public class SimpleXmlWriter extends SimpleXmlBase {
 

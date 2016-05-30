@@ -2,7 +2,7 @@ package com.cannontech.billing.format.itron;
 
 import java.util.List;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 import com.cannontech.billing.device.base.BillableDevice;
 
