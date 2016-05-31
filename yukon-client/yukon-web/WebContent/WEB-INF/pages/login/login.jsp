@@ -19,6 +19,11 @@
                                 <cti:msg2 key="yukon.web.login.invalidLogin"/>
                             </div>
                         </c:if>
+                        <c:if test="${!empty param.invalidCsrfToken}">
+                            <div class="login-error-msg">
+                                <cti:msg2 key="yukon.web.login.invalidCsrfToken"/>
+                            </div>
+                        </c:if>
                         <c:if test="${!empty param.retrySeconds}">
                             <div class="login-error-msg">
                                 <cti:msg2 key="yukon.web.login.retry" argument="${param.retrySeconds}"/>

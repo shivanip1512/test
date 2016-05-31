@@ -2,6 +2,7 @@ package com.cannontech.web.security;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +10,18 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.widget.support.WidgetMultiActionController;
 
 public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
+    private static final String INVALID_CSRF_TOKEN = "invalidCsrfToken";
+
     private WebSecurityAnnotationProcessor annotationProcessor;
-    
+
     @Autowired private CsrfTokenService csrfTokenService;
-    
+
     @Override
     public boolean preHandle(HttpServletRequest request, 
             HttpServletResponse response, Object handler) throws Exception {
@@ -31,12 +35,22 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
             annotationProcessor.processClass(getClass(handler));
             ignoreCsrf = AnnotationUtils.findAnnotation(getClass(handler), IgnoreCsrfCheck.class) != null;
         }
-        
+
         if(request.getRequestURI().contains("/soap")) {
             ignoreCsrf = true;
         }
         if (!ignoreCsrf) {
-            csrfTokenService.validateToken(request);
+            try {
+                csrfTokenService.validateToken(request);
+            } catch (SecurityException se) {
+                System.out.println(se);
+                String redirect =
+                    ServletUtil.createSafeRedirectUrl(request, "/login.jsp?" + INVALID_CSRF_TOKEN + "=true");
+                response.sendRedirect(redirect);
+                HttpSession session = request.getSession(false);
+                session.invalidate();
+                return false;
+            }
         }
 
         return true;
@@ -47,7 +61,7 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
             WebSecurityAnnotationProcessor annotationProcessor) {
         this.annotationProcessor = annotationProcessor;
     }
-    
+
     private Class<?> getClass(Object bean) {
         if (isProxy(bean)) {
             return AopUtils.getTargetClass(bean);
@@ -63,9 +77,9 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
     }
 
     private boolean isProxy(Object bean) {
-       return AopUtils.isAopProxy(bean)
-              || AopUtils.isCglibProxy(bean)
-              ||  AopUtils.isJdkDynamicProxy(bean);
+        return AopUtils.isAopProxy(bean)
+                || AopUtils.isCglibProxy(bean)
+                ||  AopUtils.isJdkDynamicProxy(bean);
     }
-    
+
 }

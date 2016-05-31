@@ -8,6 +8,7 @@
     <entry key="yukon.web.login.formTopLogo"></entry>
     <entry key="yukon.web.login.titleText"></entry>
     <entry key="yukon.web.login.invalidLogin">Invalid username/password</entry>
+    <entry key="yukon.web.login.invalidCsrfToken">Session has expired, please log back in.</entry>
     <entry key="yukon.web.login.retry">Login disabled, please retry after {0} seconds</entry>
     <entry key="yukon.web.login.invalidUrlAccess">Invalid page access for user</entry>
     <entry key="yukon.web.login.login">Login</entry>
