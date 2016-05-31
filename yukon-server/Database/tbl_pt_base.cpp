@@ -8,8 +8,10 @@ using std::string;
 using std::endl;
 
 const int CtiTablePointBase::MASK_POINT_BASE_TAGS = TAG_DISABLE_ALARM_BY_POINT
+                                                  | TAG_DISABLE_CONTROL_BY_POINT
                                                   | TAG_DISABLE_POINT_BY_POINT
-                                                  | TAG_ATTRIB_PSEUDO;
+                                                  | TAG_ATTRIB_PSEUDO
+                                                  | TAG_ATTRIB_CONTROL_AVAILABLE;
 
 string CtiTablePointBase::getSQLCoreStatement()
 {
