@@ -62,7 +62,4 @@ public:
    BOOL isPseudoPoint() const;
 
    UINT adjustStaticTags(UINT &tags) const;
-
-   static const int MASK_POINT_BASE_TAGS;
-
 };

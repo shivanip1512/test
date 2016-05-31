@@ -62,7 +62,14 @@ void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void
 
         if(statictags != pDyn->getDispatch().getTags())
         {
-            pDyn->getDispatch().resetTags(CtiTablePointBase::MASK_POINT_BASE_TAGS);
+            static constexpr int DB_CONTROLLED_TAGS = 
+                TAG_DISABLE_ALARM_BY_POINT
+                | TAG_DISABLE_CONTROL_BY_POINT
+                | TAG_DISABLE_POINT_BY_POINT
+                | TAG_ATTRIB_PSEUDO
+                | TAG_ATTRIB_CONTROL_AVAILABLE;
+
+            pDyn->getDispatch().resetTags(DB_CONTROLLED_TAGS);
             pDyn->getDispatch().setTags(statictags);
         }
     }
