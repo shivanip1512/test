@@ -34,7 +34,7 @@ CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, char *file, char
 
             os << "lockguard-" << GetCurrentThreadId();
 
-            RaiseException(0xe0000001, 0, 0, 0);
+            CreateMiniDump(os.str());
         }
     }
 

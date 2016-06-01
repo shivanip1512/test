@@ -2260,11 +2260,20 @@ LONG WINAPI CreateMiniDumpExceptionHandler( const Cti::compileinfo_t &info, cons
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
+static CtiMutex dumpMutex;      // Minidump is not thread safe.
+
+/*
+Create a minidump file for use in debugging.
+
+If the call is done my an SEH exception, then pExceptionPtrs contains the detail of the fault causeing
+The call.  If it's called by the user, pExceptionPtrs is 0 and a psudo-fault will be created pointing
+to the calling stackframe.
+*/
 void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTERS &pExceptionPtrs )
 {
     /* Great info at http://www.debuginfo.com/articles/effminidumps.html */
 
-    assert(pExceptionPtrs != 0);
+    CTILOCKGUARD(CtiMutex, guard, dumpMutex);
 
     ostringstream os;
 
@@ -2299,7 +2308,38 @@ void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTE
     // We need to create a MINIDUMP_EXCEPTION_INFORMATION structure to pass to MiniDumpWriteDump.
     dumpInfo.ThreadId = GetCurrentThreadId();
     dumpInfo.ClientPointers = false;
-    dumpInfo.ExceptionPointers = pExceptionPtrs;
+    if (pExceptionPtrs != 0)
+    {
+        // Caused by SEH
+        dumpInfo.ExceptionPointers = pExceptionPtrs;
+    }
+    else
+    {
+        // Make up our own ExceptionPointers
+
+        EXCEPTION_RECORD ExceptionRecord{};
+        CONTEXT ContextRecord{};
+        EXCEPTION_POINTERS ExceptionPointers{};
+
+        // Adapted from http://crashrpt.sourceforge.net/docs/html/exception_handling.html
+
+        // See https://msdn.microsoft.com/en-us/library/s975zw7k.aspx and
+        //     https://msdn.microsoft.com/en-us/library/64ez38eh.aspx for 
+        //     _ReturnAddress and _AddressOfReturnAddress definitions
+
+        ContextRecord.ContextFlags = CONTEXT_CONTROL;
+        ContextRecord.Eip = (ULONG)_ReturnAddress();
+        ContextRecord.Esp = (ULONG)_AddressOfReturnAddress();
+        ContextRecord.Ebp = *((ULONG *)_AddressOfReturnAddress()-1);
+
+        // Make up a customer defined error code.
+        ExceptionRecord.ExceptionCode = 0xe0000001;
+        ExceptionRecord.ExceptionAddress = _ReturnAddress();    // Exception is our caller
+
+        dumpInfo.ExceptionPointers = &ExceptionPointers;
+        dumpInfo.ExceptionPointers->ExceptionRecord = &ExceptionRecord;
+        dumpInfo.ExceptionPointers->ContextRecord = &ContextRecord;  
+    }
 
     /* Generate mini-dump */
     if( !MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), outfile, 

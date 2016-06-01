@@ -56,7 +56,7 @@ public:
 
                 os << "lockguard-" << GetCurrentThreadId();
 
-                RaiseException(0xe0000001, 0, 0, 0);
+                CreateMiniDump(os.str());
             }
         }
         _acquired = true;
