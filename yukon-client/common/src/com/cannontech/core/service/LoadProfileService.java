@@ -72,7 +72,7 @@ public interface LoadProfileService {
     
      public static interface CompletionCallback{
         public void onSuccess(String successInfo);
-        public String onFailure(int deviceId, String resultString);
+        public String onFailure(int returnStatus, String resultString);
         public void onCancel(LiteYukonUser cancelUser);
     }
      
