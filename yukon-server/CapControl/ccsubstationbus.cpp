@@ -248,6 +248,20 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _dirty( false )
 {
     restore(rdr);
+
+    if ( ! rdr[ "AdditionalFlags" ].isNull() ) 
+    {
+        setDynamicData( rdr );
+    }
+
+    if ( ! rdr[ "DECIMALPLACES" ].isNull() ) 
+    {
+        long decimalPlaces;
+
+        rdr["DECIMALPLACES"] >> decimalPlaces;
+
+        setDecimalPlaces( decimalPlaces );
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -8610,11 +8624,36 @@ void CtiCCSubstationBus::restore( Cti::RowReader & rdr )
     std::string flag;
 
     rdr["CurrentVarLoadPointID"]  >> _currentvarloadpointid;
+
+    if ( _currentvarloadpointid > 0 )
+    {
+        addPointId( _currentvarloadpointid );
+    }
+
     rdr["CurrentWattLoadPointID"] >> _currentwattloadpointid;
+
+    if ( _currentwattloadpointid > 0 )
+    {
+        addPointId( _currentwattloadpointid );
+    }
+
     rdr["MapLocationID"]          >> _maplocationid;
+
     rdr["CurrentVoltLoadPointID"] >> _currentvoltloadpointid;
+
+    if ( _currentvoltloadpointid > 0 )
+    {
+        addPointId( _currentvoltloadpointid );
+    }
+
     rdr["AltSubID"]               >> _altDualSubId;
+
     rdr["SwitchPointID"]          >> _switchOverPointId;
+
+    if ( _switchOverPointId > 0 )
+    {
+        addPointId( _switchOverPointId );
+    }
 
     rdr["DualBusEnabled"]         >> flag;
 
@@ -8631,12 +8670,36 @@ void CtiCCSubstationBus::restore( Cti::RowReader & rdr )
     rdr["phaseb"]                 >> _phaseBid;
     rdr["phasec"]                 >> _phaseCid;
 
+    if ( _usePhaseData )
+    {
+        if ( _phaseBid > 0 )
+        {
+            addPointId( _phaseBid );
+        }
+
+        if ( _phaseCid > 0 )
+        {
+            addPointId( _phaseCid );
+        }
+    }
+
     rdr["ControlFlag"]            >> flag;
 
     _totalizedControlFlag         = deserializeFlag( flag );
 
     rdr["VoltReductionPointId"]   >> _voltReductionControlId;
+
+    if ( _voltReductionControlId > 0 )
+    {
+        addPointId( _voltReductionControlId );
+    }
+
     rdr["DisableBusPointId"]      >> _disableBusPointId;
+
+    if ( _disableBusPointId > 0 )
+    {
+        addPointId( _disableBusPointId );
+    }
 }
 
 void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
@@ -8708,17 +8771,6 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
     _sendMoreTimeControlledCommandsFlag   = deserializeFlag( flags, 15 );
     _disableOvUvVerificationFlag          = deserializeFlag( flags, 16 );
     _primaryBusFlag                       = deserializeFlag( flags, 17 );
-
-    if (getStrategy()->getMaxConfirmTime() == 0)
-    {
-        setSendMoreTimeControlledCommandsFlag(false);
-    }
-
-    if ( getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod ||
-         _likeDayControlFlag)
-    {
-        figureNextCheckTime();
-    }
 
     rdr["CurrVerifyCBId"]           >> _currentVerificationCapBankId;
     rdr["CurrVerifyFeederId"]       >> _currentVerificationFeederId;

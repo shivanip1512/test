@@ -4456,44 +4456,117 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
         CtiTime currentDateTime;
         {
-            static const string sqlNoID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                             "YP.description, YP.disableflag, CSB.currentvarloadpointid, "
-                                             "CSB.currentwattloadpointid, CSB.maplocationid, CSB.currentvoltloadpointid, "
-                                             "CSB.AltSubID, CSB.SwitchPointID, CSB.DualBusEnabled, "
-                                             "CSB.multiMonitorControl, CSB.usephasedata, CSB.phaseb, CSB.phasec, "
-                                             "CSB.controlflag, CSB.voltreductionpointid, CSB.disablebuspointid "
-                                           "FROM yukonpaobject YP, capcontrolsubstationbus CSB "
-                                           "WHERE YP.paobjectid = CSB.substationbusid";
+            static const std::string sql = 
+                "SELECT "
+                    "Y.PAObjectID, "
+                    "Y.Category, "
+                    "Y.PAOClass, "
+                    "Y.PAOName, "
+                    "Y.Type, "
+                    "Y.Description, "
+                    "Y.DisableFlag, "
+                    "B.CurrentVarLoadPointID, "
+                    "B.CurrentWattLoadPointID, "
+                    "B.MapLocationID, "
+                    "B.CurrentVoltLoadPointID, "
+                    "B.AltSubID, "
+                    "B.SwitchPointID, "
+                    "B.DualBusEnabled, "
+                    "B.MultiMonitorControl, "
+                    "B.usephasedata, "
+                    "B.phaseb, "
+                    "B.phasec, "
+                    "B.ControlFlag, "
+                    "B.VoltReductionPointId, "
+                    "B.DisableBusPointId, "
+                    "D.CurrentVarPointValue, "
+                    "D.CurrentWattPointValue, "
+                    "D.NextCheckTime, "
+                    "D.NewPointDataReceivedFlag, "
+                    "D.BusUpdatedFlag, "
+                    "D.LastCurrentVarUpdateTime, "
+                    "D.EstimatedVarPointValue, "
+                    "D.CurrentDailyOperations, "
+                    "D.PeakTimeFlag, "
+                    "D.RecentlyControlledFlag, "
+                    "D.LastOperationTime, "
+                    "D.VarValueBeforeControl, "
+                    "D.LastFeederPAOid, "
+                    "D.LastFeederPosition, "
+                    "D.PowerFactorValue, "
+                    "D.KvarSolution, "
+                    "D.EstimatedPFValue, "
+                    "D.CurrentVarPointQuality, "
+                    "D.WaiveControlFlag, "
+                    "D.AdditionalFlags, "
+                    "D.CurrVerifyCBId, "
+                    "D.CurrVerifyFeederId, "
+                    "D.CurrVerifyCBOrigState, "
+                    "D.VerificationStrategy, "
+                    "D.CbInactivityTime, "
+                    "D.CurrentVoltPointValue, "
+                    "D.SwitchPointStatus, "
+                    "D.AltSubControlValue, "
+                    "D.EventSeq, "
+                    "D.CurrentWattPointQuality, "
+                    "D.CurrentVoltPointQuality, "
+                    "D.iVControlTot, "
+                    "D.iVCount, "
+                    "D.iWControlTot, "
+                    "D.iWCount, "
+                    "D.phaseavalue, "
+                    "D.phasebvalue, "
+                    "D.phasecvalue, "
+                    "D.LastWattPointTime, "
+                    "D.LastVoltPointTime, "
+                    "D.PhaseAValueBeforeControl, "
+                    "D.PhaseBValueBeforeControl, "
+                    "D.PhaseCValueBeforeControl, "
+                    "P.DECIMALPLACES "
+                "FROM "
+                    "YukonPAObject Y "
+                        "JOIN CAPCONTROLSUBSTATIONBUS B "
+                            "ON Y.PAObjectID = B.SubstationBusID "
+                        "LEFT OUTER JOIN DynamicCCSubstationBus D "
+                            "ON B.SubstationBusID = D.SubstationBusID "
+                        "LEFT OUTER JOIN POINTUNIT P "
+                            "ON B.CurrentVarLoadPointID = P.POINTID";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            static const std::string sqlID = sql +
+                " WHERE "
+                    "Y.PAObjectID = ? OR B.AltSubID = ?";
 
-            if( subBusId > 0 )
+            Cti::Database::DatabaseConnection   connection;
+            Cti::Database::DatabaseReader       rdr( connection );
+
+            if ( subBusId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " AND (YP.paobjectid = ? OR CSB.AltSubID = ?)");
-                rdr.setCommandText(sqlID);
+                rdr.setCommandText( sqlID );
                 rdr << subBusId
                     << subBusId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
-            CtiCCSubstationBusPtr  currentCCSubstationBus;
             while ( rdr() )
             {
                 long busId;
                 long altBusId;
-                rdr["paobjectid"] >> busId;
-                rdr["AltSubID"] >> altBusId;
+
+                rdr["PAObjectID"] >> busId;
+                rdr["AltSubID"]   >> altBusId;
+
+                CtiCCSubstationBusPtr  currentCCSubstationBus;
+
                 if (subBusId > 0 && busId != subBusId && altBusId == subBusId && paobject_subbus_map->find(busId) != paobject_subbus_map->end() )
                 {
                     currentCCSubstationBus = findInMap(busId, paobject_subbus_map);
@@ -4505,59 +4578,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 }
 
 
-                if (currentCCSubstationBus->getCurrentVarLoadPointId() > 0 )
-                {
-                    pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getCurrentVarLoadPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getCurrentVarLoadPointId());
-                }
-                if (currentCCSubstationBus->getCurrentWattLoadPointId() > 0 )
-                {
-                    pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getCurrentWattLoadPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getCurrentWattLoadPointId());
-                }
-                if (currentCCSubstationBus->getCurrentVoltLoadPointId() > 0 )
-                {
-                    pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getCurrentVoltLoadPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getCurrentVoltLoadPointId());
-                }
-                if (currentCCSubstationBus->getSwitchOverPointId() > 0 )
-                {
-                    pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getSwitchOverPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getSwitchOverPointId());
-                }
-
                 if (currentCCSubstationBus->getDualBusEnable() &&
                     currentCCSubstationBus->getAltDualSubId() != currentCCSubstationBus->getPaoId())
                 {
                     altsub_sub_idmap->insert(make_pair(currentCCSubstationBus->getAltDualSubId(), currentCCSubstationBus->getPaoId()));
                 }
-                if (currentCCSubstationBus->getUsePhaseData())
-                {
-                    if (currentCCSubstationBus->getPhaseBId() > 0)
-                    {
-                        pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getPhaseBId(), currentCCSubstationBus));
-                        currentCCSubstationBus->addPointId(currentCCSubstationBus->getPhaseBId());
-                    }
-                    if (currentCCSubstationBus->getPhaseCId() > 0)
-                    {
-                        pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getPhaseCId(), currentCCSubstationBus));
-                        currentCCSubstationBus->addPointId(currentCCSubstationBus->getPhaseCId());
-                    }
-
-                }
-
-                if (currentCCSubstationBus->getVoltReductionControlId() > 0 )
-                {
-                    pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getVoltReductionControlId(), currentCCSubstationBus));
-                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getVoltReductionControlId());
-                }
-                if (currentCCSubstationBus->getDisableBusPointId() > 0)
-                {
-                    pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getDisableBusPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getDisableBusPointId());
-
-                }
-                    //cCSubstationBuses->push_back(currentCCSubstationBus);
             }
         }
         {
@@ -4826,95 +4851,43 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
             }
 
         }
-        {
-            static const string sqlNoID =  "SELECT SSB.substationbusid, PTU.decimalplaces "
-                                           "FROM pointunit PTU, capcontrolsubstationbus SSB "
-                                           "WHERE SSB.currentvarloadpointid = PTU.pointid";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+        {   // there was a section of code in the setDynamicData function that initialized some
+            //  strategy stuff.  this *was* occuring after the strategy loading.  setDynamicData
+            //  was folded into the constructor so that section of code needed to be moved out
+            //  and executed after the strategy was assigned.  so here it is!
 
-            if( subBusId > 0 )
+            auto initStrategy = 
+                []( CtiCCSubstationBusPtr bus )
+                {
+                    if ( bus->getStrategy()->getMaxConfirmTime() == 0 )
+                    {
+                        bus->setSendMoreTimeControlledCommandsFlag( false );
+                    }
+
+                    if ( bus->getStrategy()->getMethodType() == ControlStrategy::TimeOfDayMethod ||
+                         bus->getLikeDayControlFlag() )
+                    {
+                        bus->figureNextCheckTime();
+                    }
+                };
+
+            if ( subBusId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " AND SSB.substationbusid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << subBusId;
+                if ( auto bus = Cti::mapFind( *paobject_subbus_map, subBusId ) )
+                {
+                    initStrategy( *bus );
+                }
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentSubBusId;
-                long tempDecimalPlaces;
-                rdr["substationbusid"] >> currentSubBusId;
-                if (CtiCCSubstationBusPtr currentCCSubstationBus = findInMap(currentSubBusId, paobject_subbus_map))
+                for ( auto & element : *paobject_subbus_map )
                 {
-                    rdr["decimalplaces"] >> tempDecimalPlaces;
-                    currentCCSubstationBus->setDecimalPlaces(tempDecimalPlaces);
+                    initStrategy( element.second );
                 }
             }
         }
-        {
-            static const string sqlNoID =  "SELECT DSB.substationbusid, DSB.currentvarpointvalue, "
-                                               "DSB.currentwattpointvalue, DSB.nextchecktime, DSB.newpointdatareceivedflag, "
-                                               "DSB.busupdatedflag, DSB.lastcurrentvarupdatetime, DSB.estimatedvarpointvalue, "
-                                               "DSB.currentdailyoperations, DSB.peaktimeflag, DSB.recentlycontrolledflag, "
-                                               "DSB.lastoperationtime, DSB.varvaluebeforecontrol, DSB.lastfeederpaoid, "
-                                               "DSB.lastfeederposition, DSB.powerfactorvalue, "
-                                               "DSB.kvarsolution, DSB.estimatedpfvalue, DSB.currentvarpointquality, "
-                                               "DSB.waivecontrolflag, DSB.additionalflags, DSB.currverifycbid, "
-                                               "DSB.currverifyfeederid, DSB.currverifycborigstate, DSB.verificationstrategy, "
-                                               "DSB.cbinactivitytime, DSB.currentvoltpointvalue, DSB.switchPointStatus, "
-                                               "DSB.altSubControlValue, DSB.eventSeq, DSB.currentwattpointquality, "
-                                               "DSB.currentvoltpointquality, DSB.ivcontroltot, DSB.ivcount, DSB.iwcontroltot, "
-                                               "DSB.iwcount, DSB.phaseavalue, DSB.phasebvalue, DSB.phasecvalue, "
-                                               "DSB.lastwattpointtime, DSB.lastvoltpointtime, DSB.phaseavaluebeforecontrol, "
-                                               "DSB.phasebvaluebeforecontrol, DSB.phasecvaluebeforecontrol "
-                                           "FROM capcontrolsubstationbus CSB, dynamicccsubstationbus DSB "
-                                           "WHERE CSB.substationbusid = DSB.substationbusid";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if( subBusId > 0 )
-            {
-                static const string sqlID = string(sqlNoID + " AND CSB.substationbusid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << subBusId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentSubBusId;
-
-                rdr["substationbusid"] >> currentSubBusId;
-                if (CtiCCSubstationBusPtr currentCCSubstationBus = findInMap(currentSubBusId, paobject_subbus_map))
-                {
-                     currentCCSubstationBus->setDynamicData(rdr);
-                }
-            }
-        }
         if (subBusId > 0) // else, when reloading all, then the reload of feeders will be called after subBusReload and take care of it.
         {
             static const string sql =  "SELECT FSA.feederid, FSA.substationbusid, FSA.displayorder "

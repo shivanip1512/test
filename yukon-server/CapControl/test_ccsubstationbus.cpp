@@ -792,7 +792,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_no_dynam
 
     {   // Core bus object initialization
 
-        using CCBusRow     = Cti::Test::StringRow<21>;
+        using CCBusRow     = Cti::Test::StringRow<65>;
         using CCBusReader  = Cti::Test::TestReader<CCBusRow>;
 
         CCBusRow columnNames =
@@ -817,7 +817,51 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_no_dynam
             "phasec",
             "ControlFlag",
             "VoltReductionPointId",
-            "DisableBusPointId"
+            "DisableBusPointId",
+            "CurrentVarPointValue",
+            "CurrentWattPointValue",
+            "NextCheckTime",
+            "NewPointDataReceivedFlag",
+            "BusUpdatedFlag",
+            "LastCurrentVarUpdateTime",
+            "EstimatedVarPointValue",
+            "CurrentDailyOperations",
+            "PeakTimeFlag",
+            "RecentlyControlledFlag",
+            "LastOperationTime",
+            "VarValueBeforeControl",
+            "LastFeederPAOid",
+            "LastFeederPosition",
+            "PowerFactorValue",
+            "KvarSolution",
+            "EstimatedPFValue",
+            "CurrentVarPointQuality",
+            "WaiveControlFlag",
+            "AdditionalFlags",
+            "CurrVerifyCBId",
+            "CurrVerifyFeederId",
+            "CurrVerifyCBOrigState",
+            "VerificationStrategy",
+            "CbInactivityTime",
+            "CurrentVoltPointValue",
+            "SwitchPointStatus",
+            "AltSubControlValue",
+            "EventSeq",
+            "CurrentWattPointQuality",
+            "CurrentVoltPointQuality",
+            "iVControlTot",
+            "iVCount",
+            "iWControlTot",
+            "iWCount",
+            "phaseavalue",
+            "phasebvalue",
+            "phasecvalue",
+            "LastWattPointTime",
+            "LastVoltPointTime",
+            "PhaseAValueBeforeControl",
+            "PhaseBValueBeforeControl",
+            "PhaseCValueBeforeControl",
+            "DECIMALPLACES"
         };
 
         std::vector<CCBusRow> rowVec
@@ -843,7 +887,51 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_no_dynam
                 "107",
                 "Y",
                 "108",
-                "109"
+                "109",
+                CCBusReader::getNullString(), 
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString(),
+                CCBusReader::getNullString()
             }
         };
 
@@ -976,7 +1064,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
 
     {   // Core bus object initialization
 
-        using CCBusRow     = Cti::Test::StringRow<21>;
+        using CCBusRow     = Cti::Test::StringRow<65>;
         using CCBusReader  = Cti::Test::TestReader<CCBusRow>;
 
         CCBusRow columnNames =
@@ -1001,56 +1089,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
             "phasec",
             "ControlFlag",
             "VoltReductionPointId",
-            "DisableBusPointId"
-        };
-
-        std::vector<CCBusRow> rowVec
-        {
-            {
-                "4",
-                "CAPCONTROL",
-                "CAPCONTROL",
-                "GL Bus 10",
-                "CCSUBBUS",
-                "NV",
-                "Y",
-                "101",
-                "102",
-                "10",
-                "103",
-                "104",
-                "105",
-                "Y",
-                "Y",
-                "Y",
-                "106",
-                "107",
-                "Y",
-                "108",
-                "109"
-            }
-        };
-
-        CCBusReader reader( columnNames, rowVec );
-
-        while ( reader() )
-        {
-            long    paoID;
-
-            reader[ "PAObjectID" ] >> paoID;
-
-            busses.insert( paoID, new test_CtiCCSubstationBus( reader ) );
-        }
-    }
-
-    {   // Dynamic data portion of the loading
-
-        using CCBusRow     = Cti::Test::StringRow<44>;
-        using CCBusReader  = Cti::Test::TestReader<CCBusRow>;
-
-        CCBusRow columnNames =
-        {
-            "SubstationBusID",
+            "DisableBusPointId",
             "CurrentVarPointValue",
             "CurrentWattPointValue",
             "NextCheckTime",
@@ -1093,13 +1132,34 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
             "LastVoltPointTime",
             "PhaseAValueBeforeControl",
             "PhaseBValueBeforeControl",
-            "PhaseCValueBeforeControl"
+            "PhaseCValueBeforeControl",
+            "DECIMALPLACES"
         };
 
         std::vector<CCBusRow> rowVec
         {
             {
                 "4",
+                "CAPCONTROL",
+                "CAPCONTROL",
+                "GL Bus 10",
+                "CCSUBBUS",
+                "NV",
+                "Y",
+                "101",
+                "102",
+                "10",
+                "103",
+                "104",
+                "105",
+                "Y",
+                "Y",
+                "Y",
+                "106",
+                "107",
+                "Y",
+                "108",
+                "109",
                 "550",
                 "2200",
                 "2016-04-26 13:00:00.000",
@@ -1142,33 +1202,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
                 "2015-12-07 17:17:18.000",
                 "0",
                 "0",
-                "0"
-            }
-        };
-
-        CCBusReader reader( columnNames, rowVec );
-
-        while ( reader() )
-        {
-            busses[ 4 ].setDynamicData( reader );
-        }
-    }
-
-    {   // Decimal places
-
-        using CCBusRow     = Cti::Test::StringRow<2>;
-        using CCBusReader  = Cti::Test::TestReader<CCBusRow>;
-
-        CCBusRow columnNames =
-        {
-            "SubstationBusID",
-            "DECIMALPLACES"
-        };
-
-        std::vector<CCBusRow> rowVec
-        {
-            {
-                "4",
+                "0",
                 "2"
             }
         };
@@ -1177,50 +1211,12 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
 
         while ( reader() )
         {
-            long decimalPlaces;
+            long    paoID;
 
-            reader["DECIMALPLACES"] >> decimalPlaces;
+            reader[ "PAObjectID" ] >> paoID;
 
-            busses[ 4 ].setDecimalPlaces( decimalPlaces );
+            busses.insert( paoID, new test_CtiCCSubstationBus( reader ) );
         }
-    }
-
-    //  These are the IDs that go in the objects pointID collection.
-
-    if ( busses[ 4 ].getCurrentVarLoadPointId() > 0 )
-    {
-        busses[ 4 ].addPointId( busses[ 4 ].getCurrentVarLoadPointId() );
-    }
-    if ( busses[ 4 ].getCurrentWattLoadPointId() > 0 )
-    {
-        busses[ 4 ].addPointId( busses[ 4 ].getCurrentWattLoadPointId() );
-    }
-    if ( busses[ 4 ].getCurrentVoltLoadPointId() > 0 )
-    {
-        busses[ 4 ].addPointId( busses[ 4 ].getCurrentVoltLoadPointId() );
-    }
-    if ( busses[ 4 ].getSwitchOverPointId() > 0 )
-    {
-        busses[ 4 ].addPointId( busses[ 4 ].getSwitchOverPointId() );
-    }
-    if ( busses[ 4 ].getUsePhaseData() )
-    {
-        if ( busses[ 4 ].getPhaseBId() > 0 )
-        {
-            busses[ 4 ].addPointId( busses[ 4 ].getPhaseBId() );
-        }
-        if ( busses[ 4 ].getPhaseCId() > 0 )
-        {
-            busses[ 4 ].addPointId( busses[ 4 ].getPhaseCId() );
-        }
-    }
-    if ( busses[ 4 ].getVoltReductionControlId() > 0 )
-    {
-        busses[ 4 ].addPointId( busses[ 4 ].getVoltReductionControlId() );
-    }
-    if ( busses[ 4 ].getDisableBusPointId() > 0 )
-    {
-        busses[ 4 ].addPointId( busses[ 4 ].getDisableBusPointId() );
     }
 
     // ** Validate...
