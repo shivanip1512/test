@@ -43,7 +43,6 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
             try {
                 csrfTokenService.validateToken(request);
             } catch (SecurityException se) {
-                System.out.println(se);
                 String redirect =
                     ServletUtil.createSafeRedirectUrl(request, "/login.jsp?" + INVALID_CSRF_TOKEN + "=true");
                 response.sendRedirect(redirect);
