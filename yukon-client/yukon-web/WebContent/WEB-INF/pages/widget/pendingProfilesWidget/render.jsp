@@ -12,7 +12,7 @@
     // REFRESHER
     var refreshCmd = 'refreshPending';
     var refreshParams = {'deviceId':${deviceId}};
-    var refreshPeriod = 4;
+    var refreshPeriod = 10;
     var refresher = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd, refreshParams, refreshPeriod);
     
     // CANCEL FUNCTION

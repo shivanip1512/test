@@ -67,14 +67,21 @@ public interface LoadProfileService {
         public int channel;
         public String userName;
         public Double percentDone;
-       
+        public String requestFailureMessage;
     }
     
      public static interface CompletionCallback{
         public void onSuccess(String successInfo);
-        public void onFailure(int returnStatus, String resultString);
+        public String onFailure(int deviceId, String resultString);
         public void onCancel(LiteYukonUser cancelUser);
     }
      
     public List<Map<String, String>> getPendingRequests(LiteYukonPAObject device,  YukonUserContext userContext);
+    
+    /** updates Failure Message in the failed profile load task
+     * @param errorDescription
+     * @param requestId
+     * @param deviceId 
+     */
+    public void updateFailureMessage(String errorDescription, long requestId, int deviceId);
 }

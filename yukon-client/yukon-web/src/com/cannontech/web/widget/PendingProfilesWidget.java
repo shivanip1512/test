@@ -48,6 +48,7 @@ public class PendingProfilesWidget extends WidgetControllerBase {
         setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
+    @Override
     @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
@@ -75,7 +76,7 @@ public class PendingProfilesWidget extends WidgetControllerBase {
         // stop request
         long stopRequestId = ServletRequestUtils.getLongParameter(request, "stopRequestId", 0);
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
-        if (stopRequestId > 0) {
+        if (stopRequestId != 0) {
             loadProfileService.removePendingLoadProfileRequest(device, stopRequestId, userContext);
         }
         

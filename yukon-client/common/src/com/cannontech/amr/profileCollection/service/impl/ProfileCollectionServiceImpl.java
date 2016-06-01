@@ -140,7 +140,7 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
             }
 
             @Override
-            public void onFailure(int returnStatus, String resultString) {
+            public String onFailure(int returnStatus, String resultString) {
                 log.error(token + " onFailure for " + paoIdentifier + ", returnStatus = " +
                         returnStatus + "; resultString = " + resultString);
 
@@ -153,6 +153,7 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
                 
                 errors.put(paoIdentifier, deviceError);
                 workLeft.remove(paoIdentifier);
+                return errorDescription.getDescription();
             }
 
             @Override

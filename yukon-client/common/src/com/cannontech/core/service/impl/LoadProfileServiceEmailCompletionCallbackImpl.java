@@ -20,8 +20,8 @@ import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailHtmlMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 
 
@@ -72,12 +72,11 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
     }
     
     //  onFailure
-    public void onFailure(int returnStatus, String resultString) {
+    public String onFailure(int returnStatus, String resultString) {
+        String errorReason = "";
+        String errorHtmlReason = "";
+        String description = null;
         try {
-           
-            String errorReason = "";
-            String errorHtmlReason = "";
-            
             boolean haveSpecificReason = false;
             final String errorReasonStr = "Error Reason (" + returnStatus + "):";
             
@@ -89,7 +88,7 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
                     haveSpecificReason = true;
                     // Try to use the actual resultString if not empty, otherwise default to deviceErrorTranslator.porter message
                     String porter = StringUtils.defaultIfEmpty(resultString, deviceErrorDescription.getPorter());
-                    String description = deviceErrorDescription.getDescription();
+                    description = deviceErrorDescription.getDescription();
 
                     errorReason += errorReasonStr + "\n" + porter + ": " + description;
                     errorHtmlReason += errorReasonStr + "<br/>" + porter + ": " + description;
@@ -110,7 +109,6 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
                 String originalBody = failureMessage .getBody();
                 String newBody = originalBody + "\n\n" + errorReason;
                 failureMessage.setBody(newBody);
-
                 String originalHtmlBody = failureMessage.getHtmlBody();
                 String newHtmlBody = originalHtmlBody + "<br/><br/>" + errorHtmlReason;
                 failureMessage.setHtmlBody(newHtmlBody);
@@ -121,6 +119,7 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
         } catch (MessagingException e) {
             log.error("Unable to send onFailure message",e);
         }
+        return description;
     }
 
     // onSuccess

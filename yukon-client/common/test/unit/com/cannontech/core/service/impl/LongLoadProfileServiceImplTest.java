@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
@@ -27,16 +26,10 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoAdapter;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ScheduledExecutorMock;
-import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
-import com.cannontech.database.TransactionType;
-import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.ConnectionException;
@@ -107,8 +100,9 @@ public class LongLoadProfileServiceImplTest {
 
     private final LoadProfileService.CompletionCallback incrementingRunner = new LoadProfileService.CompletionCallback() {
         @Override
-        public void onFailure(int returnStatus, String resultString) {
+        public String onFailure(int returnStatus, String resultString) {
             failureRan++;
+            return resultString;
         }
 
         @Override

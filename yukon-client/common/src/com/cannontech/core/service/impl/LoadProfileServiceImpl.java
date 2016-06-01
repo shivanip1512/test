@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,6 +78,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     private Set<Long> recentlyReceivedRequestIds = new HashSet<Long>();
     private Map<Long, CompletionCallback> currentRequestIds = new HashMap<Long, CompletionCallback>();
     private MapQueue<Integer,ProfileRequestInfo> pendingDeviceRequests = new MapQueue<Integer,ProfileRequestInfo>();
+    private ConcurrentHashMap<Integer, CopyOnWriteArrayList<ProfileRequestInfo>> incomingRequestDetails = 
+            new ConcurrentHashMap<Integer, CopyOnWriteArrayList<ProfileRequestInfo>>();
     private Map<Integer,ProfileRequestInfo> currentDeviceRequests = new HashMap<Integer,ProfileRequestInfo>();
     private Map<Long, Integer> enableDisableVoltageProfileRequestIds = new HashMap<Long, Integer>();
     
@@ -211,6 +215,12 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     
     private synchronized void handleOutgoingMessage(ProfileRequestInfo info) {
         int deviceId = info.request.getDeviceID();
+        CopyOnWriteArrayList<ProfileRequestInfo> requests = incomingRequestDetails.get(deviceId);
+        if (requests == null) {
+            requests = new CopyOnWriteArrayList<ProfileRequestInfo>();
+            incomingRequestDetails.put(deviceId, requests);
+        }
+        requests.add(info);
         if (currentDeviceRequests.containsKey(deviceId)) {
             log.info("ongoing request for device id " + deviceId + " already in progress, queueing command");
             pendingDeviceRequests.offer(deviceId,info);
@@ -411,7 +421,6 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 final String resultString = returnMsg.getResultString();
                 
                 recentlyReceivedRequestIds.remove(requestId);
-                currentDeviceRequests.remove(deviceId);
                 
                 if(returnStatus == 0){
                     completedRequestIds.add(requestId);
@@ -426,7 +435,6 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
-
                             // success
                             if (returnStatus == 0) {
                                 runnable.onSuccess("");
@@ -435,8 +443,11 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                             // failure - onFailure will take status and resultString and come up
                             // with a message for the email
                             else {
-                                runnable.onFailure(returnStatus, resultString);
+                                String failureReason = runnable.onFailure(returnStatus, resultString);
+                                // Update the failure message in the Completed tasks list
+                                updateFailureMessage(failureReason, requestId, deviceId);
                             }
+                            currentDeviceRequests.remove(deviceId);
                         }
                     });
                 }
@@ -449,9 +460,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                     // send it through the cancel process to be sure it has been cleaned up
                     sendCancelCommand(requestId, deviceId);
                 }
-                   
-
-            }
+                            }
             
         // this return is for a cancel command that we sent out
         }
@@ -539,6 +548,14 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             }
         }
 
+        CopyOnWriteArrayList<ProfileRequestInfo> requests = incomingRequestDetails.get(deviceId);
+        if (!requests.isEmpty()) {
+            for (ProfileRequestInfo request : requests) {
+                if (request.requestId == requestId) {
+                    requests.remove(request);
+                }
+            }
+        }
         return removed;
     }
     
@@ -584,23 +601,14 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     @Override
     public synchronized List<ProfileRequestInfo> getPendingLoadProfileRequests(YukonPao device) {
         int deviceId = device.getPaoIdentifier().getPaoId();
-        ProfileRequestInfo info = currentDeviceRequests.get(deviceId);
         List<ProfileRequestInfo> result = new ArrayList<ProfileRequestInfo>();
-        
-        if(info != null){
-            
-            info.percentDone =  calculatePercentDone(info.requestId);
-            result.add(info);
+        CopyOnWriteArrayList<ProfileRequestInfo> requests = incomingRequestDetails.get(deviceId);
+        if (requests != null) {
+            for (ProfileRequestInfo info : requests) {
+                info.percentDone = calculatePercentDone(info.requestId);
+                result.add(info);
+            }
         }
-        
-        List<ProfileRequestInfo> pending = pendingDeviceRequests.get(deviceId);
-        
-        for(ProfileRequestInfo pendinginfo : pending){
-            
-            pendinginfo.percentDone =  calculatePercentDone(pendinginfo.requestId);
-            result.add(pendinginfo);
-        }
-        
         return result;
         
     }
@@ -622,6 +630,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
 
         return percentDone;
     }
+
 
     @Override
     public String getLastReturnMsg(long requestId){
@@ -660,7 +669,11 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             data.put("requestId", Long.toString(info.request.getUserMessageID()));
             data.put("channel", ((Integer) info.channel).toString());
             data.put("userName", info.userName);
-            data.put("percentDone", info.percentDone.toString());
+            data.put("requestFailureMessage", info.requestFailureMessage);
+            if (info != null && info.percentDone != null) {
+                data.put("percentDone", info.percentDone.toString());
+            }
+            
             pendingRequests.add(data);
         }
 
@@ -725,5 +738,15 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
+    }
+
+    @Override
+    public void updateFailureMessage(String errorDescription, long requestId, int deviceId) {
+        CopyOnWriteArrayList<ProfileRequestInfo> requests = incomingRequestDetails.get(deviceId);
+        for (ProfileRequestInfo info : requests){
+            if (info.requestId == requestId){
+                info.requestFailureMessage = errorDescription;
+            }
+        }
     }
 }
