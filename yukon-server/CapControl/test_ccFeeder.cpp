@@ -1382,7 +1382,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
 
     {   // Dynamic Data initialization
 
-        using CCFeederRow     = Cti::Test::StringRow<43>;
+        using CCFeederRow     = Cti::Test::StringRow<42>;
         using CCFeederReader  = Cti::Test::TestReader<CCFeederRow>;
 
         CCFeederRow columnNames =
@@ -1400,7 +1400,6 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
             "LastCapBankDeviceID",
             "BusOptimizedVarCategory",
             "BusOptimizedVarOffset",
-            "CTITimeStamp",
             "PowerFactorValue",
             "KvarSolution",
             "EstimatedPFValue",
@@ -1448,7 +1447,6 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
                 "364",
                 "2",
                 "1",
-                "2016-05-06 12:46:55.000",
                 "1.1",
                 "10",
                 "1.2",

@@ -19,6 +19,9 @@ using Cti::CapControl::setVariableIfDifferent;
 using Cti::CapControl::sendCapControlOperationMessage;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
+using Cti::CapControl::deserializeFlag;
+using Cti::CapControl::serializeFlag;
+
 using namespace Cti::Messaging::CapControl;
 using std::endl;
 using std::string;
@@ -113,14 +116,12 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _retryIndex( 0 ),
         _likeDayControlFlag( false ),
         _porterRetFailFlag( false ),
-    _solution( "IDLE" ),
-    _parentName( "none" ),
-
-    _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
-    _lastoperationtime( gInvalidCtiTime ),
-    _lastWattPointTime( gInvalidCtiTime ),
-    _lastVoltPointTime( gInvalidCtiTime ),
-
+        _solution( "IDLE" ),
+        _parentName( "none" ),
+        _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
+        _lastoperationtime( gInvalidCtiTime ),
+        _lastWattPointTime( gInvalidCtiTime ),
+        _lastVoltPointTime( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
@@ -196,15 +197,12 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _retryIndex( 0 ),
         _likeDayControlFlag( false ),
         _porterRetFailFlag( false ),
-    _solution( "IDLE" ),
-    _parentName( "none" ),
-
-    _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
-    _lastoperationtime( gInvalidCtiTime ),
-    _lastWattPointTime( gInvalidCtiTime ),
-    _lastVoltPointTime( gInvalidCtiTime ),
-
-
+        _solution( "IDLE" ),
+        _parentName( "none" ),
+        _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
+        _lastoperationtime( gInvalidCtiTime ),
+        _lastWattPointTime( gInvalidCtiTime ),
+        _lastVoltPointTime( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
@@ -215,10 +213,6 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
     restore(rdr);
 
     _originalParent.setPAOId(getPaoId());
-//    regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-//    regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-//    regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-//    regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
 /*---------------------------------------------------------------------------
@@ -5609,39 +5603,25 @@ bool CtiCCFeeder::isDirty() const
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if( _dirty )
+    if ( _dirty )
     {
-        if( !_insertDynamicDataFlag )
-        {
-            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
-            addFlags[0] = (_verificationFlag?'Y':'N');
-            addFlags[1] = (_performingVerificationFlag?'Y':'N');
-            addFlags[2] = (_verificationDoneFlag?'Y':'N');
-            addFlags[3] = (_preOperationMonitorPointScanFlag?'Y':'N');
-            addFlags[4] = (_operationSentWaitFlag?'Y':'N');
-            addFlags[5] = (_postOperationMonitorPointScanFlag?'Y':'N');
-            addFlags[6] = (_waitForReCloseDelayFlag?'Y':'N');
-            addFlags[7] = (_peakTimeFlag?'Y':'N');
-            addFlags[8] = (_maxDailyOpsHitFlag?'Y':'N');
-            addFlags[9] = (_ovUvDisabledFlag?'Y':'N');
-            addFlags[10] = (_correctionNeededNoBankAvailFlag?'Y':'N');
-            addFlags[11] = (_likeDayControlFlag?'Y':'N');
-            addFlags[12] = (_lastVerificationMsgSentSuccessful?'Y':'N');
+        std::string flags( 20, 'N' );
 
-            _additionalFlags = char2string(*addFlags);
-            _additionalFlags.append(char2string(*(addFlags+1)));
-            _additionalFlags.append(char2string(*(addFlags+2)));
-            _additionalFlags.append(char2string(*(addFlags+3)));
-            _additionalFlags.append(char2string(*(addFlags+4)));
-            _additionalFlags.append(char2string(*(addFlags+5)));
-            _additionalFlags.append(char2string(*(addFlags+6)));
-            _additionalFlags.append(char2string(*(addFlags+7)));
-            _additionalFlags.append(char2string(*(addFlags+8)));
-            _additionalFlags.append(char2string(*(addFlags+9)));
-            _additionalFlags.append(char2string(*(addFlags+10)));
-            _additionalFlags.append(char2string(*(addFlags+11)));
-            _additionalFlags.append(char2string(*(addFlags+12)));
-            _additionalFlags.append("NNNNNNN");
+        if ( !_insertDynamicDataFlag )
+        {
+            flags[  0 ] = serializeFlag( _verificationFlag );
+            flags[  1 ] = serializeFlag( _performingVerificationFlag );
+            flags[  2 ] = serializeFlag( _verificationDoneFlag );
+            flags[  3 ] = serializeFlag( _preOperationMonitorPointScanFlag );
+            flags[  4 ] = serializeFlag( _operationSentWaitFlag );
+            flags[  5 ] = serializeFlag( _postOperationMonitorPointScanFlag );
+            flags[  6 ] = serializeFlag( _waitForReCloseDelayFlag );
+            flags[  7 ] = serializeFlag( _peakTimeFlag );
+            flags[  8 ] = serializeFlag( _maxDailyOpsHitFlag );
+            flags[  9 ] = serializeFlag( _ovUvDisabledFlag );
+            flags[ 10 ] = serializeFlag( _correctionNeededNoBankAvailFlag );
+            flags[ 11 ] = serializeFlag( _likeDayControlFlag );
+            flags[ 12 ] = serializeFlag( _lastVerificationMsgSentSuccessful );
 
             static const string updateSql = "update dynamicccfeeder set "
                                             "currentvarpointvalue = ?, currentwattpointvalue = ?, "
@@ -5681,7 +5661,7 @@ void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTi
             << _estimatedpowerfactorvalue
             << _currentvarpointquality
             << (string)(_waivecontrolflag?"Y":"N")
-            << _additionalFlags
+            << flags
             << _currentvoltloadpointvalue
             << _eventSeq
             << _currentVerificationCapBankId
@@ -5716,7 +5696,6 @@ void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTi
                                               "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                                               "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                                               "?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            static const string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             Cti::Database::DatabaseWriter dbInserter(conn, inserterSql);
 
@@ -5739,7 +5718,7 @@ void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTi
             << _estimatedpowerfactorvalue
             << _currentvarpointquality
             << (string)(_waivecontrolflag?"Y":"N")
-            << addFlags
+            << flags
             << _currentvoltloadpointvalue
             << _eventSeq
             << _currentVerificationCapBankId
@@ -5803,104 +5782,107 @@ CtiCCFeeder* CtiCCFeeder::replicate() const
 
 void CtiCCFeeder::restore(Cti::RowReader& rdr)
 {
-    CtiTime currentDateTime;
-    string tempBoolString;
+    std::string flag;
 
-    rdr["currentvarloadpointid"] >> _currentvarloadpointid;
-    rdr["currentwattloadpointid"] >> _currentwattloadpointid;
-    rdr["maplocationid"] >> _maplocationid;
+    rdr["CurrentVarLoadPointID"]  >> _currentvarloadpointid;
+    rdr["CurrentWattLoadPointID"] >> _currentwattloadpointid;
+    rdr["MapLocationID"]          >> _maplocationid;
+    rdr["CurrentVoltLoadPointID"] >> _currentvoltloadpointid;
 
-    //rdr["displayorder"] >> _displayorder;
-    rdr["currentvoltloadpointid"] >> _currentvoltloadpointid;
-    rdr["multiMonitorControl"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _multiMonitorFlag = (tempBoolString=="y");
-    rdr["usephasedata"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _usePhaseData = (tempBoolString=="y");
-    rdr["phaseb"] >> _phaseBid;
-    rdr["phasec"] >> _phaseCid;
-    rdr["controlflag"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _totalizedControlFlag = (tempBoolString=="y");
+    rdr["MultiMonitorControl"]    >> flag;
 
-    _insertDynamicDataFlag = true;
-    _dirty = true;
+    _multiMonitorFlag             = deserializeFlag( flag );
 
-    _originalParent.setPAOId(getPaoId());
+    rdr["usephasedata"]           >> flag;
+
+    _usePhaseData                 = deserializeFlag( flag );
+
+    rdr["phaseb"]                 >> _phaseBid;
+    rdr["phasec"]                 >> _phaseCid;
+
+    rdr["ControlFlag"]            >> flag;
+
+    _totalizedControlFlag         = deserializeFlag( flag );
 }
 
 void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
 {
+    std::string flags;
 
-    string tempBoolString;
-    rdr["currentvarpointvalue"] >> _currentvarloadpointvalue;
-    rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
-    rdr["newpointdatareceivedflag"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _newpointdatareceivedflag = (tempBoolString=="y");
-    rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
-    rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
-    rdr["currentdailyoperations"] >> _currentdailyoperations;
-    rdr["recentlycontrolledflag"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _recentlycontrolledflag = (tempBoolString=="y");
-    rdr["lastoperationtime"] >> _lastoperationtime;
-    rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
-    rdr["lastcapbankdeviceid"] >> _lastcapbankcontrolleddeviceid;
-    rdr["busoptimizedvarcategory"] >> _busoptimizedvarcategory;
-    rdr["busoptimizedvaroffset"] >> _busoptimizedvaroffset;
-    rdr["powerfactorvalue"] >> _powerfactorvalue;
-    rdr["kvarsolution"] >> _kvarsolution;
-    rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
-    rdr["currentvarpointquality"] >> _currentvarpointquality;
-    rdr["waivecontrolflag"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _waivecontrolflag = (tempBoolString=="y");
-    rdr["additionalflags"] >> _additionalFlags;
-    rdr["currentvoltpointvalue"] >> _currentvoltloadpointvalue;
-    std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-    _verificationFlag = (_additionalFlags[0]=='y');
-    _performingVerificationFlag = (_additionalFlags[1]=='y');
-    _verificationDoneFlag = (_additionalFlags[2]=='y');
-    _preOperationMonitorPointScanFlag = (_additionalFlags[3]=='y');
-    _operationSentWaitFlag = (_additionalFlags[4]=='y');
-    _postOperationMonitorPointScanFlag = (_additionalFlags[5]=='y');
-    _waitForReCloseDelayFlag = (_additionalFlags[6]=='y');
-    _peakTimeFlag = (_additionalFlags[7]=='y');
-    _maxDailyOpsHitFlag = (_additionalFlags[8]=='y');
-    _ovUvDisabledFlag = (_additionalFlags[9]=='y');
-    _correctionNeededNoBankAvailFlag = (_additionalFlags[10]=='y');
-    _likeDayControlFlag = (_additionalFlags[11]=='y');
-    _lastVerificationMsgSentSuccessful = (_additionalFlags[12]=='y');
-    rdr["eventSeq"] >> _eventSeq;
-    rdr["currverifycbid"] >> _currentVerificationCapBankId;
-    rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
-    rdr["currentwattpointquality"] >> _currentwattpointquality;
-    rdr["currentvoltpointquality"] >> _currentvoltpointquality;
+    rdr["CurrentVarPointValue"]     >> _currentvarloadpointvalue;
+    rdr["CurrentWattPointValue"]    >> _currentwattloadpointvalue;
 
-    rdr["ivcontroltot"] >> _iVControlTot;
-    rdr["ivcount"] >> _iVCount;
-    rdr["iwcontroltot"] >> _iWControlTot;
-    rdr["iwcount"] >> _iWCount;
+    rdr["NewPointDataReceivedFlag"] >> flags;
 
-    rdr["phaseavalue"] >> _phaseAvalue;
-    rdr["phasebvalue"] >> _phaseBvalue;
-    rdr["phasecvalue"] >> _phaseCvalue;
+    _newpointdatareceivedflag       = deserializeFlag( flags );
 
-    rdr["lastwattpointtime"] >> _lastWattPointTime;
-    rdr["lastvoltpointtime"] >> _lastVoltPointTime;
-    rdr["retryindex"] >> _retryIndex;
+    rdr["LastCurrentVarUpdateTime"] >> _lastcurrentvarpointupdatetime;
+    rdr["EstimatedVarPointValue"]   >> _estimatedvarloadpointvalue;
+    rdr["CurrentDailyOperations"]   >> _currentdailyoperations;
 
-    rdr["phaseavaluebeforecontrol"] >> _phaseAvalueBeforeControl;
-    rdr["phasebvaluebeforecontrol"] >> _phaseBvalueBeforeControl;
-    rdr["phasecvaluebeforecontrol"] >> _phaseCvalueBeforeControl;
+    rdr["RecentlyControlledFlag"]   >> flags;
+
+    _recentlycontrolledflag         = deserializeFlag( flags );
+
+    rdr["LastOperationTime"]        >> _lastoperationtime;
+    rdr["VarValueBeforeControl"]    >> _varvaluebeforecontrol;
+    rdr["LastCapBankDeviceID"]      >> _lastcapbankcontrolleddeviceid;
+    rdr["BusOptimizedVarCategory"]  >> _busoptimizedvarcategory;
+    rdr["BusOptimizedVarOffset"]    >> _busoptimizedvaroffset;
+    rdr["PowerFactorValue"]         >> _powerfactorvalue;
+    rdr["KvarSolution"]             >> _kvarsolution;
+    rdr["EstimatedPFValue"]         >> _estimatedpowerfactorvalue;
+    rdr["CurrentVarPointQuality"]   >> _currentvarpointquality;
+
+    rdr["WaiveControlFlag"]         >> flags;
+
+    _waivecontrolflag               = deserializeFlag( flags );
+
+    rdr["AdditionalFlags"]          >> flags;
+
+    _verificationFlag                   = deserializeFlag( flags,  0 );
+    _performingVerificationFlag         = deserializeFlag( flags,  1 );
+    _verificationDoneFlag               = deserializeFlag( flags,  2 );
+    _preOperationMonitorPointScanFlag   = deserializeFlag( flags,  3 );
+    _operationSentWaitFlag              = deserializeFlag( flags,  4 );
+    _postOperationMonitorPointScanFlag  = deserializeFlag( flags,  5 );
+    _waitForReCloseDelayFlag            = deserializeFlag( flags,  6 );
+    _peakTimeFlag                       = deserializeFlag( flags,  7 );
+    _maxDailyOpsHitFlag                 = deserializeFlag( flags,  8 );
+    _ovUvDisabledFlag                   = deserializeFlag( flags,  9 );
+    _correctionNeededNoBankAvailFlag    = deserializeFlag( flags, 10 );
+    _likeDayControlFlag                 = deserializeFlag( flags, 11 );
+    _lastVerificationMsgSentSuccessful  = deserializeFlag( flags, 12 );
+
+    rdr["CurrentVoltPointValue"]    >> _currentvoltloadpointvalue;
+    rdr["EventSeq"]                 >> _eventSeq;
+    rdr["CurrVerifyCBId"]           >> _currentVerificationCapBankId;
+    rdr["CurrVerifyCBOrigState"]    >> _currentCapBankToVerifyAssumedOrigState;
+    rdr["CurrentWattPointQuality"]  >> _currentwattpointquality;
+    rdr["CurrentVoltPointQuality"]  >> _currentvoltpointquality;
+
+    rdr["iVControlTot"]             >> _iVControlTot;
+    rdr["iVCount"]                  >> _iVCount;
+    rdr["iWControlTot"]             >> _iWControlTot;
+    rdr["iWCount"]                  >> _iWCount;
+
+    rdr["phaseavalue"]              >> _phaseAvalue;
+    rdr["phasebvalue"]              >> _phaseBvalue;
+    rdr["phasecvalue"]              >> _phaseCvalue;
+
+    rdr["LastWattPointTime"]        >> _lastWattPointTime;
+    rdr["LastVoltPointTime"]        >> _lastVoltPointTime;
+
+    rdr["retryIndex"]               >> _retryIndex;
+
+    rdr["PhaseAValueBeforeControl"] >> _phaseAvalueBeforeControl;
+    rdr["PhaseBValueBeforeControl"] >> _phaseBvalueBeforeControl;
+    rdr["PhaseCValueBeforeControl"] >> _phaseCvalueBeforeControl;
 
     _originalParent.restore(rdr);
 
     _insertDynamicDataFlag = false;
     _dirty = false;
-
 }
 
 /*---------------------------------------------------------------------------

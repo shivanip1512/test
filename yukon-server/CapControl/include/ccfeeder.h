@@ -365,9 +365,6 @@ private:
 
     CtiCCCapBank_SVector _cccapbanks;
 
-    //verification info
-    std::string _additionalFlags;
-
     bool _verificationFlag;
     bool _performingVerificationFlag;
     bool _verificationDoneFlag;
