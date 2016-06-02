@@ -96,8 +96,11 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     public void setValue(String value) {
         this.value = value;
     }
-
+    
     public void setDisabled(Boolean disabled) {
+        if (disabled == null) {
+            disabled = false;
+        }
         this.disabled = disabled;
     }
     
