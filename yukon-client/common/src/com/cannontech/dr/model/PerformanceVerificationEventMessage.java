@@ -6,12 +6,12 @@ public final class PerformanceVerificationEventMessage {
 
     private final long messageId;
     private final Instant timeMessageSent;
-    private final Boolean isArchived;
+    private final boolean archived;
 
-    public PerformanceVerificationEventMessage(long messageId, Instant timeMessageSent, Boolean isArchived) {
+    public PerformanceVerificationEventMessage(long messageId, Instant timeMessageSent, boolean archived) {
         this.messageId = messageId;
         this.timeMessageSent = timeMessageSent;
-        this.isArchived = isArchived;
+        this.archived = archived;
     }
 
     public long getMessageId() {
@@ -22,7 +22,9 @@ public final class PerformanceVerificationEventMessage {
         return timeMessageSent;
     }
 
-    public Boolean getIsArchived() {
-        return isArchived;
+    public boolean isArchived() {
+        return archived;
     }
+
+
 }

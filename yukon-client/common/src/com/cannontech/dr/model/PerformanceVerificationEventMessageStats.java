@@ -9,12 +9,12 @@ public final class PerformanceVerificationEventMessageStats {
 
     public PerformanceVerificationEventMessageStats(long messageId, 
                                                     Instant timeMessageSent, 
-                                                    Boolean isArchived,
+                                                    boolean archived,
                                                     int numSuccesses, 
                                                     int numFailures, 
                                                     int numUnknowns) {
         
-        eventMessage = new PerformanceVerificationEventMessage(messageId, timeMessageSent,isArchived);
+        eventMessage = new PerformanceVerificationEventMessage(messageId, timeMessageSent, archived);
         eventStats = new PerformanceVerificationEventStats(numSuccesses, numFailures, numUnknowns);
     }
     

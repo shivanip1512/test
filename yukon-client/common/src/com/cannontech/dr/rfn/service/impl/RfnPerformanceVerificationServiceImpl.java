@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.RfnPerformanceVerificationEventLogService;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
@@ -39,6 +40,7 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private RfnPerformanceVerificationEventLogService performanceVerificationEventLog;
     
     @Override
     @Transactional
@@ -167,12 +169,8 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     @Override
     @Transactional
     public void archiveVerificationMessage() {
-
-        // Insert into RfnBroadcastArchivedEventStatus event status older than
-        // 180 days.
-        DateTime removeAfterDate = new DateTime().plusDays(-180).withTimeAtStartOfDay();
-        performanceVerificationDao.archiveRfnBroadcastEventStatus(removeAfterDate);
-        performanceVerificationDao.removeOlderRfnBroadcastEventStatus(removeAfterDate);
-
+        DateTime removeBeforeDate = new DateTime().plusDays(-180).withTimeAtStartOfDay();
+        performanceVerificationDao.archiveRfnBroadcastEventStatus(removeBeforeDate);
+        performanceVerificationEventLog.archivedRfnBroadcastEventStatus(removeBeforeDate);
     }
 }

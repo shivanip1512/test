@@ -94,15 +94,12 @@ public interface PerformanceVerificationDao {
     Instant getEventTime(long messageId);
     
     /**
-     * Archive event data older than 180 days from table RfnBroadcastEventDeviceStatus to RfnBroadcastArchivedEventStatus
-     * In the RfnBroadcastArchivedEventStatus only daily count of status is maintained.  
+     * Archive event data older than 180 days from table RfnBroadcastEventDeviceStatus to RfnBroadcastEventSummary 
+     * Deletes data from RfnBroadcastEventDeviceStatus that is older than 180 days.
+     * 
+     * In the RfnBroadcastEventSummary only daily count of status is maintained.  
      */
     void archiveRfnBroadcastEventStatus(DateTime removeAfterDate);
-    
-    /**
-     * Delete event data older than 180 days from table RfnBroadcastEventDeviceStatus.  
-     */
-    void removeOlderRfnBroadcastEventStatus(DateTime removeAfterDate);
     
     /**
      * Retrieve archive event data from table RfnBroadcastArchivedEventStatus.  

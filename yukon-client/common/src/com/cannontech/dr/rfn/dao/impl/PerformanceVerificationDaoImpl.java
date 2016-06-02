@@ -369,13 +369,13 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-    public void archiveRfnBroadcastEventStatus(DateTime removeAfterDate) {
+    public void archiveRfnBroadcastEventStatus(DateTime removeBeforeDate) {
         List<Long> rfnBroadcastEventId = new ArrayList<>();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RfnBroadcastEventId FROM RfnBroadcastEvent");
-        sql.append("WHERE EventSentTime").lt(removeAfterDate);
+        sql.append("WHERE EventSentTime").lt(removeBeforeDate);
         sql.append("AND RfnBroadcastEventId NOT IN (");
-        sql.append("SELECT RfnBroadcastEventId FROM RfnBroadcastArchivedEventStatus)");
+        sql.append("SELECT RfnBroadcastEventId FROM RfnBroadcastEventSummary)");
 
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
@@ -386,43 +386,32 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 
         for (Long eventId : rfnBroadcastEventId) {
             SqlStatementBuilder insertSql = new SqlStatementBuilder();
-            insertSql.append("INSERT INTO RfnBroadcastArchivedEventStatus");
-            insertSql.append("(RfnBroadcastEventId, Success, SuccessUnenrolled, Failure, Unknown) VALUES (");
-            insertSql.append(eventId);
-            insertSql.append(",");
-            insertSql.append(" (SELECT COUNT(*) FROM RfnBroadcastEventDeviceStatus where RfnBroadcastEventId")
-                     .eq(eventId);
-            insertSql.append(" AND RfnBroadcastEventDeviceStatus.Result").eq_k(SUCCESS);
-            insertSql.append(" )");
-            insertSql.append(",");
-            insertSql.append(" (SELECT COUNT(*) FROM RfnBroadcastEventDeviceStatus where RfnBroadcastEventId")
-                     .eq(eventId);
-            insertSql.append(" AND RfnBroadcastEventDeviceStatus.Result").eq_k(SUCCESS_UNENROLLED);
-            insertSql.append(" )");
-            insertSql.append(",");
-            insertSql.append(" (SELECT COUNT(*) FROM RfnBroadcastEventDeviceStatus where RfnBroadcastEventId")
-                     .eq(eventId);
-            insertSql.append(" AND RfnBroadcastEventDeviceStatus.Result").eq_k(FAILURE);
-            insertSql.append(" )");
-            insertSql.append(",");
-            insertSql.append(" (SELECT COUNT(*) FROM RfnBroadcastEventDeviceStatus where RfnBroadcastEventId")
-                     .eq(eventId);
-            insertSql.append(" AND RfnBroadcastEventDeviceStatus.Result").eq_k(UNKNOWN);
-            insertSql.append(" ))");
-
-            jdbcTemplate.update(insertSql);
+            insertSql.append("INSERT INTO RfnBroadcastEventSummary");
+            insertSql.append("SELECT RfnBroadcastEventId,");
+            insertSql.append("COUNT(CASE WHEN Result").eq_k(SUCCESS).append("THEN 1 END), ");
+            insertSql.append("COUNT(CASE WHEN Result").eq_k(SUCCESS_UNENROLLED).append(" THEN 1 END), ");
+            insertSql.append("COUNT(CASE WHEN Result").eq_k(FAILURE).append("THEN 1 END), ");
+            insertSql.append("COUNT(CASE WHEN Result").eq_k(UNKNOWN).append("THEN 1 END) ");
+            insertSql.append("FROM RfnBroadcastEventDeviceStatus");
+            insertSql.append("WHERE RfnBroadcastEventId").eq(eventId);
+            insertSql.append("GROUP BY RfnBroadcastEventId");
+ 
+           jdbcTemplate.update(insertSql);
 
         }
+        removeOlderRfnBroadcastEventStatus(removeBeforeDate);
     }
     
-    @Override
-    public void removeOlderRfnBroadcastEventStatus(DateTime removeAfterDate) {
+    
+    private void removeOlderRfnBroadcastEventStatus(DateTime removeBeforeDate) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM RfnBroadcastEventDeviceStatus ");
         sql.append("WHERE RfnBroadcastEventId IN");
-        sql.append("(SELECT RfnBroadcastEventId");
-        sql.append(" FROM RfnBroadcastEvent");
-        sql.append(" WHERE EventSentTime").lt(removeAfterDate);
+        sql.append("(SELECT rbae.RfnbroadcastEventid");
+        sql.append(" FROM RfnBroadcastEventSummary rbae");
+        sql.append(" JOIN RfnBroadcastEvent rbe ON");
+        sql.append(" rbae.RfnBroadcastEventId=rbe.RfnBroadcastEventId");
+        sql.append(" WHERE EventSentTime").lt(removeBeforeDate);
         sql.append(")");
 
         jdbcTemplate.update(sql);
@@ -433,7 +422,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         List<PerformanceVerificationEventMessageStats> reports = new ArrayList<>();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT rbaes.RfnBroadcastEventId AS EventId, rbe.EventSentTime AS EventSentTime, Success, Failure, Unknown");
-        sql.append("FROM RfnBroadcastArchivedEventStatus rbaes");
+        sql.append("FROM RfnBroadcastEventSummary rbaes");
         sql.append("JOIN RfnBroadcastEvent rbe ON rbaes.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
         sql.append("AND rbe.EventSentTime").gt(range.getMin());
         sql.append("AND rbe.EventSentTime").lt(range.getMax());
