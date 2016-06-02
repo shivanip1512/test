@@ -11,6 +11,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.RouteBase;
@@ -18,8 +19,8 @@ import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 
-public class RepeaterRoleCollisionModel extends ReportModelBase {
-    
+public class RepeaterRoleCollisionModel extends ReportModelBase<RepeaterRoleCollisionData> {
+
     /** Number of columns */
     protected final int NUMBER_COLUMNS = 4;
     
@@ -52,11 +53,11 @@ public class RepeaterRoleCollisionModel extends ReportModelBase {
         RouteUsageHelper routeMaster = new RouteUsageHelper();
         for(int i = 0; i < 32; i++) {
             for(int j = 0; j < 7; j++) {
-                Vector dups = routeMaster.findDuplicatesForBits(i,j);
+                Vector<Integer> dups = routeMaster.findDuplicatesForBits(i,j);
                 if(dups != null) {
-                    Enumeration enummers = dups.elements();
+                    Enumeration<Integer> enummers = dups.elements();
                     while(enummers.hasMoreElements()) {
-                        LiteYukonPAObject liteYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(((Integer)enummers.nextElement()).intValue());
+                        LiteYukonPAObject liteYuk = DefaultDatabaseCache.getInstance().getAllPaosMap().get(enummers.nextElement().intValue());
                         DBPersistent heavyRoute = LiteFactory.createDBPersistent(liteYuk);
                         java.sql.Connection conn = null;
                         try {
@@ -67,7 +68,7 @@ public class RepeaterRoleCollisionModel extends ReportModelBase {
                             CTILogger.error(e);
                         }
                         finally {
-                        	SqlUtils.close(conn);
+                            SqlUtils.close(conn);
                         }
                         int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
                         String ccuName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(deviceID);

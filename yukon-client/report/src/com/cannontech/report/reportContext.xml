@@ -301,13 +301,7 @@
     </bean>
     
     <!-- Raw Point history -->
-   <bean id="rawPointHistoryModel" class="com.cannontech.analysis.tablemodel.RawPointHistoryModel"
-         scope="prototype">
-        <property name="rphDao" ref="rphDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="pointDao" ref="pointDao"/>
-        <property name="dateFormattingService" ref="dateFormattingService"/>
-    </bean>
+   <bean id="rawPointHistoryModel" class="com.cannontech.analysis.tablemodel.RawPointHistoryModel" scope="prototype"/>
     
     <bean id="rawPointHistoryDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
         <property name="reportModelName"><idref bean="rawPointHistoryModel"/></property>
@@ -597,14 +591,7 @@
     </bean>
     
     <!-- Normalized Usage history -->
-   <bean id="normalizedUsageModel" class="com.cannontech.analysis.tablemodel.NormalizedUsageModel"
-         scope="prototype">
-        <property name="rphDao" ref="rphDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="pointDao" ref="pointDao"/>
-        <property name="dateFormattingService" ref="dateFormattingService"/>
-        <property name="normalizedUsageService" ref="normalizedUsageService"/>
-    </bean>
+   <bean id="normalizedUsageModel" class="com.cannontech.analysis.tablemodel.NormalizedUsageModel" scope="prototype"/>
     
     <bean id="normalizedUsageDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
         <property name="reportModelName"><idref bean="normalizedUsageModel"/></property>
@@ -650,14 +637,7 @@
     </bean>
     
     <!-- Daily Usage Report -->
-   <bean id="dailyUsageModel" class="com.cannontech.analysis.tablemodel.DailyUsageModel"
-         scope="prototype">
-        <property name="rphDao" ref="rphDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="pointDao" ref="pointDao"/>
-        <property name="dateFormattingService" ref="dateFormattingService"/>
-        <property name="dbPersistentDao" ref="dbPersistentDao"/>
-    </bean>
+   <bean id="dailyUsageModel" class="com.cannontech.analysis.tablemodel.DailyUsageModel" scope="prototype"/>
     
     <bean id="dailyUsageDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
         <property name="reportModelName"><idref bean="dailyUsageModel"/></property>

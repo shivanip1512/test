@@ -14,21 +14,20 @@ import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 public class GroupCommanderSuccessResultsModel extends BareReportModelBase<GroupCommanderSuccessResultsModel.ModelRow> implements ReportModelMetaInfo {
-    
-    private GroupCommandExecutor groupCommandExecutor;
-	private PaoDao paoDao;
-	private PointDao pointDao;
+
+    @Autowired private GroupCommandExecutor groupCommandExecutor;
+    @Autowired private PointDao pointDao;
     private String resultKey;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static String title;
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private String command;
@@ -58,7 +57,7 @@ public class GroupCommanderSuccessResultsModel extends BareReportModelBase<Group
         for (YukonDevice device : devices) {
             
             // device name
-            LiteYukonPAObject paoObject = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
+            LiteYukonPAObject paoObject = DefaultDatabaseCache.getInstance().getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
             String deviceName = paoObject.getPaoName();
             
             // last result
@@ -133,25 +132,5 @@ public class GroupCommanderSuccessResultsModel extends BareReportModelBase<Group
     
     public String getResultKey() {
         return resultKey;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setGroupCommandExecutor(GroupCommandExecutor groupCommandExecutor) {
-        this.groupCommandExecutor = groupCommandExecutor;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
     }
 }

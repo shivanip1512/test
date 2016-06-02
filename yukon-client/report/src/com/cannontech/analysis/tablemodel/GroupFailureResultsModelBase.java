@@ -5,18 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.GroupActionResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public abstract class GroupFailureResultsModelBase extends BareReportModelBase<GroupFailureResultsModelBase.ModelRow> implements ReportModelMetaInfo {
-    private PaoDao paoDao;
-    
+
     protected String resultKey;
     protected List<ModelRow> data = new ArrayList<ModelRow>();
     static public class ModelRow {
@@ -33,8 +30,7 @@ public abstract class GroupFailureResultsModelBase extends BareReportModelBase<G
         for (YukonDevice device : devices) {
 
             // device name
-            LiteYukonPAObject paoObject =
-                paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
+            LiteYukonPAObject paoObject = DefaultDatabaseCache.getInstance().getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
             String deviceName = paoObject.getPaoName();
 
             // error
@@ -71,10 +67,5 @@ public abstract class GroupFailureResultsModelBase extends BareReportModelBase<G
     
     public String getResultKey() {
         return resultKey;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
 }

@@ -9,18 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -31,12 +31,11 @@ import com.cannontech.user.YukonUserContext;
 public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRow> implements ReportModelMetaInfo {
     
     // dependencies
-    private RawPointHistoryDao rphDao;
-    private PaoDao paoDao;
-    private PointDao pointDao;
-    private DateFormattingService dateFormattingService;
-    private DBPersistentDao dbPersistentDao;
-    
+    @Autowired private RawPointHistoryDao rphDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private DBPersistentDao dbPersistentDao;
+
     // inputs
     int pointId;
     Date startDate;
@@ -61,7 +60,7 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         // load profile interval
         LitePoint litePoint = pointDao.getLitePoint(getPointId());
         int deviceId = litePoint.getPaobjectID();
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject device = DefaultDatabaseCache.getInstance().getAllPaosMap().get(deviceId);
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
         DeviceLoadProfile deviceLoadProfile = ((MCTBase)yukonPaobject).getDeviceLoadProfile();
         Integer intervalRate = deviceLoadProfile.getLoadProfileDemandRate() / 60;
@@ -83,72 +82,72 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         Map<Date, Double> dayValues = new LinkedHashMap<Date, Double>();
         List<Double> hourValues = null;
         while (d1.compareTo(d2) <= 0) {
-        	
-        	// if new day, average the hour values, add to days list, reset the hours array
-        	todayDay = DateUtils.truncate(d1, Calendar.DATE);
-        	if(todayDay.compareTo(prevDay) > 0) {
-        		
-        	    // must have complete 24 hours worth of data
-        	    // hours in which there was too much/little data have not ben added
-        	    // to the hoursValues list, making the entire day "incomplete"
-        	    if (hourValues != null && hourValues.size() == 24) {
-        	    
-            		Double dayValue = 0.0;
-            		for (Double hourVal : hourValues) {
-            			dayValue += hourVal;
-            		}
-            		dayValues.put(prevDay, dayValue);
-        	    }
-        	    else {
-        	        dayValues.put(prevDay, null);
-        	    }
-        		
-        		hourValues = null;
-        	}
-        	
-        	// create a 1 hour range
-        	Date range1 = d1;
-        	Date range2 = DateUtils.addHours(d1, 1);
-        	
-        	Range<Date> dateRange = new Range<Date>(range1, true, range2, false);
-        	// get rph data for range
-			List<PointValueHolder> pvhList = rphDao.getPointData(pointId,
-					dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD);
-	
-        	Integer rphCount = pvhList.size();
-        	Double hourTotal = 0.0;
-        	Double hourAvg = 0.0;
-        	
-        	// sum values within hour
-        	for (PointValueHolder pvh : pvhList) {
-        		hourTotal += pvh.getValue();
-        	}
-        	
-        	// hour average values will only be added to the hoursValues if there is the correct
-        	// amount of values retrieved, based on the current intervalRate
-        	if (pvhList.size() > 0) {
-        	    
-        	    if (rphCount == intervalsPerHour)  {
-        	        
-        	        if (hourValues == null) {
+
+            // if new day, average the hour values, add to days list, reset the hours array
+            todayDay = DateUtils.truncate(d1, Calendar.DATE);
+            if(todayDay.compareTo(prevDay) > 0) {
+
+                // must have complete 24 hours worth of data
+                // hours in which there was too much/little data have not ben added
+                // to the hoursValues list, making the entire day "incomplete"
+                if (hourValues != null && hourValues.size() == 24) {
+
+                    Double dayValue = 0.0;
+                    for (Double hourVal : hourValues) {
+                        dayValue += hourVal;
+                    }
+                    dayValues.put(prevDay, dayValue);
+                }
+                else {
+                    dayValues.put(prevDay, null);
+                }
+
+                hourValues = null;
+            }
+
+            // create a 1 hour range
+            Date range1 = d1;
+            Date range2 = DateUtils.addHours(d1, 1);
+
+            Range<Date> dateRange = new Range<Date>(range1, true, range2, false);
+            // get rph data for range
+            List<PointValueHolder> pvhList = rphDao.getPointData(pointId,
+                                                                 dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD);
+
+            Integer rphCount = pvhList.size();
+            Double hourTotal = 0.0;
+            Double hourAvg = 0.0;
+
+            // sum values within hour
+            for (PointValueHolder pvh : pvhList) {
+                hourTotal += pvh.getValue();
+            }
+
+            // hour average values will only be added to the hoursValues if there is the correct
+            // amount of values retrieved, based on the current intervalRate
+            if (pvhList.size() > 0) {
+
+                if (rphCount == intervalsPerHour)  {
+
+                    if (hourValues == null) {
                         hourValues = new ArrayList<Double>();
                     }
-        	        
-        	        hourAvg = hourTotal / (double)intervalsPerHour;
-        	        hourValues.add(hourAvg);
-        	    }
-        	}
-        	
-        	// advance counter
-        	prevDay = DateUtils.truncate(d1, Calendar.DATE);
-        	d1 = range2;
-        	
+
+                    hourAvg = hourTotal / (double)intervalsPerHour;
+                    hourValues.add(hourAvg);
+                }
+            }
+
+            // advance counter
+            prevDay = DateUtils.truncate(d1, Calendar.DATE);
+            d1 = range2;
+
         }
         
         // add report row for each day's calculated value
         for (Date date : dayValues.keySet()) {
-        	
-        	DailyUsageModel.ModelRow row = new DailyUsageModel.ModelRow();
+
+            DailyUsageModel.ModelRow row = new DailyUsageModel.ModelRow();
             row.date = date;
             
             Double dayValue = dayValues.get(date);
@@ -173,8 +172,8 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
 
         LitePoint litePoint = pointDao.getLitePoint(getPointId());
         int deviceId = litePoint.getPaobjectID();
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
-        
+        LiteYukonPAObject device = DefaultDatabaseCache.getInstance().getAllPaosMap().get(deviceId);
+
         info.put("Device Name", device.getPaoName());
         info.put("Point", litePoint.getPointName() +  " (id: " + getPointId() + ")");
         info.put("Start Date", dateFormattingService.format(startDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
@@ -200,32 +199,7 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
     public String getTitle() {
         return title;
     }
-    
-    @Required
-    public void setRphDao(RawPointHistoryDao rphDao) {
-        this.rphDao = rphDao;
-    }
-    
-    @Required
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
-    @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Required
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Required
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-		this.dbPersistentDao = dbPersistentDao;
-	}
-    
+
     public void setPointId(int pointId) {
         this.pointId = pointId;
     }
@@ -249,6 +223,4 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
     public Date getStopDate() {
         return stopDate;
     }
-
-
 }
