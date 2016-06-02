@@ -368,6 +368,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="test_error.cpp">
     </ClCompile>
+    <ClCompile Include="test_guard.cpp" />
     <ClCompile Include="test_logger.cpp">
     </ClCompile>
     <ClCompile Include="test_main.cpp">

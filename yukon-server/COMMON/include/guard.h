@@ -3,6 +3,7 @@
 #include "utility.h"
 #include "dlldefs.h"
 #include "logger.h"
+#include "dllbase.h"
 
 #include <iostream>
 #include <sstream>
@@ -15,11 +16,18 @@
 #define CTILOCKGUARD2(type, guard, resource, millis) \
     CtiLockGuard<type> guard( resource, millis, #resource, __FILE__, __FUNCSIG__, __LINE__);
 
+#define CTIREADLOCKGUARD(type, guard, resource) \
+    CtiReadLockGuard<type> guard( resource, #resource, __FILE__, __FUNCSIG__, __LINE__);
+
+#define CTIREADLOCKGUARD2(type, guard, resource, millis) \
+    CtiReadLockGuard<type> guard( resource, millis, #resource, __FILE__, __FUNCSIG__, __LINE__);
+
 #pragma pack(push, LockGuardPack, 8)
 template<class T>
 class IM_EX_CTIBASE CtiLockGuard
 {
 public:
+    void acquireLock( T& resource, unsigned long millis, char *resourceName = 0, char *file = 0, char *func = 0, int line = 0 );
     CtiLockGuard( T& resource, char *resourceName = 0, char *file=0, char *func=0, int line=0 );
     CtiLockGuard( T& resource, unsigned long millis, char *resourceName = 0, char *file = 0, char *func = 0, int line = 0 );
     ~CtiLockGuard();
@@ -41,12 +49,28 @@ template<class T>
 class CtiReadLockGuard
 {
 public:
-    CtiReadLockGuard(T& resource) :  _res(resource)
+    CtiReadLockGuard(T& resource, char *resourceName = 0, char *file=0, char *func=0, int line=0 ) :  _res(resource)
     {
         static bool hasDumped = false;
+        _file = file;
+        _func = func;
+        _line = line;
+        _resourceName = resourceName;
+
+        if( file != 0 && (DebugLevel & DEBUGLEVEL_GUARD) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+        {
+            Cti::StreamBufferSink logStream_;
+            logStream_ << "Acquiring lock for " << _resourceName << " @ " << std::hex << &_res;
+            logStream_ << " owned by " << std::hex << _res.lastAcquiredByTID();
+            // We call formatAndForceLog directly so that we can insert the caller's context
+            dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+        }
+
         while(!(_acquired = _res.acquireRead(900000)))
         {
-            CTILOG_WARN(dout, "guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
+            CTILOG_WARN(dout, "guard is unable to lock " << (_resourceName!=0?_resourceName:"resource") 
+                << " FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
+            CTILOG_WARN(dout, "Acquiring lock from " << func << ":" << file << ":" << line);
 
             if( !hasDumped )
             {
@@ -60,6 +84,14 @@ public:
             }
         }
         _acquired = true;
+
+        if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+        {
+            Cti::StreamBufferSink logStream_;
+            logStream_ << "Acquired lock for " << _resourceName << " @ " << std::hex << &_res;
+            dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+        }
+
     }
 
     CtiReadLockGuard(T& resource, unsigned long millis ) : _res(resource)
@@ -89,6 +121,10 @@ private:
 
     bool _acquired;
     T& _res;
+    char *_resourceName;
+    char *_file;
+    char *_func;
+    int _line;
 };
 
 namespace Cti {

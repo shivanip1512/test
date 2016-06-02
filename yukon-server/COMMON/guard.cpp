@@ -5,9 +5,8 @@
 #include "dllbase.h"
 
 template<class T>
-CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, char *file, char *func, int line ) : _res( resource )
+void CtiLockGuard<T>::acquireLock( T& resource, unsigned long millis, char *resourceName, char *file, char *func, int line )
 {
-    static bool hasDumped = false;
     _file = file;
     _func = func;
     _line = line;
@@ -22,9 +21,26 @@ CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, char *file, char
         dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
     }
 
-    while( !(_acquired = _res.acquire(900000)) )  //  try to acquire for up to 15 minutes
+    _acquired = _res.acquire(900000);
+
+    if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
     {
-        CTILOG_WARN(dout, "guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
+        Cti::StreamBufferSink logStream_;
+        logStream_ << "Acquired lock for " << _resourceName << " @ " << std::hex << &_res;
+        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+    }
+}
+
+template<class T>
+CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, char *file, char *func, int line ) : _res( resource )
+{
+    static bool hasDumped = false;
+
+    while (acquireLock(resource, 900000, resourceName, file, func, line), _acquired == 0)  //  try to acquire for up to 15 minutes
+    {
+        CTILOG_WARN(dout, "guard is unable to lock " << (_resourceName!=0?_resourceName:"resource") 
+            << " FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
+        CTILOG_WARN(dout, "Acquiring lock from " << func << ":" << file << ":" << line);
 
         if( !hasDumped )
         {
@@ -37,40 +53,12 @@ CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, char *file, char
             CreateMiniDump(os.str());
         }
     }
-
-    if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
-    {
-        Cti::StreamBufferSink logStream_;
-        logStream_ << "Acquired lock for " << _resourceName << " @ " << std::hex << &_res;
-        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
-    }
 }
 
 template<class T>
 CtiLockGuard<T>::CtiLockGuard( T& resource, unsigned long millis, char *resourceName, char *file, char *func, int line ) : _res( resource )
 {
-    _file = file;
-    _func = func;
-    _line = line;
-    _resourceName = resourceName;
-
-    if( file != 0 && (DebugLevel & DEBUGLEVEL_GUARD) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
-    {
-        Cti::StreamBufferSink logStream_;
-        logStream_ << "Acquiring lock for " << _resourceName << " @ " << std::hex << &_res;
-        logStream_ << " owned by " << _res.lastAcquiredByTID();
-        // We call formatAndForceLog directly so that we can insert the caller's context
-        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
-    }
-
-    _acquired = _res.acquire( millis );
-
-    if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
-    {
-        Cti::StreamBufferSink logStream_;
-        logStream_ << "Acquired lock for " << _resourceName << " @ " << std::hex << &_res;
-        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
-    }
+    acquireLock(resource, millis, resourceName, file, func, line);
 }
 
 template<class T>
@@ -146,7 +134,6 @@ CtiLockGuard<CtiCriticalSection>::CtiLockGuard( CtiCriticalSection& resource, ch
         logStream_ << "Acquired lock for " << _resourceName << " @ " << std::hex << &_res;
         dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
     }
-
 }
 
 //  Do not implement the timed constructor for CtiCriticalSection, since it does not implement a timed acquire
@@ -162,5 +149,11 @@ CtiLockGuard<CtiCriticalSection>::~CtiLockGuard()
         logStream_ << "Released lock for " << _resourceName << " @ " << std::hex << &_res;
         dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
     }
+}
+
+template<>
+bool CtiLockGuard<CtiCriticalSection>::isAcquired() const
+{
+    return _acquired;
 }
 
