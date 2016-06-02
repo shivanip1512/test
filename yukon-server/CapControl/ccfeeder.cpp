@@ -68,14 +68,14 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastcapbankcontrolleddeviceid( 0 ),
-        _busoptimizedvarcategory( 0 ),
+        _busoptimizedvarcategory( 1 ),
         _busoptimizedvaroffset( 0 ),
-        _powerfactorvalue( 0 ),
+        _powerfactorvalue( -1 ),
         _kvarsolution( 0 ),
-        _estimatedpowerfactorvalue( 0 ),
-        _currentvarpointquality( UnintializedQuality ),
-        _currentwattpointquality( UnintializedQuality ),
-        _currentvoltpointquality( UnintializedQuality ),
+        _estimatedpowerfactorvalue( -1 ),
+        _currentvarpointquality( NormalQuality ),
+        _currentwattpointquality( NormalQuality ),
+        _currentvoltpointquality( NormalQuality ),
         _waivecontrolflag( false ),
         _decimalPlaces( 0 ),
         _peakTimeFlag( false ),
@@ -91,7 +91,7 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _correctionNeededNoBankAvailFlag( false ),
         _lastVerificationMsgSentSuccessful( false ),
         _eventSeq( 0 ),
-        _currentVerificationCapBankId( 0 ),
+        _currentVerificationCapBankId( -1 ),
         _currentCapBankToVerifyAssumedOrigState( 0 ),
         _targetvarvalue( 0 ),
         _iVControlTot( 0 ),
@@ -113,6 +113,14 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _retryIndex( 0 ),
         _likeDayControlFlag( false ),
         _porterRetFailFlag( false ),
+    _solution( "IDLE" ),
+    _parentName( "none" ),
+
+    _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
+    _lastoperationtime( gInvalidCtiTime ),
+    _lastWattPointTime( gInvalidCtiTime ),
+    _lastVoltPointTime( gInvalidCtiTime ),
+
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
@@ -123,15 +131,94 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
 }
 
 CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
-    : Controllable(rdr, strategyManager)
+    :   Controllable( rdr, strategyManager ),
+        _parentId( 0 ),
+        _multiMonitorFlag( false ),
+        _currentvarloadpointid( 0 ),
+        _currentvarloadpointvalue( 0 ),
+        _currentwattloadpointid( 0 ),
+        _currentwattloadpointvalue( 0 ),
+        _currentvoltloadpointid( 0 ),
+        _currentvoltloadpointvalue( 0 ),
+        _displayorder( 0 ),
+        _newpointdatareceivedflag( false ),
+        _estimatedvarloadpointid( 0 ),
+        _estimatedvarloadpointvalue( 0 ),
+        _dailyoperationsanalogpointid( 0 ),
+        _powerfactorpointid( 0 ),
+        _estimatedpowerfactorpointid( 0 ),
+        _currentdailyoperations( 0 ),
+        _recentlycontrolledflag( false ),
+        _varvaluebeforecontrol( 0 ),
+        _lastcapbankcontrolleddeviceid( 0 ),
+        _busoptimizedvarcategory( 1 ),
+        _busoptimizedvaroffset( 0 ),
+        _powerfactorvalue( -1 ),
+        _kvarsolution( 0 ),
+        _estimatedpowerfactorvalue( -1 ),
+        _currentvarpointquality( NormalQuality ),
+        _currentwattpointquality( NormalQuality ),
+        _currentvoltpointquality( NormalQuality ),
+        _waivecontrolflag( false ),
+        _decimalPlaces( 0 ),
+        _peakTimeFlag( false ),
+        _verificationFlag( false ),
+        _performingVerificationFlag( false ),
+        _verificationDoneFlag( false ),
+        _preOperationMonitorPointScanFlag( false ),
+        _operationSentWaitFlag( false ),
+        _postOperationMonitorPointScanFlag( false ),
+        _waitForReCloseDelayFlag( false ),
+        _maxDailyOpsHitFlag( false ),
+        _ovUvDisabledFlag( false ),
+        _correctionNeededNoBankAvailFlag( false ),
+        _lastVerificationMsgSentSuccessful( false ),
+        _eventSeq( 0 ),
+        _currentVerificationCapBankId( -1 ),
+        _currentCapBankToVerifyAssumedOrigState( 0 ),
+        _targetvarvalue( 0 ),
+        _iVControlTot( 0 ),
+        _iVCount( 0 ),
+        _iWControlTot( 0 ),
+        _iWCount( 0 ),
+        _iVControl( 0 ),
+        _iWControl( 0 ),
+        _usePhaseData( 0 ),
+        _phaseBid( 0 ),
+        _phaseCid( 0 ),
+        _totalizedControlFlag( false ),
+        _phaseAvalue( 0 ),
+        _phaseBvalue( 0 ),
+        _phaseCvalue( 0 ),
+        _phaseAvalueBeforeControl( 0 ),
+        _phaseBvalueBeforeControl( 0 ),
+        _phaseCvalueBeforeControl( 0 ),
+        _retryIndex( 0 ),
+        _likeDayControlFlag( false ),
+        _porterRetFailFlag( false ),
+    _solution( "IDLE" ),
+    _parentName( "none" ),
+
+    _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
+    _lastoperationtime( gInvalidCtiTime ),
+    _lastWattPointTime( gInvalidCtiTime ),
+    _lastVoltPointTime( gInvalidCtiTime ),
+
+
+        regression( _RATE_OF_CHANGE_DEPTH ),
+        regressionA( _RATE_OF_CHANGE_DEPTH ),
+        regressionB( _RATE_OF_CHANGE_DEPTH ),
+        regressionC( _RATE_OF_CHANGE_DEPTH ),
+        _insertDynamicDataFlag( true ),
+        _dirty( true )
 {
     restore(rdr);
 
     _originalParent.setPAOId(getPaoId());
-    regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-    regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-    regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
-    regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+//    regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+//    regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+//    regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+//    regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
 /*---------------------------------------------------------------------------
@@ -5717,7 +5804,6 @@ CtiCCFeeder* CtiCCFeeder::replicate() const
 void CtiCCFeeder::restore(Cti::RowReader& rdr)
 {
     CtiTime currentDateTime;
-    CtiTime dynamicTimeStamp;
     string tempBoolString;
 
     rdr["currentvarloadpointid"] >> _currentvarloadpointid;
@@ -5738,96 +5824,15 @@ void CtiCCFeeder::restore(Cti::RowReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _totalizedControlFlag = (tempBoolString=="y");
 
-    setDecimalPlaces(0);
-
-    _displayorder = 0;
-    _estimatedvarloadpointid = 0;
-    _dailyoperationsanalogpointid = 0;
-    _powerfactorpointid = 0;
-    _estimatedpowerfactorpointid = 0;
-
-    setNewPointDataReceivedFlag(false);
-    setLastCurrentVarPointUpdateTime(gInvalidCtiTime);
-    setEstimatedVarLoadPointValue(0.0);
-    _currentdailyoperations = 0;
-    setRecentlyControlledFlag(false);
-    setLastOperationTime(gInvalidCtiTime);
-    setVarValueBeforeControl(0.0);
-    setLastCapBankControlledDeviceId(0);
-    _busoptimizedvarcategory = 1;
-    _busoptimizedvaroffset = 0.0;
-    _powerfactorvalue = -1000000.0;
-    _kvarsolution = 0.0;
-    _estimatedpowerfactorvalue = -1000000.0;
-    _currentvarpointquality = NormalQuality;
-    _waivecontrolflag = false;
-    setVerificationFlag(false);
-    _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
-    setPerformingVerificationFlag(false);
-    setVerificationDoneFlag(false);
-    setPreOperationMonitorPointScanFlag(false);
-    setOperationSentWaitFlag(false);
-    setPostOperationMonitorPointScanFlag(false);
-    setWaitForReCloseDelayFlag(false);
-    setMaxDailyOpsHitFlag(false);
-    setOvUvDisabledFlag(false);
-    setCorrectionNeededNoBankAvailFlag(false);
-    setLikeDayControlFlag(false);
-    setPeakTimeFlag(false);
-    setEventSequence(0);
-    setCurrentVerificationCapBankId(-1);
-    setCurrentVerificationCapBankState(0);
-    _currentwattpointquality = NormalQuality;
-    _currentvoltpointquality = NormalQuality;
-
-    setTargetVarValue(0);
-    setSolution("IDLE");
-
     _insertDynamicDataFlag = true;
     _dirty = true;
 
-
-    if( _currentvarloadpointid <= 0 )
-    {
-        _currentvarloadpointvalue = 0;
-    }
-    if( _currentwattloadpointid <= 0 )
-    {
-        _currentwattloadpointvalue = 0;
-    }
-    if( _currentvoltloadpointid <= 0 )
-    {
-        _currentvoltloadpointvalue = 0;
-    }
-
-    _currentvarloadpointvalue = 0;
-    _currentwattloadpointvalue = 0;
-    _currentvoltloadpointvalue = 0;
-
-    setIVControlTot(0);
-    setIVCount(0);
-    setIWControlTot(0);
-    setIWCount(0);
-    setIVControl(0);
-    setIWControl(0);
-
-    setPhaseAValue(0, currentDateTime);
-    setPhaseBValue(0, currentDateTime);
-    setPhaseCValue(0, currentDateTime);
-    setPhaseAValueBeforeControl(0);
-    setPhaseBValueBeforeControl(0);
-    setPhaseCValueBeforeControl(0);
-
-    setLastWattPointTime(gInvalidCtiTime);
-    setLastVoltPointTime(gInvalidCtiTime);
-    setRetryIndex(0);
     _originalParent.setPAOId(getPaoId());
 }
 
 void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
 {
 
-    CtiTime dynamicTimeStamp;
     string tempBoolString;
     rdr["currentvarpointvalue"] >> _currentvarloadpointvalue;
     rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
@@ -5845,7 +5850,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["lastcapbankdeviceid"] >> _lastcapbankcontrolleddeviceid;
     rdr["busoptimizedvarcategory"] >> _busoptimizedvarcategory;
     rdr["busoptimizedvaroffset"] >> _busoptimizedvaroffset;
-    rdr["ctitimestamp"] >> dynamicTimeStamp;
     rdr["powerfactorvalue"] >> _powerfactorvalue;
     rdr["kvarsolution"] >> _kvarsolution;
     rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;

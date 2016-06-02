@@ -915,10 +915,10 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction )
     BOOST_CHECK_EQUAL(      0, feeder.getEstimatedPowerFactorPointId() );
     BOOST_CHECK_EQUAL(      0, feeder.getCurrentDailyOperations() );
     BOOST_CHECK_EQUAL(      0, feeder.getLastCapBankControlledDeviceId() );
-    BOOST_CHECK_EQUAL(      0, feeder.getBusOptimizedVarCategory() );
+    BOOST_CHECK_EQUAL(      1, feeder.getBusOptimizedVarCategory() );
     BOOST_CHECK_EQUAL(      0, feeder.getDecimalPlaces() );
     BOOST_CHECK_EQUAL(      0, feeder.getEventSequence() );
-    BOOST_CHECK_EQUAL(      0, feeder.getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(     -1, feeder.getCurrentVerificationCapBankId() );
     BOOST_CHECK_EQUAL(      0, feeder.getCurrentVerificationCapBankOrigState() );
     BOOST_CHECK_EQUAL(      0, feeder.getIVCount() );
     BOOST_CHECK_EQUAL(      0, feeder.getIWCount() );
@@ -926,9 +926,9 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction )
     BOOST_CHECK_EQUAL(      0, feeder.getPhaseCId() );
     BOOST_CHECK_EQUAL(      0, feeder.getRetryIndex() );
 
-    BOOST_CHECK_EQUAL( UnintializedQuality, feeder.getCurrentVarPointQuality() );
-    BOOST_CHECK_EQUAL( UnintializedQuality, feeder.getCurrentWattPointQuality() );
-    BOOST_CHECK_EQUAL( UnintializedQuality, feeder.getCurrentVoltPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, feeder.getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, feeder.getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, feeder.getCurrentVoltPointQuality() );
 
     BOOST_CHECK_EQUAL(   0.0f, feeder.getDisplayOrder() );
 
@@ -938,9 +938,9 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction )
     BOOST_CHECK_EQUAL(    0.0, feeder.getEstimatedVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getVarValueBeforeControl() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getBusOptimizedVarOffset() );
-    BOOST_CHECK_EQUAL(    0.0, feeder.getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, feeder.getPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getKVARSolution() );
-    BOOST_CHECK_EQUAL(    0.0, feeder.getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, feeder.getEstimatedPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getTargetVarValue() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getIVControlTot() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getIWControlTot() );
@@ -954,9 +954,9 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction )
     BOOST_CHECK_EQUAL(    0.0, feeder.getPhaseCValueBeforeControl() );
 
     BOOST_CHECK_EQUAL(     "", feeder.getMapLocationId() );
-    BOOST_CHECK_EQUAL(     "", feeder.getSolution() );
+    BOOST_CHECK_EQUAL( "IDLE", feeder.getSolution() );
     BOOST_CHECK_EQUAL(     "", feeder.getParentControlUnits() );
-    BOOST_CHECK_EQUAL(     "", feeder.getParentName() );
+    BOOST_CHECK_EQUAL( "none", feeder.getParentName() );
 
     BOOST_CHECK_EQUAL(      0, feeder.getCCCapBanks().size() );
     BOOST_CHECK_EQUAL(      0, feeder.getMultipleMonitorPoints().size() );
@@ -970,12 +970,10 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction )
     BOOST_CHECK_EQUAL(      0, feeder.getRegressionC().getCurDepth() );
     BOOST_CHECK_EQUAL(      5, feeder.getRegressionC().getRegDepth() );
 
-//  These are default constructed to CtiTime::now() -- don't test...
-//
-//    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastCurrentVarPointUpdateTime() );
-//    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastOperationTime() );
-//    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastWattPointTime() );
-//    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastVoltPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastCurrentVarPointUpdateTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastOperationTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastWattPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastVoltPointTime() );
 }
 
 BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
@@ -1018,10 +1016,10 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
     BOOST_CHECK_EQUAL(      0, feeder.getEstimatedPowerFactorPointId() );
     BOOST_CHECK_EQUAL(      0, feeder.getCurrentDailyOperations() );
     BOOST_CHECK_EQUAL(      0, feeder.getLastCapBankControlledDeviceId() );
-    BOOST_CHECK_EQUAL(      0, feeder.getBusOptimizedVarCategory() );
+    BOOST_CHECK_EQUAL(      1, feeder.getBusOptimizedVarCategory() );
     BOOST_CHECK_EQUAL(      0, feeder.getDecimalPlaces() );
     BOOST_CHECK_EQUAL(      0, feeder.getEventSequence() );
-    BOOST_CHECK_EQUAL(      0, feeder.getCurrentVerificationCapBankId() );
+    BOOST_CHECK_EQUAL(     -1, feeder.getCurrentVerificationCapBankId() );
     BOOST_CHECK_EQUAL(      0, feeder.getCurrentVerificationCapBankOrigState() );
     BOOST_CHECK_EQUAL(      0, feeder.getIVCount() );
     BOOST_CHECK_EQUAL(      0, feeder.getIWCount() );
@@ -1029,9 +1027,9 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
     BOOST_CHECK_EQUAL(      0, feeder.getPhaseCId() );
     BOOST_CHECK_EQUAL(      0, feeder.getRetryIndex() );
 
-    BOOST_CHECK_EQUAL( UnintializedQuality, feeder.getCurrentVarPointQuality() );
-    BOOST_CHECK_EQUAL( UnintializedQuality, feeder.getCurrentWattPointQuality() );
-    BOOST_CHECK_EQUAL( UnintializedQuality, feeder.getCurrentVoltPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, feeder.getCurrentVarPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, feeder.getCurrentWattPointQuality() );
+    BOOST_CHECK_EQUAL( NormalQuality, feeder.getCurrentVoltPointQuality() );
 
     BOOST_CHECK_EQUAL(   0.0f, feeder.getDisplayOrder() );
 
@@ -1041,9 +1039,9 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
     BOOST_CHECK_EQUAL(    0.0, feeder.getEstimatedVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getVarValueBeforeControl() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getBusOptimizedVarOffset() );
-    BOOST_CHECK_EQUAL(    0.0, feeder.getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, feeder.getPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getKVARSolution() );
-    BOOST_CHECK_EQUAL(    0.0, feeder.getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, feeder.getEstimatedPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getTargetVarValue() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getIVControlTot() );
     BOOST_CHECK_EQUAL(    0.0, feeder.getIWControlTot() );
@@ -1057,9 +1055,9 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
     BOOST_CHECK_EQUAL(    0.0, feeder.getPhaseCValueBeforeControl() );
 
     BOOST_CHECK_EQUAL(     "", feeder.getMapLocationId() );
-    BOOST_CHECK_EQUAL(     "", feeder.getSolution() );
+    BOOST_CHECK_EQUAL( "IDLE", feeder.getSolution() );
     BOOST_CHECK_EQUAL(     "", feeder.getParentControlUnits() );
-    BOOST_CHECK_EQUAL(     "", feeder.getParentName() );
+    BOOST_CHECK_EQUAL( "none", feeder.getParentName() );
 
     BOOST_CHECK_EQUAL(      0, feeder.getCCCapBanks().size() );
     BOOST_CHECK_EQUAL(      0, feeder.getMultipleMonitorPoints().size() );
@@ -1073,12 +1071,10 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
     BOOST_CHECK_EQUAL(      0, feeder.getRegressionC().getCurDepth() );
     BOOST_CHECK_EQUAL(      5, feeder.getRegressionC().getRegDepth() );
 
-//  These are default constructed to CtiTime::now() -- don't test...
-//
-//    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastCurrentVarPointUpdateTime() );
-//    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastOperationTime() );
-//    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastWattPointTime() );
-//    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastVoltPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastCurrentVarPointUpdateTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastOperationTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastWattPointTime() );
+    BOOST_CHECK_EQUAL( gInvalidCtiTime , feeder.getLastVoltPointTime() );
 }
 
 BOOST_AUTO_TEST_CASE( test_ccFeeder_replication )
@@ -1243,12 +1239,12 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_no_dynamic_data
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getOvUvDisabledFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getCorrectionNeededNoBankAvailFlag() );
     BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getUsePhaseData() );
-//    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPorterRetFailFlag() ); // uninitialized...
-//    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLastVerificationMsgSentSuccessfulFlag() ); // uninitialized...
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPorterRetFailFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLastVerificationMsgSentSuccessfulFlag() );
     BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getTotalizedControlFlag() );
     BOOST_CHECK_EQUAL(   true, feeders[ 5 ].isDirty() );
 
-//    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getParentId() );  // uninitialized...
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getParentId() );
     BOOST_CHECK_EQUAL(    190, feeders[ 5 ].getCurrentVarLoadPointId() );
     BOOST_CHECK_EQUAL(    191, feeders[ 5 ].getCurrentWattLoadPointId() );
     BOOST_CHECK_EQUAL(    193, feeders[ 5 ].getCurrentVoltLoadPointId() );
@@ -1281,9 +1277,9 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_no_dynamic_data
     BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getEstimatedVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getVarValueBeforeControl() );
     BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getBusOptimizedVarOffset() );
-    BOOST_CHECK_EQUAL( -1000000.0, feeders[ 5 ].getPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, feeders[ 5 ].getPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getKVARSolution() );
-    BOOST_CHECK_EQUAL( -1000000.0, feeders[ 5 ].getEstimatedPowerFactorValue() );
+    BOOST_CHECK_EQUAL(   -1.0, feeders[ 5 ].getEstimatedPowerFactorValue() );
     BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getTargetVarValue() );
     BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getIVControlTot() );
     BOOST_CHECK_EQUAL(    0.0, feeders[ 5 ].getIWControlTot() );
@@ -1299,7 +1295,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_no_dynamic_data
     BOOST_CHECK_EQUAL(   "42", feeders[ 5 ].getMapLocationId() );
     BOOST_CHECK_EQUAL( "IDLE", feeders[ 5 ].getSolution() );
     BOOST_CHECK_EQUAL(     "", feeders[ 5 ].getParentControlUnits() );
-    BOOST_CHECK_EQUAL(     "", feeders[ 5 ].getParentName() );
+    BOOST_CHECK_EQUAL( "none", feeders[ 5 ].getParentName() );
 
     BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getCCCapBanks().size() );
     BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getMultipleMonitorPoints().size() );
@@ -1500,8 +1496,8 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
     BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getMultiMonitorFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getNewPointDataReceivedFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPeakTimeFlag() );
-    BOOST_CHECK_EQUAL(  true, feeders[ 5 ].getRecentlyControlledFlag() );
-    BOOST_CHECK_EQUAL(  true, feeders[ 5 ].getWaiveControlFlag() );
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getRecentlyControlledFlag() );
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getWaiveControlFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLikeDayControlFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getVerificationFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPerformingVerificationFlag() );
@@ -1511,15 +1507,15 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPostOperationMonitorPointScanFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getWaitForReCloseDelayFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getMaxDailyOpsHitFlag() );
-    BOOST_CHECK_EQUAL( true, feeders[ 5 ].getOvUvDisabledFlag() );
+    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getOvUvDisabledFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getCorrectionNeededNoBankAvailFlag() );
     BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getUsePhaseData() );
-//    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPorterRetFailFlag() ); // uninitialized...
-//    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLastVerificationMsgSentSuccessfulFlag() ); // uninitialized...
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPorterRetFailFlag() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLastVerificationMsgSentSuccessfulFlag() );
     BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getTotalizedControlFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].isDirty() );
 
-//    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getParentId() );  // uninitialized...
+    BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getParentId() );
     BOOST_CHECK_EQUAL(    190, feeders[ 5 ].getCurrentVarLoadPointId() );
     BOOST_CHECK_EQUAL(    191, feeders[ 5 ].getCurrentWattLoadPointId() );
     BOOST_CHECK_EQUAL(    193, feeders[ 5 ].getCurrentVoltLoadPointId() );
@@ -1570,7 +1566,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
     BOOST_CHECK_EQUAL(   "42", feeders[ 5 ].getMapLocationId() );
     BOOST_CHECK_EQUAL( "IDLE", feeders[ 5 ].getSolution() );
     BOOST_CHECK_EQUAL(     "", feeders[ 5 ].getParentControlUnits() );
-    BOOST_CHECK_EQUAL(     "", feeders[ 5 ].getParentName() );
+    BOOST_CHECK_EQUAL( "none", feeders[ 5 ].getParentName() );
 
     BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getCCCapBanks().size() );
     BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getMultipleMonitorPoints().size() );
