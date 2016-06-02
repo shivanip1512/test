@@ -20,9 +20,12 @@ for %%x in (%*) do (
   if "%%x" == "diag" set verbose=/v:diag
 )
 
-msbuild yukon-server.sln %conf% %mp% %verbose% %clean% 2>&1 | tee yukon-server.log
+msbuild yukon-server.sln %conf% %mp% %verbose% %clean% 
+set rc=%ERRORLEVEL%
 
 if not "%clean%" == "" (
   if exist bin rd /s /q bin
   if exist lib rd /s /q lib
 )
+
+exit /b %rc%
