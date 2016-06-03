@@ -174,7 +174,9 @@
     </bean>
 
     <!-- Toggle Profiling Service -->
-    <bean id="profilingService" class="com.cannontech.amr.toggleProfiling.service.impl.ProfilingServiceImpl"/>
+    <bean id="profilingService" class="com.cannontech.amr.toggleProfiling.service.impl.ProfilingServiceImpl">
+            <property name="toggleProfilingDefinition" ref="toggleProfilingJob" />
+    </bean>
 
     <!-- This is temporary.  This exports services that the EIM server uses that the web server provides.
          (This context file is now only included in the web server.)  Yes, this is wrong (but functional)

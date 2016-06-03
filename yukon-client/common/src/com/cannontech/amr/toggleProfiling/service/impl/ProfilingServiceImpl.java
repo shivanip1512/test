@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.toggleProfiling.service.ProfilingService;
 import com.cannontech.amr.toggleProfiling.tasks.ToggleProfilingTask;
@@ -33,7 +34,7 @@ public class ProfilingServiceImpl implements ProfilingService {
     @Autowired private IDatabaseCache databaseCache; 
     @Autowired private DBPersistentDao dbPersistentDao = null;
     @Autowired private JobManager jobManager = null;
-    @Autowired private YukonJobDefinition<ToggleProfilingTask> toggleProfilingDefinition = null;
+    private YukonJobDefinition<ToggleProfilingTask> toggleProfilingDefinition = null;
 
     @Override
     public void startProfilingForDevice(int deviceId, int channelNum) {
@@ -176,5 +177,11 @@ public class ProfilingServiceImpl implements ProfilingService {
     public Instant getScheduledStart(int deviceId, int channel) {
         ScheduledOneTimeJob job = findScheduledJob(deviceId, channel, true);
         return job == null ? null : new Instant(job.getStartTime());
+    }
+    
+    @Required
+    public void setToggleProfilingDefinition(
+            YukonJobDefinition<ToggleProfilingTask> toggleProfilingDefinition) {
+        this.toggleProfilingDefinition = toggleProfilingDefinition;
     }
 }
