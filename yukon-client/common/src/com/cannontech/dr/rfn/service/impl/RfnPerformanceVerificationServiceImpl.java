@@ -171,6 +171,6 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     public void archiveVerificationMessage() {
         DateTime removeBeforeDate = new DateTime().plusDays(-180).withTimeAtStartOfDay();
         performanceVerificationDao.archiveRfnBroadcastEventStatus(removeBeforeDate);
-        performanceVerificationEventLog.archivedRfnBroadcastEventStatus(removeBeforeDate);
+        performanceVerificationEventLog.archivedRfnBroadcastEventStatus(removeBeforeDate.minusDays(1));
     }
 }

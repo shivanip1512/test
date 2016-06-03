@@ -583,6 +583,7 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.rf.details.showUnreported">Show Unreported</entry>
 <entry key="yukon.web.modules.dr.rf.details.showSuccess">Show Confirmed Success</entry>
 <entry key="yukon.web.modules.dr.rf.details.showMissed">Show Confirmed Missed</entry>
+<entry key="yukon.web.modules.dr.rf.details.detailsNotAvailable">Individual device details are not available beyond 180 days.</entry>
 <entry key="yukon.web.modules.dr.rf.details.device">Device</entry>
 <entry key="yukon.web.modules.dr.rf.details.accountNo">Account No.</entry>
 <entry key="yukon.web.modules.dr.rf.details.unknownType">Current Status</entry>

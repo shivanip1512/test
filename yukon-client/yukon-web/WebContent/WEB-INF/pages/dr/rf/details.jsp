@@ -53,8 +53,12 @@
                     <td>
                         <dr:rfPerformanceStats test="${test.eventStats}"/>
                         <c:if test="${hasStats}">
-                            <c:if test = "${!test.eventMessage.archived}">
                             <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
+                            <c:choose>
+                            <c:when test = "${test.eventMessage.archived}">
+                                <cm:dropdownOption key=".detailsNotAvailable"/>
+                            </c:when>
+                            <c:otherwise>
                                 <c:if test="${test.numUnknowns > 0}">
                                     <cm:dropdownOption key=".showUnreported" classes="js-unknown" data-test="${test.messageId}"/>
                                 </c:if>
@@ -64,8 +68,9 @@
                                 <c:if test="${test.numSuccesses > 0}">
                                     <cm:dropdownOption key=".showSuccess" classes="js-success" data-test="${test.messageId}"/>
                                 </c:if>
+                             </c:otherwise>
+                             </c:choose>
                             </cm:dropdown>
-                            </c:if>
                         </c:if>
                     </td>
                 </tr>
