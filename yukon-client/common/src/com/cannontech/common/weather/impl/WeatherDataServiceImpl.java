@@ -37,11 +37,13 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class WeatherDataServiceImpl implements WeatherDataService {
 
     private Logger log = YukonLogManager.getLogger(WeatherDataServiceImpl.class);
     
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private PaoDao paoDao;
     @Autowired private StaticPaoInfoDao staticPaoInfoDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
@@ -55,7 +57,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     public WeatherLocation findWeatherLocationForPao(int paoId) {
         LiteYukonPAObject pao;
         try {
-            pao = paoDao.getLiteYukonPAO(paoId);
+            pao = databaseCache.getAllPaosMap().get(paoId);
         } catch(NotFoundException e) {
             return null;
         }

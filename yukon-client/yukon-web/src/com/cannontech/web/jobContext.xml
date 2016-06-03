@@ -174,13 +174,8 @@
     </bean>
 
     <!-- Toggle Profiling Service -->
-    <bean id="profilingService" class="com.cannontech.amr.toggleProfiling.service.impl.ProfilingServiceImpl">
-        <property name="paoDao" ref="paoDao" />
-        <property name="dbPersistentDao" ref="dbPersistentDao" />
-        <property name="jobManager" ref="jobManager" />
-        <property name="toggleProfilingDefinition" ref="toggleProfilingJob" />
+    <bean id="profilingService" class="com.cannontech.amr.toggleProfiling.service.impl.ProfilingServiceImpl"/>
 
-    </bean>
     <!-- This is temporary.  This exports services that the EIM server uses that the web server provides.
          (This context file is now only included in the web server.)  Yes, this is wrong (but functional)
          and needs to be cleaned up.  See YUK-11769. -->

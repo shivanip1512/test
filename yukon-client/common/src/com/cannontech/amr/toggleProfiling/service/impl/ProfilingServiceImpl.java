@@ -9,13 +9,12 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.toggleProfiling.service.ProfilingService;
 import com.cannontech.amr.toggleProfiling.tasks.ToggleProfilingTask;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -25,15 +24,16 @@ import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class ProfilingServiceImpl implements ProfilingService {
 
     private Logger logger = YukonLogManager.getLogger(ProfilingServiceImpl.class);
-    
-    private PaoDao paoDao = null;
-    private DBPersistentDao dbPersistentDao = null;
-    private JobManager jobManager = null;
-    private YukonJobDefinition<ToggleProfilingTask> toggleProfilingDefinition = null;
+
+    @Autowired private IDatabaseCache databaseCache; 
+    @Autowired private DBPersistentDao dbPersistentDao = null;
+    @Autowired private JobManager jobManager = null;
+    @Autowired private YukonJobDefinition<ToggleProfilingTask> toggleProfilingDefinition = null;
 
     @Override
     public void startProfilingForDevice(int deviceId, int channelNum) {
@@ -47,7 +47,7 @@ public class ProfilingServiceImpl implements ProfilingService {
 
     private void toggleProfilingForDevice(int deviceId, int channelNum, boolean newToggleVal) {
         
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject device = databaseCache.getAllPaosMap().get(deviceId);
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
         DeviceLoadProfile deviceLoadProfile = ((MCTBase)yukonPaobject).getDeviceLoadProfile();
         
@@ -91,7 +91,7 @@ public class ProfilingServiceImpl implements ProfilingService {
     @Override
     public boolean isProfilingOnNow(int deviceId, int channelNum) {
         
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject device = databaseCache.getAllPaosMap().get(deviceId);
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
         DeviceLoadProfile deviceLoadProfile = ((MCTBase)yukonPaobject).getDeviceLoadProfile();
         
@@ -103,7 +103,7 @@ public class ProfilingServiceImpl implements ProfilingService {
     @Override
     public DeviceLoadProfile getDeviceLoadProfile(int deviceId) {
         
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject device = databaseCache.getAllPaosMap().get(deviceId);
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
         DeviceLoadProfile deviceLoadProfile = ((MCTBase)yukonPaobject).getDeviceLoadProfile();
         
@@ -176,26 +176,5 @@ public class ProfilingServiceImpl implements ProfilingService {
     public Instant getScheduledStart(int deviceId, int channel) {
         ScheduledOneTimeJob job = findScheduledJob(deviceId, channel, true);
         return job == null ? null : new Instant(job.getStartTime());
-    }
-
-    @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    @Required
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-
-    @Required
-    public void setJobManager(JobManager jobManager) {
-        this.jobManager = jobManager;
-    }
-
-    @Required
-    public void setToggleProfilingDefinition(
-            YukonJobDefinition<ToggleProfilingTask> toggleProfilingDefinition) {
-        this.toggleProfilingDefinition = toggleProfilingDefinition;
     }
 }

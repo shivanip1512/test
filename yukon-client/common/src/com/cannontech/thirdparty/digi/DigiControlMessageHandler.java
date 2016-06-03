@@ -14,7 +14,6 @@ import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.service.ControlHistoryService;
@@ -29,17 +28,18 @@ import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.SepMessageHandler;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
+import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 
 public class DigiControlMessageHandler implements SepMessageHandler {
 
     private static final Logger log = YukonLogManager.getLogger(DigiControlMessageHandler.class);
-    
+
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private IServerConnection dispatchConnection;
     @Autowired private AttributeService attributeService;
     @Autowired private ZigbeeWebService zigbeeWebService;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private PaoDao paoDao;
     @Autowired private ZigbeeDeviceDao zigbeeDeviceDao;
     @Autowired private ZigbeeControlEventDao zigbeeControlEventDao;
     @Autowired private ControlHistoryService controlHistoryService;
@@ -58,7 +58,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
 
     @Override
     public void handleControlMessage(SepControlMessage message) {
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
+        LiteYukonPAObject pao = databaseCache.getAllPaosMap().get(message.getGroupId());
         log.info("Sending Control Command to Load Group: " + pao.getPaoName());
         
         int eventId = nextValueHelper.getNextValue("ZBControlEvent");
@@ -95,7 +95,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
 
     @Override
     public void handleRestoreMessage(SepRestoreMessage message) {
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(message.getGroupId());
+        LiteYukonPAObject pao = databaseCache.getAllPaosMap().get(message.getGroupId());
         log.info("Sending Restore Command to Load Group: " + pao.getPaoName());
         
         int eventId = zigbeeControlEventDao.findCurrentEventId(message.getGroupId());

@@ -49,7 +49,6 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -73,6 +72,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -82,9 +82,10 @@ import com.google.common.collect.Maps;
 @Controller
 @RequestMapping("/profileWidget/*")
 public class ProfileWidget extends WidgetControllerBase {
+    
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private LoadProfileService loadProfileService;
     @Autowired private EmailService emailService;
-    @Autowired private PaoDao paoDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private MeterDao meterDao;
     @Autowired private DurationFormattingService durationFormattingService;
@@ -241,7 +242,7 @@ public class ProfileWidget extends WidgetControllerBase {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
 
         // get lite device, set name
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject device = databaseCache.getAllPaosMap().get(deviceId);
         PaoType paoType = device.getPaoType();
         List<Map<String, Object>> availableChannels;
         // get info about each channels scanning status
@@ -332,7 +333,7 @@ public class ProfileWidget extends WidgetControllerBase {
         String startDateStr = WidgetParameterHelper.getStringParameter(request, "startDateStr", "");
         String stopDateStr = WidgetParameterHelper.getStringParameter(request, "stopDateStr", "");
 
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject device = databaseCache.getAllPaosMap().get(deviceId);
         LiteDeviceMeterNumber meterNum = deviceDao.getLiteDeviceMeterNumber(deviceId);
 
         errorMsg = validateDateRange(startDateStr, stopDateStr, userContext); // validate dates

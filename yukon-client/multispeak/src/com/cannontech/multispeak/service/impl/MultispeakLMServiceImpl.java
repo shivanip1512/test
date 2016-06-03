@@ -26,7 +26,6 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -65,12 +64,13 @@ import com.cannontech.multispeak.db.MspLmMappingComparator;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.service.MultispeakLMService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class MultispeakLMServiceImpl implements MultispeakLMService {
 
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private MspLmInterfaceMappingDao mspLMInterfaceMappingDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private FdrTranslationDao fdrTranslationDao;
     @Autowired private SimplePointAccessDao simplePointAccessDao;
     @Autowired private MspObjectDao mspObjectDao;
@@ -138,7 +138,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         ErrorObject errorObject = null;
         for (MspLmMapping mspLMInterfaceMapping : mspLoadControl.getMspLmInterfaceMappings()) {
             try {
-                LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(mspLMInterfaceMapping.getPaobjectId());
+                LiteYukonPAObject liteYukonPAObject = databaseCache.getAllPaosMap().get(mspLMInterfaceMapping.getPaobjectId());
                 if (paoDefinitionDao.isTagSupported(liteYukonPAObject.getPaoType(), PaoTag.LM_PROGRAM)) {
                     String programName = liteYukonPAObject.getPaoName();
                     ProgramStatus programStatus = null;
@@ -329,7 +329,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
                 // Build a list of all the programs for the controllable object's device type
                 lmProgramBases = new ArrayList<LMProgramBase>();
                 int paobjectId = mspLMInterfaceMapping.getPaobjectId();
-                LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(paobjectId);
+                LiteYukonPAObject liteYukonPAObject = databaseCache.getAllPaosMap().get(paobjectId);
                 if (paoDefinitionDao.isTagSupported(liteYukonPAObject.getPaoType(), PaoTag.LM_PROGRAM)) {
                     LMProgramBase program = loadControlClientConnection.getProgramSafe(paobjectId);
                     lmProgramBases.add(program);

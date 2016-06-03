@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -27,13 +26,14 @@ import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
 @RequestMapping("/pendingProfilesWidget/*")
 public class PendingProfilesWidget extends WidgetControllerBase {
     
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private LoadProfileService loadProfileService;
-    @Autowired private PaoDao paoDao;
     
     @Autowired
     public PendingProfilesWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
@@ -75,7 +75,7 @@ public class PendingProfilesWidget extends WidgetControllerBase {
 
         // stop request
         long stopRequestId = ServletRequestUtils.getLongParameter(request, "stopRequestId", 0);
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject device = databaseCache.getAllPaosMap().get(deviceId);
         if (stopRequestId != 0) {
             loadProfileService.removePendingLoadProfileRequest(device, stopRequestId, userContext);
         }
@@ -110,11 +110,10 @@ public class PendingProfilesWidget extends WidgetControllerBase {
     
     private List<Map<String, String>> getPendingRequests(int deviceId, YukonUserContext userContext) {
         
-        LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject devicePaoObj = databaseCache.getAllPaosMap().get(deviceId);
         List<Map<String, String>> pendingRequests = loadProfileService.getPendingRequests(devicePaoObj, userContext);
         
         return pendingRequests;
         
     }
-    
 }
