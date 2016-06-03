@@ -55,7 +55,7 @@
                         <c:when test="${!input.attribute.intervalApplicable && readType == 'INTERVAL'}"> 
                             <cti:msg2 var="addTitle" key=".rfnChannelConfiguration.disabledInterval.title"/>
                             <cti:button label="${readLabel}" disabled="true" 
-                                data-channel="${loopStatus.index}" data-value="${readType}" title="${addTitle}"/>
+                                data-channel="${loopStatus.index}" data-value="${readType}" title="${addTitle}" classes="peakPoint" />
                         </c:when>
                     </c:choose>
                 </c:forEach>
