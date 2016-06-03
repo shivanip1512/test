@@ -509,7 +509,7 @@
 
     <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}.</entry>
     <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}.</entry>
-    <entry key="yukon.common.events.system.rfnPerformanceVerificationEventStatus.archivedRfnBroadcastEventStatus">Rfn broadcast event status archived till {11}.</entry>
+    <entry key="yukon.common.events.system.rfnPerformanceVerificationEventStatus.archivedRfnBroadcastEventStatus">RFN broadcast event details summarized and individual device event status deleted through {11}.</entry>
     
     <!-- Tools functionalities -->
     <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatCreated">Data export format {2} created by {1}.</entry>
