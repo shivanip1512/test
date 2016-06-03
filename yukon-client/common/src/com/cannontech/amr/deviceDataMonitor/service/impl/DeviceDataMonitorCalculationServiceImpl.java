@@ -47,6 +47,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -183,6 +184,8 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                 }
             } catch (JMSException e) {
                 log.error("Unable to extract message", e);
+            } catch (Exception e) {
+                log.error("Unable to process message", e);
             }
         }
     }
@@ -202,14 +205,24 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      */
     private void updateViolationGroup(DeviceDataMonitorMessage message) {
 
-        String oldName = message.getOldMonitor() == null ? null : message.getOldMonitor().getGroupName();
-        String newName = message.getUpdatedMonitor() == null ? null : message.getUpdatedMonitor().getGroupName();
+        String oldName = message.getOldMonitor() == null ? null : message.getOldMonitor().getName();
+        String newName = message.getUpdatedMonitor() == null ? null : message.getUpdatedMonitor().getName();
         if (!oldName.equals(newName)) {
-            log.debug("Updated old name=" + oldName + "  to new name=" + newName + " " + message.getUpdatedMonitor());
-            DeviceGroup existingGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.DEVICE_DATA, oldName);
-            StoredDeviceGroup existingViolationStoredGroup = deviceGroupEditorDao.getStoredGroup(existingGroup);
-            existingViolationStoredGroup.setName(newName);
-            deviceGroupEditorDao.updateGroup(existingViolationStoredGroup);
+            log.debug("monitor name changed from " + oldName + " to " + newName);
+            // try to retrieve group by new name (possible it could exist)
+            // if does not exist, get old group, give it new name
+            try {
+                
+                StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, newName, false);
+                log.debug("Group "+group.getFullName()+" was already created");
+            } catch (NotFoundException e) {
+                
+                log.debug("Creating group with the name "+newName);
+                StoredDeviceGroup outageGroup =  deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA,
+                    message.getOldMonitor().getName(), false);
+                outageGroup.setName(newName);
+                deviceGroupEditorDao.updateGroup(outageGroup);
+            }
         }
     }
     
