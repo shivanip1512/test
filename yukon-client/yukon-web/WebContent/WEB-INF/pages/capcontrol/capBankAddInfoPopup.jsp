@@ -73,7 +73,7 @@
                     <td><spring:escapeBody htmlEscape="true">${capBankAdd.otherComments}</spring:escapeBody></td>
                 </tr>
                 <tr>
-                    <td><i:inline key=".opteamComments"/></td>
+                    <td><i:inline key=".opTeamComments"/></td>
                     <td><spring:escapeBody htmlEscape="true">${capBankAdd.opTeamComments}</spring:escapeBody></td>
                 </tr>
                 <tr>

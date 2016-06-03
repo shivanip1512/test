@@ -2,6 +2,7 @@ package com.cannontech.analysis.report;
 
 import java.util.Arrays;
 import java.util.List;
+
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.CapControlMaintenancePendingModel;
 
@@ -17,7 +18,7 @@ public class CapControlMaintenancePendingReport extends SimpleYukonReportBase {
         new ColumnLayoutData("Latitude", "latitude", 45),
         new ColumnLayoutData("Longitude", "longitude", 50),
         new ColumnLayoutData("Other Comments", "otherComments", 80),
-        new ColumnLayoutData("Opteam Comments", "opteamComments", 100),
+        new ColumnLayoutData("Op Team Comments", "opteamComments", 100),
     };
 
     public CapControlMaintenancePendingReport(BareReportModel bareModel) {

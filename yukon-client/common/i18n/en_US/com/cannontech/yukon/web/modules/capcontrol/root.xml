@@ -265,7 +265,6 @@
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.maintRequestPending">Maintenance Request Pending</entry> 
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.requestPending">Request Pending</entry> 
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.otherComments">Other Comments</entry>
-    <entry key="yukon.web.modules.capcontrol.cbAddInfo.opteamComments">Opteam Comments</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.opTeamComments">Op Team Comments</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.cbcInstallDate">CBC Install Date</entry> 
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.cbMapAddress">Cap Bank Map Address</entry> 
