@@ -663,18 +663,14 @@ yukon.ami.ddm = (function () {
                 $('.js-violations').addClass('dn');
                 $('.js-calculating-disable').removeAttr('disabled');
                 $('.js-calculating-warning').toggleClass('dn', true);
-                if (value === undefined) {
-                    $('.js-violations-count').removeClass('dn').text('N/A');
-                    return;
+                if (value === undefined || value === 'NA') {
+                    $('.js-violations-na').removeClass('dn');
+                    _validate_processors();
                 }
-                if (value === 'CALCULATING') {
+                else if (value === 'CALCULATING') {
                     $('.js-violations-calculating').removeClass('dn');
                     $('.js-calculating-disable').attr('disabled', true);
                     $('.js-calculating-warning').toggleClass('dn', false);
-                }
-                else if (value === 'NA') {
-                    $('.js-violations-na').removeClass('dn');
-                    _validate_processors();
                 }
                 else {
                     $('.js-violations-count').removeClass('dn').text(count);
