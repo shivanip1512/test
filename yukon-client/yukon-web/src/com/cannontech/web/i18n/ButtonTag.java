@@ -8,6 +8,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
@@ -98,10 +99,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     }
     
     public void setDisabled(Boolean disabled) {
-        if (disabled == null) {
-            disabled = false;
-        }
-        this.disabled = disabled;
+        this.disabled = BooleanUtils.toBoolean(disabled);
     }
     
     public void setBusy(Boolean busy) {
