@@ -437,8 +437,9 @@ public class DeviceConfigurationCategoryController {
             String readField = "enabledChannels." + Integer.toString(field) + ".read";
             BuiltInAttribute attribute =  BuiltInAttribute.valueOf(channelItems.get(attributeField));
             ReadType readType = ReadType.valueOf(channelItems.get(readField));
-
-            attributeAssignment.put(attribute, readType);
+            if (readType != ReadType.INTERVAL || attribute.isIntervalApplicable()) {
+                attributeAssignment.put(attribute, readType);
+            }
         }
 
         for (Entry<BuiltInAttribute, ReadType> entry : attributeAssignment.entrySet()) {

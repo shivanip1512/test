@@ -332,7 +332,7 @@ yukon.deviceConfig = (function () {
             $(document).on('change', 'input[data-channel-read]', function () {
                 var buttons = $('.button-group [data-value]'),
                     inputs = $('.button-group input[data-channel-read]'),
-                    intervals = buttons.filter(function () {return $(this).data('value') === 'INTERVAL'; }),
+                    intervals = buttons.filter(function () {return $(this).data('value') === 'INTERVAL' && !$(this).is(":disabled"); }),
                     midnights = buttons.filter(function () {return $(this).data('value') === 'MIDNIGHT'; }),
                     numIntervals = inputs.filter(function () {return $(this).val() === 'INTERVAL'; }).length,
                     numMidnights = inputs.filter(function () {return $(this).val() === 'MIDNIGHT'; }).length;
