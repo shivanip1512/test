@@ -61,7 +61,7 @@ yukon.da.schedules = (function () {
 
                 dialog.find('form').ajaxSubmit({
                     success: function () {
-                        window.location.reload();
+                        window.location.href = yukon.url('/capcontrol/schedules');
                     },
                     error: function (xhr) {
                         dialog.html(xhr.responseText);

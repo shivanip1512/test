@@ -18,6 +18,9 @@
             <div class="stacked"><a href="<cti:url value="/capcontrol/cbc/create"/>"><i:inline key=".type.CBC"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/regulators/create"/>"><i:inline key=".regulator"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/strategies/create"/>"><i:inline key=".type.STRATEGY"/></a></div>
-        </div>
+            <div class="stacked"><a data-popup="#schedule-create-popup" href="#"><i:inline key=".type.SCHEDULE"/></a></div>
+            <cti:url var="createUrl" value="/capcontrol/schedules/create" />
+            <div id="schedule-create-popup" data-url="${createUrl}" data-dialog data-load-event="yukon:da:schedules:create" data-event="yukon:da:schedules:edit:submit" class="dn"></div>
+            </div>
     </div>
 </cti:msgScope>

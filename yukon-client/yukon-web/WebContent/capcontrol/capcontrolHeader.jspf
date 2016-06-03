@@ -21,6 +21,9 @@
 <cti:includeScript link="/resources/js/pages/yukon.da.command.js"/>
 <cti:includeScript link="/resources/js/pages/yukon.da.updaters.js"/>
 <cti:includeScript link="/resources/js/pages/yukon.da.comments.js"/>
+<!-- Needed for Create Schedule -->
+<cti:includeScript link="/resources/js/pages/yukon.da.schedules.js"/>
+
 
 <!-- Beans -->
 <jsp:useBean id="ccSession" class="com.cannontech.web.capcontrol.CCSessionInfo" type="com.cannontech.web.capcontrol.CCSessionInfo" scope="session"/>
