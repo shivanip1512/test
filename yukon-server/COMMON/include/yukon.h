@@ -520,12 +520,11 @@ enum class CtiDBChangeCategory
     YukonListEntry,
     PorterResponseMonitor,
     DeviceDataMonitor,                // 10
-    DeviceGroupMember,
     CCMonitorBankList,
     GlobalSetting,
     EnergyCompanySetting,
-    RepeatingJob,                     // 15
-    DataExportFormat,
+    RepeatingJob,
+    DataExportFormat,                 // 15
     Monitor
 };
 

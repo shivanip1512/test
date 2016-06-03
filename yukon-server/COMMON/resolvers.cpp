@@ -984,7 +984,6 @@ CtiDBChangeCategory resolveDBCategory(const string& category)
         { "yukonlistentry",                 CtiDBChangeCategory::YukonListEntry },
         { "porter_response_monitor",        CtiDBChangeCategory::PorterResponseMonitor },
         { "device_data_monitor",            CtiDBChangeCategory::DeviceDataMonitor },
-        { "device_group_member",            CtiDBChangeCategory::DeviceGroupMember },
         { "cc_monitor_bank_list",           CtiDBChangeCategory::CCMonitorBankList },
         { "globalsetting",                  CtiDBChangeCategory::GlobalSetting },
         { "energycompanysetting",           CtiDBChangeCategory::EnergyCompanySetting },

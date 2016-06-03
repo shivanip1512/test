@@ -97,11 +97,6 @@ void DispatchMsgHandlerThread()
 
                         CTILOG_INFO(dout, "Porter has received a "<< dbchg->getCategory() <<" DBCHANGE message from Dispatch");
 
-                        if(dbCategory == CtiDBChangeCategory::DeviceGroupMember)
-                        {
-                            //  Porter ignores DEVICE_GROUP_MEMBER dbchanges
-                            continue;
-                        }
                         if (dbCategory == CtiDBChangeCategory::GlobalSetting)
                         {
                             GlobalSettings::reload();

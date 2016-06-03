@@ -23,7 +23,6 @@ public enum DbChangeCategory {
     YUKON_LIST_ENTRY("YukonListEntry"),
     PORTER_RESPONSE_MONITOR,
     DEVICE_DATA_MONITOR,
-    DEVICE_GROUP_MEMBER,
     CC_MONITOR_BANK_LIST,
     GLOBAL_SETTING("GlobalSetting"),
     ENERGY_COMPANY_SETTING("EnergyCompanySetting"),

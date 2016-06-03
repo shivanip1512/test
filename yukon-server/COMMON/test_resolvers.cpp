@@ -493,7 +493,6 @@ BOOST_AUTO_TEST_CASE(test_resolveDBCategory)
     BOOST_CHECK(resolveDBCategory("yukonlistentry")                   == CtiDBChangeCategory::YukonListEntry);
     BOOST_CHECK(resolveDBCategory("porter_response_monitor")          == CtiDBChangeCategory::PorterResponseMonitor);
     BOOST_CHECK(resolveDBCategory("device_data_monitor")              == CtiDBChangeCategory::DeviceDataMonitor);
-    BOOST_CHECK(resolveDBCategory("device_group_member")              == CtiDBChangeCategory::DeviceGroupMember);
     BOOST_CHECK(resolveDBCategory("cc_monitor_bank_list")             == CtiDBChangeCategory::CCMonitorBankList);
     BOOST_CHECK(resolveDBCategory("globalsetting")                    == CtiDBChangeCategory::GlobalSetting);
     BOOST_CHECK(resolveDBCategory("energycompanysetting")             == CtiDBChangeCategory::EnergyCompanySetting);
