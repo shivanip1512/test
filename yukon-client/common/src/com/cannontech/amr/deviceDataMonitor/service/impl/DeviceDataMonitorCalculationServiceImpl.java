@@ -218,10 +218,10 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             } catch (NotFoundException e) {
                 
                 log.debug("Creating group with the name "+newName);
-                StoredDeviceGroup outageGroup =  deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA,
+                StoredDeviceGroup group =  deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA,
                     message.getOldMonitor().getName(), false);
-                outageGroup.setName(newName);
-                deviceGroupEditorDao.updateGroup(outageGroup);
+                group.setName(newName);
+                deviceGroupEditorDao.updateGroup(group);
             }
         }
     }
