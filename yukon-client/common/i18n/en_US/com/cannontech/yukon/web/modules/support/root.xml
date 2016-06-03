@@ -145,25 +145,24 @@
 
     <entry key="yukon.web.modules.support.supportBundle.writerName.paoTypeCsvSource">PAO Type Counts</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.rawPointCountCsvSource">Raw Point History Count</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.eventLogAggregatedCsvSource">Event Log</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.jobTableCsvSource">Job Table </entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.yukonGroupTableCsvSource">YukonGroup Table</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.eventLogAggregatedCsvSource">Event Log Summary</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.jobTableCsvSource">Jobs</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.macScriptsCsvSource">MACS Scripts</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.masterConfigFileSource">Master.cfg</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.masterConfigFileSource">master.cfg</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.serverXmlFileSource">server.xml</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.deviceDefinitionXmlSource">deviceDefinition.xml</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.rfnPointMappingXmlSource">rfnPointMappinng.xml</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.paoDefinitionXmlSource">paoDefinition.xml</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.logsFilesSource">Log Files</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.commFilesSource">Comm Files</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.logsFilesSource">Server Log Files</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.commFilesSource">Comm Log Files</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.clientLogFilesSource">Client Log Files</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.weblogsFilesSource">Web Log Files</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.yukonFileStructureCsvSource">Printout of Yukon file structure to CSV</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupDaoSource">User Group Data</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.eventLogCsvSource">Event Log Data</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.themeDirectory">Theme Directory</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupToYukonGroupMappingTableCsvSource">UserGroup to YukonGroup Mapping</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupTableCsvSource">UserGroup Table</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.eventLogCsvSource">Event Log Details</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.themeDirectory">Themes</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupTableCsvSource">UserGroup To RoleGroups</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.globalSettingTableCsvSource">Global Settings</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.storedProcedureLogTableCsvSource">Stored Procedure Log</entry>
 
     <entry key="yukon.web.startOver.testMessage">Test "startOver"</entry>

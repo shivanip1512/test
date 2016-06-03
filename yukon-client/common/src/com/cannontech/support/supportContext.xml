@@ -20,23 +20,29 @@
         <property name="name" value="rawPointCountCsvSource"/>
     </bean>
 
+    <bean class="com.cannontech.support.service.impl.SupportBundleEventLogDateRangeWriter"> 
+        <property name="zipFilename" value="EventLogAllResultsInDateRange.csv"/>
+        <property name="name" value="eventLogCsvSource"/>
+    </bean>  
+    
     <bean class="com.cannontech.support.service.impl.SupportBundleEventLogAggregatedResultsWriter"> 
         <property name="name" value="eventLogAggregatedCsvSource"/>
     </bean>
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleJobTableWriter"> 
-        <property name="name" value="jobTableCsvSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundleUserGroupRoleWriter">
+        <property name="name" value="userGroupDaoSource"/>
     </bean>
-    <bean class="com.cannontech.support.service.impl.SupportBundleYukonGroupTableWriter"> 
-        <property name="name" value="yukonGroupTableCsvSource"/>
-    </bean>
-
+    
     <bean class="com.cannontech.support.service.impl.SupportBundleUserGroupTableWriter"> 
         <property name="name" value="userGroupTableCsvSource"/>
     </bean>
 
-    <bean class="com.cannontech.support.service.impl.SupportBundleUserGroupToYukonGroupMappingTableWriter"> 
-        <property name="name" value="userGroupToYukonGroupMappingTableCsvSource"/>
+    <bean class="com.cannontech.support.service.impl.SupportBundleGlobalSettingTableWriter"> 
+        <property name="name" value="globalSettingTableCsvSource"/>
+    </bean>
+
+    <bean class="com.cannontech.support.service.impl.SupportBundleJobTableWriter"> 
+        <property name="name" value="jobTableCsvSource"/>
     </bean>
     
     <bean class="com.cannontech.support.service.impl.SupportBundleStoredProcedureLogTableWriter">
@@ -117,13 +123,4 @@
         <property name="name" value="yukonFileStructureCsvSource"/>
         <property name="optional" value="true"/>
     </bean>
-
-    <bean class="com.cannontech.support.service.impl.SupportBundleUserGroupRoleWriter">
-        <property name="name" value="userGroupDaoSource"/>
-    </bean>
-
-    <bean class="com.cannontech.support.service.impl.SupportBundleEventLogDateRangeWriter"> 
-        <property name="zipFilename" value="EventLogAllResultsInDateRange.csv"/>
-        <property name="name" value="eventLogCsvSource"/>
-    </bean>  
 </beans>
