@@ -12,6 +12,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.commander.YC;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -139,7 +140,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     }
     
     public void setDeviceType(int deviceId) {
-        LiteYukonPAObject lPao = paoDao.getLiteYukonPAO(deviceId);
+        LiteYukonPAObject lPao = cache.getAllPaosMap().get(deviceId);
         deviceType = lPao.getPaoType().getDbString();
         
         log.debug(" DEVICE TYPE for command lookup: " + deviceType);
@@ -148,7 +149,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     }
 
     public final LiteYukonPAObject[] getValidRoutes() {
-        return paoDao.getRoutesByType(validRouteTypes);
+        return YukonSpringHook.getBean(PaoDao.class).getRoutesByType(validRouteTypes);
     }
 
     public int getUserID() {
@@ -195,7 +196,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
         
         LiteYukonPAObject litePAO = null;
         if (paoId != PAOGroups.INVALID) {
-            litePAO = paoDao.getLiteYukonPAO(paoId);
+            litePAO = cache.getAllPaosMap().get(paoId);
         }
         
         this.setLiteYukonPao(litePAO);

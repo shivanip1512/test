@@ -12,19 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.multispeak.dao.MspLmInterfaceMappingDao;
 import com.cannontech.multispeak.db.MspLmMapping;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
 
     private final String TABLENAME = "MspLMInterfaceMapping";
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private PaoDao paoDao;
 
     private final RowMapper<MspLmMapping> mspLMInterfaceMappingRowMapper = new RowMapper<MspLmMapping>() {
         @Override
@@ -135,7 +135,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
         String strategyName = SqlUtils.convertDbValueToString(rset.getString(2).trim());
         String substationName = SqlUtils.convertDbValueToString(rset.getString(3).trim());
         int paobjectId = rset.getInt(4);
-        String paoName = paoDao.getYukonPAOName(paobjectId);
+        String paoName = databaseCache.getAllPaosMap().get(paobjectId).getPaoName();
 
         MspLmMapping mspLMInterfaceMapping = new MspLmMapping(mspLMInterfaceMappingID,
                                                               strategyName,

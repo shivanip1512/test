@@ -39,7 +39,6 @@ import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -54,6 +53,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.updater.point.CachedPointDataCorrelationService;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -63,12 +63,12 @@ import com.google.common.collect.Sets;
 @RequestMapping("/historicalReadings/*")
 public class HistoricalReadingsController {
     
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private PointDao pointDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private CachedPointDataCorrelationService cachedPointDataCorrelationService;
     
@@ -234,7 +234,7 @@ public class HistoricalReadingsController {
             Map<Integer, PointInfo> pointInfoByPointIds = pointDao.getPointInfoByPointIds(Sets.newHashSet(pointId));
             PointInfo pointInfo = pointInfoByPointIds.get(pointId);
             if (pointInfo != null) {
-                PaoType paoType = paoDao.getYukonPao(deviceId).getPaoIdentifier().getPaoType();
+                PaoType paoType = databaseCache.getAllPaosMap().get(deviceId).getPaoIdentifier().getPaoType();
                 PointIdentifier pointIdentifier = pointInfo.getPointIdentifier();
                 BuiltInAttribute builtInAttribute = 
                         paoDefinitionDao.findOneAttributeForPaoTypeAndPoint(

@@ -6,16 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.dr.message.ControlHistoryMessage;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
+import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 
 public class ControlHistoryServiceImpl implements ControlHistoryService {
-    @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private IServerConnection dispatchConnection;
      
     @Override
@@ -66,7 +66,7 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
     private ControlHistoryMessage buildBaseControlHistoryMessage(int groupId, Instant time, ControlType controlType,
                                                                  Integer associationId) {
         
-        PaoIdentifier paoIdentifier = paoDao.getYukonPao(groupId).getPaoIdentifier();
+        PaoIdentifier paoIdentifier = databaseCache.getAllPaosMap().get(groupId).getPaoIdentifier();
         LitePoint point = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.LM_GROUP_STATUS);
         
         ControlHistoryMessage controlHistoryMessage = new ControlHistoryMessage();

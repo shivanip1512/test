@@ -43,11 +43,9 @@ import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCommand;
@@ -83,12 +81,11 @@ import com.cannontech.yukon.conns.ConnPool;
 
 public class YC extends Observable implements MessageListener {
     
-    protected static final IDatabaseCache cache = DefaultDatabaseCache.getInstance();
     protected static final IServerConnection connection = ConnPool.getInstance().getDefPorterConn();
     protected static final String commandsDir = CtiUtilities.getCommandsDirPath();
     protected static final Logger log = YukonLogManager.getLogger(YC.class);
     
-    protected PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+    protected IDatabaseCache cache = YukonSpringHook.getBean(IDatabaseCache.class);
     protected PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
     protected DeviceGroupService deviceGroupService = YukonSpringHook.getBean(DeviceGroupService.class);
     protected PaoCommandAuthorizationService paoCommandAuthService = YukonSpringHook.getBean(PaoCommandAuthorizationService.class);
@@ -228,7 +225,7 @@ public class YC extends Observable implements MessageListener {
             } else if (getTreeItem() instanceof LiteDeviceMeterNumber) {
                 // Meter number item in tree selected.
                 LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
-                LiteYukonPAObject liteYukonPao = paoDao.getLiteYukonPAO(ldmn.getLiteID());
+                LiteYukonPAObject liteYukonPao = cache.getAllPaosMap().get(ldmn.getLiteID());
                 setLiteYukonPao(liteYukonPao);
                 handleDevice();
             } else if (TreeModelEnum.isEditableSerial(getModelType())) {
@@ -248,7 +245,7 @@ public class YC extends Observable implements MessageListener {
                     Iterator<Integer> deviceIter = deviceIds.iterator();
                     while (deviceIter.hasNext()) {
                         int deviceId = deviceIter.next();
-                        LiteYukonPAObject liteYukonPao = paoDao.getLiteYukonPAO(deviceId);
+                        LiteYukonPAObject liteYukonPao = cache.getAllPaosMap().get(deviceId);
                         setLiteYukonPao(liteYukonPao);
                         handleDevice();
                         // Clone the vector because handleDevice() removed the command but in truth, it
@@ -276,7 +273,7 @@ public class YC extends Observable implements MessageListener {
     
     public LiteYukonPAObject[] getAllRoutes() {
         if (allRoutes == null) {
-            allRoutes = paoDao.getAllLiteRoutes();
+            allRoutes = cache.getAllRoutes().toArray(allRoutes);
         }
         return allRoutes;
     }
@@ -767,7 +764,7 @@ public class YC extends Observable implements MessageListener {
         } else if (this.treeItem instanceof LiteDeviceMeterNumber) {
             // Meter number item in tree selected.
             LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
-            LiteYukonPAObject liteYukonPao = paoDao.getLiteYukonPAO(ldmn.getLiteID());
+            LiteYukonPAObject liteYukonPao = cache.getAllPaosMap().get(ldmn.getLiteID());
             setLiteYukonPao(liteYukonPao);
         } else {
             setLiteYukonPao(null);
@@ -832,7 +829,7 @@ public class YC extends Observable implements MessageListener {
 
         String message = "";
         if (request.getDeviceID() > 0) {
-            message = " Device \'" + paoDao.getYukonPAOName(request.getDeviceID()) + "\'";
+            message = " Device \'" + cache.getAllPaosMap().get(request.getDeviceID()).getPaoName() + "\'";
         } else {
             message = " Serial # \'" + serialNumber + "\'";
         }
@@ -925,7 +922,7 @@ public class YC extends Observable implements MessageListener {
                     String command = StringEscapeUtils.escapeHtml4(returnMsg.getCommandString());
                     debugOutput = "<BR>[" + displayFormat.format(returnMsg.getTimeStamp()) 
                             + "] - {" + returnMsg.getUserMessageID() 
-                            + "} {Device: " +  paoDao.getYukonPAOName(returnMsg.getDeviceID()) 
+                            + "} {Device: " +  cache.getAllPaosMap().get(returnMsg.getDeviceID()).getPaoName() 
                             + "} Return from '" + command + "'";
                     writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.INFO);
                     debugOutput = "";
@@ -954,11 +951,11 @@ public class YC extends Observable implements MessageListener {
                 if (returnMsg.getExpectMore() == 0) {
                     String routeName = null;
                     if (returnMsg.getRouteOffset() > 0) {
-                        routeName = paoDao.getYukonPAOName(returnMsg.getRouteOffset());
+                        routeName = cache.getAllPaosMap().get(returnMsg.getRouteOffset()).getPaoName();
                     }
                     
                     if (routeName == null) {
-                        routeName = paoDao.getYukonPAOName(returnMsg.getDeviceID());
+                        routeName = cache.getAllPaosMap().get(returnMsg.getDeviceID()).getPaoName();
                     }
 
                     displayOutput = "Route:   " + routeName;
@@ -1378,7 +1375,7 @@ public class YC extends Observable implements MessageListener {
                 || commandStr.startsWith("putvalue")) {
             
             int pointId = PointTypes.SYS_PID_SYSTEM;
-            LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(deviceId);
+            LiteYukonPAObject liteYukonPAObject = cache.getAllPaosMap().get(deviceId);
             logDescr = liteYukonPAObject.getPaoType().getPaoClass() + ": " 
                     + liteYukonPAObject.getPaoName() + " (ID:" + liteYukonPAObject.getLiteID() + ")";
                         

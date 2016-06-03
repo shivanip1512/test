@@ -35,7 +35,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
@@ -53,6 +52,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -64,8 +64,8 @@ public class MapController {
     private static final Logger log = YukonLogManager.getLogger(MapController.class);
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private PaoDao paoDao;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private PointService pointService;
@@ -111,7 +111,7 @@ public class MapController {
     @RequestMapping("/map/device/{id}/info")
     public String info(ModelMap model, @PathVariable int id) {
         
-        YukonPao pao = paoDao.getYukonPao(id);
+        YukonPao pao = databaseCache.getAllPaosMap().get(id);
         DisplayablePao displayable = paoLoadingService.getDisplayablePao(pao);
         if (displayable instanceof DisplayableMeter) {
             if (StringUtils.isNotBlank(((DisplayableMeter) displayable).getMeter().getRoute())) {

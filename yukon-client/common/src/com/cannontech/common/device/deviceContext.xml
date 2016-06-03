@@ -42,11 +42,7 @@
     
     <bean id="deviceUpdateService" class="com.cannontech.common.device.service.DeviceUpdateServiceImpl"/>
 
-    <bean id="routeDiscoveryService" class="com.cannontech.common.device.service.RouteDiscoveryServiceImpl">
-        <property name="commandRequestRouteAndDeviceExecutor" ref="commandRequestRouteAndDeviceExecutor" />
-        <property name="scheduledExecutor" ref="globalScheduledExecutor" />
-        <property name="paoDao" ref="paoDao" />
-    </bean>
+    <bean id="routeDiscoveryService" class="com.cannontech.common.device.service.RouteDiscoveryServiceImpl"/>
     
     <bean id="paoDefinitionService" class="com.cannontech.common.pao.definition.service.PaoDefinitionServiceImpl"/>
     
@@ -221,15 +217,7 @@
     
     <bean id="routeLocateResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     
-    <bean id="routeLocateExecutor" class="com.cannontech.common.device.routeLocate.impl.RouteLocateExecutorImpl">
-        <property name="routeDiscoveryService" ref="routeDiscoveryService" />
-        <property name="temporaryDeviceGroupService" ref="temporaryDeviceGroupService" />
-        <property name="paoDao" ref="paoDao" />
-        <property name="deviceUpdateService" ref="deviceUpdateService" />
-        <property name="routeLocateResultsCache" ref="routeLocateResultsCache" />
-        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
-        <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
-    </bean>
+    <bean id="routeLocateExecutor" class="com.cannontech.common.device.routeLocate.impl.RouteLocateExecutorImpl"/>
     
     <bean id="routeBroadcastService" class="com.cannontech.common.device.service.RouteBroadcastServiceImpl"/>
 </beans>

@@ -128,7 +128,7 @@ public class CommanderController {
                 Integer paoId = webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null, JsonUtils.INT_TYPE);
                 if (paoId != null) {
                     try {
-                        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+                        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
                         model.addAttribute("paoId", paoId);
                         // Add route info if available
                         PaoType type = pao.getPaoType();
@@ -173,7 +173,7 @@ public class CommanderController {
 
         Map<String, Object> data = new HashMap<>();
         try {
-            LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+            LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
             data.put("pao", pao);
             
             PaoType type = pao.getPaoType();
@@ -220,7 +220,7 @@ public class CommanderController {
     public @ResponseBody LiteYukonPAObject changeRoute(HttpServletResponse resp, ModelMap model, LiteYukonUser user,
             @PathVariable int paoId, @PathVariable int routeId) {
                 
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         Map<Integer, LiteYukonPAObject> routes = cache.getAllRoutesMap();
         LiteYukonPAObject oldRoute = routes.get(pao.getRouteID());
         LiteYukonPAObject newRoute = routes.get(routeId);
@@ -387,7 +387,7 @@ public class CommanderController {
         
         List<LiteCommand> commands = new ArrayList<>(); 
         try {
-            YukonPao pao = paoDao.getYukonPao(paoId);
+            YukonPao pao = cache.getAllPaosMap().get(paoId);
             String type = pao.getPaoIdentifier().getPaoType().getDbString();
             commands = commands(type, user);
         } catch (NotFoundException nfe){

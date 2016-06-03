@@ -13,10 +13,10 @@ import com.cannontech.analysis.data.device.capcontrol.CapControlActivityData;
 import com.cannontech.analysis.report.SimpleYukonReportBase;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Created on Dec 15, 2003
@@ -244,15 +244,15 @@ public class CapControlNewActivityModel extends FilterObjectsReportModelBase<Obj
 				case DATE_TIME_COLUMN:
 				    return ccActivity.getDateTime();
 				case SUB_NAME_COLUMN:
-					return YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(ccActivity.getSubID().intValue());
+					return YukonSpringHook.getBean(IDatabaseCache.class).getAllPaosMap().get(ccActivity.getSubID()).getPaoName();
 				case FEEDER_NAME_COLUMN:
-				    return YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(ccActivity.getFeederID().intValue());
+				    return YukonSpringHook.getBean(IDatabaseCache.class).getAllPaosMap().get(ccActivity.getFeederID()).getPaoName();
 				case CAP_BANK_NAME_COLUMN:
-				    return YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(ccActivity.getCapBankID().intValue());
+				    return YukonSpringHook.getBean(IDatabaseCache.class).getAllPaosMap().get(ccActivity.getCapBankID()).getPaoName();
 				case BANK_SIZE_COLUMN:
 					return ccActivity.getBankSize();
 				case CBC_NAME_COLUMN:
-					return YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(ccActivity.getCbcID().intValue());
+					return YukonSpringHook.getBean(IDatabaseCache.class).getAllPaosMap().get(ccActivity.getCbcID()).getPaoName();
 				case ACTION_COLUMN:
 				    return ccActivity.getAction();
 				case DESCRIPTION_COLUMN:

@@ -17,16 +17,16 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.service.SepMessageHandler;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 public class SepMessageListener {
 
-    private PaoDao paoDao;
+    @Autowired IDatabaseCache databaseCache;
     
     private static final Logger logger = YukonLogManager.getLogger(SepMessageListener.class);
     
@@ -50,7 +50,7 @@ public class SepMessageListener {
             
             //Passes the message to the handlers that handle this LM Group Type
             for (SepMessageHandler handler : sepMessageHandlers) {
-                PaoIdentifier paoIdentifier = paoDao.getYukonPao(sepMessage.getGroupId()).getPaoIdentifier();
+                PaoIdentifier paoIdentifier = databaseCache.getAllPaosMap().get(sepMessage.getGroupId()).getPaoIdentifier();
                 
                 if(handler.handlePao(paoIdentifier)) {
                     handler.handleControlMessage(sepMessage);
@@ -109,7 +109,7 @@ public class SepMessageListener {
             
             //Passes the message to the handlers that handle this LM Group Type
             for (SepMessageHandler handler : sepMessageHandlers) {
-                PaoIdentifier paoIdentifier = paoDao.getYukonPao(sepMessage.getGroupId()).getPaoIdentifier();
+                PaoIdentifier paoIdentifier = databaseCache.getAllPaosMap().get(sepMessage.getGroupId()).getPaoIdentifier();
                 
                 if(handler.handlePao(paoIdentifier)) {
                     handler.handleRestoreMessage(sepMessage);
@@ -273,10 +273,5 @@ public class SepMessageListener {
     @Autowired
     public void setSepMessageHandlers(List<SepMessageHandler> sepMessageHandlers) {
         this.sepMessageHandlers = ImmutableList.copyOf(sepMessageHandlers);
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
 }

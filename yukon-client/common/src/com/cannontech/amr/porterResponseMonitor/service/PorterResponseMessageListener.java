@@ -28,7 +28,6 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.data.lite.LitePoint;
@@ -36,14 +35,15 @@ import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class PorterResponseMessageListener implements MessageListener {
 
-    @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private PorterResponseMonitorDao porterResponseMonitorDao;
     private static final Logger log = YukonLogManager.getLogger(PorterResponseMessageListener.class);
     private Map<Integer, PorterResponseMonitor> monitors = new ConcurrentHashMap<Integer, PorterResponseMonitor>();
@@ -186,22 +186,21 @@ public class PorterResponseMessageListener implements MessageListener {
 
     protected void sendPointData(PorterResponseMonitor monitor, PorterResponseMonitorRule rule, PorterResponseMonitorTransaction transaction) {
         //The two DB hits below are a possible point of efficiency improvement. Leaving as is for now
-        YukonPao yukonPao;
-        yukonPao = paoDao.getYukonPao(transaction.getPaoId());
+        YukonPao yukonPao = databaseCache.getAllPaosMap().get(transaction.getPaoId());
         LitePoint litePoint;
         try {
             litePoint = attributeService.getPointForAttribute(yukonPao, monitor.getAttribute());
         } catch (IllegalUseOfAttribute e) {
             LogHelper.trace(log, "Attribute %s configured on PorterResponseMonitor [monitorId: %s] " +
-            		"could not be found on yukonPao [paoId: %s, paoType: %s]", monitor.getAttribute(), 
-            		monitor.getMonitorId(), yukonPao.getPaoIdentifier().getPaoId(), yukonPao.getPaoIdentifier().getPaoType());
+                    "could not be found on yukonPao [paoId: %s, paoType: %s]", monitor.getAttribute(),
+                    monitor.getMonitorId(), yukonPao.getPaoIdentifier().getPaoId(), yukonPao.getPaoIdentifier().getPaoType());
             return;
         }
 
         if (litePoint.getStateGroupID() != monitor.getStateGroup().getStateGroupID()) {
             LogHelper.debug(log, "Point [pointId: %s, pointName: %s] with StateGroupId of %s does not match StateGroupId of %s " +
-            		"of PorterResponseMonitor [monitorId: %s]", litePoint.getPointID(), litePoint.getPointName(), 
-            		litePoint.getStateGroupID(), monitor.getStateGroup().getStateGroupID(), monitor.getMonitorId());
+                    "of PorterResponseMonitor [monitorId: %s]", litePoint.getPointID(), litePoint.getPointName(),
+                    litePoint.getStateGroupID(), monitor.getStateGroup().getStateGroupID(), monitor.getMonitorId());
             return;
         }
 

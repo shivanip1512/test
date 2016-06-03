@@ -21,7 +21,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.development.dao.RphSimulatorDao;
@@ -35,7 +34,6 @@ import com.google.common.collect.Maps;
 public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjectionService {
     private static final Logger log = YukonLogManager.getLogger(BulkPointDataInjectionServiceImpl.class);
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private PaoDao paoDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
     @Autowired RphSimulatorDao rphSimulatorDao;
@@ -121,8 +119,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
             List<Instant> timestamps) {
        
         List<PointData> data = new ArrayList<>();
-        YukonPao yukonPao = paoDao.getYukonPao(device.getDeviceId());
-        LitePoint point = attributeService.getPointForAttribute(yukonPao, attribute);
+        LitePoint point = attributeService.getPointForAttribute(device, attribute);
         double runningTotal = 0;
         for (Instant timestamp : timestamps) {
             PointData pointData = new PointData();
@@ -201,16 +198,14 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
             Attribute attribute) {
         List<LitePoint> litePoints = Lists.newArrayList();
         for (SimpleDevice simpleDevice : simpleDevices) {
-            YukonPao yukonPao = paoDao.getYukonPao(simpleDevice.getDeviceId());
-            LitePoint point = attributeService.getPointForAttribute(yukonPao, attribute);
+            LitePoint point = attributeService.getPointForAttribute(simpleDevice, attribute);
             litePoints.add(point);
         }
         return litePoints;
     }
 
     private LitePoint getLitePointsFromSimpleDevicesWithAttribute(SimpleDevice simpleDevice, Attribute attribute) {
-        YukonPao yukonPao = paoDao.getYukonPao(simpleDevice.getDeviceId());
-        LitePoint point = attributeService.getPointForAttribute(yukonPao, attribute);
+        LitePoint point = attributeService.getPointForAttribute(simpleDevice, attribute);
         return point;
     }
 

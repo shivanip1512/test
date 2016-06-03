@@ -21,7 +21,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -67,7 +66,6 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @Autowired private @Qualifier("porter") BasicServerConnection porter;
     @PostConstruct private void init() { porter.addMessageListener(this); }
     @Autowired private CommandDao commandDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthService;
     @Autowired private LMCommandAuthorizationService lmCommandAuthService;
@@ -244,6 +242,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         return reqs;
     }
     
+    @Override
     public Map<String, Boolean> authorizeCommand(CommandParams params,
             YukonUserContext userContext, Object obj) {
         List<String> commands = splitCommands(params);
@@ -271,10 +270,10 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         CommandTarget type = params.getTarget();
         String key = type.getRequestTextKey();
         if (type.isRoute()) {
-            String route = paoDao.getYukonPAOName(params.getRouteId());
+            String route = cache.getAllPaosMap().get(params.getRouteId()).getPaoName();
             return accessor.getMessage(key, params.getSerialNumber(), route, params.getCommand());
         } else {
-            String pao = paoDao.getYukonPAOName(params.getPaoId());
+            String pao = cache.getAllPaosMap().get(params.getPaoId()).getPaoName();
             return accessor.getMessage(key, pao, params.getCommand());
         }
     }

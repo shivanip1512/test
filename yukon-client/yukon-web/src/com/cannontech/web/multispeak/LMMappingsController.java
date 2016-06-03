@@ -17,16 +17,16 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.multispeak.dao.MspLmInterfaceMappingDao;
 import com.cannontech.multispeak.db.MspLmMapping;
-import com.cannontech.multispeak.db.MspLmMappingComparator;
 import com.cannontech.multispeak.db.MspLmMappingColumn;
+import com.cannontech.multispeak.db.MspLmMappingComparator;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 
 @CheckGlobalSetting(GlobalSettingType.MSP_LM_MAPPING_SETUP)
@@ -34,7 +34,7 @@ import com.google.common.collect.ImmutableMap;
 @RequestMapping("setup/lmMappings/*")
 public class LMMappingsController {
 
-    @Autowired private PaoDao paoDao;
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private MspLmInterfaceMappingDao mspLMMappingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
@@ -113,7 +113,7 @@ public class LMMappingsController {
         try{
             MspLmMapping mapping = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
             int paoId = mapping.getPaobjectId();
-            mappedName = paoDao.getYukonPAOName(paoId);
+            mappedName = databaseCache.getAllPaosMap().get(paoId).getPaoName();
         } catch (NotFoundException e) {
         }
         return mappedName;

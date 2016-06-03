@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -30,13 +29,14 @@ import com.cannontech.web.contextualMenu.model.menuEntry.DeviceMenuAction;
 import com.cannontech.web.contextualMenu.model.menuEntry.MenuEntry;
 import com.cannontech.web.contextualMenu.model.menuEntry.MenuSeparator;
 import com.cannontech.web.contextualMenu.model.menuEntry.SingleDeviceMenuAction;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/*")
 public class ContextualMenuController {
-    
-    @Autowired private PaoDao paoDao;
+
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -106,7 +106,7 @@ public class ContextualMenuController {
     private void checkMenuEntrySupports(Menu menu, DeviceMenuAction menuEntry, Map<String, String> inputParams) {
         Integer deviceId = menuEntry.getDeviceId(menu.getCollectionCategory(), inputParams);
         if (deviceId != null) {
-            YukonPao yukonPao = paoDao.getYukonPao(deviceId);
+            YukonPao yukonPao = databaseCache.getAllPaosMap().get(deviceId);
             if (!menuEntry.supports(yukonPao.getPaoIdentifier())) {
                 throw new RuntimeException("Device " + yukonPao + " does not support being in a SingleDeviceMenuEntry");
             }

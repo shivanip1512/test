@@ -21,7 +21,6 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
@@ -40,6 +39,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
@@ -58,9 +58,9 @@ public class PorterExpressComCommandBuilder {
     private static final String VERSACOM_FILE = "versacom.txt";
     private static final String PROBLEM_FILE = "problem.txt";
     
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private StarsCustAccountInformationDao accountInfoDao;
     @Autowired private LMHardwareConfigurationDao configDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private YukonListDao yukonListDao;
     
     /**
@@ -249,7 +249,7 @@ public class PorterExpressComCommandBuilder {
         } else if (groupId != null) {
             
             try {
-                String groupName = paoDao.getYukonPAOName(groupId.intValue());
+                String groupName = databaseCache.getAllPaosMap().get(groupId).getPaoName();
                 String command = "putconfig serial " + sn + " template '" + groupName + "'";
                 commands.add(command);
             } catch (NotFoundException e) {
@@ -269,7 +269,7 @@ public class PorterExpressComCommandBuilder {
                     
                     if (appInventoryId == inventoryId && addressingGroupId > 0) {
                         try {
-                            String groupName = paoDao.getYukonPAOName(addressingGroupId);
+                            String groupName = databaseCache.getAllPaosMap().get(addressingGroupId).getPaoName();
                             String command = "putconfig serial " + sn + " template '" + groupName + "'";
                             commands.add(command);
                         } catch (NotFoundException e) {
@@ -621,7 +621,7 @@ public class PorterExpressComCommandBuilder {
         if (optGroupId != null) {
             
             try {
-                loadGroupName = paoDao.getYukonPAOName(optGroupId);
+                loadGroupName = databaseCache.getAllPaosMap().get(optGroupId).getPaoName();
             } catch (NotFoundException e) {
                 log.error(e.getMessage(), e);
             }
@@ -630,7 +630,7 @@ public class PorterExpressComCommandBuilder {
             
             optGroupId = configDao.getForInventoryId(lmhb.getInventoryID()).get(0).getAddressingGroupId();
             if (optGroupId > 0) {
-                loadGroupName = paoDao.getYukonPAOName(optGroupId);
+                loadGroupName = databaseCache.getAllPaosMap().get(optGroupId).getPaoName();
             }
         }
         
