@@ -640,6 +640,13 @@ yukon.ami.ddm = (function () {
             
             $(document).on('click', '.js-undo-remove-btn, .js-remove-btn', _get_supported_counts);
             
+            $(document).on('click', '.js-recalculate', function () {
+                $('.js-violations-calculating').removeClass('dn');
+                $('.js-calculating-disable').attr('disabled', true);
+                $('.js-calculating-warning').toggleClass('dn', false);
+            });
+
+            
             _get_supported_counts({ initial_load: true });
             
             // Add our help icons next to the two column titles (Settings and Processors)
@@ -656,7 +663,11 @@ yukon.ami.ddm = (function () {
                 $('.js-violations').addClass('dn');
                 $('.js-calculating-disable').removeAttr('disabled');
                 $('.js-calculating-warning').toggleClass('dn', true);
-                if (value === undefined || value === 'CALCULATING') {
+                if (value === undefined) {
+                    $('.js-violations-count').removeClass('dn').text('N/A');
+                    return;
+                }
+                if (value === 'CALCULATING') {
                     $('.js-violations-calculating').removeClass('dn');
                     $('.js-calculating-disable').attr('disabled', true);
                     $('.js-calculating-warning').toggleClass('dn', false);

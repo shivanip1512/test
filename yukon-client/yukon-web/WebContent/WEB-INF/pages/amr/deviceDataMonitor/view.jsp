@@ -137,7 +137,7 @@
         <cti:url value="/amr/deviceDataMonitor/recalculate" var="recalculateUrl">
             <cti:param name="monitorId" value="${monitor.id}"/>
         </cti:url>
-        <cti:button classes="js-calculating-disable" nameKey="recalculate" icon="icon-calculator" href="${recalculateUrl}"/>
+        <cti:button classes="js-calculating-disable js-recalculate" nameKey="recalculate" icon="icon-calculator" href="${recalculateUrl}"/>
         
         <cti:button nameKey="back" href="${startUrl}"/>
     </div>
