@@ -24,6 +24,22 @@ public abstract class DisplayableRuntimeException extends RuntimeException {
         this.args = args;
     }
 
+    protected DisplayableRuntimeException(String message) {
+        super(message);
+    }
+
+    protected DisplayableRuntimeException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public Object[] getArgs() {
+        return args;
+    }
+
     public MessageSourceResolvable getMessageSourceResolvable() {
         return new YukonMessageSourceResolvable(key, args);
     }

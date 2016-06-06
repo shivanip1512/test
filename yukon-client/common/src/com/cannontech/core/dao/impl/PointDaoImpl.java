@@ -640,7 +640,7 @@ public class PointDaoImpl implements PointDao {
                 dbPersistentDao.retrieveDBPersistent(pointBase);
                 points.add(pointBase);
             } catch (PersistenceException e) {
-                throw new DeviceCreationException("Could not retrieve points for new device.", e);
+                throw new DeviceCreationException("Could not retrieve points for new device.", "unsupportedDevice", e);
             }
         }
 

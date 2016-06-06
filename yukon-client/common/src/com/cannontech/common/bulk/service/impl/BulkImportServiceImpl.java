@@ -126,7 +126,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
                         creationFields.put(bulkHeader, fieldStringValue);
                     }
                     catch (ArrayIndexOutOfBoundsException e) {
-                        throw new DeviceCreationException("Missing required column: " + bulkHeader.name(), e);
+                        throw new DeviceCreationException("Missing required column: " + bulkHeader.name(),"missingRequiredColumn", bulkHeader.name(), e);
                     }
                     
                 }

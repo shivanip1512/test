@@ -169,7 +169,7 @@ public abstract class BaseBulkService {
                         return setupUpdateableDevice(from, device, bulkFieldList, bulkFieldIndexMap);
                     }
                     catch (DeviceCreationException e) {
-                        throw new ObjectMappingException(e.getMessage());
+                        throw new ObjectMappingException(e);
                     }
                 }
             };
@@ -411,14 +411,13 @@ public abstract class BaseBulkService {
                         fieldStringValue = null;
                     } else if ((bulkField instanceof NameBulkField)
                         && !(PaoUtils.isValidPaoName(fieldStringValue))) {
-                        throw new DeviceCreationException(
-                            "Device name cannot include any of the following characters " +  String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS));
+                        throw new DeviceCreationException("Device name cannot include any of the following characters " +  String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS),"invalidChars");
                     }
 
                     valueMap.put(inputSource.getField(), fieldStringValue);
                 
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    throw new DeviceCreationException("Incomplete row.", e);
+                    throw new DeviceCreationException("Incomplete row.","incompleteRow", e);
                 }
             }
     

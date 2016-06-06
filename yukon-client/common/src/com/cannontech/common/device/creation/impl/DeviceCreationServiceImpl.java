@@ -83,14 +83,18 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         int templateDeviceId = templateDevice.getPAObjectID();
         PaoType paoType = templateDevice.getPaoType();
         if ((!YukonValidationUtils.isRfnSerialNumberValid(serialNumber))) {
-            throw new DeviceCreationException("Device serial number must be numeric and serial number length must be less than 30");
+            throw new DeviceCreationException("Device serial number must be numeric and serial number length must be less than 30",
+                                              "maxLength");
         }
         PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
         
         if (templateDevice.getPaoType().getPaoClass() != PaoClass.RFMESH) {
             throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'. Template must be an RFN Device",
                                                             newDeviceName,
-                                                            templateName));
+                                                            templateName),
+                                              "invalidRFNTemplate",
+                                              newDeviceName,
+                                              templateName);
         }
         
         // copy device
@@ -113,14 +117,14 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
         // test
         if (!dlcAddressRangeService.isValidEnforcedAddress(paoType, address)) {
-            throw new DeviceCreationException("Invalid address: " + address + ".");
+            throw new DeviceCreationException("Invalid address: " + address + ".", "invalidAddress", address );
         }
         else if (StringUtils.isBlank(name)) {
-            throw new DeviceCreationException("Device name is blank.");
+            throw new DeviceCreationException("Device name is blank.", "blankName");
         }
         
         if (!(PaoUtils.isValidPaoName(name))) {
-            throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ ,\" ' |");
+            throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ ,\" ' |", "invalidChars");
         }
 
         // create
@@ -142,7 +146,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         // verify that the device type is RFN device type
         if (type.getPaoClass() != PaoClass.RFMESH) {
-            throw new DeviceCreationException(String.format("Could not create new device named '%s'. Device Type must be RFN Device Type.",  name));
+            throw new DeviceCreationException(String.format("Could not create new device named '%s'. Device Type must be RFN Device Type.",  name), "invalidRFNDeviceType", name);
         }
        
         // create device
@@ -151,11 +155,14 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         newDevice.setDeviceID(newDeviceId);       
         
         if (StringUtils.isBlank(name) || !(PaoUtils.isValidPaoName(name))) {
-            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ ,\" ' |");
+            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ ,\" ' |",
+                                              "invalidChars");
         }
-        
+
         if ((!YukonValidationUtils.isRfnSerialNumberValid(rfId.getSensorSerialNumber()))) {
-            throw new DeviceCreationException("Device serial number must be numeric and serial number length must be less than 30");
+            throw new DeviceCreationException("Device serial number must be numeric and serial number length must be less than 30",
+                                              "maxLength");
+
         }
         
         newDevice.setPAOName(name);
@@ -185,7 +192,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             
             return yukonDevice;
         } catch (PersistenceException e) {
-            throw new DeviceCreationException("Could not create new device.", e);
+            throw new DeviceCreationException("Could not create new device.", "invalidNewDevice", e);
         }
     }
 
@@ -217,7 +224,11 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         } catch (PersistenceException e) {
             throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'",
                                                             newDevice.getPAOName(),
-                                                            templateName), e);
+                                                            templateName),
+                                              "invalidTemplate",
+                                              newDevice.getPAOName(),
+                                              templateName,
+                                              e);
         }
 
     }
@@ -229,7 +240,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         newDevice.setDeviceID(newDeviceId);
         
         if (StringUtils.isBlank(newDeviceName) || !(PaoUtils.isValidPaoName(newDeviceName))) {
-            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ ,\" ' |");
+            throw new DeviceCreationException("Device name cannot be blank or include any of the following characters: / \\ ,\" ' |", "invalidChars");
         }
         
         newDevice.setPAOName(newDeviceName);
@@ -251,7 +262,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new BadTemplateDeviceCreationException(templateName);
         }catch (PersistenceException e) {
-            throw new DeviceCreationException("Could not load template device from database: " + templateName, e);
+            throw new DeviceCreationException("Could not load template device from database: " + templateName, "invalidtemplateDevice", templateName, e);
         }
         
     }

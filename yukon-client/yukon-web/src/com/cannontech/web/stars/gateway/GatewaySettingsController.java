@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -152,8 +153,12 @@ public class GatewaySettingsController {
             model.addAttribute("errorMsg", errorMsg);
             
             return "gateways/settings.jsp";
+        } catch (DeviceCreationException e) {
+
+            String errorMsg = accessor.getMessage(e.getKey());
+            throw new DeviceCreationException(errorMsg, e.getKey());
         }
-        
+
     }
     
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)

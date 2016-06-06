@@ -202,7 +202,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             /** Attempt to stub out a stars devices for lcr archive messages */ 
             String ecName = configurationSource.getString("RFN_ENERGY_COMPANY_NAME");
             if (StringUtils.isEmpty(ecName)) {
-                throw new DeviceCreationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg");
+                throw new DeviceCreationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg","configurationProperty");
             }
             EnergyCompany ec = ecDao.getEnergyCompany(ecName);
             LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ec.getId());
@@ -210,7 +210,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             List<YukonListEntry> typeEntries = yukonListDao.getYukonListEntry(type.getDefinitionId(), lsec);
             
             if (typeEntries.isEmpty()) {
-                throw new DeviceCreationException("Energy company " + ecName + " has no device for type: " + device.getPaoIdentifier().getPaoType());
+                throw new DeviceCreationException("Energy company " + ecName + " has no device for type: " + device.getPaoIdentifier().getPaoType(),"invalidDevice",ecName,device.getPaoIdentifier().getPaoType());
             }
             
             hardware = new Hardware();

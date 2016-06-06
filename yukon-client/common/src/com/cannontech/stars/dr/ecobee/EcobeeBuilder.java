@@ -57,7 +57,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
             //Catch any exception here - only ecobee exceptions (most often communications) are expected, but we might
             //also have authentication exceptions (which cannot be explicitly caught here) or something unexpected.
             log.error("Unable to create device.", e);
-            throw new DeviceCreationException(e.getMessage(), e);
+            throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);
         }
     }
     
