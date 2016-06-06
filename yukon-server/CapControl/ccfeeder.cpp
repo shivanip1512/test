@@ -210,9 +210,25 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _insertDynamicDataFlag( true ),
         _dirty( true )
 {
-    restore(rdr);
+    restore( rdr );
 
-    _originalParent.setPAOId(getPaoId());
+    _originalParent.setPAOId( getPaoId() );
+
+    if ( ! rdr[ "AdditionalFlags" ].isNull() ) 
+    {
+        setDynamicData( rdr );
+
+        _originalParent.restore( rdr );
+    }
+
+    if ( ! rdr[ "DECIMALPLACES" ].isNull() ) 
+    {
+        long decimalPlaces;
+
+        rdr["DECIMALPLACES"] >> decimalPlaces;
+
+        setDecimalPlaces( decimalPlaces );
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -5785,9 +5801,27 @@ void CtiCCFeeder::restore(Cti::RowReader& rdr)
     std::string flag;
 
     rdr["CurrentVarLoadPointID"]  >> _currentvarloadpointid;
+
+    if ( _currentvarloadpointid > 0 )
+    {
+        addPointId( _currentvarloadpointid );
+    }
+
     rdr["CurrentWattLoadPointID"] >> _currentwattloadpointid;
+
+    if ( _currentwattloadpointid > 0 )
+    {
+        addPointId( _currentwattloadpointid );
+    }
+
     rdr["MapLocationID"]          >> _maplocationid;
+
     rdr["CurrentVoltLoadPointID"] >> _currentvoltloadpointid;
+
+    if ( _currentvoltloadpointid > 0 )
+    {
+        addPointId( _currentvoltloadpointid );
+    }
 
     rdr["MultiMonitorControl"]    >> flag;
 
@@ -5799,6 +5833,19 @@ void CtiCCFeeder::restore(Cti::RowReader& rdr)
 
     rdr["phaseb"]                 >> _phaseBid;
     rdr["phasec"]                 >> _phaseCid;
+
+    if ( _usePhaseData )
+    {
+        if ( _phaseBid > 0 )
+        {
+            addPointId( _phaseBid );
+        }
+
+        if ( _phaseCid > 0 )
+        {
+            addPointId( _phaseCid );
+        }
+    }
 
     rdr["ControlFlag"]            >> flag;
 
@@ -5878,8 +5925,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["PhaseAValueBeforeControl"] >> _phaseAvalueBeforeControl;
     rdr["PhaseBValueBeforeControl"] >> _phaseBvalueBeforeControl;
     rdr["PhaseCValueBeforeControl"] >> _phaseCvalueBeforeControl;
-
-    _originalParent.restore(rdr);
 
     _insertDynamicDataFlag = false;
     _dirty = false;

@@ -1165,7 +1165,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_no_dynamic_data
 
     {   // Core bus object initialization
 
-        using CCFeederRow     = Cti::Test::StringRow<16>;
+        using CCFeederRow     = Cti::Test::StringRow<58>;
         using CCFeederReader  = Cti::Test::TestReader<CCFeederRow>;
 
         CCFeederRow columnNames =
@@ -1185,7 +1185,49 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_no_dynamic_data
             "usephasedata",
             "phaseb",
             "phasec",
-            "ControlFlag"
+            "ControlFlag",
+            "CurrentVarPointValue",
+            "CurrentWattPointValue",
+            "NewPointDataReceivedFlag",
+            "LastCurrentVarUpdateTime",
+            "EstimatedVarPointValue",
+            "CurrentDailyOperations",
+            "RecentlyControlledFlag",
+            "LastOperationTime",
+            "VarValueBeforeControl",
+            "LastCapBankDeviceID",
+            "BusOptimizedVarCategory",
+            "BusOptimizedVarOffset",
+            "PowerFactorValue",
+            "KvarSolution",
+            "EstimatedPFValue",
+            "CurrentVarPointQuality",
+            "WaiveControlFlag",
+            "AdditionalFlags",
+            "CurrentVoltPointValue",
+            "EventSeq",
+            "CurrVerifyCBId",
+            "CurrVerifyCBOrigState",
+            "CurrentWattPointQuality",
+            "CurrentVoltPointQuality",
+            "iVControlTot",
+            "iVCount",
+            "iWControlTot",
+            "iWCount",
+            "phaseavalue",
+            "phasebvalue",
+            "phasecvalue",
+            "LastWattPointTime",
+            "LastVoltPointTime",
+            "retryIndex",
+            "PhaseAValueBeforeControl",
+            "PhaseBValueBeforeControl",
+            "PhaseCValueBeforeControl",
+            "OriginalParentId",
+            "OriginalSwitchingOrder",
+            "OriginalCloseOrder",
+            "OriginalTripOrder",
+            "DECIMALPLACES"
         };
 
         std::vector<CCFeederRow> rowVec
@@ -1206,7 +1248,49 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_no_dynamic_data
                 "Y",
                 "195",
                 "196",
-                "Y"
+                "Y",
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString(),
+                CCFeederReader::getNullString()
             }
         };
 
@@ -1323,7 +1407,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
 
     {   // Core bus object initialization
 
-        using CCFeederRow     = Cti::Test::StringRow<16>;
+        using CCFeederRow     = Cti::Test::StringRow<58>;
         using CCFeederReader  = Cti::Test::TestReader<CCFeederRow>;
 
         CCFeederRow columnNames =
@@ -1343,51 +1427,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
             "usephasedata",
             "phaseb",
             "phasec",
-            "ControlFlag"
-        };
-
-        std::vector<CCFeederRow> rowVec
-        {
-            {
-                "5",
-                "CAPCONTROL",
-                "CAPCONTROL",
-                "A Feeder",
-                "CCFEEDER",
-                "(none)",
-                "N",
-                "190",
-                "191",
-                "42",
-                "193",
-                "Y",
-                "Y",
-                "195",
-                "196",
-                "Y"
-            }
-        };
-
-        CCFeederReader reader( columnNames, rowVec );
-
-        while ( reader() )
-        {
-            long    paoID;
-
-            reader[ "PAObjectID" ] >> paoID;
-
-            feeders.insert( paoID, new test_CtiCCFeeder( reader ) );
-        }
-    }
-
-    {   // Dynamic Data initialization
-
-        using CCFeederRow     = Cti::Test::StringRow<42>;
-        using CCFeederReader  = Cti::Test::TestReader<CCFeederRow>;
-
-        CCFeederRow columnNames =
-        {
-            "FeederID",
+            "ControlFlag",
             "CurrentVarPointValue",
             "CurrentWattPointValue",
             "NewPointDataReceivedFlag",
@@ -1428,13 +1468,29 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
             "OriginalParentId",
             "OriginalSwitchingOrder",
             "OriginalCloseOrder",
-            "OriginalTripOrder"
+            "OriginalTripOrder",
+            "DECIMALPLACES"
         };
 
         std::vector<CCFeederRow> rowVec
         {
             {
                 "5",
+                "CAPCONTROL",
+                "CAPCONTROL",
+                "A Feeder",
+                "CCFEEDER",
+                "(none)",
+                "N",
+                "190",
+                "191",
+                "42",
+                "193",
+                "Y",
+                "Y",
+                "195",
+                "196",
+                "Y",
                 "-400",
                 "1300",
                 "N",
@@ -1475,6 +1531,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
                 "0",
                 "0",
                 "0",
+                "0",
                 "0"
             }
         };
@@ -1485,9 +1542,9 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_with_dynamic_da
         {
             long    paoID;
 
-            reader[ "FeederID" ] >> paoID;
+            reader[ "PAObjectID" ] >> paoID;
 
-            feeders[ paoID ].setDynamicData( reader );
+            feeders.insert( paoID, new test_CtiCCFeeder( reader ) );
         }
     }
 

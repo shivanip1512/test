@@ -4577,6 +4577,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     paobject_subbus_map->insert(make_pair(currentCCSubstationBus->getPaoId(),currentCCSubstationBus));
                 }
 
+                for ( const long pointID : *currentCCSubstationBus->getPointIds() )
+                {
+                    pointid_subbus_map->emplace( pointID, currentCCSubstationBus );
+                }
 
                 if (currentCCSubstationBus->getDualBusEnable() &&
                     currentCCSubstationBus->getAltDualSubId() != currentCCSubstationBus->getPaoId())
@@ -5279,70 +5283,109 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
         CtiTime currentDateTime;
         {
-            static const string sqlNoID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                               "YP.description, YP.disableflag, CCF.currentvarloadpointid, "
-                                               "CCF.currentwattloadpointid, CCF.maplocationid, CCF.currentvoltloadpointid, "
-                                               "CCF.multiMonitorControl, CCF.usephasedata, CCF.phaseb, CCF.phasec, "
-                                               "CCF.controlflag "
-                                           "FROM yukonpaobject YP, capcontrolfeeder CCF "
-                                           "WHERE YP.paobjectid = CCF.feederid";
+            static const std::string sql =
+                "SELECT "
+                    "Y.PAObjectID, "
+                    "Y.Category, "
+                    "Y.PAOClass, "
+                    "Y.PAOName, "
+                    "Y.Type, "
+                    "Y.Description, "
+                    "Y.DisableFlag, "
+                    "F.CurrentVarLoadPointID, "
+                    "F.CurrentWattLoadPointID, "
+                    "F.MapLocationID, "
+                    "F.CurrentVoltLoadPointID, "
+                    "F.MultiMonitorControl, "
+                    "F.usephasedata, "
+                    "F.phaseb, "
+                    "F.phasec, "
+                    "F.ControlFlag, "
+                    "D.CurrentVarPointValue, "
+                    "D.CurrentWattPointValue, "
+                    "D.NewPointDataReceivedFlag, "
+                    "D.LastCurrentVarUpdateTime, "
+                    "D.EstimatedVarPointValue, "
+                    "D.CurrentDailyOperations, "
+                    "D.RecentlyControlledFlag, "
+                    "D.LastOperationTime, "
+                    "D.VarValueBeforeControl, "
+                    "D.LastCapBankDeviceID, "
+                    "D.BusOptimizedVarCategory, "
+                    "D.BusOptimizedVarOffset, "
+                    "D.PowerFactorValue, "
+                    "D.KvarSolution, "
+                    "D.EstimatedPFValue, "
+                    "D.CurrentVarPointQuality, "
+                    "D.WaiveControlFlag, "
+                    "D.AdditionalFlags, "
+                    "D.CurrentVoltPointValue, "
+                    "D.EventSeq, "
+                    "D.CurrVerifyCBId, "
+                    "D.CurrVerifyCBOrigState, "
+                    "D.CurrentWattPointQuality, "
+                    "D.CurrentVoltPointQuality, "
+                    "D.iVControlTot, "
+                    "D.iVCount, "
+                    "D.iWControlTot, "
+                    "D.iWCount, "
+                    "D.phaseavalue, "
+                    "D.phasebvalue, "
+                    "D.phasecvalue, "
+                    "D.LastWattPointTime, "
+                    "D.LastVoltPointTime, "
+                    "D.retryIndex, "
+                    "D.PhaseAValueBeforeControl, "
+                    "D.PhaseBValueBeforeControl, "
+                    "D.PhaseCValueBeforeControl, "
+                    "P.OriginalParentId, "
+                    "P.OriginalSwitchingOrder, "
+                    "P.OriginalCloseOrder, "
+                    "P.OriginalTripOrder, "
+                    "U.DECIMALPLACES "
+                "FROM "
+                    "YukonPAObject Y "
+                        "JOIN CapControlFeeder F "
+                            "ON Y.PAObjectID = F.FeederID "
+                        "LEFT OUTER JOIN DynamicCCFeeder D "
+                            "ON F.FeederID = D.FeederID "
+                        "LEFT OUTER JOIN DynamicCCOriginalParent P "
+                            "ON F.FeederID = P.PAObjectId "
+                        "LEFT OUTER JOIN POINTUNIT U "
+                            "ON F.CurrentVarLoadPointID = U.POINTID";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            static const std::string sqlID = sql +
+                " WHERE Y.PAObjectID = ?";
 
-            if( feederId > 0 )
+            Cti::Database::DatabaseConnection   connection;
+            Cti::Database::DatabaseReader       rdr( connection );
+
+            if ( feederId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " AND YP.paobjectid = ?");
-                rdr.setCommandText(sqlID);
+                rdr.setCommandText( sqlID );
                 rdr << feederId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
-            CtiCCFeederPtr oldCCFeeder, currentCCFeeder;
-            CtiCCSubstationBusPtr oldFeederParentSub = NULL;
             while ( rdr() )
             {
-                currentCCFeeder = CtiCCFeederPtr(new CtiCCFeeder(rdr, _strategyManager.get()));
+                CtiCCFeederPtr currentCCFeeder = CtiCCFeederPtr(new CtiCCFeeder(rdr, _strategyManager.get()));
 
                 paobject_feeder_map->insert(make_pair(currentCCFeeder->getPaoId(),currentCCFeeder));
 
-                if (currentCCFeeder->getCurrentVarLoadPointId() > 0 )
+                for ( const long pointID : *currentCCFeeder->getPointIds() )
                 {
-                    pointid_feeder_map->insert(make_pair(currentCCFeeder->getCurrentVarLoadPointId(), currentCCFeeder));
-                    currentCCFeeder->addPointId(currentCCFeeder->getCurrentVarLoadPointId());
-                }
-                if (currentCCFeeder->getCurrentWattLoadPointId() > 0)
-                {
-                    pointid_feeder_map->insert(make_pair(currentCCFeeder->getCurrentWattLoadPointId(), currentCCFeeder));
-                    currentCCFeeder->addPointId(currentCCFeeder->getCurrentWattLoadPointId());
-                }
-                if (currentCCFeeder->getCurrentVoltLoadPointId() > 0)
-                {
-                    pointid_feeder_map->insert(make_pair(currentCCFeeder->getCurrentVoltLoadPointId(), currentCCFeeder));
-                    currentCCFeeder->addPointId(currentCCFeeder->getCurrentVoltLoadPointId());
-                }
-                if (currentCCFeeder->getUsePhaseData())
-                {
-                    if (currentCCFeeder->getPhaseBId() > 0)
-                    {
-                        pointid_feeder_map->insert(make_pair(currentCCFeeder->getPhaseBId(), currentCCFeeder));
-                        currentCCFeeder->addPointId(currentCCFeeder->getPhaseBId());
-                    }
-                    if (currentCCFeeder->getPhaseCId() > 0)
-                    {
-                        pointid_feeder_map->insert(make_pair(currentCCFeeder->getPhaseCId(), currentCCFeeder));
-                        currentCCFeeder->addPointId(currentCCFeeder->getPhaseCId());
-                    }
+                    pointid_feeder_map->emplace( pointID, currentCCFeeder );
                 }
             }
         }
@@ -5594,109 +5637,22 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                 reloadMonitorPointsFromDatabase(currentFeeder->getParentId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
             }
         }
+
         {
-            static const string sqlNoID =  "SELECT CCF.feederid, PTU.decimalplaces "
-                                           "FROM pointunit PTU, capcontrolfeeder CCF "
-                                           "WHERE CCF.currentvarloadpointid = PTU.pointid";
+            // there was a section of code in the dynamic table read that initialized the target VAr
+            //  value.  this *was* occuring after the strategy loading.  dynamic data reading was folded into
+            //  the constructor so that section of code needed to be moved out and executed after the
+            //  strategy was assigned.  so here it is!
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if(feederId > 0)
+            if ( feederId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " AND CCF.feederid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << feederId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentFeederId;
-                long tempDecimalPlaces;
-                rdr["feederid"] >> currentFeederId;
-
-                CtiCCFeederPtr currentFeeder = findInMap(currentFeederId, paobject_feeder_map);
-                if (currentFeeder == NULL)
+                if ( CtiCCFeederPtr feeder = findInMap( feederId, paobject_feeder_map ) )
                 {
-                    continue;
-                }
-                rdr["decimalplaces"] >> tempDecimalPlaces;
-                currentFeeder->setDecimalPlaces(tempDecimalPlaces);
-            }
-
-
-        }
-        {
-            static const string sqlNoID =  "SELECT DCF.feederid, DCF.currentvarpointvalue, DCF.currentwattpointvalue, "
-                                               "DCF.newpointdatareceivedflag, DCF.lastcurrentvarupdatetime, "
-                                               "DCF.estimatedvarpointvalue, DCF.currentdailyoperations, "
-                                               "DCF.recentlycontrolledflag, DCF.lastoperationtime, DCF.varvaluebeforecontrol, "
-                                               "DCF.lastcapbankdeviceid, DCF.busoptimizedvarcategory, "
-                                               "DCF.busoptimizedvaroffset, DCF.ctitimestamp, DCF.powerfactorvalue, "
-                                               "DCF.kvarsolution, DCF.estimatedpfvalue, DCF.currentvarpointquality, "
-                                               "DCF.waivecontrolflag, DCF.additionalflags, DCF.currentvoltpointvalue, "
-                                               "DCF.eventSeq, DCF.currverifycbid, DCF.currverifycborigstate, "
-                                               "DCF.currentwattpointquality, DCF.currentvoltpointquality, DCF.ivcontroltot, "
-                                               "DCF.ivcount, DCF.iwcontroltot, DCF.iwcount, DCF.phaseavalue, DCF.phasebvalue, "
-                                               "DCF.phasecvalue, DCF.lastwattpointtime, DCF.lastvoltpointtime, DCF.retryindex, "
-                                               "DCF.phaseavaluebeforecontrol, DCF.phasebvaluebeforecontrol, "
-                                               "DCF.phasecvaluebeforecontrol, DOP.originalparentid, "
-                                               "DOP.originalswitchingorder, DOP.originalcloseorder, DOP.originaltriporder "
-                                           "FROM dynamicccfeeder DCF, capcontrolfeeder CCF, dynamicccoriginalparent DOP "
-                                           "WHERE CCF.feederid = DCF.feederid AND CCF.feederid = DOP.paobjectid";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if(feederId > 0)
-            {
-                static const string sqlID = string(sqlNoID + " AND CCF.feederid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << feederId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long currentCCFeederId;
-                rdr["feederid"] >> currentCCFeederId;
-                if (currentCCFeederId != NULL)
-                {
-                    CtiCCFeederPtr currentCCFeeder = findInMap(currentCCFeederId, paobject_feeder_map);
-                    if (currentCCFeeder == NULL)
+                    if ( CtiCCSubstationBusPtr bus = findSubBusByPAObjectID( feeder->getParentId() ) )
                     {
-                        continue;
-                    }
-                    currentCCFeeder->setDynamicData(rdr);
-                    if(feederId > 0 )
-                    {
-                        CtiCCSubstationBusPtr myTempBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
-                        if(myTempBus != NULL)
-                        {
-                            currentCCFeeder->figureAndSetTargetVarValue(myTempBus->getStrategy()->getControlMethod(), myTempBus->getStrategy()->getControlUnits(), myTempBus->getPeakTimeFlag());
-                        }
-
+                        feeder->figureAndSetTargetVarValue( bus->getStrategy()->getControlMethod(),
+                                                            bus->getStrategy()->getControlUnits(),
+                                                            bus->getPeakTimeFlag() );
                     }
                 }
             }
