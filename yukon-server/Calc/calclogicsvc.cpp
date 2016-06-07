@@ -26,11 +26,11 @@
 
 #include "amq_constants.h"
 
+#include "coroutine_util.h"
+
 #include <boost/range.hpp>
 
 #include <iostream>
-
-#include <experimental/generator>
 
 using namespace std;
 
@@ -1174,24 +1174,6 @@ void CtiCalcLogicService::updateCalcData()
 }
 
 
-template <class Container>
-std::experimental::generator<boost::iterator_range<typename Container::const_iterator>> chop(Container& c, size_t chunkSize)
-{
-    auto chunks = c.size() / chunkSize;
-
-    auto itr = c.cbegin();
-    auto end = c.cend();
-
-    while( chunks-- )
-    {
-        yield boost::iterator_range<Container::const_iterator>(itr, itr + chunkSize);
-        itr += chunkSize;
-    }
-
-    yield boost::iterator_range<Container::const_iterator>(itr, end);
-}
-
-
 void CtiCalcLogicService::_registerForPoints()
 {
     try
@@ -1200,13 +1182,13 @@ void CtiCalcLogicService::_registerForPoints()
 
         const auto dependencies = calcThread->getPointDependencies();
 
-        auto msgPtReg = std::make_unique<CtiPointRegistrationMsg>(REG_NONE);  //  REG_ALL_CALCULATED if we can make getPointDependencies return only non-calc components
+        auto msgPtReg = std::make_unique<CtiPointRegistrationMsg>(REG_NOTHING);  //  REG_ALL_CALCULATED if we can make getPointDependencies return only non-calc components
         
         msgPtReg->insert(ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc));
 
         dispatchConnection->WriteConnQue(msgPtReg.release(), CALLSITE);
 
-        for( auto chunk : chop(dependencies, 10'000) )
+        for( auto chunk : Cti::Coroutines::chunked(dependencies, 10'000) )
         {
             msgPtReg = std::make_unique<CtiPointRegistrationMsg>(REG_ADD_POINTS);
 

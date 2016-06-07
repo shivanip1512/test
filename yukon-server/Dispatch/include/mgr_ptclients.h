@@ -122,7 +122,7 @@ public:
    bool pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn);
 
    CtiTime findNextNearestArchivalTime();
-   void scanForArchival(const CtiTime &Now, boost::ptr_vector<CtiTableRawPointHistory> &Que);
+   std::vector<std::unique_ptr<CtiTableRawPointHistory>> scanForArchival(const CtiTime &Now);
 
    void validateConnections();
    void storeDirtyRecords();

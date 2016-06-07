@@ -49,12 +49,19 @@ public:
         None
     };
 
+    enum class ClientType : bool {
+        SqlServer,
+        Oracle
+    };
+
     DatabaseConnection();
     DatabaseConnection(QueryTimeout t);
 
     virtual ~DatabaseConnection();
 
     bool isValid() const;
+
+    ClientType getClientType() const;
 };
 
 }

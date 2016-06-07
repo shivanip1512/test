@@ -59,6 +59,27 @@ bool DatabaseConnection::isValid() const
     return ( connection != NULL );
 }
 
+auto DatabaseConnection::getClientType() const -> ClientType
+{
+    static const std::map<eSAClient, ClientType> ClientMapping{
+        { SA_SQLServer_Client, ClientType::SqlServer },
+        { SA_Oracle_Client,    ClientType::Oracle }};
+
+    if( ! connection )
+    {
+        throw DatabaseException("Cannot determine client type, SAConnection is null");
+    }
+
+    const auto clientId = connection->Client();
+
+    if( auto client = mapFind(ClientMapping, clientId) )
+    {
+        return *client;
+    }
+
+    throw DatabaseException("Unknown client type " + std::to_string(clientId));
+}
+
 void DatabaseConnection::beginTransaction()
 {
     try

@@ -679,15 +679,17 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
     return closeTime;
 }
 
-void CtiPointClientManager::scanForArchival(const CtiTime &Now, boost::ptr_vector<CtiTableRawPointHistory> &Que)
+std::vector<std::unique_ptr<CtiTableRawPointHistory>> CtiPointClientManager::scanForArchival(const CtiTime &Now)
 {
+    std::vector<std::unique_ptr<CtiTableRawPointHistory>> toArchive;
+
     {
         Cti::Timing::DebugTimer debugTime("Scanning For Archival", false, 1);
         coll_type::writer_lock_guard_t guard(getLock());
         vector<long> points;
         getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
 
-        for each( long ptid in points )
+        for( long ptid : points )
         {
             if( CtiPointSPtr pPt = getPoint(ptid) )
             {
@@ -707,7 +709,7 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, boost::ptr_vecto
                                 case ArchiveTypeOnTimer:
                                 case ArchiveTypeOnTimerOrUpdated:
                                     {
-                                        Que.push_back(new CtiTableRawPointHistory(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now, 0));
+                                        toArchive.emplace_back(std::make_unique<CtiTableRawPointHistory>(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now, 0));
                                         break;
                                     }
                                 case ArchiveTypeOnTimerAndUpdated:
@@ -736,6 +738,8 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, boost::ptr_vecto
             }
         }
     }
+
+    return toArchive;
 }
 
 auto CtiPointClientManager::getDirtyRecordList() -> DynamicPointDispatchList

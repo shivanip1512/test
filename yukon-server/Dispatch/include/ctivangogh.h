@@ -71,11 +71,11 @@ private:
 
     CtiFIFOQueue< CtiSignalMsg > _signalMsgQueue;
 
-    boost::ptr_deque< CtiTableRawPointHistory > _archiverQueue;
+    std::vector<std::unique_ptr<CtiTableRawPointHistory>> _archiverQueue;
     CtiCriticalSection _archiverLock;
 
-    void submitRowsToArchiver(boost::ptr_vector<CtiTableRawPointHistory> &rows);
-    void submitRowToArchiver(std::auto_ptr<CtiTableRawPointHistory> row);
+    void submitRowsToArchiver(std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rows);
+    void submitRowToArchiver(std::unique_ptr<CtiTableRawPointHistory>&& row);
     unsigned archiverQueueSize();
 
     // These are the signals which have not been cleared by a client app
@@ -89,7 +89,7 @@ private:
     CtiClientConnection*       _notificationConnection;
     bool ShutdownOnThreadTimeout;
 
-    unsigned writeRawPointHistory(boost::ptr_deque<CtiTableRawPointHistory> &rowsToWrite);
+    unsigned writeRawPointHistory(Cti::Database::DatabaseConnection &conn, std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rowsToWrite);
 
     void checkNumericReasonability(CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
     void checkNumericLimits(int alarm, CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
@@ -151,7 +151,7 @@ protected:
         WriteMode_WriteAll
     };
 
-    bool writeArchiveDataToDB(const WriteMode wm);
+    bool writeArchiveDataToDB(Cti::Database::DatabaseConnection& conn, const WriteMode wm);
 
 public:
 

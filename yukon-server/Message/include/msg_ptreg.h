@@ -35,7 +35,7 @@ public:
 
    typedef CtiMessage Inherited;
 
-   CtiPointRegistrationMsg(int Flag = (REG_NONE), int Pri = 14);
+   CtiPointRegistrationMsg(int Flag = (REG_NOTHING), int Pri = 14);
    virtual ~CtiPointRegistrationMsg();
    CtiPointRegistrationMsg(const CtiPointRegistrationMsg &aRef);
 

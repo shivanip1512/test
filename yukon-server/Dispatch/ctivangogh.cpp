@@ -67,9 +67,14 @@
 #include "logger.h"
 #include "desolvers.h"
 
+#include "coroutine_util.h"
+
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/adaptor/indirected.hpp>
+#include <boost/range/algorithm/for_each.hpp>
 
 using namespace std;
 
@@ -1351,11 +1356,7 @@ void CtiVanGogh::VGArchiverThread()
              *  Step 1. Write/mark any points which need archiving and update their nextArchive times.
              */
 
-            boost::ptr_vector<CtiTableRawPointHistory> rowsToArchive;
-
-            PointMgr.scanForArchival(TimeNow, rowsToArchive);
-
-            submitRowsToArchiver(rowsToArchive);
+            submitRowsToArchiver(PointMgr.scanForArchival(TimeNow));
 
             /*
              *  Step 2. identify the next nearest time we need to do an archival write.
@@ -1598,8 +1599,8 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         // however cause any change in normal pending scanned readings
 
                         submitRowToArchiver(
-                                std::auto_ptr<CtiTableRawPointHistory>(
-                                        new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis())));
+                                std::make_unique<CtiTableRawPointHistory>(
+                                        TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
 
                         pDyn->setWasArchived(true);
                     }
@@ -1610,8 +1611,8 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         (TempPoint->getArchiveType() == ArchiveTypeOnTimerOrUpdated))
                 {
                     submitRowToArchiver(
-                            std::auto_ptr<CtiTableRawPointHistory>(
-                                    new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis())));
+                            std::make_unique<CtiTableRawPointHistory>(
+                                    TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
 
                     pDyn->setArchivePending(false);
 
@@ -2637,10 +2638,10 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
     }
 }
 
-bool CtiVanGogh::writeArchiveDataToDB(const WriteMode wm)
+bool CtiVanGogh::writeArchiveDataToDB(Cti::Database::DatabaseConnection& conn, const WriteMode wm)
 {
     const unsigned MinRowsToWrite = 10;
-    const unsigned ChunkSize = 1000;
+    const unsigned ChunkSize = 10000;
 
     const unsigned rowsWaiting = archiverQueueSize();
 
@@ -2654,32 +2655,39 @@ bool CtiVanGogh::writeArchiveDataToDB(const WriteMode wm)
         return false;
     }
 
-    boost::ptr_deque<CtiTableRawPointHistory> rowsToWrite;
+    std::vector<std::unique_ptr<CtiTableRawPointHistory>> rowsToWrite;
 
     {
         CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
 
         if( wm != WriteMode_WriteAll && _archiverQueue.size() > ChunkSize )
         {
-            rowsToWrite.transfer(
-                    rowsToWrite.begin(),
-                    _archiverQueue.begin(),
-                    _archiverQueue.begin() + ChunkSize,
-                    _archiverQueue);
+            rowsToWrite.reserve(ChunkSize);
+
+            const auto begin = _archiverQueue.begin();
+            const auto mid = begin + ChunkSize;
+
+            rowsToWrite.assign(
+                std::make_move_iterator(begin),
+                std::make_move_iterator(mid));
+
+            _archiverQueue.erase(begin, mid);
         }
         else
         {
-            rowsToWrite = _archiverQueue.release();
+            rowsToWrite.swap(_archiverQueue);
         }
     }
 
     try
     {
-        if( unsigned rowsWritten = writeRawPointHistory(rowsToWrite) )
+        Cti::Timing::MillisecondTimer timer;
+
+        if( unsigned rowsWritten = writeRawPointHistory(conn, std::move(rowsToWrite)) )
         {
             const unsigned rowsRemaining = archiverQueueSize();
 
-            CTILOG_INFO(dout, "RawPointHistory transaction complete. Inserted "<< rowsWritten <<" rows. remaining: "<< rowsRemaining <<" rows");
+            CTILOG_INFO(dout, "RawPointHistory transaction completed in " << timer.elapsed() << "ms. Inserted "<< rowsWritten <<" rows. remaining: "<< rowsRemaining <<" rows");
 
             return rowsRemaining > MinRowsToWrite;
         }
@@ -3141,10 +3149,12 @@ YukonError_t CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiM
         LONG did = Op[2];
         PointMgr.getEqualByPAO(did, points);
 
-        for each( CtiPointSPtr pPoint in points )
+        for( auto& pPoint : points )
         {
-            // We know this point.. AND it is our device!
-            if(pPoint && pPoint->getDeviceID() == did)
+            //  Don't mark calc points nonupdated - they can inherit the quality through their component points if necessary.
+            if( pPoint
+                && pPoint->getType() != CalculatedPointType
+                && pPoint->getType() != CalculatedStatusPointType)
             {
                 status = markPointNonUpdated(*pPoint, aWrap);
             }
@@ -4462,6 +4472,8 @@ void CtiVanGogh::VGRPHWriterThread()
 
     try
     {
+        Cti::Database::DatabaseConnection conn;
+
         const unsigned ThirtySeconds = 30 * 1000;
         unsigned loopTimer = 0;
 
@@ -4488,7 +4500,7 @@ void CtiVanGogh::VGRPHWriterThread()
                 }
             }
 
-            const bool MoreWaiting = writeArchiveDataToDB(wm);
+            const bool MoreWaiting = writeArchiveDataToDB(conn, wm);
 
             const unsigned MinimumLoopTime = MoreWaiting ? 50 : 1000;  //  wait 50 ms if more work waiting, 1 second otherwise
 
@@ -4503,7 +4515,7 @@ void CtiVanGogh::VGRPHWriterThread()
         }
 
         //  Write anything remaining before we exit.
-        writeArchiveDataToDB(WriteMode_WriteAll);
+        writeArchiveDataToDB(conn, WriteMode_WriteAll);
     }
     catch(...)
     {
@@ -5081,18 +5093,23 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
     }
 }
 
-void CtiVanGogh::submitRowToArchiver(std::auto_ptr<CtiTableRawPointHistory> row)
+void CtiVanGogh::submitRowToArchiver(std::unique_ptr<CtiTableRawPointHistory>&& row)
 {
     CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
 
-    _archiverQueue.push_back(row);
+    _archiverQueue.emplace_back(std::move(row));
 }
 
-void CtiVanGogh::submitRowsToArchiver(boost::ptr_vector<CtiTableRawPointHistory> &rows)
+void CtiVanGogh::submitRowsToArchiver(std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rows)
 {
     CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
 
-    _archiverQueue.transfer(_archiverQueue.end(), rows);
+    _archiverQueue.reserve(_archiverQueue.size() + rows.size());
+
+    _archiverQueue.insert(
+            _archiverQueue.end(), 
+            std::make_move_iterator(rows.begin()), 
+            std::make_move_iterator(rows.end()));
 }
 
 unsigned CtiVanGogh::archiverQueueSize()
@@ -5103,88 +5120,71 @@ unsigned CtiVanGogh::archiverQueueSize()
 }
 
 
-unsigned CtiVanGogh::writeRawPointHistory(boost::ptr_deque<CtiTableRawPointHistory> &rowsToWrite)
+unsigned CtiVanGogh::writeRawPointHistory(Cti::Database::DatabaseConnection &conn, std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rowsToWrite)
 {
     using namespace Cti::Database;
-
-    DatabaseConnection conn;
 
     if( ! conn.isValid() )
     {
         CTILOG_ERROR(dout, "Invalid Connection to Database");
         return 0;
     }
-
-    const unsigned ChunkSize = 10;
-
-    //  form up the SQL for both the single-row and multi-row cases
-    const std::string rowSql   = CtiTableRawPointHistory::getInsertSql();
-
-    //  format is "BEGIN INSERT INTO.... ;INSERT INTO.... ;END;"
-    const std::string chunkSql = "BEGIN " + boost::join(std::vector<std::string>(ChunkSize, rowSql), ";") + ";END;";
+    
+    static const size_t ChunkSize = 180;  //  each row takes 5 placeholders, so this is 900 - which is close to our (current) 999 limit, but still a round number
 
     unsigned rowsWritten = 0;
-    bool multiRowInsert = true;
-    bool retryChangeId = false;
 
-    while( ! rowsToWrite.empty() )
+    boost::optional<DatabaseTransaction> transaction;
+
+    try
     {
-        multiRowInsert &= rowsToWrite.size() >= ChunkSize;
+        DatabaseWriter truncator{ conn, CtiTableRawPointHistory::getTempTableTruncationSql(conn.getClientType()) };
 
-        const unsigned rows = multiRowInsert ? ChunkSize : 1;
-
-        DatabaseWriter inserter(conn, multiRowInsert ? chunkSql : rowSql);
-
-        boost::scoped_ptr<DatabaseTransaction> transaction;
-
-        if( multiRowInsert || retryChangeId )
+        if( ! truncator.execute() )
         {
-            transaction.reset(new DatabaseTransaction(conn));
+            CTILOG_INFO(dout, "Temp table not detected, attempting to create");
+
+            DatabaseWriter creator{ conn, CtiTableRawPointHistory::getTempTableCreationSql(conn.getClientType()) };
+
+            executeWriter(creator, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
         }
 
-        for( unsigned i = 0; i < rows; ++i )
-        {
-            rowsToWrite[i].fillInserter(inserter, ChangeIdGen(retryChangeId));
-        }
+        transaction.emplace(conn);
 
-        try
+        for( auto chunk : Cti::Coroutines::chunked(rowsToWrite, ChunkSize) )
         {
+            DatabaseWriter inserter{ conn, CtiTableRawPointHistory::getInsertSql(conn.getClientType(), chunk.size()) };
+
+            boost::range::for_each( chunk, [&](auto& record) {
+                record->fillInserter(inserter);
+            });
+
             executeWriter(inserter, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
 
-            rowsWritten += rows;
-
-            retryChangeId = false;  //  we succeeded!
-        }
-        catch( DatabaseException & ex )
-        {
-            //  try to correct a PK error once, then let it fail
-            retryChangeId = ! retryChangeId && dynamic_cast<PrimaryKeyViolationException *>(&ex);
-
-            transaction && transaction->rollback();
-
-            if( multiRowInsert || retryChangeId )
-            {
-                if( multiRowInsert )
-                {
-                    CTILOG_EXCEPTION_ERROR(dout, ex, "Reverting to single-row inserts into RawPointHistory");
-                }
-
-                if( retryChangeId )
-                {
-                    CTILOG_EXCEPTION_WARN(dout, ex, "Insert collision occurred in RawPointHistory.  ChangeId will be re-initialized.  There may be two copies of dispatch inserting into this DB");
-                }
-
-                multiRowInsert = false;  //  any error means we fall back to single-row inserts for the entire block
-
-                continue;
-            }
-
-            //  If we reach this point, we are an unrecoverable single-row error.
-            CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to insert row into RawPointHistory");
+            rowsWritten += chunk.size();
         }
 
-        rowsToWrite.erase(rowsToWrite.begin(), rowsToWrite.begin() + rows);
+        DatabaseWriter finalizer{ conn, CtiTableRawPointHistory::getFinalizeSql(conn.getClientType()) };
+
+        finalizer.executeWithDatabaseException();
     }
+    catch( DatabaseException & ex )
+    {
+        if( transaction )
+        {
+            transaction->rollback();
+        }
+
+        CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to insert rows into RawPointHistory:\n" <<
+            boost::join(rowsToWrite |
+                boost::adaptors::indirected |
+                boost::adaptors::transformed(
+                    [](const Cti::Loggable &obj) {
+                        return obj.toString(); }), "\n"));
+
+        rowsWritten = 0;
+    }
+
 
     return rowsWritten;
 }
