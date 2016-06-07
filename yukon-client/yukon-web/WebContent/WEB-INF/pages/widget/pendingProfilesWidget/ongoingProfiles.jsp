@@ -26,7 +26,7 @@
                                     <c:if test="${isRfn}">
                                     <td>
                                         <c:if test="${empty pendingRequest.percentDone}">
-                                            <div class="error"><i:inline key="yukon.common.requestFailed"/></div><div>${pageScope.lastReturnMsg}</div><div>${pendingRequest.requestFailureMessage}</div>
+                                            <div class="error"><i:inline key="yukon.common.requestFailed"/></div><div class="error">${pageScope.lastReturnMsg}</div><div>${pendingRequest.requestFailureMessage}</div>
                                         </c:if>
                                         <c:if test="${pendingRequest.percentDone >= 100.0}">
                                            <div class="success"><i:inline key="yukon.common.completed"/></div>
