@@ -13,7 +13,7 @@ std::experimental::generator<boost::iterator_range<typename Container::const_ite
     auto itr = c.cbegin();
     auto end = c.cend();
 
-    if( ! c.empty() )
+    if( ! c.empty() && chunkSize )
     {
         auto chunks = (c.size() - 1) / chunkSize;  //  Make sure we round down if we have an even multiple of chunkSize
 

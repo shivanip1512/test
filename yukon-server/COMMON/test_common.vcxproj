@@ -143,6 +143,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>precompiled.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/await</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -195,6 +196,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>precompiled.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/await</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -350,6 +352,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="test_compiler_behaviors.cpp">
     </ClCompile>
+    <ClCompile Include="test_coroutines.cpp" />
     <ClCompile Include="test_ctidate.cpp">
     </ClCompile>
     <ClCompile Include="test_CtiPCPtrQueue.cpp">
