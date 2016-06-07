@@ -27,9 +27,9 @@ template<class T>
 class IM_EX_CTIBASE CtiLockGuard
 {
 public:
-    void acquireLock( T& resource, unsigned long millis, char *resourceName = 0, char *file = 0, char *func = 0, int line = 0 );
-    CtiLockGuard( T& resource, char *resourceName = 0, char *file=0, char *func=0, int line=0 );
-    CtiLockGuard( T& resource, unsigned long millis, char *resourceName = 0, char *file = 0, char *func = 0, int line = 0 );
+    void acquireLock(T& resource, unsigned long millis, char *resourceName = nullptr, char *file = nullptr, char *func = nullptr, int line = 0);
+    CtiLockGuard(T& resource, char *resourceName = nullptr, char *file = nullptr, char *func = nullptr, int line = 0);
+    CtiLockGuard(T& resource, unsigned long millis, char *resourceName = nullptr, char *file = nullptr, char *func = nullptr, int line = 0);
     ~CtiLockGuard();
 
     bool isAcquired() const;
@@ -49,7 +49,7 @@ template<class T>
 class CtiReadLockGuard
 {
 public:
-    CtiReadLockGuard(T& resource, char *resourceName = 0, char *file=0, char *func=0, int line=0 ) :  _res(resource)
+    CtiReadLockGuard(T& resource, char *resourceName = nullptr, char *file = nullptr, char *func = nullptr, int line = 0) : _res(resource)
     {
         static bool hasDumped = false;
         _file = file;
@@ -70,7 +70,8 @@ public:
         {
             CTILOG_WARN(dout, "guard is unable to lock " << (_resourceName!=0?_resourceName:"resource") 
                 << " FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
-            CTILOG_WARN(dout, "Acquiring lock from " << func << ":" << file << ":" << line);
+            CTILOG_WARN(dout, "Acquiring lock from " << (func != nullptr ? func : "(null)") << 
+                ":" << (file != nullptr ? file : "(null)") << ":" << line);
 
             if( !hasDumped )
             {

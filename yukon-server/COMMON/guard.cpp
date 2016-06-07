@@ -40,7 +40,8 @@ CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, char *file, char
     {
         CTILOG_WARN(dout, "guard is unable to lock " << (_resourceName!=0?_resourceName:"resource") 
             << " FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
-        CTILOG_WARN(dout, "Acquiring lock from " << func << ":" << file << ":" << line);
+        CTILOG_WARN(dout, "Acquiring lock from " << (func != nullptr ? func : "(null)") 
+            << ":" << (file != nullptr ? file : "(null)") << ":" << line);
 
         if( !hasDumped )
         {
