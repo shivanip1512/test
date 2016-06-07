@@ -419,7 +419,7 @@ YukonError_t ApplicationLayer::decode( TransportLayer &_transport )
             _errorCondition = ClientErrors::Abnormal;
         }
 
-        // Returning an Abnormal error will prevent the error counter from resetting while not effecting anything else.
+        // Returning an Abnormal error will prevent the port field comm status counter from resetting to 0 inappropriately while not affecting anything else.
         return ClientErrors::Abnormal;
     }
 
