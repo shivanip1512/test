@@ -201,6 +201,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/await</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIVANGOGH;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctivg;%(PreprocessorDefinitions)</PreprocessorDefinitions>
