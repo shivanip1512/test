@@ -12,7 +12,7 @@
 <c:choose>
 
     <c:when test="${empty percentDone}">
-        <div id="progressMsg_${requestId}" class="error"><i:inline key="yukon.common.requestFailed"/></div><div class="error">${lastReturnMsg}</div>
+        <div id="progressMsg_${requestId}" class="error"><i:inline key="yukon.common.requestFailed"/></div><div class="error">${lastReturnMsg}</div><div class="error">${pendingRequest.requestFailureMessage}</div>
     </c:when>
 
     <c:when test="${percentDone >= 100.0}">
