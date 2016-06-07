@@ -5980,6 +5980,7 @@
         </points>
         <tags>
             <tag name="PORTER_COMMAND_REQUESTS" />
+            <tag name="METER_DETAIL_DISPLAYABLE" />
         </tags>
     </pao>
     <pao id="ION_7330" inherits="ELECTRONIC_METER_ION_BASE">
@@ -11639,6 +11640,9 @@
                 <basicLookup point="Peak kW (Rate A kW)" />
             </attribute>
         </attributes>
+        <tags>
+            <tag name="METER_DETAIL_DISPLAYABLE" />
+        </tags>
     </pao>
 
     <pao id="VECTRON" inherits="ELECTRONIC_METER_BASE">
