@@ -419,7 +419,8 @@ YukonError_t ApplicationLayer::decode( TransportLayer &_transport )
             _errorCondition = ClientErrors::Abnormal;
         }
 
-        return _errorCondition;
+        // Returning an Abnormal error will prevent the error counter from resetting while not effecting anything else.
+        return ClientErrors::Abnormal;
     }
 
     switch( _appState )
