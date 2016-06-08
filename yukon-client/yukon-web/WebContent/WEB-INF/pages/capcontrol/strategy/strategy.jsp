@@ -41,7 +41,7 @@
                     <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
                     
                         <tags:nameValue2 nameKey="yukon.common.name">
-                            <tags:input path="name" />
+                            <tags:input path="name" maxlength="32"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".controlMethod">

@@ -53,8 +53,8 @@
                     <cti:msg2 var="infoTab" key=".infoTab"/>
                     <cti:tab title="${infoTab}">
                         <tags:nameValueContainer2 tableClass="natural-width">
-                            <tags:nameValue2 nameKey=".name">
-                                <tags:input path="name" size="25" autofocus="autofocus"/>
+                            <tags:nameValue2 nameKey=".name" valueClass="wbba">
+                                <tags:input path="name" size="25" maxlength="60" autofocus="autofocus"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".status">
                                 <tags:switchButton path="disabled" inverse="${true}"

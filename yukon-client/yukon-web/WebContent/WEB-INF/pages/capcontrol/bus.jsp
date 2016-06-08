@@ -53,11 +53,11 @@
                 <cti:msg2 var="infoTab" key=".infoTab"/>
                 <cti:tab title="${infoTab}">
                     <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".name">
+                        <tags:nameValue2 nameKey=".name" valueClass="wbba">
                             <tags:switchButton path="capControlSubstationBus.multiMonitorControlBoolean" classes="dn"/>
                             <form:hidden path="pAOStatistics"/>
                             <form:hidden path="id"/>
-                            <tags:input path="name" autofocus="autofocus"/>
+                            <tags:input path="name" maxlength="60" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".status">
                             <tags:switchButton path="disabled" inverse="${true}"

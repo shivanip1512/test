@@ -58,6 +58,7 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
                 errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
             }
         }
+        YukonValidationUtils.checkExceedsMaxLength(errors, "name", capbank.getName(), 60);
 
         if (!paoDao.isNameAvailable(fieldValue, paoType)) {
 

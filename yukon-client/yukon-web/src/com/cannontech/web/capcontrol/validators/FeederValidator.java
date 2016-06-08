@@ -39,7 +39,7 @@ public class FeederValidator extends SimpleValidator<CapControlFeeder> {
                 errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
             }
         }
-
+        YukonValidationUtils.checkExceedsMaxLength(errors, "name", feeder.getName(), 60);
         if (!paoDao.isNameAvailable(feeder.getName(), PaoType.CAP_CONTROL_FEEDER)) {
 
             if (id == null) {

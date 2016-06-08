@@ -41,6 +41,7 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
             }
         }
 
+        YukonValidationUtils.checkExceedsMaxLength(errors, "name", regulator.getName(), 60);
         boolean idSpecified = regulator.getId() != null;
 
         boolean nameAvailable = paoDao.isNameAvailable(regulator.getName(), regulator.getType());

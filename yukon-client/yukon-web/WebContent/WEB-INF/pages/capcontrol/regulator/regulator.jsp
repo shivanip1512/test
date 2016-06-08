@@ -81,8 +81,8 @@
                 </cti:displayForPageEditModes>
                 <tags:nameValueContainer2 tableClass="natural-width ${clazz}">
                     
-                    <tags:nameValue2 nameKey=".name">
-                        <tags:input path="name"/>
+                    <tags:nameValue2 nameKey=".name" valueClass="wbba">
+                        <tags:input path="name" maxlength="60"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".description">

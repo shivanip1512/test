@@ -39,7 +39,7 @@ public class SubstationValidator extends SimpleValidator<CapControlSubstation> {
                 errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
             }
         }
-
+        YukonValidationUtils.checkExceedsMaxLength(errors, "name", substation.getName(), 50);
         if (!paoDao.isNameAvailable(substation.getName(), PaoType.CAP_CONTROL_SUBSTATION)) {
 
             if (id == null) {

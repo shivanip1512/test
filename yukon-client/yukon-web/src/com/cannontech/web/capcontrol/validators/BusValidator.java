@@ -39,7 +39,7 @@ public class BusValidator extends SimpleValidator<CapControlSubBus> {
                 errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
             }
         }
-
+        YukonValidationUtils.checkExceedsMaxLength(errors, "name", bus.getName(), 60);
         if (!paoDao.isNameAvailable(bus.getName(), PaoType.CAP_CONTROL_SUBBUS)) {
 
             if (id == null) {

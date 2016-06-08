@@ -102,7 +102,7 @@ $(function() {
                 <div class="column one">
                     <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".name" valueClass="wbba">
-                            <tags:input path="name" autofocus="autofocus"/>
+                            <tags:input path="name" maxlength="50" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".geoName" valueClass="wbba">
                             <tags:input path="geoAreaName"/>

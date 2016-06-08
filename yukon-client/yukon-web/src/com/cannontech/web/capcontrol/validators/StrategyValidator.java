@@ -60,6 +60,9 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
     private void validateName(CapControlStrategy strategy, Errors errors) {
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
+        if (!errors.hasFieldErrors("name")) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "name", strategy.getName(), 32);
+        }
 
         boolean idSpecified = strategy.getId() != null;
 

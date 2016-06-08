@@ -61,6 +61,7 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
             }
         }
 
+        YukonValidationUtils.checkExceedsMaxLength(errors, "name", cbc.getName(), 60);
         boolean idSpecified = cbc.getId() != null;
 
         boolean nameAvailable = paoDao.isNameAvailable(cbc.getName(), cbc.getPaoType());
