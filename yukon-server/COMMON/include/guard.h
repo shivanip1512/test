@@ -16,11 +16,17 @@
 #define CTILOCKGUARD2(type, guard, resource, millis) \
     CtiLockGuard<type> guard( resource, millis, #resource, __FILE__, __FUNCSIG__, __LINE__);
 
-#define CTIREADLOCKGUARD(type, guard, resource) \
-    CtiReadLockGuard<type> guard( resource, #resource, __FILE__, __FUNCSIG__, __LINE__);
+#define CTIREADLOCKGUARD(guard, resource) \
+    CtiReadLockGuard<Cti::readers_writer_lock_t> guard( resource, #resource, __FILE__, __FUNCSIG__, __LINE__);
 
-#define CTIREADLOCKGUARD2(type, guard, resource, millis) \
-    CtiReadLockGuard<type> guard( resource, millis, #resource, __FILE__, __FUNCSIG__, __LINE__);
+#define CTIREADLOCKGUARD2(guard, resource, millis) \
+    CtiReadLockGuard<Cti::readers_writer_lock_t> guard( resource, millis, #resource, __FILE__, __FUNCSIG__, __LINE__);
+
+#define CTIWRITELOCKGUARD(guard, resource) \
+    CtiReadLockGuard<Cti::readers_writer_lock_t> guard( resource, #resource, __FILE__, __FUNCSIG__, __LINE__);
+
+#define CTIWRITELOCKGUARD2(guard, resource, millis) \
+    CtiReadLockGuard<Cti::readers_writer_lock_t> guard( resource, millis, #resource, __FILE__, __FUNCSIG__, __LINE__);
 
 #pragma pack(push, LockGuardPack, 8)
 template<class T>

@@ -248,6 +248,7 @@ BOOST_AUTO_TEST_CASE(test_guard_test_readers_writer_lock)
         Sleep( 20 );
 
         /* Worker should have run by now and set f2, but not f3 since it's blocked */
+        BOOST_TEST_MESSAGE("f1 == " << f1 << " && f2 == " << f2 << " && f3 == " << f3);
         BOOST_CHECK( f1 == 1 && f2 == 1 && f3 == 0 );
         BOOST_CHECK( lockGuardTestRW.lastAcquiredByTID()==parentTID );
 
@@ -393,7 +394,7 @@ void lockGuardTestChildRRW(DWORD parentTid, int childIndex)
     cf[childIndex] = 1;
 
     /* Try for lock, we will block */
-    CTIREADLOCKGUARD( Cti::readers_writer_lock_t , lock,  lockGuardTestRW );
+    CTIREADLOCKGUARD( lock,  lockGuardTestRW );
 
     cf[childIndex] = 2;
 

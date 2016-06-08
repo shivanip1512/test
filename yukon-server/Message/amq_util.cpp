@@ -191,7 +191,7 @@ void ManagedConnection::start()
     {
         try
         {
-            WriterGuard guard( _lock );
+            CTIWRITELOCKGUARD(guard, _lock );
 
             if( _closed )
             {
@@ -231,7 +231,7 @@ void ManagedConnection::start()
 
 void ManagedConnection::close()
 {
-    ReaderGuard guard( _lock );
+    CTIREADLOCKGUARD(guard, _lock);
 
     {
         boost::unique_lock<boost::mutex> lock( _closeMux );
@@ -251,7 +251,7 @@ void ManagedConnection::close()
 
 void ManagedConnection::setExceptionListener( cms::ExceptionListener *listener )
 {
-    ReaderGuard guard( _lock );
+    CTIREADLOCKGUARD(guard, _lock);
 
     if( !_connection )
     {
@@ -263,7 +263,7 @@ void ManagedConnection::setExceptionListener( cms::ExceptionListener *listener )
 
 cms::Session* ManagedConnection::createSession()
 {
-    ReaderGuard guard( _lock );
+    CTIREADLOCKGUARD(guard, _lock);
 
     if( !_connection )
     {
@@ -275,7 +275,7 @@ cms::Session* ManagedConnection::createSession()
 
 bool ManagedConnection::verifyConnection() const
 {
-    ReaderGuard guard( _lock );
+    CTIREADLOCKGUARD(guard, _lock);
 
     const activemq::core::ActiveMQConnection* conn = dynamic_cast<const activemq::core::ActiveMQConnection*>( _connection.get() );
 
