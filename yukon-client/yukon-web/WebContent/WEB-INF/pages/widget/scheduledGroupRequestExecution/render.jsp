@@ -92,7 +92,7 @@
                                     </cti:url> --%>
                                     <cm:dropdown icon="icon-cog" triggerClasses="fr">
                                         <c:choose>                                        
-                                            <c:when test="${jobWrapper.job.manualScheduleWithoutRunDate}">
+                                            <c:when test="${jobWrapper.tagState.cronTagStyleType == 'ONETIME'}"> 
                                                 <c:if test="${jobWrapper.jobStatus ne 'RUNNING'}">
                                                     <cm:dropdownOption id="startScheduleButton" key="yukon.common.start" data-job-id="${jobId}" data-redirect-url="/meter/start" 
                                                     icon="icon-bullet-go" data-popup="#startScheduleDialog-${jobId}"/>

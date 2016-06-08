@@ -23,6 +23,7 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
@@ -32,6 +33,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	@Autowired private JobStatusDao jobStatusDao;
 	@Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ObjectFormattingService objectFormattingService;
+    
     private JobManager jobManager;
     
 	public ScheduledGroupRequestExecutionJobWrapper createJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext) {
@@ -48,6 +50,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		private ScheduledRepeatingJob job;
 		private ScheduledGroupRequestExecutionStatus jobStatus;
 		private YukonUserContext userContext;
+		private CronExpressionTagState tagState;
 		
 		private ScheduledGroupRequestExecutionTask task;
 
@@ -56,6 +59,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 			this.jobStatus = executionStatusService.getStatus(job.getId());
 			this.userContext = userContext;
 			this.task = (ScheduledGroupRequestExecutionTask)jobManager.instantiateTask(this.job);
+			this.setTagState(cronExpressionTagService.parse( job.getCronString(), userContext));
 		}
 		
 		public ScheduledRepeatingJob getJob() {
@@ -137,6 +141,14 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		public int compareTo(ScheduledGroupRequestExecutionJobWrapper o) {
 			return this.task.getName().compareToIgnoreCase(o.getTask().getName());
 		}
+
+        public CronExpressionTagState getTagState() {
+            return tagState;
+        }
+
+        public void setTagState(CronExpressionTagState cronExpressionTagState) {
+            this.tagState = cronExpressionTagState;
+        }
 	}
 	
     public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getNextRunAndNameComparator() {

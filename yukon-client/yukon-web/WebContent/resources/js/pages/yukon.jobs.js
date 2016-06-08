@@ -53,7 +53,7 @@ yukon.jobs = (function () {
                 var redirectUrl = $(ev.target).data('redirectUrl');
                 //set future start
                 var dateTimeVisible = $('#' + jobId + '-cron-exp-one-time').is(":visible"); 
-                var futureStart = dateTimeVisible ? false : true;
+                var futureStart = dateTimeVisible ? true : false;
                 $('#' + jobId + '_future-start').val(futureStart);
                  
                 ev.preventDefault();
