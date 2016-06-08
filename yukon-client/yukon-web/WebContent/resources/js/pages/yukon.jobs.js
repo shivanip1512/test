@@ -36,7 +36,6 @@ yukon.jobs = (function () {
             
             $(document).on('yukon.schedule.cancel', function (ev) {
                 var jobId = $(ev.target).data('jobId');
-                var redirectUrl = $(ev.target).data('redirectUrl');
                 ev.preventDefault();
                 //close the dialog
                 yukon.dialogConfirm.cancel();
@@ -44,13 +43,14 @@ yukon.jobs = (function () {
                 $.ajax({
                      url: yukon.url('/group/scheduledGroupRequestExecution/cancelJob'),
                      dataType: 'json',
-                     data: { 'toggleJobId': jobId, 'redirectUrl': redirectUrl }
+                     data: { 'toggleJobId': jobId }
+                }).always(function () {
+                    window.location.reload();
                 });
             });
             
             $(document).on('yukon:schedule:start', function (ev) {
                 var jobId = $(ev.target).data('jobId');
-                var redirectUrl = $(ev.target).data('redirectUrl');
                 //set future start
                 var dateTimeVisible = $('#' + jobId + '-cron-exp-one-time').is(":visible"); 
                 var futureStart = dateTimeVisible ? true : false;
@@ -66,7 +66,9 @@ yukon.jobs = (function () {
                 $.ajax({
                      url: yukon.url('/group/scheduledGroupRequestExecution/startJob?' + $('#startScheduleForm').serialize()),
                      dataType: 'json',
-                     data: { 'toggleJobId': jobId, 'redirectUrl':redirectUrl}
+                     data: { 'toggleJobId': jobId} 
+                }).always(function () {
+                    window.location.reload();
                 });
             });
             

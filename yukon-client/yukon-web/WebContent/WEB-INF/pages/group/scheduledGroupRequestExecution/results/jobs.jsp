@@ -169,10 +169,9 @@
                                        <c:choose>                     
                                             <c:when test="${jobWrapper.tagState.cronTagStyleType == 'ONETIME'}"> 
                                                 <c:if test="${jobWrapper.jobStatus ne 'RUNNING'}">
-                                                    <cm:dropdownOption id="startScheduleButton" key="yukon.common.start" data-job-id="${jobId}" data-redirect-url="/group/scheduledGroupRequestExecutionResults/jobs" 
-                                                    icon="icon-bullet-go" data-popup="#startScheduleDialog-${jobId}" />
+                                                    <cm:dropdownOption id="startScheduleButton" key="yukon.common.start" data-job-id="${jobId}" icon="icon-bullet-go" data-popup="#startScheduleDialog-${jobId}" />
                                                     <div class="dn" id="startScheduleDialog-${jobId}" data-dialog data-title="<cti:msg2 key="yukon.web.widgets.schedules.start"/>" data-ok-text="<cti:msg2 key="yukon.common.start"/>"
-                                                    data-url="<cti:url value="/group/scheduledGroupRequestExecution/startDialog?jobId=${jobId}"/>" data-job-id="${jobId}" data-redirect-url="/group/scheduledGroupRequestExecutionResults/jobs" data-event="yukon:schedule:start" data-height="250" data-width="400"></div>
+                                                    data-url="<cti:url value="/group/scheduledGroupRequestExecution/startDialog?jobId=${jobId}"/>" data-job-id="${jobId}" data-event="yukon:schedule:start" data-height="250" data-width="400"></div>
                                                 </c:if>
                                             </c:when>
                                             <c:otherwise>
@@ -190,8 +189,7 @@
                                             </c:otherwise>
                                         </c:choose>
                                         <c:if test="${jobWrapper.jobStatus eq 'RUNNING'}">
-                                            <cm:dropdownOption id="cancel-job-btn-${jobId}" data-ok-event="yukon.schedule.cancel" data-job-id="${jobId}" data-redirect-url="/group/scheduledGroupRequestExecutionResults/jobs" 
-                                                key="yukon.common.cancel" icon="icon-cross"/>
+                                            <cm:dropdownOption id="cancel-job-btn-${jobId}" data-ok-event="yukon.schedule.cancel" data-job-id="${jobId}" key="yukon.common.cancel" icon="icon-cross"/>
                                             <d:confirm on="#cancel-job-btn-${jobId}" nameKey="cancelConfirm" argument="${jobWrapper.name}"/>
                                         </c:if>
 <%--                                         <cm:dropdownOption key="yukon.web.widgets.schedules.createDependent" href="${createDependentScheduleUrl}" icon="icon-plus-green"/> --%>

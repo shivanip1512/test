@@ -19,6 +19,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -529,12 +530,8 @@ public class ScheduledGroupRequestExecutionController {
     }
 	
 	   @RequestMapping("toggleJob")
-	    public ModelAndView toggleJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-	      
+	    public void toggleJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 	        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
-	        String redirectUrl = ServletRequestUtils.getRequiredStringParameter(request, "redirectUrl");
-	       ModelAndView mav = new ModelAndView("redirect:" + redirectUrl);
-
 	        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
 	        
 	        if (job.isDisabled()) {
@@ -543,9 +540,7 @@ public class ScheduledGroupRequestExecutionController {
 	            jobManager.disableJob(job);
 	        }
 	        
-	        //response.setStatus(HttpStatus.NO_CONTENT.value());
-	        
-	        return mav;
+	        response.setStatus(HttpStatus.NO_CONTENT.value());
 	    }
 	   
        @RequestMapping("startDialog")
@@ -580,12 +575,10 @@ public class ScheduledGroupRequestExecutionController {
        }
        
 	   @RequestMapping(value="startJob")
-	    public ModelAndView startJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-	       
+	    public void startJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	     
 	        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-	        
-	        String redirectUrl = request.getParameter("redirectUrl");
-	        
+
 	        int toggleJobId = Integer.parseInt(request.getParameter("toggleJobId"));
 	        
 	        String jobId = request.getParameter("toggleJobId");
@@ -600,32 +593,21 @@ public class ScheduledGroupRequestExecutionController {
 	        } catch (Exception e) {
 	            
 	        }
-	        
-	        ModelAndView mav = new ModelAndView("redirect:" + redirectUrl);
-          	  
+
 	        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
 	        jobManager.startJob(job, cronExpression);
 	        
-	        mav.addObject("editJobId", toggleJobId);
-	        
-	        return mav;
+	        response.setStatus(HttpStatus.NO_CONTENT.value());
 	        
 	    }
 	   
     @RequestMapping("cancelJob")
-    public ModelAndView cancelJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        String redirectUrl = ServletRequestUtils.getRequiredStringParameter(request, "redirectUrl");
-        ModelAndView mav = new ModelAndView("redirect:" + redirectUrl);
-
+    public void cancelJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
         jobManager.abortJob(job);
         
-        mav.addObject("editJobId", toggleJobId);
-
-        return mav;
-
+        response.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
     /**
