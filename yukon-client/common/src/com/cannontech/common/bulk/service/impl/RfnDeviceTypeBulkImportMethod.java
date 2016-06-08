@@ -63,7 +63,7 @@ public class RfnDeviceTypeBulkImportMethod extends BulkImportMethodBase {
 
         } catch (IllegalArgumentException e) {
             throw new DeviceCreationException("Could not create device by type: Invalid device type.",
-                                              "invalidRouteName",
+                                              "invalidDeviceType",
                                               e);
         }
     }

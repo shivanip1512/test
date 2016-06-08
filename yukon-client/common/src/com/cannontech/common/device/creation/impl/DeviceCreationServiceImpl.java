@@ -92,7 +92,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'. Template must be an RFN Device",
                                                             newDeviceName,
                                                             templateName),
-                                              "invalidRFNTemplate",
+                                              "invalidRfnTemplate",
                                               newDeviceName,
                                               templateName);
         }
@@ -146,7 +146,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         // verify that the device type is RFN device type
         if (type.getPaoClass() != PaoClass.RFMESH) {
-            throw new DeviceCreationException(String.format("Could not create new device named '%s'. Device Type must be RFN Device Type.",  name), "invalidRFNDeviceType", name);
+            throw new DeviceCreationException(String.format("Could not create new device named '%s'. Device Type must be RFN Device Type.",  name), "invalidRfnDeviceType", name);
         }
        
         // create device
@@ -262,7 +262,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new BadTemplateDeviceCreationException(templateName);
         }catch (PersistenceException e) {
-            throw new DeviceCreationException("Could not load template device from database: " + templateName, "invalidtemplateDevice", templateName, e);
+            throw new DeviceCreationException("Could not load template device from database: " + templateName, "invalidTemplateDevice", templateName, e);
         }
         
     }

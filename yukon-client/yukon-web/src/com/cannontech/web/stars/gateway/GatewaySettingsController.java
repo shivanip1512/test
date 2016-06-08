@@ -156,7 +156,7 @@ public class GatewaySettingsController {
         } catch (DeviceCreationException e) {
 
             String errorMsg = accessor.getMessage(e.getKey());
-            throw new DeviceCreationException(errorMsg, e.getKey());
+            throw new DeviceCreationException(errorMsg, e.getKey(), e);
         }
 
     }

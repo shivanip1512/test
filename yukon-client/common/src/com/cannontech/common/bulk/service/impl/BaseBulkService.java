@@ -411,7 +411,7 @@ public abstract class BaseBulkService {
                         fieldStringValue = null;
                     } else if ((bulkField instanceof NameBulkField)
                         && !(PaoUtils.isValidPaoName(fieldStringValue))) {
-                        throw new DeviceCreationException("Device name cannot include any of the following characters " +  String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS),"invalidChars");
+                        throw new DeviceCreationException("Device name cannot include any of the following characters " + String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS),"invalidCharacters", String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS));
                     }
 
                     valueMap.put(inputSource.getField(), fieldStringValue);

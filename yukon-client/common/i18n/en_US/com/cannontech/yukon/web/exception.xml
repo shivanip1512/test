@@ -69,22 +69,23 @@
 <entry key="yukon.exception.processingException.INVALID_CONFIG_UPDATE">Unable to attach configuration "{2}" to {1}. Existing configuration still in use.</entry>
 
 <entry key="yukon.exception.deviceCreationException.invalidChars">Device name cannot be blank or include any of the following characters: / \\ ,\" ' |</entry>
-<entry key="yukon.exception.deviceCreationException.incompleteRow">Incomplete row</entry>
-<entry key="yukon.exception.deviceCreationException.missingRequiredColumn">Missing required column: {0}</entry>
+<entry key="yukon.exception.deviceCreationException.invalidCharacters">Device name cannot be blank or include any of the following characters: {0}</entry>
+<entry key="yukon.exception.deviceCreationException.incompleteRow">Incomplete row.</entry>
+<entry key="yukon.exception.deviceCreationException.missingRequiredColumn">Missing required column: {0}.</entry>
 <entry key="yukon.exception.deviceCreationException.invalidRouteName">Could not create device by type: Invalid route name.</entry>
 <entry key="yukon.exception.deviceCreationException.nonNumericAddress">Could not create device by type: Non-numeric address value.</entry>
 <entry key="yukon.exception.deviceCreationException.invalidNewDevice">Could not create new device.</entry>
 <entry key="yukon.exception.deviceCreationException.invalidDeviceType">Could not create device by type: Invalid device type.</entry>
-<entry key="yukon.exception.deviceCreationException.maxLength">Device serial number must be numeric and serial number length must be less than 30</entry>
-<entry key="yukon.exception.deviceCreationException.invalidRFNTemplate">Could not create new device named {0} from template {1}.Template must be an RFN Device</entry>
+<entry key="yukon.exception.deviceCreationException.maxLength">Device serial number must be numeric and serial number length must be less than 30.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidRfnTemplate">Could not create new device named {0} from template {1}.Template must be an RFN Device.</entry>
 <entry key="yukon.exception.deviceCreationException.blankName">Device name is blank.</entry>
-<entry key="yukon.exception.deviceCreationException.invalidAddress">Invalid address: {0}</entry>
-<entry key="yukon.exception.deviceCreationException.invalidRFNDeviceType">Could not create new device named {0}. Device Type must be RFN Device Type.</entry>
-<entry key="yukon.exception.deviceCreationException.invalidTemplate">Could not create new device named {1} from template {2}</entry>
-<entry key="yukon.exception.deviceCreationException.invalidtemplateDevice">Could not load template device from database: {0}</entry>
+<entry key="yukon.exception.deviceCreationException.invalidAddress">Invalid address: {0}.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidRfnDeviceType">Could not create new device named {0}. Device Type must be RFN Device Type.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidTemplate">Could not create new device named {0} from template {1}.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidTemplateDevice">Could not load template device from database: {0}.</entry>
 <entry key="yukon.exception.deviceCreationException.invalidTemplateName">Template {0} not found.</entry>
-<entry key="yukon.exception.deviceCreationException.configurationProperty">RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg</entry>
-<entry key="yukon.exception.deviceCreationException.invalidDevice">Energy company {0} has no device for type: {1}</entry>
+<entry key="yukon.exception.deviceCreationException.configurationProperty">RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidDevice">Energy company {0} has no device for type: {1}.</entry>
 <entry key="yukon.exception.deviceCreationException.unsupportedDevice">Could not retrieve points for new device.</entry>
 <entry key="yukon.exception.deviceCreationException.invalidDeviceCreation">Exception while creating device.</entry>
 

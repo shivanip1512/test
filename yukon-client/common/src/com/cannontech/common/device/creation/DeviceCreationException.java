@@ -32,7 +32,7 @@ public class DeviceCreationException extends DisplayableRuntimeException {
     }
 
     public DeviceCreationException(String message, String key, String deviceName, String templateName, Throwable cause) {
-        super(message, keyBase + key, cause, deviceName, templateName);
+        super(message, cause, keyBase + key,  deviceName, templateName);
     }
 
     public DeviceCreationException(String message, String key, String ecName, PaoType paoType) {
