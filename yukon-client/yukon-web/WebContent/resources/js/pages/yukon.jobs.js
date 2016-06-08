@@ -33,6 +33,47 @@ yukon.jobs = (function () {
                      data: { 'jobId': jobId }
                 });
             });
+            
+            $(document).on('yukon.schedule.cancel', function (ev) {
+                var jobId = $(ev.target).data('jobId');
+                var redirectUrl = $(ev.target).data('redirectUrl');
+                ev.preventDefault();
+                //close the dialog
+                yukon.dialogConfirm.cancel();
+                //submit job cancellation request
+                $.ajax({
+                     url: yukon.url('/group/scheduledGroupRequestExecution/cancelJob'),
+                     dataType: 'json',
+                     data: { 'toggleJobId': jobId, 'redirectUrl': redirectUrl }
+                });
+            });
+            
+            $(document).on('yukon:schedule:start', function (ev) {
+                var jobId = $(ev.target).data('jobId');
+                var redirectUrl = $(ev.target).data('redirectUrl');
+                //set future start
+                var dateTimeVisible = $('#' + jobId + '-cron-exp-one-time').is(":visible"); 
+                var futureStart = dateTimeVisible ? false : true;
+                $('#' + jobId + '_future-start').val(futureStart);
+                 
+                ev.preventDefault();
+                //close the dialog
+                var dialog = $("#startScheduleDialog-" + jobId);
+                dialog.dialog('close');
+                
+                yukon.dialogConfirm.cancel();
+                //submit job start request
+                $.ajax({
+                     url: yukon.url('/group/scheduledGroupRequestExecution/startJob?' + $('#startScheduleForm').serialize()),
+                     dataType: 'json',
+                     data: { 'toggleJobId': jobId, 'redirectUrl':redirectUrl}
+                });
+            });
+            
+            $(".js-cancel").click(function(e){
+                var dialog = $(this).closest("#startScheduleOptions");
+                dialog.dialog('close');
+            });
 
             $(document).on('change', '.js-toggle-job .checkbox-input', function() {
                 var checkbox = $(this);

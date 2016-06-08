@@ -5,6 +5,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+
 
 <style>
     .take16 { height:16px; }
@@ -21,13 +23,13 @@
     <c:when test="${fn:length(jobWrappers) > 0}">
         <div class="scroll-lg">
         
-            <table class="compact-results-table">
+            <table class="compact-results-table has-actions">
                 <thead>
                     <th><i:inline key=".tableHeader.scheduleName"/></th>
                     <th><i:inline key=".tableHeader.scheduleDescription"/></th>
                     <th><i:inline key=".tableHeader.status"/></th>
                     <c:if test="${canManage}">
-                        <th><!-- the 'enabled' column --></th>
+                        <th><!-- the cog column --></th>
                     </c:if>
                 </thead>
                 <tfoot></tfoot>
@@ -63,17 +65,62 @@
                                         containerClasses="progress-sm" 
                                         hideCount="true" 
                                         hidePercent="true"/>
-                                    <cti:button id="cancel-job-btn-${jobId}" nameKey="cancel" data-job-id="${jobId}" 
-                                        data-ok-event="yukon.job.cancel" classes="js-cancel-job fn M0" renderMode="image" 
-                                        arguments="${jobWrapper.name}" icon="icon-cross"/>
                                 </div>
-                                <d:confirm on="#cancel-job-btn-${jobId}" nameKey="cancelConfirm" argument="${jobWrapper.name}"/>
                             </td>
                 
                             <%-- enable/disable --%>
                             <c:if test="${canManage}">
-                                <td class="remove-column">
-                                    <tags:switch checked="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}" disabled="${jobWrapper.jobStatus eq 'RUNNING'}" name="toggle" id="toggle_${jobId}" data-job-id="${jobId}" classes="js-toggle-job toggle-sm"/>
+                                <td>
+                                    <cti:url var="toggleUrl" value="/group/scheduledGroupRequestExecution/toggleJob" >
+                                        <cti:param name="toggleJobId" value="${jobWrapper.job.id}"/>
+                                        <cti:param name="redirectUrl" value="/meter/start"/>
+                                    </cti:url>
+                                    <cti:url var="startUrl" value="/group/scheduledGroupRequestExecution/startJob" >
+                                        <cti:param name="toggleJobId" value="${jobWrapper.job.id}"/>
+                                        <cti:param name="redirectUrl" value="/meter/start"/>
+                                    </cti:url>
+                                    <cti:url var="startDialogUrl" value="/group/scheduledGroupRequestExecution/startDialog" >
+                                        <cti:param name="toggleJobId" value="${jobWrapper.job.id}"/>
+                                        <cti:param name="redirectUrl" value="/meter/start"/>
+                                    </cti:url>
+                                    <cti:url var="cancelUrl" value="/group/scheduledGroupRequestExecution/cancelJob" >
+                                        <cti:param name="toggleJobId" value="${jobWrapper.job.id}"/>
+                                        <cti:param name="redirectUrl" value="/meter/start"/>
+                                    </cti:url>
+<%--                                     <cti:url var="createDependentScheduleUrl" value="/group/scheduledGroupRequestExecution/home" >
+                                        <cti:param name="editJobId" value="${jobWrapper.job.id}"/>
+                                    </cti:url> --%>
+                                    <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                                        <c:choose>                                        
+                                            <c:when test="${jobWrapper.job.manualScheduleWithoutRunDate}">
+                                                <c:if test="${jobWrapper.jobStatus ne 'RUNNING'}">
+                                                    <cm:dropdownOption id="startScheduleButton" key="yukon.common.start" data-job-id="${jobId}" data-redirect-url="/meter/start" 
+                                                    icon="icon-bullet-go" data-popup="#startScheduleDialog-${jobId}"/>
+                                                    <div class="dn" id="startScheduleDialog-${jobId}" data-dialog data-title="<cti:msg2 key="yukon.web.widgets.schedules.start"/>" data-ok-text="<cti:msg2 key="yukon.common.start"/>"
+                                                    data-url="<cti:url value="/group/scheduledGroupRequestExecution/startDialog?jobId=${jobId}"/>" data-job-id="${jobId}" data-redirect-url="/meter/start" data-event="yukon:schedule:start" data-height="250" data-width="400"></div>
+                                                </c:if>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:choose>
+                                                    <c:when test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">
+                                                        <cm:dropdownOption disabled="${jobWrapper.jobStatus eq 'RUNNING'}" key="yukon.common.disable" href="${toggleUrl}" icon="icon-disabled"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <cm:dropdownOption key="yukon.common.enable" href="${toggleUrl}" icon="icon-enabled"/>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:if test="${jobWrapper.jobStatus ne 'RUNNING'}">
+                                                    <cm:dropdownOption disabled="${jobWrapper.jobStatus eq 'RUNNING'}" key="yukon.common.start" href="${startUrl}" icon="icon-bullet-go"/>
+                                                </c:if>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <c:if test="${jobWrapper.jobStatus eq 'RUNNING'}">
+                                            <cm:dropdownOption id="cancel-job-btn-${jobId}" data-ok-event="yukon.schedule.cancel" data-job-id="${jobId}" data-redirect-url="/meter/start" 
+                                                key="yukon.common.cancel" icon="icon-cross"/>
+                                            <d:confirm on="#cancel-job-btn-${jobId}" nameKey="cancelConfirm" argument="${jobWrapper.name}"/>
+                                        </c:if>
+<%--                                         <cm:dropdownOption key="yukon.web.widgets.schedules.createDependent" href="${createDependentScheduleUrl}" icon="icon-plus-green"/> --%>
+                                    </cm:dropdown>
                                 </td>
                             </c:if>
                         </tr>

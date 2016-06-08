@@ -1,6 +1,8 @@
 package com.cannontech.web.group;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,10 +14,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
@@ -167,10 +176,13 @@ public class ScheduledGroupRequestExecutionController {
         }
 
         mav.addObject("editJobId", editJobId);
+        mav.addObject("futureStart", false);
+
         if (editMode) {
             pageEditMode = PageEditMode.EDIT;
             mav.addObject("disabled", existingJob.isDisabled());
             mav.addObject("status", scheduledGroupRequestExecutionDao.getStatusByJobId(existingJob.getId()));
+            mav.addObject("futureStart", true);
         }
         mav.addObject("mode", pageEditMode);
         mav.addObject("errorMsg", errorMsg);
@@ -517,6 +529,100 @@ public class ScheduledGroupRequestExecutionController {
         return mav;
         
     }
+	
+	   @RequestMapping("toggleJob")
+	    public ModelAndView toggleJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	      
+	        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+	        String redirectUrl = ServletRequestUtils.getRequiredStringParameter(request, "redirectUrl");
+	       ModelAndView mav = new ModelAndView("redirect:" + redirectUrl);
+
+	        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
+	        
+	        if (job.isDisabled()) {
+	            jobManager.enableJob(job);
+	        } else {
+	            jobManager.disableJob(job);
+	        }
+	        
+	        //response.setStatus(HttpStatus.NO_CONTENT.value());
+	        
+	        return mav;
+	    }
+	   
+       @RequestMapping("startDialog")
+       public String startDialog(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+           int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "jobId");
+           ScheduledRepeatingJob job = jobManager.getRepeatingJob(toggleJobId);
+           DateTime nextRunTime = new DateTime().plusHours(1);
+
+           try {
+               CronExpression cronExpression = new CronExpression(job.getCronString());
+               Date cronDate = cronExpression.getNextValidTimeAfter(new Date());
+               if (cronDate != null) {
+                   nextRunTime = new DateTime(cronDate);
+               }
+           } catch (ParseException e) {
+
+           }
+           DateTimeFormatter format = DateTimeFormat.forPattern("a");
+           String amPm = format.print(nextRunTime);
+           
+           model.addAttribute("jobId", toggleJobId);
+           int hours = nextRunTime.getHourOfDay();
+           int minutes = nextRunTime.getMinuteOfHour();
+
+           model.addAttribute("hours", hours);
+           model.addAttribute("amPm", amPm);
+           model.addAttribute("minutes", minutes);
+           model.addAttribute("now", nextRunTime);
+           return "scheduledGroupRequestExecution/startSchedule.jsp";
+
+           
+       }
+       
+	   @RequestMapping(value="startJob")
+	    public ModelAndView startJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	       
+	        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+	        
+	        String redirectUrl = request.getParameter("redirectUrl");
+	        
+	        int toggleJobId = Integer.parseInt(request.getParameter("toggleJobId"));
+	        
+	        String jobId = request.getParameter("toggleJobId");
+	        
+	        // validate cron
+	        String cronExpression = null;
+	        try {
+	            cronExpression = cronExpressionTagService.build(jobId, request, userContext);
+	        } catch (Exception e) {
+	            
+	        }
+	        
+	        ModelAndView mav = new ModelAndView("redirect:" + redirectUrl);
+          	        
+	        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
+	        
+	        mav.addObject("editJobId", toggleJobId);
+	        
+	        return mav;
+	        
+	    }
+	   
+	       @RequestMapping("cancelJob")
+	       public ModelAndView cancelJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	           
+	            String redirectUrl = ServletRequestUtils.getRequiredStringParameter(request, "redirectUrl");
+	            ModelAndView mav = new ModelAndView("redirect:" + redirectUrl);
+	            
+	           int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+	           
+	           mav.addObject("editJobId", toggleJobId);
+	           
+	           return mav;
+	           
+	       }
     
     /**
      *  (not really a hard delete, but set Job.Disabled = 'D' to hide it)
