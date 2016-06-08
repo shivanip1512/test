@@ -277,8 +277,16 @@ public class JobManagerImpl implements JobManager {
     @Override
     public void startJob(ScheduledRepeatingJob job, String newCronString) {
         if (StringUtils.isEmpty(newCronString)) {
+            // not a manual job, user selected to start now
+            executor.execute(new BaseRunnableJob(job));
+        } else if (ScheduledRepeatingJob.NEVER_RUN_CRON_STRING.equals(newCronString)) {
+            // manual job that was scheduled to start in the future, user selected to start now
+            job.setCronString(newCronString);
+            log.debug("Updating job with a new cron string:" + job.getCronString());
+            scheduledRepeatingJobDao.update(job);
             executor.execute(new BaseRunnableJob(job));
         } else {
+            //manual job that was set up not to start, user selected to start in the future
             if (!job.getCronString().equals(newCronString)) {
                 job.setCronString(newCronString);
                 log.debug("Updating job with a new cron string:" + job.getCronString());
