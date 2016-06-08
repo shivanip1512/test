@@ -276,17 +276,23 @@ public class JobManagerImpl implements JobManager {
     
     @Override
     public void startJob(ScheduledRepeatingJob job, String newCronString) {
+        if (currentlyRunning.containsKey(job)) {
+            log.info("The job still running. The job will not be started or scheduled.  job= " + job);
+            return;
+        }
+        
         if (StringUtils.isEmpty(newCronString)) {
             // not a manual job, user selected to start now
             executor.execute(new BaseRunnableJob(job));
         } else if (ScheduledRepeatingJob.NEVER_RUN_CRON_STRING.equals(newCronString)) {
             // manual job that was scheduled to start in the future, user selected to start now
+            scheduledJobs.remove(job.getId());
             job.setCronString(newCronString);
             log.debug("Updating job with a new cron string:" + job.getCronString());
             scheduledRepeatingJobDao.update(job);
             executor.execute(new BaseRunnableJob(job));
         } else {
-            //manual job that was set up not to start, user selected to start in the future
+            // manual job that was set up not to start, user selected to start in the future
             if (!job.getCronString().equals(newCronString)) {
                 job.setCronString(newCronString);
                 log.debug("Updating job with a new cron string:" + job.getCronString());
@@ -612,7 +618,7 @@ public class JobManagerImpl implements JobManager {
                     @Override
                     public Object doInTransaction(TransactionStatus transactionStatus) {
                         YukonJob job = yukonJobDao.getById(jobId);
-                        log.info("Starting runnable: job=" + job);
+                        log.info("Starting job=" + job);
 
                         beforeRun();
                         status.setStartTime(timeSource.getCurrentTime());
