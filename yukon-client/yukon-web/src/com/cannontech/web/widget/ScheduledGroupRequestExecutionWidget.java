@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.device.DeviceRequestType;
@@ -68,7 +67,6 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 				0, null, null, types,
 				ScheduleGroupRequestExecutionDaoEnabledFilter.ANY,
 				ScheduleGroupRequestExecutionDaoPendingFilter.ANY,
-				ScheduleGroupRequestExecutionDaoOnetimeFilter.EXCLUDE_ONETIME,
 				false);
 		Collections.sort(jobs, getNextRunComparator());
 		
@@ -117,6 +115,7 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
         Ordering<Date> dateComparer = Ordering.natural().nullsLast();
         Ordering<ScheduledRepeatingJob> jobNextRunOrdering = dateComparer
             .onResultOf(new Function<ScheduledRepeatingJob, Date>() {
+                @Override
                 public Date apply(ScheduledRepeatingJob from) {
                     return getNextRun(from);
                 }

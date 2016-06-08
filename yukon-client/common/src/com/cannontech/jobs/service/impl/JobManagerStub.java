@@ -139,4 +139,10 @@ public class JobManagerStub implements JobManager {
     public List<ScheduledRepeatingJob> getNotDeletedRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
+
+    @Override
+    public void startJob(ScheduledRepeatingJob job, String newCronString) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
+
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
@@ -32,7 +31,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.user.YukonUserContext;
@@ -52,8 +50,6 @@ public class CommandRequestExecutionResultsController {
 
 	@Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
 	@Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
-	@Autowired private DateFormattingService dateFormattingService;
-	@Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	@Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
 	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;

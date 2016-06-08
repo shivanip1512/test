@@ -302,6 +302,20 @@
                                 <bean class="com.cannontech.web.input.type.IntegerType"/>
                             </property>
                         </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="dependentJobGroupId"/>
+                            <property name="displayName" value="Dependent Job Group Id"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="dependentJobResultCategories"/>
+                            <property name="displayName" value="Dependent Job Result Categories"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
                     </list>
                 </property>
             </bean>

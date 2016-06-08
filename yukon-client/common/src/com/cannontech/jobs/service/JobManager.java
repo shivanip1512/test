@@ -144,4 +144,12 @@ public interface JobManager {
      */
     public Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException;
 
+    /**
+     * Starts Job
+     * 
+     * @param newCronString - if the newCronString is null the job will be started right away otherwise the job will be
+     *        updated with a new cron string and scheduled to start.
+     */
+    void startJob(ScheduledRepeatingJob job, String newCronString);
+
 }

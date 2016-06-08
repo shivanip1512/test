@@ -2,7 +2,8 @@ package com.cannontech.jobs.model;
 
 import java.util.Map;
 
-import org.springframework.core.style.ToStringCreator;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
@@ -145,14 +146,17 @@ public class YukonJob {
 
     @Override
     public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("id", id);
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder tsc = new ToStringBuilder(this, style);
+        tsc.append("jobId", id);
+        tsc.append("jobGroupId", jobGroupId);
         tsc.append("beanName", beanName);
         tsc.append("disabled", disabled);
-        tsc.append("userContext", userContext);
+        tsc.append("user", userContext.getYukonUser().getUsername());
         tsc.append("jobProperties", jobProperties);
         tsc.append("isSystemUser", isSystemUser);
-        tsc.append("jobGroupId", jobGroupId);
         return tsc.toString();
     }
 }

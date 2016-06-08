@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.device.DeviceRequestType;
@@ -148,7 +147,7 @@ public class ScheduledGroupRequestExecutionResultsController {
         model.addAttribute("commandRequestExecutionId", lastCre.getId());
         return "redirect:/common/commandRequestExecutionResults/detail";
     }
-
+    
     private void setupJobsFromFilter(ScheduledJobsFilter filter,
                                      YukonUserContext userContext, 
                                      ModelMap model,
@@ -161,7 +160,6 @@ public class ScheduledGroupRequestExecutionResultsController {
                                     filter.getTypeFilterAsList(),
                                     filter.getStatusFilter(),
                                     filter.getExcludePendingFilter(),
-                                    filter.getIncludeOnetimeFilter(),
                                     false);
         
         List<ScheduledGroupRequestExecutionJobWrapper> jobWrappers = Lists.newArrayListWithCapacity(jobs.size());
@@ -227,7 +225,6 @@ public class ScheduledGroupRequestExecutionResultsController {
         binder.registerCustomEditor(Date.class, "toDate", toDateEditor);
         EnumPropertyEditor.register(binder, ScheduleGroupRequestExecutionDaoEnabledFilter.class);
         EnumPropertyEditor.register(binder, ScheduleGroupRequestExecutionDaoPendingFilter.class);
-        EnumPropertyEditor.register(binder, ScheduleGroupRequestExecutionDaoOnetimeFilter.class);
         EnumPropertyEditor.register(binder, DeviceRequestType.class);
     }
     

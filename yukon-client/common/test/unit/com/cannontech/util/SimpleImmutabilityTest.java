@@ -1,6 +1,6 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -51,7 +51,6 @@ import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.service.pointmapping.SiPrefix;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorStateType;
@@ -624,7 +623,6 @@ public class SimpleImmutabilityTest {
             RfnMeterReadingReplyType.class,
             RfnMeterReadingType.class,
             ScheduleGroupRequestExecutionDaoEnabledFilter.class,
-            ScheduleGroupRequestExecutionDaoOnetimeFilter.class,
             ScheduleGroupRequestExecutionDaoPendingFilter.class,
             ScheduledGroupRequestExecutionStatus.class,
             SiPrefix.class,

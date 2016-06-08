@@ -13,7 +13,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
@@ -37,9 +36,7 @@ import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
-import com.google.common.collect.Lists;
 
 public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequestExecutionDao {
 
@@ -71,8 +68,6 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         template.insert(pair);
     }
     
-    
-    
     // LATEST CRE FOR JOB ID
     @Override
     public CommandRequestExecution findLatestCommandRequestExecutionForJobId(int jobId, Date cutoff) {
@@ -101,7 +96,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     @Override
 	public List<ScheduledRepeatingJob> getJobs(int jobId, Date startTime, Date stopTime, List<DeviceRequestType> types, 
     		ScheduleGroupRequestExecutionDaoEnabledFilter enabled, ScheduleGroupRequestExecutionDaoPendingFilter pending,
-    		ScheduleGroupRequestExecutionDaoOnetimeFilter onetime, boolean ascendingJobIds) {
+    		boolean ascendingJobIds) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT DISTINCT Job.*, JSR.* FROM Job");
@@ -185,22 +180,8 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	sql.append("ORDER BY Job.JobID DESC");
         }
 
-    	List<ScheduledRepeatingJob> potentialJobs = yukonJdbcTemplate.query(sql, scheduledRepeatingJobDao.getJobRowMapper());
-    	List<ScheduledRepeatingJob> jobs = Lists.newArrayListWithExpectedSize(potentialJobs.size());
-
-    	for (ScheduledRepeatingJob job : potentialJobs) {
-    		Date nextRun = null;
-			try {
-				nextRun = this.jobManager.getNextRuntime(job, new Date());
-			} catch (ScheduleException e) {
-				// has no next run time, leave as null
-			}
-
-			if (onetime.equals(ScheduleGroupRequestExecutionDaoOnetimeFilter.INCLUDE_ONETIME) || nextRun != null) {
-				jobs.add(job);
-			}
-    	}
-
+    	List<ScheduledRepeatingJob> jobs = yukonJdbcTemplate.query(sql, scheduledRepeatingJobDao.getJobRowMapper());
+    	
     	return jobs;
 	}
 

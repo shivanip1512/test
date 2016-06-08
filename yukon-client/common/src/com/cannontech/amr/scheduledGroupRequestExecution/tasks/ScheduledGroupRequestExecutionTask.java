@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,6 +42,8 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     private Integer stopRetryAfterHoursCount = null;
     private Integer turnOffQueuingAfterRetryCount = null;
     private CompletionCallback completionCallback = null;
+    private Integer dependentJobGroupId;
+    private String dependentJobResultCategories;
     
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
@@ -55,9 +60,9 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     public void stop() {
 
         int jobId = getJob().getId();
-        log.info("Stopping job id=" + jobId);
+        log.info("Canceling job id=" + jobId);
         long commandsCancelled = completionCallback.cancelExecution(getUserContext().getYukonUser());
-        log.info("Stopped job id=" + jobId + ". " + commandsCancelled + " commands were cancelled.");
+        log.info("Canceling job id=" + jobId + ". " + commandsCancelled + " commands were cancelled.");
     }
 
     private void startTask() {
@@ -74,10 +79,9 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             eventLogService.jobStarted(deviceRequestType.getShortName(), name, deviceGroup.getFullName(),
                 retryParameters.getQueuedTries() + retryParameters.getNonQueuedTries(), user, getJob().getId());
             if (log.isDebugEnabled()) {
-                log.debug("Job id=" + getJob().getId() + ", schedule name=" + name + ", Execution type="
-                    + deviceRequestType + ", Device Group=" + taskDeviceGroup.getName() + ", reties="
-                    + retryParameters.getQueuedTries() + retryParameters.getNonQueuedTries() + " started by "
-                    + user);
+                log.debug("Staring ScheduledGroupRequestExecutionTask");
+                log.debug(this);
+                log.debug(getJob());
             }
             final CountDownLatch taskCompletionLatch = new CountDownLatch(1);
             CommandCompletionCallbackAdapter<CommandRequestDevice> callback =
@@ -109,10 +113,9 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                     + " Context Id=" + completionCallback.getContextId() + " finished.");
             }
         } catch (NotFoundException e) {
-            log.error("Could not run command due to missing device group. command = " + getCommand() + ", name="
-                + getName() + ", groupName = " + getDeviceGroup().getFullName() + ", user = " + user.getUsername()
-                + ", retryCount=" + getRetryCount()
-                + ", turnOffQueuingAfterRetryCount=" + getTurnOffQueuingAfterRetryCount() + ".", e);
+            log.error("Could not run command due to missing device group. command = " + getCommand(), e);
+            log.error(getJob());
+            log.error(this);
         }
     }
 
@@ -185,4 +188,49 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 	public void setTurnOffQueuingAfterRetryCount(Integer turnOffQueuingAfterRetryCount) {
 		this.turnOffQueuingAfterRetryCount = turnOffQueuingAfterRetryCount;
 	}
+
+    public Integer getDependentJobGroupId() {
+        return dependentJobGroupId;
+    }
+
+    public void setDependentJobGroupId(Integer dependentJobGroupId) {
+        this.dependentJobGroupId = dependentJobGroupId;
+    }
+
+    public String getDependentJobResultCategories() {
+        return dependentJobResultCategories;
+    }
+
+    public void setDependentJobResultCategories(String dependentJobResultCategories) {
+        this.dependentJobResultCategories = dependentJobResultCategories;
+    }
+    
+    @Override
+    public String toString() {
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        if (getJob() != null) {
+            builder.append("JobId", getJob().getId());
+        }
+        builder.append("Schedule name", name);
+        builder.append("Device Request Type", deviceRequestType);
+        if(!StringUtils.isEmpty(command)){
+            builder.append("Command", command);
+        }
+        if (attributes != null && !attributes.isEmpty()) {
+            builder.append("Attributes", attributes);
+        }
+        builder.append("Retry Count", retryCount);
+        RetryParameters retries = getRetryParameters();
+        builder.append("Queued Retries", retries.getQueuedTries());
+        builder.append("NonQueued Retries", retries.getNonQueuedTries());
+        builder.append("Device Request Type", deviceRequestType);
+        if (dependentJobGroupId != null &&  dependentJobGroupId > 0) {
+            builder.append("Dependent Job Group Id", dependentJobGroupId);
+        }
+
+        return builder.toString();
+    }
 }

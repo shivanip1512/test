@@ -21,7 +21,7 @@
                     </c:if>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".runSchedule">
-                    <tags:cronExpressionData state="${expressionTagState}" id="${cronUniqueId}" allowTypeChange="false" />
+                    <tags:cronExpressionData state="${expressionTagState}" id="${cronUniqueId}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".nextRun">
                     <amr:scheduledGroupRequestExecutionJobNextRunDate jobId="${job.id}" />

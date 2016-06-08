@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -36,6 +35,10 @@ public class NextRunJobUpdaterHandler implements JobUpdaterHandler {
 	        return dateStr;
 	    }
 	    
+	    if(job.isManualScheduleWithoutRunDate()){
+	        return dateStr;
+	    }
+	    
 		Date nextRun;
 		try {
 			nextRun = jobManager.getNextRuntime(job, new Date());
@@ -45,11 +48,7 @@ public class NextRunJobUpdaterHandler implements JobUpdaterHandler {
 		
         if (nextRun != null) {
             dateStr = dateFormattingService.format(nextRun, DateFormatEnum.DATEHM, userContext);
-        } else if (nextRun == null && !job.isDisabled()) {
-            dateStr =
-                messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(
-                    "yukon.common.job.error.restart.required");
-        }
+        } 
 		return dateStr;
 	}
 	

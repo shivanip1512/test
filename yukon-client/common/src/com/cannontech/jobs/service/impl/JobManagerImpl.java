@@ -11,6 +11,8 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,6 +26,7 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.StringUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -60,6 +63,7 @@ public class JobManagerImpl implements JobManager {
     private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     private ScheduledExecutor scheduledExecutor;
     private TransactionTemplate transactionTemplate;
+    private Executor executor = Executors.newCachedThreadPool();
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DbChangeManager dbChangeManager;
     
@@ -269,7 +273,21 @@ public class JobManagerImpl implements JobManager {
 
         return repeatingJob;
     }
-
+    
+    @Override
+    public void startJob(ScheduledRepeatingJob job, String newCronString) {
+        if (StringUtils.isEmpty(newCronString)) {
+            executor.execute(new BaseRunnableJob(job));
+        } else {
+            if (!job.getCronString().equals(newCronString)) {
+                job.setCronString(newCronString);
+                log.debug("Updating job with a new cron string:" + job.getCronString());
+                scheduledRepeatingJobDao.update(job);
+            }
+            doScheduleScheduledJob(job, null);
+        }
+    }
+    
     // PRIVATE HELPERS
     private void scheduleJobCommon(YukonJob job, YukonJobDefinition<?> jobDefinition, YukonTask task,
         YukonUserContext userContext) throws BeansException {
@@ -285,7 +303,6 @@ public class JobManagerImpl implements JobManager {
     }
 
     private void doScheduleScheduledJob(final ScheduledRepeatingJob job, Date lastTimeScheduled) {
-        log.debug("doScheduleScheduledJob for " + job);
         try {
             Date getAfterTime = lastTimeScheduled != null ? lastTimeScheduled : timeSource.getCurrentTime();
             final Date nextRuntime = getNextRuntime(job, getAfterTime);
@@ -301,9 +318,9 @@ public class JobManagerImpl implements JobManager {
             if (nextRuntime != null) {
 
                 doSchedule(job, runnable, nextRuntime);
-                log.info("job " + job + " scheduled for " + nextRuntime);
+                log.info("job scheduled for " + nextRuntime + " job="+job);
             } else {
-                log.debug("job " + job + " has no next runtime, it will not be scheduled.");
+                log.info("job has no next runtime, it will not be scheduled. job="+job);
             }
         } catch (Exception e) {
             log.error("unable to schedule job " + job, e);
@@ -337,10 +354,7 @@ public class JobManagerImpl implements JobManager {
         final int jobId = job.getId();
         long delay = nextRuntime.getTime() - timeSource.getCurrentMillis();
         final ScheduledInfo info = new ScheduledInfo(jobId, nextRuntime);
-        ScheduledInfo oldValue = scheduledJobs.put(jobId, info);
-        if (oldValue != null) {
-            throw new RuntimeException("scheduledJobs map already contained job: " + job);
-        }
+        scheduledJobs.put(jobId, info);
         try {
             Runnable runnerToSchedule = new Runnable() {
                 @Override
@@ -526,7 +540,6 @@ public class JobManagerImpl implements JobManager {
     public synchronized YukonTask instantiateTask(YukonJob job) {
         YukonJobDefinition<? extends YukonTask> jobDefinition = job.getJobDefinition();
 
-        log.debug("instantiating task for " + jobDefinition);
         YukonTask task = jobDefinition.createBean();
 
         InputRoot inputRoot = jobDefinition.getInputs();
@@ -590,10 +603,8 @@ public class JobManagerImpl implements JobManager {
                 transactionTemplate.execute(new TransactionCallback<Object>() {
                     @Override
                     public Object doInTransaction(TransactionStatus transactionStatus) {
-                        log.info("starting runnable: jobId=" + jobId);
-
-                        // fetch the job
                         YukonJob job = yukonJobDao.getById(jobId);
+                        log.info("Starting runnable: job=" + job);
 
                         beforeRun();
                         status.setStartTime(timeSource.getCurrentTime());

@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.common.device.DeviceRequestType;
 
@@ -18,7 +17,6 @@ public class ScheduledJobsFilter {
     private ScheduleGroupRequestExecutionDaoEnabledFilter statusFilter =
         ScheduleGroupRequestExecutionDaoEnabledFilter.ANY;
     boolean excludePendingFilterBool = false;
-    boolean includeOnetimeFilterBool = false;
     private String typeFilterAsString;
     
     public Date getToDate() {
@@ -58,21 +56,6 @@ public class ScheduledJobsFilter {
             return ScheduleGroupRequestExecutionDaoPendingFilter.EXECUTED_ONLY;
         }
         return ScheduleGroupRequestExecutionDaoPendingFilter.ANY;
-    }
-
-    public boolean isIncludeOnetimeFilterBool() {
-        return includeOnetimeFilterBool;
-    }
-
-    public void setIncludeOnetimeFilterBool(boolean includeOnetimeFilterBool) {
-        this.includeOnetimeFilterBool = includeOnetimeFilterBool;
-    }
-
-    public ScheduleGroupRequestExecutionDaoOnetimeFilter getIncludeOnetimeFilter() {
-        if (includeOnetimeFilterBool) {
-            return ScheduleGroupRequestExecutionDaoOnetimeFilter.INCLUDE_ONETIME;
-        }
-        return ScheduleGroupRequestExecutionDaoOnetimeFilter.EXCLUDE_ONETIME;
     }
 
     public String getTypeFilterAsString() {

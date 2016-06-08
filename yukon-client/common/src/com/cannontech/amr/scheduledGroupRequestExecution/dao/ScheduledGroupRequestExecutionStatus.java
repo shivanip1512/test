@@ -7,9 +7,12 @@ public enum ScheduledGroupRequestExecutionStatus implements DisplayableEnum {
 	ENABLED,
 	DISABLED,
 	RUNNING,
-	DELETED;
+	DELETED,
+	//Manual status is for display only
+	MANUAL;
 	
-	public String getFormatKey() {
+	@Override
+    public String getFormatKey() {
 		return "yukon.common.device.schedules.state." + this.name();
 	}
 }

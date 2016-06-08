@@ -94,7 +94,7 @@
                          <tags:nameValueGap gapHeight="${take12}"/>
                          
                          <tags:nameValue name="${timeFrequencyLabel}">
-                             <tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
+                             <tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}" allowManual="${true}"/>
                          </tags:nameValue>
                          
                          <tags:nameValue name="${retryLabel}">
@@ -182,7 +182,7 @@
                         <tags:nameValueGap gapHeight="${take12}"/>
                         
                         <tags:nameValue name="${timeFrequencyLabel}">
-                            <tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
+                            <tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}" allowManual='true'/>
                         </tags:nameValue>
                         
                         <tags:nameValue name="${retryLabel}">

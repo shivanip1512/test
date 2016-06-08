@@ -79,7 +79,7 @@
     </tags:nameValue2>
 
     <tags:nameValue2 nameKey=".scheduleCronString" nameClass="vat">
-        <tags:cronExpressionData id="scheduleCronString" state="${cronExpressionTagState}" allowTypeChange="false" />
+        <tags:cronExpressionData id="scheduleCronString" state="${cronExpressionTagState}"/>
     </tags:nameValue2>
 
     <c:if test="${!isSmtpConfigured}">

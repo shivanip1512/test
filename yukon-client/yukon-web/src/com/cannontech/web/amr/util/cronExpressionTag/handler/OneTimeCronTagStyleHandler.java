@@ -12,6 +12,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExceptionType;
@@ -33,6 +34,12 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
 
         String[] parts = new String[]{"*", "*", "*", "*", "*", "*", "*"};
         
+        
+        boolean futureStart = ServletRequestUtils.getBooleanParameter(request, id + "_future-start", false);
+        if (!futureStart) {
+            return ScheduledRepeatingJob.NEVER_RUN_CRON_STRING;
+        }
+
         // time
         buildTime(id, request, parts);
         Calendar cal;
@@ -112,7 +119,10 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
     @Override
     public String generateDescription(CronExpressionTagState state, YukonUserContext userContext) {
         String dateStr = dateFormattingService.format(state.getDate(), DateFormatEnum.DATE, userContext);
-        String desc = "One-time, " + dateStr + ", at " + getTimeDescription(state, userContext);
+        String desc = "Manual";
+        if (!state.getCustomExpression().equals(ScheduledRepeatingJob.NEVER_RUN_CRON_STRING)) {
+            desc = "Manual, " + dateStr + ", at " + getTimeDescription(state, userContext);
+        }
         return desc;
     }
     

@@ -10,67 +10,37 @@
 <%@ attribute name="state" required="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" 
         description="Used to configure the controls to a certain state. Pass a new CronExpressionTagState 
                      to configure to default state." %>
-                     
-<%@ attribute name="allowTypeChange" type="java.lang.Boolean" 
-        description="Allow changing between Repeating and One-Time job options. Default: true." %>
-<cti:default var="allowTypeChange" value="${true}"/>
+
+<%@ attribute name="allowManual" type="java.lang.Boolean"
+    description="Displays manual option. Default: false."%>
+<cti:default var="allowManual" value="${false}" />
 
 <cti:msgScope paths="components.cronPicker">
 <%-- FREQUENCY --%>
 <div class="stacked">
     <select id="${id}-cron-exp-freq" name="${id}_CRONEXP_FREQ" onchange="yukon.ui.util.cronExpFreqChange('${id}', this);">
-        <c:choose>
-            <c:when test="${!allowTypeChange}">
-                <c:choose>
-                    <c:when test="${state.cronTagStyleType == 'ONETIME'}">
-                        <option value="ONETIME"
-                            <c:if test="${state.cronTagStyleType == 'ONETIME'}">selected</c:if>>
-                            <i:inline key=".oneTime"/>
-                        </option>
-                    </c:when>
-                    <c:otherwise>
-                        <option value="DAILY"
-                            <c:if test="${state.cronTagStyleType == 'DAILY'}">selected</c:if>>
-                            <i:inline key=".daily"/>
-                        </option>
-                        <option value="WEEKLY"
-                            <c:if test="${state.cronTagStyleType == 'WEEKLY'}">selected</c:if>>
-                            <i:inline key=".weekly"/>
-                        </option>
-                        <option value="MONTHLY"
-                            <c:if test="${state.cronTagStyleType == 'MONTHLY'}">selected</c:if>>
-                            <i:inline key=".monthly"/>
-                        </option>
-                        <option value="CUSTOM"
-                            <c:if test="${state.cronTagStyleType == 'CUSTOM'}">selected</c:if>>
-                            <i:inline key=".custom"/>
-                        </option>
-                    </c:otherwise>
-                </c:choose>
-            </c:when>
-            <c:otherwise>
-                <option value="DAILY"
-                    <c:if test="${state.cronTagStyleType == 'DAILY'}">selected</c:if>>
-                    <i:inline key=".daily"/>
-                </option>
-                <option value="WEEKLY"
-                    <c:if test="${state.cronTagStyleType == 'WEEKLY'}">selected</c:if>>
-                    <i:inline key=".weekly"/>
-                </option>
-                <option value="MONTHLY"
-                    <c:if test="${state.cronTagStyleType == 'MONTHLY'}">selected</c:if>>
-                    <i:inline key=".monthly"/>
-                </option>
-                <option value="ONETIME"
-                    <c:if test="${state.cronTagStyleType == 'ONETIME'}">selected</c:if>>
-                    <i:inline key=".oneTime"/>
-                </option>
-                <option value="CUSTOM"
-                    <c:if test="${state.cronTagStyleType == 'CUSTOM'}">selected</c:if>>
-                    <i:inline key=".custom"/>
-                </option>
-            </c:otherwise>
-        </c:choose>
+        <option value="DAILY"
+            <c:if test="${state.cronTagStyleType == 'DAILY'}">selected</c:if>>
+            <i:inline key=".daily" />
+        </option>
+        <option value="WEEKLY"
+            <c:if test="${state.cronTagStyleType == 'WEEKLY'}">selected</c:if>>
+            <i:inline key=".weekly" />
+        </option>
+        <option value="MONTHLY"
+            <c:if test="${state.cronTagStyleType == 'MONTHLY'}">selected</c:if>>
+            <i:inline key=".monthly" />
+        </option>
+        <c:if test="${allowManual}">
+            <option value="ONETIME"
+                <c:if test="${state.cronTagStyleType == 'ONETIME'}">selected</c:if>>
+                <i:inline key=".oneTime" />
+            </option>
+        </c:if>
+        <option value="CUSTOM"
+            <c:if test="${state.cronTagStyleType == 'CUSTOM'}">selected</c:if>>
+            <i:inline key=".custom" />
+        </option>
     </select>
 </div>
 
@@ -159,7 +129,7 @@
 
 <%-- ONE-TIME --%>
 <div id="${id}-cron-exp-one-time" class="stacked dn">
-    <dt:date name="${id}_CRONEXP_ONETIME_DATE" value="${state.date}"/>
+    <dt:date name="${id}_CRONEXP_ONETIME_DATE" value="${state.date}"/>    
 </div>
 
 <%-- CUSTOM --%>

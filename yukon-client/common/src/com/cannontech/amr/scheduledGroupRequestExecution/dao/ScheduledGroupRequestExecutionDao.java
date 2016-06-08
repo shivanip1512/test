@@ -21,7 +21,6 @@ public interface ScheduledGroupRequestExecutionDao {
 												List<DeviceRequestType> types, 
 												ScheduleGroupRequestExecutionDaoEnabledFilter enabled, 
 												ScheduleGroupRequestExecutionDaoPendingFilter pending,
-												ScheduleGroupRequestExecutionDaoOnetimeFilter onetime,
 												boolean ascendingJobIds);
 		
 	/**

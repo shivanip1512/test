@@ -18,7 +18,7 @@
     
     <cti:uniqueIdentifier var="uid" prefix="schedule"/>
     <input type="hidden" name="uid" value="${uid}">
-    <tags:cronExpressionData id="${uid}" state="${state}" allowTypeChange="false"/>
+    <tags:cronExpressionData id="${uid}" state="${state}"/>
     
 </form:form>
 

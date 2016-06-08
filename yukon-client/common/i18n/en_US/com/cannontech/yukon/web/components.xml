@@ -150,7 +150,7 @@
     <entry key="yukon.web.components.cronPicker.daily">Daily</entry>
     <entry key="yukon.web.components.cronPicker.weekly">Weekly</entry>
     <entry key="yukon.web.components.cronPicker.monthly">Monthly</entry>
-    <entry key="yukon.web.components.cronPicker.oneTime">One-Time</entry>
+    <entry key="yukon.web.components.cronPicker.oneTime">Manual</entry>
     <entry key="yukon.web.components.cronPicker.custom">Custom</entry>
     <entry key="yukon.web.components.cronPicker.am">AM</entry>
     <entry key="yukon.web.components.cronPicker.pm">PM</entry>
