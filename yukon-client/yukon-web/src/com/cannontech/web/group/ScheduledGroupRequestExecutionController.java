@@ -594,6 +594,9 @@ public class ScheduledGroupRequestExecutionController {
 	        String cronExpression = null;
 	        try {
 	            cronExpression = cronExpressionTagService.build(jobId, request, userContext);
+	            if(ScheduledRepeatingJob.NEVER_RUN_CRON_STRING.equalsIgnoreCase(cronExpression)){
+	                cronExpression = null;
+	            }
 	        } catch (Exception e) {
 	            
 	        }
@@ -609,19 +612,21 @@ public class ScheduledGroupRequestExecutionController {
 	        
 	    }
 	   
-	       @RequestMapping("cancelJob")
-	       public ModelAndView cancelJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-	           
-	            String redirectUrl = ServletRequestUtils.getRequiredStringParameter(request, "redirectUrl");
-	            ModelAndView mav = new ModelAndView("redirect:" + redirectUrl);
-	            
-	           int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
-	           
-	           mav.addObject("editJobId", toggleJobId);
-	           
-	           return mav;
-	           
-	       }
+    @RequestMapping("cancelJob")
+    public ModelAndView cancelJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+        String redirectUrl = ServletRequestUtils.getRequiredStringParameter(request, "redirectUrl");
+        ModelAndView mav = new ModelAndView("redirect:" + redirectUrl);
+
+        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
+        jobManager.abortJob(job);
+        
+        mav.addObject("editJobId", toggleJobId);
+
+        return mav;
+
+    }
     
     /**
      *  (not really a hard delete, but set Job.Disabled = 'D' to hide it)
