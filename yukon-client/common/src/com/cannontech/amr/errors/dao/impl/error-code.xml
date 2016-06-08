@@ -804,15 +804,30 @@
         <description>Request timed out.</description>
         <troubleshooting>Check Yukon Logs for errors.</troubleshooting>
     </error>
+    <error code="260">
+        <category>Yukon System</category>
+        <porter></porter>
+        <description>MACS timed out on this message.</description>
+        <troubleshooting>
+            MACS did not hear anything back from Porter within the script timeout (default 15 
+            minutes). 
+            <ul>
+                <li>Porter's work queue may be overloaded with other requests. You may need to adjust 
+                script start times and/or increase the script timeout. </li>
+            </ul>
+        </troubleshooting>
+    </error>
     <error code="261">
         <category>Data Validation</category>
-        <porter>The freeze check bit in the frozen reading does not match the last recorded freeze
-            sent to the device.</porter>
-        <description>The freeze check bit in the frozen reading does not match the last recorded
-            freeze sent to the device.</description>
+        <porter>The frozen peak timestamp is outside of the expected range.</porter>
+        <description>Verification of the frozen peak's timestamp as retrieved from the device has
+            failed.</description>
         <troubleshooting>
-            This is a data validation error associated with the freeze check bit retrieved from the
-            device not matching the value expected by the master station.
+            This is a data validation error associated with the frozen peak demand's timestamp
+            falling outside the range expected by the master station.
+            This range is defined as greater than the last frozen peak demand reading archived in the database
+            and less than the timestamp of the most recent freeze command sent to the device.
+            This error typically occurs if the device missed an attempted freeze of the registers.
             <ul>
                 <li>Send the expected freeze command and attempt the command again</li>
                 <ol>
