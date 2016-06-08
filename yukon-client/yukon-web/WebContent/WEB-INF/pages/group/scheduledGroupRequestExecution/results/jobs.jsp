@@ -150,50 +150,7 @@
                                 </td>
                                 <cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
                                     <td class="tar">
-                                    <cti:url var="toggleUrl" value="/group/scheduledGroupRequestExecution/toggleJob" >
-                                        <cti:param name="toggleJobId" value="${jobWrapper.job.id}"/>
-                                        <cti:param name="redirectUrl" value="/group/scheduledGroupRequestExecutionResults/jobs"/>
-                                    </cti:url>
-                                    <cti:url var="startUrl" value="/group/scheduledGroupRequestExecution/startJob" >
-                                        <cti:param name="toggleJobId" value="${jobWrapper.job.id}"/>
-                                        <cti:param name="redirectUrl" value="/group/scheduledGroupRequestExecutionResults/jobs"/>
-                                    </cti:url>
-                                    <cti:url var="cancelUrl" value="/group/scheduledGroupRequestExecution/cancelJob" >
-                                        <cti:param name="toggleJobId" value="${jobWrapper.job.id}"/>
-                                        <cti:param name="redirectUrl" value="/group/scheduledGroupRequestExecutionResults/jobs"/>
-                                    </cti:url>
-<%--                                     <cti:url var="createDependentScheduleUrl" value="/group/scheduledGroupRequestExecution/home" >
-                                        <cti:param name="editJobId" value="${jobWrapper.job.id}"/>
-                                    </cti:url> --%>
-                                    <cm:dropdown icon="icon-cog" triggerClasses="fr">
-                                       <c:choose>                     
-                                            <c:when test="${jobWrapper.tagState.cronTagStyleType == 'ONETIME'}"> 
-                                                <c:if test="${jobWrapper.jobStatus ne 'RUNNING'}">
-                                                    <cm:dropdownOption id="startScheduleButton" key="yukon.common.start" data-job-id="${jobId}" icon="icon-bullet-go" data-popup="#startScheduleDialog-${jobId}" />
-                                                    <div class="dn" id="startScheduleDialog-${jobId}" data-dialog data-title="<cti:msg2 key="yukon.web.widgets.schedules.start"/>" data-ok-text="<cti:msg2 key="yukon.common.start"/>"
-                                                    data-url="<cti:url value="/group/scheduledGroupRequestExecution/startDialog?jobId=${jobId}"/>" data-job-id="${jobId}" data-event="yukon:schedule:start" data-height="250" data-width="400"></div>
-                                                </c:if>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:choose>
-                                                    <c:when test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">
-                                                        <cm:dropdownOption disabled="${jobWrapper.jobStatus eq 'RUNNING'}" key="yukon.common.disable" href="${toggleUrl}" icon="icon-disabled"/>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <cm:dropdownOption key="yukon.common.enable" href="${toggleUrl}" icon="icon-enabled"/>
-                                                    </c:otherwise>
-                                                 </c:choose>
-                                                 <c:if test="${jobWrapper.jobStatus ne 'RUNNING'}">
-                                                    <cm:dropdownOption disabled="${jobWrapper.jobStatus eq 'RUNNING'}" key="yukon.common.start" href="${startUrl}" icon="icon-bullet-go"/>
-                                                </c:if>
-                                            </c:otherwise>
-                                        </c:choose>
-                                        <c:if test="${jobWrapper.jobStatus eq 'RUNNING'}">
-                                            <cm:dropdownOption id="cancel-job-btn-${jobId}" data-ok-event="yukon.schedule.cancel" data-job-id="${jobId}" key="yukon.common.cancel" icon="icon-cross"/>
-                                            <d:confirm on="#cancel-job-btn-${jobId}" nameKey="cancelConfirm" argument="${jobWrapper.name}"/>
-                                        </c:if>
-<%--                                         <cm:dropdownOption key="yukon.web.widgets.schedules.createDependent" href="${createDependentScheduleUrl}" icon="icon-plus-green"/> --%>
-                                    </cm:dropdown>
+                                        <%@ include file="../scheduleCog.jspf" %>
                                     </td>
                                 </cti:checkRolesAndProperties>
                             </tr>

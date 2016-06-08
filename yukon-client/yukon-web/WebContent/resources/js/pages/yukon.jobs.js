@@ -34,6 +34,32 @@ yukon.jobs = (function () {
                 });
             });
             
+            $(".js-schedule-toggle").click(function(e){                
+                var selection = $(this);
+                var jobId = selection.data('jobId');
+                //submit toggle request
+                $.ajax({
+                     url: yukon.url('/group/scheduledGroupRequestExecution/toggleJob'),
+                     dataType: 'json',
+                     data: { 'toggleJobId': jobId }
+                }).always(function () {
+                    window.location.reload();
+                });
+            });
+            
+            $(".js-schedule-start").click(function(e){                
+                var selection = $(this);
+                var jobId = selection.data('jobId');
+                //submit start request
+                $.ajax({
+                     url: yukon.url('/group/scheduledGroupRequestExecution/startJob'),
+                     dataType: 'json',
+                     data: { 'toggleJobId': jobId }
+                }).always(function () {
+                    window.location.reload();
+                });
+            });
+            
             $(document).on('yukon.schedule.cancel', function (ev) {
                 var jobId = $(ev.target).data('jobId');
                 ev.preventDefault();
