@@ -46,10 +46,6 @@
                 <form:checkbox path="excludePendingFilterBool"/>
             </tags:nameValue2>
 
-            <tags:nameValue2 nameKey=".filter.includeOnetime">
-                <form:checkbox path="includeOnetimeFilterBool"/>
-            </tags:nameValue2>
-
             <tags:nameValue2 nameKey=".filter.type">
                 <form:select path="typeFilterAsString">
                     <form:option value="ANY"><cti:msg2 key=".filter.typeAny"/></form:option>
@@ -89,7 +85,6 @@
                 <cti:param name="toDate" value="${filter.toDate}"/>
                 <cti:param name="statusFilter" value="${filter.statusFilter}"/>
                 <cti:param name="excludePendingFilterBool" value="${filter.excludePendingFilterBool}"/>
-                <cti:param name="includeOnetimeFilterBool" value="${filter.includeOnetimeFilterBool}"/>
                 <cti:param name="typeFilterAsString" value="${filter.typeFilterAsString}"/>
             </cti:url>
             <div data-url="${url}" data-static>

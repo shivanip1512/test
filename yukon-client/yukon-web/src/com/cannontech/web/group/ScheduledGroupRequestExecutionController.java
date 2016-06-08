@@ -19,12 +19,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
@@ -601,8 +599,9 @@ public class ScheduledGroupRequestExecutionController {
 	        }
 	        
 	        ModelAndView mav = new ModelAndView("redirect:" + redirectUrl);
-          	        
+          	  
 	        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
+	        jobManager.startJob(job, cronExpression);
 	        
 	        mav.addObject("editJobId", toggleJobId);
 	        
