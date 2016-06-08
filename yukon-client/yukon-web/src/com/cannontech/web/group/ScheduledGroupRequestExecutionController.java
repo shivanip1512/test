@@ -587,6 +587,9 @@ public class ScheduledGroupRequestExecutionController {
 	        String cronExpression = null;
 	        try {
 	            cronExpression = cronExpressionTagService.build(jobId, request, userContext);
+	            if(ScheduledRepeatingJob.NEVER_RUN_CRON_STRING.equalsIgnoreCase(cronExpression)){
+	                cronExpression = null;
+	            }
 	        } catch (Exception e) {
 	            
 	        }
