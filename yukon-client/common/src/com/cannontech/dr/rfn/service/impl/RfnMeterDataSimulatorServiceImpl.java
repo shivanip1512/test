@@ -71,7 +71,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private final static long epoch =
         (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005")) / 1000;
 
-    private static final int INTERVAL_HOURS = 24;
+    private static final int INTERVAL_HOURS = 1;
 
     @Override
     @PostConstruct
@@ -536,8 +536,9 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
      * The consumption value is constructed using the current time and meter address.
      */
     private double makeValueConsumption(int address, long consumptionTimeInSeconds, long duration) {
-        if (duration == 0)
+        if (duration == 0) {
             return 0;
+        }
 
         double consumptionMultiplier = getConsumptionMultiplier(address);
 
