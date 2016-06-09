@@ -154,9 +154,13 @@ public class GatewaySettingsController {
             
             return "gateways/settings.jsp";
         } catch (DeviceCreationException e) {
-
-            String errorMsg = accessor.getMessage(e.getKey());
-            throw new DeviceCreationException(errorMsg, e.getKey(), e);
+            
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.CREATE);
+            String errorMsg = accessor.getMessage(e.getMessageSourceResolvable());
+            model.addAttribute("errorMsg", errorMsg);
+            
+            return "gateways/settings.jsp";
         }
 
     }
