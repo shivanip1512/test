@@ -42,8 +42,6 @@ yukon.jobs = (function () {
                      url: yukon.url('/group/scheduledGroupRequestExecution/toggleJob'),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId }
-                }).always(function () {
-                    window.location.reload();
                 });
             });
             
@@ -55,8 +53,6 @@ yukon.jobs = (function () {
                      url: yukon.url('/group/scheduledGroupRequestExecution/startJob'),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId }
-                }).always(function () {
-                    window.location.reload();
                 });
             });
             
@@ -70,8 +66,6 @@ yukon.jobs = (function () {
                      url: yukon.url('/group/scheduledGroupRequestExecution/cancelJob'),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId }
-                }).always(function () {
-                    window.location.reload();
                 });
             });
             
@@ -93,8 +87,6 @@ yukon.jobs = (function () {
                      url: yukon.url('/group/scheduledGroupRequestExecution/startJob?' + $('#startScheduleForm').serialize()),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId} 
-                }).always(function () {
-                    window.location.reload();
                 });
             });
             
@@ -140,17 +132,35 @@ yukon.jobs = (function () {
                     
                     $('#jobRunningSpan_' + jobId).hide();
                     $('#jobNotRunningSpan_' + jobId).show();
+                    //show enable and hide other options
+                    $('#enable-schedule-' + jobId).show();
+                    $('#disable-schedule-' + jobId).hide();
+                    $('#startScheduleButton-' + jobId).hide();
+                    $('#start-schedule-' + jobId).hide();
+                    $('#cancel-job-btn-' + jobId).hide();
                 } else if (state === 'Running') {
                     $(jobRow).addClass('success');
                     $('#toggle_' + jobId).attr("disabled", true);
                     
                     $('#jobRunningSpan_' + jobId).show();
                     $('#jobNotRunningSpan_' + jobId).hide();
+                    //hide start, enable/disable and show cancel
+                    $('#enable-schedule-' + jobId).hide();
+                    $('#disable-schedule-' + jobId).hide();
+                    $('#startScheduleButton-' + jobId).hide();
+                    $('#start-schedule-' + jobId).hide();
+                    $('#cancel-job-btn-' + jobId).show();
                 } else if (state === 'Scheduled') {
                     $('#toggle_' + jobId).removeAttr("disabled");
                     
                     $('#jobRunningSpan_' + jobId).hide();
                     $('#jobNotRunningSpan_' + jobId).show();
+                    //show start and disable, hide other options
+                    $('#startScheduleButton-' + jobId).show();
+                    $('#start-schedule-' + jobId).show();
+                    $('#cancel-job-btn-' + jobId).hide();
+                    $('#enable-schedule-' + jobId).hide();
+                    $('#disable-schedule-' + jobId).show();
                 }
             };
         },
