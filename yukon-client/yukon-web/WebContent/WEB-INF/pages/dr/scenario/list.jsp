@@ -18,7 +18,7 @@
             <input type="hidden" name="itemsPerPage" value="${paging.itemsPerPage}">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".filter.name">
-                    <input type="text" name="name" size="40" value="${name}">
+                    <input type="text" name="name" size="40" value="${fn:escapeXml(name)}">
                 </tags:nameValue2>
             </tags:nameValueContainer2>
             
