@@ -5,6 +5,7 @@
 <%@ taglib prefix="cc" tagdir="/WEB-INF/tags/capcontrol" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <!-- Check CapControl Role Access -->
@@ -44,6 +45,11 @@
 
 <!-- Page Dropdown Actions -->
 <div id="page-actions" class="dn">
+
+<!-- Needed for date tags to work in popups (create schedule)-->
+<div class="dn">
+     <dt:date name="date"/>
+</div>
 
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cm:dropdownOption classes="js-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>

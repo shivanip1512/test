@@ -53,7 +53,14 @@ yukon.da.schedules = (function () {
                 });
             });
 
-            $(document).on('yukon:da:schedules:create', yukon.ui.initDateTimePickers);
+            $(document).on('yukon:da:schedules:create', function (ev) {
+                yukon.ui.initDateTimePickers();
+                var contentDialog = $('#contentPopup');
+                //close create popup if it exists
+                if (contentDialog.is(':visible')) {
+                    $('#contentPopup').dialog('close');
+                }
+            });
 
             $(document).on('yukon:da:schedules:edit:submit', function (ev) {
 

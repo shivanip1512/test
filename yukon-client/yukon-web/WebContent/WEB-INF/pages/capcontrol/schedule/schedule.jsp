@@ -7,6 +7,15 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+<script>
+    // Reinit the datepickers.
+    $(function () {
+        if (typeof yukon.ui.initDateTimePickers !== 'undefined') {
+            yukon.ui.initDateTimePickers();
+        }
+    });
+</script>
+
 <cti:msgScope paths="modules.capcontrol.schedules.edit, modules.capcontrol.schedules, modules.capcontrol">
     <tags:setFormEditMode mode="${mode}"/>
     <cti:displayForPageEditModes modes="CREATE">
