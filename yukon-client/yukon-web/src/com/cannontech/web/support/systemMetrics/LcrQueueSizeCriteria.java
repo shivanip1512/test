@@ -10,12 +10,12 @@ import com.cannontech.web.support.dao.SystemMetricCriteriaDao;
  * System health criteria that checks to see if the number of LCR archive requests exceed the number of LCRs in the
  * system.
  */
-public class LcrRequestsEnqueuedCriteria extends MetricHealthCriteriaBase<ExtendedQueueData> {
+public class LcrQueueSizeCriteria extends MetricHealthCriteriaBase<ExtendedQueueData> {
     private static final Logger log = YukonLogManager.getLogger(MetricHealthCriteria.class);
     @Autowired SystemMetricCriteriaDao systemMetricCriteriaDao;
     
-    public LcrRequestsEnqueuedCriteria() {
-        super(ExtendedQueueData.class, "lcrEnqueuedCount", "");
+    public LcrQueueSizeCriteria() {
+        super(ExtendedQueueData.class, "lcrQueueSizeWarn", "lcrQueueSizeError");
     }
     
     @Override
@@ -26,12 +26,14 @@ public class LcrRequestsEnqueuedCriteria extends MetricHealthCriteriaBase<Extend
     @Override
     protected MetricStatus doMetricCheck(ExtendedQueueData metric) {
         int rfnLcrCount = systemMetricCriteriaDao.getRfnLcrCount();
-        long enqueuedCount = metric.getEnqueuedCount();
+        long queueSize = metric.getQueueSize();
         
-        log.debug("Lcr Requests Enqueued Criteria checked. RfnLcrCount: " + rfnLcrCount + " enqueuedCount: " 
-                + enqueuedCount);
+        log.debug("Lcr Requests Enqueued Criteria checked. RfnLcrCount: " + rfnLcrCount + " queueSize: " 
+                + queueSize);
         
-        if (enqueuedCount > rfnLcrCount) {
+        if (queueSize > rfnLcrCount) {
+            return MetricStatus.ERROR;
+        } else if ((queueSize * 2) > rfnLcrCount) {
             return MetricStatus.WARN;
         }
         return MetricStatus.GOOD;

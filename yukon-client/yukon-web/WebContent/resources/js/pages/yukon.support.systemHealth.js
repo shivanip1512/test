@@ -35,7 +35,8 @@ yukon.support.systemHealth = (function() {
                 $('#' + id + '-avg').text(queue.averageEnqueueTime);
                 $('#' + id + '-status i').removeClass()
                                          .addClass('icon')
-                                         .addClass(queue.status.iconName);
+                                         .addClass(queue.status.iconName)
+                                         .prop('title', queue.status.allMessages);
             }
             
             for (var i in extendedQueueMetrics) {
@@ -47,7 +48,8 @@ yukon.support.systemHealth = (function() {
                 $('#' + id + '-avg').text(queue.averageEnqueueTime);
                 $('#' + id + '-status i').removeClass()
                                          .addClass('icon')
-                                         .addClass(queue.status.iconName);
+                                         .addClass(queue.status.iconName)
+                                         .prop('title', queue.status.allMessages);
                 $('#' + id + '-arc').text(queue.archivedReadingsCount !== null ? queue.archivedReadingsCount : '');
                 $('#' + id + '-arp').text(queue.archivedRequestsProcessed);
             }

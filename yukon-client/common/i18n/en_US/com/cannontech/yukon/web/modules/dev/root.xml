@@ -412,4 +412,13 @@
     <entry key="yukon.web.modules.dev.rfnMeterSimulator.helpText"><![CDATA[RFN Meter Simulator tool generates the  read archive requests with the point data for the existing all RFN meter device types or the chosen RFN meter types, as per the Reporting interval selected.
     <br>The duplicate read archive request will be generated as per the percentage of duplicity mentioned while starting the simulator.]]></entry>
     
+    <entry key="yukon.web.modules.dev.systemMetricsSimulator.pageName">System Metrics Simulator</entry>
+    <entry key="yukon.web.modules.dev.systemMetricsSimulator.active">Activate Fake Metrics</entry>
+    <entry key="yukon.web.modules.dev.systemMetricsSimulator.metrics.ENQUEUED_COUNT">Enqueued Count</entry>
+    <entry key="yukon.web.modules.dev.systemMetricsSimulator.metrics.DEQUEUED_COUNT">Dequeued Count</entry>
+    <entry key="yukon.web.modules.dev.systemMetricsSimulator.metrics.QUEUE_SIZE">Queue Size</entry>
+    <entry key="yukon.web.modules.dev.systemMetricsSimulator.metrics.AVERAGE_ENQUEUE_TIME">Average Enqueue Time</entry>
+    <entry key="yukon.web.modules.dev.systemMetricsSimulator.metrics.ARCHIVED_READINGS_COUNT">Archived Readings Count</entry>
+    <entry key="yukon.web.modules.dev.systemMetricsSimulator.metrics.ARCHIVED_REQUESTS_PROCESSED">Archived Requests Processed</entry>
+    <entry key="yukon.web.modules.dev.systemMetricsSimulator.updateSuccessful">System metric settings updated successfully.</entry>
 </properties>

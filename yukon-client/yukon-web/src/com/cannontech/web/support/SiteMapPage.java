@@ -221,6 +221,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE, MasterConfigBoolean.ENABLE_WEB_DEBUG_PAGES),
     ACCOUNT_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.webServices.account.pageName", "/debug/accountService/inputs/home",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE, MasterConfigBoolean.ENABLE_WEB_DEBUG_PAGES),
+    SYSTEM_METRICS_SIMULATOR(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.systemMetricsSimulator.pageName", "/dev/systemHealthMetricSimulator/home",
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE, MasterConfigBoolean.ENABLE_WEB_DEBUG_PAGES)
     ;
 
     public enum OtherPermission { 

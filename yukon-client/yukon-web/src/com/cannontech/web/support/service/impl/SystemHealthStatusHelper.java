@@ -81,7 +81,7 @@ public class SystemHealthStatusHelper {
      * there are multiple criteria to evaluate, the status returned will be the "worst" status returned by any criteria,
      * and the messages will contain i18ned error messages for every status that was WARN or ERROR.
      */
-    private MetricStatusWithMessages calculateStatus(SystemHealthMetric metric) {
+    public MetricStatusWithMessages calculateStatus(SystemHealthMetric metric) {
         Collection<MetricHealthCriteria> pertinentCriteria = metricHealthCriteriaByMetricId.get(metric.getMetricIdentifier());
         
         MetricStatusWithMessages status = defaultGoodStatus;
@@ -100,5 +100,4 @@ public class SystemHealthStatusHelper {
     public MetricStatusWithMessages getStatus(SystemHealthMetricIdentifier metric) {
         return metricStatusCache.get(metric);
     }
-    
 }

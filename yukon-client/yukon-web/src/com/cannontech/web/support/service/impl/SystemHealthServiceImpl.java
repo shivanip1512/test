@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.dev.service.SystemHealthMetricSimulatorService;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.support.dao.UserSystemMetricDao;
 import com.cannontech.web.support.service.SystemHealthService;
@@ -32,12 +35,20 @@ public class SystemHealthServiceImpl implements SystemHealthService {
     private static final Logger log = YukonLogManager.getLogger(SystemHealthServiceImpl.class);
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired List<MetricHealthCriteria> metricHealthCriteria;
+    @Autowired private SystemHealthMetricSimulatorService metricSimulator;
     @Autowired private UserSystemMetricDao userSystemMetricDao;
     @Autowired private YsmJmxQueryService jmxQueryService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private SystemHealthStatusHelper statusHelper;
     
     @PostConstruct
     private void init() {
+        // Set the default message for healthy metrics
+        String message = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system)
+                                              .getMessage("yukon.web.modules.support.systemHealth.criteria.default");
+        MetricStatusWithMessages.setDefaultMessage(message);
+        
+        // Init status helper and start periodic status calculation
         statusHelper = new SystemHealthStatusHelper(this, executor, metricHealthCriteria);
     }
     
@@ -132,6 +143,14 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             
             log.debug("Loaded data for metric " + metric + ": " + data.toString());
             
+            if (metricSimulator.isActive()) {
+                metricSimulator.applyFakeMetrics(data);
+                MetricStatusWithMessages fakeStatus = statusHelper.calculateStatus(data);
+                data.setStatus(fakeStatus);
+            }
+            
+            log.debug("Applied fake data to metric " + metric + ": " + data.toString());
+            
             return data;
         } catch (Exception e) {
             log.error("Couldn't load metric data.", e);
@@ -159,6 +178,14 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             data.setStatus(status);
             
             log.debug("Loaded data for metric " + metric + ": " + data.toString());
+            
+            if (metricSimulator.isActive()) {
+                metricSimulator.applyFakeMetrics(data);
+                MetricStatusWithMessages fakeStatus = statusHelper.calculateStatus(data);
+                data.setStatus(fakeStatus);
+            }
+            
+            log.debug("Applied fake data to metric " + metric + ": " + data.toString());
             
             return data;
         } catch (Exception e) {

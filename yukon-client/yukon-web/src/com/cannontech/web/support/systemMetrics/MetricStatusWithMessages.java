@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
  * A metric status with explanatory messages.
  */
 public class MetricStatusWithMessages {
+    private static String defaultMessage; // Used by any metric status that has no messages.
     private final MetricStatus metricStatus;
     private final ImmutableList<String> messages;
     
@@ -46,6 +47,10 @@ public class MetricStatusWithMessages {
      * @return All the message strings, concatenated, separated by HTML newlines.
      */
     public String getAllMessages() {
+        if (messages.isEmpty()) {
+            return defaultMessage;
+        }
+        
         return StringUtils.join(messages, "&#10;");
     }
     
@@ -73,5 +78,12 @@ public class MetricStatusWithMessages {
     @Override
     public String toString() {
         return "MetricStatusWithMessages [metricStatus=" + metricStatus + ", messages=" + messages + "]";
+    }
+    
+    /**
+     * Sets the default message for good statuses.
+     */
+    public static void setDefaultMessage(String message) {
+        defaultMessage = message;
     }
 }

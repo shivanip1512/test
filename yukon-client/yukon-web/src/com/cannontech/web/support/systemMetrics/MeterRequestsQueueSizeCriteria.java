@@ -10,12 +10,12 @@ import com.cannontech.web.support.dao.SystemMetricCriteriaDao;
  * System health criteria that checks to see if the number of meter archive requests exceed the number of meters in the
  * system.
  */
-public class MeterRequestsEnqueuedCriteria extends MetricHealthCriteriaBase<ExtendedQueueData> {
+public class MeterRequestsQueueSizeCriteria extends MetricHealthCriteriaBase<ExtendedQueueData> {
     private static final Logger log = YukonLogManager.getLogger(MetricHealthCriteria.class);
     @Autowired SystemMetricCriteriaDao systemMetricCriteriaDao;
     
-    public MeterRequestsEnqueuedCriteria() {
-        super(ExtendedQueueData.class, "meterEnqueuedCount", "");
+    public MeterRequestsQueueSizeCriteria() {
+        super(ExtendedQueueData.class, "meterQueueSizeWarn", "meterQueueSizeError");
     }
     
     @Override
@@ -26,12 +26,14 @@ public class MeterRequestsEnqueuedCriteria extends MetricHealthCriteriaBase<Exte
     @Override
     protected MetricStatus doMetricCheck(ExtendedQueueData metric) {
         int rfnMeterCount = systemMetricCriteriaDao.getRfnMeterCount();
-        long enqueuedCount = metric.getEnqueuedCount();
+        long queueSize = metric.getQueueSize();
         
-        log.debug("Meter Requests Enqueued Criteria checked. RfnMeterCount: " + rfnMeterCount + " enqueuedCount: " 
-                  + enqueuedCount);
+        log.debug("Meter Requests Enqueued Criteria checked. RfnMeterCount: " + rfnMeterCount + " queueSize: " 
+                  + queueSize);
         
-        if (enqueuedCount > rfnMeterCount) {
+        if (queueSize > rfnMeterCount) {
+            return MetricStatus.ERROR;
+        } else if ((queueSize * 2) > rfnMeterCount) {
             return MetricStatus.WARN;
         }
         return MetricStatus.GOOD;

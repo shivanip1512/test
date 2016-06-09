@@ -45,6 +45,7 @@
                     <li><a href="<cti:url value="/dev/rfn/viewBase"/>">RFN Test</a></li>
                     <li><a href="<cti:url value="/dev/js-testing"/>">JS Testing</a></li>
                     <li><a href="<cti:url value="/dev/ecobee/viewBase"/>">Ecobee Test</a></li>
+                    <li><a href="<cti:url value="/dev/systemHealthMetricSimulator/home"/>">Fake System Health Metrics</a></li>
                 </ul>
             </tags:sectionContainer>
         </div>
