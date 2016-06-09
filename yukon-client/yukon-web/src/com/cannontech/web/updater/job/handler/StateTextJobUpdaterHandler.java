@@ -1,5 +1,10 @@
 package com.cannontech.web.updater.job.handler;
 
+
+import java.text.ParseException;
+import java.util.Date;
+
+import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -24,13 +29,16 @@ public class StateTextJobUpdaterHandler implements JobUpdaterHandler {
         ScheduledRepeatingJob job = null;
         try {
             job = scheduledRepeatingJobDao.getById(jobId);
-            // The status MANUAL is only used for display purposes
-            if (job.isManualScheduleWithoutRunDate() && state == ScheduledGroupRequestExecutionStatus.ENABLED) {
+            CronExpression cronExpression = new CronExpression(job.getCronString());
+            if (cronExpression.getNextValidTimeAfter(new Date()) == null) {
+                // The status MANUAL is only used for display
                 state = ScheduledGroupRequestExecutionStatus.MANUAL;
             }
-        } catch (EmptyResultDataAccessException e2) {
+        } catch (EmptyResultDataAccessException | ParseException e) {
             // ignore, this job is a ScheduledOneTimeJob
         }
+        
+        System.out.println(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(state));
 
         return messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(state);
     }
