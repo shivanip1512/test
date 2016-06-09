@@ -410,6 +410,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="ccutil.cpp">
     </ClCompile>
+    <ClCompile Include="Conductor.cpp" />
     <ClCompile Include="Controllable.cpp">
     </ClCompile>
     <ClCompile Include="ControlStrategy.cpp">
@@ -569,6 +570,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\cctypes.h" />
     <ClInclude Include="include\ccUnitTestUtil.h" />
     <ClInclude Include="include\ccutil.h" />
+    <ClInclude Include="include\Conductor.h" />
     <ClInclude Include="include\Controllable.h" />
     <ClInclude Include="include\ControlPolicy.h" />
     <ClInclude Include="include\ControlStrategy.h" />

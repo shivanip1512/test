@@ -293,6 +293,9 @@
     <ClCompile Include="..\COMMON\boost_assert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Conductor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CapControlDispatchConnection.h">
@@ -602,6 +605,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\DynamicData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Conductor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
