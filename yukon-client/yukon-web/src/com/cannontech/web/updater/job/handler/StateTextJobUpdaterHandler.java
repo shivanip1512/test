@@ -38,8 +38,6 @@ public class StateTextJobUpdaterHandler implements JobUpdaterHandler {
             // ignore, this job is a ScheduledOneTimeJob
         }
         
-        System.out.println(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(state));
-
         return messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(state);
     }
 
