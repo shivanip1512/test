@@ -134,56 +134,6 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 		}
 	return buffer;
 	}
-	
-	public void createSVGFormat(java.io.File file )
-	{
-		/**** not functional yet.
-		java.io.Writer writer = null;
-		try
-		{
-//			java.io.OutputStream out = new java.io.FileOutputStream(file);
-			com.jrefinery.chart.JFreeChart fChart = (com.jrefinery.chart.JFreeChart)exportObject;
-			com.jrefinery.chart.ChartPanel cp = new com.jrefinery.chart.ChartPanel(fChart);	
-	
-		  // Get a DOMImplementation
-	        org.w3c.dom.DOMImplementation domImpl =
-	            org.apache.batik.dom.GenericDOMImplementation.getDOMImplementation();
-	
-	        // Create an instance of org.w3c.dom.Document
-	        org.w3c.dom.Document document = domImpl.createDocument(null, "svg", null);
-	
-	        // Create an instance of the SVG Generator
-	        org.apache.batik.svggen.SVGGraphics2D svgGenerator = 
-	          new org.apache.batik.svggen.SVGGraphics2D(document);
-	
-	
-	        // Ask the test to render into the SVG Graphics2D implementation       
-	    	  cp.paint(svgGenerator);
-	
-	        // Finally, stream out SVG to the standard output 
-	        // is this a good encoding to use?
-	        writer = new java.io.FileWriter(file);
-	        svgGenerator.stream(writer, true);
-//	        out.flush();
-		}
-		catch (java.io.IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-		finally 
-		{
-			try
-			{
-				if( writer != null)
-					writer.close();
-			}
-			catch(java.io.IOException ioe)
-			{
-				ioe.printStackTrace();
-			}
-		}
-		*/
-	}
 
 	public char[] createHTMLFormat() 
 	{
@@ -327,9 +277,9 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 				Long ts1 = ts_KeyArray[x - 1]; // use x-1 to include the 0 position of the keyarray.
 				
 				// date data for exportArray
-				exportArray[x] = (String) (dateFormat.format(new java.util.Date(ts1.longValue())).toString());
+				exportArray[x] = (dateFormat.format(new java.util.Date(ts1.longValue())).toString());
 				// time data for exportArray			
-				exportArray[csvRowLength + x] = (String) (timeFormat_HH_mm.format(new java.util.Date(ts1.longValue())).toString());
+				exportArray[csvRowLength + x] = (timeFormat_HH_mm.format(new java.util.Date(ts1.longValue())).toString());
 			}
 
 			int validIndex = 0;
@@ -410,13 +360,8 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 				}
 			}
 
-			//  Formats not (fully) implemented yet.
-//			else if( extension.equalsIgnoreCase("gif"))
-//				createGIFFormat();
 			else if( extension.equalsIgnoreCase("pdf"))
 				createPDFFormat(file);
-//			else if( extension.equalsIgnoreCase("svg"))
-//				createSVGFormat();
 			else if( extension.equalsIgnoreCase("html"))
 			{
 				char data[] = createHTMLFormat();

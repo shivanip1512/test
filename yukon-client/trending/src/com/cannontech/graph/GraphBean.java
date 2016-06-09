@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.List;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.core.dao.PaoDao;
@@ -32,6 +32,7 @@ import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.util.SessionAttribute;
+import com.google.common.collect.Lists;
 
 public class GraphBean extends Graph {
     private String start = "";
@@ -280,8 +281,6 @@ public class GraphBean extends Graph {
             encodePng(out);
         } else if (format.equalsIgnoreCase("jpg")) {
             encodeJpeg(out);
-        } else if (format.equalsIgnoreCase("svg")) {
-            encodeSVG(out);
         } else {
             encodePng(out);
         }
@@ -327,7 +326,7 @@ public class GraphBean extends Graph {
             }
         }
 
-        java.util.List paObjects = new Vector(3);
+        List<LiteYukonPAObject> paObjects = Lists.newArrayList();
         String logDesc = "Forced alternate scan of deviceID(s): ";
         for (int i = 0; i < custDevices.length; i++) {
             LiteYukonPAObject litePAO =

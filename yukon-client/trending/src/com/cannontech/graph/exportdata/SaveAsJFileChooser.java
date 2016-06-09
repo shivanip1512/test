@@ -74,8 +74,6 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("csv", "Comma Separated"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("jpeg", "JPEG Image Format"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("png", "Portable Network Graphics"));			
-//			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("gif", "GIF Image Format"));
-//			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("svg", "Scalable Vector Graphics"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("pdf", "Portable Document Format"));
 		}
 	

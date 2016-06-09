@@ -28,7 +28,6 @@
                 <cm:dropdownOption key=".downloadPng" icon="icon-picture" classes="js-dl-png"/>
                 <cm:dropdownOption key=".downloadJpg" icon="icon-picture" classes="js-dl-jpg"/>
                 <cm:dropdownOption key=".downloadPdf" icon="icon-page-white-acrobat" classes="js-dl-pdf"/>
-                <cm:dropdownOption key=".downloadSvg" icon="icon-vector" classes="js-dl-svg"/>
                 <li class="divider">
                 <cm:dropdownOption key=".downloadCsv" icon="icon-page-white-excel" classes="js-dl-csv" data-trend-id="${trendId}"/>
             </cm:dropdown>

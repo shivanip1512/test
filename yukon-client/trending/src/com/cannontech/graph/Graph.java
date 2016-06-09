@@ -8,11 +8,8 @@ package com.cannontech.graph;
  * 
  * @author: Aaron Lauinger
  */
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,16 +19,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.joda.time.Instant;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -153,36 +145,6 @@ public class Graph implements GraphDefines {
     public void encodePng(OutputStream out) throws java.io.IOException {
         synchronized (Graph.class) {
             ChartUtilities.writeChartAsPNG(out, getFreeChart(), getWidth(), getHeight());
-        }
-    }
-
-    public void encodeSVG(OutputStream out) throws java.io.IOException {
-        synchronized (Graph.class) {
-            DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
-
-            // Create an instance of org.w3c.dom.Document
-            Document document = domImpl.createDocument(null, "svg", null);
-
-            // Create an instance of the SVG Generator
-            SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
-
-            getFreeChart().draw(svgGenerator, new Rectangle(getWidth(), getHeight()));
-
-            Element svgRoot = svgGenerator.getRoot();
-            if (getGenerationType() == GDEF_GENERATION) {
-                svgRoot.setAttributeNS(null, "gdefid",
-                    String.valueOf(getGraphDefinition().getGraphDefinition().getGraphDefinitionID()));
-            } else if (getGenerationType() == POINT_GENERATION) {
-                svgRoot.setAttributeNS(null, "pointid", String.valueOf(getPointIDs()[0])); // use the first
-                                                                                           // pointID as the
-                                                                                           // attribute value?
-                                                                                           // TODO
-            }
-
-            // Finally, stream out SVG to the standard output
-            // is this a good encoding to use?
-            Writer writer = new OutputStreamWriter(out, "ISO-8859-1");
-            svgGenerator.stream(svgRoot, writer, true);
         }
     }
 

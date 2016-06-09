@@ -1,7 +1,7 @@
 yukon.namespace('yukon.tools.trends');
 
 /**
- * Module to manage the trends page, uses highstock library to display svg trends
+ * Module to manage the trends page, uses highstock library to display trends
  * 
  * @require JQUERY
  * @require highstock 1.3.9
@@ -164,10 +164,6 @@ yukon.tools.trends = (function () {
             $(document).on('click', '.js-dl-pdf', function (ev) {
                 var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'application/pdf'});
-            });
-            $(document).on('click', '.js-dl-svg', function (ev) {
-                var chart = $('[data-trend]').highcharts();
-                chart.exportChart({type: 'image/svg+xml'});
             });
             $(document).on('click', '.js-dl-csv', function (ev) {
                 

@@ -2,12 +2,13 @@ package com.cannontech.servlet;
 
 /**
  * Parameters
+
  * 
  * start	- Start date string, (mm/dd/yy)
  * stop     - Stop date string, undefined (mm/dd/yy)
  * type 	- the type of report to create, value int from ReportTypes
  * period	- undefined
- * ext 		- gif | png | jpg | svg
+ * ext 		- gif | png | jpg 
  * page		- the page number (0 based) of the report to view/return (PNG)
  * fileName - the name of the file to download to
  * ACTION 	- the action to perform - DownloadReport | PagedReport | LoadParameters

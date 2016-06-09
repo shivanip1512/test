@@ -1,7 +1,7 @@
 package com.cannontech.servlet;
 
 /**
- * GraphGenerator generates a gif, png, svg, or jpg image of a graph based on the state
+ * GraphGenerator generates a gif, png, or jpg image of a graph based on the state
  * of an instance of com.cannontech.graph.GraphBean stored in the session.
  *
  * If an instance of GraphBean isn't found, one is created and placed in the session.
@@ -20,7 +20,7 @@ package com.cannontech.servlet;
  * period	- See com.cannontech.util.ServletUtil for valid period strings
  * view		- See com.cannontech.graph.model.TrendModelType for valid view strings
  * option	- ?See com.cannontech.graph.model.TrendModelType for valid option masks(?)
- * format	- gif | png | jpg | svg
+ * format	- gif | png | jpg 
  * dtFormat - overrides the date format, see java.text.SimpleDateFormat
  * 				Default is MM:dd:yyyy:HH:mm:ss
  * width	- Width of the generated graph
@@ -30,7 +30,7 @@ package com.cannontech.servlet;
  * @author: Stacey Nebben
  */
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +40,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.util.SessionAttribute;
+import com.google.common.collect.Lists;
 
 public class GraphGenerator extends javax.servlet.http.HttpServlet {
 		
@@ -78,20 +79,20 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 		if( param != null)
 		{
 			int []pointIDs = null;
-			Vector ptIdsVec = new Vector();
+			List<Integer> ptIdsList = Lists.newArrayList();
 			int startIndex = 0;
 			int endIndex = param.indexOf(',');
 			while( startIndex < endIndex )
 			{
-				ptIdsVec.add(Integer.valueOf(param.substring(startIndex, endIndex).trim()));
+			    ptIdsList.add(Integer.valueOf(param.substring(startIndex, endIndex).trim()));
 				startIndex = endIndex+1;
 				endIndex = param.indexOf(',', startIndex); 
 			}
-			ptIdsVec.add(Integer.valueOf(param.substring(startIndex).trim()));
+			ptIdsList.add(Integer.valueOf(param.substring(startIndex).trim()));
 
-			pointIDs = new int[ptIdsVec.size()];
-			for (int i = 0; i < ptIdsVec.size(); i++)
-				pointIDs[i] = ((Integer)ptIdsVec.get(i)).intValue();
+			pointIDs = new int[ptIdsList.size()];
+			for (int i = 0; i < ptIdsList.size(); i++)
+				pointIDs[i] = ptIdsList.get(i).intValue();
 
 			localBean.setPointIDs(pointIDs);
 		}

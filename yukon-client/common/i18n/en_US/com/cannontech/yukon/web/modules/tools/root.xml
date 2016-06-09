@@ -10,7 +10,6 @@
     <entry key="yukon.web.modules.tools.downloadPng">Download PNG</entry>
     <entry key="yukon.web.modules.tools.downloadJpg">Download JPG</entry>
     <entry key="yukon.web.modules.tools.downloadPdf">Download PDF</entry>
-    <entry key="yukon.web.modules.tools.downloadSvg">Download SVG</entry>
     <entry key="yukon.web.modules.tools.downloadCsv">Download CSV</entry>
     
     <entry key="yukon.web.modules.tools.bulk.disconnect.result.pageName">Connect/Disconnect Results</entry>
