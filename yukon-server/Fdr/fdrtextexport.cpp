@@ -295,15 +295,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
         // if status is ok, we were able to read the database at least
         if ( pointList->loadPointList())
         {
-            /**************************************
-            * seeing occasional problems where we get empty data sets back
-            * and there should be info in them,  we're checking this to see if
-            * is reasonable if the list may now be empty
-            * the 2 entry thing is completly arbitrary
-            ***************************************
-            */
-            if (((pointList->entries() == 0) && (getReceiveFromList().getPointList()->entries() <= 2)) ||
-                (pointList->entries() > 0))
+            if (pointList->entries() > 0)
             {
 
                 // get iterator on send list
@@ -349,7 +341,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
             }
             else
             {
-                CTILOG_ERROR(dout, "Could not load receive points for "<< getInterfaceName() <<" : Empty data set returned");
+                CTILOG_WARN(dout, "Could not load receive points for "<< getInterfaceName() <<" : Empty data set returned");
                 successful = false;
             }
         }

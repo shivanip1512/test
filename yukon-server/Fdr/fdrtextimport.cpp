@@ -971,7 +971,7 @@ std::list<string> CtiFDR_TextImport::parseFiles()
         strm->open( (*itr).c_str(), std::fstream::in );
         if( !(*strm).is_open() )
         {
-            CTILOG_ERROR(dout, "Unable to open file: "<< (*itr));
+            CTILOG_WARN(dout, "Unable to open file: "<< (*itr));
             delete strm;
         }else
         {
