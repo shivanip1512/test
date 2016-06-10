@@ -59,6 +59,8 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
             }
         }
 
+        YukonValidationUtils.checkExceedsMaxLength(errors, "description", regulator.getDescription(), 60);
+
         LightDeviceConfiguration config = new LightDeviceConfiguration(regulator.getConfigId(), null, null);
         if (!deviceConfigurationDao.isTypeSupportedByConfiguration(config, regulator.getType())) {
             errors.rejectValue("configId", basekey + "invalidConfig");

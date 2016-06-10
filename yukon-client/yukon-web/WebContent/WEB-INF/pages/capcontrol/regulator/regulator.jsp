@@ -85,8 +85,8 @@
                         <tags:input path="name" maxlength="60"/>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey=".description">
-                        <tags:input path="description"/>
+                    <tags:nameValue2 nameKey=".description" valueClass="wbba">
+                        <tags:input path="description" maxlength="60"/>
                     </tags:nameValue2>
                     
                     <c:if test="${empty zone}">
