@@ -298,14 +298,14 @@
     <entry key="yukon.web.modules.support.systemHealth.serverBrokerStatistics.helpText">
         <![CDATA[
             <h3>Queues</h3>
-            Queues handle messages between Yukon and Network Manager that contain information for device creation, device editing, or data archival.
+            Queues handle messages between Service Manager and Network Manager that contain information for device creation, device editing, or data archival.
             <ul>
-                <li><b>RFN Meter Archive Request:</b> Meter data to be archived, sent from Network Manager to Yukon.</li>
-                <li><b>RFN LCR Archive Request:</b> LCR data to be archived, sent from Network Manager to Yukon.</li>
-                <li><b>Gateway Archive Request:</b> Initiates creation of an RF Gateway device, sent from Network Manager to Yukon.</li>
-                <li><b>RF DA Archive Request:</b> Initiates creation of an RF DA device, sent from Network Manager to Yukon.</li>
-                <li><b>Gateway Data Request:</b> Request for data about an RF Gateway, sent from Yukon to Network Manager.</li>
-                <li><b>Gateway Data Response:</b> RF Gateway data, sent from Network Manager to Yukon.</li>
+                <li><b>RFN Meter Archive Request:</b> Meter data to be archived, sent from Network Manager to Service Manager.</li>
+                <li><b>RFN LCR Archive Request:</b> LCR data to be archived, sent from Network Manager to Service Manager.</li>
+                <li><b>Gateway Archive Request:</b> Initiates creation of an RF Gateway device, sent from Network Manager to Service Manager.</li>
+                <li><b>RF DA Archive Request:</b> Initiates creation of an RF DA device, sent from Network Manager to Service Manager.</li>
+                <li><b>Gateway Data Request:</b> Request for data about an RF Gateway, sent from Service Manager to Network Manager.</li>
+                <li><b>Gateway Data Response:</b> RF Gateway data, sent from Network Manager to Service Manager.</li>
             </ul>
             
             <h3>Metrics</h3>
