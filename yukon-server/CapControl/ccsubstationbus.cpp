@@ -48,13 +48,10 @@ DEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
-    :   Controllable( strategyManager ),
+    :   Conductor( strategyManager ),
         _parentId( 0 ),
-        _currentvarloadpointid( 0 ),
         _currentvarloadpointvalue( 0 ),
-        _currentwattloadpointid( 0 ),
         _currentwattloadpointvalue( 0 ),
-        _currentvoltloadpointid( 0 ),
         _currentvoltloadpointvalue( 0 ),
         _altDualSubId( 0 ),
         _altSubControlValue( 0 ),
@@ -63,7 +60,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _primaryBusFlag( false ),
         _dualBusEnable( false ),
         _eventSeq( 0 ),
-        _multiMonitorFlag( false ),
         _decimalplaces( 0 ),
         _newpointdatareceivedflag( false ),
         _busupdatedflag( false ),
@@ -120,10 +116,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _iWCount( 0 ),
         _iVControl( 0 ),
         _iWControl( 0 ),
-        _usePhaseData( false ),
-        _phaseBid( 0 ),
-        _phaseCid( 0 ),
-        _totalizedControlFlag( false ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
@@ -149,13 +141,10 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
 }
 
 CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * strategyManager )
-    :   Controllable( rdr, strategyManager ),
+    :   Conductor( rdr, strategyManager ),
         _parentId( 0 ),
-        _currentvarloadpointid( 0 ),
         _currentvarloadpointvalue( 0 ),
-        _currentwattloadpointid( 0 ),
         _currentwattloadpointvalue( 0 ),
-        _currentvoltloadpointid( 0 ),
         _currentvoltloadpointvalue( 0 ),
         _altDualSubId( 0 ),
         _altSubControlValue( 0 ),
@@ -164,7 +153,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _primaryBusFlag( false ),
         _dualBusEnable( false ),
         _eventSeq( 0 ),
-        _multiMonitorFlag( false ),
         _decimalplaces( 0 ),
         _newpointdatareceivedflag( false ),
         _busupdatedflag( false ),
@@ -221,10 +209,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _iWCount( 0 ),
         _iVControl( 0 ),
         _iWControl( 0 ),
-        _usePhaseData( false ),
-        _phaseBid( 0 ),
-        _phaseCid( 0 ),
-        _totalizedControlFlag( false ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
@@ -381,35 +365,6 @@ double CtiCCSubstationBus::getIWControl() const
 }
 
 /*---------------------------------------------------------------------------
-    get UsePhaseData flag
-
-    Returns the usePhaseData flag of the substation
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBus::getUsePhaseData() const
-{
-    return _usePhaseData;
-}
-
-/*---------------------------------------------------------------------------
-    getPhaseBid
-
-    Returns the getPhaseB pointid of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getPhaseBId() const
-{
-    return _phaseBid;
-}
-/*---------------------------------------------------------------------------
-    getPhaseCid
-
-    Returns the getPhaseC pointid of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getPhaseCId() const
-{
-    return _phaseCid;
-}
-
-/*---------------------------------------------------------------------------
     getTotalizedControlFlag
 
     Returns the TotalizedControlFlag of the substation
@@ -420,7 +375,7 @@ bool CtiCCSubstationBus::getTotalizedControlFlag() const
     {
         return true;
     }
-    return _totalizedControlFlag;
+    return Conductor::getTotalizedControlFlag();
 }
 
 /*---------------------------------------------------------------------------
@@ -480,16 +435,6 @@ double CtiCCSubstationBus::getPhaseBValueBeforeControl() const
 double CtiCCSubstationBus::getPhaseCValueBeforeControl() const
 {
     return _phaseCvalueBeforeControl;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentVarLoadPointId
-
-    Returns the current var load point id of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getCurrentVarLoadPointId() const
-{
-    return _currentvarloadpointid;
 }
 
 /**
@@ -558,15 +503,6 @@ double CtiCCSubstationBus::getTotalizedVarLoadPointValue() const
     }
     return getRawCurrentVarLoadPointValue();
 }
-/*---------------------------------------------------------------------------
-    getCurrentWattLoadPointId
-
-    Returns the current watt load point id of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getCurrentWattLoadPointId() const
-{
-    return _currentwattloadpointid;
-}
 
 /*---------------------------------------------------------------------------
     getCurrentWattLoadPointValue
@@ -593,16 +529,6 @@ double CtiCCSubstationBus::getRawCurrentWattLoadPointValue() const
 }
 
 /*---------------------------------------------------------------------------
-    getCurrentVoltLoadPointId
-
-    Returns the current volt load point id of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getCurrentVoltLoadPointId() const
-{
-    return _currentvoltloadpointid;
-}
-
-/*---------------------------------------------------------------------------
     getCurrentVoltLoadPointValue
 
     Returns the current volt load point value of the substation
@@ -617,17 +543,6 @@ double CtiCCSubstationBus::getCurrentVoltLoadPointValue() const
         }
     }
     return _currentvoltloadpointvalue;
-}
-
-
-/*---------------------------------------------------------------------------
-    getMapLocationId
-
-    Returns the map location id of the substation
----------------------------------------------------------------------------*/
-const string& CtiCCSubstationBus::getMapLocationId() const
-{
-    return _maplocationid;
 }
 
 /*---------------------------------------------------------------------------
@@ -1113,11 +1028,6 @@ bool CtiCCSubstationBus::getReEnableBusFlag() const
     return _reEnableBusFlag;
 }
 
-bool CtiCCSubstationBus::getMultiMonitorFlag() const
-{
-    return _multiMonitorFlag;
-}
-
 /*---------------------------------------------------------------------------
 
  Added for serialization
@@ -1298,44 +1208,6 @@ void CtiCCSubstationBus::setIWControl(double value)
 {
     _iWControl = value;
 }
-/*---------------------------------------------------------------------------
-    setUsePhaseData flag
-
-    Sets the UsePhaseData flag  of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setUsePhaseData(bool flag)
-{
-    _usePhaseData = flag;
-}
-/*---------------------------------------------------------------------------
-    setPhaseBid
-
-    Sets the PhaseB pointid  of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setPhaseBId(long pointid)
-{
-    _phaseBid = pointid;
-}
-
-/*---------------------------------------------------------------------------
-    setPhaseCid
-
-    Sets the PhaseC pointid  of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setPhaseCId(long pointid)
-{
-    _phaseCid = pointid;
-}
-/*---------------------------------------------------------------------------
-    setTotalizedControlFlag
-
-    Sets the TotalizedControlFlag  of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setTotalizedControlFlag(bool flag)
-{
-    _totalizedControlFlag = flag;
-}
-
 
 /*---------------------------------------------------------------------------
     setPhaseAValue
@@ -1429,16 +1301,6 @@ void CtiCCSubstationBus::setPhaseCValueBeforeControl(double value)
 }
 
 /*---------------------------------------------------------------------------
-    setCurrentVarLoadPointId
-
-    Sets the current var load point id of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setCurrentVarLoadPointId(long currentvarid)
-{
-    _currentvarloadpointid = currentvarid;
-}
-
-/*---------------------------------------------------------------------------
     setCurrentVarLoadPointValue
 
     Sets the current var load point value of the substation
@@ -1458,16 +1320,6 @@ void CtiCCSubstationBus::setCurrentVarLoadPointValue(double value, CtiTime times
 }
 
 /*---------------------------------------------------------------------------
-    setCurrentWattLoadPointId
-
-    Sets the current watt load point id of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setCurrentWattLoadPointId(long currentwattid)
-{
-    _currentwattloadpointid = currentwattid;
-}
-
-/*---------------------------------------------------------------------------
     setCurrentWattLoadPointValue
 
     Sets the current watt load point value of the substation
@@ -1475,15 +1327,6 @@ void CtiCCSubstationBus::setCurrentWattLoadPointId(long currentwattid)
 void CtiCCSubstationBus::setCurrentWattLoadPointValue(double currentwattval)
 {
     _dirty |= setVariableIfDifferent(_currentwattloadpointvalue, currentwattval);
-}
-/*---------------------------------------------------------------------------
-    setCurrentVoltLoadPointId
-
-    Sets the current volt load point id of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setCurrentVoltLoadPointId(long currentvoltid)
-{
-    _currentvoltloadpointid = currentvoltid;
 }
 
 /*---------------------------------------------------------------------------
@@ -1495,18 +1338,6 @@ void CtiCCSubstationBus::setCurrentVoltLoadPointValue(double currentvoltval)
 {
     _dirty |= setVariableIfDifferent(_currentvoltloadpointvalue, currentvoltval);
 }
-
-
-/*---------------------------------------------------------------------------
-    setMapLocationId
-
-    Sets the map location id of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setMapLocationId(const string& maplocation)
-{
-    _maplocationid = maplocation;
-}
-
 
 /*---------------------------------------------------------------------------
     setSolution
@@ -1952,7 +1783,7 @@ void CtiCCSubstationBus::setPowerFactorValue(double pfval)
 
 void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
 {
-    if (_currentvarloadpointid == 0 || _currentwattloadpointid == 0)
+    if ( getCurrentVarLoadPointId() == 0 || getCurrentWattLoadPointId() == 0 )
     {
         //sum the var/watt values from the feeders and set as the pf for the substation.
         long varTotal = 0;
@@ -2072,11 +1903,6 @@ void CtiCCSubstationBus::setEventSequence(long eventSeq)
 void CtiCCSubstationBus::setReEnableBusFlag(bool flag)
 {
     _dirty |= setVariableIfDifferent(_reEnableBusFlag, flag);
-}
-
-void CtiCCSubstationBus::setMultiMonitorFlag(bool flag)
-{
-    _dirty |= setVariableIfDifferent(_multiMonitorFlag, flag);
 }
 
 void CtiCCSubstationBus::reOrderFeederDisplayOrders()
@@ -8623,29 +8449,6 @@ void CtiCCSubstationBus::restore( Cti::RowReader & rdr )
 {
     std::string flag;
 
-    rdr["CurrentVarLoadPointID"]  >> _currentvarloadpointid;
-
-    if ( _currentvarloadpointid > 0 )
-    {
-        addPointId( _currentvarloadpointid );
-    }
-
-    rdr["CurrentWattLoadPointID"] >> _currentwattloadpointid;
-
-    if ( _currentwattloadpointid > 0 )
-    {
-        addPointId( _currentwattloadpointid );
-    }
-
-    rdr["MapLocationID"]          >> _maplocationid;
-
-    rdr["CurrentVoltLoadPointID"] >> _currentvoltloadpointid;
-
-    if ( _currentvoltloadpointid > 0 )
-    {
-        addPointId( _currentvoltloadpointid );
-    }
-
     rdr["AltSubID"]               >> _altDualSubId;
 
     rdr["SwitchPointID"]          >> _switchOverPointId;
@@ -8659,33 +8462,6 @@ void CtiCCSubstationBus::restore( Cti::RowReader & rdr )
 
     _dualBusEnable                = deserializeFlag( flag );
 
-    rdr["MultiMonitorControl"]    >> flag;
-
-    _multiMonitorFlag             = deserializeFlag( flag );
-
-    rdr["usephasedata"]           >> flag;
-
-    _usePhaseData                 = deserializeFlag( flag );
-
-    rdr["phaseb"]                 >> _phaseBid;
-    rdr["phasec"]                 >> _phaseCid;
-
-    if ( _usePhaseData )
-    {
-        if ( _phaseBid > 0 )
-        {
-            addPointId( _phaseBid );
-        }
-
-        if ( _phaseCid > 0 )
-        {
-            addPointId( _phaseCid );
-        }
-    }
-
-    rdr["ControlFlag"]            >> flag;
-
-    _totalizedControlFlag         = deserializeFlag( flag );
 
     rdr["VoltReductionPointId"]   >> _voltReductionControlId;
 

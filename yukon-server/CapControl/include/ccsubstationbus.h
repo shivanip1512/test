@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Controllable.h"
+#include "Conductor.h"
 #include "regression.h"
 #include "ccfeeder.h"
 #include "TimeOfDayStrategy.h"
@@ -30,7 +30,7 @@ enum CtiCCMultiBusState
 };
 
 
-class CtiCCSubstationBus : public Controllable
+class CtiCCSubstationBus : public Conductor
 {
 public:
     DECLARE_COLLECTABLE( CtiCCSubstationBus );
@@ -43,16 +43,12 @@ public:
     long getParentId() const;
 
     Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
-    long getCurrentVarLoadPointId() const;
     double getCurrentVarLoadPointValue() const;
     double getRawCurrentVarLoadPointValue() const;
     double getTotalizedVarLoadPointValue() const;
-    long getCurrentWattLoadPointId() const;
     double getCurrentWattLoadPointValue() const;
     double getRawCurrentWattLoadPointValue() const;
-    long getCurrentVoltLoadPointId() const;
     double getCurrentVoltLoadPointValue() const;
-    const std::string& getMapLocationId() const;
     long getDecimalPlaces() const;
     const CtiTime& getNextCheckTime() const;
     bool getNewPointDataReceivedFlag() const;
@@ -96,7 +92,6 @@ public:
     bool getDualBusEnable() const;
     long getEventSequence() const;
     bool getReEnableBusFlag() const;
-    bool getMultiMonitorFlag() const;
     bool getWaitForReCloseDelayFlag() const;
     bool getWaitToFinishRegularControlFlag() const;
     bool getMaxDailyOpsHitFlag() const;
@@ -119,10 +114,9 @@ public:
     long getIWCount() const;
     double getIVControl() const;
     double getIWControl() const;
-    bool getUsePhaseData() const;
-    long getPhaseBId() const;
-    long getPhaseCId() const;
+
     bool getTotalizedControlFlag() const;
+
     double getPhaseAValue() const;
     double getPhaseBValue() const;
     double getPhaseCValue() const;
@@ -147,13 +141,9 @@ public:
 
     long getControlSendRetries() const;
 
-    void setCurrentVarLoadPointId(long currentvarid);
     void setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp);
-    void setCurrentWattLoadPointId(long currentwattid);
     void setCurrentWattLoadPointValue(double currentwattval);
-    void setCurrentVoltLoadPointId(long currentvoltid);
     void setCurrentVoltLoadPointValue(double currentvoltval);
-    void setMapLocationId(const std::string& maplocation);
     void setDecimalPlaces(long places);
     void figureNextCheckTime();
     void setNewPointDataReceivedFlag(bool newpointdatareceived);
@@ -193,7 +183,6 @@ public:
     void setDualBusEnable(bool flag);
     void setEventSequence(long eventSeq);
     void setReEnableBusFlag(bool flag);
-    void setMultiMonitorFlag(bool flag);
     void setWaitForReCloseDelayFlag(bool flag);
     void setWaitToFinishRegularControlFlag(bool flag);
     void setMaxDailyOpsHitFlag(bool flag);
@@ -217,10 +206,6 @@ public:
     void setIWCount(long value);
     void setIVControl(double value);
     void setIWControl(double value);
-    void setUsePhaseData(bool flag);
-    void setPhaseBId(long pointid);
-    void setPhaseCId(long pointid);
-    void setTotalizedControlFlag(bool flag);
     void setPhaseAValue(double value, CtiTime time);
     void setPhaseBValue(double value, CtiTime time);
     void setPhaseCValue(double value, CtiTime time);
@@ -371,11 +356,8 @@ protected:
 private:
 
     long _parentId;
-    long _currentvarloadpointid;
     double _currentvarloadpointvalue;
-    long _currentwattloadpointid;
     double _currentwattloadpointvalue;
-    long _currentvoltloadpointid;
     double _currentvoltloadpointvalue;
     long   _altDualSubId;
     double _altSubControlValue;
@@ -384,8 +366,6 @@ private:
     bool   _primaryBusFlag;
     bool   _dualBusEnable;
     long   _eventSeq;
-    bool   _multiMonitorFlag;
-    std::string _maplocationid;
 
     long _decimalplaces;
     CtiTime _nextchecktime;
@@ -460,11 +440,6 @@ private:
 
     double _iVControl;
     double _iWControl;
-
-    bool _usePhaseData;
-    long _phaseBid;
-    long _phaseCid;
-    bool _totalizedControlFlag;
 
     double _phaseAvalue;
     double _phaseBvalue;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Controllable.h"
+#include "Conductor.h"
 #include "ccOriginalParent.h"
 #include "regression.h"
 #include "cccapbank.h"
@@ -29,7 +29,7 @@ typedef codeproject::sorted_vector<CtiCCCapBankPtr,false,CtiCCCapBank_lessClose>
 typedef codeproject::sorted_vector<CtiCCCapBankPtr,false,CtiCCCapBank_lessTrip> CtiCCCapBank_STripVector;
 
 
-class CtiCCFeeder : public Controllable
+class CtiCCFeeder : public Conductor
 {
 public:
     DECLARE_COLLECTABLE( CtiCCFeeder );
@@ -41,13 +41,9 @@ public:
 
     long getParentId() const;
 
-    long getCurrentVarLoadPointId() const;
     double getCurrentVarLoadPointValue() const;
-    long getCurrentWattLoadPointId() const;
     double getCurrentWattLoadPointValue() const;
-    long getCurrentVoltLoadPointId() const;
     double getCurrentVoltLoadPointValue() const;
-    const std::string& getMapLocationId() const;
     float getDisplayOrder() const;
     bool getNewPointDataReceivedFlag() const;
     const CtiTime& getLastCurrentVarPointUpdateTime() const;
@@ -76,7 +72,6 @@ public:
     bool getPeakTimeFlag() const;
     bool getPorterRetFailFlag() const;
     long getEventSequence() const;
-    bool getMultiMonitorFlag() const;
     bool getVerificationFlag() const;
     bool getPerformingVerificationFlag() const;
     bool getVerificationDoneFlag() const;
@@ -99,11 +94,7 @@ public:
     long getIWCount() const;
     double getIVControl() const;
     double getIWControl() const;
-    bool getUsePhaseData() const;
-    long getPhaseBId() const;
-    long getPhaseCId() const;
     Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
-    bool getTotalizedControlFlag() const;
     double getPhaseAValue() const;
     double getPhaseBValue() const;
     double getPhaseCValue() const;
@@ -126,13 +117,9 @@ public:
     void deleteCCCapBank(long capBankId);
 
     void setParentId(long parentId);
-    void setCurrentVarLoadPointId(long currentvarid);
     void setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp);
-    void setCurrentWattLoadPointId(long currentwattid);
     void setCurrentWattLoadPointValue(double currentwattval);
-    void setCurrentVoltLoadPointId(long currentvoltid);
     void setCurrentVoltLoadPointValue(double currentvoltval);
-    void setMapLocationId(const std::string& maplocation);
     void setDisplayOrder(float order);
     void setNewPointDataReceivedFlag(bool newpointdatareceived);
     void setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
@@ -162,7 +149,6 @@ public:
     void setPeakTimeFlag(bool peakTimeFlag);
     void setPorterRetFailFlag(bool flag);
     void setEventSequence(long eventSeq);
-    void setMultiMonitorFlag(bool flag);
     void setVerificationFlag(bool verificationFlag);
     void setPerformingVerificationFlag(bool performingVerificationFlag);
     void setVerificationDoneFlag(bool verificationDoneFlag);
@@ -185,13 +171,9 @@ public:
     void setIWCount(long value);
     void setIVControl(double value);
     void setIWControl(double value);
-    void setUsePhaseData(bool flag);
-    void setPhaseBId(long pointid);
-    void setPhaseCId(long pointid);
     void setPhaseAValue(double value, CtiTime timestamp);
     void setPhaseBValue(double value, CtiTime timestamp);
     void setPhaseCValue(double value, CtiTime timestamp);
-    void setTotalizedControlFlag(bool flag);
     void setPhaseAValueBeforeControl(double value);
     void setPhaseBValueBeforeControl(double value);
     void setPhaseCValueBeforeControl(double value);
@@ -324,14 +306,9 @@ protected:
 private:
 
     long _parentId; //subBusId
-    bool _multiMonitorFlag;
 
-    std::string _maplocationid;
-    long _currentvarloadpointid;
     double _currentvarloadpointvalue;
-    long _currentwattloadpointid;
     double _currentwattloadpointvalue;
-    long _currentvoltloadpointid;
     double _currentvoltloadpointvalue;
 
     float _displayorder;
@@ -394,11 +371,6 @@ private:
 
     double _iVControl;
     double _iWControl;
-
-    bool _usePhaseData;
-    long _phaseBid;
-    long _phaseCid;
-    bool _totalizedControlFlag;
 
     double _phaseAvalue;
     double _phaseBvalue;

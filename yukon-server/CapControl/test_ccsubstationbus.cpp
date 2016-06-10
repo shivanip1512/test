@@ -1341,7 +1341,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
     {
         std::vector<long>   expected
         {
-            101, 102, 103, 105, 106, 107, 108, 109
+            101, 102, 103, 106, 107, 105, 108, 109
         };
 
         BOOST_CHECK_EQUAL_RANGES( expected, *busses[ 4 ].getPointIds() );

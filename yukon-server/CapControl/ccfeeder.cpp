@@ -51,14 +51,10 @@ DEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
-    :   Controllable( strategyManager ),
+    :   Conductor( strategyManager ),
         _parentId( 0 ),
-        _multiMonitorFlag( false ),
-        _currentvarloadpointid( 0 ),
         _currentvarloadpointvalue( 0 ),
-        _currentwattloadpointid( 0 ),
         _currentwattloadpointvalue( 0 ),
-        _currentvoltloadpointid( 0 ),
         _currentvoltloadpointvalue( 0 ),
         _displayorder( 0 ),
         _newpointdatareceivedflag( false ),
@@ -103,10 +99,6 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _iWCount( 0 ),
         _iVControl( 0 ),
         _iWControl( 0 ),
-        _usePhaseData( 0 ),
-        _phaseBid( 0 ),
-        _phaseCid( 0 ),
-        _totalizedControlFlag( false ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
@@ -132,14 +124,10 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
 }
 
 CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
-    :   Controllable( rdr, strategyManager ),
+    :   Conductor( rdr, strategyManager ),
         _parentId( 0 ),
-        _multiMonitorFlag( false ),
-        _currentvarloadpointid( 0 ),
         _currentvarloadpointvalue( 0 ),
-        _currentwattloadpointid( 0 ),
         _currentwattloadpointvalue( 0 ),
-        _currentvoltloadpointid( 0 ),
         _currentvoltloadpointvalue( 0 ),
         _displayorder( 0 ),
         _newpointdatareceivedflag( false ),
@@ -184,10 +172,6 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _iWCount( 0 ),
         _iVControl( 0 ),
         _iWControl( 0 ),
-        _usePhaseData( 0 ),
-        _phaseBid( 0 ),
-        _phaseCid( 0 ),
-        _totalizedControlFlag( false ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
@@ -269,16 +253,6 @@ long CtiCCFeeder::getParentId() const
 
 
 /*---------------------------------------------------------------------------
-    getCurrentVarLoadPointId
-
-    Returns the current var load point id of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getCurrentVarLoadPointId() const
-{
-    return _currentvarloadpointid;
-}
-
-/*---------------------------------------------------------------------------
     getCurrentVarLoadPointValue
 
     Returns the current var load point value of the feeder
@@ -286,16 +260,6 @@ long CtiCCFeeder::getCurrentVarLoadPointId() const
 double CtiCCFeeder::getCurrentVarLoadPointValue() const
 {
     return _currentvarloadpointvalue;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentWattLoadPointId
-
-    Returns the current watt load point id of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getCurrentWattLoadPointId() const
-{
-    return _currentwattloadpointid;
 }
 
 /*---------------------------------------------------------------------------
@@ -307,15 +271,6 @@ double CtiCCFeeder::getCurrentWattLoadPointValue() const
 {
     return _currentwattloadpointvalue;
 }
-/*---------------------------------------------------------------------------
-    getCurrentVoltLoadPointId
-
-    Returns the current volt load point id of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getCurrentVoltLoadPointId() const
-{
-    return _currentvoltloadpointid;
-}
 
 /*---------------------------------------------------------------------------
     getCurrentVoltLoadPointValue
@@ -325,17 +280,6 @@ long CtiCCFeeder::getCurrentVoltLoadPointId() const
 double CtiCCFeeder::getCurrentVoltLoadPointValue() const
 {
     return _currentvoltloadpointvalue;
-}
-
-
-/*---------------------------------------------------------------------------
-    getMapLocationId
-
-    Returns the map location id of the feeder
----------------------------------------------------------------------------*/
-const string& CtiCCFeeder::getMapLocationId() const
-{
-    return _maplocationid;
 }
 
 /*---------------------------------------------------------------------------
@@ -408,34 +352,6 @@ double CtiCCFeeder::getIWControl() const
 {
     return _iWControl;
 }
-/*---------------------------------------------------------------------------
-    get UsePhaseData flag
-
-    Returns the usePhaseData flag of the feeder
----------------------------------------------------------------------------*/
-bool CtiCCFeeder::getUsePhaseData() const
-{
-    return _usePhaseData;
-}
-
-/*---------------------------------------------------------------------------
-    getPhaseBid
-
-    Returns the getPhaseB pointid of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getPhaseBId() const
-{
-    return _phaseBid;
-}
-/*---------------------------------------------------------------------------
-    getPhaseCid
-
-    Returns the getPhaseC pointid of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getPhaseCId() const
-{
-    return _phaseCid;
-}
 
 /**
  * Returns var point id if totalized or the point ids to phase
@@ -457,17 +373,6 @@ Cti::CapControl::PointIdVector CtiCCFeeder::getCurrentVarLoadPoints() const
 
     return points;
 }
-
-/*---------------------------------------------------------------------------
-    getTotalizedControlFlag
-
-    Returns the getPhaseC pointid of the feeder
----------------------------------------------------------------------------*/
-bool CtiCCFeeder::getTotalizedControlFlag() const
-{
-    return _totalizedControlFlag;
-}
-
 
 /*---------------------------------------------------------------------------
     getPhaseAValue
@@ -819,12 +724,6 @@ long CtiCCFeeder::getEventSequence() const
     return _eventSeq;
 }
 
-
-bool CtiCCFeeder::getMultiMonitorFlag() const
-{
-    return _multiMonitorFlag;
-}
-
 /*---------------------------------------------------------------------------
     getCCCapBanks
 
@@ -900,17 +799,6 @@ void CtiCCFeeder::setParentId(long parentId)
     _parentId = parentId;
 }
 
-
-/*---------------------------------------------------------------------------
-    setCurrentVarLoadPointId
-
-    Sets the current var load point id of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentVarLoadPointId(long currentvarid)
-{
-    _currentvarloadpointid = currentvarid;
-}
-
 /*---------------------------------------------------------------------------
     setCurrentVarLoadPointValue
 
@@ -930,16 +818,6 @@ void CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiTime time
 }
 
 /*---------------------------------------------------------------------------
-    setCurrentWattLoadPointId
-
-    Sets the current watt load point id of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentWattLoadPointId(long currentwattid)
-{
-    _currentwattloadpointid = currentwattid;
-}
-
-/*---------------------------------------------------------------------------
     setCurrentWattLoadPointValue
 
     Sets the current watt load point value of the feeder
@@ -947,15 +825,6 @@ void CtiCCFeeder::setCurrentWattLoadPointId(long currentwattid)
 void CtiCCFeeder::setCurrentWattLoadPointValue(double currentwattval)
 {
     _dirty |= setVariableIfDifferent(_currentwattloadpointvalue, currentwattval);
-}
-/*---------------------------------------------------------------------------
-    setCurrentVoltLoadPointId
-
-    Sets the current volt load point id of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentVoltLoadPointId(long currentvoltid)
-{
-    _currentvoltloadpointid = currentvoltid;
 }
 
 /*---------------------------------------------------------------------------
@@ -966,16 +835,6 @@ void CtiCCFeeder::setCurrentVoltLoadPointId(long currentvoltid)
 void CtiCCFeeder::setCurrentVoltLoadPointValue(double currentvoltval)
 {
     _dirty |= setVariableIfDifferent(_currentvoltloadpointvalue, currentvoltval);
-}
-
-/*---------------------------------------------------------------------------
-    setMapLocationId
-
-    Sets the map location id of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setMapLocationId(const string& maplocation)
-{
-    _maplocationid = maplocation;
 }
 
 /*---------------------------------------------------------------------------
@@ -1280,12 +1139,6 @@ void CtiCCFeeder::setEventSequence(long eventSeq)
 {
     _dirty |= setVariableIfDifferent(_eventSeq, eventSeq);
 }
-
-void CtiCCFeeder::setMultiMonitorFlag(bool flag)
-{
-    _dirty |= setVariableIfDifferent(_multiMonitorFlag, flag);
-}
-
 
 CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMultiMsg_vec& pointChanges, double leadLevel, double lagLevel, double currentVarValue,
                                                    bool checkLimits)
@@ -4787,46 +4640,6 @@ void CtiCCFeeder::setIWControl(double value)
 {
     _dirty |= setVariableIfDifferent(_iWControl, value);
 }
-/*---------------------------------------------------------------------------
-    setUsePhaseData flag
-
-    Sets the UsePhaseData flag  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setUsePhaseData(bool flag)
-{
-    _usePhaseData = flag;
-}
-/*---------------------------------------------------------------------------
-    setPhaseBid
-
-    Sets the PhaseB pointid  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPhaseBId(long pointid)
-{
-    _phaseBid = pointid;
-}
-
-/*---------------------------------------------------------------------------
-    setPhaseCid
-
-    Sets the PhaseC pointid  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPhaseCId(long pointid)
-{
-    _phaseCid = pointid;
-}
-
-
-/*---------------------------------------------------------------------------
-    setTotalizedControlFlag
-
-    Sets the TotalizedControlFlag of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setTotalizedControlFlag(bool flag)
-{
-    _totalizedControlFlag = flag;
-}
-
 
 /*---------------------------------------------------------------------------
     setPhaseAValue
@@ -5798,58 +5611,7 @@ CtiCCFeeder* CtiCCFeeder::replicate() const
 
 void CtiCCFeeder::restore(Cti::RowReader& rdr)
 {
-    std::string flag;
 
-    rdr["CurrentVarLoadPointID"]  >> _currentvarloadpointid;
-
-    if ( _currentvarloadpointid > 0 )
-    {
-        addPointId( _currentvarloadpointid );
-    }
-
-    rdr["CurrentWattLoadPointID"] >> _currentwattloadpointid;
-
-    if ( _currentwattloadpointid > 0 )
-    {
-        addPointId( _currentwattloadpointid );
-    }
-
-    rdr["MapLocationID"]          >> _maplocationid;
-
-    rdr["CurrentVoltLoadPointID"] >> _currentvoltloadpointid;
-
-    if ( _currentvoltloadpointid > 0 )
-    {
-        addPointId( _currentvoltloadpointid );
-    }
-
-    rdr["MultiMonitorControl"]    >> flag;
-
-    _multiMonitorFlag             = deserializeFlag( flag );
-
-    rdr["usephasedata"]           >> flag;
-
-    _usePhaseData                 = deserializeFlag( flag );
-
-    rdr["phaseb"]                 >> _phaseBid;
-    rdr["phasec"]                 >> _phaseCid;
-
-    if ( _usePhaseData )
-    {
-        if ( _phaseBid > 0 )
-        {
-            addPointId( _phaseBid );
-        }
-
-        if ( _phaseCid > 0 )
-        {
-            addPointId( _phaseCid );
-        }
-    }
-
-    rdr["ControlFlag"]            >> flag;
-
-    _totalizedControlFlag         = deserializeFlag( flag );
 }
 
 void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
