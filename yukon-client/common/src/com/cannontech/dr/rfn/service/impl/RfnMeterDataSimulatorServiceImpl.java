@@ -70,8 +70,8 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private final static int secondsPerYear = 31556926;
     private final static long epoch =
         (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005")) / 1000;
-
-    private static final int INTERVAL_HOURS = 1;
+    private static DateTime lastBillingGenerationTime = null;
+    private static final int INTERVAL_HOURS = 24;
 
     @Override
     @PostConstruct
@@ -194,12 +194,14 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         // NOTE the real device does midnight but does not follow DST, so this is compensating by
         // getting midnight in local time, then removing DST compensation by finding the active offset
         // and the normal offset and doing some awesome math.
-        DateTime billingGenerationTime = now.withTimeAtStartOfDay()
+        DateTime currentDateTime = now.withTimeAtStartOfDay()
                 .plusMillis(now.getZone().getOffset(now.withTimeAtStartOfDay()))
                 .minusMillis (now.getZone().getStandardOffset(now.withTimeAtStartOfDay().getMillis()));
-
-        if (now.minusHours(INTERVAL_HOURS).isBefore(billingGenerationTime)) {
-            createAndAddArchiveRequest(device, billingGenerationTime, RfnMeterReadingType.BILLING, now, requests);
+        if (null == lastBillingGenerationTime
+            || lastBillingGenerationTime.plusHours(INTERVAL_HOURS).isEqual(currentDateTime)) {
+            // Billing data point to be generated only once in a day, no matter whatever is the reporting interval 
+            lastBillingGenerationTime = currentDateTime;
+            createAndAddArchiveRequest(device, lastBillingGenerationTime, RfnMeterReadingType.BILLING, now, requests);
         }
 
         final ReportingInterval reportingIntervalEnum =
