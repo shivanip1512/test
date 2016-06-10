@@ -21,19 +21,6 @@ yukon.jobs = (function () {
                 return;
             }
             
-            $(document).on('yukon.job.cancel', function (ev) {
-                var jobId = $(ev.target).data('jobId');
-                ev.preventDefault();
-                //close the dialog
-                yukon.dialogConfirm.cancel();
-                //submit job cancellation request
-                $.ajax({
-                     url: yukon.url('/group/scheduledGroupRequestExecutionResults/cancelJob'),
-                     dataType: 'json',
-                     data: { 'jobId': jobId }
-                });
-            });
-            
             $(".js-schedule-toggle").click(function(e){                
                 var selection = $(this);
                 var jobId = selection.data('jobId');
@@ -45,7 +32,7 @@ yukon.jobs = (function () {
                 });
             });
             
-            $(".js-schedule-start").click(function(e){                
+            $(".js-schedule-start-now").click(function(e){                
                 var selection = $(this);
                 var jobId = selection.data('jobId');
                 //submit start request
@@ -56,7 +43,7 @@ yukon.jobs = (function () {
                 });
             });
             
-            $(document).on('yukon.schedule.cancel', function (ev) {
+            $(document).on('yukon:schedule:cancel', function (ev) {
                 var jobId = $(ev.target).data('jobId');
                 ev.preventDefault();
                 //close the dialog
@@ -71,7 +58,7 @@ yukon.jobs = (function () {
             
             $(document).on('yukon:schedule:start', function (ev) {
                 var jobId = $(ev.target).data('jobId');
-                //set future start
+                //set future start if date time was selected
                 var dateTimeVisible = $('#' + jobId + '-cron-exp-one-time').is(":visible"); 
                 var futureStart = dateTimeVisible ? true : false;
                 $('#' + jobId + '_future-start').val(futureStart);
@@ -87,28 +74,6 @@ yukon.jobs = (function () {
                      url: yukon.url('/group/scheduledGroupRequestExecution/startJob?' + $('#startScheduleForm').serialize()),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId} 
-                });
-            });
-            
-            $(".js-cancel").click(function(e){
-                var dialog = $(this).closest("#startScheduleOptions");
-                dialog.dialog('close');
-            });
-
-            $(document).on('change', '.js-toggle-job .checkbox-input', function() {
-                var checkbox = $(this);
-                var jobId = checkbox.data('jobId');
-                
-                $.ajax({
-                    url: yukon.url('/group/scheduledGroupRequestExecutionResults/toggleEnabled'),
-                    dataType: 'json',
-                    data: { 'jobId': jobId }
-                }).done(function (data, textStatus, jqXHR) {
-                    if (data.jobEnabled === false) {
-                        $(checkbox).closest('tr').addClass('subtle');
-                    } else {
-                        $(checkbox).closest('tr').removeClass('subtle');
-                    }
                 });
             });
             

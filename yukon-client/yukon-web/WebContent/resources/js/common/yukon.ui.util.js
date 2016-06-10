@@ -367,30 +367,24 @@ yukon.ui.util = (function () {
                 cronMonthly = $('#' + id + '-cron-exp-monthly'),
                 cronOneTime = $('#' + id + '-cron-exp-one-time'),
                 cronCustom = $('#' + id + '-cron-exp-custom'),
-                cronFutureStart = $('#' + id + '-cron-exp-future-start'),
-                cronFuncs = [cronTime, cronDaily, cronWeekly, cronMonthly, cronOneTime, cronCustom, cronFutureStart],
+                cronFuncs = [cronTime, cronDaily, cronWeekly, cronMonthly, cronOneTime, cronCustom],
                 plan = [],
                 cfi;
             switch (selectedFreqVal) {
             case 'DAILY':
-                plan = ['s', 's', 'h', 'h', 'h', 'h', 'h'];
+                plan = ['s', 's', 'h', 'h', 'h', 'h'];
                 break;
             case 'WEEKLY':
-                plan = ['s', 'h', 's', 'h', 'h', 'h', 'h'];
+                plan = ['s', 'h', 's', 'h', 'h', 'h'];
                 break;
             case 'MONTHLY':
-                plan = ['s', 'h', 'h', 's', 'h', 'h', 'h'];
+                plan = ['s', 'h', 'h', 's', 'h', 'h'];
                 break;
             case 'ONETIME':
-                var futureStartCheckbox = $('#' + id + '_future-start');
-                if ((futureStartCheckbox).attr('checked')) {
-                    plan = ['s', 'h', 'h', 'h', 's', 'h', 's'];
-                } else {
-                    plan = ['h', 'h', 'h', 'h', 'h', 'h', 's'];
-                }
+                plan = ['h', 'h', 'h', 'h', 'h', 'h'];
                 break;
             case 'CUSTOM':
-                plan = ['h', 'h', 'h', 'h', 'h', 's', 'h'];
+                plan = ['h', 'h', 'h', 'h', 'h', 's'];
                 break;
             default:
                 return;
@@ -536,10 +530,6 @@ $(function () {
             title = container.find('.title').text().trim().replace(/[^\w]/g, '');
             hidden = container.is('.collapsed');
         yukon.cookie.set('hideReveal', title, hidden ? 'hide' : 'show');
-    });
-    
-    $(document).on('click', '.js-future-start', function (ev) {
-        console.log("HERE I AM");
     });
 
 });
