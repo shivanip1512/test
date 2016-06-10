@@ -730,7 +730,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             }
             PaoPointIdentifier paoPointIdent = attributeService.getPaoPointIdentifierForAttribute(pao, attribute);
             int paoId = pao.getPaoIdentifier().getPaoId();
-            return unitMeasureLookupTable.get(paoId, paoPointIdent.getPointIdentifier()).getUnitMeasureName();
+            if (unitMeasureLookupTable.get(paoId, paoPointIdent.getPointIdentifier()) != null) {
+                return unitMeasureLookupTable.get(paoId, paoPointIdent.getPointIdentifier()).getUnitMeasureName();
+            }
         } catch (IllegalUseOfAttribute | IllegalArgumentException e) {
             // missing value
         }
