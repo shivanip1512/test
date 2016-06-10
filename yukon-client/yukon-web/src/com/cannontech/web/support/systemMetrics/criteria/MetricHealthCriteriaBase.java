@@ -1,10 +1,13 @@
-package com.cannontech.web.support.systemMetrics;
+package com.cannontech.web.support.systemMetrics.criteria;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.support.systemMetrics.MetricStatus;
+import com.cannontech.web.support.systemMetrics.MetricStatusWithMessages;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
 import com.google.common.collect.Lists;
 
 /**

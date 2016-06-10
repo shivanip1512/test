@@ -1,6 +1,6 @@
 package com.cannontech.common.pao;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.Set;
 
@@ -287,6 +287,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> transmitterTypes;
     private final static ImmutableSet<PaoType> rfGatewayTypes;
     private final static ImmutableSet<PaoType> substationBusTypes;
+    private final static ImmutableSet<PaoType> rfDaTypes;
     
     public final static int INVALID = -1;
     
@@ -596,6 +597,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN_GATEWAY,
             GWY800);
         
+        rfDaTypes = ImmutableSet.of(RFN_1200);
+        
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {
             if (paoType.isCapControl()) {
@@ -843,6 +846,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRfMeterTypes() {
         return rfMeterTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getRfDaTypes() {
+        return rfDaTypes;
     }
     
     public boolean isRfMeter() {

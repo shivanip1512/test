@@ -1,10 +1,13 @@
-package com.cannontech.web.support.systemMetrics;
+package com.cannontech.web.support.systemMetrics.criteria;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.support.dao.SystemMetricCriteriaDao;
+import com.cannontech.web.support.systemMetrics.ExtendedQueueData;
+import com.cannontech.web.support.systemMetrics.MetricStatus;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 
 /**
  * System health criteria that checks to see if the number of LCR archive requests exceed the number of LCRs in the
@@ -28,7 +31,7 @@ public class LcrQueueSizeCriteria extends MetricHealthCriteriaBase<ExtendedQueue
         int rfnLcrCount = systemMetricCriteriaDao.getRfnLcrCount();
         long queueSize = metric.getQueueSize();
         
-        log.debug("Lcr Requests Enqueued Criteria checked. RfnLcrCount: " + rfnLcrCount + " queueSize: " 
+        log.debug("Lcr Requests Queue Size Criteria checked. RfnLcrCount: " + rfnLcrCount + " queueSize: " 
                 + queueSize);
         
         if (queueSize > rfnLcrCount) {

@@ -21,12 +21,12 @@ import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.support.dao.UserSystemMetricDao;
 import com.cannontech.web.support.service.SystemHealthService;
 import com.cannontech.web.support.systemMetrics.ExtendedQueueData;
-import com.cannontech.web.support.systemMetrics.MetricHealthCriteria;
 import com.cannontech.web.support.systemMetrics.MetricStatusWithMessages;
 import com.cannontech.web.support.systemMetrics.QueueData;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
+import com.cannontech.web.support.systemMetrics.criteria.MetricHealthCriteria;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 

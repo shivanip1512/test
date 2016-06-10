@@ -16,6 +16,10 @@ public class SystemMetricCriteriaDaoImpl implements SystemMetricCriteriaDao {
     private Instant meterCountLastUpdateTime = new Instant(0);
     private Integer cachedLcrCount = 0;
     private Instant lcrCountLastUpdateTime = new Instant(0);
+    private Integer cachedDaCount = 0;
+    private Instant daCountLastUpdateTime = new Instant(0);
+    private Integer cachedGatewayCount = 0;
+    private Instant gatewayCountLastUpdateTime = new Instant(0);
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
@@ -23,15 +27,7 @@ public class SystemMetricCriteriaDaoImpl implements SystemMetricCriteriaDao {
     public int getRfnMeterCount() {
         synchronized (cachedMeterCount) {
             if (isMoreThanOneHourSince(meterCountLastUpdateTime)) {
-                Set<PaoType> rfnMeterTypes = PaoType.getRfMeterTypes();
-                
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT COUNT(Type)");
-                sql.append("FROM YukonPaObject");
-                sql.append("WHERE Type").in(rfnMeterTypes);
-                
-                int newMeterCount = jdbcTemplate.queryForInt(sql);
-                cachedMeterCount = newMeterCount;
+                cachedMeterCount = getDeviceCountByTypes(PaoType.getRfMeterTypes());
             }
         }
         return cachedMeterCount;
@@ -41,18 +37,39 @@ public class SystemMetricCriteriaDaoImpl implements SystemMetricCriteriaDao {
     public int getRfnLcrCount() {
         synchronized (cachedLcrCount) {
             if (isMoreThanOneHourSince(lcrCountLastUpdateTime)) {
-                Set<PaoType> rfnLcrTypes = PaoType.getRfLcrTypes();
-                
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT COUNT(Type)");
-                sql.append("FROM YukonPaObject");
-                sql.append("WHERE Type").in(rfnLcrTypes);
-                
-                int newLcrCount = jdbcTemplate.queryForInt(sql);
-                cachedLcrCount = newLcrCount;
+                cachedLcrCount = getDeviceCountByTypes(PaoType.getRfLcrTypes());
             }
         }
         return cachedLcrCount;
+    }
+    
+    @Override
+    public int getRfDaCount() {
+        synchronized (cachedDaCount) {
+            if (isMoreThanOneHourSince(daCountLastUpdateTime)) {
+                cachedDaCount = getDeviceCountByTypes(PaoType.getRfDaTypes());
+            }
+        }
+        return cachedDaCount;
+    }
+    
+    @Override
+    public int getRfGatewayCount() {
+        synchronized (cachedGatewayCount) {
+            if (isMoreThanOneHourSince(gatewayCountLastUpdateTime)) {
+                cachedGatewayCount = getDeviceCountByTypes(PaoType.getRfGatewayTypes());
+            }
+        }
+        return cachedGatewayCount;
+    }
+    
+    private int getDeviceCountByTypes(Set<PaoType> types) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(Type)");
+        sql.append("FROM YukonPaObject");
+        sql.append("WHERE Type").in(types);
+        
+        return jdbcTemplate.queryForInt(sql);
     }
     
     private static final Duration oneHour = Duration.standardHours(1);

@@ -341,6 +341,13 @@
     <entry key="yukon.web.modules.support.systemHealth.criteria.meterQueueSizeError">The number of meter reading archive requests in the queue exceeds the total number of meters in the system.</entry>
     <entry key="yukon.web.modules.support.systemHealth.criteria.lcrQueueSizeWarn">The number of LCR reading archive requests in the queue is more than 50% of the total number of LCRs in the system.</entry>
     <entry key="yukon.web.modules.support.systemHealth.criteria.lcrQueueSizeError">The number of LCR reading archive requests in the queue exceeds the total number of LCRs in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.rfDaQueueSizeWarn">The number of RF DA archive requests in the queue is more than 50% of the total number of RF DA devices in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.rfDaQueueSizeError">The number of RF DA archive requests in the queue exceeds the total number of RF DA devices in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayQueueSizeWarn">The number of gateway data responses in the queue is more than 50% of the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayQueueSizeError">The number of gateway data responses in the queue exceeds the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayRequestQueueSizeWarn">The number of gateway data requests in the queue is more than 50% of the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayRequestQueueSizeError">The number of gateway data requests in the queue exceeds the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayArchiveQueueSizeWarn">There are multiple gateway archive requests in the queue. Typically, there should be few of these requests, and they should be processed quickly.</entry>
     
     <entry key="yukon.web.modules.support.systemHealth.favMetricButton.hoverText">Favorite this metric to display it on your Yukon dashboard.</entry>
     <entry key="yukon.web.modules.support.systemHealth.unfavMetricButton.hoverText">Un-favorite this metric to remove it from your Yukon dashboard.</entry>

@@ -1250,7 +1250,10 @@
     <bean class="com.cannontech.web.support.dao.impl.SystemMetricCriteriaDaoImpl"/>
     
     <!-- System Metric Criteria -->
-    <bean class="com.cannontech.web.support.systemMetrics.LcrQueueSizeCriteria"/>
-    <bean class="com.cannontech.web.support.systemMetrics.MeterRequestsQueueSizeCriteria"/>
-    
+    <bean class="com.cannontech.web.support.systemMetrics.criteria.LcrQueueSizeCriteria"/>
+    <bean class="com.cannontech.web.support.systemMetrics.criteria.MeterRequestsQueueSizeCriteria"/>
+    <bean class="com.cannontech.web.support.systemMetrics.criteria.RfDaQueueSizeCriteria"/>
+    <bean class="com.cannontech.web.support.systemMetrics.criteria.GatewayDataQueueSizeCriteria"/>
+    <bean class="com.cannontech.web.support.systemMetrics.criteria.GatewayDataRequestQueueSizeCriteria"/>
+    <bean class="com.cannontech.web.support.systemMetrics.criteria.GatewayArchiveRequestQueueSizeCriteria"/>
 </beans>

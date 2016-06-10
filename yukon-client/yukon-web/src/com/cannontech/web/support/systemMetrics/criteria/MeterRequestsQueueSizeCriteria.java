@@ -1,10 +1,13 @@
-package com.cannontech.web.support.systemMetrics;
+package com.cannontech.web.support.systemMetrics.criteria;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.support.dao.SystemMetricCriteriaDao;
+import com.cannontech.web.support.systemMetrics.ExtendedQueueData;
+import com.cannontech.web.support.systemMetrics.MetricStatus;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 
 /**
  * System health criteria that checks to see if the number of meter archive requests exceed the number of meters in the
@@ -28,7 +31,7 @@ public class MeterRequestsQueueSizeCriteria extends MetricHealthCriteriaBase<Ext
         int rfnMeterCount = systemMetricCriteriaDao.getRfnMeterCount();
         long queueSize = metric.getQueueSize();
         
-        log.debug("Meter Requests Enqueued Criteria checked. RfnMeterCount: " + rfnMeterCount + " queueSize: " 
+        log.debug("Meter Requests Queue Size Criteria checked. RfnMeterCount: " + rfnMeterCount + " queueSize: " 
                   + queueSize);
         
         if (queueSize > rfnMeterCount) {

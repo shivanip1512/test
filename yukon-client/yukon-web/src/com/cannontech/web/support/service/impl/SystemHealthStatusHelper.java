@@ -12,11 +12,11 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.web.support.service.SystemHealthService;
-import com.cannontech.web.support.systemMetrics.MetricHealthCriteria;
 import com.cannontech.web.support.systemMetrics.MetricStatus;
 import com.cannontech.web.support.systemMetrics.MetricStatusWithMessages;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
+import com.cannontech.web.support.systemMetrics.criteria.MetricHealthCriteria;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 

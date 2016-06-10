@@ -3,6 +3,7 @@ package com.cannontech.web.dev.service;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
+import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
@@ -35,6 +36,10 @@ public class YsmJmxQueryService {
                 Object object = mbeanConn.getAttribute(name, attribute);
                 
                 return object;
+            } catch (InstanceNotFoundException e) {
+                //The requested attribute wasn't found. No need to reconnect in this case.
+                log.debug("Instance not found. Name: " + name + ", Attribute: " + attribute);
+                return null;
             } catch (Exception e) {
                 try {
                     // Try to reconnect, maybe YSM was restarted.

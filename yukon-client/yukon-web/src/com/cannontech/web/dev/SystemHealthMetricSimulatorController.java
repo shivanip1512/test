@@ -1,8 +1,8 @@
 package com.cannontech.web.dev;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +25,9 @@ public class SystemHealthMetricSimulatorController {
     @RequestMapping("/home")
     public String home(ModelMap model, FlashScope flash) {
         
-        Map<SystemHealthMetricIdentifier, Map<SystemHealthMetricMethod, Object>> metricValues = new HashMap<>();
+        Map<SystemHealthMetricIdentifier, Map<SystemHealthMetricMethod, Object>> metricValues = new TreeMap<>();
         for (SystemHealthMetricIdentifier metricId : SystemHealthMetricIdentifier.values()) {
-            metricValues.put(metricId, new HashMap<SystemHealthMetricMethod, Object>());
+            metricValues.put(metricId, new TreeMap<SystemHealthMetricMethod, Object>());
             Collection<SystemHealthMetricMethod> methodsForType = SystemHealthMetricMethod.getMethodsForMetricType(metricId.getType());
             for (SystemHealthMetricMethod method : methodsForType) {
                 metricValues.get(metricId).put(method, null);
