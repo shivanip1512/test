@@ -118,6 +118,9 @@ $(function() {
             <div>
                 <a href="<cti:msg2 key=".rma.link"/>" target="_blank"><i:inline key=".rma"/></a>
             </div>
+            <div>
+                <a href="<cti:msg2 key=".utilityProRma.link"/>" target="_blank"><i:inline key=".utilityProRma"/></a>
+            </div>
         </tags:sectionContainer2>
     </div>
 </div>
