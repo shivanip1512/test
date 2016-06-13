@@ -22,8 +22,10 @@
     <entry key="yukon.web.modules.support.support.logs.title">Today's Logs</entry>
     <entry key="yukon.web.modules.support.support.allLogs">View All Logs</entry>
     <entry key="yukon.web.modules.support.support.dbInfo.title">Database Info</entry>
-    <entry key="yukon.web.modules.support.support.rma">RMA Form</entry>
-    <entry key="yukon.web.modules.support.support.rma.link">http://www.cannontech.com/support/CustomerServiceRMA.asp</entry>
+    <entry key="yukon.web.modules.support.support.rma">Energy Automation Solutions RMA</entry>
+    <entry key="yukon.web.modules.support.support.rma.link">http://www.cooperindustries.com/content/public/en/power_systems/resources/request_forms/warranty_request/eas-rma.html</entry>
+    <entry key="yukon.web.modules.support.support.utilityProRma">UtilityPRO RMA</entry>
+    <entry key="yukon.web.modules.support.support.utilityProRma.link">http://www.cooperindustries.com/content/public/en/power_systems/resources/request_forms/warranty_request/utilitypro-rma.html</entry>
     <entry key="yukon.web.modules.support.supportSite.title">Support Website</entry>
     <entry key="yukon.web.modules.support.supportSite.link">http://www.cooperpowercentral.com</entry>
 
