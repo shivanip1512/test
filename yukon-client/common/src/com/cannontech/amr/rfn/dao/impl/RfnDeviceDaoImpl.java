@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,14 +98,11 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
 
         RfnManufacturerModel mm = RfnManufacturerModel.of(rfnIdentifier);
         if (mm != null) {
-            Integer paoId = rfnIdentifierCache.getPaoIdFor(mm, rfnIdentifier.getSensorSerialNumber());
-            if (paoId != null) {
-                LiteYukonPAObject litePao = cache.getAllPaosMap().get(paoId);
-                if (litePao != null) {
-                    return new RfnDevice(litePao.getPaoName(), litePao,
-                        new RfnIdentifier(mm.getManufacturer(), mm.getModel(), rfnIdentifier.getSensorSerialNumber()));
-                }
-            }
+            rfnDevice = Optional
+                    .ofNullable(rfnIdentifierCache.getPaoIdFor(mm, rfnIdentifier.getSensorSerialNumber()))
+                    .map(paoId -> cache.getAllPaosMap().get(paoId))
+                    .map(litePao -> new RfnDevice(litePao.getPaoName(), litePao, rfnIdentifier))
+                    .orElse(null);
         } else {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
