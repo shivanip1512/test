@@ -22,10 +22,8 @@
     <entry key="yukon.web.modules.support.support.logs.title">Today's Logs</entry>
     <entry key="yukon.web.modules.support.support.allLogs">View All Logs</entry>
     <entry key="yukon.web.modules.support.support.dbInfo.title">Database Info</entry>
-    <entry key="yukon.web.modules.support.support.rma">Energy Automation Solutions RMA</entry>
-    <entry key="yukon.web.modules.support.support.rma.link">http://www.cooperindustries.com/content/public/en/power_systems/resources/request_forms/warranty_request/eas-rma.html</entry>
-    <entry key="yukon.web.modules.support.support.utilityProRma">UtilityPRO RMA</entry>
-    <entry key="yukon.web.modules.support.support.utilityProRma.link">http://www.cooperindustries.com/content/public/en/power_systems/resources/request_forms/warranty_request/utilitypro-rma.html</entry>
+    <entry key="yukon.web.modules.support.support.rma">RMA Form</entry>
+    <entry key="yukon.web.modules.support.support.rma.link">http://www.cannontech.com/support/CustomerServiceRMA.asp</entry>
     <entry key="yukon.web.modules.support.supportSite.title">Support Website</entry>
     <entry key="yukon.web.modules.support.supportSite.link">http://www.cooperpowercentral.com</entry>
 
@@ -300,14 +298,14 @@
     <entry key="yukon.web.modules.support.systemHealth.serverBrokerStatistics.helpText">
         <![CDATA[
             <h3>Queues</h3>
-            Queues handle messages between Yukon and Network Manager that contain information for device creation, device editing, or data archival.
+            Queues handle messages between Service Manager and Network Manager that contain information for device creation, device editing, or data archival.
             <ul>
-                <li><b>RFN Meter Archive Request:</b> Meter data to be archived, sent from Network Manager to Yukon.</li>
-                <li><b>RFN LCR Archive Request:</b> LCR data to be archived, sent from Network Manager to Yukon.</li>
-                <li><b>Gateway Archive Request:</b> Initiates creation of an RF Gateway device, sent from Network Manager to Yukon.</li>
-                <li><b>RF DA Archive Request:</b> Initiates creation of an RF DA device, sent from Network Manager to Yukon.</li>
-                <li><b>Gateway Data Request:</b> Request for data about an RF Gateway, sent from Yukon to Network Manager.</li>
-                <li><b>Gateway Data Response:</b> RF Gateway data, sent from Network Manager to Yukon.</li>
+                <li><b>RFN Meter Archive Request:</b> Meter data to be archived, sent from Network Manager to Service Manager.</li>
+                <li><b>RFN LCR Archive Request:</b> LCR data to be archived, sent from Network Manager to Service Manager.</li>
+                <li><b>Gateway Archive Request:</b> Initiates creation of an RF Gateway device, sent from Network Manager to Service Manager.</li>
+                <li><b>RF DA Archive Request:</b> Initiates creation of an RF DA device, sent from Network Manager to Service Manager.</li>
+                <li><b>Gateway Data Request:</b> Request for data about an RF Gateway, sent from Service Manager to Network Manager.</li>
+                <li><b>Gateway Data Response:</b> RF Gateway data, sent from Network Manager to Service Manager.</li>
             </ul>
             
             <h3>Metrics</h3>
@@ -343,6 +341,13 @@
     <entry key="yukon.web.modules.support.systemHealth.criteria.meterQueueSizeError">The number of meter reading archive requests in the queue exceeds the total number of meters in the system.</entry>
     <entry key="yukon.web.modules.support.systemHealth.criteria.lcrQueueSizeWarn">The number of LCR reading archive requests in the queue is more than 50% of the total number of LCRs in the system.</entry>
     <entry key="yukon.web.modules.support.systemHealth.criteria.lcrQueueSizeError">The number of LCR reading archive requests in the queue exceeds the total number of LCRs in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.rfDaQueueSizeWarn">The number of RF DA archive requests in the queue is more than 50% of the total number of RF DA devices in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.rfDaQueueSizeError">The number of RF DA archive requests in the queue exceeds the total number of RF DA devices in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayQueueSizeWarn">The number of gateway data responses in the queue is more than 50% of the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayQueueSizeError">The number of gateway data responses in the queue exceeds the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayRequestQueueSizeWarn">The number of gateway data requests in the queue is more than 50% of the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayRequestQueueSizeError">The number of gateway data requests in the queue exceeds the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayArchiveQueueSizeWarn">There are multiple gateway archive requests in the queue. Typically, there should be few of these requests, and they should be processed quickly.</entry>
     
     <entry key="yukon.web.modules.support.systemHealth.favMetricButton.hoverText">Favorite this metric to display it on your Yukon dashboard.</entry>
     <entry key="yukon.web.modules.support.systemHealth.unfavMetricButton.hoverText">Un-favorite this metric to remove it from your Yukon dashboard.</entry>
