@@ -615,13 +615,22 @@
                 <li>The firmware for this device may not support this operation.</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.error.code.261.porter">The freeze check bit in the frozen reading does not
-		match the last recorded freeze
-		sent to the device.</entry>
-	<entry key="yukon.web.error.code.261.description">The freeze check bit in the frozen reading does not
-		match the last recorded
-		freeze sent to the device.</entry>
-	<entry key="yukon.web.error.code.261.troubleshooting"><![CDATA[This is a data validation error associated with the freeze check bit retrieved from the
+    <entry key="yukon.web.error.code.260.porter"></entry>
+    <entry key="yukon.web.error.code.260.description">MACS timed out on this message.</entry>
+    <entry key="yukon.web.error.code.260.troubleshooting"><![CDATA[MACS did not hear anything back 
+        from Porter within the script timeout (default 15 minutes). 
+            <ul>
+                <li>Porter's work queue may be overloaded with other requests. You may need to adjust 
+                script start times and/or increase the script timeout. </li>
+            </ul>]]></entry>
+
+    <entry key="yukon.web.error.code.261.porter">The freeze check bit in the frozen reading does not
+        match the last recorded freeze
+        sent to the device.</entry>
+    <entry key="yukon.web.error.code.261.description">The freeze check bit in the frozen reading does not
+        match the last recorded
+        freeze sent to the device.</entry>
+    <entry key="yukon.web.error.code.261.troubleshooting"><![CDATA[This is a data validation error associated with the freeze check bit retrieved from the
             device not matching the value expected by the master station.
             <ul>
                 <li>Send the expected freeze command and attempt the command again</li>
