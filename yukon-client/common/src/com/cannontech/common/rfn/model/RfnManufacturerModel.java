@@ -1,10 +1,18 @@
 package com.cannontech.common.rfn.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
-import com.google.common.collect.Lists;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Table;
 
 /**
  * Only use this enum if you know what you are doing!
@@ -85,6 +93,7 @@ public enum RfnManufacturerModel {
     private PaoType type;
     private String manufacturer;
     private String model;
+    private static final Table<String, String, RfnManufacturerModel> lookup = HashBasedTable.<String, String, RfnManufacturerModel>create();
     
     private RfnManufacturerModel(PaoType type, String manufacturer, String model) {
         this.type = type;
@@ -92,15 +101,26 @@ public enum RfnManufacturerModel {
         this.model = model;
     }
     
+    static {
+        //  These LGYR model strings were used for both the RFN-410 and RFN-420, and do not map to a unique entry.
+        Set<String> duplicateLgyrModels = Sets.newHashSet("FocuskWh", "FocusAXD", "FocusAXR-SD");
+        
+    	Stream.of(values())
+    	    .filter(mm -> !(mm.manufacturer.equals("LGYR") && duplicateLgyrModels.contains(mm.model)))
+    		.forEach(mm -> lookup.put(mm.manufacturer, mm.model, mm));
+    }
+    
     public static List<RfnManufacturerModel> getForType(PaoType type) {
-        List<RfnManufacturerModel> list = Lists.newArrayList();
-        for (RfnManufacturerModel item : values()) {
-            if (item.type == type) list.add(item);
-        }
-        
-        if (list.isEmpty()) throw new IllegalArgumentException("Unknown template for type: " + type);
-        
-        return list;
+    	return Optional.of(
+    			Stream.of(values())
+    					.filter(item -> item.type == type)
+						.collect(Collectors.toCollection(() -> new ArrayList<RfnManufacturerModel>())))
+    			.filter(list -> ! list.isEmpty())
+    			.orElseThrow(() -> new IllegalArgumentException("Unknown template for type: " + type));
+    }
+    
+    public static RfnManufacturerModel of(RfnIdentifier rfnIdentifier) {
+    	return lookup.get(rfnIdentifier.getSensorManufacturer(), rfnIdentifier.getSensorModel());
     }
     
     public PaoType getType() {

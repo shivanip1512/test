@@ -13,23 +13,25 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.RfnIdentifierCache;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -39,8 +41,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     private final static Logger log = Logger.getLogger(RfnDeviceDaoImpl.class);
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache cache;
+    @Autowired private RfnIdentifierCache rfnIdentifierCache;
 
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
         @Override
@@ -59,7 +61,19 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     @Override
     public boolean deviceExists(RfnIdentifier rfnIdentifier) {
-        
+
+        // This method is currently only used by GatewayCreationService, and gateways are not currently
+        // cached.
+        // Uncomment the section below if/when they are added to RfnManufacturerModel.
+
+//        RfnManufacturerModel mm = RfnManufacturerModel.of(rfnIdentifier);
+//        if (mm != null) {
+//            Integer paoId = rfnIdentifierCache.getPaoIdFor(mm, rfnIdentifier.getSensorSerialNumber());
+//            if (paoId != null) {
+//                return true;
+//            }
+//        }
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.PaoName");
         sql.append("from YukonPaObject ypo");
@@ -78,21 +92,39 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     @Override
     public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
-        sql.append("from YukonPaObject ypo");
-        sql.append("join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
-        sql.append("where rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
-        sql.append("and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
-        sql.append("and rfn.Model").eq(rfnIdentifier.getSensorModel());
-        
-        try {
-            RfnDevice rfnDevice = jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
-            return rfnDevice;
-        } catch (EmptyResultDataAccessException e) {
+
+        RfnDevice rfnDevice = null;
+
+        RfnManufacturerModel mm = RfnManufacturerModel.of(rfnIdentifier);
+        if (mm != null) {
+            Integer paoId = rfnIdentifierCache.getPaoIdFor(mm, rfnIdentifier.getSensorSerialNumber());
+            if (paoId != null) {
+                LiteYukonPAObject litePao = cache.getAllPaosMap().get(paoId);
+                if (litePao != null) {
+                    return new RfnDevice(litePao.getPaoName(), litePao,
+                        new RfnIdentifier(mm.getManufacturer(), mm.getModel(), rfnIdentifier.getSensorSerialNumber()));
+                }
+            }
+        } else {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+            sql.append("from YukonPaObject ypo");
+            sql.append("join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
+            sql.append("where rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
+            sql.append("and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
+            sql.append("and rfn.Model").eq(rfnIdentifier.getSensorModel());
+
+            try {
+                rfnDevice = jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
+            } catch (EmptyResultDataAccessException e) {
+                log.debug("Empty result set for query " + sql + sql.getArgumentList());
+            }
+        }
+
+        if (rfnDevice == null) {
             throw new NotFoundException("Unknown rfn identifier " + rfnIdentifier);
         }
+        return rfnDevice;
     }
 
     @Override
@@ -196,6 +228,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         if (device.getRfnIdentifier().isBlank()) {
             /* When someone has blanked out the three fields of the rfn device address, delete that row from RfnAddress. */
             deleteRfnAddress(device);
+            rfnIdentifierCache.invalidatePaoId(device.getPaoIdentifier().getPaoId());
             return;
         }
         if (!device.getRfnIdentifier().isNotBlank()) {
@@ -211,6 +244,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
 
         try {
             jdbcTemplate.update(sql);
+            rfnIdentifierCache.updatePaoId(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier());
             return;
         } catch (DataIntegrityViolationException e) {
             /* Row is there, try to update it. */
@@ -226,6 +260,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 /* The initial insert failed because a different device is using this SN, Manufacturer, Model combination. */
                 throw new DataIntegrityViolationException("Serial Number, Manufacturer, and Model must be unique.");
             }
+            rfnIdentifierCache.updatePaoId(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier());
         }
 
     }

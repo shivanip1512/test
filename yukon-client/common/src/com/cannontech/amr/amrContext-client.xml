@@ -95,6 +95,7 @@
     <bean id="meterEventLookupService" class="com.cannontech.amr.meter.service.impl.MeterEventLookupService"/>
     
     <bean id="rfnDeviceDao" class="com.cannontech.amr.rfn.dao.impl.RfnDeviceDaoImpl"/>
+    <bean class="com.cannontech.amr.rfn.dao.impl.RfnIdentifierCacheImpl"/>
     <bean class="com.cannontech.amr.rfn.dao.impl.RfnDeviceAttributeDaoImpl" />
     <bean class="com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMappingParser"/>
     
