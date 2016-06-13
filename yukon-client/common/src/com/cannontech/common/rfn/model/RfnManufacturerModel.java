@@ -105,22 +105,22 @@ public enum RfnManufacturerModel {
         //  These LGYR model strings were used for both the RFN-410 and RFN-420, and do not map to a unique entry.
         Set<String> duplicateLgyrModels = Sets.newHashSet("FocuskWh", "FocusAXD", "FocusAXR-SD");
         
-    	Stream.of(values())
-    	    .filter(mm -> !(mm.manufacturer.equals("LGYR") && duplicateLgyrModels.contains(mm.model)))
-    		.forEach(mm -> lookup.put(mm.manufacturer, mm.model, mm));
+        Stream.of(values())
+            .filter(mm -> !(mm.manufacturer.equals("LGYR") && duplicateLgyrModels.contains(mm.model)))
+            .forEach(mm -> lookup.put(mm.manufacturer, mm.model, mm));
     }
     
     public static List<RfnManufacturerModel> getForType(PaoType type) {
-    	return Optional.of(
-    			Stream.of(values())
-    					.filter(item -> item.type == type)
-						.collect(Collectors.toCollection(() -> new ArrayList<RfnManufacturerModel>())))
-    			.filter(list -> ! list.isEmpty())
-    			.orElseThrow(() -> new IllegalArgumentException("Unknown template for type: " + type));
+        return Optional.of(
+                Stream.of(values())
+                        .filter(item -> item.type == type)
+                        .collect(Collectors.toCollection(() -> new ArrayList<RfnManufacturerModel>())))
+                .filter(list -> ! list.isEmpty())
+                .orElseThrow(() -> new IllegalArgumentException("Unknown template for type: " + type));
     }
     
     public static RfnManufacturerModel of(RfnIdentifier rfnIdentifier) {
-    	return lookup.get(rfnIdentifier.getSensorManufacturer(), rfnIdentifier.getSensorModel());
+        return lookup.get(rfnIdentifier.getSensorManufacturer(), rfnIdentifier.getSensorModel());
     }
     
     public PaoType getType() {
