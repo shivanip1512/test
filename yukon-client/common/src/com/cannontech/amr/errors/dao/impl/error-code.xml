@@ -806,7 +806,7 @@
     </error>
     <error code="260">
         <category>Yukon System</category>
-        <porter></porter>
+        <porter>MACS timed out on this message</porter>
         <description>MACS timed out on this message.</description>
         <troubleshooting>
             MACS did not hear anything back from Porter within the script timeout (default 15 
