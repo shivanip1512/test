@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.DeviceDnpConfiguration;
 import com.cannontech.common.device.config.model.DisplayableConfigurationCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
@@ -174,11 +176,25 @@ public class DeviceConfigurationController {
     }
 
     @RequestMapping("{id}")
-    public @ResponseBody DeviceConfiguration deviceConfig(@PathVariable int id) {
+    public @ResponseBody DeviceDnpConfiguration deviceConfig(@PathVariable int id, YukonUserContext userContext) {
+        DeviceDnpConfiguration deviceDnpConfiguration = new DeviceDnpConfiguration();
         DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(id);
-        return deviceConfig;
+        deviceDnpConfiguration.setDeviceConfiguration(deviceConfig);
+
+        String timeOffsetKey = null;
+        List<DeviceConfigCategoryItem> items = deviceConfig.getDnpCategory().getDeviceConfigurationItems();
+        for (DeviceConfigCategoryItem deviceConfigCategoryItem : items) {
+            if (deviceConfigCategoryItem.getFieldName().equals("timeOffset")) {
+                timeOffsetKey = deviceConfigCategoryItem.getValue();
+            }
+        }
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String timeOffsetValue =
+            accessor.getMessage("yukon.web.modules.tools.configs.enum.dnpTimeOffset." + timeOffsetKey);
+        deviceDnpConfiguration.setTimeOffsetValue(timeOffsetValue);
+        return deviceDnpConfiguration;
     }
-    
+
     public enum ConfigurationSortBy implements DisplayableEnum {
         
         name,

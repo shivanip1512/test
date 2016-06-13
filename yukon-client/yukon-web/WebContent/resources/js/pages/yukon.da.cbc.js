@@ -70,10 +70,13 @@ yukon.da.cbc = (function () {
                 yukon.ui.block(dnpFields, 200);
                 $.get(url)
                 .done(function (data) {
-                    if(data.dnpCategory != null) {
-                        data.dnpCategory.deviceConfigurationItems.forEach(function (field) {
+                    if(data.deviceConfiguration.dnpCategory != null) {
+                        data.deviceConfiguration.dnpCategory.deviceConfigurationItems.forEach(function (field) {
                             var fieldName = field.fieldName;
                             var value = field.value;
+                            if(fieldName == 'timeOffset'){
+                            	value = data.timeOffsetValue;
+                            }
                             dnpFields.find('.js-dnp-' + fieldName).text(value);
                         });
                     }
@@ -87,4 +90,24 @@ yukon.da.cbc = (function () {
     return mod;
 })();
 
+function getKeyValue(key){
+	
+ 	var res = '';
+	 $.ajax({
+        url: yukon.url('/capcontrol/cbc/getKeyValue/' + key),
+        async: false
+    }).done(function (data) {
+       alert(data);
+       res = data;
+    });
+
+	 return res;
+	/*  var url = yukon.url('/capcontrol/cbc/getKeyValue/' + key);
+	  var res = "";
+	  $.get(url).done(function (data) {
+		  alert(data);
+		  return data;
+		  res = data;
+	  });*/
+}
 $(function () { yukon.da.cbc.init(); });
