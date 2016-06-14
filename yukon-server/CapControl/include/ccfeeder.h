@@ -68,7 +68,6 @@ public:
     bool getWaiveControlFlag() const;
     const std::string& getParentControlUnits() const;
     const std::string& getParentName() const;
-    long getDecimalPlaces() const;
     bool getPeakTimeFlag() const;
     bool getPorterRetFailFlag() const;
     long getEventSequence() const;
@@ -145,7 +144,6 @@ public:
     void setWaiveControlFlag(bool waive);
     void setParentControlUnits(const std::string& parentControlUnits);
     void setParentName(const std::string& parentName);
-    void setDecimalPlaces(long decimalPlaces);
     void setPeakTimeFlag(bool peakTimeFlag);
     void setPorterRetFailFlag(bool flag);
     void setEventSequence(long eventSeq);
@@ -336,7 +334,6 @@ private:
 
     std::string _parentControlUnits;
     std::string _parentName;
-    long _decimalPlaces;
     bool _peakTimeFlag;
 
     CtiCCCapBank_SVector _cccapbanks;

@@ -528,75 +528,69 @@ struct TestCase<CtiCCFeeder> : public TestCase<CapControlPao>
     {
         TestCase<CapControlPao>::Populate();
 
-        {
-            Conductor &imsg = static_cast<Conductor&>(*_imsg);
+        Conductor   &c_imsg = static_cast<Conductor&>(*_imsg);
+        CtiCCFeeder &imsg = static_cast<CtiCCFeeder&>(*_imsg);
 
-            GenerateRandom( imsg._currentVarLoadPointId );
-            GenerateRandom( imsg._currentWattLoadPointId );
-            GenerateRandom( imsg._currentVoltLoadPointId );
-            GenerateRandom( imsg._mapLocationId );
-            GenerateRandom( imsg._usePhaseData );
+        GenerateRandom( imsg._parentId );
+        GenerateRandom( c_imsg._currentVarLoadPointId );
+        GenerateRandom( imsg._currentvarloadpointvalue );
+        GenerateRandom( c_imsg._currentWattLoadPointId );
+        GenerateRandom( imsg._currentwattloadpointvalue );
+        GenerateRandom( c_imsg._mapLocationId );
+        GenerateRandom( imsg._displayorder );
+        GenerateRandom( imsg._newpointdatareceivedflag );
+        GenerateRandom( imsg._lastcurrentvarpointupdatetime );
+        GenerateRandom( imsg._estimatedvarloadpointid );
+        GenerateRandom( imsg._estimatedvarloadpointvalue );
+        GenerateRandom( imsg._dailyoperationsanalogpointid );
+        GenerateRandom( imsg._powerfactorpointid );
+        GenerateRandom( imsg._estimatedpowerfactorpointid );
+        GenerateRandom( imsg._currentdailyoperations );
+
+        {
+            bool recentlyControlledFlag_or_performingVerificationFlag;
+            GenerateRandom( recentlyControlledFlag_or_performingVerificationFlag );
+
+            imsg._recentlycontrolledflag     = recentlyControlledFlag_or_performingVerificationFlag;
+            imsg._performingVerificationFlag = recentlyControlledFlag_or_performingVerificationFlag;
         }
 
+        GenerateRandom( imsg._lastoperationtime );
+        GenerateRandom( imsg._varvaluebeforecontrol );
+        GenerateRandom( imsg._powerfactorvalue );
+        GenerateRandom( imsg._estimatedpowerfactorvalue );
+        GenerateRandom( imsg._currentvarpointquality );
+        GenerateRandom( imsg._waivecontrolflag );
+        GenerateRandom( c_imsg._decimalPlaces );
+        GenerateRandom( imsg._peakTimeFlag );
+        GenerateRandom( c_imsg._currentVoltLoadPointId );
+        GenerateRandom( imsg._currentvoltloadpointvalue );
+        GenerateRandom( imsg._currentwattpointquality );
+        GenerateRandom( imsg._currentvoltpointquality );
+        GenerateRandom( imsg._targetvarvalue );
+        GenerateRandom( imsg._solution );
+        GenerateRandom( imsg._ovUvDisabledFlag );
+        GenerateRandom( imsg._phaseAvalue );
+        GenerateRandom( imsg._phaseBvalue );
+        GenerateRandom( imsg._phaseCvalue );
+        GenerateRandom( imsg._likeDayControlFlag );
+        GenerateRandom( c_imsg._usePhaseData );
+        GenerateRandom( imsg.getOriginalParent()._originalParentId );
+
+        // careful here, this is a sorted vector (just generate 1)
+        const int max_item_nbr = 1;
+
+        for( int item_nbr=0; item_nbr < max_item_nbr; item_nbr++ )
         {
-            CtiCCFeeder &imsg = static_cast<CtiCCFeeder&>(*_imsg);
-
-            GenerateRandom( imsg._parentId );
-            GenerateRandom( imsg._currentvarloadpointvalue );
-            GenerateRandom( imsg._currentwattloadpointvalue );
-            GenerateRandom( imsg._displayorder );
-            GenerateRandom( imsg._newpointdatareceivedflag );
-            GenerateRandom( imsg._lastcurrentvarpointupdatetime );
-            GenerateRandom( imsg._estimatedvarloadpointid );
-            GenerateRandom( imsg._estimatedvarloadpointvalue );
-            GenerateRandom( imsg._dailyoperationsanalogpointid );
-            GenerateRandom( imsg._powerfactorpointid );
-            GenerateRandom( imsg._estimatedpowerfactorpointid );
-            GenerateRandom( imsg._currentdailyoperations );
-
-            {
-                bool recentlyControlledFlag_or_performingVerificationFlag;
-                GenerateRandom( recentlyControlledFlag_or_performingVerificationFlag );
-
-                imsg._recentlycontrolledflag     = recentlyControlledFlag_or_performingVerificationFlag;
-                imsg._performingVerificationFlag = recentlyControlledFlag_or_performingVerificationFlag;
-            }
-
-            GenerateRandom( imsg._lastoperationtime );
-            GenerateRandom( imsg._varvaluebeforecontrol );
-            GenerateRandom( imsg._powerfactorvalue );
-            GenerateRandom( imsg._estimatedpowerfactorvalue );
-            GenerateRandom( imsg._currentvarpointquality );
-            GenerateRandom( imsg._waivecontrolflag );
-            GenerateRandom( imsg._decimalPlaces );
-            GenerateRandom( imsg._peakTimeFlag );
-            GenerateRandom( imsg._currentvoltloadpointvalue );
-            GenerateRandom( imsg._currentwattpointquality );
-            GenerateRandom( imsg._currentvoltpointquality );
-            GenerateRandom( imsg._targetvarvalue );
-            GenerateRandom( imsg._solution );
-            GenerateRandom( imsg._ovUvDisabledFlag );
-            GenerateRandom( imsg._phaseAvalue );
-            GenerateRandom( imsg._phaseBvalue );
-            GenerateRandom( imsg._phaseCvalue );
-            GenerateRandom( imsg._likeDayControlFlag );
-            GenerateRandom( imsg.getOriginalParent()._originalParentId );
-
-            // careful here, this is a sorted vector (just generate 1)
-            const int max_item_nbr = 1;
-
-            for( int item_nbr=0; item_nbr < max_item_nbr; item_nbr++ )
-            {
-                imsg._cccapbanks.push_back( new CtiCCCapBank );
-                TestCaseItem<CtiCCCapBank> tc_item;
-                tc_item.Populate( imsg._cccapbanks.back() );
-            }
-
-            // set and randomize the control strategy
-            imsg._strategyId = TestStrategyLoader::TEST_STRATEGY_ID;
-            TestControlStrategy& strategy = dynamic_cast<TestControlStrategy&>(*(imsg.getStrategy()));
-            strategy.randomize();
+            imsg._cccapbanks.push_back( new CtiCCCapBank );
+            TestCaseItem<CtiCCCapBank> tc_item;
+            tc_item.Populate( imsg._cccapbanks.back() );
         }
+
+        // set and randomize the control strategy
+        imsg._strategyId = TestStrategyLoader::TEST_STRATEGY_ID;
+        TestControlStrategy& strategy = dynamic_cast<TestControlStrategy&>(*(imsg.getStrategy()));
+        strategy.randomize();
     }
 };
 
@@ -612,86 +606,80 @@ struct TestCase<CtiCCSubstationBus> : public TestCase<CapControlPao>
     {
         TestCase<CapControlPao>::Populate();
 
-        {
-            Conductor &imsg = static_cast<Conductor&>(*_imsg);
+        Conductor          &c_imsg = static_cast<Conductor&>(*_imsg);
+        CtiCCSubstationBus &imsg = static_cast<CtiCCSubstationBus&>(*_imsg);
 
-            GenerateRandom( imsg._currentVarLoadPointId );
-            GenerateRandom( imsg._currentWattLoadPointId );
-            GenerateRandom( imsg._currentVoltLoadPointId );
-            GenerateRandom( imsg._mapLocationId );
-            GenerateRandom( imsg._usePhaseData );
+        GenerateRandom( imsg._parentId );
+        GenerateRandom( c_imsg._currentVarLoadPointId );
+        GenerateRandom( imsg._currentvarloadpointvalue );
+        GenerateRandom( c_imsg._currentWattLoadPointId );
+        GenerateRandom( imsg._currentwattloadpointvalue );
+        GenerateRandom( c_imsg._mapLocationId );
+        GenerateRandom( c_imsg._decimalPlaces );
+        GenerateRandom( imsg._newpointdatareceivedflag );
+        GenerateRandom( imsg._busupdatedflag );
+        GenerateRandom( imsg._lastcurrentvarpointupdatetime );
+        GenerateRandom( imsg._estimatedvarloadpointid );
+        GenerateRandom( imsg._estimatedvarloadpointvalue );
+        GenerateRandom( imsg._dailyoperationsanalogpointid );
+        GenerateRandom( imsg._powerfactorpointid );
+        GenerateRandom( imsg._estimatedpowerfactorpointid );
+        GenerateRandom( imsg._currentdailyoperations );
+        GenerateRandom( imsg._peaktimeflag );
+        GenerateRandom( imsg._recentlycontrolledflag );
+        GenerateRandom( imsg._lastoperationtime );
+        GenerateRandom( imsg._varvaluebeforecontrol );
+        GenerateRandom( imsg._powerfactorvalue );
+        GenerateRandom( imsg._estimatedpowerfactorvalue );
+        GenerateRandom( imsg._currentvarpointquality );
+        GenerateRandom( imsg._waivecontrolflag );
+        GenerateRandom( c_imsg._currentVoltLoadPointId );
+        GenerateRandom( imsg._currentvoltloadpointvalue );
+        GenerateRandom( imsg._verificationFlag );
+        GenerateRandom( imsg._switchOverStatus );
+        GenerateRandom( imsg._currentwattpointquality );
+        GenerateRandom( imsg._currentvoltpointquality );
+        GenerateRandom( imsg._targetvarvalue );
+        GenerateRandom( imsg._solution );
+        GenerateRandom( imsg._ovUvDisabledFlag );
+        GenerateRandom( imsg._phaseAvalue );
+        GenerateRandom( imsg._phaseBvalue );
+        GenerateRandom( imsg._phaseCvalue );
+        GenerateRandom( imsg._likeDayControlFlag );
+        GenerateRandom( imsg._displayOrder );
+        GenerateRandom( imsg._voltReductionFlag );
+        GenerateRandom( c_imsg._usePhaseData );
+
+        // imsg._primaryBusFlag should remain false in this test
+
+        GenerateRandom( imsg._altDualSubId );
+        GenerateRandom( imsg._dualBusEnable );
+
+        // {
+        //    // _strategyId this is overwritten for testing controlStrategy
+        //    Controllable &item = static_cast<Controllable&>(*_imsg);
+        //    GenerateRandom( item._strategyId );
+        // }
+
+        const int maxFeeders = GenerateRandom<int>( 2, 5 );
+
+        for( int item_nbr=0; item_nbr < maxFeeders; item_nbr++ )
+        {
+            imsg._ccfeeders.push_back( new CtiCCFeeder( TestStrategyManager::getNewInstance() ));
+            TestCaseItem<CtiCCFeeder> tc_item;
+            tc_item.Populate( imsg._ccfeeders[item_nbr] );
         }
 
-        {
-            CtiCCSubstationBus &imsg = static_cast<CtiCCSubstationBus&>(*_imsg);
+        // re-copy to alternate (this is preferred over constraining more flags, if we randomize those with different value,
+        // Java client would need a more complete model to predict values )
+        imsg._altSubVarVal  = imsg._currentvarloadpointvalue;
+        imsg._altSubWattVal = imsg._currentwattloadpointvalue;
+        imsg._altSubVoltVal = imsg._currentvoltloadpointvalue;
 
-            GenerateRandom( imsg._parentId );
-            GenerateRandom( imsg._currentvarloadpointvalue );
-            GenerateRandom( imsg._currentwattloadpointvalue );
-            GenerateRandom( imsg._decimalplaces );
-            GenerateRandom( imsg._newpointdatareceivedflag );
-            GenerateRandom( imsg._busupdatedflag );
-            GenerateRandom( imsg._lastcurrentvarpointupdatetime );
-            GenerateRandom( imsg._estimatedvarloadpointid );
-            GenerateRandom( imsg._estimatedvarloadpointvalue );
-            GenerateRandom( imsg._dailyoperationsanalogpointid );
-            GenerateRandom( imsg._powerfactorpointid );
-            GenerateRandom( imsg._estimatedpowerfactorpointid );
-            GenerateRandom( imsg._currentdailyoperations );
-            GenerateRandom( imsg._peaktimeflag );
-            GenerateRandom( imsg._recentlycontrolledflag );
-            GenerateRandom( imsg._lastoperationtime );
-            GenerateRandom( imsg._varvaluebeforecontrol );
-            GenerateRandom( imsg._powerfactorvalue );
-            GenerateRandom( imsg._estimatedpowerfactorvalue );
-            GenerateRandom( imsg._currentvarpointquality );
-            GenerateRandom( imsg._waivecontrolflag );
-            GenerateRandom( imsg._currentvoltloadpointvalue );
-            GenerateRandom( imsg._verificationFlag );
-            GenerateRandom( imsg._switchOverStatus );
-            GenerateRandom( imsg._currentwattpointquality );
-            GenerateRandom( imsg._currentvoltpointquality );
-            GenerateRandom( imsg._targetvarvalue );
-            GenerateRandom( imsg._solution );
-            GenerateRandom( imsg._ovUvDisabledFlag );
-            GenerateRandom( imsg._phaseAvalue );
-            GenerateRandom( imsg._phaseBvalue );
-            GenerateRandom( imsg._phaseCvalue );
-            GenerateRandom( imsg._likeDayControlFlag );
-            GenerateRandom( imsg._displayOrder );
-            GenerateRandom( imsg._voltReductionFlag );
-
-            // imsg._primaryBusFlag should remain false in this test
-
-            GenerateRandom( imsg._altDualSubId );
-            GenerateRandom( imsg._dualBusEnable );
-
-            // {
-            //    // _strategyId this is overwritten for testing controlStrategy
-            //    Controllable &item = static_cast<Controllable&>(*_imsg);
-            //    GenerateRandom( item._strategyId );
-            // }
-
-            const int maxFeeders = GenerateRandom<int>( 2, 5 );
-
-            for( int item_nbr=0; item_nbr < maxFeeders; item_nbr++ )
-            {
-                imsg._ccfeeders.push_back( new CtiCCFeeder( TestStrategyManager::getNewInstance() ));
-                TestCaseItem<CtiCCFeeder> tc_item;
-                tc_item.Populate( imsg._ccfeeders[item_nbr] );
-            }
-
-            // re-copy to alternate (this is preferred over constraining more flags, if we randomize those with different value,
-            // Java client would need a more complete model to predict values )
-            imsg._altSubVarVal  = imsg._currentvarloadpointvalue;
-            imsg._altSubWattVal = imsg._currentwattloadpointvalue;
-            imsg._altSubVoltVal = imsg._currentvoltloadpointvalue;
-
-            // set and randomize the control strategy
-            imsg._strategyId = TestStrategyLoader::TEST_STRATEGY_ID;
-            TestControlStrategy& strategy = dynamic_cast<TestControlStrategy&>(*(imsg.getStrategy()));
-            strategy.randomize();
-        }
+        // set and randomize the control strategy
+        imsg._strategyId = TestStrategyLoader::TEST_STRATEGY_ID;
+        TestControlStrategy& strategy = dynamic_cast<TestControlStrategy&>(*(imsg.getStrategy()));
+        strategy.randomize();
     }
 };
 

@@ -60,7 +60,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _primaryBusFlag( false ),
         _dualBusEnable( false ),
         _eventSeq( 0 ),
-        _decimalplaces( 0 ),
         _newpointdatareceivedflag( false ),
         _busupdatedflag( false ),
         _estimatedvarloadpointid( 0 ),
@@ -151,7 +150,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _primaryBusFlag( false ),
         _dualBusEnable( false ),
         _eventSeq( 0 ),
-        _decimalplaces( 0 ),
         _newpointdatareceivedflag( false ),
         _busupdatedflag( false ),
         _estimatedvarloadpointid( 0 ),
@@ -232,15 +230,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
     if ( hasDynamicData( rdr["AdditionalFlags"] ) )
     {
         setDynamicData( rdr );
-    }
-
-    if ( ! rdr[ "DECIMALPLACES" ].isNull() ) 
-    {
-        long decimalPlaces;
-
-        rdr["DECIMALPLACES"] >> decimalPlaces;
-
-        setDecimalPlaces( decimalPlaces );
     }
 }
 
@@ -613,16 +602,6 @@ long CtiCCSubstationBus::getLastFeederControlledSendRetries() const
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return sendRetries;
-}
-
-/*---------------------------------------------------------------------------
-    getDecimalPlaces
-
-    Returns the decimal places of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getDecimalPlaces() const
-{
-    return _decimalplaces;
 }
 
 /*---------------------------------------------------------------------------
@@ -1352,16 +1331,6 @@ void CtiCCSubstationBus::setSolution(const string& text)
 void CtiCCSubstationBus::setTargetVarValue(double value)
 {
     _targetvarvalue = value;
-}
-
-/*---------------------------------------------------------------------------
-    setDecimalPlaces
-
-    Sets the decimal places of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setDecimalPlaces(long places)
-{
-    _decimalplaces = places;
 }
 
 long CtiCCSubstationBus::getNextTODStartTime()
@@ -6093,13 +6062,13 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _currentvarloadpointvalue
         << _currentwattloadpointvalue
         << _nextchecktime
-        << (string)(_newpointdatareceivedflag?"Y":"N")
-        << (string)(_busupdatedflag?"Y":"N")
+        << serializeFlag( _newpointdatareceivedflag )
+        << serializeFlag( _busupdatedflag )
         << _lastcurrentvarpointupdatetime
         << _estimatedvarloadpointvalue
         << _currentdailyoperations
-        << (string)(_peaktimeflag?"Y":"N")
-        << (string)(_recentlycontrolledflag?"Y":"N")
+        << serializeFlag( _peaktimeflag )
+        << serializeFlag( _recentlycontrolledflag )
         << _lastoperationtime
         << _varvaluebeforecontrol
         << _lastfeedercontrolledpaoid
@@ -6109,7 +6078,7 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _kvarsolution
         << _estimatedpowerfactorvalue
         << _currentvarpointquality
-        << (string)(_waivecontrolflag?"Y":"N")
+        << serializeFlag( _waivecontrolflag )
         << formatFlags()
         << _currentVerificationCapBankId
         << _currentVerificationFeederId
@@ -6117,7 +6086,7 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _verificationStrategy
         << _capBankToVerifyInactivityTime
         << _currentvoltloadpointvalue
-        << (string)(_switchOverStatus?"Y":"N")
+        << serializeFlag( _switchOverStatus )
         << _altSubControlValue
         << _eventSeq
         << _currentwattpointquality
@@ -6160,13 +6129,13 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _currentvarloadpointvalue
         << _currentwattloadpointvalue
         << _nextchecktime
-        << (string)(_newpointdatareceivedflag?"Y":"N")
-        << (string)(_busupdatedflag?"Y":"N")
+        << serializeFlag( _newpointdatareceivedflag )
+        << serializeFlag( _busupdatedflag )
         << _lastcurrentvarpointupdatetime
         << _estimatedvarloadpointvalue
         << _currentdailyoperations
-        << (string)(_peaktimeflag?"Y":"N")
-        << (string)(_recentlycontrolledflag?"Y":"N")
+        << serializeFlag( _peaktimeflag )
+        << serializeFlag( _recentlycontrolledflag )
         << _lastoperationtime
         << _varvaluebeforecontrol
         << _lastfeedercontrolledpaoid
@@ -6176,7 +6145,7 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _kvarsolution
         << _estimatedpowerfactorvalue
         << _currentvarpointquality
-        << (string)(_waivecontrolflag?"Y":"N")
+        << serializeFlag( _waivecontrolflag )
         << formatFlags()
         << _currentVerificationCapBankId
         << _currentVerificationFeederId
@@ -6184,7 +6153,7 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _verificationStrategy
         << _capBankToVerifyInactivityTime
         << _currentvoltloadpointvalue
-        << (string)(_switchOverStatus?"Y":"N")
+        << serializeFlag( _switchOverStatus )
         << _altSubControlValue
         << _eventSeq
         << _currentwattpointquality

@@ -49,7 +49,6 @@ public:
     double getCurrentWattLoadPointValue() const;
     double getRawCurrentWattLoadPointValue() const;
     double getCurrentVoltLoadPointValue() const;
-    long getDecimalPlaces() const;
     const CtiTime& getNextCheckTime() const;
     bool getNewPointDataReceivedFlag() const;
     bool getBusUpdatedFlag() const;
@@ -144,7 +143,6 @@ public:
     void setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp);
     void setCurrentWattLoadPointValue(double currentwattval);
     void setCurrentVoltLoadPointValue(double currentvoltval);
-    void setDecimalPlaces(long places);
     void figureNextCheckTime();
     void setNewPointDataReceivedFlag(bool newpointdatareceived);
     void setBusUpdatedFlag(bool busupdated);
@@ -366,7 +364,6 @@ private:
     bool   _dualBusEnable;
     long   _eventSeq;
 
-    long _decimalplaces;
     CtiTime _nextchecktime;
     bool _newpointdatareceivedflag;
     bool _busupdatedflag;

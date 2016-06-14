@@ -76,7 +76,6 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _currentwattpointquality( NormalQuality ),
         _currentvoltpointquality( NormalQuality ),
         _waivecontrolflag( false ),
-        _decimalPlaces( 0 ),
         _peakTimeFlag( false ),
         _verificationFlag( false ),
         _performingVerificationFlag( false ),
@@ -147,7 +146,6 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _currentwattpointquality( NormalQuality ),
         _currentvoltpointquality( NormalQuality ),
         _waivecontrolflag( false ),
-        _decimalPlaces( 0 ),
         _peakTimeFlag( false ),
         _verificationFlag( false ),
         _performingVerificationFlag( false ),
@@ -197,15 +195,6 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         setDynamicData( rdr );
 
         _originalParent.restore( rdr );
-    }
-
-    if ( ! rdr[ "DECIMALPLACES" ].isNull() ) 
-    {
-        long decimalPlaces;
-
-        rdr["DECIMALPLACES"] >> decimalPlaces;
-
-        setDecimalPlaces( decimalPlaces );
     }
 }
 
@@ -687,17 +676,6 @@ const string& CtiCCFeeder::getParentName() const
     return _parentName;
 }
 
-
-/*---------------------------------------------------------------------------
-    getDecimalPlaces
-
-    Returns the DecimalPlaces of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getDecimalPlaces() const
-{
-    return _decimalPlaces;
-}
-
 /*---------------------------------------------------------------------------
     getPeakTimeFlag
 
@@ -1099,17 +1077,6 @@ void CtiCCFeeder::setParentControlUnits(const string& parentControlUnits)
 void CtiCCFeeder::setParentName(const string& parentName)
 {
     updateDynamicValue( _parentName, parentName );
-}
-
-
-/*---------------------------------------------------------------------------
-    setParentDecimalPlaces
-
-    Sets the ParentDecimalPlaces in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setDecimalPlaces(long decimalPlaces)
-{
-    updateDynamicValue( _decimalPlaces, decimalPlaces );
 }
 
 /*---------------------------------------------------------------------------

@@ -34,6 +34,8 @@ public:
     long getPhaseCId() const;
     bool getTotalizedControlFlag() const;
 
+    long getDecimalPlaces() const;
+
 
     void setCurrentVarLoadPointId( const long pointId );
     void setCurrentWattLoadPointId( const long pointId );
@@ -47,6 +49,8 @@ public:
     void setPhaseCId( const long pointId );
     void setTotalizedControlFlag( const bool flag );
 
+    void setDecimalPlaces( const long places );
+
 
 protected:
 
@@ -57,6 +61,8 @@ protected:
 private:
 
     void restoreStaticData( Cti::RowReader & rdr );
+    void restoreDynamicData( Cti::RowReader & rdr );
+
 
     long _currentVarLoadPointId;
     long _currentWattLoadPointId;
@@ -69,6 +75,8 @@ private:
     long _phaseBid;
     long _phaseCid;
     bool _totalizedControlFlag;
+
+    long _decimalPlaces;
 
 };
 

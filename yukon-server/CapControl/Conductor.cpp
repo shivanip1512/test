@@ -17,7 +17,9 @@ Conductor::Conductor( StrategyManager * strategyManager )
         _usePhaseData( false ),
         _phaseBid( 0 ),
         _phaseCid( 0 ),
-        _totalizedControlFlag( false )
+        _totalizedControlFlag( false ),
+        _decimalPlaces( 0 )
+
 
 {
 
@@ -32,11 +34,25 @@ Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
         _usePhaseData( false ),
         _phaseBid( 0 ),
         _phaseCid( 0 ),
-        _totalizedControlFlag( false )
+        _totalizedControlFlag( false ),
+        _decimalPlaces( 0 )
 
 {
     restoreStaticData( rdr );
 
+    if ( hasDynamicData( rdr["AdditionalFlags"] ) )
+    {
+        restoreDynamicData( rdr );
+    }
+
+    if ( ! rdr[ "DECIMALPLACES" ].isNull() ) 
+    {
+        long decimalPlaces;
+
+        rdr["DECIMALPLACES"] >> decimalPlaces;
+
+        setDecimalPlaces( decimalPlaces );
+    }
 }
 
 void Conductor::restoreStaticData( Cti::RowReader & rdr )
@@ -95,6 +111,11 @@ void Conductor::restoreStaticData( Cti::RowReader & rdr )
     _totalizedControlFlag         = deserializeFlag( flag );
 }
 
+void Conductor::restoreDynamicData( Cti::RowReader & rdr )
+{
+
+
+}
 
 /*
     Accessors
@@ -144,52 +165,63 @@ bool Conductor::getTotalizedControlFlag() const
     return _totalizedControlFlag;
 }
 
+long Conductor::getDecimalPlaces() const
+{
+    return _decimalPlaces;
+}
+
 /*
     Mutators
 */
 void Conductor::setCurrentVarLoadPointId( const long pointId )
 {
-    _currentVarLoadPointId = pointId;
+    updateStaticValue( _currentVarLoadPointId, pointId );
 }
 
 void Conductor::setCurrentWattLoadPointId( const long pointId )
 {
-    _currentWattLoadPointId = pointId;
+    updateStaticValue( _currentWattLoadPointId, pointId );
 }
 
 void Conductor::setCurrentVoltLoadPointId( const long pointId )
 {
-    _currentVoltLoadPointId = pointId;
+    updateStaticValue( _currentVoltLoadPointId, pointId );
 }
 
 void Conductor::setMapLocationId( const std::string & mapLocation )
 {
-    _mapLocationId = mapLocation;
+    updateStaticValue( _mapLocationId, mapLocation );
 }
 
 void Conductor::setMultiMonitorFlag( const bool flag )
 {
-    _multiMonitorFlag = flag;
-//    _dirty |= setVariableIfDifferent(_multiMonitorFlag, flag);    // WHY!!
+    updateStaticValue( _multiMonitorFlag, flag );
 }
 
 void Conductor::setUsePhaseData( const bool flag )
 {
-    _usePhaseData = flag;
+    updateStaticValue( _usePhaseData, flag );
 }
 
 void Conductor::setPhaseBId( const long pointId )
 {
-    _phaseBid = pointId;
+    updateStaticValue( _phaseBid, pointId );
 }
 
 void Conductor::setPhaseCId( const long pointId )
 {
-    _phaseCid = pointId;
+    updateStaticValue( _phaseCid, pointId );
 }
 
 void Conductor::setTotalizedControlFlag( const bool flag )
 {
-    _totalizedControlFlag = flag;
+    updateStaticValue( _totalizedControlFlag, flag );
 }
+
+void Conductor::setDecimalPlaces( const long places )
+{
+    updateStaticValue( _decimalPlaces, places );
+}
+
+
 
