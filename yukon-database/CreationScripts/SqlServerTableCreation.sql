@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/19/2016 11:48:31 AM                        */
+/* Created on:     6/14/2016 1:04:29 AM                         */
 /*==============================================================*/
 
 
@@ -8159,6 +8159,19 @@ Result ASC
 go
 
 /*==============================================================*/
+/* Table: RfnBroadcastEventSummary                              */
+/*==============================================================*/
+create table RfnBroadcastEventSummary (
+   RfnBroadcastEventId  numeric(18,0)        not null,
+   Success              numeric(5,0)         not null,
+   SuccessUnenrolled    numeric(5,0)         not null,
+   Failure              numeric(5,0)         not null,
+   Unknown              numeric(5,0)         not null,
+   constraint PK_RFNBROADCASTEVENTSUMMARY primary key nonclustered (RfnBroadcastEventId)
+)
+go
+
+/*==============================================================*/
 /* Table: Route                                                 */
 /*==============================================================*/
 create table Route (
@@ -13734,6 +13747,11 @@ alter table RfnBroadcastEventDeviceStatus
    add constraint FK_RfnBcstEvntDev_RfnBcstEvnt foreign key (RfnBroadcastEventId)
       references RfnBroadcastEvent (RfnBroadcastEventId)
          on delete cascade
+go
+
+alter table RfnBroadcastEventSummary
+   add constraint FK_RFNBROAD_REFERENCE_RFNBROAD foreign key (RfnBroadcastEventId)
+      references RfnBroadcastEvent (RfnBroadcastEventId)
 go
 
 alter table Route

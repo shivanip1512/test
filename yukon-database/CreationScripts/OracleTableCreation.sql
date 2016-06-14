@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/19/2016 11:56:08 AM                        */
+/* Created on:     6/14/2016 12:59:55 AM                        */
 /*==============================================================*/
 
 
@@ -7685,6 +7685,18 @@ create index Indx_RfnBcstEvntDev_DevIdMsgId on RfnBroadcastEventDeviceStatus (
 );
 
 /*==============================================================*/
+/* Table: RfnBroadcastEventSummary                              */
+/*==============================================================*/
+create table RfnBroadcastEventSummary  (
+   RfnBroadcastEventId  NUMERIC(18,0)                   not null,
+   Success              NUMERIC(5,0)                    not null,
+   SuccessUnenrolled    NUMERIC(5,0)                    not null,
+   Failure              NUMERIC(5,0)                    not null,
+   Unknown              NUMERIC(5,0)                    not null,
+   constraint PK_RFNBROADCASTEVENTSUMMARY primary key (RfnBroadcastEventId)
+);
+
+/*==============================================================*/
 /* Table: Route                                                 */
 /*==============================================================*/
 create table Route  (
@@ -12615,6 +12627,10 @@ alter table RfnBroadcastEventDeviceStatus
    add constraint FK_RfnBcstEvntDev_RfnBcstEvnt foreign key (RfnBroadcastEventId)
       references RfnBroadcastEvent (RfnBroadcastEventId)
       on delete cascade;
+
+alter table RfnBroadcastEventSummary
+   add constraint FK_RFNBROAD_REFERENCE_RFNBROAD foreign key (RfnBroadcastEventId)
+      references RfnBroadcastEvent (RfnBroadcastEventId);
 
 alter table Route
    add constraint FK_Route_DevID foreign key (DeviceID)
