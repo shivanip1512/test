@@ -18,7 +18,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -63,6 +62,16 @@ class RfnIdentifierCache implements DBChangeListener {
             }
         default:
             break;
+        }
+    }
+
+    private void invalidatePaoId(int paoId) {
+        Lock writeLock = cacheLock.writeLock();
+        try {
+            writeLock.lock();
+            invalidatedPaoIds.add(paoId);
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -152,47 +161,6 @@ class RfnIdentifierCache implements DBChangeListener {
 
     private Map<String, Integer> getStringSerialMapFor(RfnManufacturerModel mm) {
         return rfnStringSerials.computeIfAbsent(mm, unused -> new PatriciaTrie<Integer>());
-    }
-
-    /**
-     * Invalidates the cache entry for the specified paoId.
-     * Causes any existing RfnIdentifier association to be reloaded if requested.
-     */
-    public void invalidatePaoId(int paoId) {
-        Lock writeLock = cacheLock.writeLock();
-        try {
-            writeLock.lock();
-            invalidatedPaoIds.add(paoId);
-        } finally {
-            writeLock.unlock();
-        }
-    }
-
-    /**
-     * Updates the cache entry for the specified paoId.
-     * To be used only by the service generating the DBChange - all other changes should be handled via the cache's DBChangeListener. 
-     */
-    public void updatePaoId(int paoId, RfnIdentifier rfnIdentifier) {
-        RfnManufacturerModel mm = RfnManufacturerModel.of(rfnIdentifier);
-        if (mm != null) {
-            String serial = rfnIdentifier.getSensorSerialNumber();
-            Long numericSerial = tryParseSerialAsLong(serial);
-            //  This acquires the write lock and will contend with other cache access.
-            //    This is currently only called from RfnDeviceDaoImpl.updateDevice(), so it should be rare.
-            //    If it becomes a bottleneck, the updates could be buffered into a separate ConcurrentMap<RfnIdentifier, Integer>.
-            Lock writeLock = cacheLock.writeLock();
-            try {
-                writeLock.lock();
-                if (numericSerial != null) {
-                    getNumericSerialMapFor(mm).put(numericSerial, paoId);
-                } else {
-                    getStringSerialMapFor(mm).put(serial, paoId);
-                }
-                //invalidatedPaoIds.remove(paoId);
-            } finally {
-                writeLock.unlock();
-            }
-        }
     }
 
     private final static class RfnSerialPaoId {

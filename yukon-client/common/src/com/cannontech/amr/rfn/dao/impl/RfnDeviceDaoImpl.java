@@ -45,7 +45,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private AsyncDynamicDataSource dynamicDataSource;
     @Autowired private IDatabaseCache cache;
-    @Autowired private RfnIdentifierCache rfnIdentifierCache;
+    private RfnIdentifierCache rfnIdentifierCache;
 
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
         @Override
@@ -233,7 +233,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         if (device.getRfnIdentifier().isBlank()) {
             /* When someone has blanked out the three fields of the rfn device address, delete that row from RfnAddress. */
             deleteRfnAddress(device);
-            rfnIdentifierCache.invalidatePaoId(device.getPaoIdentifier().getPaoId());
             return;
         }
         if (!device.getRfnIdentifier().isNotBlank()) {
@@ -249,7 +248,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
 
         try {
             jdbcTemplate.update(sql);
-            rfnIdentifierCache.updatePaoId(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier());
             return;
         } catch (DataIntegrityViolationException e) {
             /* Row is there, try to update it. */
@@ -265,7 +263,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 /* The initial insert failed because a different device is using this SN, Manufacturer, Model combination. */
                 throw new DataIntegrityViolationException("Serial Number, Manufacturer, and Model must be unique.");
             }
-            rfnIdentifierCache.updatePaoId(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier());
         }
 
     }
