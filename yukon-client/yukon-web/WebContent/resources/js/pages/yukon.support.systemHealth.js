@@ -51,7 +51,7 @@ yukon.support.systemHealth = (function() {
                                          .addClass(queue.status.iconName)
                                          .prop('title', queue.status.allMessages);
                 $('#' + id + '-arc').text(queue.archivedReadingsCount !== null ? queue.archivedReadingsCount : '');
-                $('#' + id + '-arp').text(queue.archivedRequestsProcessed);
+                $('#' + id + '-arp').text(queue.archiveRequestsProcessed);
             }
         }).fail(function(xhr, status, error) {
             debug.log('update failed:' + status + ': ' + error);
