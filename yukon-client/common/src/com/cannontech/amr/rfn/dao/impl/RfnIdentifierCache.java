@@ -13,15 +13,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.collections4.trie.PatriciaTrie;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-
-import com.cannontech.amr.rfn.dao.RfnIdentifierCache;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
@@ -35,12 +30,11 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.google.common.collect.Range;
 import com.google.common.collect.Ranges;
 
-class RfnIdentifierCacheImpl implements DBChangeListener, RfnIdentifierCache {
+class RfnIdentifierCache implements DBChangeListener {
 
-    private final static Logger log = Logger.getLogger(RfnIdentifierCacheImpl.class);
+    private final static Logger log = Logger.getLogger(RfnIdentifierCache.class);
 
-    @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private AsyncDynamicDataSource dynamicDataSource;
+    private YukonJdbcTemplate jdbcTemplate;
     
     //  This cache only includes entries that uniquely map to an RfnManufacturerModel.
     //    This currently excludes gateways, relays, Focus 410s, and a few Focus 420s.  See RfnManufacturerModel for details.
@@ -51,8 +45,9 @@ class RfnIdentifierCacheImpl implements DBChangeListener, RfnIdentifierCache {
     
     private Set<Integer> invalidatedPaoIds = new HashSet<Integer>();
 
-    @PostConstruct
-    private void listenForDbChanges() {
+    public RfnIdentifierCache(YukonJdbcTemplate jdbcTemplate, AsyncDynamicDataSource dynamicDataSource) {
+        this.jdbcTemplate = jdbcTemplate;
+        
         dynamicDataSource.addDBChangeListener(this);
     }
     
@@ -71,7 +66,10 @@ class RfnIdentifierCacheImpl implements DBChangeListener, RfnIdentifierCache {
         }
     }
 
-    @Override
+    /** 
+     * Attempts to load and cache the paoId for the specified RfnManufacturerModel and serial.
+     * Returns null if not found.
+     */
     public Integer getPaoIdFor(RfnManufacturerModel mm, String serial) {
         Integer paoId = null;
         Long numericSerial = tryParseSerialAsLong(serial);
@@ -156,7 +154,10 @@ class RfnIdentifierCacheImpl implements DBChangeListener, RfnIdentifierCache {
         return rfnStringSerials.computeIfAbsent(mm, unused -> new PatriciaTrie<Integer>());
     }
 
-    @Override
+    /**
+     * Invalidates the cache entry for the specified paoId.
+     * Causes any existing RfnIdentifier association to be reloaded if requested.
+     */
     public void invalidatePaoId(int paoId) {
         Lock writeLock = cacheLock.writeLock();
         try {
@@ -167,7 +168,10 @@ class RfnIdentifierCacheImpl implements DBChangeListener, RfnIdentifierCache {
         }
     }
 
-    @Override
+    /**
+     * Updates the cache entry for the specified paoId.
+     * To be used only by the service generating the DBChange - all other changes should be handled via the cache's DBChangeListener. 
+     */
     public void updatePaoId(int paoId, RfnIdentifier rfnIdentifier) {
         RfnManufacturerModel mm = RfnManufacturerModel.of(rfnIdentifier);
         if (mm != null) {

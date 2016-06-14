@@ -122,7 +122,7 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
 
     @Override
     public void addDBChangeListener(DBChangeListener l) {
-        throw new MethodNotImplementedException();
+        //  Ignore any listeners for now.  However, we will need to add support for this when anyone utilizes  publishDbChange().
     }
 
     @Override

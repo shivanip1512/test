@@ -4,11 +4,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.cannontech.core.dynamic.impl.MockAsyncDynamicDataSourceImpl;
 import com.google.common.collect.Range;
 import com.google.common.collect.Ranges;
 
 public class RfnIdentifierCacheTest {
-    private RfnIdentifierCacheImpl cache = new RfnIdentifierCacheImpl();
+    private RfnIdentifierCache cache = new RfnIdentifierCache(null, new MockAsyncDynamicDataSourceImpl());
     
     @Test
     public void test_buildSerialRange() {
