@@ -481,11 +481,34 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     delete area;
 }
 
+struct test_CtiCCSubstationBus : CtiCCSubstationBus
+{
+    test_CtiCCSubstationBus()
+        :   CtiCCSubstationBus()
+    {
+
+    }
+
+    test_CtiCCSubstationBus( Cti::RowReader & rdr )
+        :   CtiCCSubstationBus( rdr, nullptr )
+    {
+
+    }
+
+    test_CtiCCSubstationBus( StrategyManager * strategyManager )
+        :   CtiCCSubstationBus( strategyManager )
+    {
+
+    }
+
+    using CtiCCSubstationBus::isDirty;
+};
+
 BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction )
 {
     _RATE_OF_CHANGE_DEPTH = 5;      // this shows up in the regressions: getRegDepth()
 
-    CtiCCSubstationBus  bus;
+    test_CtiCCSubstationBus bus;
 
     BOOST_CHECK_EQUAL(  false, bus.getSwitchOverStatus() );
     BOOST_CHECK_EQUAL(  false, bus.getPrimaryBusFlag() );
@@ -604,7 +627,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_ma
 
     StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
-    CtiCCSubstationBus  bus( &_strategyManager );
+    test_CtiCCSubstationBus bus( &_strategyManager );
 
     BOOST_CHECK_EQUAL(  false, bus.getSwitchOverStatus() );
     BOOST_CHECK_EQUAL(  false, bus.getPrimaryBusFlag() );
@@ -770,21 +793,6 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_replication )
     delete station;
     delete area;
 }
-
-struct test_CtiCCSubstationBus : CtiCCSubstationBus
-{
-    test_CtiCCSubstationBus()
-        :   CtiCCSubstationBus()
-    {
-
-    }
-
-    test_CtiCCSubstationBus( Cti::RowReader & rdr )
-        :   CtiCCSubstationBus( rdr, nullptr )
-    {
-
-    }
-};
 
 BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_no_dynamic_data )
 {

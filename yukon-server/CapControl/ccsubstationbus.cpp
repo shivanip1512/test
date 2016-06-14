@@ -134,9 +134,7 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
-        regressionC( _RATE_OF_CHANGE_DEPTH ),
-        _insertDynamicDataFlag( true ),
-        _dirty( false )
+        regressionC( _RATE_OF_CHANGE_DEPTH )
 {
 }
 
@@ -227,13 +225,11 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
-        regressionC( _RATE_OF_CHANGE_DEPTH ),
-        _insertDynamicDataFlag( true ),
-        _dirty( false )
+        regressionC( _RATE_OF_CHANGE_DEPTH )
 {
     restore(rdr);
 
-    if ( ! rdr[ "AdditionalFlags" ].isNull() ) 
+    if ( hasDynamicData( rdr["AdditionalFlags"] ) )
     {
         setDynamicData( rdr );
     }
@@ -1130,7 +1126,7 @@ void CtiCCSubstationBus::setParentId(long parentId)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setParentControlUnits(const string& parentControlUnits)
 {
-    _dirty |= setVariableIfDifferent(_parentControlUnits, parentControlUnits);
+    updateDynamicValue( _parentControlUnits, parentControlUnits );
 }
 
 /*---------------------------------------------------------------------------
@@ -1140,7 +1136,7 @@ void CtiCCSubstationBus::setParentControlUnits(const string& parentControlUnits)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setParentName(const string& parentName)
 {
-    _dirty |= setVariableIfDifferent(_parentName, parentName);
+    updateDynamicValue( _parentName, parentName );
 }
 
 /*---------------------------------------------------------------------------
@@ -1159,7 +1155,7 @@ void CtiCCSubstationBus::setDisplayOrder(long displayOrder)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setIVControlTot(double value)
 {
-    _dirty |= setVariableIfDifferent(_iVControlTot, value);
+    updateDynamicValue( _iVControlTot, value );
 }
 /*---------------------------------------------------------------------------
     setIVCoont
@@ -1168,7 +1164,7 @@ void CtiCCSubstationBus::setIVControlTot(double value)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setIVCount(long value)
 {
-    _dirty |= setVariableIfDifferent(_iVCount, value);
+    updateDynamicValue( _iVCount, value );
 }
 /*---------------------------------------------------------------------------
     setIWControlTot
@@ -1177,7 +1173,7 @@ void CtiCCSubstationBus::setIVCount(long value)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setIWControlTot(double value)
 {
-    _dirty |= setVariableIfDifferent(_iWControlTot, value);
+    updateDynamicValue( _iWControlTot, value );
 }
 /*---------------------------------------------------------------------------
     setIWCoont
@@ -1216,7 +1212,7 @@ void CtiCCSubstationBus::setIWControl(double value)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setPhaseAValue(double value, CtiTime timestamp)
 {
-    _dirty |= setVariableIfDifferent(_phaseAvalue, value);
+    updateDynamicValue( _phaseAvalue, value );
 
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
@@ -1235,7 +1231,7 @@ void CtiCCSubstationBus::setPhaseAValue(double value, CtiTime timestamp)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setPhaseBValue(double value, CtiTime timestamp)
 {
-    _dirty |= setVariableIfDifferent(_phaseBvalue, value);
+    updateDynamicValue( _phaseBvalue, value );
 
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
@@ -1256,7 +1252,7 @@ void CtiCCSubstationBus::setPhaseBValue(double value, CtiTime timestamp)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setPhaseCValue(double value, CtiTime timestamp)
 {
-    _dirty |= setVariableIfDifferent(_phaseCvalue, value);
+    updateDynamicValue( _phaseCvalue, value );
 
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
@@ -1307,7 +1303,7 @@ void CtiCCSubstationBus::setPhaseCValueBeforeControl(double value)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setCurrentVarLoadPointValue(double value, CtiTime timestamp)
 {
-    _dirty |= setVariableIfDifferent(_currentvarloadpointvalue, value);
+    updateDynamicValue( _currentvarloadpointvalue, value );
 
     if(_RATE_OF_CHANGE && !getRecentlyControlledFlag())
     {
@@ -1326,7 +1322,7 @@ void CtiCCSubstationBus::setCurrentVarLoadPointValue(double value, CtiTime times
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setCurrentWattLoadPointValue(double currentwattval)
 {
-    _dirty |= setVariableIfDifferent(_currentwattloadpointvalue, currentwattval);
+    updateDynamicValue( _currentwattloadpointvalue, currentwattval );
 }
 
 /*---------------------------------------------------------------------------
@@ -1336,7 +1332,7 @@ void CtiCCSubstationBus::setCurrentWattLoadPointValue(double currentwattval)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setCurrentVoltLoadPointValue(double currentvoltval)
 {
-    _dirty |= setVariableIfDifferent(_currentvoltloadpointvalue, currentvoltval);
+    updateDynamicValue( _currentvoltloadpointvalue, currentvoltval );
 }
 
 /*---------------------------------------------------------------------------
@@ -1403,6 +1399,8 @@ long CtiCCSubstationBus::getNextTODStartTime()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::figureNextCheckTime()
 {
+    CtiTime originalTime = _nextchecktime;
+
     CtiTime currenttime = CtiTime();
     if (getLikeDayControlFlag())
     {
@@ -1472,7 +1470,11 @@ void CtiCCSubstationBus::figureNextCheckTime()
             long tempsum = (currenttime.seconds()-(currenttime.seconds()%getStrategy()->getControlInterval()))+getStrategy()->getControlInterval();
             _nextchecktime = CtiTime(CtiTime(tempsum));
         }
-        _dirty = true;
+
+        if ( _nextchecktime != originalTime )
+        {
+            setDirty( true );   // why here and nowhere else in this function...?
+        }
     }
     else
     {
@@ -1516,7 +1518,7 @@ double CtiCCSubstationBus::getSetPoint()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setNewPointDataReceivedFlag(bool newpointdatareceived)
 {
-    _dirty |= setVariableIfDifferent(_newpointdatareceivedflag, newpointdatareceived);
+    updateDynamicValue( _newpointdatareceivedflag, newpointdatareceived );
 }
 
 /*---------------------------------------------------------------------------
@@ -1536,7 +1538,7 @@ void CtiCCSubstationBus::setBusUpdatedFlag(bool busupdated)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
 {
-    _dirty |= setVariableIfDifferent(_lastcurrentvarpointupdatetime, lastpointupdate);
+    updateDynamicValue( _lastcurrentvarpointupdatetime, lastpointupdate );
 }
 /*---------------------------------------------------------------------------
     setLastWattPointTime
@@ -1545,7 +1547,7 @@ void CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const CtiTime& lastpoi
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setLastWattPointTime(const CtiTime& lastpointupdate)
 {
-    _dirty |= setVariableIfDifferent(_lastWattPointTime, lastpointupdate);
+    updateDynamicValue( _lastWattPointTime, lastpointupdate );
 }
 /*---------------------------------------------------------------------------
     setLastVoltPointTime
@@ -1554,7 +1556,7 @@ void CtiCCSubstationBus::setLastWattPointTime(const CtiTime& lastpointupdate)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setLastVoltPointTime(const CtiTime& lastpointupdate)
 {
-    _dirty |= setVariableIfDifferent(_lastVoltPointTime, lastpointupdate);
+    updateDynamicValue( _lastVoltPointTime, lastpointupdate );
 }
 
 /*---------------------------------------------------------------------------
@@ -1574,9 +1576,7 @@ void CtiCCSubstationBus::setEstimatedVarLoadPointId(long estimatedvarid)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setEstimatedVarLoadPointValue(double estimatedvarval)
 {
-    const bool varChanged = setVariableIfDifferent(_estimatedvarloadpointvalue, estimatedvarval);
-    _busupdatedflag |= varChanged;
-    _dirty |= varChanged;
+    _busupdatedflag |= updateDynamicValue( _estimatedvarloadpointvalue, estimatedvarval );
 }
 
 /*---------------------------------------------------------------------------
@@ -1617,15 +1617,13 @@ void CtiCCSubstationBus::setEstimatedPowerFactorPointId(long epfpointid)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
 {
-    if( _currentdailyoperations != operations )
+    if ( updateDynamicValue( _currentdailyoperations, operations ) )
     {
-        if( getDailyOperationsAnalogPointId() > 0 )
+        if ( getDailyOperationsAnalogPointId() > 0 )
         {
             pointChanges.push_back(new CtiPointDataMsg(getDailyOperationsAnalogPointId(),operations,NormalQuality,AnalogPointType));
         }
-        _dirty = true;
     }
-    _currentdailyoperations = operations;
 }
 
 
@@ -1636,7 +1634,7 @@ void CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(long operations, Ct
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setCurrentDailyOperations(long operations)
 {
-    _dirty |= setVariableIfDifferent(_currentdailyoperations, operations);
+    updateDynamicValue( _currentdailyoperations, operations );
 }
 
 /*---------------------------------------------------------------------------
@@ -1646,7 +1644,7 @@ void CtiCCSubstationBus::setCurrentDailyOperations(long operations)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setPeakTimeFlag(bool peaktime)
 {
-    _dirty |= setVariableIfDifferent(_peaktimeflag, peaktime);
+    updateDynamicValue( _peaktimeflag, peaktime );
 }
 
 /*---------------------------------------------------------------------------
@@ -1656,7 +1654,7 @@ void CtiCCSubstationBus::setPeakTimeFlag(bool peaktime)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setRecentlyControlledFlag(bool recentlycontrolled)
 {
-    _dirty |= setVariableIfDifferent(_recentlycontrolledflag, recentlycontrolled);
+    updateDynamicValue( _recentlycontrolledflag, recentlycontrolled );
 }
 
 /*---------------------------------------------------------------------------
@@ -1711,7 +1709,7 @@ void CtiCCSubstationBus::checkAndUpdateRecentlyControlledFlag()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setLastOperationTime(const CtiTime& lastoperation)
 {
-    _dirty |= setVariableIfDifferent(_lastoperationtime, lastoperation);
+    updateDynamicValue( _lastoperationtime, lastoperation );
 }
 
 void CtiCCSubstationBus::setLastVerificationCheck(const CtiTime& checkTime)
@@ -1726,7 +1724,7 @@ void CtiCCSubstationBus::setLastVerificationCheck(const CtiTime& checkTime)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setVarValueBeforeControl(double oldvarval, long originalParentId)
 {
-    _dirty |= setVariableIfDifferent(_varvaluebeforecontrol, oldvarval);
+    updateDynamicValue( _varvaluebeforecontrol, oldvarval );
 
     setPhaseAValueBeforeControl(getPhaseAValue());
     setPhaseBValueBeforeControl(getPhaseBValue());
@@ -1740,7 +1738,7 @@ void CtiCCSubstationBus::setVarValueBeforeControl(double oldvarval, long origina
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setLastFeederControlledPAOId(long lastfeederpao)
 {
-    _dirty |= setVariableIfDifferent(_lastfeedercontrolledpaoid, lastfeederpao);
+    updateDynamicValue( _lastfeedercontrolledpaoid, lastfeederpao );
 }
 
 void CtiCCSubstationBus::setLastFeederControlled(long lastfeederpao)
@@ -1767,7 +1765,7 @@ void CtiCCSubstationBus::setLastFeederControlled(long lastfeederpao)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setLastFeederControlledPosition(long lastfeederposition)
 {
-    _dirty |= setVariableIfDifferent(_lastfeedercontrolledposition, lastfeederposition);
+    updateDynamicValue( _lastfeedercontrolledposition, lastfeederposition );
 }
 
 /*---------------------------------------------------------------------------
@@ -1777,7 +1775,7 @@ void CtiCCSubstationBus::setLastFeederControlledPosition(long lastfeederposition
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setPowerFactorValue(double pfval)
 {
-    _dirty |= setVariableIfDifferent(_powerfactorvalue, pfval);
+    updateDynamicValue( _powerfactorvalue, pfval );
 }
 
 
@@ -1807,7 +1805,7 @@ void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setKVARSolution(double solution)
 {
-    _dirty |= setVariableIfDifferent(_kvarsolution, solution);
+    updateDynamicValue( _kvarsolution, solution );
 }
 
 /*---------------------------------------------------------------------------
@@ -1817,7 +1815,7 @@ void CtiCCSubstationBus::setKVARSolution(double solution)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setEstimatedPowerFactorValue(double epfval)
 {
-    _dirty |= setVariableIfDifferent(_estimatedpowerfactorvalue, epfval);
+    updateDynamicValue( _estimatedpowerfactorvalue, epfval );
 }
 
 /*---------------------------------------------------------------------------
@@ -1827,7 +1825,7 @@ void CtiCCSubstationBus::setEstimatedPowerFactorValue(double epfval)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setCurrentVarPointQuality(long cvpq)
 {
-    _dirty |= setVariableIfDifferent(_currentvarpointquality, cvpq);
+    updateDynamicValue( _currentvarpointquality, cvpq );
 }
 
 
@@ -1838,7 +1836,7 @@ void CtiCCSubstationBus::setCurrentVarPointQuality(long cvpq)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setCurrentWattPointQuality(long cwpq)
 {
-    _dirty |= setVariableIfDifferent(_currentwattpointquality, cwpq);
+    updateDynamicValue( _currentwattpointquality, cwpq );
 }
 
 
@@ -1849,7 +1847,7 @@ void CtiCCSubstationBus::setCurrentWattPointQuality(long cwpq)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setCurrentVoltPointQuality(long cvpq)
 {
-    _dirty |= setVariableIfDifferent(_currentvoltpointquality, cvpq);
+    updateDynamicValue( _currentvoltpointquality, cvpq );
 }
 
 /*---------------------------------------------------------------------------
@@ -1859,16 +1857,16 @@ void CtiCCSubstationBus::setCurrentVoltPointQuality(long cvpq)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::setWaiveControlFlag(bool waive)
 {
-    _dirty |= setVariableIfDifferent(_waivecontrolflag, waive);
+    updateDynamicValue( _waivecontrolflag, waive );
 }
 
 void CtiCCSubstationBus::setAltDualSubId(long altDualSubId)
 {
-    _dirty |= setVariableIfDifferent(_altDualSubId, altDualSubId);
+    updateDynamicValue( _altDualSubId, altDualSubId );
 }
 void CtiCCSubstationBus::setAltSubControlValue(double controlValue)
 {
-    _dirty |= setVariableIfDifferent(_altSubControlValue, controlValue);
+    updateDynamicValue( _altSubControlValue, controlValue );
 }
 void CtiCCSubstationBus::setAllAltSubValues(double volt, double var, double watt)
 {
@@ -1880,29 +1878,29 @@ void CtiCCSubstationBus::setAllAltSubValues(double volt, double var, double watt
 
 void CtiCCSubstationBus::setSwitchOverPointId(long pointId)
 {
-    _dirty |= setVariableIfDifferent(_switchOverPointId, pointId);
+    updateDynamicValue( _switchOverPointId, pointId );
 }
 void CtiCCSubstationBus::setSwitchOverStatus(bool status)
 {
-    _dirty |= setVariableIfDifferent(_switchOverStatus, status);
+    updateDynamicValue( _switchOverStatus, status );
 }
 void CtiCCSubstationBus::setPrimaryBusFlag(bool status)
 {
-    _dirty |= setVariableIfDifferent(_primaryBusFlag, status);
+    updateDynamicValue( _primaryBusFlag, status );
 }
 void CtiCCSubstationBus::setDualBusEnable(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_dualBusEnable, flag);
+    updateDynamicValue( _dualBusEnable, flag );
 }
 
 void CtiCCSubstationBus::setEventSequence(long eventSeq)
 {
-    _dirty |= setVariableIfDifferent(_eventSeq, eventSeq);
+    updateDynamicValue( _eventSeq, eventSeq );
 }
 
 void CtiCCSubstationBus::setReEnableBusFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_reEnableBusFlag, flag);
+    updateDynamicValue( _reEnableBusFlag, flag );
 }
 
 void CtiCCSubstationBus::reOrderFeederDisplayOrders()
@@ -5122,64 +5120,64 @@ void CtiCCSubstationBus::getNextCapBankToVerify(EventLogEntries &ccEvents)
 
 void CtiCCSubstationBus::setVerificationFlag(bool verificationFlag)
 {
-    _dirty |= setVariableIfDifferent(_verificationFlag, verificationFlag);
+    updateDynamicValue( _verificationFlag, verificationFlag );
 }
 
 void CtiCCSubstationBus::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
-    _dirty |= setVariableIfDifferent(_performingVerificationFlag, performingVerificationFlag);
+    updateDynamicValue( _performingVerificationFlag, performingVerificationFlag );
 }
 void CtiCCSubstationBus::setVerificationDoneFlag(bool verificationDoneFlag)
 {
-    _dirty |= setVariableIfDifferent(_verificationDoneFlag, verificationDoneFlag);
+    updateDynamicValue( _verificationDoneFlag, verificationDoneFlag );
 }
 
 void CtiCCSubstationBus::setOverlappingVerificationFlag(bool overlapFlag)
 {
-    _dirty |= setVariableIfDifferent(_overlappingSchedulesVerificationFlag, overlapFlag);
+    updateDynamicValue( _overlappingSchedulesVerificationFlag, overlapFlag );
 }
 
 void CtiCCSubstationBus::setPreOperationMonitorPointScanFlag( bool flag)
 {
-    _dirty |= setVariableIfDifferent(_preOperationMonitorPointScanFlag, flag);
+    updateDynamicValue( _preOperationMonitorPointScanFlag, flag );
 }
 
 void CtiCCSubstationBus::setOperationSentWaitFlag( bool flag)
 {
-    _dirty |= setVariableIfDifferent(_operationSentWaitFlag, flag);
+    updateDynamicValue( _operationSentWaitFlag, flag );
 }
 
 void CtiCCSubstationBus::setPostOperationMonitorPointScanFlag( bool flag)
 {
-    _dirty |= setVariableIfDifferent(_postOperationMonitorPointScanFlag, flag);
+    updateDynamicValue( _postOperationMonitorPointScanFlag, flag );
 }
 
 void CtiCCSubstationBus::setWaitForReCloseDelayFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_waitForReCloseDelayFlag, flag);
+    updateDynamicValue( _waitForReCloseDelayFlag, flag );
 }
 
 void CtiCCSubstationBus::setWaitToFinishRegularControlFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_waitToFinishRegularControlFlag, flag);
+    updateDynamicValue( _waitToFinishRegularControlFlag, flag );
 }
 void CtiCCSubstationBus::setMaxDailyOpsHitFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_maxDailyOpsHitFlag, flag);
+    updateDynamicValue( _maxDailyOpsHitFlag, flag );
 }
 
 void CtiCCSubstationBus::setOvUvDisabledFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
+    updateDynamicValue( _ovUvDisabledFlag, flag );
 }
 void CtiCCSubstationBus::setCorrectionNeededNoBankAvailFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_correctionNeededNoBankAvailFlag, flag);
+    updateDynamicValue( _correctionNeededNoBankAvailFlag, flag );
 }
 
 void CtiCCSubstationBus::setLikeDayControlFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_likeDayControlFlag, flag);
+    updateDynamicValue( _likeDayControlFlag, flag );
 }
 
 void CtiCCSubstationBus::setVoltReductionControlId(long pointid)
@@ -5194,27 +5192,27 @@ void CtiCCSubstationBus::setDisableBusPointId(long pointid)
 
 void CtiCCSubstationBus::setVoltReductionFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_voltReductionFlag, flag);
+    updateDynamicValue( _voltReductionFlag, flag );
 }
 
 void CtiCCSubstationBus::setSendMoreTimeControlledCommandsFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_sendMoreTimeControlledCommandsFlag, flag);
+    updateDynamicValue( _sendMoreTimeControlledCommandsFlag, flag );
 }
 
 void CtiCCSubstationBus::setCurrentVerificationFeederId(long feederId)
 {
-    _dirty |= setVariableIfDifferent(_currentVerificationFeederId, feederId);
+    updateDynamicValue( _currentVerificationFeederId, feederId );
 }
 
 
 void CtiCCSubstationBus::setCurrentVerificationCapBankId(long capBankId)
 {
-    _dirty |= setVariableIfDifferent(_currentVerificationCapBankId, capBankId);
+    updateDynamicValue( _currentVerificationCapBankId, capBankId );
 }
 void CtiCCSubstationBus::setCurrentVerificationCapBankState(long status)
 {
-    _dirty |= setVariableIfDifferent(_currentCapBankToVerifyAssumedOrigState, status);
+    updateDynamicValue( _currentCapBankToVerifyAssumedOrigState, status );
 }
 
 
@@ -5982,17 +5980,6 @@ bool CtiCCSubstationBus::checkForAndPerformVerificationSendRetry(const CtiTime& 
    return returnBoolean;
 }
 
-
-/*---------------------------------------------------------------------------
-    isDirty
-
-    Returns the dirty flag of the cap bank
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBus::isDirty() const
-{
-    return _dirty;
-}
-
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
@@ -6000,197 +5987,7 @@ bool CtiCCSubstationBus::isDirty() const
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if ( _dirty )
-    {
-        std::string flags( 20, 'N' );
-
-        if( !_insertDynamicDataFlag )
-        {
-            flags[  0 ] = serializeFlag( _verificationFlag );
-            flags[  1 ] = serializeFlag( _performingVerificationFlag );
-            flags[  2 ] = serializeFlag( _verificationDoneFlag );
-            flags[  3 ] = serializeFlag( _overlappingSchedulesVerificationFlag );
-            flags[  4 ] = serializeFlag( _preOperationMonitorPointScanFlag );
-            flags[  5 ] = serializeFlag( _operationSentWaitFlag );
-            flags[  6 ] = serializeFlag( _postOperationMonitorPointScanFlag );
-            flags[  7 ] = serializeFlag( _reEnableBusFlag );
-            flags[  8 ] = serializeFlag( _waitForReCloseDelayFlag );
-            flags[  9 ] = serializeFlag( _waitToFinishRegularControlFlag );
-            flags[ 10 ] = serializeFlag( _maxDailyOpsHitFlag );
-            flags[ 11 ] = serializeFlag( _ovUvDisabledFlag );
-            flags[ 12 ] = serializeFlag( _correctionNeededNoBankAvailFlag );
-            flags[ 13 ] = serializeFlag( _likeDayControlFlag );
-            flags[ 14 ] = serializeFlag( _voltReductionFlag );
-            flags[ 15 ] = serializeFlag( _sendMoreTimeControlledCommandsFlag );
-            flags[ 16 ] = serializeFlag( _disableOvUvVerificationFlag );
-            flags[ 17 ] = serializeFlag( _primaryBusFlag );
-
-            static const string updateSql = "update dynamicccsubstationbus set "
-                                            "currentvarpointvalue = ?, "
-                                            "currentwattpointvalue = ?, "
-                                            "nextchecktime = ?, "
-                                            "newpointdatareceivedflag = ?, "
-                                            "busupdatedflag = ?, "
-                                            "lastcurrentvarupdatetime = ?, "
-                                            "estimatedvarpointvalue = ?, "
-                                            "currentdailyoperations = ?, "
-                                            "peaktimeflag = ?, "
-                                            "recentlycontrolledflag = ?, "
-                                            "lastoperationtime = ?, "
-                                            "varvaluebeforecontrol = ?, "
-                                            "lastfeederpaoid = ?, "
-                                            "lastfeederposition = ?, "
-                                            "ctitimestamp = ?, "
-                                            "powerfactorvalue = ?, "
-                                            "kvarsolution = ?, "
-                                            "estimatedpfvalue = ?, "
-                                            "currentvarpointquality = ?, "
-                                            "waivecontrolflag = ?, "
-                                            "additionalflags = ?, "
-                                            "currverifycbid = ?, "
-                                            "currverifyfeederid = ?, "
-                                            "currverifycborigstate = ?, "
-                                            "verificationstrategy = ?, "
-                                            "cbinactivitytime = ?, "
-                                            "currentvoltpointvalue = ?, "
-                                            "switchPointStatus = ?, "
-                                            "altSubControlValue = ?, "
-                                            "eventSeq = ?, "
-                                            "currentwattpointquality = ?, "
-                                            "currentvoltpointquality = ?, "
-                                            "ivcontroltot = ?, "
-                                            "ivcount = ?, "
-                                            "iwcontroltot = ?, "
-                                            "iwcount = ?, "
-                                            "phaseavalue = ?, "
-                                            "phasebvalue = ?, "
-                                            "phasecvalue = ?, "
-                                            "lastwattpointtime = ?, "
-                                            "lastvoltpointtime = ?, "
-                                            "phaseavaluebeforecontrol = ?, "
-                                            "phasebvaluebeforecontrol = ?, "
-                                            "phasecvaluebeforecontrol = ?"
-                                            " where substationbusid = ?";
-
-            Cti::Database::DatabaseWriter updater(conn, updateSql);
-
-            updater << _currentvarloadpointvalue
-                    << _currentwattloadpointvalue
-                    << _nextchecktime
-                    << (string)(_newpointdatareceivedflag?"Y":"N")
-                    << (string)(_busupdatedflag?"Y":"N")
-                    << _lastcurrentvarpointupdatetime
-                    << _estimatedvarloadpointvalue
-                    << _currentdailyoperations
-                    << (string)(_peaktimeflag?"Y":"N")
-                    << (string)(_recentlycontrolledflag?"Y":"N")
-                    << _lastoperationtime
-                    << _varvaluebeforecontrol
-                    << _lastfeedercontrolledpaoid
-                    << _lastfeedercontrolledposition
-                    << currentDateTime
-                    << _powerfactorvalue
-                    << _kvarsolution
-                    << _estimatedpowerfactorvalue
-                    << _currentvarpointquality
-                    << (string)(_waivecontrolflag?"Y":"N")
-                    << flags
-                    << _currentVerificationCapBankId
-                    << _currentVerificationFeederId
-                    << _currentCapBankToVerifyAssumedOrigState
-                    << _verificationStrategy
-                    << _capBankToVerifyInactivityTime
-                    << _currentvoltloadpointvalue
-                    << (string)(_switchOverStatus?"Y":"N")
-                    << _altSubControlValue
-                    << _eventSeq
-                    << _currentwattpointquality
-                    << _currentvoltpointquality
-                    << _iVControlTot
-                    << _iVCount
-                    << _iWControlTot
-                    << _iWCount
-                    << _phaseAvalue
-                    << _phaseBvalue
-                    << _phaseCvalue
-                    << _lastWattPointTime
-                    << _lastVoltPointTime
-                    << _phaseAvalueBeforeControl
-                    << _phaseBvalueBeforeControl
-                    << _phaseCvalueBeforeControl
-                    << getPaoId();
-
-            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
-            {
-                _dirty = false; // No error occured!
-            }
-        }
-        else
-        {
-            CTILOG_INFO(dout, "Inserted substation bus into DynamicCCSubstationBus: " << getPaoName());
-
-            static const string insertSql = "insert into dynamicccsubstationbus values ( "
-                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                            "?, ?, ?, ?, ? )";
-
-            Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
-
-            dbInserter << getPaoId()
-            << _currentvarloadpointvalue
-            << _currentwattloadpointvalue
-            << _nextchecktime
-            << (string)(_newpointdatareceivedflag?"Y":"N")
-            << (string)(_busupdatedflag?"Y":"N")
-            << _lastcurrentvarpointupdatetime
-            << _estimatedvarloadpointvalue
-            << _currentdailyoperations
-            << (string)(_peaktimeflag?"Y":"N")
-            << (string)(_recentlycontrolledflag?"Y":"N")
-            << _lastoperationtime
-            << _varvaluebeforecontrol
-            << _lastfeedercontrolledpaoid
-            << _lastfeedercontrolledposition
-            << currentDateTime
-            << _powerfactorvalue
-            << _kvarsolution
-            << _estimatedpowerfactorvalue
-            << _currentvarpointquality
-            << (string)(_waivecontrolflag?"Y":"N")
-            << flags
-            << _currentVerificationCapBankId
-            << _currentVerificationFeederId
-            << _currentCapBankToVerifyAssumedOrigState
-            << _verificationStrategy
-            << _capBankToVerifyInactivityTime
-            << _currentvoltloadpointvalue
-            << (string)(_switchOverStatus?"Y":"N")
-            << _altSubControlValue
-            << _eventSeq
-            << _currentwattpointquality
-            << _currentvoltpointquality
-            << _iVControlTot
-            << _iVCount
-            << _iWControlTot
-            << _iWCount
-            << _phaseAvalue
-            << _phaseBvalue
-            << _phaseCvalue
-            << _lastWattPointTime
-            << _lastVoltPointTime
-            << _phaseAvalueBeforeControl
-            << _phaseBvalueBeforeControl
-            << _phaseCvalueBeforeControl;
-
-            if( Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
-            {
-                _insertDynamicDataFlag = false;
-                _dirty = false; // No error occured!
-            }
-        }
-    }
+    writeDynamicData( conn, currentDateTime );
 
     getOperationStats().dumpDynamicData(conn, currentDateTime);
     for each (const map<long, CtiCCMonitorPointPtr>::value_type & entry in _monitorPoints )
@@ -6209,7 +6006,203 @@ void CtiCCSubstationBus::dumpDynamicData(Cti::Database::DatabaseConnection& conn
             CTILOG_DEBUG(dout, "Point Response save failed. ");
         }
     }
+}
 
+std::string CtiCCSubstationBus::formatFlags() const
+{
+    std::string flags( 20, 'N' );
+
+    flags[  0 ] = serializeFlag( _verificationFlag );
+    flags[  1 ] = serializeFlag( _performingVerificationFlag );
+    flags[  2 ] = serializeFlag( _verificationDoneFlag );
+    flags[  3 ] = serializeFlag( _overlappingSchedulesVerificationFlag );
+    flags[  4 ] = serializeFlag( _preOperationMonitorPointScanFlag );
+    flags[  5 ] = serializeFlag( _operationSentWaitFlag );
+    flags[  6 ] = serializeFlag( _postOperationMonitorPointScanFlag );
+    flags[  7 ] = serializeFlag( _reEnableBusFlag );
+    flags[  8 ] = serializeFlag( _waitForReCloseDelayFlag );
+    flags[  9 ] = serializeFlag( _waitToFinishRegularControlFlag );
+    flags[ 10 ] = serializeFlag( _maxDailyOpsHitFlag );
+    flags[ 11 ] = serializeFlag( _ovUvDisabledFlag );
+    flags[ 12 ] = serializeFlag( _correctionNeededNoBankAvailFlag );
+    flags[ 13 ] = serializeFlag( _likeDayControlFlag );
+    flags[ 14 ] = serializeFlag( _voltReductionFlag );
+    flags[ 15 ] = serializeFlag( _sendMoreTimeControlledCommandsFlag );
+    flags[ 16 ] = serializeFlag( _disableOvUvVerificationFlag );
+    flags[ 17 ] = serializeFlag( _primaryBusFlag );
+
+    return flags;
+}
+
+bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "UPDATE "
+            "dynamicccsubstationbus "
+        "SET "
+            "currentvarpointvalue = ?, "
+            "currentwattpointvalue = ?, "
+            "nextchecktime = ?, "
+            "newpointdatareceivedflag = ?, "
+            "busupdatedflag = ?, "
+            "lastcurrentvarupdatetime = ?, "
+            "estimatedvarpointvalue = ?, "
+            "currentdailyoperations = ?, "
+            "peaktimeflag = ?, "
+            "recentlycontrolledflag = ?, "
+            "lastoperationtime = ?, "
+            "varvaluebeforecontrol = ?, "
+            "lastfeederpaoid = ?, "
+            "lastfeederposition = ?, "
+            "ctitimestamp = ?, "
+            "powerfactorvalue = ?, "
+            "kvarsolution = ?, "
+            "estimatedpfvalue = ?, "
+            "currentvarpointquality = ?, "
+            "waivecontrolflag = ?, "
+            "additionalflags = ?, "
+            "currverifycbid = ?, "
+            "currverifyfeederid = ?, "
+            "currverifycborigstate = ?, "
+            "verificationstrategy = ?, "
+            "cbinactivitytime = ?, "
+            "currentvoltpointvalue = ?, "
+            "switchPointStatus = ?, "
+            "altSubControlValue = ?, "
+            "eventSeq = ?, "
+            "currentwattpointquality = ?, "
+            "currentvoltpointquality = ?, "
+            "ivcontroltot = ?, "
+            "ivcount = ?, "
+            "iwcontroltot = ?, "
+            "iwcount = ?, "
+            "phaseavalue = ?, "
+            "phasebvalue = ?, "
+            "phasecvalue = ?, "
+            "lastwattpointtime = ?, "
+            "lastvoltpointtime = ?, "
+            "phaseavaluebeforecontrol = ?, "
+            "phasebvaluebeforecontrol = ?, "
+            "phasecvaluebeforecontrol = ? "
+        "WHERE "
+            "substationbusid = ?";
+
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer
+        << _currentvarloadpointvalue
+        << _currentwattloadpointvalue
+        << _nextchecktime
+        << (string)(_newpointdatareceivedflag?"Y":"N")
+        << (string)(_busupdatedflag?"Y":"N")
+        << _lastcurrentvarpointupdatetime
+        << _estimatedvarloadpointvalue
+        << _currentdailyoperations
+        << (string)(_peaktimeflag?"Y":"N")
+        << (string)(_recentlycontrolledflag?"Y":"N")
+        << _lastoperationtime
+        << _varvaluebeforecontrol
+        << _lastfeedercontrolledpaoid
+        << _lastfeedercontrolledposition
+        << currentDateTime
+        << _powerfactorvalue
+        << _kvarsolution
+        << _estimatedpowerfactorvalue
+        << _currentvarpointquality
+        << (string)(_waivecontrolflag?"Y":"N")
+        << formatFlags()
+        << _currentVerificationCapBankId
+        << _currentVerificationFeederId
+        << _currentCapBankToVerifyAssumedOrigState
+        << _verificationStrategy
+        << _capBankToVerifyInactivityTime
+        << _currentvoltloadpointvalue
+        << (string)(_switchOverStatus?"Y":"N")
+        << _altSubControlValue
+        << _eventSeq
+        << _currentwattpointquality
+        << _currentvoltpointquality
+        << _iVControlTot
+        << _iVCount
+        << _iWControlTot
+        << _iWCount
+        << _phaseAvalue
+        << _phaseBvalue
+        << _phaseCvalue
+        << _lastWattPointTime
+        << _lastVoltPointTime
+        << _phaseAvalueBeforeControl
+        << _phaseBvalueBeforeControl
+        << _phaseCvalueBeforeControl
+        << getPaoId();
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+}
+
+bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "INSERT INTO "
+            "dynamicccsubstationbus "
+        "VALUES ( "
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+            "?, ?, ?, ?, ? )";
+
+    CTILOG_INFO(dout, "Inserted substation bus into DynamicCCSubstationBus: " << getPaoName());
+
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer 
+        << getPaoId()
+        << _currentvarloadpointvalue
+        << _currentwattloadpointvalue
+        << _nextchecktime
+        << (string)(_newpointdatareceivedflag?"Y":"N")
+        << (string)(_busupdatedflag?"Y":"N")
+        << _lastcurrentvarpointupdatetime
+        << _estimatedvarloadpointvalue
+        << _currentdailyoperations
+        << (string)(_peaktimeflag?"Y":"N")
+        << (string)(_recentlycontrolledflag?"Y":"N")
+        << _lastoperationtime
+        << _varvaluebeforecontrol
+        << _lastfeedercontrolledpaoid
+        << _lastfeedercontrolledposition
+        << currentDateTime
+        << _powerfactorvalue
+        << _kvarsolution
+        << _estimatedpowerfactorvalue
+        << _currentvarpointquality
+        << (string)(_waivecontrolflag?"Y":"N")
+        << formatFlags()
+        << _currentVerificationCapBankId
+        << _currentVerificationFeederId
+        << _currentCapBankToVerifyAssumedOrigState
+        << _verificationStrategy
+        << _capBankToVerifyInactivityTime
+        << _currentvoltloadpointvalue
+        << (string)(_switchOverStatus?"Y":"N")
+        << _altSubControlValue
+        << _eventSeq
+        << _currentwattpointquality
+        << _currentvoltpointquality
+        << _iVControlTot
+        << _iVCount
+        << _iWControlTot
+        << _iWCount
+        << _phaseAvalue
+        << _phaseBvalue
+        << _phaseCvalue
+        << _lastWattPointTime
+        << _lastVoltPointTime
+        << _phaseAvalueBeforeControl
+        << _phaseBvalueBeforeControl
+        << _phaseCvalueBeforeControl;
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
 
 /*-------------------------------------------------------------------------
@@ -6321,7 +6314,7 @@ bool CtiCCSubstationBus::areThereMoreCapBanksToVerify(EventLogEntries &ccEvents)
 
 void CtiCCSubstationBus::setVerificationStrategy(CtiPAOScheduleManager::VerificationStrategy verificationStrategy)
 {
-    _dirty |= setVariableIfDifferent(_verificationStrategy, verificationStrategy);
+    updateDynamicValue( _verificationStrategy, verificationStrategy );
 }
 
 CtiPAOScheduleManager::VerificationStrategy CtiCCSubstationBus::getVerificationStrategy(void) const
@@ -6331,7 +6324,7 @@ CtiPAOScheduleManager::VerificationStrategy CtiCCSubstationBus::getVerificationS
 
 void CtiCCSubstationBus::setVerificationDisableOvUvFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_disableOvUvVerificationFlag, flag);
+    updateDynamicValue( _disableOvUvVerificationFlag, flag );
 }
 
 bool CtiCCSubstationBus::getVerificationDisableOvUvFlag(void) const
@@ -6342,7 +6335,7 @@ bool CtiCCSubstationBus::getVerificationDisableOvUvFlag(void) const
 
 void CtiCCSubstationBus::setCapBankInactivityTime(long capBankToVerifyInactivityTime)
 {
-    _dirty |= setVariableIfDifferent(_capBankToVerifyInactivityTime, capBankToVerifyInactivityTime);
+    updateDynamicValue( _capBankToVerifyInactivityTime, capBankToVerifyInactivityTime );
 }
 
 long CtiCCSubstationBus::getCapBankInactivityTime(void) const
@@ -8588,10 +8581,6 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
     rdr["PhaseAValueBeforeControl"] >> _phaseAvalueBeforeControl;
     rdr["PhaseBValueBeforeControl"] >> _phaseBvalueBeforeControl;
     rdr["PhaseCValueBeforeControl"] >> _phaseCvalueBeforeControl;
-
-    _insertDynamicDataFlag = false;
-
-    _dirty = false;
 }
 
 /*---------------------------------------------------------------------------

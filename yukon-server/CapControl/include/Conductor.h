@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Controllable.h"
+#include "DynamicData.h"
 
 
 namespace Cti
@@ -12,7 +13,7 @@ class StrategyManager;
 
 
 
-class Conductor : public Controllable
+class Conductor : public Controllable, public DynamicData
 {
 public:
 

@@ -877,11 +877,34 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_with_small_lead_lag)
     CtiCCSubstationBusStore::deleteInstance();
 }
 
+struct test_CtiCCFeeder : CtiCCFeeder
+{
+    test_CtiCCFeeder()
+        :   CtiCCFeeder()
+    {
+
+    }
+
+    test_CtiCCFeeder( Cti::RowReader & rdr )
+        :   CtiCCFeeder( rdr, nullptr )
+    {
+
+    }
+
+    test_CtiCCFeeder( StrategyManager * strategyManager )
+        :   CtiCCFeeder( strategyManager )
+    {
+
+    }
+
+    using CtiCCFeeder::isDirty;
+};
+
 BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction )
 {
     _RATE_OF_CHANGE_DEPTH = 5;      // this shows up in the regressions: getRegDepth()
 
-    CtiCCFeeder feeder;
+    test_CtiCCFeeder    feeder;
 
     BOOST_CHECK_EQUAL(  false, feeder.getMultiMonitorFlag() );
     BOOST_CHECK_EQUAL(  false, feeder.getNewPointDataReceivedFlag() );
@@ -903,7 +926,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction )
     BOOST_CHECK_EQUAL(  false, feeder.getPorterRetFailFlag() );
     BOOST_CHECK_EQUAL(  false, feeder.getLastVerificationMsgSentSuccessfulFlag() );
     BOOST_CHECK_EQUAL(  false, feeder.getTotalizedControlFlag() );
-    BOOST_CHECK_EQUAL(   true, feeder.isDirty() );
+    BOOST_CHECK_EQUAL(  false, feeder.isDirty() );
 
     BOOST_CHECK_EQUAL(      0, feeder.getParentId() );
     BOOST_CHECK_EQUAL(      0, feeder.getCurrentVarLoadPointId() );
@@ -982,7 +1005,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
 
     StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
-    CtiCCFeeder feeder( &_strategyManager );
+    test_CtiCCFeeder    feeder( &_strategyManager );
 
     BOOST_CHECK_EQUAL(  false, feeder.getMultiMonitorFlag() );
     BOOST_CHECK_EQUAL(  false, feeder.getNewPointDataReceivedFlag() );
@@ -1004,7 +1027,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
     BOOST_CHECK_EQUAL(  false, feeder.getPorterRetFailFlag() );
     BOOST_CHECK_EQUAL(  false, feeder.getLastVerificationMsgSentSuccessfulFlag() );
     BOOST_CHECK_EQUAL(  false, feeder.getTotalizedControlFlag() );
-    BOOST_CHECK_EQUAL(   true, feeder.isDirty() );
+    BOOST_CHECK_EQUAL(  false, feeder.isDirty() );
 
     BOOST_CHECK_EQUAL(      0, feeder.getParentId() );
     BOOST_CHECK_EQUAL(      0, feeder.getCurrentVarLoadPointId() );
@@ -1141,21 +1164,6 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_replication )
     delete station;
     delete area;
 }
-
-struct test_CtiCCFeeder : CtiCCFeeder
-{
-    test_CtiCCFeeder()
-        :   CtiCCFeeder()
-    {
-
-    }
-
-    test_CtiCCFeeder( Cti::RowReader & rdr )
-        :   CtiCCFeeder( rdr, nullptr )
-    {
-
-    }
-};
 
 BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_no_dynamic_data )
 {
@@ -1326,7 +1334,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_creation_via_database_reader_no_dynamic_data
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getPorterRetFailFlag() );
     BOOST_CHECK_EQUAL(  false, feeders[ 5 ].getLastVerificationMsgSentSuccessfulFlag() );
     BOOST_CHECK_EQUAL(   true, feeders[ 5 ].getTotalizedControlFlag() );
-    BOOST_CHECK_EQUAL(   true, feeders[ 5 ].isDirty() );
+    BOOST_CHECK_EQUAL(  false, feeders[ 5 ].isDirty() );
 
     BOOST_CHECK_EQUAL(      0, feeders[ 5 ].getParentId() );
     BOOST_CHECK_EQUAL(    190, feeders[ 5 ].getCurrentVarLoadPointId() );

@@ -278,7 +278,6 @@ public:
     CtiCCOriginalParent& getOriginalParent();
     const CtiCCOriginalParent& getOriginalParent() const;
 
-    bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     CtiCCFeeder* replicate() const;
@@ -385,11 +384,10 @@ private:
 
     CtiCCOriginalParent _originalParent;
 
-    //don't stream
-    bool _insertDynamicDataFlag;
-    bool _dirty;
+    std::string formatFlags() const;
+    bool updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
+    bool insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
 
-    void restore(Cti::RowReader& rdr);
     std::string doubleToString(double doubleVal, long decimalPlaces);
 
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;

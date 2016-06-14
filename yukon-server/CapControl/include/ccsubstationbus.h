@@ -331,7 +331,6 @@ public:
 
     std::vector<Cti::CapControl::PointResponse> getPointResponsesForDevice(const long deviceId);
 
-    bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(Cti::RowReader& rdr);
 
@@ -452,9 +451,9 @@ private:
     CtiTime _lastVoltPointTime;
     long    _commsStatePointId;
 
-    //don't stream
-    bool _insertDynamicDataFlag;
-    bool _dirty;
+    std::string formatFlags() const;
+    bool updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
+    bool insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime ) override;
 
     void restore(Cti::RowReader& rdr);
     std::string doubleToString(double doubleVal);

@@ -117,9 +117,7 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
-        regressionC( _RATE_OF_CHANGE_DEPTH ),
-        _insertDynamicDataFlag( true ),
-        _dirty( true )
+        regressionC( _RATE_OF_CHANGE_DEPTH )
 {
 }
 
@@ -190,15 +188,11 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
-        regressionC( _RATE_OF_CHANGE_DEPTH ),
-        _insertDynamicDataFlag( true ),
-        _dirty( true )
+        regressionC( _RATE_OF_CHANGE_DEPTH )
 {
-    restore( rdr );
-
     _originalParent.setPAOId( getPaoId() );
 
-    if ( ! rdr[ "AdditionalFlags" ].isNull() ) 
+    if ( hasDynamicData( rdr["AdditionalFlags"] ) )
     {
         setDynamicData( rdr );
 
@@ -806,7 +800,7 @@ void CtiCCFeeder::setParentId(long parentId)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp)
 {
-    _dirty |= setVariableIfDifferent(_currentvarloadpointvalue, currentvarval);
+    updateDynamicValue( _currentvarloadpointvalue, currentvarval );
 
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() ){
         regression.appendWithoutFill(std::make_pair((double)timestamp.seconds(),currentvarval));
@@ -824,7 +818,7 @@ void CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiTime time
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setCurrentWattLoadPointValue(double currentwattval)
 {
-    _dirty |= setVariableIfDifferent(_currentwattloadpointvalue, currentwattval);
+    updateDynamicValue( _currentwattloadpointvalue, currentwattval );
 }
 
 /*---------------------------------------------------------------------------
@@ -834,7 +828,7 @@ void CtiCCFeeder::setCurrentWattLoadPointValue(double currentwattval)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setCurrentVoltLoadPointValue(double currentvoltval)
 {
-    _dirty |= setVariableIfDifferent(_currentvoltloadpointvalue, currentvoltval);
+    updateDynamicValue( _currentvoltloadpointvalue, currentvoltval );
 }
 
 /*---------------------------------------------------------------------------
@@ -855,7 +849,7 @@ void CtiCCFeeder::setDisplayOrder(float order)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setNewPointDataReceivedFlag(bool newpointdatareceived)
 {
-    _dirty |= setVariableIfDifferent(_newpointdatareceivedflag, newpointdatareceived);
+    updateDynamicValue( _newpointdatareceivedflag, newpointdatareceived );
 }
 
 /*---------------------------------------------------------------------------
@@ -865,7 +859,7 @@ void CtiCCFeeder::setNewPointDataReceivedFlag(bool newpointdatareceived)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
 {
-    _dirty |= setVariableIfDifferent(_lastcurrentvarpointupdatetime, lastpointupdate);
+    updateDynamicValue( _lastcurrentvarpointupdatetime, lastpointupdate );
 }
 /*---------------------------------------------------------------------------
     setLastWattPointTime
@@ -874,7 +868,7 @@ void CtiCCFeeder::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdat
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setLastWattPointTime(const CtiTime& lastpointupdate)
 {
-    _dirty |= setVariableIfDifferent(_lastWattPointTime, lastpointupdate);
+    updateDynamicValue( _lastWattPointTime, lastpointupdate );
 }
 /*---------------------------------------------------------------------------
     setLastVoltPointTime
@@ -883,7 +877,7 @@ void CtiCCFeeder::setLastWattPointTime(const CtiTime& lastpointupdate)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setLastVoltPointTime(const CtiTime& lastpointupdate)
 {
-    _dirty |= setVariableIfDifferent(_lastVoltPointTime, lastpointupdate);
+    updateDynamicValue( _lastVoltPointTime, lastpointupdate );
 }
 
 
@@ -904,7 +898,7 @@ void CtiCCFeeder::setEstimatedVarLoadPointId(long estimatedvarid)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setEstimatedVarLoadPointValue(double estimatedvarval)
 {
-    _dirty |= setVariableIfDifferent(_estimatedvarloadpointvalue, estimatedvarval);
+    updateDynamicValue( _estimatedvarloadpointvalue, estimatedvarval );
 }
 
 /*---------------------------------------------------------------------------
@@ -944,15 +938,13 @@ void CtiCCFeeder::setEstimatedPowerFactorPointId(long epfpointid)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
 {
-    if( _currentdailyoperations != operations )
+    if ( updateDynamicValue( _currentdailyoperations, operations ) )
     {
-        if( getDailyOperationsAnalogPointId() > 0 )
+        if ( getDailyOperationsAnalogPointId() > 0 )
         {
             pointChanges.push_back(new CtiPointDataMsg(getDailyOperationsAnalogPointId(),operations,NormalQuality,AnalogPointType));
         }
-        _dirty = true;
     }
-    _currentdailyoperations = operations;
 }
 /*---------------------------------------------------------------------------
     setCurrentDailyOperations
@@ -961,7 +953,7 @@ void CtiCCFeeder::setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiM
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setCurrentDailyOperations(long operations)
 {
-    _dirty |= setVariableIfDifferent(_currentdailyoperations, operations);
+    updateDynamicValue( _currentdailyoperations, operations );
 }
 
 
@@ -972,7 +964,7 @@ void CtiCCFeeder::setCurrentDailyOperations(long operations)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setRecentlyControlledFlag(bool recentlycontrolled)
 {
-    _dirty |= setVariableIfDifferent(_recentlycontrolledflag, recentlycontrolled);
+    updateDynamicValue( _recentlycontrolledflag, recentlycontrolled );
 }
 
 /*---------------------------------------------------------------------------
@@ -982,7 +974,7 @@ void CtiCCFeeder::setRecentlyControlledFlag(bool recentlycontrolled)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setLastOperationTime(const CtiTime& lastoperation)
 {
-    _dirty |= setVariableIfDifferent(_lastoperationtime,lastoperation);
+    updateDynamicValue( _lastoperationtime, lastoperation );
 }
 
 /*---------------------------------------------------------------------------
@@ -992,7 +984,7 @@ void CtiCCFeeder::setLastOperationTime(const CtiTime& lastoperation)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setVarValueBeforeControl(double oldvarval)
 {
-    _dirty |= setVariableIfDifferent(_varvaluebeforecontrol, oldvarval);
+    updateDynamicValue( _varvaluebeforecontrol, oldvarval );
 
     setPhaseAValueBeforeControl(getPhaseAValue());
     setPhaseBValueBeforeControl(getPhaseBValue());
@@ -1006,7 +998,7 @@ void CtiCCFeeder::setVarValueBeforeControl(double oldvarval)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setLastCapBankControlledDeviceId(long lastcapbank)
 {
-    _dirty |= setVariableIfDifferent(_lastcapbankcontrolleddeviceid, lastcapbank);
+    updateDynamicValue( _lastcapbankcontrolleddeviceid, lastcapbank );
 }
 
 // These 2 functions are here just to unit test the sort comparator for bus optimized feeder
@@ -1026,7 +1018,7 @@ void CtiCCFeeder::setBusOptimizedVarOffset(const double varoffset)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setPowerFactorValue(double pfval)
 {
-    _dirty |= setVariableIfDifferent(_powerfactorvalue, pfval);
+    updateDynamicValue( _powerfactorvalue, pfval );
 }
 
 /*---------------------------------------------------------------------------
@@ -1036,7 +1028,7 @@ void CtiCCFeeder::setPowerFactorValue(double pfval)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setKVARSolution(double solution)
 {
-    _dirty |= setVariableIfDifferent(_kvarsolution, solution);
+    updateDynamicValue( _kvarsolution, solution );
 }
 
 /*---------------------------------------------------------------------------
@@ -1046,7 +1038,7 @@ void CtiCCFeeder::setKVARSolution(double solution)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setEstimatedPowerFactorValue(double epfval)
 {
-    _dirty |= setVariableIfDifferent(_estimatedpowerfactorvalue, epfval);
+    updateDynamicValue( _estimatedpowerfactorvalue, epfval );
 }
 
 /*---------------------------------------------------------------------------
@@ -1056,7 +1048,7 @@ void CtiCCFeeder::setEstimatedPowerFactorValue(double epfval)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setCurrentVarPointQuality(long cvpq)
 {
-    _dirty |= setVariableIfDifferent(_currentvarpointquality, cvpq);
+    updateDynamicValue( _currentvarpointquality, cvpq );
 }
 
 /*---------------------------------------------------------------------------
@@ -1066,7 +1058,7 @@ void CtiCCFeeder::setCurrentVarPointQuality(long cvpq)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setCurrentWattPointQuality(long cwpq)
 {
-    _dirty |= setVariableIfDifferent(_currentwattpointquality, cwpq);
+    updateDynamicValue( _currentwattpointquality, cwpq );
 }
 
 /*---------------------------------------------------------------------------
@@ -1076,7 +1068,7 @@ void CtiCCFeeder::setCurrentWattPointQuality(long cwpq)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setCurrentVoltPointQuality(long cvpq)
 {
-    _dirty |= setVariableIfDifferent(_currentvoltpointquality, cvpq);
+    updateDynamicValue( _currentvoltpointquality, cvpq );
 }
 
 /*---------------------------------------------------------------------------
@@ -1086,7 +1078,7 @@ void CtiCCFeeder::setCurrentVoltPointQuality(long cvpq)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setWaiveControlFlag(bool waive)
 {
-    _dirty |= setVariableIfDifferent(_waivecontrolflag, waive);
+    updateDynamicValue( _waivecontrolflag, waive );
 }
 
 /*---------------------------------------------------------------------------
@@ -1096,7 +1088,7 @@ void CtiCCFeeder::setWaiveControlFlag(bool waive)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setParentControlUnits(const string& parentControlUnits)
 {
-    _dirty |= setVariableIfDifferent(_parentControlUnits, parentControlUnits);
+    updateDynamicValue( _parentControlUnits, parentControlUnits );
 }
 
 /*---------------------------------------------------------------------------
@@ -1106,7 +1098,7 @@ void CtiCCFeeder::setParentControlUnits(const string& parentControlUnits)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setParentName(const string& parentName)
 {
-    _dirty |= setVariableIfDifferent(_parentName, parentName);
+    updateDynamicValue( _parentName, parentName );
 }
 
 
@@ -1117,7 +1109,7 @@ void CtiCCFeeder::setParentName(const string& parentName)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setDecimalPlaces(long decimalPlaces)
 {
-    _dirty |= setVariableIfDifferent(_decimalPlaces, decimalPlaces);
+    updateDynamicValue( _decimalPlaces, decimalPlaces );
 }
 
 /*---------------------------------------------------------------------------
@@ -1127,17 +1119,17 @@ void CtiCCFeeder::setDecimalPlaces(long decimalPlaces)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setPeakTimeFlag(bool peakTimeFlag)
 {
-    _dirty |= setVariableIfDifferent(_peakTimeFlag, peakTimeFlag);
+    updateDynamicValue( _peakTimeFlag, peakTimeFlag );
 }
 
 void CtiCCFeeder::setPorterRetFailFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_porterRetFailFlag, flag);
+    updateDynamicValue( _porterRetFailFlag, flag );
 }
 
 void CtiCCFeeder::setEventSequence(long eventSeq)
 {
-    _dirty |= setVariableIfDifferent(_eventSeq, eventSeq);
+    updateDynamicValue( _eventSeq, eventSeq );
 }
 
 CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMultiMsg_vec& pointChanges, double leadLevel, double lagLevel, double currentVarValue,
@@ -4510,80 +4502,80 @@ void CtiCCFeeder::setVerificationFlag(bool verificationFlag)
         setVerificationDoneFlag(false);
     }
 
-    _dirty |= setVariableIfDifferent(_verificationFlag, verificationFlag);
+    updateDynamicValue( _verificationFlag, verificationFlag );
 }
 
 void CtiCCFeeder::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
-    _dirty |= setVariableIfDifferent(_performingVerificationFlag, performingVerificationFlag);
+    updateDynamicValue( _performingVerificationFlag, performingVerificationFlag );
 }
 void CtiCCFeeder::setVerificationDoneFlag(bool verificationDoneFlag)
 {
-    _dirty |= setVariableIfDifferent(_verificationDoneFlag, verificationDoneFlag);
+    updateDynamicValue( _verificationDoneFlag, verificationDoneFlag );
 }
 
 void CtiCCFeeder::setPreOperationMonitorPointScanFlag( bool flag)
 {
-    _dirty |= setVariableIfDifferent(_preOperationMonitorPointScanFlag, flag);
+    updateDynamicValue( _preOperationMonitorPointScanFlag, flag );
 }
 
 void CtiCCFeeder::setOperationSentWaitFlag( bool flag)
 {
-    _dirty |= setVariableIfDifferent(_operationSentWaitFlag, flag);
+    updateDynamicValue( _operationSentWaitFlag, flag );
 }
 
 void CtiCCFeeder::setPostOperationMonitorPointScanFlag( bool flag)
 {
-    _dirty |= setVariableIfDifferent(_postOperationMonitorPointScanFlag, flag);
+    updateDynamicValue( _postOperationMonitorPointScanFlag, flag );
 }
 
 void CtiCCFeeder::setWaitForReCloseDelayFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_waitForReCloseDelayFlag, flag);
+    updateDynamicValue( _waitForReCloseDelayFlag, flag );
 }
 
 void CtiCCFeeder::setMaxDailyOpsHitFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_maxDailyOpsHitFlag, flag);
+    updateDynamicValue( _maxDailyOpsHitFlag, flag );
 }
 
 void CtiCCFeeder::setOvUvDisabledFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
+    updateDynamicValue( _ovUvDisabledFlag, flag );
 }
 
 void CtiCCFeeder::setCorrectionNeededNoBankAvailFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_correctionNeededNoBankAvailFlag, flag);
+    updateDynamicValue( _correctionNeededNoBankAvailFlag, flag );
 }
 
 void CtiCCFeeder::setLikeDayControlFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_likeDayControlFlag, flag);
+    updateDynamicValue( _likeDayControlFlag, flag );
 }
 void CtiCCFeeder::setLastVerificationMsgSentSuccessfulFlag(bool flag)
 {
-    _dirty |= setVariableIfDifferent(_lastVerificationMsgSentSuccessful, flag);
+    updateDynamicValue( _lastVerificationMsgSentSuccessful, flag );
 }
 
 void CtiCCFeeder::setCurrentVerificationCapBankId(long capBankId)
 {
-    _dirty |= setVariableIfDifferent(_currentVerificationCapBankId, capBankId);
+    updateDynamicValue( _currentVerificationCapBankId, capBankId );
 }
 void CtiCCFeeder::setCurrentVerificationCapBankState(long status)
 {
-    _dirty |= setVariableIfDifferent(_currentCapBankToVerifyAssumedOrigState, status);
+    updateDynamicValue( _currentCapBankToVerifyAssumedOrigState, status );
 }
 
 void CtiCCFeeder::setTargetVarValue(double value)
 {
-    _dirty |= setVariableIfDifferent(_targetvarvalue, value);
+    updateDynamicValue( _targetvarvalue, value );
 }
 
 void CtiCCFeeder::setSolution(const string &text)
 {
     string temp = text;
-    _dirty |= setVariableIfDifferent(_solution, temp);
+    updateDynamicValue( _solution, temp );
 }
 
 /*---------------------------------------------------------------------------
@@ -4593,7 +4585,7 @@ void CtiCCFeeder::setSolution(const string &text)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setIVControlTot(double value)
 {
-    _dirty |= setVariableIfDifferent(_iVControlTot, value);
+    updateDynamicValue( _iVControlTot, value );
 }
 /*---------------------------------------------------------------------------
     setIVCoont
@@ -4602,7 +4594,7 @@ void CtiCCFeeder::setIVControlTot(double value)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setIVCount(long value)
 {
-    _dirty |= setVariableIfDifferent(_iVCount, value);
+    updateDynamicValue( _iVCount, value );
 }
 /*---------------------------------------------------------------------------
     setIWControlTot
@@ -4611,7 +4603,7 @@ void CtiCCFeeder::setIVCount(long value)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setIWControlTot(double value)
 {
-    _dirty |= setVariableIfDifferent(_iWControlTot, value);
+    updateDynamicValue( _iWControlTot, value );
 }
 /*---------------------------------------------------------------------------
     setIWCoont
@@ -4620,7 +4612,7 @@ void CtiCCFeeder::setIWControlTot(double value)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setIWCount(long value)
 {
-    _dirty |= setVariableIfDifferent(_iWCount, value);
+    updateDynamicValue( _iWCount, value );
 }
 /*---------------------------------------------------------------------------
     setIVControl
@@ -4629,7 +4621,7 @@ void CtiCCFeeder::setIWCount(long value)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setIVControl(double value)
 {
-    _dirty |= setVariableIfDifferent(_iVControl, value);
+    updateDynamicValue( _iVControl, value );
 }
 /*---------------------------------------------------------------------------
     setIWControl
@@ -4638,7 +4630,7 @@ void CtiCCFeeder::setIVControl(double value)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setIWControl(double value)
 {
-    _dirty |= setVariableIfDifferent(_iWControl, value);
+    updateDynamicValue( _iWControl, value );
 }
 
 /*---------------------------------------------------------------------------
@@ -4648,7 +4640,7 @@ void CtiCCFeeder::setIWControl(double value)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setPhaseAValue(double value, CtiTime timestamp)
 {
-    _dirty |= setVariableIfDifferent(_phaseAvalue, value);
+    updateDynamicValue( _phaseAvalue, value );
 
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
@@ -4666,7 +4658,7 @@ void CtiCCFeeder::setPhaseAValue(double value, CtiTime timestamp)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setPhaseBValue(double value, CtiTime timestamp)
 {
-    _dirty |= setVariableIfDifferent(_phaseBvalue, value);
+    updateDynamicValue( _phaseBvalue, value );
 
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
@@ -4684,7 +4676,7 @@ void CtiCCFeeder::setPhaseBValue(double value, CtiTime timestamp)
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::setPhaseCValue(double value, CtiTime timestamp)
 {
-    _dirty |= setVariableIfDifferent(_phaseCvalue, value);
+    updateDynamicValue( _phaseCvalue, value );
 
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
@@ -4726,7 +4718,7 @@ void CtiCCFeeder::setPhaseCValueBeforeControl(double value)
 
 void CtiCCFeeder::setRetryIndex(long value)
 {
-    _dirty |= setVariableIfDifferent(_retryIndex, value);
+    updateDynamicValue( _retryIndex, value );
 }
 
 bool CtiCCFeeder::getVerificationFlag() const
@@ -5416,168 +5408,166 @@ void CtiCCFeeder::addAllFeederPointsToMsg(std::set<long>& pointAddMsg)
 }
 
 /*---------------------------------------------------------------------------
-    isDirty
-
-    Returns the dirty flag of the cap bank
----------------------------------------------------------------------------*/
-bool CtiCCFeeder::isDirty() const
-{
-    return _dirty;
-}
-
-/*---------------------------------------------------------------------------
     dumpDynamicData
 
     Writes out the dynamic information for this cc feeder.
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if ( _dirty )
-    {
-        std::string flags( 20, 'N' );
-
-        if ( !_insertDynamicDataFlag )
-        {
-            flags[  0 ] = serializeFlag( _verificationFlag );
-            flags[  1 ] = serializeFlag( _performingVerificationFlag );
-            flags[  2 ] = serializeFlag( _verificationDoneFlag );
-            flags[  3 ] = serializeFlag( _preOperationMonitorPointScanFlag );
-            flags[  4 ] = serializeFlag( _operationSentWaitFlag );
-            flags[  5 ] = serializeFlag( _postOperationMonitorPointScanFlag );
-            flags[  6 ] = serializeFlag( _waitForReCloseDelayFlag );
-            flags[  7 ] = serializeFlag( _peakTimeFlag );
-            flags[  8 ] = serializeFlag( _maxDailyOpsHitFlag );
-            flags[  9 ] = serializeFlag( _ovUvDisabledFlag );
-            flags[ 10 ] = serializeFlag( _correctionNeededNoBankAvailFlag );
-            flags[ 11 ] = serializeFlag( _likeDayControlFlag );
-            flags[ 12 ] = serializeFlag( _lastVerificationMsgSentSuccessful );
-
-            static const string updateSql = "update dynamicccfeeder set "
-                                            "currentvarpointvalue = ?, currentwattpointvalue = ?, "
-                                            "newpointdatareceivedflag = ?, lastcurrentvarupdatetime = ?, "
-                                            "estimatedvarpointvalue = ?, currentdailyoperations = ?, "
-                                            "recentlycontrolledflag = ?, lastoperationtime = ?, "
-                                            "varvaluebeforecontrol = ?, lastcapbankdeviceid = ?, "
-                                            "busoptimizedvarcategory = ?, busoptimizedvaroffset = ?, "
-                                            "ctitimestamp = ?, powerfactorvalue = ?, kvarsolution = ?, "
-                                            "estimatedpfvalue = ?, currentvarpointquality = ?, waivecontrolflag = ?, "
-                                            "additionalflags = ?, currentvoltpointvalue = ?, eventseq = ?, "
-                                            "currverifycbid = ?, currverifycborigstate = ?, currentwattpointquality = ?, "
-                                            "currentvoltpointquality = ?, ivcontroltot = ?, ivcount = ?, "
-                                            "iwcontroltot = ?, iwcount = ?, phaseavalue = ?, phasebvalue = ?, "
-                                            "phasecvalue = ?, lastwattpointtime = ?, lastvoltpointtime = ?, "
-                                            "retryindex = ?, phaseavaluebeforecontrol = ?, "
-                                            "phasebvaluebeforecontrol = ?, phasecvaluebeforecontrol = ?"
-                                            " where feederid = ?";
-
-            Cti::Database::DatabaseWriter updater(conn, updateSql);
-
-            updater << _currentvarloadpointvalue
-            << _currentwattloadpointvalue
-            << (string)(_newpointdatareceivedflag?"Y":"N")
-            << _lastcurrentvarpointupdatetime
-            << _estimatedvarloadpointvalue
-            << _currentdailyoperations
-            << (string)(_recentlycontrolledflag?"Y":"N")
-            << _lastoperationtime
-            << _varvaluebeforecontrol
-            << _lastcapbankcontrolleddeviceid
-            << _busoptimizedvarcategory
-            << _busoptimizedvaroffset
-            << currentDateTime
-            << _powerfactorvalue
-            << _kvarsolution
-            << _estimatedpowerfactorvalue
-            << _currentvarpointquality
-            << (string)(_waivecontrolflag?"Y":"N")
-            << flags
-            << _currentvoltloadpointvalue
-            << _eventSeq
-            << _currentVerificationCapBankId
-            << _currentCapBankToVerifyAssumedOrigState
-            << _currentwattpointquality
-            << _currentvoltpointquality
-            << _iVControlTot
-            << _iVCount
-            << _iWControlTot
-            << _iWCount
-            << _phaseAvalue
-            << _phaseBvalue
-            << _phaseCvalue
-            << _lastWattPointTime
-            << _lastVoltPointTime
-            << _retryIndex
-            << _phaseAvalueBeforeControl
-            << _phaseBvalueBeforeControl
-            << _phaseCvalueBeforeControl
-            << getPaoId();
-
-            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
-            {
-                _dirty = false; // No error occured!
-            }
-        }
-        else
-        {
-            CTILOG_INFO(dout, "Inserted Feeder into DynamicCCFeeder: " << getPaoName());
-            static const string inserterSql = "insert into dynamicccfeeder values ( "
-                                              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                              "?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            Cti::Database::DatabaseWriter dbInserter(conn, inserterSql);
-
-            dbInserter << getPaoId()
-            << _currentvarloadpointvalue
-            << _currentwattloadpointvalue
-            << (string)(_newpointdatareceivedflag?"Y":"N")
-            << _lastcurrentvarpointupdatetime
-            << _estimatedvarloadpointvalue
-            << _currentdailyoperations
-            << (string)(_recentlycontrolledflag?"Y":"N")
-            << _lastoperationtime
-            << _varvaluebeforecontrol
-            << _lastcapbankcontrolleddeviceid
-            << _busoptimizedvarcategory
-            << _busoptimizedvaroffset
-            << currentDateTime
-            << _powerfactorvalue
-            << _kvarsolution
-            << _estimatedpowerfactorvalue
-            << _currentvarpointquality
-            << (string)(_waivecontrolflag?"Y":"N")
-            << flags
-            << _currentvoltloadpointvalue
-            << _eventSeq
-            << _currentVerificationCapBankId
-            << _currentCapBankToVerifyAssumedOrigState
-            << _currentwattpointquality
-            << _currentvoltpointquality
-            << _iVControlTot
-            << _iVCount
-            << _iWControlTot
-            << _iWCount
-            << _phaseAvalue
-            << _phaseBvalue
-            << _phaseCvalue
-            << _lastWattPointTime
-            << _lastVoltPointTime
-            << _retryIndex
-            << _phaseAvalueBeforeControl
-            << _phaseBvalueBeforeControl
-            << _phaseCvalueBeforeControl;
-
-            if( Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__ , Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
-            {
-                _insertDynamicDataFlag = false;
-                _dirty = false; // No error occured!
-            }
-        }
-    }
+    writeDynamicData( conn, currentDateTime );
 
     getOriginalParent().dumpDynamicData(conn, currentDateTime);
     getOperationStats().dumpDynamicData(conn, currentDateTime);
+}
+
+std::string CtiCCFeeder::formatFlags() const
+{
+    std::string flags( 20, 'N' );
+
+    flags[  0 ] = serializeFlag( _verificationFlag );
+    flags[  1 ] = serializeFlag( _performingVerificationFlag );
+    flags[  2 ] = serializeFlag( _verificationDoneFlag );
+    flags[  3 ] = serializeFlag( _preOperationMonitorPointScanFlag );
+    flags[  4 ] = serializeFlag( _operationSentWaitFlag );
+    flags[  5 ] = serializeFlag( _postOperationMonitorPointScanFlag );
+    flags[  6 ] = serializeFlag( _waitForReCloseDelayFlag );
+    flags[  7 ] = serializeFlag( _peakTimeFlag );
+    flags[  8 ] = serializeFlag( _maxDailyOpsHitFlag );
+    flags[  9 ] = serializeFlag( _ovUvDisabledFlag );
+    flags[ 10 ] = serializeFlag( _correctionNeededNoBankAvailFlag );
+    flags[ 11 ] = serializeFlag( _likeDayControlFlag );
+    flags[ 12 ] = serializeFlag( _lastVerificationMsgSentSuccessful );
+
+    return flags;
+}
+
+bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "UPDATE "
+            "dynamicccfeeder "
+        "SET "
+            "currentvarpointvalue = ?, currentwattpointvalue = ?, "
+            "newpointdatareceivedflag = ?, lastcurrentvarupdatetime = ?, "
+            "estimatedvarpointvalue = ?, currentdailyoperations = ?, "
+            "recentlycontrolledflag = ?, lastoperationtime = ?, "
+            "varvaluebeforecontrol = ?, lastcapbankdeviceid = ?, "
+            "busoptimizedvarcategory = ?, busoptimizedvaroffset = ?, "
+            "ctitimestamp = ?, powerfactorvalue = ?, kvarsolution = ?, "
+            "estimatedpfvalue = ?, currentvarpointquality = ?, waivecontrolflag = ?, "
+            "additionalflags = ?, currentvoltpointvalue = ?, eventseq = ?, "
+            "currverifycbid = ?, currverifycborigstate = ?, currentwattpointquality = ?, "
+            "currentvoltpointquality = ?, ivcontroltot = ?, ivcount = ?, "
+            "iwcontroltot = ?, iwcount = ?, phaseavalue = ?, phasebvalue = ?, "
+            "phasecvalue = ?, lastwattpointtime = ?, lastvoltpointtime = ?, "
+            "retryindex = ?, phaseavaluebeforecontrol = ?, "
+            "phasebvaluebeforecontrol = ?, phasecvaluebeforecontrol = ? "
+        "WHERE "
+            "feederid = ?";
+
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer
+        << _currentvarloadpointvalue
+        << _currentwattloadpointvalue
+        << serializeFlag( _newpointdatareceivedflag )
+        << _lastcurrentvarpointupdatetime
+        << _estimatedvarloadpointvalue
+        << _currentdailyoperations
+        << serializeFlag( _recentlycontrolledflag )
+        << _lastoperationtime
+        << _varvaluebeforecontrol
+        << _lastcapbankcontrolleddeviceid
+        << _busoptimizedvarcategory
+        << _busoptimizedvaroffset
+        << currentDateTime
+        << _powerfactorvalue
+        << _kvarsolution
+        << _estimatedpowerfactorvalue
+        << _currentvarpointquality
+        << serializeFlag( _waivecontrolflag )
+        << formatFlags()
+        << _currentvoltloadpointvalue
+        << _eventSeq
+        << _currentVerificationCapBankId
+        << _currentCapBankToVerifyAssumedOrigState
+        << _currentwattpointquality
+        << _currentvoltpointquality
+        << _iVControlTot
+        << _iVCount
+        << _iWControlTot
+        << _iWCount
+        << _phaseAvalue
+        << _phaseBvalue
+        << _phaseCvalue
+        << _lastWattPointTime
+        << _lastVoltPointTime
+        << _retryIndex
+        << _phaseAvalueBeforeControl
+        << _phaseBvalueBeforeControl
+        << _phaseCvalueBeforeControl
+        << getPaoId();
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+}
+
+bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
+{
+    static const std::string sql =
+        "INSERT INTO "
+            "dynamicccfeeder "
+        "VALUES ( "
+              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+              "?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    CTILOG_INFO( dout, "Inserted Feeder into DynamicCCFeeder: " << getPaoName() );
+
+    Cti::Database::DatabaseWriter writer( conn, sql );
+
+    writer
+        << getPaoId()
+        << _currentvarloadpointvalue
+        << _currentwattloadpointvalue
+        << serializeFlag( _newpointdatareceivedflag )
+        << _lastcurrentvarpointupdatetime
+        << _estimatedvarloadpointvalue
+        << _currentdailyoperations
+        << serializeFlag( _recentlycontrolledflag )
+        << _lastoperationtime
+        << _varvaluebeforecontrol
+        << _lastcapbankcontrolleddeviceid
+        << _busoptimizedvarcategory
+        << _busoptimizedvaroffset
+        << currentDateTime
+        << _powerfactorvalue
+        << _kvarsolution
+        << _estimatedpowerfactorvalue
+        << _currentvarpointquality
+        << serializeFlag( _waivecontrolflag )
+        << formatFlags()
+        << _currentvoltloadpointvalue
+        << _eventSeq
+        << _currentVerificationCapBankId
+        << _currentCapBankToVerifyAssumedOrigState
+        << _currentwattpointquality
+        << _currentvoltpointquality
+        << _iVControlTot
+        << _iVCount
+        << _iWControlTot
+        << _iWCount
+        << _phaseAvalue
+        << _phaseBvalue
+        << _phaseCvalue
+        << _lastWattPointTime
+        << _lastVoltPointTime
+        << _retryIndex
+        << _phaseAvalueBeforeControl
+        << _phaseBvalueBeforeControl
+        << _phaseCvalueBeforeControl;
+
+    return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
 
 /*---------------------------------------------------------------------------
@@ -5601,17 +5591,6 @@ CtiCCFeeder* CtiCCFeeder::replicate() const
                     } ); 
 
     return newFeeder;
-}
-
-/*---------------------------------------------------------------------------
-    restore
-
-    Restores given a Reader
----------------------------------------------------------------------------*/
-
-void CtiCCFeeder::restore(Cti::RowReader& rdr)
-{
-
 }
 
 void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
@@ -5687,9 +5666,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["PhaseAValueBeforeControl"] >> _phaseAvalueBeforeControl;
     rdr["PhaseBValueBeforeControl"] >> _phaseBvalueBeforeControl;
     rdr["PhaseCValueBeforeControl"] >> _phaseCvalueBeforeControl;
-
-    _insertDynamicDataFlag = false;
-    _dirty = false;
 }
 
 /*---------------------------------------------------------------------------
