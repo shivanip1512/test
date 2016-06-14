@@ -18,8 +18,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.collections4.trie.PatriciaTrie;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
-import org.junit.Assert;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -297,16 +295,4 @@ class RfnIdentifierCacheImpl implements DBChangeListener, RfnIdentifierCache {
         
         return null;
     }
-    
-    static public class UnitTests {
-        @Test
-        public void testBuildSerialRange() {
-            Assert.assertEquals(buildSerialRange("B02984"), Ranges.openClosed("B02", "B03"));
-            Assert.assertEquals(buildSerialRange("31415927"), Ranges.openClosed("31415", "31416"));
-            Assert.assertEquals(buildSerialRange("3141"), null);
-            Assert.assertEquals(buildSerialRange("B99994"), null);
-            Assert.assertEquals(buildSerialRange("banana"), null);
-        }
-    }
-
 }
