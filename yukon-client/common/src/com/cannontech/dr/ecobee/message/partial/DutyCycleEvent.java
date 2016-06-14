@@ -18,15 +18,8 @@ public class DutyCycleEvent {
     private final String type = "demandResponse";
     private final String name;
     private final boolean isOptional = true;
-
     private final Instant startDate;
     private final Instant endDate;
-    
-    //Since this control uses duty cycle, set a relative temperature offset of 0 degrees
-    private final boolean isTemperatureRelative = true;
-    private final int heatHoldTemp = 0; //value = temp x10
-    private final int coolHoldTemp = 0; //vaule = temp x10
-    
     private final int dutyCyclePercentage;
     
     public DutyCycleEvent(String name, int dutyCyclePercentage, Instant startDate, Instant endDate) {
@@ -79,18 +72,6 @@ public class DutyCycleEvent {
         return endDate;
     }
 
-    public boolean getIsTemperatureRelative() {
-        return isTemperatureRelative;
-    }
-
-    public int getHeatHoldTemp() {
-        return heatHoldTemp;
-    }
-
-    public int getCoolHoldTemp() {
-        return coolHoldTemp;
-    }
-
     public int getDutyCyclePercentage() {
         return dutyCyclePercentage;
     }
@@ -103,12 +84,9 @@ public class DutyCycleEvent {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + coolHoldTemp;
         result = prime * result + dutyCyclePercentage;
         result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
-        result = prime * result + heatHoldTemp;
         result = prime * result + (isOptional ? 1231 : 1237);
-        result = prime * result + (isTemperatureRelative ? 1231 : 1237);
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -127,9 +105,6 @@ public class DutyCycleEvent {
             return false;
         }
         DutyCycleEvent other = (DutyCycleEvent) obj;
-        if (coolHoldTemp != other.coolHoldTemp) {
-            return false;
-        }
         if (dutyCyclePercentage != other.dutyCyclePercentage) {
             return false;
         }
@@ -140,13 +115,7 @@ public class DutyCycleEvent {
         } else if (!endDate.equals(other.endDate)) {
             return false;
         }
-        if (heatHoldTemp != other.heatHoldTemp) {
-            return false;
-        }
         if (isOptional != other.isOptional) {
-            return false;
-        }
-        if (isTemperatureRelative != other.isTemperatureRelative) {
             return false;
         }
         if (name == null) {
@@ -172,5 +141,4 @@ public class DutyCycleEvent {
         }
         return true;
     }
-    
 }
