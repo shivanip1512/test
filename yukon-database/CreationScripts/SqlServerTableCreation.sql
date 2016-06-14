@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/14/2016 1:04:29 AM                         */
+/* Created on:     6/14/2016 1:40:30 AM                         */
 /*==============================================================*/
 
 
@@ -13752,6 +13752,7 @@ go
 alter table RfnBroadcastEventSummary
    add constraint FK_RFNBROAD_REFERENCE_RFNBROAD foreign key (RfnBroadcastEventId)
       references RfnBroadcastEvent (RfnBroadcastEventId)
+         on delete cascade
 go
 
 alter table Route
