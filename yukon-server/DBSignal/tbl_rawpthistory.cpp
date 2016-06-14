@@ -71,7 +71,7 @@ std::string CtiTableRawPointHistory::getTempTableTruncationSql(const DbClientTyp
 std::string CtiTableRawPointHistory::getInsertSql(const DbClientType clientType, size_t rows)
 {
     const std::string oraclePrefix = "INSERT ALL";
-    const std::string oracleInfix  = " INTO Temp_RPH (pointid,timestamp,quality,value,millis) VALUES(?,?,?,?,?)";
+    const std::string oracleInfix  = " INTO Temp_RPH VALUES(?,?,?,?,?)";
     const std::string oracleSuffix = " SELECT 1 FROM DUAL;";
 
     const std::string sqlPrefix = "INSERT INTO ##rph (pointid,timestamp,quality,value,millis) VALUES";
@@ -113,7 +113,7 @@ std::string CtiTableRawPointHistory::getFinalizeSql(const DbClientType clientTyp
                     " SELECT MAX(changeid) INTO maxChangeId"
                     " FROM RAWPOINTHISTORY;"
                 "INSERT INTO RAWPOINTHISTORY"
-					" SELECT maxChangeId + ROW_NUMBER() OVER(ORDER BY (SELECT 1)), pointid, timestamp, quality, value, millis"
+					" SELECT maxChangeId + ROW_NUMBER() OVER(ORDER BY (SELECT 1 FROM DUAL)), pointid, timestamp, quality, value, millis"
                     " FROM Temp_RPH; "
                 "END;";
         }
