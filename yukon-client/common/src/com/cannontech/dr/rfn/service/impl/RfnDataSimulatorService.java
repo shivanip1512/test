@@ -107,7 +107,8 @@ public abstract class RfnDataSimulatorService {
         // DateTime now = new DateTime();
         //int minuteOfTheDay = now.getMinuteOfDay() + 1;
         
-        int minuteOfTheDay = Integer.parseInt(serialNumber) % MINUTES_IN_A_DAY;
+        //  Make sure we get serials ending with 0-9 each minute
+        int minuteOfTheDay = Integer.parseInt(serialNumber) / 10 % MINUTES_IN_A_DAY;
         return minuteOfTheDay;
     }
 }
