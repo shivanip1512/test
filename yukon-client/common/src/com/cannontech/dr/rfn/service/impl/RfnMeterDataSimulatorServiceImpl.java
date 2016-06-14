@@ -71,7 +71,6 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private final static long epoch =
         (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005")) / 1000;
     private static DateTime lastBillingGenerationTime = null;
-    private static final int BILLING_INTERVAL_HOURS = 24;
 
     @Override
     @PostConstruct
@@ -198,7 +197,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
                 .plusMillis(now.getZone().getOffset(now.withTimeAtStartOfDay()))
                 .minusMillis (now.getZone().getStandardOffset(now.withTimeAtStartOfDay().getMillis()));
         if (null == lastBillingGenerationTime
-            || lastBillingGenerationTime.plusHours(BILLING_INTERVAL_HOURS).isEqual(currentDateTime)) {
+            || lastBillingGenerationTime.isBefore(currentDateTime)) {
             // Billing data point to be generated only once in a day, no matter whatever is the reporting interval 
             lastBillingGenerationTime = currentDateTime;
             createAndAddArchiveRequest(device, lastBillingGenerationTime, RfnMeterReadingType.BILLING, now, requests);
