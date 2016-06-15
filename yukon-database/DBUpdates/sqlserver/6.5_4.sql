@@ -21,6 +21,14 @@ WHERE p.ServiceFlag = 'N'
   AND CAST(dpd.Tags AS BIGINT) & 0x01 != 0;
 /* End YUK-15352 */
 
+/* Start YUK-15271 */
+INSERT INTO PointAlarming(PointId, AlarmStates, ExcludeNotifyStates, NotifyOnAcknowledge, NotificationGroupId)
+SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1 
+FROM Point p
+WHERE p.PAObjectID = 0
+  AND p.PointId NOT IN (SELECT PointId FROM PointAlarming);
+/* End YUK-15271 */ 
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
