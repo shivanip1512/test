@@ -90,24 +90,4 @@ yukon.da.cbc = (function () {
     return mod;
 })();
 
-function getKeyValue(key){
-	
- 	var res = '';
-	 $.ajax({
-        url: yukon.url('/capcontrol/cbc/getKeyValue/' + key),
-        async: false
-    }).done(function (data) {
-       alert(data);
-       res = data;
-    });
-
-	 return res;
-	/*  var url = yukon.url('/capcontrol/cbc/getKeyValue/' + key);
-	  var res = "";
-	  $.get(url).done(function (data) {
-		  alert(data);
-		  return data;
-		  res = data;
-	  });*/
-}
 $(function () { yukon.da.cbc.init(); });

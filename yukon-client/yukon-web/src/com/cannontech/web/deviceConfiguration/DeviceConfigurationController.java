@@ -182,7 +182,11 @@ public class DeviceConfigurationController {
         deviceDnpConfiguration.setDeviceConfiguration(deviceConfig);
 
         String timeOffsetKey = null;
-        List<DeviceConfigCategoryItem> items = deviceConfig.getDnpCategory().getDeviceConfigurationItems();
+        List<DeviceConfigCategoryItem> items = null;
+        if (deviceConfig.getDnpCategory() != null) {
+            items = deviceConfig.getDnpCategory().getDeviceConfigurationItems();
+        }
+
         for (DeviceConfigCategoryItem deviceConfigCategoryItem : items) {
             if (deviceConfigCategoryItem.getFieldName().equals("timeOffset")) {
                 timeOffsetKey = deviceConfigCategoryItem.getValue();
