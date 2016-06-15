@@ -147,6 +147,53 @@ std::string createIdSqlClause(const long id, const std::string &table, const std
     return sql.extractToString();
 }
 
+
+std::string createPlaceholderList(const size_t count)
+{
+    if( count == 0 )
+    {
+        return "()";
+    }
+
+    std::string in_list(count * 2 + 1, '?');  //  N '?' + N-1 ',' + '(' + ')' = N * 2 + 1
+
+    *in_list.begin() = '(';
+    *in_list.rbegin() = ')';
+
+    for( auto idx = 1; idx < count; ++idx )
+    {
+        in_list[idx * 2] = ',';  //  replace index 2, 4, 6, etc:  "(?,?,?,?..."
+    }
+
+    return in_list;
+}
+
+
+std::string createIdInClause(const std::string &table, const std::string &column, size_t count)
+{
+    if( count == 1 )
+    {
+        return createIdEqualClause(table, column);
+    }
+
+    Cti::StreamBuffer sql;
+
+    sql << table << "." << column << " IN " << createPlaceholderList(count);
+
+    return sql.extractToString();
+}
+
+
+std::string createIdEqualClause(const std::string &table, const std::string &column)
+{
+    Cti::StreamBuffer sql;
+
+    sql << table << "." << column << " = ?";
+
+    return sql.extractToString();
+}
+
+
 /**
  * Execute an Upsert operation
  *

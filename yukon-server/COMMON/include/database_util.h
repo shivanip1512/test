@@ -111,6 +111,20 @@ std::string IM_EX_CTIBASE createIdSqlClause(const id_set &ids, const std::string
 std::string IM_EX_CTIBASE createIdSqlClause(const long id, const std::string &table, const std::string &column);
 
 /**
+ * Helper method to create a string of the format
+ * "table.column in (?, ?, ?)" or
+ * "table.column = ?" or
+ * "table.column in ()"
+ */
+std::string IM_EX_CTIBASE createIdInClause(const std::string &table, const std::string &column, size_t count);
+
+/**
+* Helper method to create a string of the format
+* "table.column = ?"
+*/
+std::string IM_EX_CTIBASE createIdEqualClause(const std::string &table, const std::string &column);
+
+/**
  * Execute an Upsert operation
  * @throws DatabaseException
  */

@@ -19,8 +19,11 @@ std::experimental::generator<boost::iterator_range<typename Container::const_ite
 
         while( chunks-- )
         {
-            yield boost::iterator_range<Container::const_iterator>(itr, itr + chunkSize);
-            itr += chunkSize;
+            const auto chunk_begin = itr;
+
+            std::advance(itr, chunkSize);
+
+            yield boost::iterator_range<Container::const_iterator>(chunk_begin, itr);
         }
     }
 

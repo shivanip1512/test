@@ -70,6 +70,26 @@ public:
     RowReader &operator<<(const boost::posix_time::ptime &operand);
     RowReader &operator<<(const std::string &operand);
     RowReader &operator<<(const char *operand);
+    
+    template <class T>
+    RowReader &operator<<(const std::vector<T>& container)
+    {
+        for( const auto& element : container )
+        {
+            *this << element;
+        }
+        return *this;
+    }
+
+    template <class T>
+    RowReader &operator<<(const std::set<T>& container)
+    {
+        for( const auto& element : container )
+        {
+            *this << element;
+        }
+        return *this;
+    }
 
     std::string asString();
 };
