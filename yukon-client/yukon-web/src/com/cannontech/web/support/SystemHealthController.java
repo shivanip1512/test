@@ -5,12 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,10 +26,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.service.SystemHealthService;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
@@ -35,6 +44,9 @@ import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
 @RequestMapping("/systemHealth/*")
 public class SystemHealthController {
     private static final Logger log = YukonLogManager.getLogger(SystemHealthController.class);
+    private static JmsTemplate jmsTemplate;
+    private static Instant lastResync;
+    
     @Autowired private SystemHealthService systemHealthService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
@@ -86,6 +98,42 @@ public class SystemHealthController {
         return metricTypeToMetrics;
     }
     
+    @RequestMapping("resync")
+    @CheckRoleProperty(YukonRoleProperty.ADMIN_NM_ACCESS)
+    public @ResponseBody Map<String, String> resync(ModelMap model, HttpServletResponse resp, FlashScope flash, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        RfnLogger rfnCommsLog = YukonLogManager.getRfnLogger();
+        
+        Map<String, String> json = new HashMap<>();
+        
+        // Make sure a re-sync hasn't been sent in the last 5 minutes 
+        if (lastResync == null) {
+            lastResync = new Instant();
+        } else {
+            Instant now = new Instant();
+            if (lastResync.isAfter(now.minus(Duration.standardMinutes(5)))) {
+                resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.resync.throttle"));
+                return json;
+            }
+            lastResync = now;
+        }
+        
+        // Take care of webserver log and RFN comms log
+        log.info("User: " + userContext.getYukonUser().getUsername() + " initiated a re-sync of Network Manager data.");
+        if (rfnCommsLog.isDebugEnabled()) {
+            rfnCommsLog.debug("Initiated a re-sync of Network Manager data.");
+        }
+        
+        // Send the re-sync message
+        RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
+        jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
+        
+        resp.setStatus(HttpStatus.OK.value());
+        json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.resync.success"));
+        return json;
+    }
+    
     /**
      * Either favorites or un-favorites the specified metric for the user.
      * @param isFavorite If true, sets the metric as a favorite. Otherwise, un-favorites the metric.
@@ -118,5 +166,12 @@ public class SystemHealthController {
                 setValue(SystemHealthMetricIdentifier.valueOf(text));
             }
         });
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
 }

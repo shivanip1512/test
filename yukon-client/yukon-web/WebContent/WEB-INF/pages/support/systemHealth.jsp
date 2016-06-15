@@ -1,9 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="support" page="systemHealth">
+    
+    <cti:checkRolesAndProperties value="ADMIN_NM_ACCESS">
+        <div id="page-actions" class="dn">
+            <cm:dropdownOption id="resync-nm-data" key=".resync" data-ok-event="yukon:support:systemhealth:resync" icon="icon-arrow-refresh" />
+            <d:confirm on="#resync-nm-data" nameKey="confirmResync"/>
+        </div>
+    </cti:checkRolesAndProperties>
     
     <tags:sectionContainer2 nameKey="serverBrokerStatistics">
         <table class="compact-results-table stacked-md">

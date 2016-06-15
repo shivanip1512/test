@@ -330,7 +330,10 @@
     <entry key="yukon.web.modules.support.systemHealth.averageEnqueueTime">Average Enqueue Time</entry>
     <entry key="yukon.web.modules.support.systemHealth.queue">Queue</entry>
     <entry key="yukon.web.modules.support.systemHealth.status">Status</entry>
-    
+    <entry key="yukon.web.modules.support.systemHealth.resync">Re-Sync Network Manager Data</entry>
+    <entry key="yukon.web.modules.support.systemHealth.resync.throttle">The re-sync operation has been performed recently. Please wait at least 5 minutes between attempts.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.resync.success">The re-sync operation has been initiated.</entry>
+
     <entry key="yukon.web.modules.support.systemHealth.metric.meterReads">RFN Meter Archive Request</entry>
     <entry key="yukon.web.modules.support.systemHealth.metric.lcrReads">RFN LCR Archive Request</entry>
     <entry key="yukon.web.modules.support.systemHealth.metric.gatewayArchive">Gateway Archive Request</entry>

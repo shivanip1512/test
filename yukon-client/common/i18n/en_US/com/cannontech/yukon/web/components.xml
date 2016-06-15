@@ -185,7 +185,11 @@
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.title">Confirm Action</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.message">Are you sure you want to perform this action?</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.ok">Ok</entry>
-    
+
+    <entry key="yukon.web.components.ajaxConfirm.confirmResync.title">Re-Sync Network Manager Data</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmResync.message">This will initiate a re-transmission of all unacknowledged NM data. This may result in a large volume of network traffic. Are you sure you want to perform this action?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmResync.ok">Ok</entry>
+
     <entry key="yukon.web.components.updatedWarning.title">Data Update Failed</entry>
     <entry key="yukon.web.components.updatedWarning.text">One or more objects on this page have been deleted. Refresh to update.</entry>
     

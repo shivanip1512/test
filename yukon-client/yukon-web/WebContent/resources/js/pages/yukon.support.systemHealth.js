@@ -91,10 +91,26 @@ yukon.support.systemHealth = (function() {
                                  .addClass('icon-favorite-not');
                        }
                    },
+                   
                    error: function(xhr, status, error) {
                        var errorMsg = xhr.responseJSON.message;
                        yukon.ui.alertError(errorMsg);
                    }
+                });
+            });
+            
+            $(document).on('yukon:support:systemhealth:resync', function(e) {
+                $.ajax({
+                    url: yukon.url('/support/systemHealth/resync'),
+                    type: 'GET',
+                    success: function(data) {
+                        var successMsg = data.message;
+                        yukon.ui.alertSuccess(successMsg);
+                    },
+                    error: function(xhr, status, error) {
+                        var errorMsg = xhr.responseJSON.message;
+                        yukon.ui.alertError(errorMsg);
+                    }
                 });
             });
             
