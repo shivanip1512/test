@@ -213,15 +213,15 @@
                             ${dnpConfig.omitTimeRequest}
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".unsolicit1"
-                            valueClass="js-dnp-field js-dnp-enableUnsolicitedMessageClass1">
+                            valueClass="js-dnp-field js-dnp-enableUnsolicitedMessagesClass1">
                             ${dnpConfig.enableUnsolicitedMessageClass1}
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".unsolicit2"
-                            valueClass="js-dnp-field js-dnp-enableUnsolicitedMessageClass2">
+                            valueClass="js-dnp-field js-dnp-enableUnsolicitedMessagesClass2">
                             ${dnpConfig.enableUnsolicitedMessageClass2}
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".unsolicit3"
-                            valueClass="js-dnp-field js-dnp-enableUnsolicitedMessageClass3">
+                            valueClass="js-dnp-field js-dnp-enableUnsolicitedMessagesClass3">
                             ${dnpConfig.enableUnsolicitedMessageClass3}
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
