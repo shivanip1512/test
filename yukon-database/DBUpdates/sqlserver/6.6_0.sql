@@ -195,6 +195,26 @@ ALTER TABLE UserSystemMetric
       ON DELETE CASCADE;
 /* End YUK-15280 */
 
+      
+/* Start YUK-15374 */
+create table RfnBroadcastEventSummary (
+   RfnBroadcastEventId  numeric(18,0)        not null,
+   Success              numeric(5,0)         not null,
+   SuccessUnenrolled    numeric(5,0)         not null,
+   Failure              numeric(5,0)         not null,
+   Unknown              numeric(5,0)         not null,
+   constraint PK_RFNBROADCASTEVENTSUMMARY primary key nonclustered (RfnBroadcastEventId)
+)
+go
+
+alter table RfnBroadcastEventSummary
+   add constraint FK_RFNBROAD_REFERENCE_RFNBROAD foreign key (RfnBroadcastEventId)
+      references RfnBroadcastEvent (RfnBroadcastEventId)
+         on delete cascade
+go
+
+/* End YUK-15374 */
+
 /* Start YUK-15251 */
 UPDATE UserPage
 SET PagePath = '/capcontrol/substations/' + SUBSTRING(PagePath, 39, LEN(PagePath)-38)
