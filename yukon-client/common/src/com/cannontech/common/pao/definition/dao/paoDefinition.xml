@@ -9852,7 +9852,8 @@
 
     <pao id="RFN520_BASE" abstract="true"
         inherits="RFN_COMMON, RFN_L2_CENTRON_AND_FOCUS, RFN_TOU_FOR_ALL_EXCEPT_A3D, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS,
-            RFN_CONFIGURATION, RFN_VOLTAGE_CONFIG, RFN_TEMPERATURE_ALARM_CONFIGURATION, SUPPORTS_VOLTAGE_PROFILE_TAG">
+            RFN_CONFIGURATION, RFN_VOLTAGE_CONFIG, RFN_TEMPERATURE_ALARM_CONFIGURATION, SUPPORTS_VOLTAGE_PROFILE_TAG, 
+            THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT">
         <points>
             <point type="Analog" offset="101">
                 <name>Delivered kW</name>
@@ -10125,7 +10126,7 @@
         <displayName>RFN-520fRXD</displayName>
     </pao>
 
-    <pao id="RFN530_BASE" inherits="RFN_COMMON" abstract="true">
+    <pao id="RFN530_BASE" inherits="RFN_COMMON, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT" abstract="true">
         <points>
             <point type="Analog" offset="265">
                 <name>Sum Peak kW</name>

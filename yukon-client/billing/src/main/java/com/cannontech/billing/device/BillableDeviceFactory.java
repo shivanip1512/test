@@ -118,9 +118,9 @@ public class BillableDeviceFactory {
         case DeviceTypes.RFN520FRXD:
         case DeviceTypes.RFN530S4X:
         case DeviceTypes.RFN530S4EAD:
-        case DeviceTypes.RFN500S4EAT:
-        case DeviceTypes.RFN500S4ERD:
-        case DeviceTypes.RFN500S4ERT:
+        case DeviceTypes.RFN530S4EAT:
+        case DeviceTypes.RFN530S4ERD:
+        case DeviceTypes.RFN530S4ERT:
             device = new RFN410();
             break;
 

@@ -1,6 +1,6 @@
 package com.cannontech.common.pao;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Set;
 
@@ -142,9 +142,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     RFN530S4X(DeviceTypes.RFN530S4X, "RFN-530S4x", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN530S4EAD(DeviceTypes.RFN530S4EAD, "RFN-530S4eAD", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN530S4EAT(DeviceTypes.RFN500S4EAT, "RFN-530S4eAT", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN530S4ERD(DeviceTypes.RFN500S4ERD, "RFN-530S4eRD", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN530S4ERT(DeviceTypes.RFN500S4ERT, "RFN-530S4eRT", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN530S4EAT(DeviceTypes.RFN530S4EAT, "RFN-530S4eAT", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN530S4ERD(DeviceTypes.RFN530S4ERD, "RFN-530S4eRD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN530S4ERT(DeviceTypes.RFN530S4ERT, "RFN-530S4eRT", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFWMETER(DeviceTypes.RFWMETER, "RFW-Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
     LCR6200_RFN(DeviceTypes.LCR6200_RFN, "LCR-6200 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),
