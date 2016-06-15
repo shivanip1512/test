@@ -37,6 +37,7 @@ public:
     long getDecimalPlaces() const;
 
 
+
     void setCurrentVarLoadPointId( const long pointId );
     void setCurrentWattLoadPointId( const long pointId );
     void setCurrentVoltLoadPointId( const long pointId );
@@ -50,6 +51,26 @@ public:
     void setTotalizedControlFlag( const bool flag );
 
     void setDecimalPlaces( const long places );
+
+    // Power Factor
+
+    long getPowerFactorPointId() const;
+    void setPowerFactorPointId( const long pointId );
+    double getPowerFactorValue() const;
+    void setPowerFactorValue( const double aValue );
+    long getEstimatedPowerFactorPointId() const;
+    void setEstimatedPowerFactorPointId( const long pointId );
+    double getEstimatedPowerFactorValue() const;
+    void setEstimatedPowerFactorValue( const double aValue );
+
+    // Daily Operations
+
+    long getDailyOperationsAnalogPointId() const;
+    void setDailyOperationsAnalogPointId( const long pointId );
+    long getCurrentDailyOperations() const;
+    void setCurrentDailyOperations( const long operations );
+
+    void setCurrentDailyOperationsAndSendMsg( const long operations, CtiMultiMsg_vec & pointChanges );
 
 
 protected:
@@ -77,6 +98,20 @@ private:
     bool _totalizedControlFlag;
 
     long _decimalPlaces;
+
+    // Power Factor
+
+    long    _powerFactorPointId;
+    double  _powerFactorValue;
+    long    _estimatedPowerFactorPointId;
+    double  _estimatedPowerFactorValue;
+
+    // Daily Operations
+
+    long    _dailyOperationsAnalogPointId;
+    long    _currentDailyOperations;
+
+
 
 };
 

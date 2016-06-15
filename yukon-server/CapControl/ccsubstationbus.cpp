@@ -64,18 +64,12 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _busupdatedflag( false ),
         _estimatedvarloadpointid( 0 ),
         _estimatedvarloadpointvalue( 0 ),
-        _dailyoperationsanalogpointid( 0 ),
-        _powerfactorpointid( 0 ),
-        _estimatedpowerfactorpointid( 0 ),
-        _currentdailyoperations( 0 ),
         _peaktimeflag( true ),
         _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastfeedercontrolledpaoid( 0 ),
         _lastfeedercontrolledposition( 0 ),
-        _powerfactorvalue( -1 ),
         _kvarsolution( 0 ),
-        _estimatedpowerfactorvalue( -1 ),
         _currentvarpointquality( NormalQuality),
         _currentwattpointquality( NormalQuality ),
         _currentvoltpointquality( NormalQuality ),
@@ -154,18 +148,12 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _busupdatedflag( false ),
         _estimatedvarloadpointid( 0 ),
         _estimatedvarloadpointvalue( 0 ),
-        _dailyoperationsanalogpointid( 0 ),
-        _powerfactorpointid( 0 ),
-        _estimatedpowerfactorpointid( 0 ),
-        _currentdailyoperations( 0 ),
         _peaktimeflag( true ),
         _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastfeedercontrolledpaoid( 0 ),
         _lastfeedercontrolledposition( 0 ),
-        _powerfactorvalue( -1 ),
         _kvarsolution( 0 ),
-        _estimatedpowerfactorvalue( -1 ),
         _currentvarpointquality( NormalQuality),
         _currentwattpointquality( NormalQuality ),
         _currentvoltpointquality( NormalQuality ),
@@ -686,46 +674,6 @@ double CtiCCSubstationBus::getEstimatedVarLoadPointValue() const
 }
 
 /*---------------------------------------------------------------------------
-    getDailyOperationsAnalogPointId
-
-    Returns the daily operations analog point id of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getDailyOperationsAnalogPointId() const
-{
-    return _dailyoperationsanalogpointid;
-}
-
-/*---------------------------------------------------------------------------
-    getPowerFactorPointId
-
-    Returns the power factor point id of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getPowerFactorPointId() const
-{
-    return _powerfactorpointid;
-}
-
-/*---------------------------------------------------------------------------
-    getEstimatedPowerFactorPointId
-
-    Returns the estimated power factor point id of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getEstimatedPowerFactorPointId() const
-{
-    return _estimatedpowerfactorpointid;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentDailyOperations
-
-    Returns the current daily operations of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getCurrentDailyOperations() const
-{
-    return _currentdailyoperations;
-}
-
-/*---------------------------------------------------------------------------
     getPeakTimeFlag
 
     Returns the flag that represents if the substation is in peak time
@@ -787,26 +735,6 @@ long CtiCCSubstationBus::getLastFeederControlledPosition() const
     else
         return 0;
 
-}
-
-/*---------------------------------------------------------------------------
-    getPowerFactorValue
-
-    Returns the PowerFactorValue of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getPowerFactorValue() const
-{
-    return _powerfactorvalue;
-}
-
-/*---------------------------------------------------------------------------
-    getEstimatedPowerFactorValue
-
-    Returns the EstimatedPowerFactorValue of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getEstimatedPowerFactorValue() const
-{
-    return _estimatedpowerfactorvalue;
 }
 
 /*---------------------------------------------------------------------------
@@ -1549,64 +1477,6 @@ void CtiCCSubstationBus::setEstimatedVarLoadPointValue(double estimatedvarval)
 }
 
 /*---------------------------------------------------------------------------
-    setDailyOperationsAnalogPointId
-
-    Sets the daily operations analog point id of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setDailyOperationsAnalogPointId(long opanalogpointid)
-{
-    _dailyoperationsanalogpointid = opanalogpointid;
-}
-
-/*---------------------------------------------------------------------------
-    setPowerFactorPointId
-
-    Sets the power factor point id of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setPowerFactorPointId(long pfpointid)
-{
-    _powerfactorpointid = pfpointid;
-}
-
-/*---------------------------------------------------------------------------
-    setEstimatedPowerFactorPointId
-
-    Sets the estimated power factor point id of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setEstimatedPowerFactorPointId(long epfpointid)
-{
-    _estimatedpowerfactorpointid = epfpointid;
-}
-
-
-/*---------------------------------------------------------------------------
-    setCurrentDailyOperations
-
-    Sets the current daily operations of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
-{
-    if ( updateDynamicValue( _currentdailyoperations, operations ) )
-    {
-        if ( getDailyOperationsAnalogPointId() > 0 )
-        {
-            pointChanges.push_back(new CtiPointDataMsg(getDailyOperationsAnalogPointId(),operations,NormalQuality,AnalogPointType));
-        }
-    }
-}
-
-
-/*---------------------------------------------------------------------------
-    setCurrentDailyOperations
-
-    Sets the current daily operations of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setCurrentDailyOperations(long operations)
-{
-    updateDynamicValue( _currentdailyoperations, operations );
-}
-
-/*---------------------------------------------------------------------------
     setPeakTimeFlag
 
     Sets the flag if the substation is in peak time
@@ -1737,17 +1607,6 @@ void CtiCCSubstationBus::setLastFeederControlledPosition(long lastfeederposition
     updateDynamicValue( _lastfeedercontrolledposition, lastfeederposition );
 }
 
-/*---------------------------------------------------------------------------
-    setPowerFactorValue
-
-    Sets the PowerFactorValue in the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setPowerFactorValue(double pfval)
-{
-    updateDynamicValue( _powerfactorvalue, pfval );
-}
-
-
 void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
 {
     if ( getCurrentVarLoadPointId() == 0 || getCurrentWattLoadPointId() == 0 )
@@ -1775,16 +1634,6 @@ void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
 void CtiCCSubstationBus::setKVARSolution(double solution)
 {
     updateDynamicValue( _kvarsolution, solution );
-}
-
-/*---------------------------------------------------------------------------
-    setEstimatedPowerFactorValue
-
-    Sets the EstimatedPowerFactorValue in the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setEstimatedPowerFactorValue(double epfval)
-{
-    updateDynamicValue( _estimatedpowerfactorvalue, epfval );
 }
 
 /*---------------------------------------------------------------------------
@@ -1933,8 +1782,8 @@ void CtiCCSubstationBus::checkForMaxDailyOpsHit()
 {
     //have we went past the max daily ops
     if( getStrategy()->getMaxDailyOperation() > 0 &&
-        (_currentdailyoperations == getStrategy()->getMaxDailyOperation()  ||
-         (!getMaxDailyOpsHitFlag() && _currentdailyoperations > getStrategy()->getMaxDailyOperation()) ) )//only send once
+        ( getCurrentDailyOperations() == getStrategy()->getMaxDailyOperation()  ||
+         (!getMaxDailyOpsHitFlag() && getCurrentDailyOperations() > getStrategy()->getMaxDailyOperation()) ) )//only send once
     {
         string text = string("Substation Bus Exceeded Max Daily Operations");
         string additional = string("Substation Bus: ");
@@ -6066,7 +5915,7 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << serializeFlag( _busupdatedflag )
         << _lastcurrentvarpointupdatetime
         << _estimatedvarloadpointvalue
-        << _currentdailyoperations
+        << getCurrentDailyOperations()
         << serializeFlag( _peaktimeflag )
         << serializeFlag( _recentlycontrolledflag )
         << _lastoperationtime
@@ -6074,9 +5923,9 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _lastfeedercontrolledpaoid
         << _lastfeedercontrolledposition
         << currentDateTime
-        << _powerfactorvalue
+        << getPowerFactorValue()
         << _kvarsolution
-        << _estimatedpowerfactorvalue
+        << getEstimatedPowerFactorValue()
         << _currentvarpointquality
         << serializeFlag( _waivecontrolflag )
         << formatFlags()
@@ -6133,7 +5982,7 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << serializeFlag( _busupdatedflag )
         << _lastcurrentvarpointupdatetime
         << _estimatedvarloadpointvalue
-        << _currentdailyoperations
+        << getCurrentDailyOperations()
         << serializeFlag( _peaktimeflag )
         << serializeFlag( _recentlycontrolledflag )
         << _lastoperationtime
@@ -6141,9 +5990,9 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _lastfeedercontrolledpaoid
         << _lastfeedercontrolledposition
         << currentDateTime
-        << _powerfactorvalue
+        << getPowerFactorValue()
         << _kvarsolution
-        << _estimatedpowerfactorvalue
+        << getEstimatedPowerFactorValue()
         << _currentvarpointquality
         << serializeFlag( _waivecontrolflag )
         << formatFlags()
@@ -8461,7 +8310,6 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
 
     rdr["LastCurrentVarUpdateTime"] >> _lastcurrentvarpointupdatetime;
     rdr["EstimatedVarPointValue"]   >> _estimatedvarloadpointvalue;
-    rdr["CurrentDailyOperations"]   >> _currentdailyoperations;
 
     rdr["PeakTimeFlag"]             >> flags;
 
@@ -8475,9 +8323,7 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
     rdr["VarValueBeforeControl"]    >> _varvaluebeforecontrol;
     rdr["LastFeederPAOid"]          >> _lastfeedercontrolledpaoid;
     rdr["LastFeederPosition"]       >> _lastfeedercontrolledposition;
-    rdr["PowerFactorValue"]         >> _powerfactorvalue;
     rdr["KvarSolution"]             >> _kvarsolution;
-    rdr["EstimatedPFValue"]         >> _estimatedpowerfactorvalue;
     rdr["CurrentVarPointQuality"]   >> _currentvarpointquality;
 
     rdr["WaiveControlFlag"]         >> flags;

@@ -3,6 +3,9 @@
 #include "Conductor.h"
 #include "database_reader.h"
 #include "ccutil.h"
+#include "msg_pdata.h"
+#include "pointdefs.h"
+#include "pointtypes.h"
 
 using Cti::CapControl::deserializeFlag;
 
@@ -18,9 +21,13 @@ Conductor::Conductor( StrategyManager * strategyManager )
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
-        _decimalPlaces( 0 )
-
-
+        _decimalPlaces( 0 ),
+        _powerFactorPointId( 0 ),
+        _powerFactorValue( -1.0 ),
+        _estimatedPowerFactorPointId( 0 ),
+        _estimatedPowerFactorValue( -1.0 ),
+        _dailyOperationsAnalogPointId( 0 ),
+        _currentDailyOperations( 0 )
 {
 
 }
@@ -35,8 +42,13 @@ Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
-        _decimalPlaces( 0 )
-
+        _decimalPlaces( 0 ),
+        _powerFactorPointId( 0 ),
+        _powerFactorValue( -1.0 ),
+        _estimatedPowerFactorPointId( 0 ),
+        _estimatedPowerFactorValue( -1.0 ),
+        _dailyOperationsAnalogPointId( 0 ),
+        _currentDailyOperations( 0 )
 {
     restoreStaticData( rdr );
 
@@ -113,8 +125,10 @@ void Conductor::restoreStaticData( Cti::RowReader & rdr )
 
 void Conductor::restoreDynamicData( Cti::RowReader & rdr )
 {
+    rdr["PowerFactorValue"]         >> _powerFactorValue;
+    rdr["EstimatedPFValue"]         >> _estimatedPowerFactorValue;
 
-
+    rdr["CurrentDailyOperations"]   >> _currentDailyOperations;
 }
 
 /*
@@ -170,9 +184,7 @@ long Conductor::getDecimalPlaces() const
     return _decimalPlaces;
 }
 
-/*
-    Mutators
-*/
+
 void Conductor::setCurrentVarLoadPointId( const long pointId )
 {
     updateStaticValue( _currentVarLoadPointId, pointId );
@@ -223,5 +235,83 @@ void Conductor::setDecimalPlaces( const long places )
     updateStaticValue( _decimalPlaces, places );
 }
 
+
+// Power Factor
+
+long Conductor::getPowerFactorPointId() const
+{
+    return _powerFactorPointId;
+}
+
+void Conductor::setPowerFactorPointId( const long pointId )
+{
+    updateStaticValue( _powerFactorPointId, pointId );
+}
+
+double Conductor::getPowerFactorValue() const
+{
+    return _powerFactorValue;
+}
+
+void Conductor::setPowerFactorValue( const double aValue )
+{
+    updateDynamicValue( _powerFactorValue, aValue );
+}
+
+long Conductor::getEstimatedPowerFactorPointId() const
+{
+    return _estimatedPowerFactorPointId;
+}
+
+void Conductor::setEstimatedPowerFactorPointId( const long pointId )
+{
+    updateStaticValue( _estimatedPowerFactorPointId, pointId );
+}
+
+double Conductor::getEstimatedPowerFactorValue() const
+{
+    return _estimatedPowerFactorValue;
+}
+
+void Conductor::setEstimatedPowerFactorValue( const double aValue )
+{
+    updateDynamicValue( _estimatedPowerFactorValue, aValue );
+}
+
+// Daily Operations
+
+long Conductor::getDailyOperationsAnalogPointId() const
+{
+    return _dailyOperationsAnalogPointId;
+}
+
+void Conductor::setDailyOperationsAnalogPointId( const long pointId )
+{
+    updateStaticValue( _dailyOperationsAnalogPointId, pointId );
+}
+
+long Conductor::getCurrentDailyOperations() const
+{
+    return _currentDailyOperations;
+}
+
+void Conductor::setCurrentDailyOperations( const long operations )
+{
+    updateDynamicValue( _currentDailyOperations, operations );
+}
+
+void Conductor::setCurrentDailyOperationsAndSendMsg( const long operations, CtiMultiMsg_vec & pointChanges )
+{
+    if ( updateDynamicValue( _currentDailyOperations, operations ) )
+    {
+        if ( getDailyOperationsAnalogPointId() > 0 )
+        {
+            pointChanges.push_back( new CtiPointDataMsg( getDailyOperationsAnalogPointId(),
+                                                         getCurrentDailyOperations(),
+                                                         NormalQuality,
+                                                         AnalogPointType ) );
+        }
+    }
+}
 
 

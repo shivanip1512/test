@@ -60,18 +60,12 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _newpointdatareceivedflag( false ),
         _estimatedvarloadpointid( 0 ),
         _estimatedvarloadpointvalue( 0 ),
-        _dailyoperationsanalogpointid( 0 ),
-        _powerfactorpointid( 0 ),
-        _estimatedpowerfactorpointid( 0 ),
-        _currentdailyoperations( 0 ),
         _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastcapbankcontrolleddeviceid( 0 ),
         _busoptimizedvarcategory( 1 ),
         _busoptimizedvaroffset( 0 ),
-        _powerfactorvalue( -1 ),
         _kvarsolution( 0 ),
-        _estimatedpowerfactorvalue( -1 ),
         _currentvarpointquality( NormalQuality ),
         _currentwattpointquality( NormalQuality ),
         _currentvoltpointquality( NormalQuality ),
@@ -130,18 +124,12 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _newpointdatareceivedflag( false ),
         _estimatedvarloadpointid( 0 ),
         _estimatedvarloadpointvalue( 0 ),
-        _dailyoperationsanalogpointid( 0 ),
-        _powerfactorpointid( 0 ),
-        _estimatedpowerfactorpointid( 0 ),
-        _currentdailyoperations( 0 ),
         _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastcapbankcontrolleddeviceid( 0 ),
         _busoptimizedvarcategory( 1 ),
         _busoptimizedvaroffset( 0 ),
-        _powerfactorvalue( -1 ),
         _kvarsolution( 0 ),
-        _estimatedpowerfactorvalue( -1 ),
         _currentvarpointquality( NormalQuality ),
         _currentwattpointquality( NormalQuality ),
         _currentvoltpointquality( NormalQuality ),
@@ -480,46 +468,6 @@ double CtiCCFeeder::getEstimatedVarLoadPointValue() const
 }
 
 /*---------------------------------------------------------------------------
-    getDailyOperationsAnalogPointId
-
-    Returns the daily operations point id of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getDailyOperationsAnalogPointId() const
-{
-    return _dailyoperationsanalogpointid;
-}
-
-/*---------------------------------------------------------------------------
-    getPowerFactorPointId
-
-    Returns the power factor point id of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getPowerFactorPointId() const
-{
-    return _powerfactorpointid;
-}
-
-/*---------------------------------------------------------------------------
-    getEstimatedPowerFactorPointId
-
-    Returns the estimated power factor point id of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getEstimatedPowerFactorPointId() const
-{
-    return _estimatedpowerfactorpointid;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentDailyOperations
-
-    Returns the current daily operations of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getCurrentDailyOperations() const
-{
-    return _currentdailyoperations;
-}
-
-/*---------------------------------------------------------------------------
     getRecentlyControlledFlag
 
     Returns the flag if the feeder has been recently controlled
@@ -587,16 +535,6 @@ double CtiCCFeeder::getBusOptimizedVarOffset() const
 }
 
 /*---------------------------------------------------------------------------
-    getPowerFactorValue
-
-    Returns the power factor value of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getPowerFactorValue() const
-{
-    return _powerfactorvalue;
-}
-
-/*---------------------------------------------------------------------------
     getKVARSolution
 
     Returns the kvar solution of the feeder
@@ -604,16 +542,6 @@ double CtiCCFeeder::getPowerFactorValue() const
 double CtiCCFeeder::getKVARSolution() const
 {
     return _kvarsolution;
-}
-
-/*---------------------------------------------------------------------------
-    getEstimatedPowerFactorValue
-
-    Returns the estimated power factor value of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getEstimatedPowerFactorValue() const
-{
-    return _estimatedpowerfactorvalue;
 }
 
 /*---------------------------------------------------------------------------
@@ -880,62 +808,6 @@ void CtiCCFeeder::setEstimatedVarLoadPointValue(double estimatedvarval)
 }
 
 /*---------------------------------------------------------------------------
-    setDailyOperationsAnalogPointId
-
-    Sets the daily operations analog point id of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setDailyOperationsAnalogPointId(long opspointid)
-{
-    _dailyoperationsanalogpointid = opspointid;
-}
-
-/*---------------------------------------------------------------------------
-    setPowerFactorPointId
-
-    Sets the power factor point id of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPowerFactorPointId(long pfpointid)
-{
-    _powerfactorpointid = pfpointid;
-}
-
-/*---------------------------------------------------------------------------
-    setEstimatedPowerFactorPointId
-
-    Sets the estimated power factor point id of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setEstimatedPowerFactorPointId(long epfpointid)
-{
-    _estimatedpowerfactorpointid = epfpointid;
-}
-
-/*---------------------------------------------------------------------------
-    setCurrentDailyOperations
-
-    Sets the current daily operations of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
-{
-    if ( updateDynamicValue( _currentdailyoperations, operations ) )
-    {
-        if ( getDailyOperationsAnalogPointId() > 0 )
-        {
-            pointChanges.push_back(new CtiPointDataMsg(getDailyOperationsAnalogPointId(),operations,NormalQuality,AnalogPointType));
-        }
-    }
-}
-/*---------------------------------------------------------------------------
-    setCurrentDailyOperations
-
-    Sets the current daily operations of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentDailyOperations(long operations)
-{
-    updateDynamicValue( _currentdailyoperations, operations );
-}
-
-
-/*---------------------------------------------------------------------------
     setRecentlyControlledFlag
 
     Sets the recently controlled flag of the feeder
@@ -990,16 +862,6 @@ void CtiCCFeeder::setBusOptimizedVarOffset(const double varoffset)
 }
 
 /*---------------------------------------------------------------------------
-    setPowerFactorValue
-
-    Sets the PowerFactorValue in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPowerFactorValue(double pfval)
-{
-    updateDynamicValue( _powerfactorvalue, pfval );
-}
-
-/*---------------------------------------------------------------------------
     setKVARSolution
 
     Sets the KVARSolution in the feeder
@@ -1007,16 +869,6 @@ void CtiCCFeeder::setPowerFactorValue(double pfval)
 void CtiCCFeeder::setKVARSolution(double solution)
 {
     updateDynamicValue( _kvarsolution, solution );
-}
-
-/*---------------------------------------------------------------------------
-    setEstimatedPowerFactorValue
-
-    Sets the EstimatedPowerFactorValue in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setEstimatedPowerFactorValue(double epfval)
-{
-    updateDynamicValue( _estimatedpowerfactorvalue, epfval );
 }
 
 /*---------------------------------------------------------------------------
@@ -1342,7 +1194,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::OpenPending,capBank, true);
     capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
-    setCurrentDailyOperationsAndSendMsg(_currentdailyoperations+1, pointChanges);
+    setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations()+1, pointChanges);
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
     capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
     setRecentlyControlledFlag(true);
@@ -1444,7 +1296,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
                                                                        capBank, true);
     capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
-    setCurrentDailyOperationsAndSendMsg(_currentdailyoperations+1, pointChanges);
+    setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations()+1, pointChanges);
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
     capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
     //setRecentlyControlledFlag(true);
@@ -1540,7 +1392,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
                                                                        capBank, true);
     capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
-    setCurrentDailyOperationsAndSendMsg(_currentdailyoperations+1, pointChanges);
+    setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations()+1, pointChanges);
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
     capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
 
@@ -1643,7 +1495,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
                                                                        capBank, true);
     capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
-    setCurrentDailyOperationsAndSendMsg(_currentdailyoperations+1, pointChanges);
+    setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations()+1, pointChanges);
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
     capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
     setRecentlyControlledFlag(true);
@@ -1761,7 +1613,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
         textInfo += typeOfControl;
     }
     capBank->setControlStatusQuality(CC_AbnormalQuality);
-    setCurrentDailyOperationsAndSendMsg(_currentdailyoperations+1, pointChanges);
+    setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations()+1, pointChanges);
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
     capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
 
@@ -5440,7 +5292,7 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
         << serializeFlag( _newpointdatareceivedflag )
         << _lastcurrentvarpointupdatetime
         << _estimatedvarloadpointvalue
-        << _currentdailyoperations
+        << getCurrentDailyOperations()
         << serializeFlag( _recentlycontrolledflag )
         << _lastoperationtime
         << _varvaluebeforecontrol
@@ -5448,9 +5300,9 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
         << _busoptimizedvarcategory
         << _busoptimizedvaroffset
         << currentDateTime
-        << _powerfactorvalue
+        << getPowerFactorValue()
         << _kvarsolution
-        << _estimatedpowerfactorvalue
+        << getEstimatedPowerFactorValue()
         << _currentvarpointquality
         << serializeFlag( _waivecontrolflag )
         << formatFlags()
@@ -5500,7 +5352,7 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << serializeFlag( _newpointdatareceivedflag )
         << _lastcurrentvarpointupdatetime
         << _estimatedvarloadpointvalue
-        << _currentdailyoperations
+        << getCurrentDailyOperations()
         << serializeFlag( _recentlycontrolledflag )
         << _lastoperationtime
         << _varvaluebeforecontrol
@@ -5508,9 +5360,9 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << _busoptimizedvarcategory
         << _busoptimizedvaroffset
         << currentDateTime
-        << _powerfactorvalue
+        << getPowerFactorValue()
         << _kvarsolution
-        << _estimatedpowerfactorvalue
+        << getEstimatedPowerFactorValue()
         << _currentvarpointquality
         << serializeFlag( _waivecontrolflag )
         << formatFlags()
@@ -5573,7 +5425,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
 
     rdr["LastCurrentVarUpdateTime"] >> _lastcurrentvarpointupdatetime;
     rdr["EstimatedVarPointValue"]   >> _estimatedvarloadpointvalue;
-    rdr["CurrentDailyOperations"]   >> _currentdailyoperations;
 
     rdr["RecentlyControlledFlag"]   >> flags;
 
@@ -5584,9 +5435,7 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["LastCapBankDeviceID"]      >> _lastcapbankcontrolleddeviceid;
     rdr["BusOptimizedVarCategory"]  >> _busoptimizedvarcategory;
     rdr["BusOptimizedVarOffset"]    >> _busoptimizedvaroffset;
-    rdr["PowerFactorValue"]         >> _powerfactorvalue;
     rdr["KvarSolution"]             >> _kvarsolution;
-    rdr["EstimatedPFValue"]         >> _estimatedpowerfactorvalue;
     rdr["CurrentVarPointQuality"]   >> _currentvarpointquality;
 
     rdr["WaiveControlFlag"]         >> flags;
@@ -5672,8 +5521,8 @@ bool CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
 {
     bool retVal = false;
     if( getStrategy()->getMaxDailyOperation() > 0 &&
-        ( _currentdailyoperations == getStrategy()->getMaxDailyOperation()  ||
-         (!getMaxDailyOpsHitFlag() && _currentdailyoperations > getStrategy()->getMaxDailyOperation()) ) )//only send once
+        ( getCurrentDailyOperations() == getStrategy()->getMaxDailyOperation()  ||
+         (!getMaxDailyOpsHitFlag() && getCurrentDailyOperations() > getStrategy()->getMaxDailyOperation()) ) )//only send once
     {
 
         string text = ("Feeder Exceeded Max Daily Operations");
