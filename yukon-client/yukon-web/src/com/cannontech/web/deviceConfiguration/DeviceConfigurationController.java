@@ -32,6 +32,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.deviceConfiguration.enumeration.DnpTimeOffset.Offsets;
 import com.cannontech.web.deviceConfiguration.model.DisplayableConfigurationData;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
@@ -186,16 +187,19 @@ public class DeviceConfigurationController {
         if (deviceConfig.getDnpCategory() != null) {
             items = deviceConfig.getDnpCategory().getDeviceConfigurationItems();
         }
-
-        for (DeviceConfigCategoryItem deviceConfigCategoryItem : items) {
-            if (deviceConfigCategoryItem.getFieldName().equals("timeOffset")) {
-                timeOffsetKey = deviceConfigCategoryItem.getValue();
+        if (items != null) {
+            for (DeviceConfigCategoryItem deviceConfigCategoryItem : items) {
+                if (deviceConfigCategoryItem.getFieldName().equals("timeOffset")) {
+                    timeOffsetKey = deviceConfigCategoryItem.getValue();
+                }
             }
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String timeOffsetValue =
+                accessor.getMessage("yukon.web.modules.tools.configs.enum.dnpTimeOffset." + timeOffsetKey);
+            deviceDnpConfiguration.setTimeOffsetValue(timeOffsetValue);
+        } else {
+            deviceDnpConfiguration.setTimeOffsetValue(Offsets.UTC.toString());
         }
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        String timeOffsetValue =
-            accessor.getMessage("yukon.web.modules.tools.configs.enum.dnpTimeOffset." + timeOffsetKey);
-        deviceDnpConfiguration.setTimeOffsetValue(timeOffsetValue);
         return deviceDnpConfiguration;
     }
 
