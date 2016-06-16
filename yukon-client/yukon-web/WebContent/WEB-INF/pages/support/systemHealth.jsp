@@ -7,10 +7,10 @@
 
 <cti:standardPage module="support" page="systemHealth">
     
-    <cti:checkRolesAndProperties value="ADMIN_NM_ACCESS">
+    <cti:checkRolesAndProperties value="OPERATOR_ADMINISTRATOR">
         <div id="page-actions" class="dn">
-            <cm:dropdownOption id="resync-nm-data" key=".resync" data-ok-event="yukon:support:systemhealth:resync" icon="icon-arrow-refresh" />
-            <d:confirm on="#resync-nm-data" nameKey="confirmResync"/>
+            <cm:dropdownOption id="sync-nm-data" key=".sync" data-ok-event="yukon:support:systemhealth:sync" icon="icon-arrow-refresh" />
+            <d:confirm on="#sync-nm-data" nameKey="confirmSync"/>
         </div>
     </cti:checkRolesAndProperties>
     

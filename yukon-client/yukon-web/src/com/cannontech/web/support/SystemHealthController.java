@@ -29,12 +29,12 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.support.service.SystemHealthService;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
@@ -98,8 +98,8 @@ public class SystemHealthController {
         return metricTypeToMetrics;
     }
     
-    @RequestMapping("resync")
-    @CheckRoleProperty(YukonRoleProperty.ADMIN_NM_ACCESS)
+    @RequestMapping("sync")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public @ResponseBody Map<String, String> resync(ModelMap model, HttpServletResponse resp, FlashScope flash, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         RfnLogger rfnCommsLog = YukonLogManager.getRfnLogger();
@@ -113,16 +113,16 @@ public class SystemHealthController {
             Instant now = new Instant();
             if (lastResync.isAfter(now.minus(Duration.standardMinutes(5)))) {
                 resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.resync.throttle"));
+                json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.sync.throttle"));
                 return json;
             }
             lastResync = now;
         }
         
         // Take care of webserver log and RFN comms log
-        log.info("User: " + userContext.getYukonUser().getUsername() + " initiated a re-sync of Network Manager data.");
+        log.info("User: " + userContext.getYukonUser().getUsername() + " initiated a re-sync of RF data.");
         if (rfnCommsLog.isDebugEnabled()) {
-            rfnCommsLog.debug("Initiated a re-sync of Network Manager data.");
+            rfnCommsLog.debug("Initiated a re-sync of RF data.");
         }
         
         // Send the re-sync message
@@ -130,7 +130,7 @@ public class SystemHealthController {
         jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
         
         resp.setStatus(HttpStatus.OK.value());
-        json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.resync.success"));
+        json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.sync.success"));
         return json;
     }
     

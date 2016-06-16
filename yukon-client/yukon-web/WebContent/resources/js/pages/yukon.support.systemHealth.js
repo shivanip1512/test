@@ -99,9 +99,9 @@ yukon.support.systemHealth = (function() {
                 });
             });
             
-            $(document).on('yukon:support:systemhealth:resync', function(e) {
+            $(document).on('yukon:support:systemhealth:sync', function(e) {
                 $.ajax({
-                    url: yukon.url('/support/systemHealth/resync'),
+                    url: yukon.url('/support/systemHealth/sync'),
                     type: 'GET',
                     success: function(data) {
                         var successMsg = data.message;
