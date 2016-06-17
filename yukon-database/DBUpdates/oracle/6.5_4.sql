@@ -29,6 +29,7 @@ INSERT INTO PointAlarming(PointId, AlarmStates, ExcludeNotifyStates, NotifyOnAck
 SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1 
 FROM Point p
 WHERE p.PAObjectID = 0
+  AND p.PointType != 'System'
   AND p.PointId NOT IN (SELECT PointId FROM PointAlarming);
 /* End YUK-15271 */
 
