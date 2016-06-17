@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/14/2016 1:40:30 AM                         */
+/* Created on:     6/17/2016 12:18:58 AM                        */
 /*==============================================================*/
 
 
@@ -8162,11 +8162,11 @@ go
 /* Table: RfnBroadcastEventSummary                              */
 /*==============================================================*/
 create table RfnBroadcastEventSummary (
-   RfnBroadcastEventId  numeric(18,0)        not null,
-   Success              numeric(5,0)         not null,
-   SuccessUnenrolled    numeric(5,0)         not null,
-   Failure              numeric(5,0)         not null,
-   Unknown              numeric(5,0)         not null,
+   RfnBroadcastEventId  numeric              not null,
+   Success              numeric              not null,
+   SuccessUnenrolled    numeric              not null,
+   Failure              numeric              not null,
+   Unknown              numeric              not null,
    constraint PK_RFNBROADCASTEVENTSUMMARY primary key nonclustered (RfnBroadcastEventId)
 )
 go

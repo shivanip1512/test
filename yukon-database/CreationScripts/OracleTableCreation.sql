@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/14/2016 1:39:18 AM                         */
+/* Created on:     6/17/2016 12:16:14 AM                        */
 /*==============================================================*/
 
 
@@ -7688,11 +7688,11 @@ create index Indx_RfnBcstEvntDev_DevIdMsgId on RfnBroadcastEventDeviceStatus (
 /* Table: RfnBroadcastEventSummary                              */
 /*==============================================================*/
 create table RfnBroadcastEventSummary  (
-   RfnBroadcastEventId  NUMBER(18,0)                    not null,
-   Success              NUMBER(5,0)                     not null,
-   SuccessUnenrolled    NUMBER(5,0)                     not null,
-   Failure              NUMBER(5,0)                     not null,
-   Unknown              NUMBER(5,0)                     not null,
+   RfnBroadcastEventId  NUMBER                          not null,
+   Success              NUMBER                          not null,
+   SuccessUnenrolled    NUMBER                          not null,
+   Failure              NUMBER                          not null,
+   Unknown              NUMBER                          not null,
    constraint PK_RFNBROADCASTEVENTSUMMARY primary key (RfnBroadcastEventId)
 );
 
