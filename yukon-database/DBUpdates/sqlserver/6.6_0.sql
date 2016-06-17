@@ -198,11 +198,11 @@ ALTER TABLE UserSystemMetric
       
 /* Start YUK-15374 */
 create table RfnBroadcastEventSummary (
-   RfnBroadcastEventId  numeric(18,0)        not null,
-   Success              numeric(5,0)         not null,
-   SuccessUnenrolled    numeric(5,0)         not null,
-   Failure              numeric(5,0)         not null,
-   Unknown              numeric(5,0)         not null,
+   RfnBroadcastEventId  numeric        not null,
+   Success              numeric         not null,
+   SuccessUnenrolled    numeric         not null,
+   Failure              numeric         not null,
+   Unknown              numeric         not null,
    constraint PK_RFNBROADCASTEVENTSUMMARY primary key nonclustered (RfnBroadcastEventId)
 )
 go
