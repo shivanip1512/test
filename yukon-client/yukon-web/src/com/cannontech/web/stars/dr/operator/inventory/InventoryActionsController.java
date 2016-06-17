@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -21,8 +22,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -30,13 +35,19 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.hardware.service.HardwareConfigService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.model.ControlAuditTask;
@@ -63,6 +74,10 @@ public class InventoryActionsController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private DateFormattingService dateFormatting;
     @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private HardwareConfigService hardwareConfigService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
     
     private static final int maxInventory = 1000;
@@ -182,6 +197,59 @@ public class InventoryActionsController {
         
         return view + "inventoryConfiguration.jsp";
     }
+
+    @RequestMapping("disable")
+    public String disable(ModelMap model, int inventoryId, YukonUserContext userContext, FlashScope flashScope) {
+
+        // Log hardware disable attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        hardwareEventLogService.hardwareDisableAttempted(userContext.getYukonUser(),
+            lmHardwareBase.getManufacturerSerialNumber(), CtiUtilities.STRING_NONE, EventSource.OPERATOR);
+
+        model.addAttribute("inventoryId", inventoryId);
+
+        try {
+            hardwareConfigService.disable(inventoryId, CtiUtilities.NONE_ZERO_ID, -1, userContext);
+
+            MessageSourceResolvable confirmationMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandSent");
+            flashScope.setConfirm(confirmationMessage);
+        } catch (CommandCompletionException e) {
+            MessageSourceResolvable errorMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandFailed",
+                    e.getMessage());
+            flashScope.setError(errorMessage);
+        }
+
+        return "redirect:/stars/operator/inventory/view";
+    }
+
+    @RequestMapping("enable")
+    public String enable(ModelMap model, int inventoryId, YukonUserContext userContext, FlashScope flashScope) {
+
+        // Log hardware disable attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        hardwareEventLogService.hardwareEnableAttempted(userContext.getYukonUser(),
+            lmHardwareBase.getManufacturerSerialNumber(), CtiUtilities.STRING_NONE, EventSource.OPERATOR);
+
+        model.addAttribute("inventoryId", inventoryId);
+
+        try {
+            hardwareConfigService.enable(inventoryId, CtiUtilities.NONE_ZERO_ID, -1, userContext);
+
+            MessageSourceResolvable confirmationMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandSent");
+            flashScope.setConfirm(confirmationMessage);
+        } catch (CommandCompletionException e) {
+            MessageSourceResolvable errorMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandFailed",
+                    e.getMessage());
+            flashScope.setError(errorMessage);
+        }
+
+        return "redirect:/stars/operator/inventory/view";
+    }
+
     
     /** Inventory Collection Popup Table */
     @RequestMapping("selectedInventoryTable")

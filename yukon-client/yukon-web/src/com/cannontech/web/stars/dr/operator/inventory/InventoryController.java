@@ -132,7 +132,9 @@ public class InventoryController {
             model.addAttribute("accountId", accountId);
             return "redirect:/stars/operator/hardware/view";
         }
-        
+        InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
+        model.addAttribute("canEnableDisable", !inventory.getHardwareType().isZigbee()
+            && !inventory.getHardwareType().isEcobee());
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
         setupModel(model, userContext, hardware);
         

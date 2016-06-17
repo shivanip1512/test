@@ -28,7 +28,27 @@
                     <%@ include file="../hardware/hardwarePoints.jspf" %>
                     <br>
                 </c:if>  
-
+                <%--DEVICE ACTIONS --%>
+                <tags:sectionContainer2 nameKey="actions" styleClass="stacked">
+                    <ul class="button-stack">
+                        <c:if test="${canEnableDisable}"> 
+                            <cti:url var="enableUrl" value="/stars/operator/inventory/enable">
+                               <cti:param name="inventoryId" value="${param.inventoryId}"/>
+                            </cti:url>
+                            <li>
+                                <cti:button nameKey="sendEnable" href="${enableUrl}" renderMode="labeledImage" icon="icon-accept" id="enable-hardware-btn"/>
+                                <d:confirm on="#enable-hardware-btn" nameKey="confirmEnable" argument="${hardware.displayName}"/>
+                            </li>
+                             <cti:url var="disableUrl" value="/stars/operator/inventory/disable">
+                               <cti:param name="inventoryId" value="${param.inventoryId}"/>
+                            </cti:url>
+                            <li>
+                                <cti:button nameKey="sendDisable" href="${disableUrl}" renderMode="labeledImage" icon="icon-delete" id="disable-hardware-btn"/>
+                                <d:confirm on="#disable-hardware-btn" nameKey="confirmDisable" argument="${hardware.displayName}"/>
+                            </li>
+                        </c:if>
+                    </ul>
+                </tags:sectionContainer2>
  		<tags:sectionContainer2 nameKey="history" styleClass="stacked">
                 <%@ include file="../hardware/hardwareHistory.jspf" %>
         </tags:sectionContainer2>
