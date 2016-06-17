@@ -34,6 +34,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -45,6 +47,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private AsyncDynamicDataSource dynamicDataSource;
     @Autowired private IDatabaseCache cache;
+    @Autowired private DbChangeManager dbChangeManager;
     private RfnIdentifierCache rfnIdentifierCache;
 
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
@@ -233,6 +236,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         if (device.getRfnIdentifier().isBlank()) {
             /* When someone has blanked out the three fields of the rfn device address, delete that row from RfnAddress. */
             deleteRfnAddress(device);
+            dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
             return;
         }
         if (!device.getRfnIdentifier().isNotBlank()) {
@@ -248,6 +252,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
 
         try {
             jdbcTemplate.update(sql);
+            dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
             return;
         } catch (DataIntegrityViolationException e) {
             /* Row is there, try to update it. */
@@ -263,6 +268,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 /* The initial insert failed because a different device is using this SN, Manufacturer, Model combination. */
                 throw new DataIntegrityViolationException("Serial Number, Manufacturer, and Model must be unique.");
             }
+            dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
         }
 
     }
