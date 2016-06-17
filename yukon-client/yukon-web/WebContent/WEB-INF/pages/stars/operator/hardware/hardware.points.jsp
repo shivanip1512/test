@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="operator" page="hardware.points">
+<cti:standardPage module="operator" page="${page}">
     <cti:url var="url" value="/stars/operator/hardware/points">
         <cti:param name="deviceId" value="${deviceId}"/>
         <cti:param name="accountId" value="${accountId}"/>

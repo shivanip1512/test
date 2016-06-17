@@ -22,6 +22,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.pao.service.LiteYukonPoint;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
 import com.cannontech.web.common.sort.SortableColumn;
@@ -62,13 +63,18 @@ public class HardwarePointsController {
         model.addAttribute("displayName", hardware.getDisplayName());
         model.addAttribute("accountId", hardware.getAccountId());
         model.addAttribute("inventoryId", inventoryId);
-        model.addAttribute("accountNumber", account.getAccountNumber());
-        
+        if (account != null) {
+            model.addAttribute("accountNumber", account.getAccountNumber());
+        }
         buildColumn(model, accessor, PointSortField.ATTRIBUTE, sorting);
         buildColumn(model, accessor, PointSortField.POINTNAME, sorting);
         buildColumn(model, accessor, PointSortField.POINTTYPE, sorting);
         buildColumn(model, accessor, PointSortField.POINTOFFSET, sorting);
-        
+        if (account == null) {
+            model.addAttribute("page", "inventory." + PageEditMode.VIEW);
+        } else {
+            model.addAttribute("page", "hardware.points");
+        }
         return "operator/hardware/hardware.points.jsp";
     }
     

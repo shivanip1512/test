@@ -1,6 +1,8 @@
 package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -29,13 +31,16 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -62,6 +67,8 @@ import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -86,6 +93,7 @@ public class InventoryController {
     @Autowired private StarsDatabaseCache starsDbCache;
     @Autowired private YukonListDao listDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private PointDao pointDao;
     
     private static final String key = "yukon.web.modules.operator.hardware.";
     
@@ -447,6 +455,30 @@ public class InventoryController {
         if (type == HardwareType.LCR_3102) {
             model.addAttribute("showTwoWay", true);
         }
+        
+        // Add Pao Specifics
+        Integer deviceId = hardware.getDeviceId();
+        if (deviceId != null && deviceId > 0 && !type.isZigbee()) { // points for ZigBee device have their own
+                                                                    // special box
+            List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
+            if (!points.isEmpty()) {
+                ListMultimap<PointType, LitePoint> pointsMap = ArrayListMultimap.create();
+                for (LitePoint point : points) {
+                    pointsMap.put(point.getPointTypeEnum(), point);
+                }
+                for (PointType pointTypeKey : pointsMap.keySet()) {
+                    Collections.sort(pointsMap.get(pointTypeKey), new Comparator<LitePoint>() {
+                        @Override
+                        public int compare(LitePoint o1, LitePoint o2) {
+                            return o1.getPointName().compareTo(o2.getPointName());
+                        }
+                    });
+                }
+                model.addAttribute("showPoints", true);
+                model.addAttribute("points", pointsMap.asMap());
+            }
+        }
+
     }
     
     @InitBinder

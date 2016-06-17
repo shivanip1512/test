@@ -347,12 +347,17 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     
     @Override
     public AccountInfoFragment getAccountInfoFragment(int accountId) {
-    	
-    	AccountSearchResult accountSearchResult = operatorAccountSearchDao.getAccountSearchResultForAccountId(accountId);
-    	
-    	AccountInfoFragment accountInfoFragment = new AccountInfoFragment(accountSearchResult);
-    	
-    	return accountInfoFragment;
+
+        if (accountId > 0) {
+            AccountSearchResult accountSearchResult =
+                operatorAccountSearchDao.getAccountSearchResultForAccountId(accountId);
+
+            AccountInfoFragment accountInfoFragment = new AccountInfoFragment(accountSearchResult);
+
+            return accountInfoFragment;
+        } else {
+            return null;
+        }
     }
 	
 	@Autowired

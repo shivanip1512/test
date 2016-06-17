@@ -24,11 +24,18 @@
 
         <cti:displayForPageEditModes modes="VIEW">
             <div class = "column two nogutter">
+                 <c:if test="${showPoints}">
+                    <%@ include file="../hardware/hardwarePoints.jspf" %>
+                    <br>
+                </c:if>  
+
+ 		<tags:sectionContainer2 nameKey="history" styleClass="stacked">
                 <%@ include file="../hardware/hardwareHistory.jspf" %>
+        </tags:sectionContainer2>
             </div>
         </cti:displayForPageEditModes>
     </div>
- </c:if>   
+ </c:if> 
 
     <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
