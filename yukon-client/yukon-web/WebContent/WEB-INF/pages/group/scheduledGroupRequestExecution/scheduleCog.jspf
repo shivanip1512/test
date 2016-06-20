@@ -4,13 +4,15 @@
                 <cm:dropdownOption id="startScheduleButton-${jobId}" key="yukon.common.start" data-job-id="${jobId}" icon="icon-bullet-go" data-popup="#startScheduleDialog-${jobId}"/>
                 <div class="dn" id="startScheduleDialog-${jobId}" data-dialog data-title="<cti:msg2 key="yukon.web.widgets.schedules.start"/>" data-ok-text="<cti:msg2 key="yukon.common.start"/>"
                 data-url="<cti:url value="/group/scheduledGroupRequestExecution/startDialog?jobId=${jobId}"/>" data-job-id="${jobId}" data-event="yukon:schedule:start" data-height="250" data-width="400"></div>
+                <cm:dropdownOption id="cancel-scheduled-job-btn-${jobId}" data-ok-event="yukon:schedule:cancelScheduled" data-job-id="${jobId}" key="yukon.common.cancel" icon="icon-cross"/>
+                <d:confirm on="#cancel-scheduled-job-btn-${jobId}" nameKey="cancelConfirm" argument="${jobWrapper.name}"/>
             </c:when>
             <c:otherwise>
-                <cm:dropdownOption id="disable-schedule-${jobId}" key="yukon.common.disable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-disabled"/>
-                <cm:dropdownOption id="enable-schedule-${jobId}" key="yukon.common.enable" icon="icon-enabled" classes="js-schedule-toggle" data-job-id="${jobId}"/>
                 <cm:dropdownOption id="start-schedule-${jobId}" key="yukon.common.start" classes="js-schedule-start-now" data-job-id="${jobId}" icon="icon-bullet-go"/>
             </c:otherwise>
          </c:choose>
+         <cm:dropdownOption id="disable-schedule-${jobId}" key="yukon.common.disable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-disabled"/>
+         <cm:dropdownOption id="enable-schedule-${jobId}" key="yukon.common.enable" icon="icon-enabled" classes="js-schedule-toggle" data-job-id="${jobId}"/>
         <cm:dropdownOption id="cancel-job-btn-${jobId}" data-ok-event="yukon:schedule:cancel" data-job-id="${jobId}" key="yukon.common.cancel" icon="icon-cross"/>
         <d:confirm on="#cancel-job-btn-${jobId}" nameKey="cancelConfirm" argument="${jobWrapper.name}"/>
 </cm:dropdown>

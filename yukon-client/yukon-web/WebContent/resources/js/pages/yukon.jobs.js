@@ -56,6 +56,19 @@ yukon.jobs = (function () {
                 });
             });
             
+            $(document).on('yukon:schedule:cancelScheduled', function (ev) {
+                var jobId = $(ev.target).data('jobId');
+                ev.preventDefault();
+                //close the dialog
+                yukon.dialogConfirm.cancel();
+                //submit job cancellation request
+                $.ajax({
+                     url: yukon.url('/group/scheduledGroupRequestExecution/cancelScheduledJob'),
+                     dataType: 'json',
+                     data: { 'toggleJobId': jobId }
+                });
+            });
+            
             $(document).on('yukon:schedule:start', function (ev) {
                 var jobId = $(ev.target).data('jobId');
                 //set future start if date time was selected
@@ -88,6 +101,7 @@ yukon.jobs = (function () {
             return function (data) {
                 
                 var jobRow = '#tr_' + jobId,
+                    nextRun = $(jobRow).find('.nextRunDate').text().trim(),
                     state = data.state;
                 
                 $(jobRow).removeClass('success subtle');
@@ -103,6 +117,7 @@ yukon.jobs = (function () {
                     $('#startScheduleButton-' + jobId).hide();
                     $('#start-schedule-' + jobId).hide();
                     $('#cancel-job-btn-' + jobId).hide();
+                    $('#cancel-scheduled-job-btn-' + jobId).hide();
                 } else if (state === 'Running') {
                     $(jobRow).addClass('success');
                     $('#toggle_' + jobId).attr("disabled", true);
@@ -114,6 +129,7 @@ yukon.jobs = (function () {
                     $('#disable-schedule-' + jobId).hide();
                     $('#startScheduleButton-' + jobId).hide();
                     $('#start-schedule-' + jobId).hide();
+                    $('#cancel-scheduled-job-btn-' + jobId).hide();
                     $('#cancel-job-btn-' + jobId).show();
                 } else if (state === 'Scheduled') {
                     $('#toggle_' + jobId).removeAttr("disabled");
@@ -123,6 +139,11 @@ yukon.jobs = (function () {
                     //show start and disable, hide other options
                     $('#startScheduleButton-' + jobId).show();
                     $('#start-schedule-' + jobId).show();
+                    $('#cancel-scheduled-job-btn-' + jobId).hide();
+                    //allow users to cancel scheduled manual jobs
+                    if(nextRun != 'N/A') {
+                        $('#cancel-scheduled-job-btn-' + jobId).show();
+                    }
                     $('#cancel-job-btn-' + jobId).hide();
                     $('#enable-schedule-' + jobId).hide();
                     $('#disable-schedule-' + jobId).show();

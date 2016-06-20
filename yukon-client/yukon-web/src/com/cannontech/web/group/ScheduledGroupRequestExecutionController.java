@@ -598,6 +598,15 @@ public class ScheduledGroupRequestExecutionController {
 	        
 	    }
 	   
+    @RequestMapping("cancelScheduledJob")
+    public void cancelScheduledJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
+        jobManager.abortJob(job);
+        
+        response.setStatus(HttpStatus.NO_CONTENT.value());
+    }
+	    
     @RequestMapping("cancelJob")
     public void cancelJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");

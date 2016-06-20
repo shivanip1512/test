@@ -67,6 +67,9 @@
                                         hidePercent="true"/>
                                 </div>
                             </td>
+                            <td class="nextRunDate dn">
+                                <cti:dataUpdaterValue type="JOB" identifier="${jobId}/NEXT_RUN_DATE"/>
+                            </td>
                 
                             <%-- cog menu --%>
                             <c:if test="${canManage}">
