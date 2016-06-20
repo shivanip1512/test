@@ -23,7 +23,7 @@ WHERE p.ServiceFlag = 'N'
 
 /* Start YUK-15271 */
 INSERT INTO PointAlarming(PointId, AlarmStates, ExcludeNotifyStates, NotifyOnAcknowledge, NotificationGroupId)
-SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1 
+SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1 
 FROM Point p
 WHERE p.PAObjectID = 0
   AND p.PointType != 'System'
