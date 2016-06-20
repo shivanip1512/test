@@ -61,12 +61,14 @@ $(function() {
         <cti:url var="pointsUrl" value="/stars/operator/hardware/points">
             <cti:param name="deviceId" value="${hardware.deviceId}"/>
 
-             <c:if test="${not empty accountId}">
-                 <cti:param name="accountId" value="${accountId}"/>
-             </c:if>
-             <c:if test="${empty accountId}">
-                 <cti:param name="accountId" value="0"/>
-             </c:if>
+            <c:choose>
+                <c:when test="${not empty accountId}">
+                     <cti:param name="accountId" value="${accountId}"/>
+                </c:when>
+                <c:otherwise>
+                     <cti:param name="accountId" value="0"/>
+                </c:otherwise>
+            </c:choose>
 
         </cti:url>
         <a href="${pointsUrl}"><i:inline key="yukon.common.showAll"/></a>
