@@ -227,7 +227,7 @@ public class InventoryActionsController {
     @RequestMapping("enable")
     public String enable(ModelMap model, int inventoryId, YukonUserContext userContext, FlashScope flashScope) {
 
-        // Log hardware disable attempt
+        // Log hardware enable attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
         hardwareEventLogService.hardwareEnableAttempted(userContext.getYukonUser(),
             lmHardwareBase.getManufacturerSerialNumber(), CtiUtilities.STRING_NONE, EventSource.OPERATOR);
