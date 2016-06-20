@@ -203,7 +203,7 @@ create table RfnBroadcastEventSummary (
    SuccessUnenrolled    numeric         not null,
    Failure              numeric         not null,
    Unknown              numeric         not null,
-   constraint PK_RFNBROADCASTEVENTSUMMARY primary key nonclustered (RfnBroadcastEventId)
+   constraint PK_RFNBROADCASTEVENTSUMMARY primary key (RfnBroadcastEventId)
 )
 go
 
