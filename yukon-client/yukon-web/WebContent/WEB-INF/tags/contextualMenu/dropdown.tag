@@ -23,7 +23,7 @@
 <cti:default var="showLabel" value="true"/>
 <cti:default var="type" value="icon"/>
 
-<div class="dropdown-trigger usn clearfix ${pageScope.triggerClasses}" <c:if test="${not empty id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
+<div class="dropdown-trigger wsnw usn clearfix ${pageScope.triggerClasses}" <c:if test="${not empty id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
     <c:choose>
         <c:when test="${type == 'link' && not empty pageScope.key}">
             <a class="button naked">
@@ -49,7 +49,7 @@
             </button>
         </c:when>
         <c:otherwise>
-            <a><i class="icon ${icon} M0"></i><c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down M0"></i></c:if></a>
+            <a><i class="icon ${icon} M0 fn"></i><c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down M0 fn"></i></c:if></a>
         </c:otherwise>
     </c:choose>
     <ul class="dropdown-menu dn ${pageScope.menuClasses}" role="menu"><jsp:doBody/></ul>
