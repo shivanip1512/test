@@ -141,7 +141,12 @@ public class JobManagerStub implements JobManager {
     }
 
     @Override
-    public void startJob(ScheduledRepeatingJob job, String newCronString) {
+    public void startJob(ScheduledRepeatingJob job, String newCronString) throws ScheduleException {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
+
+    @Override
+    public void unscheduleJob(ScheduledRepeatingJob job) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
 

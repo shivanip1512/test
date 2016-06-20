@@ -149,7 +149,13 @@ public interface JobManager {
      * 
      * @param newCronString - if the newCronString is null the job will be started right away otherwise the job will be
      *        updated with a new cron string and scheduled to start.
+     * @throws ScheduleException 
      */
-    void startJob(ScheduledRepeatingJob job, String newCronString);
+    void startJob(ScheduledRepeatingJob job, String newCronString) throws ScheduleException;
+
+    /**
+     * This method sets a cron string for scheduled job to never run ({@link ScheduledRepeatingJob#NEVER_RUN_CRON_STRING}).
+     */
+    void unscheduleJob(ScheduledRepeatingJob job);
 
 }

@@ -275,7 +275,7 @@ public class JobManagerImpl implements JobManager {
     }
     
     @Override
-    public void startJob(ScheduledRepeatingJob job, String newCronString) {
+    public void startJob(ScheduledRepeatingJob job, String newCronString) throws ScheduleException {
         if (currentlyRunning.containsKey(job)) {
             log.info("The job still running. The job will not be started or scheduled.  job= " + job);
             return;
@@ -294,6 +294,18 @@ public class JobManagerImpl implements JobManager {
         } else {
             // manual job that was set up not to start, user selected to start in the future
             if (!job.getCronString().equals(newCronString)) {
+                try {
+                    CronExpression cronExpression = new CronExpression(newCronString);
+                    Date cronDate = cronExpression.getNextValidTimeAfter(new Date());
+                    if (cronDate == null) {
+                        throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName()
+                            + " with new cron string " + newCronString + " .This schedule will not be scheduled.");
+                    }
+                } catch (ParseException e) {
+                    throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName()
+                        + " with new cron string " + newCronString + " .This schedule will not be scheduled.");
+                }
+                
                 job.setCronString(newCronString);
                 log.debug("Updating job with a new cron string:" + job.getCronString());
                 scheduledRepeatingJobDao.update(job);
@@ -390,7 +402,28 @@ public class JobManagerImpl implements JobManager {
         }
     }
 
-    // MISC PUBLIC
+    @Override
+    public void unscheduleJob(ScheduledRepeatingJob job) {
+        log.info("Job is no longer scheduled: " + job);
+        job.setCronString(ScheduledRepeatingJob.NEVER_RUN_CRON_STRING);
+        
+        scheduledRepeatingJobDao.update(job);
+
+        // see if we can cancel it
+        ScheduledInfo jobInfo = scheduledJobs.remove(job.getId());
+
+        if (jobInfo != null) {
+            // this should unschedule it, but since we removed it from the map
+            // the is no longer any way it could run
+
+            // there is no need to pass true because it is taken out of scheduledJobs
+            // before it actually runs
+            if (jobInfo.future != null) {
+                jobInfo.future.cancel(false);
+            }
+        } 
+    }
+    
     @Override
     public void disableJob(YukonJob job) {
         log.info("disabling job: " + job);

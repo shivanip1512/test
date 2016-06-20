@@ -51,6 +51,7 @@ import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -592,7 +593,11 @@ public class ScheduledGroupRequestExecutionController {
 	        }
 
 	        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
-	        jobManager.startJob(job, cronExpression);
+	        try {
+                jobManager.startJob(job, cronExpression);
+            } catch (ScheduleException e) {
+                //show error, date invalid - in the past
+            }
 	        
 	        response.setStatus(HttpStatus.NO_CONTENT.value());
 	        
@@ -602,7 +607,7 @@ public class ScheduledGroupRequestExecutionController {
     public void cancelScheduledJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
-        jobManager.abortJob(job);
+        jobManager.unscheduleJob(job);
         
         response.setStatus(HttpStatus.NO_CONTENT.value());
     }
