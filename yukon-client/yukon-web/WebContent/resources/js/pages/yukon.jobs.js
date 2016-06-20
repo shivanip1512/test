@@ -66,6 +66,8 @@ yukon.jobs = (function () {
                      url: yukon.url('/group/scheduledGroupRequestExecution/cancelScheduledJob'),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId }
+                }).done(function () {
+                    window.location.reload();
                 });
             });
             
