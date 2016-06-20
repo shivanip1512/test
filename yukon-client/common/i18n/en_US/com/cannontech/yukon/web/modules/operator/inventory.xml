@@ -67,12 +67,6 @@
     <entry key="yukon.web.modules.operator.inventory.CREATE.pageDescription">Create Hardware</entry>
     <entry key="yukon.web.modules.operator.inventory.CREATE.contextualPageName">Create</entry>
     <entry key="yukon.web.modules.operator.inventory.yukonMeterAdded">Meter {0} successfully added.</entry>
-    <entry key="yukon.web.modules.operator.inventory.sendEnable.label">Send Enable</entry>
-    <entry key="yukon.web.modules.operator.inventory.sendDisable.label">Send Disable</entry>
-    <entry key="yukon.web.modules.operator.inventory.confirmEnable.message">Are you sure you want to enable {0}?</entry>
-    <entry key="yukon.web.modules.operator.inventory.confirmEnable.title">Enable {0}</entry>
-    <entry key="yukon.web.modules.operator.inventory.confirmDisable.message">Are you sure you want to disable {0}?</entry>
-    <entry key="yukon.web.modules.operator.inventory.confirmDisable.title">Disable {0}</entry>
     
     <!-- /inventory/report.jsp -->
     <entry key="yukon.web.modules.operator.inventory.report.pageTitle">Assets: Device Report</entry>

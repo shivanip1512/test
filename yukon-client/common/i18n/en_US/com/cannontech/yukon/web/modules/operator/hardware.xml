@@ -33,6 +33,13 @@
     <entry key="yukon.web.modules.operator.hardware.changeOut.hoverText">Change out this device for a different device.</entry>
     <entry key="yukon.web.modules.operator.hardware.changeOut.label">Change Out Device</entry>
     
+    <entry key="yukon.web.modules.operator.hardware.sendEnable.label">Send Enable</entry>
+    <entry key="yukon.web.modules.operator.hardware.sendDisable.label">Send Disable</entry>
+    <entry key="yukon.web.modules.operator.hardware.confirmEnable.message">Are you sure you want to enable {0}?</entry>
+    <entry key="yukon.web.modules.operator.hardware.confirmEnable.title">Enable {0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.confirmDisable.message">Are you sure you want to disable {0}?</entry>
+    <entry key="yukon.web.modules.operator.hardware.confirmDisable.title">Disable {0}</entry>
+    
     <entry key="yukon.web.modules.operator.hardware.showPoints.label">Show Points</entry>
     <entry key="yukon.web.modules.operator.hardware.showPoints.hoverText">Show device points</entry>
 
