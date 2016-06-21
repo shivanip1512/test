@@ -3,6 +3,7 @@ package com.cannontech.web.group;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
@@ -576,7 +578,9 @@ public class ScheduledGroupRequestExecutionController {
        }
        
 	   @RequestMapping(value="startJob")
-	    public void startJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	    public @ResponseBody Map<String, Object> startJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	       
+	        Map<String , Object> json = new HashMap<>();
 	     
 	        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
@@ -597,9 +601,10 @@ public class ScheduledGroupRequestExecutionController {
                 jobManager.startJob(job, cronExpression);
             } catch (ScheduleException e) {
                 //show error, date invalid - in the past
+                json.put("error", e.getMessage());
             }
 	        
-	        response.setStatus(HttpStatus.NO_CONTENT.value());
+	        return json;
 	        
 	    }
 	   

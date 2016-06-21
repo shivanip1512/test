@@ -175,4 +175,7 @@
     </c:if>
 </tags:sectionContainer2>
 
+<div id="errorMessages"></div>
+
+
 </cti:standardPage>

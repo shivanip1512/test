@@ -108,6 +108,9 @@
     </c:if>
 </div>
 
+<div id="errorMessages"></div>
+
+
 </cti:msgScope>
     
 </form>

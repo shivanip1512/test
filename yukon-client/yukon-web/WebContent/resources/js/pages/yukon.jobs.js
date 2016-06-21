@@ -10,6 +10,21 @@ yukon.namespace('yukon.jobs');
  */
 yukon.jobs = (function () {
     
+    /**
+     * Display error messages
+     * @param {string} id - element id 
+     */
+    function displayErrors (errorMessages) {
+        var errors = $('#errorMessages');
+        errors.html(errorMessages);
+        errors.dialog({
+            title: 'Error Messages',
+            buttons: [{ text: yg.text.ok, click: function () { $(this).dialog('close'); } }]
+        });
+        errors.dialog();
+        errors.dialog("open");
+    }
+    
     var _initialized = false,
     
     mod = {};
@@ -35,11 +50,16 @@ yukon.jobs = (function () {
             $(".js-schedule-start-now").click(function(e){                
                 var selection = $(this);
                 var jobId = selection.data('jobId');
+
                 //submit start request
                 $.ajax({
                      url: yukon.url('/group/scheduledGroupRequestExecution/startJob'),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId }
+                }).done(function (data) {
+                    if (data.error) {
+                        displayErrors(data.error);
+                    }
                 });
             });
             
@@ -89,6 +109,10 @@ yukon.jobs = (function () {
                      url: yukon.url('/group/scheduledGroupRequestExecution/startJob?' + $('#startScheduleForm').serialize()),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId} 
+                }).done(function (data) {
+                    if (data.error) {
+                        displayErrors(data.error);
+                    }
                 });
             });
             
