@@ -106,7 +106,7 @@ public class SystemHealthController {
         
         Map<String, String> json = new HashMap<>();
         
-        // Make sure a re-sync hasn't been sent in the last 5 minutes 
+        // Make sure a sync hasn't been sent in the last 5 minutes 
         if (lastResync == null) {
             lastResync = new Instant();
         } else {
@@ -120,12 +120,12 @@ public class SystemHealthController {
         }
         
         // Take care of webserver log and RFN comms log
-        log.info("User: " + userContext.getYukonUser().getUsername() + " initiated a re-sync of RF data.");
+        log.info("User: " + userContext.getYukonUser().getUsername() + " initiated a sync of RF data.");
         if (rfnCommsLog.isDebugEnabled()) {
-            rfnCommsLog.debug("Initiated a re-sync of RF data.");
+            rfnCommsLog.debug("Initiated a sync of RF data.");
         }
         
-        // Send the re-sync message
+        // Send the sync message
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
         jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
         
