@@ -63,7 +63,7 @@ RESOURCE        = $(COMPILEBASE)\resource
 
 CPP_LIBRARIES   = $(DEV_ENVIRONMENT)\libraries
 
-XERCES          = $(CPP_LIBRARIES)\apache\xerces-c\3.1.2-vc140-1
+XERCES          = $(CPP_LIBRARIES)\apache\xerces-c\3.1.3-vc140-1
 XERCES_BIN      = $(XERCES)\$(CONFIGURATION)\bin
 !IFDEF DEBUG
 XERCES_LIB      = $(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib
