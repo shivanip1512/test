@@ -1,6 +1,8 @@
 package com.cannontech.jobs.support;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -63,5 +65,18 @@ public class SimpleYukonJobDefinition implements YukonJobDefinition, BeanFactory
     @Override
     public void setBeanName(String name) {
         this.name = name;
+    }
+    
+
+    @Override
+    public String toString() {
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        builder.append("taskName", taskName);
+        builder.append("name", name);
+        builder.append("title", title);
+        return builder.toString();
     }
 }

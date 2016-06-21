@@ -21,7 +21,7 @@ public class ScheduledRepeatingJob extends YukonJob {
     }
     
     public boolean isManualScheduleWithoutRunDate(){
-        if(cronString != null && NEVER_RUN_CRON_STRING.equals(cronString)){
+        if(NEVER_RUN_CRON_STRING.equals(cronString)){
             return true;
         }
         return false;
