@@ -91,13 +91,6 @@ yukon.jobs = (function () {
                 var dateTimeVisible = $('#' + jobId + '-cron-exp-one-time').is(":visible"); 
                 var futureStart = dateTimeVisible ? true : false;
                 $('#' + jobId + '_future-start').val(futureStart);
-                 
-                ev.preventDefault();
-                //close the dialog
-                var dialog = $("#startScheduleDialog-" + jobId);
-                dialog.dialog('close');
-                
-                yukon.dialogConfirm.cancel();
                 //submit job start request
                 $.ajax({
                      url: yukon.url('/group/scheduledGroupRequestExecution/startJob?' + $('#startScheduleForm').serialize()),
@@ -105,7 +98,12 @@ yukon.jobs = (function () {
                      data: { 'toggleJobId': jobId} 
                 }).done(function (data) {
                     if (data.error) {
-                        displayErrors(data.error);
+                        var errors = $('#errorMsg');
+                        errors.html(data.error);
+                    } else {
+                        //close the dialog
+                        var dialog = $("#startScheduleDialog-" + jobId);
+                        dialog.dialog('close');
                     }
                 });
             });

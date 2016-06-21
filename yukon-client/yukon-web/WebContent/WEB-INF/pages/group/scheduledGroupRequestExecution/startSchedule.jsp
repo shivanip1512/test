@@ -18,8 +18,7 @@ $(function () {
 
     <form id="startScheduleForm">
     
-    <div class="error">${error}</div>
-    
+    <div id="errorMsg" class="error">${error}</div>
 
         <tags:nameValueContainer2>
 
