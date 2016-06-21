@@ -18,7 +18,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 
 public enum DeviceError {
-    //PORTOR ERRORS
+    //PORTER ERRORS
     BAD_MESSAGE_TYPE(BULK_COMMUNICATIONS, 3),
     D_WORD_LENGTH_WRONG(BULK_COMMUNICATIONS, 4),
     PARAMETER_OUT_OF_RANGE(DATA_VALIDATION, 9),
