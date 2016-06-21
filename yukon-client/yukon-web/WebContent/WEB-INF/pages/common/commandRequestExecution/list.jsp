@@ -16,7 +16,7 @@
             <tags:nameValue2 nameKey=".filter.type">${singleJobType}</tags:nameValue2>
         </tags:nameValueContainer2>
     </c:if>
-    
+    <cti:msg var="filterSectionText" key="yukon.web.modules.tools.schedules.all.filter.section"/>
     <%-- FILTER POPUP --%>
     <tags:simplePopup id="filterPopup" title="${filterSectionText}" on="#filterButton">
         <cti:url var="listUrl" value="/common/commandRequestExecutionResults/list"/>
