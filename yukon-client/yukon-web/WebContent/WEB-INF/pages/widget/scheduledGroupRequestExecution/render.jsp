@@ -19,6 +19,8 @@
 
 <cti:msgScope paths="yukon.web.widgets.schedules">
 
+<div id="errorMessages" class="error"></div>
+
 <c:choose>
     <c:when test="${fn:length(jobWrappers) > 0}">
         <div class="scroll-lg">
@@ -107,9 +109,6 @@
         <cti:button nameKey="create" type="submit" classes="js-blocker fr" icon="icon-plus-green"/>
     </c:if>
 </div>
-
-<div id="errorMessages"></div>
-
 
 </cti:msgScope>
     

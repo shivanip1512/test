@@ -13,6 +13,8 @@
 <cti:standardPage module="tools" page="schedules.all">
     
 <cti:includeScript link="/resources/js/pages/yukon.jobs.js"/>
+
+<div id="errorMessages" class="error"></div>
   
 <%-- FILTER POPUP --%>
 <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filter.section"/>">
@@ -157,7 +159,7 @@
                             <cti:dataUpdaterCallback function="yukon.jobs.buildTooltipText('status_${jobId}')" initialize="true"
                                 tooltip="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_TOOLTIP_TEXT_FOR_JOB"/>
                             <cti:dataUpdaterCallback function="yukon.jobs.setTrClassByJobState(${jobId})"
-                                initialize="true" state="JOB/${jobId}/STATE"/>
+                                initialize="true" state="JOB/${jobId}/STATE_TEXT"/>
                         </c:forEach>
                         
                     </tbody>
@@ -174,8 +176,5 @@
         </div>
     </c:if>
 </tags:sectionContainer2>
-
-<div id="errorMessages"></div>
-
 
 </cti:standardPage>

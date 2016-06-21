@@ -17,12 +17,6 @@ yukon.jobs = (function () {
     function displayErrors (errorMessages) {
         var errors = $('#errorMessages');
         errors.html(errorMessages);
-        errors.dialog({
-            title: 'Error Messages',
-            buttons: [{ text: yg.text.ok, click: function () { $(this).dialog('close'); } }]
-        });
-        errors.dialog();
-        errors.dialog("open");
     }
     
     var _initialized = false,
