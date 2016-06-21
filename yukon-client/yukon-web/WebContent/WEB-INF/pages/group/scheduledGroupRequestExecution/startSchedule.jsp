@@ -34,7 +34,7 @@ $(function () {
 
             <input type="hidden" id="${jobId}_future-start" name="${jobId}_future-start"/>
 
-            <tags:nameValue2 nameKey="yukon.common.blank" data-toggle-group="later">
+            <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true" data-toggle-group="later">
 
                 <%-- TIME --%>
                 <div id="${jobId}-cron-exp-time" class="stacked">
@@ -63,7 +63,7 @@ $(function () {
 
             </tags:nameValue2>
 
-            <tags:nameValue2 nameKey="yukon.common.blank" data-toggle-group="later">
+            <tags:nameValue2 nameKey="yukon.common.blank" excludeColon="true" data-toggle-group="later">
 
                 <div id="${jobId}-cron-exp-one-time" class="stacked">
                     <dt:date name="${jobId}_CRONEXP_ONETIME_DATE" value="${now}" minDate="${now}" />

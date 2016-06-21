@@ -50,7 +50,7 @@
                             </td>
                             
                             <%-- schedule description --%>
-                            <td class="wsnw">${jobWrapper.scheduleDescription}</td>
+                            <td>${jobWrapper.scheduleDescription}</td>
                 
                             <%-- status --%>
                             <td id="status_${jobId}">
