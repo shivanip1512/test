@@ -36,6 +36,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -49,6 +50,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
@@ -80,6 +82,7 @@ public class ScheduledGroupRequestExecutionController {
     @Autowired private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private List<LiteCommand> meterCommands;
     private JobManager jobManager;
@@ -588,7 +591,6 @@ public class ScheduledGroupRequestExecutionController {
 	        
 	        String jobId = request.getParameter("toggleJobId");
 	        
-	        // validate cron
 	        String cronExpression = null;
 	        try {
 	            cronExpression = cronExpressionTagService.build(jobId, request, userContext);
@@ -600,8 +602,8 @@ public class ScheduledGroupRequestExecutionController {
 	        try {
                 jobManager.startJob(job, cronExpression);
             } catch (ScheduleException e) {
-                //show error, date invalid - in the past
-                json.put("error", e.getMessage());
+                MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+                json.put("error", messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.all.typeMismatch.java.util.Date"));
             }
 	        
 	        return json;
