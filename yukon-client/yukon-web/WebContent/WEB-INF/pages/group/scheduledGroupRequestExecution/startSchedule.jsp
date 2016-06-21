@@ -17,6 +17,9 @@ $(function () {
 </script>
 
     <form id="startScheduleForm">
+    
+    <div class="error">${error}</div>
+    
 
         <tags:nameValueContainer2>
 

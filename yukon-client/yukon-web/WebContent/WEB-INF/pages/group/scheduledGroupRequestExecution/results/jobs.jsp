@@ -159,7 +159,7 @@
                             <cti:dataUpdaterCallback function="yukon.jobs.buildTooltipText('status_${jobId}')" initialize="true"
                                 tooltip="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_TOOLTIP_TEXT_FOR_JOB"/>
                             <cti:dataUpdaterCallback function="yukon.jobs.setTrClassByJobState(${jobId})"
-                                initialize="true" state="JOB/${jobId}/STATE_TEXT"/>
+                                initialize="true" state="JOB/${jobId}/STATE"/>
                         </c:forEach>
                         
                     </tbody>

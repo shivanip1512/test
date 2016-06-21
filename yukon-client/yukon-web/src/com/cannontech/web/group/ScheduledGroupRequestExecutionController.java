@@ -562,8 +562,9 @@ public class ScheduledGroupRequestExecutionController {
                    nextRunTime = new DateTime(cronDate);
                }
            } catch (ParseException e) {
-
+               model.addAttribute("error", "Invalid date");
            }
+           
            DateTimeFormatter format = DateTimeFormat.forPattern("a");
            String amPm = format.print(nextRunTime);
            
