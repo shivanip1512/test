@@ -81,6 +81,15 @@ public:
     double getIWControlTot() const;
     void setIWControlTot( const double aValue );
 
+    // Parent Info
+
+    long getParentId() const;
+    void setParentId( const long parentId );
+    const std::string & getParentName() const;
+    void setParentName( const std::string & name );
+    const std::string & getParentControlUnits() const;
+    void setParentControlUnits( const std::string & units );
+
     // Misc
 
     const std::string & getMapLocationId() const;
@@ -138,6 +147,12 @@ private:
     long    _iWCount;
     double  _iWControl;
     double  _iWControlTot;
+
+    // Parent Info
+
+    long        _parentId;
+    std::string _parentName;
+    std::string _parentControlUnits;
 
     // Misc
     std::string _mapLocationId;

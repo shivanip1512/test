@@ -39,8 +39,6 @@ public:
 
     virtual ~CtiCCFeeder();
 
-    long getParentId() const;
-
     double getCurrentVarLoadPointValue() const;
     double getCurrentWattLoadPointValue() const;
     double getCurrentVoltLoadPointValue() const;
@@ -60,8 +58,6 @@ public:
     long getCurrentWattPointQuality() const;
     long getCurrentVoltPointQuality() const;
     bool getWaiveControlFlag() const;
-    const std::string& getParentControlUnits() const;
-    const std::string& getParentName() const;
     bool getPeakTimeFlag() const;
     bool getPorterRetFailFlag() const;
     long getEventSequence() const;
@@ -103,7 +99,6 @@ public:
         std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks();
     void deleteCCCapBank(long capBankId);
 
-    void setParentId(long parentId);
     void setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp);
     void setCurrentWattLoadPointValue(double currentwattval);
     void setCurrentVoltLoadPointValue(double currentvoltval);
@@ -123,8 +118,6 @@ public:
     void setCurrentWattPointQuality(long cwpq);
     void setCurrentVoltPointQuality(long cvpq);
     void setWaiveControlFlag(bool waive);
-    void setParentControlUnits(const std::string& parentControlUnits);
-    void setParentName(const std::string& parentName);
     void setPeakTimeFlag(bool peakTimeFlag);
     void setPorterRetFailFlag(bool flag);
     void setEventSequence(long eventSeq);
@@ -277,8 +270,6 @@ protected:
 
 private:
 
-    long _parentId; //subBusId
-
     double _currentvarloadpointvalue;
     double _currentwattloadpointvalue;
     double _currentvoltloadpointvalue;
@@ -301,8 +292,6 @@ private:
     long _currentvoltpointquality;
     bool _waivecontrolflag;
 
-    std::string _parentControlUnits;
-    std::string _parentName;
     bool _peakTimeFlag;
 
     CtiCCCapBank_SVector _cccapbanks;

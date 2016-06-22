@@ -52,7 +52,6 @@ DEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 ---------------------------------------------------------------------------*/
 CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
     :   Conductor( strategyManager ),
-        _parentId( 0 ),
         _currentvarloadpointvalue( 0 ),
         _currentwattloadpointvalue( 0 ),
         _currentvoltloadpointvalue( 0 ),
@@ -96,7 +95,6 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _likeDayControlFlag( false ),
         _porterRetFailFlag( false ),
         _solution( "IDLE" ),
-        _parentName( "none" ),
         _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
         _lastoperationtime( gInvalidCtiTime ),
         _lastWattPointTime( gInvalidCtiTime ),
@@ -110,7 +108,6 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
 
 CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
     :   Conductor( rdr, strategyManager ),
-        _parentId( 0 ),
         _currentvarloadpointvalue( 0 ),
         _currentwattloadpointvalue( 0 ),
         _currentvoltloadpointvalue( 0 ),
@@ -154,7 +151,6 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _likeDayControlFlag( false ),
         _porterRetFailFlag( false ),
         _solution( "IDLE" ),
-        _parentName( "none" ),
         _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
         _lastoperationtime( gInvalidCtiTime ),
         _lastWattPointTime( gInvalidCtiTime ),
@@ -199,17 +195,6 @@ const CtiCCOriginalParent& CtiCCFeeder::getOriginalParent() const
 {
     return _originalParent;
 }
-
-/*---------------------------------------------------------------------------
-    getParentId
-
-    Returns the parentID (subBusId) of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getParentId() const
-{
-    return _parentId;
-}
-
 
 /*---------------------------------------------------------------------------
     getCurrentVarLoadPointValue
@@ -512,26 +497,6 @@ bool CtiCCFeeder::getWaiveControlFlag() const
 }
 
 /*---------------------------------------------------------------------------
-    getParentControlUnits
-
-    Returns the ParentControlUnits of the feeder
----------------------------------------------------------------------------*/
-const string& CtiCCFeeder::getParentControlUnits() const
-{
-    return _parentControlUnits;
-}
-
-/*---------------------------------------------------------------------------
-    getParentName
-
-    Returns the ParentName of the feeder
----------------------------------------------------------------------------*/
-const string& CtiCCFeeder::getParentName() const
-{
-    return _parentName;
-}
-
-/*---------------------------------------------------------------------------
     getPeakTimeFlag
 
     Returns the PeakTimeFlag of the feeder
@@ -614,16 +579,6 @@ const CtiRegression& CtiCCFeeder::getRegressionB()
 const CtiRegression& CtiCCFeeder::getRegressionC()
 {
     return regressionC;
-}
-
-/*---------------------------------------------------------------------------
-    setParentId
-
-    Sets the parentID (subBusID) of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setParentId(long parentId)
-{
-    _parentId = parentId;
 }
 
 /*---------------------------------------------------------------------------
@@ -836,26 +791,6 @@ void CtiCCFeeder::setCurrentVoltPointQuality(long cvpq)
 void CtiCCFeeder::setWaiveControlFlag(bool waive)
 {
     updateDynamicValue( _waivecontrolflag, waive );
-}
-
-/*---------------------------------------------------------------------------
-    setParentControlUnits
-
-    Sets the ParentControlUnits in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setParentControlUnits(const string& parentControlUnits)
-{
-    updateDynamicValue( _parentControlUnits, parentControlUnits );
-}
-
-/*---------------------------------------------------------------------------
-    setParentName
-
-    Sets the ParentName in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setParentName(const string& parentName)
-{
-    updateDynamicValue( _parentName, parentName );
 }
 
 /*---------------------------------------------------------------------------

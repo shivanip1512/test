@@ -32,6 +32,8 @@ Conductor::Conductor( StrategyManager * strategyManager )
         _iWCount( 0 ),
         _iWControl( 0 ),
         _iWControlTot( 0 ),
+        _parentId( 0 ),
+        _parentName( "none" ),
         _multiMonitorFlag( false ),
         _decimalPlaces( 0 )
 {
@@ -59,6 +61,8 @@ Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
         _iWCount( 0 ),
         _iWControl( 0 ),
         _iWControlTot( 0 ),
+        _parentId( 0 ),
+        _parentName( "none" ),
         _multiMonitorFlag( false ),
         _decimalPlaces( 0 )
 {
@@ -363,6 +367,38 @@ double Conductor::getIWControlTot() const
 void Conductor::setIWControlTot( const double aValue )
 {
     updateDynamicValue( _iWControlTot, aValue );
+}
+
+// Parent Info
+
+long Conductor::getParentId() const
+{
+    return _parentId;
+}
+
+void Conductor::setParentId( const long parentId )
+{
+    updateStaticValue( _parentId, parentId );
+}
+
+const std::string & Conductor::getParentName() const
+{
+    return _parentName; 
+}
+
+void Conductor::setParentName( const std::string & name )
+{
+    updateStaticValue( _parentName, name );             // bus and feeder had this as dynamic... why?
+}
+
+const std::string & Conductor::getParentControlUnits() const
+{
+    return _parentControlUnits;
+}
+
+void Conductor::setParentControlUnits( const std::string & units )
+{
+    updateStaticValue( _parentControlUnits, units );    // bus and feeder had this as dynamic... why?
 }
 
 // Misc

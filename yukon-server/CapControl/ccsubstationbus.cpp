@@ -49,7 +49,6 @@ DEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
     :   Conductor( strategyManager ),
-        _parentId( 0 ),
         _currentvarloadpointvalue( 0 ),
         _currentwattloadpointvalue( 0 ),
         _currentvoltloadpointvalue( 0 ),
@@ -112,7 +111,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _commsStatePointId( 0 ),
         _disableBusPointId( 0 ),
         _solution( "IDLE" ),
-        _parentName( "none" ),
         _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
         _lastoperationtime( gInvalidCtiTime ),
         _lastVerificationCheck( gInvalidCtiTime ),
@@ -127,7 +125,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
 
 CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * strategyManager )
     :   Conductor( rdr, strategyManager ),
-        _parentId( 0 ),
         _currentvarloadpointvalue( 0 ),
         _currentwattloadpointvalue( 0 ),
         _currentvoltloadpointvalue( 0 ),
@@ -190,7 +187,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _commsStatePointId( 0 ),
         _disableBusPointId( 0 ),
         _solution( "IDLE" ),
-        _parentName( "none" ),
         _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
         _lastoperationtime( gInvalidCtiTime ),
         _lastVerificationCheck( gInvalidCtiTime ),
@@ -223,37 +219,6 @@ CtiCCSubstationBus::~CtiCCSubstationBus()
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
-
-/*---------------------------------------------------------------------------
-    getParentId
-
-    Returns the parentID (AreaId) of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getParentId() const
-{
-    return _parentId;
-}
-
-/*---------------------------------------------------------------------------
-    getParentControlUnits
-
-    Returns the ParentControlUnits of the substation bus
----------------------------------------------------------------------------*/
-const string& CtiCCSubstationBus::getParentControlUnits() const
-{
-    return _parentControlUnits;
-}
-
-/*---------------------------------------------------------------------------
-    getParentName
-
-    Returns the ParentName of the substation bus
----------------------------------------------------------------------------*/
-const string& CtiCCSubstationBus::getParentName() const
-{
-    return _parentName;
-}
-
 
 /*---------------------------------------------------------------------------
     getDisplayOrder
@@ -941,37 +906,6 @@ const CtiRegression& CtiCCSubstationBus::getRegressionB()
 const CtiRegression& CtiCCSubstationBus::getRegressionC()
 {
     return regressionC;
-}
-
-/*---------------------------------------------------------------------------
-    setParentId
-
-    Sets the parentID (AreaID) of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setParentId(long parentId)
-{
-    _parentId = parentId;
-}
-
-
-/*---------------------------------------------------------------------------
-    setParentControlUnits
-
-    Sets the ParentControlUnits in the substation bus
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setParentControlUnits(const string& parentControlUnits)
-{
-    updateDynamicValue( _parentControlUnits, parentControlUnits );
-}
-
-/*---------------------------------------------------------------------------
-    setParentName
-
-    Sets the ParentName in the substation bus
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setParentName(const string& parentName)
-{
-    updateDynamicValue( _parentName, parentName );
 }
 
 /*---------------------------------------------------------------------------

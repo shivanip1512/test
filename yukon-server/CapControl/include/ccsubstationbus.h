@@ -40,8 +40,6 @@ public:
 
     virtual ~CtiCCSubstationBus();
 
-    long getParentId() const;
-
     Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
     double getCurrentVarLoadPointValue() const;
     double getRawCurrentVarLoadPointValue() const;
@@ -98,8 +96,6 @@ public:
 
     const std::string& getSolution() const;
     double getTargetVarValue() const;
-    const std::string& getParentControlUnits() const;
-    const std::string& getParentName() const;
     long getDisplayOrder() const;
 
     bool getTotalizedControlFlag() const;
@@ -123,8 +119,6 @@ public:
     const CtiFeeder_vec& getCCFeeders() const;
     std::list<int> getCCFeederIds();
     void deleteCCFeeder(long feederId);
-
-    void setParentId(long parentId);
 
     long getControlSendRetries() const;
 
@@ -176,8 +170,6 @@ public:
     void setAllAltSubValues(double volt, double var, double watt);
     void setSolution(const std::string& text);
     void setTargetVarValue(double value);
-    void setParentControlUnits(const std::string& parentControlUnits);
-    void setParentName(const std::string& parentName);
     void setDisplayOrder(long displayOrder);
     void setPhaseAValue(double value, CtiTime time);
     void setPhaseBValue(double value, CtiTime time);
@@ -327,7 +319,6 @@ protected:
 
 private:
 
-    long _parentId;
     double _currentvarloadpointvalue;
     double _currentwattloadpointvalue;
     double _currentvoltloadpointvalue;
@@ -389,8 +380,6 @@ private:
 
     double _targetvarvalue;
     std::string _solution;  //text field to be added to messaging indicating status/thinking
-    std::string _parentControlUnits;
-    std::string _parentName;
     long _displayOrder;
 
     double _altSubVoltVal;

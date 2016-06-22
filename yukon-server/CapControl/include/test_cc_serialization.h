@@ -531,7 +531,7 @@ struct TestCase<CtiCCFeeder> : public TestCase<CapControlPao>
         Conductor   &c_imsg = static_cast<Conductor&>(*_imsg);
         CtiCCFeeder &imsg = static_cast<CtiCCFeeder&>(*_imsg);
 
-        GenerateRandom( imsg._parentId );
+        GenerateRandom( c_imsg._parentId );
         GenerateRandom( c_imsg._currentVarLoadPointId );
         GenerateRandom( imsg._currentvarloadpointvalue );
         GenerateRandom( c_imsg._currentWattLoadPointId );
@@ -609,7 +609,7 @@ struct TestCase<CtiCCSubstationBus> : public TestCase<CapControlPao>
         Conductor          &c_imsg = static_cast<Conductor&>(*_imsg);
         CtiCCSubstationBus &imsg = static_cast<CtiCCSubstationBus&>(*_imsg);
 
-        GenerateRandom( imsg._parentId );
+        GenerateRandom( c_imsg._parentId );
         GenerateRandom( c_imsg._currentVarLoadPointId );
         GenerateRandom( imsg._currentvarloadpointvalue );
         GenerateRandom( c_imsg._currentWattLoadPointId );
