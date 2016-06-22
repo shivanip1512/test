@@ -101,12 +101,6 @@ public:
     const std::string& getParentControlUnits() const;
     const std::string& getParentName() const;
     long getDisplayOrder() const;
-    double getIVControlTot() const;
-    long getIVCount() const;
-    double getIWControlTot() const;
-    long getIWCount() const;
-    double getIVControl() const;
-    double getIWControl() const;
 
     bool getTotalizedControlFlag() const;
 
@@ -185,12 +179,6 @@ public:
     void setParentControlUnits(const std::string& parentControlUnits);
     void setParentName(const std::string& parentName);
     void setDisplayOrder(long displayOrder);
-    void setIVControlTot(double value);
-    void setIVCount(long value);
-    void setIWControlTot(double value);
-    void setIWCount(long value);
-    void setIVControl(double value);
-    void setIWControl(double value);
     void setPhaseAValue(double value, CtiTime time);
     void setPhaseBValue(double value, CtiTime time);
     void setPhaseCValue(double value, CtiTime time);
@@ -409,14 +397,6 @@ private:
     double _altSubVarVal;
     double _altSubWattVal;
     CtiTime _lastVerificationCheck;
-
-    double _iVControlTot;
-    long  _iVCount;
-    double _iWControlTot;
-    long  _iWCount;
-
-    double _iVControl;
-    double _iWControl;
 
     double _phaseAvalue;
     double _phaseBvalue;

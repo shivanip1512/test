@@ -81,12 +81,6 @@ public:
     long getCurrentVerificationCapBankOrigState() const;
     double getTargetVarValue() const;
     const std::string& getSolution() const;
-    double getIVControlTot() const;
-    long getIVCount() const;
-    double getIWControlTot() const;
-    long getIWCount() const;
-    double getIVControl() const;
-    double getIWControl() const;
     Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
     double getPhaseAValue() const;
     double getPhaseBValue() const;
@@ -150,12 +144,6 @@ public:
     void setCurrentVerificationCapBankState(long status);
     void setTargetVarValue(double value);
     void setSolution(const std::string& text);
-    void setIVControlTot(double value);
-    void setIVCount(long value);
-    void setIWControlTot(double value);
-    void setIWCount(long value);
-    void setIVControl(double value);
-    void setIWControl(double value);
     void setPhaseAValue(double value, CtiTime timestamp);
     void setPhaseBValue(double value, CtiTime timestamp);
     void setPhaseCValue(double value, CtiTime timestamp);
@@ -340,14 +328,6 @@ private:
 
     double _targetvarvalue;
     std::string _solution;
-
-    double _iVControlTot;
-    long  _iVCount;
-    double _iWControlTot;
-    long  _iWCount;
-
-    double _iVControl;
-    double _iWControl;
 
     double _phaseAvalue;
     double _phaseBvalue;

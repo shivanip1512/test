@@ -86,12 +86,6 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _currentVerificationCapBankId( -1 ),
         _currentCapBankToVerifyAssumedOrigState( 0 ),
         _targetvarvalue( 0 ),
-        _iVControlTot( 0 ),
-        _iVCount( 0 ),
-        _iWControlTot( 0 ),
-        _iWCount( 0 ),
-        _iVControl( 0 ),
-        _iWControl( 0 ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
@@ -150,12 +144,6 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _currentVerificationCapBankId( -1 ),
         _currentCapBankToVerifyAssumedOrigState( 0 ),
         _targetvarvalue( 0 ),
-        _iVControlTot( 0 ),
-        _iVCount( 0 ),
-        _iWControlTot( 0 ),
-        _iWCount( 0 ),
-        _iVControl( 0 ),
-        _iWControl( 0 ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
@@ -261,67 +249,6 @@ double CtiCCFeeder::getCurrentVoltLoadPointValue() const
 float CtiCCFeeder::getDisplayOrder() const
 {
     return _displayorder;
-}
-
-
-
-/*---------------------------------------------------------------------------
-    getIVControlTot
-
-    Returns the Integrate Volt/Var Control total of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getIVControlTot() const
-{
-    return _iVControlTot;
-}
-/*---------------------------------------------------------------------------
-    getIVCount
-
-    Returns the Integrate Volt/Var Control count of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getIVCount() const
-{
-    return _iVCount;
-}
-
-
-/*---------------------------------------------------------------------------
-    getIWControlTot
-
-    Returns the Integrate Watt Control total of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getIWControlTot() const
-{
-    return _iWControlTot;
-}
-
-/*---------------------------------------------------------------------------
-    getIWCount
-
-    Returns the Integrate Watt Control count of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getIWCount() const
-{
-    return _iWCount;
-}
-
-/*---------------------------------------------------------------------------
-    getIVControl
-
-    Returns the Integrate Volt/Var Control of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getIVControl() const
-{
-    return _iVControl;
-}
-/*---------------------------------------------------------------------------
-    getIWControl
-
-    Returns the Integrate Watt Control of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getIWControl() const
-{
-    return _iWControl;
 }
 
 /**
@@ -4398,61 +4325,6 @@ void CtiCCFeeder::setSolution(const string &text)
 }
 
 /*---------------------------------------------------------------------------
-    setIVControlTot
-
-    Sets the Integrated Volt or var Control Total of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setIVControlTot(double value)
-{
-    updateDynamicValue( _iVControlTot, value );
-}
-/*---------------------------------------------------------------------------
-    setIVCoont
-
-    Sets the Integrated Volt or var Control Count of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setIVCount(long value)
-{
-    updateDynamicValue( _iVCount, value );
-}
-/*---------------------------------------------------------------------------
-    setIWControlTot
-
-    Sets the Integrated Watt Control Total of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setIWControlTot(double value)
-{
-    updateDynamicValue( _iWControlTot, value );
-}
-/*---------------------------------------------------------------------------
-    setIWCoont
-
-    Sets the Integrated Watt Control Count of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setIWCount(long value)
-{
-    updateDynamicValue( _iWCount, value );
-}
-/*---------------------------------------------------------------------------
-    setIVControl
-
-    Sets the Integrated Volt/Var Control of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setIVControl(double value)
-{
-    updateDynamicValue( _iVControl, value );
-}
-/*---------------------------------------------------------------------------
-    setIWControl
-
-    Sets the Integrated Watt Control  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setIWControl(double value)
-{
-    updateDynamicValue( _iWControl, value );
-}
-
-/*---------------------------------------------------------------------------
     setPhaseAValue
 
     Sets the PhaseAValue VAr  of the feeder
@@ -5312,10 +5184,10 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
         << _currentCapBankToVerifyAssumedOrigState
         << _currentwattpointquality
         << _currentvoltpointquality
-        << _iVControlTot
-        << _iVCount
-        << _iWControlTot
-        << _iWCount
+        << getIVControlTot()
+        << getIVCount()
+        << getIWControlTot()
+        << getIWCount()
         << _phaseAvalue
         << _phaseBvalue
         << _phaseCvalue
@@ -5372,10 +5244,10 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << _currentCapBankToVerifyAssumedOrigState
         << _currentwattpointquality
         << _currentvoltpointquality
-        << _iVControlTot
-        << _iVCount
-        << _iWControlTot
-        << _iWCount
+        << getIVControlTot()
+        << getIVCount()
+        << getIWControlTot()
+        << getIWCount()
         << _phaseAvalue
         << _phaseBvalue
         << _phaseCvalue
@@ -5464,11 +5336,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["CurrVerifyCBOrigState"]    >> _currentCapBankToVerifyAssumedOrigState;
     rdr["CurrentWattPointQuality"]  >> _currentwattpointquality;
     rdr["CurrentVoltPointQuality"]  >> _currentvoltpointquality;
-
-    rdr["iVControlTot"]             >> _iVControlTot;
-    rdr["iVCount"]                  >> _iVCount;
-    rdr["iWControlTot"]             >> _iWControlTot;
-    rdr["iWCount"]                  >> _iWCount;
 
     rdr["phaseavalue"]              >> _phaseAvalue;
     rdr["phasebvalue"]              >> _phaseBvalue;

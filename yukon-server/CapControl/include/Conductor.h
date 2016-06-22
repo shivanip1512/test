@@ -22,35 +22,28 @@ public:
 
     virtual ~Conductor() = default;
 
+    // VAr
+
     long getCurrentVarLoadPointId() const;
-    long getCurrentWattLoadPointId() const;
-    long getCurrentVoltLoadPointId() const;
-
-    const std::string & getMapLocationId() const;
-    bool getMultiMonitorFlag() const;
-
-    bool getUsePhaseData() const;
-    long getPhaseBId() const;
-    long getPhaseCId() const;
-    bool getTotalizedControlFlag() const;
-
-    long getDecimalPlaces() const;
-
-
-
     void setCurrentVarLoadPointId( const long pointId );
-    void setCurrentWattLoadPointId( const long pointId );
-    void setCurrentVoltLoadPointId( const long pointId );
-
-    void setMapLocationId( const std::string & mapLocation );
-    void setMultiMonitorFlag( const bool flag );
-
+    bool getUsePhaseData() const;
     void setUsePhaseData( const bool flag );
+    long getPhaseBId() const;
     void setPhaseBId( const long pointId );
+    long getPhaseCId() const;
     void setPhaseCId( const long pointId );
+    bool getTotalizedControlFlag() const;
     void setTotalizedControlFlag( const bool flag );
 
-    void setDecimalPlaces( const long places );
+    // Watt
+
+    long getCurrentWattLoadPointId() const;
+    void setCurrentWattLoadPointId( const long pointId );
+
+    // Volt
+
+    long getCurrentVoltLoadPointId() const;
+    void setCurrentVoltLoadPointId( const long pointId );
 
     // Power Factor
 
@@ -58,6 +51,7 @@ public:
     void setPowerFactorPointId( const long pointId );
     double getPowerFactorValue() const;
     void setPowerFactorValue( const double aValue );
+
     long getEstimatedPowerFactorPointId() const;
     void setEstimatedPowerFactorPointId( const long pointId );
     double getEstimatedPowerFactorValue() const;
@@ -72,6 +66,30 @@ public:
 
     void setCurrentDailyOperationsAndSendMsg( const long operations, CtiMultiMsg_vec & pointChanges );
 
+    // Integration
+
+    long getIVCount() const;
+    void setIVCount( const long aValue );
+    double getIVControl() const;
+    void setIVControl( const double aValue );
+    double getIVControlTot() const;
+    void setIVControlTot( const double aValue );
+    long getIWCount() const;
+    void setIWCount( const long aValue );
+    double getIWControl() const;
+    void setIWControl( const double aValue );
+    double getIWControlTot() const;
+    void setIWControlTot( const double aValue );
+
+    // Misc
+
+    const std::string & getMapLocationId() const;
+    void setMapLocationId( const std::string & mapLocation );
+    bool getMultiMonitorFlag() const;
+    void setMultiMonitorFlag( const bool flag );
+    long getDecimalPlaces() const;
+    void setDecimalPlaces( const long places );
+
 
 protected:
 
@@ -84,20 +102,21 @@ private:
     void restoreStaticData( Cti::RowReader & rdr );
     void restoreDynamicData( Cti::RowReader & rdr );
 
+    // VAr
 
     long _currentVarLoadPointId;
-    long _currentWattLoadPointId;
-    long _currentVoltLoadPointId;
-
-    std::string _mapLocationId;
-    bool _multiMonitorFlag;
-
     bool _usePhaseData;
     long _phaseBid;
     long _phaseCid;
     bool _totalizedControlFlag;
 
-    long _decimalPlaces;
+    // Watt
+
+    long _currentWattLoadPointId;
+
+    // Volt
+
+    long _currentVoltLoadPointId;
 
     // Power Factor
 
@@ -111,7 +130,18 @@ private:
     long    _dailyOperationsAnalogPointId;
     long    _currentDailyOperations;
 
+    // Integration
 
+    long    _iVCount;
+    double  _iVControl;
+    double  _iVControlTot;
+    long    _iWCount;
+    double  _iWControl;
+    double  _iWControlTot;
 
+    // Misc
+    std::string _mapLocationId;
+    bool _multiMonitorFlag;
+    long _decimalPlaces;
 };
 

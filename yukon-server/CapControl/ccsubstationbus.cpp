@@ -103,12 +103,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _altSubVoltVal( 0 ),
         _altSubVarVal( 0 ),
         _altSubWattVal( 0 ),
-        _iVControlTot( 0 ),
-        _iVCount( 0 ),
-        _iWControlTot( 0 ),
-        _iWCount( 0 ),
-        _iVControl( 0 ),
-        _iWControl( 0 ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
@@ -187,12 +181,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _altSubVoltVal( 0 ),
         _altSubVarVal( 0 ),
         _altSubWattVal( 0 ),
-        _iVControlTot( 0 ),
-        _iVCount( 0 ),
-        _iWControlTot( 0 ),
-        _iWCount( 0 ),
-        _iVControl( 0 ),
-        _iWControl( 0 ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
@@ -275,66 +263,6 @@ const string& CtiCCSubstationBus::getParentName() const
 long CtiCCSubstationBus::getDisplayOrder() const
 {
     return _displayOrder;
-}
-
-/*---------------------------------------------------------------------------
-    getIVControlTot
-
-    Returns the Integrate Volt/Var Control total of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getIVControlTot() const
-{
-    return _iVControlTot;
-}
-/*---------------------------------------------------------------------------
-    getIVCount
-
-    Returns the Integrate Volt/Var Control count of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getIVCount() const
-{
-    return _iVCount;
-}
-
-
-/*---------------------------------------------------------------------------
-    getIWControlTot
-
-    Returns the Integrate Watt Control total of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getIWControlTot() const
-{
-    return _iWControlTot;
-}
-
-/*---------------------------------------------------------------------------
-    getIWCount
-
-    Returns the Integrate Watt Control count of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getIWCount() const
-{
-    return _iWCount;
-}
-
-
-/*---------------------------------------------------------------------------
-    getIVControl
-
-    Returns the Integrate Volt/Var Control of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getIVControl() const
-{
-    return _iVControl;
-}
-/*---------------------------------------------------------------------------
-    getIWControl
-
-    Returns the Integrate Watt Control of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getIWControl() const
-{
-    return _iWControl;
 }
 
 /*---------------------------------------------------------------------------
@@ -1054,62 +982,6 @@ void CtiCCSubstationBus::setParentName(const string& parentName)
 void CtiCCSubstationBus::setDisplayOrder(long displayOrder)
 {
     _displayOrder = displayOrder;
-}
-/*---------------------------------------------------------------------------
-    setIVControlTot
-
-    Sets the Integrated Volt or var Control Total of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setIVControlTot(double value)
-{
-    updateDynamicValue( _iVControlTot, value );
-}
-/*---------------------------------------------------------------------------
-    setIVCoont
-
-    Sets the Integrated Volt or var Control Count of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setIVCount(long value)
-{
-    updateDynamicValue( _iVCount, value );
-}
-/*---------------------------------------------------------------------------
-    setIWControlTot
-
-    Sets the Integrated Watt Control Total of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setIWControlTot(double value)
-{
-    updateDynamicValue( _iWControlTot, value );
-}
-/*---------------------------------------------------------------------------
-    setIWCoont
-
-    Sets the Integrated Watt Control Count of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setIWCount(long value)
-{
-    _iWCount = value;
-}
-
-/*---------------------------------------------------------------------------
-    setIVControl
-
-    Sets the Integrated Volt/Var Control of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setIVControl(double value)
-{
-    _iVControl = value;
-}
-
-/*---------------------------------------------------------------------------
-    setIWControl
-
-    Sets the Integrated Watt Control of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setIWControl(double value)
-{
-    _iWControl = value;
 }
 
 /*---------------------------------------------------------------------------
@@ -5940,10 +5812,10 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _eventSeq
         << _currentwattpointquality
         << _currentvoltpointquality
-        << _iVControlTot
-        << _iVCount
-        << _iWControlTot
-        << _iWCount
+        << getIVControlTot()
+        << getIVCount()
+        << getIWControlTot()
+        << getIWCount()
         << _phaseAvalue
         << _phaseBvalue
         << _phaseCvalue
@@ -6007,10 +5879,10 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _eventSeq
         << _currentwattpointquality
         << _currentvoltpointquality
-        << _iVControlTot
-        << _iVCount
-        << _iWControlTot
-        << _iWCount
+        << getIVControlTot()
+        << getIVCount()
+        << getIWControlTot()
+        << getIWCount()
         << _phaseAvalue
         << _phaseBvalue
         << _phaseCvalue
@@ -8380,11 +8252,6 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
     rdr["CurrentVoltPointQuality"]  >> _currentvoltpointquality;
 
     _altSubVoltVal                  = _currentvoltloadpointvalue;
-
-    rdr["iVControlTot"]             >> _iVControlTot;
-    rdr["iVCount"]                  >> _iVCount;
-    rdr["iWControlTot"]             >> _iWControlTot;
-    rdr["iWCount"]                  >> _iWCount;
 
     rdr["phaseavalue"]              >> _phaseAvalue;
     rdr["phasebvalue"]              >> _phaseBvalue;

@@ -14,20 +14,26 @@ using Cti::CapControl::deserializeFlag;
 Conductor::Conductor( StrategyManager * strategyManager )
     :   Controllable( strategyManager ),
         _currentVarLoadPointId( 0 ),
-        _currentWattLoadPointId( 0 ),
-        _currentVoltLoadPointId( 0 ),
-        _multiMonitorFlag( false ),
         _usePhaseData( false ),
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
-        _decimalPlaces( 0 ),
+        _currentWattLoadPointId( 0 ),
+        _currentVoltLoadPointId( 0 ),
         _powerFactorPointId( 0 ),
         _powerFactorValue( -1.0 ),
         _estimatedPowerFactorPointId( 0 ),
         _estimatedPowerFactorValue( -1.0 ),
         _dailyOperationsAnalogPointId( 0 ),
-        _currentDailyOperations( 0 )
+        _currentDailyOperations( 0 ),
+        _iVCount( 0 ),
+        _iVControl( 0 ),
+        _iVControlTot( 0 ),
+        _iWCount( 0 ),
+        _iWControl( 0 ),
+        _iWControlTot( 0 ),
+        _multiMonitorFlag( false ),
+        _decimalPlaces( 0 )
 {
 
 }
@@ -35,20 +41,26 @@ Conductor::Conductor( StrategyManager * strategyManager )
 Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
     :   Controllable( rdr, strategyManager ),
         _currentVarLoadPointId( 0 ),
-        _currentWattLoadPointId( 0 ),
-        _currentVoltLoadPointId( 0 ),
-        _multiMonitorFlag( false ),
         _usePhaseData( false ),
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
-        _decimalPlaces( 0 ),
+        _currentWattLoadPointId( 0 ),
+        _currentVoltLoadPointId( 0 ),
         _powerFactorPointId( 0 ),
         _powerFactorValue( -1.0 ),
         _estimatedPowerFactorPointId( 0 ),
         _estimatedPowerFactorValue( -1.0 ),
         _dailyOperationsAnalogPointId( 0 ),
-        _currentDailyOperations( 0 )
+        _currentDailyOperations( 0 ),
+        _iVCount( 0 ),
+        _iVControl( 0 ),
+        _iVControlTot( 0 ),
+        _iWCount( 0 ),
+        _iWControl( 0 ),
+        _iWControlTot( 0 ),
+        _multiMonitorFlag( false ),
+        _decimalPlaces( 0 )
 {
     restoreStaticData( rdr );
 
@@ -129,34 +141,24 @@ void Conductor::restoreDynamicData( Cti::RowReader & rdr )
     rdr["EstimatedPFValue"]         >> _estimatedPowerFactorValue;
 
     rdr["CurrentDailyOperations"]   >> _currentDailyOperations;
+
+    rdr["iVCount"]                  >> _iVCount;
+    rdr["iVControlTot"]             >> _iVControlTot;
+    rdr["iWCount"]                  >> _iWCount;
+    rdr["iWControlTot"]             >> _iWControlTot;
+
 }
 
-/*
-    Accessors
-*/
+// VAr
+
 long Conductor::getCurrentVarLoadPointId() const
 {
     return _currentVarLoadPointId;
 }
 
-long Conductor::getCurrentWattLoadPointId() const
+void Conductor::setCurrentVarLoadPointId( const long pointId )
 {
-    return _currentWattLoadPointId;
-}
-
-long Conductor::getCurrentVoltLoadPointId() const
-{
-    return _currentVoltLoadPointId;
-}
-
-const std::string & Conductor::getMapLocationId() const
-{
-    return _mapLocationId;
-}
-
-bool Conductor::getMultiMonitorFlag() const
-{
-    return _multiMonitorFlag;
+    updateStaticValue( _currentVarLoadPointId, pointId );
 }
 
 bool Conductor::getUsePhaseData() const
@@ -164,55 +166,14 @@ bool Conductor::getUsePhaseData() const
     return _usePhaseData;
 }
 
-long Conductor::getPhaseBId() const
-{
-    return _phaseBid;
-}
-
-long Conductor::getPhaseCId() const
-{
-    return _phaseCid;
-}
-
-bool Conductor::getTotalizedControlFlag() const
-{
-    return _totalizedControlFlag;
-}
-
-long Conductor::getDecimalPlaces() const
-{
-    return _decimalPlaces;
-}
-
-
-void Conductor::setCurrentVarLoadPointId( const long pointId )
-{
-    updateStaticValue( _currentVarLoadPointId, pointId );
-}
-
-void Conductor::setCurrentWattLoadPointId( const long pointId )
-{
-    updateStaticValue( _currentWattLoadPointId, pointId );
-}
-
-void Conductor::setCurrentVoltLoadPointId( const long pointId )
-{
-    updateStaticValue( _currentVoltLoadPointId, pointId );
-}
-
-void Conductor::setMapLocationId( const std::string & mapLocation )
-{
-    updateStaticValue( _mapLocationId, mapLocation );
-}
-
-void Conductor::setMultiMonitorFlag( const bool flag )
-{
-    updateStaticValue( _multiMonitorFlag, flag );
-}
-
 void Conductor::setUsePhaseData( const bool flag )
 {
     updateStaticValue( _usePhaseData, flag );
+}
+
+long Conductor::getPhaseBId() const
+{
+    return _phaseBid;
 }
 
 void Conductor::setPhaseBId( const long pointId )
@@ -220,9 +181,19 @@ void Conductor::setPhaseBId( const long pointId )
     updateStaticValue( _phaseBid, pointId );
 }
 
+long Conductor::getPhaseCId() const
+{
+    return _phaseCid;
+}
+
 void Conductor::setPhaseCId( const long pointId )
 {
     updateStaticValue( _phaseCid, pointId );
+}
+
+bool Conductor::getTotalizedControlFlag() const
+{
+    return _totalizedControlFlag;
 }
 
 void Conductor::setTotalizedControlFlag( const bool flag )
@@ -230,11 +201,29 @@ void Conductor::setTotalizedControlFlag( const bool flag )
     updateStaticValue( _totalizedControlFlag, flag );
 }
 
-void Conductor::setDecimalPlaces( const long places )
+// Watt
+
+long Conductor::getCurrentWattLoadPointId() const
 {
-    updateStaticValue( _decimalPlaces, places );
+    return _currentWattLoadPointId;
 }
 
+void Conductor::setCurrentWattLoadPointId( const long pointId )
+{
+    updateStaticValue( _currentWattLoadPointId, pointId );
+}
+
+// Volt
+
+long Conductor::getCurrentVoltLoadPointId() const
+{
+    return _currentVoltLoadPointId;
+}
+
+void Conductor::setCurrentVoltLoadPointId( const long pointId )
+{
+    updateStaticValue( _currentVoltLoadPointId, pointId );
+}
 
 // Power Factor
 
@@ -314,4 +303,97 @@ void Conductor::setCurrentDailyOperationsAndSendMsg( const long operations, CtiM
     }
 }
 
+// Integration
+
+long Conductor::getIVCount() const
+{
+    return _iVCount;
+}
+
+void Conductor::setIVCount( const long aValue )
+{
+    updateDynamicValue( _iVCount, aValue );
+}
+
+double Conductor::getIVControl() const
+{
+    return _iVControl;
+}
+
+void Conductor::setIVControl( const double aValue )
+{
+    updateStaticValue( _iVControl, aValue );
+}
+
+double Conductor::getIVControlTot() const
+{
+    return _iVControlTot;
+}
+
+void Conductor::setIVControlTot( const double aValue )
+{
+    updateDynamicValue( _iVControlTot, aValue );
+}
+
+long Conductor::getIWCount() const
+{
+    return _iWCount;
+}
+
+void Conductor::setIWCount( const long aValue )
+{
+    updateDynamicValue( _iWCount, aValue );
+}
+
+double Conductor::getIWControl() const
+{
+    return _iWControl;
+}
+
+void Conductor::setIWControl( const double aValue )
+{
+    updateStaticValue( _iWControl, aValue );
+}
+
+double Conductor::getIWControlTot() const
+{
+    return _iWControlTot;
+}
+
+void Conductor::setIWControlTot( const double aValue )
+{
+    updateDynamicValue( _iWControlTot, aValue );
+}
+
+// Misc
+
+const std::string & Conductor::getMapLocationId() const
+{
+    return _mapLocationId;
+}
+
+void Conductor::setMapLocationId( const std::string & mapLocation )
+{
+    updateStaticValue( _mapLocationId, mapLocation );
+}
+
+bool Conductor::getMultiMonitorFlag() const
+{
+    return _multiMonitorFlag;
+}
+
+void Conductor::setMultiMonitorFlag( const bool flag )
+{
+    updateStaticValue( _multiMonitorFlag, flag );
+}
+
+long Conductor::getDecimalPlaces() const
+{
+    return _decimalPlaces;
+}
+
+void Conductor::setDecimalPlaces( const long places )
+{
+    updateStaticValue( _decimalPlaces, places );
+}
 
