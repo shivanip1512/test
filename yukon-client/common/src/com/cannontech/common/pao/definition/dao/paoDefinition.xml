@@ -394,7 +394,7 @@
         <points>
             <point type="Status" offset="2000">
                 <name>Comm Status</name>
-                <stategroup value="SystemState" />
+                <stategroup value="Comm Status State" />
             </point>
         </points>
         <attributes>
@@ -4894,7 +4894,7 @@
             <point type="Status" offset="2000">
                 <init>true</init>
                 <name>Comm Status</name>
-                <stategroup value="TwoStateStatus" />
+                <stategroup value="Comm Status State" />
             </point>
         </points>
         <commands>
@@ -5717,6 +5717,10 @@
                 <unitofmeasure value="Undefined" />
                 <decimalplaces value="3" />
             </point>
+            <point type="Status" offset="2000">
+                <name>Comm Status</name>
+                <stategroup value="Comm Status State" />
+            </point>
         </points>
         <commands>
             <command id="GENERAL_SCAN">
@@ -5738,6 +5742,9 @@
             </attribute>
             <attribute name="LOAD_PROFILE">
                 <basicLookup point="Load Profile kW" />
+            </attribute>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status" />
             </attribute>
         </attributes>
         <tags>
