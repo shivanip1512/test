@@ -13,8 +13,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-
+import java.util.stream.IntStream;
 import org.apache.commons.collections4.trie.PatriciaTrie;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -265,13 +264,13 @@ class RfnIdentifierCache implements DBChangeListener {
             String prefix = sensorSerialNumber.substring(0, sensorSerialNumber.length() - SERIAL_DIGITS);
             if (NumberUtils.isDigits(suffix)) {
                 try {
-                    Long longSuffix = Long.parseUnsignedLong(suffix);
-                    longSuffix -= longSuffix % SERIALS_PER_SELECT;
-                    return LongStream
-                            .range(longSuffix, longSuffix + SERIALS_PER_SELECT)
-                            .mapToObj(Long::toString)
+                    Integer intSuffix = Integer.parseUnsignedInt(suffix);
+                    intSuffix -= intSuffix % SERIALS_PER_SELECT;
+                    return IntStream
+                            .range(intSuffix, intSuffix + SERIALS_PER_SELECT)
+                            .mapToObj(Integer::toString)
                             .map(longStr -> StringUtils.leftPad(longStr, SERIAL_DIGITS, '0'))
-                            .map(paddedStr -> prefix + paddedStr)
+                            .map(prefix::concat)
                             .collect(Collectors.toList());
                 } catch (NumberFormatException e) {
                     log.warn("Serial suffix was digits, but could not parse as Long: " + sensorSerialNumber);
