@@ -25,54 +25,71 @@
   <ItemGroup>
     <BuildMacro Include="CPP_LIBRARIES">
       <Value>$(CPP_LIBRARIES)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="XERCES">
       <Value>$(XERCES)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="TCL">
       <Value>$(TCL)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="BOOST">
       <Value>$(BOOST)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="SQLAPI">
       <Value>$(SQLAPI)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="ACTIVEMQ">
       <Value>$(ACTIVEMQ)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="APR">
       <Value>$(APR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="APR_UTIL">
       <Value>$(APR_UTIL)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="APR_ICONV">
       <Value>$(APR_ICONV)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="THRIFT">
       <Value>$(THRIFT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="CAJUN">
       <Value>$(CAJUN)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="LOG4CXX">
       <Value>$(LOG4CXX)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="OPENSSL">
       <Value>$(OPENSSL)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="LIBCOAP">
       <Value>$(LIBCOAP)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="MICROSOFT">
       <Value>$(MICROSOFT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="MICROSOFT_SQL">
       <Value>$(MICROSOFT_SQL)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="DBGHELP">
       <Value>$(DBGHELP)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>
 </Project>

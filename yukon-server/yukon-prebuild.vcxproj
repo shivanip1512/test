@@ -126,7 +126,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>$(SolutionDir)\setVersion.cmd $(Configuration)</Command>
+      <Command>call $(SolutionDir)\setVersion.cmd $(Configuration)
+nmake -f libraries.mak</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -170,7 +171,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>$(SolutionDir)\setVersion.cmd $(Configuration)</Command>
+      <Command>call $(SolutionDir)\setVersion.cmd $(Configuration)
+nmake -f libraries.mak</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
