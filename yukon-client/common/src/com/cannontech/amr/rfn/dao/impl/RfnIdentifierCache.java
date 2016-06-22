@@ -12,8 +12,11 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import org.apache.commons.collections4.trie.PatriciaTrie;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -26,13 +29,34 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.google.common.collect.Range;
-import com.google.common.collect.Ranges;
 
 class RfnIdentifierCache implements DBChangeListener {
 
     private final static Logger log = Logger.getLogger(RfnIdentifierCache.class);
 
+    private final static int SERIAL_DIGITS = 5;
+    private final static int SERIALS_PER_SELECT = 250;
+
+    private final static class RfnSerialPaoId {
+        RfnSerialPaoId(String serial, int paoId) {
+            this.serial = serial;
+            this.paoId = paoId;
+        }
+        public final String serial;
+        public final int paoId;
+    }
+    
+    private final static YukonRowMapper<RfnSerialPaoId> rfnSerialRowMapper = new YukonRowMapper<RfnSerialPaoId>() {
+        @Override
+        public RfnSerialPaoId mapRow(YukonResultSet rs) throws SQLException {
+            
+            String serial = rs.getStringSafe("SerialNumber");
+            int paoId = rs.getInt("DeviceId");
+            
+            return new RfnSerialPaoId(serial, paoId);
+        }
+    };
+    
     private YukonJdbcTemplate jdbcTemplate;
     
     //  This cache only includes entries that uniquely map to an RfnManufacturerModel.
@@ -65,6 +89,10 @@ class RfnIdentifierCache implements DBChangeListener {
         }
     }
 
+    /**
+     * Adds the paoId to the list of PAOs requiring reload.  If the PAO is deleted, it will remain in this list until restart.
+     * This assumes a relatively small number of deletions occur per runtime. 
+     */
     private void invalidatePaoId(int paoId) {
         Lock writeLock = cacheLock.writeLock();
         try {
@@ -77,7 +105,7 @@ class RfnIdentifierCache implements DBChangeListener {
 
     /** 
      * Attempts to load and cache the paoId for the specified RfnManufacturerModel and serial.
-     * Returns null if not found.
+     * @return the associated paoId, or null if not found.
      */
     public Integer getPaoIdFor(RfnManufacturerModel mm, String serial) {
         Integer paoId = null;
@@ -96,6 +124,12 @@ class RfnIdentifierCache implements DBChangeListener {
         return paoId;
     }
     
+    /**
+     * Attempts to parse the serial string as a Long.
+     * @param serial The serial string to parse.
+     * @return The serial as a Long, or null if it is not digits.
+     * @throws NumberFormatException
+     */
     private Long tryParseSerialAsLong(String serial) {
         if (NumberUtils.isDigits(serial)) {
             try {
@@ -107,19 +141,27 @@ class RfnIdentifierCache implements DBChangeListener {
         return null;
     }
     
+    /**
+     * Generics shim to allow String or Long access to the serial-to-paoId maps.
+     * @return the paoId, or null if not found or invalidated.
+     */
     private <T, U extends Map<T, Integer>> Integer getPaoIdForSerial(RfnManufacturerModel mm, T serial, Map<RfnManufacturerModel, U> cache) {
         Lock readLock = cacheLock.readLock(); 
         try {
             readLock.lock();
             return Optional.ofNullable(cache.get(mm))
                     .map(serialPaoIdMap -> serialPaoIdMap.get(serial))
-                    .filter(id -> ! invalidatedPaoIds.contains(id))
+                    .filter(id -> !invalidatedPaoIds.contains(id))
                     .orElse(null);
         } finally {
             readLock.unlock();
         }
     }
     
+    /**
+     * Refreshes the caches with the list of serial-to-pao mappings, and scans for the original serial's pao ID.
+     * @return the paoId of the original serial requested, or null if not found.
+     */
     private Integer refreshSerialMap(RfnManufacturerModel mm, List<RfnSerialPaoId> serialIds, String originalSerial) {
         if (serialIds.isEmpty()) {
             return null;
@@ -163,42 +205,24 @@ class RfnIdentifierCache implements DBChangeListener {
         return rfnStringSerials.computeIfAbsent(mm, unused -> new PatriciaTrie<Integer>());
     }
 
-    private final static class RfnSerialPaoId {
-        RfnSerialPaoId(String serial, int paoId) {
-            this.serial = serial;
-            this.paoId = paoId;
-        }
-        public final String serial;
-        public final int paoId;
-    }
-    
-    private final static YukonRowMapper<RfnSerialPaoId> rfnSerialRowMapper = new YukonRowMapper<RfnSerialPaoId>() {
-        @Override
-        public RfnSerialPaoId mapRow(YukonResultSet rs) throws SQLException {
-            
-            String serial = rs.getStringSafe("SerialNumber");
-            int paoId = rs.getInt("DeviceId");
-            
-            return new RfnSerialPaoId(serial, paoId);
-        }
-    };
-    
+    /**
+     * Loads a list of serial numbers similar to the serial passed in.
+     * @param mm The Manufacturer and Model to look up.
+     * @param serial The serial number to base the load on.
+     * @return The list of serial-to-paoId mappings.
+     */
     private List<RfnSerialPaoId> loadSerials(RfnManufacturerModel mm, String serial) {
         
-        Range<String> similarSerials = buildSerialRange(serial);
+        List<String> similarSerials = buildSerialRange(serial);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select DeviceId, SerialNumber");
         sql.append("from RfnAddress rfn");
         sql.append("where Manufacturer").eq(mm.getManufacturer());
         sql.append("and Model").eq(mm.getModel());
-        if (similarSerials != null) {
-            //  This check has an execution plan that is almost as fast as the single .eq() check.
-            //    It is 2-3 times faster than a LIKE clause or an IN() list with 10 entries.
-            sql.append("and SerialNumber").gte(similarSerials.lowerEndpoint());
-            sql.append("and SerialNumber").lt(similarSerials.upperEndpoint());
-            sql.append("and LEN(SerialNumber)").eq(serial.length());
-            log.debug("Ranged load " + similarSerials + " for " + mm + serial);
+        if (!similarSerials.isEmpty()) {
+            sql.append("and SerialNumber").in(similarSerials);
+            log.debug("Ranged load [" + similarSerials.get(0) + "-" + similarSerials.get(similarSerials.size() - 1) + "] for " + mm + serial);
         } else {
             sql.append("and SerialNumber").eq(serial);
             log.debug("Directed load for " + mm + serial);
@@ -213,13 +237,8 @@ class RfnIdentifierCache implements DBChangeListener {
         }
     }
 
-    final static int SERIAL_DIGITS = 5;
-    final static int TRUNCATED_DIGITS = 3;
-    final static int TRUNCATION_FACTOR = 1000;
-    final static int OVERFLOW_LIMIT = 99000;
-
     /**
-     * Builds a range of 1000 devices if an RFN serial number has a numeric suffix of 5 digits or more.<br>Does not attempt to handle rollover past 5 digits, so serials in the range &hellip;99000-&hellip;99999 will be loaded individually.
+     * Builds a list of 250 similar serials if an RFN serial number has a numeric suffix of 5 digits or more.<br>
      * <p>Most non-trivial serial numbers in the RFN firmware and QA test labs are 8-10 characters long, such as:
      * <ul><li><tt>88638088</tt> (8 chars, ITRN C2SX-SD)</li>
      * <li><tt>133058796</tt> (9 chars, LGYR FocusAXD-SD-500)</li>
@@ -230,31 +249,30 @@ class RfnIdentifierCache implements DBChangeListener {
      * <li><tt>999620001</tt> (9 chars, CPS 1077 aka LCR-6200)</li>
      * <li><tt>7800000033</tt> (10 chars, CPS RFGateway2).</li></ul>
      * <p>Example inputs and outputs:
-     * <ul><li><tt>B02984 &rarr; [B02, B03)</tt></li>
-     * <li><tt>31415927 &rarr; [31415, 31416)</tt></li>
-     * <li><tt>3141 &rarr; null</tt></li>
-     * <li><tt>B99994 &rarr; null</tt></li>
-     * <li><tt>banana &rarr; null</tt></li></ul>
+     * <ul><li><tt>B02984 &rarr; [B02750, B02751, ..., B02999]</tt></li>
+     * <li><tt>B99994 &rarr; [B99750, B99751, ..., B99999]</tt></li>
+     * <li><tt>31415927 &rarr; [31415750, 31415751, ..., 31415999]</tt></li>
+     * <li><tt>314159 &rarr; [314000, 314001, ..., 314249]</tt></li>
+     * <li><tt>3141 &rarr; []</tt></li>
+     * <li><tt>banana &rarr; []</tt></li></ul>
      *  
      * @param sensorSerialNumber
-     * @return a Range representing the bounds of the serial, or <tt>null</tt> if none could be created.
+     * @return a list of similar serials, or an empty list if the serial did not have a numeric suffix.
      */
-    private static Range<String> buildSerialRange(String sensorSerialNumber) {
+    private static List<String> buildSerialRange(String sensorSerialNumber) {
         if (sensorSerialNumber.length() >= SERIAL_DIGITS) {
             String suffix = sensorSerialNumber.substring(sensorSerialNumber.length() - SERIAL_DIGITS);
             String prefix = sensorSerialNumber.substring(0, sensorSerialNumber.length() - SERIAL_DIGITS);
             if (NumberUtils.isDigits(suffix)) {
                 try {
                     Long longSuffix = Long.parseUnsignedLong(suffix);
-                    //  Make sure we won't roll over to the 6th digit
-                    if (longSuffix < OVERFLOW_LIMIT) {
-                        longSuffix = longSuffix / TRUNCATION_FACTOR + 1;
-                        
-                        return Ranges.openClosed(
-                                sensorSerialNumber.substring(0, sensorSerialNumber.length() - TRUNCATED_DIGITS),
-                                //  Note that 02 (the padding) is SERIAL_DIGITS - TRUNCATED_DIGITS, or 5 - 3
-                                prefix + String.format("%1$02d", longSuffix));
-                    }
+                    longSuffix -= longSuffix % SERIALS_PER_SELECT;
+                    return LongStream
+                            .range(longSuffix, longSuffix + SERIALS_PER_SELECT)
+                            .mapToObj(Long::toString)
+                            .map(longStr -> StringUtils.leftPad(longStr, SERIAL_DIGITS, '0'))
+                            .map(paddedStr -> prefix + paddedStr)
+                            .collect(Collectors.toList());
                 } catch (NumberFormatException e) {
                     log.warn("Serial suffix was digits, but could not parse as Long: " + sensorSerialNumber);
                 }
@@ -265,6 +283,6 @@ class RfnIdentifierCache implements DBChangeListener {
             log.debug("Serial was shorter than " + SERIAL_DIGITS + " characters: " + sensorSerialNumber);
         }
         
-        return null;
+        return Collections.emptyList();
     }
 }

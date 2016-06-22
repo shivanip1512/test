@@ -102,11 +102,11 @@ public enum RfnManufacturerModel {
     }
     
     static {
-        //  These LGYR model strings were used for both the RFN-410 and RFN-420, and do not map to a unique entry.
-        Set<String> duplicateLgyrModels = Sets.newHashSet("FocuskWh", "FocusAXD", "FocusAXR-SD");
+        //  These have model strings that were reused for the RFN-420 Focus models.
+        Set<RfnManufacturerModel> duplicateLgyrModels = Sets.immutableEnumSet(RFN_410FL, RFN_410FX_D, RFN_410FD_D);
         
         Stream.of(values())
-            .filter(mm -> !(mm.manufacturer.equals("LGYR") && duplicateLgyrModels.contains(mm.model)))
+            .filter(mm -> !duplicateLgyrModels.contains(mm))
             .forEach(mm -> lookup.put(mm.manufacturer, mm.model, mm));
     }
     
@@ -119,6 +119,10 @@ public enum RfnManufacturerModel {
                 .orElseThrow(() -> new IllegalArgumentException("Unknown template for type: " + type));
     }
     
+    /**
+     * Performs a reverse lookup of manufacturer+model strings to an RfnManufacturerModel entry, if one exists.<br>
+     * Will return the RFN-420 versions of the reused LGYR Focus manufacturer+model strings.
+     */
     public static RfnManufacturerModel of(RfnIdentifier rfnIdentifier) {
         return lookup.get(rfnIdentifier.getSensorManufacturer(), rfnIdentifier.getSensorModel());
     }
