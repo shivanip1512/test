@@ -36,6 +36,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -117,13 +118,12 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 				// There are required fields we KNOW are here. Set them, then try the non-requireds.
 				int cbcSerialNumber = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.CBC_SERIAL_NUMBER)]);
 				cbcData.setCbcSerialNumber(cbcSerialNumber);
-				
-				int masterAddress = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.MASTER_ADDRESS)]);
-				cbcData.setMasterAddress(masterAddress);
-				
-				int slaveAddress = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.SLAVE_ADDRESS)]);
-				cbcData.setSlaveAddress(slaveAddress);
-				
+                if (!StringUtils.isBlank(line[headerColumnMap.get(CapControlImporterCbcField.MASTER_ADDRESS)]))
+                    cbcData.setMasterAddress(Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.MASTER_ADDRESS)]));
+
+                if (!StringUtils.isBlank(line[headerColumnMap.get(CapControlImporterCbcField.SLAVE_ADDRESS)]))
+                    cbcData.setSlaveAddress(Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.SLAVE_ADDRESS)]));
+
 				String commChannel = line[headerColumnMap.get(CapControlImporterCbcField.COMM_CHANNEL)];
 			    cbcData.setCommChannel(commChannel);
 		        
@@ -386,7 +386,10 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	private void validateCbcImporterRow(Map<CapControlImporterCbcField, Integer> headerColumnMap,
 			String[] line, List<CapControlImporterCbcField> missingColumns) throws CapControlCbcFileImportException {
 		Set<CapControlImporterCbcField> columns = Sets.newHashSet(headerColumnMap.keySet());
-		
+        int cbcType = headerColumnMap.get(CapControlImporterCbcField.CBC_TYPE);
+        PaoType paoType = null;
+        if (!StringUtils.isBlank(line[cbcType]))
+            paoType = PaoType.getForDbString(line[cbcType]);
 		// Check to see if we're a template first.
 		if (headerColumnMap.containsKey(CapControlImporterCbcField.TEMPLATE_NAME)) {
 			int templateColumnId = headerColumnMap.get(CapControlImporterCbcField.TEMPLATE_NAME);
@@ -419,10 +422,13 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	            } else {
 	                for (CapControlImporterCbcField column : columns) {
 	                    int columnId = headerColumnMap.get(column);
-	                    
-	                    if (column.isRequired() && StringUtils.isBlank(line[columnId])) {
-	                        missingColumns.add(column);
-	                    }
+                        if (paoType != null
+                            && DeviceTypesFuncs.isCBCOneWay(paoType)
+                            && (column == CapControlImporterCbcField.SLAVE_ADDRESS || column == CapControlImporterCbcField.MASTER_ADDRESS)) {
+                            continue;
+                        } else if (column.isRequired() && StringUtils.isBlank(line[columnId])) {
+                            missingColumns.add(column);
+                        }
 	                }
 	            }
 		    } catch (IllegalArgumentException e) {
