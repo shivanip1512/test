@@ -10,6 +10,7 @@
 <tags:setFormEditMode mode="${mode}"/>
 <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
 
+<%@ include file="../inventory/shedLoadPopup.jsp" %>
 
 <script type="text/javascript">
 $(function(){
@@ -245,6 +246,10 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                         buttonRenderMode="labeledImage"/>
                             </li>
                         </c:if>
+                        
+                        <li>
+                            <cti:button nameKey="testShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="testShed"/>
+                        </li>
                         
                         <%-- TSTAT ACTIONS --%>
                         

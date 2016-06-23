@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.jms.core.JmsTemplate;
@@ -34,6 +35,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.google.common.collect.Sets;
 
@@ -194,6 +196,25 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
         lmhc.setType(LmHardwareCommandType.READ_NOW);
         lmhc.setUser(null);
 
+        RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
+        request.setMessageId(nextMessageId());
+        request.setMessagePriority(6);
+        request.setPayload(commandBuilder.getCommandAsHexStringByteArray(lmhc));
+        request.setResponseExpected(false);
+        request.setRfnMessageClass(RfnMessageClass.DR);
+        
+        sendUnicastRequest(request, callback);
+    }
+    
+    @Override
+    public void shedLoad(RfnDevice device, Integer relay, Integer duration, final RfnUnicastCallback callback) {
+        LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByDeviceId(device.getPaoIdentifier().getPaoId());
+        LmHardwareCommand lmhc = new LmHardwareCommand();
+        lmhc.setDevice(lmhb);
+        lmhc.setType(LmHardwareCommandType.SHED);
+        lmhc.getParams().put(LmHardwareCommandParam.RELAY, relay);
+        lmhc.getParams().put(LmHardwareCommandParam.DURATION, Duration.standardMinutes(duration));
+        
         RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
         request.setMessageId(nextMessageId());
         request.setMessagePriority(6);

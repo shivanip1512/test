@@ -16,6 +16,7 @@
     <cti:displayForPageEditModes modes="CREATE">
         <cti:url value="/stars/operator/inventory/create" var="action"/>
     </cti:displayForPageEditModes>
+ <%@ include file="../inventory/shedLoadPopup.jsp" %>   
  <c:if test="${not empty hardware}">
     <div class="column-12-12">
         <div class="column one">
@@ -47,6 +48,9 @@
                                 <d:confirm on="#disable-hardware-btn" nameKey="confirmDisable" argument="${hardware.displayName}"/>
                             </li>
                         </c:if>
+                           <li>
+                               <cti:button nameKey="testShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="testShed"/>
+                           </li>
                     </ul>
                 </tags:sectionContainer2>
  		<tags:sectionContainer2 nameKey="history" styleClass="stacked">

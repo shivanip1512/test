@@ -46,6 +46,9 @@
     <entry key="yukon.web.modules.operator.hardware.points.pageName">Points</entry>
     <entry key="yukon.web.modules.operator.hardware.points.pageDescription">{0}</entry>
 
+    <entry key="yukon.web.modules.operator.hardware.testShed.label">Test Shed</entry>
+    <entry key="yukon.web.modules.operator.hardware.testShed.hoverText">Send shed command</entry>
+    
     <!-- General Hardware Terms -->
     <entry key="yukon.web.modules.operator.hardware.deviceInfoSection.title">Device Info</entry>
     
@@ -311,5 +314,15 @@
     
     <entry key="yukon.web.modules.operator.meterProfile.error.tooLong.meterNumber">Meter numbers must be 30 characters or less.</entry>
     <entry key="yukon.web.modules.operator.meterProfile.error.required.meterNumber">A meter number is required.</entry>
+    
+    <!-- shedLoadPopup.jsp -->
+    <entry key="yukon.web.modules.operator.hardware.shedLoadPopup.title">Shed Load Configuration</entry>
+    
+    <!-- shedLoad.jsp -->
+    <entry key="yukon.web.modules.operator.hardware.shedLoad.duration">Duration (In Min)</entry>
+    <entry key="yukon.web.modules.operator.hardware.shedLoad.relayNo">Relay No</entry>
+    
+    <entry key="yukon.web.modules.operator.hardware.shedLoadSuccess">Shed Load Successfully</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.shedLoadFailed">Shed Load Failed</entry>
     
 </properties>

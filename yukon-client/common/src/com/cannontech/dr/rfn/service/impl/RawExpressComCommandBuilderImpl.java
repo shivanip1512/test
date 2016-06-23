@@ -115,6 +115,15 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
             case CANCEL_TEMP_OUT_OF_SERVICE:
                 getTempOutOfServiceInnerBytes(outputBuffer);
                 break;
+            case SHED:
+                outputBuffer.put((byte) 0x08);
+                
+                Integer relay = command.findParam(LmHardwareCommandParam.RELAY, Integer.class);
+                outputBuffer.put((byte) relay.byteValue());
+                
+                Duration shedDuration = command.findParam(LmHardwareCommandParam.DURATION, Duration.class);
+                outputBuffer.put((byte) shedDuration.getStandardMinutes());
+                break;
             default:
                 throw new IllegalArgumentException("Command Type: " + type + " not implemented");
         }

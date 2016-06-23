@@ -8,4 +8,5 @@ public enum LmHardwareCommandType {
     CANCEL_TEMP_OUT_OF_SERVICE,
     READ_NOW,
     PERFORMANCE_VERIFICATION,
+    SHED,
 }
