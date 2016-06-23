@@ -247,10 +247,6 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                             </li>
                         </c:if>
                         
-                        <li>
-                            <cti:button nameKey="testShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="testShed"/>
-                        </li>
-                        
                         <%-- TSTAT ACTIONS --%>
                         
                         <c:if test="${showTstatChangeoutAction}">
@@ -344,7 +340,8 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                         buttonRenderMode="labeledImage"/>
                             </li>
                         </c:if>
-                        
+                        <%-- DEVICE ACTIONS --%>
+                        <%@ include file="../hardware/hardwareDeviceActions.jspf" %>
                     </ul>
                     
                 </tags:sectionContainer2>

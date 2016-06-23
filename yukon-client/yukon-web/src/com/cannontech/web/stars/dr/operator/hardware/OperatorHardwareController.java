@@ -81,6 +81,7 @@ import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.hardware.service.HardwareConfigService;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
@@ -153,6 +154,7 @@ public class OperatorHardwareController {
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ZigbeeDeviceService zigbeeDeviceService;
+    @Autowired private HardwareConfigService hardwareConfigService;
 
     private static final int THERMOSTAT_DETAIL_NUM_ITEMS = 5;
     
@@ -350,7 +352,9 @@ public class OperatorHardwareController {
             model.addAttribute("assetAvailability", assetAvail);
             model.addAttribute("isTwoWayDevice", true);
         }
-        
+        InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
+        model.addAttribute("canEnableDisable", !inventory.getHardwareType().isZigbee()
+            && !inventory.getHardwareType().isEcobee());
         if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
             return "redirect:/stars/operator/hardware/mp/view";
         }
@@ -924,6 +928,86 @@ public class OperatorHardwareController {
         model.addAttribute("inventoryChecking", inventoryChecking);
     }
     
+    @RequestMapping("disable")
+    public String disable(ModelMap model, int inventoryId,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfo, FlashScope flashScope) {
+        
+        // Log hardware disable attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        hardwareEventLogService.hardwareDisableAttempted(userContext.getYukonUser(),
+                                                         lmHardwareBase.getManufacturerSerialNumber(),
+                                                         accountInfo.getAccountNumber(),
+                                                         EventSource.OPERATOR);
+        
+        // Validate request
+        verifyHardwareIsForAccount(inventoryId, accountInfo);
+        model.addAttribute("accountId", accountInfo.getAccountId());
+        model.addAttribute("inventoryId", inventoryId);
+        
+        try {
+            hardwareConfigService.disable(inventoryId,
+                                          accountInfo.getAccountId(),
+                                          accountInfo.getEnergyCompanyId(),
+                                          userContext);
+            
+            MessageSourceResolvable confirmationMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandSent");
+            flashScope.setConfirm(confirmationMessage);
+        } catch (CommandCompletionException e) {
+            MessageSourceResolvable errorMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandFailed", e.getMessage());
+            flashScope.setError(errorMessage);
+        }
+        
+        return "redirect:view";
+    }
+    
+    @RequestMapping("enable")
+    public String enable(ModelMap model, int inventoryId,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfo, FlashScope flashScope) {
+        
+        // Log hardware enable attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        hardwareEventLogService.hardwareEnableAttempted(userContext.getYukonUser(),
+                                                        lmHardwareBase.getManufacturerSerialNumber(),
+                                                        accountInfo.getAccountNumber(),
+                                                        EventSource.OPERATOR);
+        
+        // Validate request
+        verifyHardwareIsForAccount(inventoryId, accountInfo);
+        model.addAttribute("accountId", accountInfo.getAccountId());
+        model.addAttribute("inventoryId", inventoryId);
+        
+        try {
+            hardwareConfigService.enable(inventoryId,
+                                         accountInfo.getAccountId(),
+                                         accountInfo.getEnergyCompanyId(),
+                                         userContext);
+            
+            MessageSourceResolvable confirmationMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandSent");
+            flashScope.setConfirm(confirmationMessage);
+        } catch (CommandCompletionException e) {
+            MessageSourceResolvable errorMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandFailed",
+                                                 e.getMessage());
+            flashScope.setError(errorMessage);
+        }
+        
+        return "redirect:view";
+    }
+    
+    private void verifyHardwareIsForAccount(int inventoryId,
+            AccountInfoFragment accountInfo) {
+        LiteInventoryBase inventory = inventoryBaseDao.getByInventoryId(inventoryId);
+        if (inventory.getAccountID() != accountInfo.getAccountId()) {
+            throw new NotAuthorizedException("The device " + inventoryId +
+                                             " does not belong to account " +
+                                             accountInfo.getAccountId());
+        }
+    }
     // DEVICE TYPE SELECT OPTIONS WRAPPER
     public static class DeviceTypeOption {
         private int hardwareTypeEntryId;
