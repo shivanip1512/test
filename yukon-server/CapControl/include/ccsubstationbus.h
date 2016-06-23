@@ -50,9 +50,6 @@ public:
     const CtiTime& getNextCheckTime() const;
     bool getNewPointDataReceivedFlag() const;
     bool getBusUpdatedFlag() const;
-    const CtiTime& getLastCurrentVarPointUpdateTime() const;
-    long getEstimatedVarLoadPointId() const;
-    double getEstimatedVarLoadPointValue() const;
     bool getPeakTimeFlag() const;
     bool getRecentlyControlledFlag() const;
     const CtiTime& getLastOperationTime() const;
@@ -60,9 +57,6 @@ public:
     long getLastFeederControlledPAOId() const;
     long getLastFeederControlledPosition() const;
     double getKVARSolution() const;
-    long getCurrentVarPointQuality() const;
-    long getCurrentWattPointQuality() const;
-    long getCurrentVoltPointQuality() const;
     bool getWaiveControlFlag() const;
     bool getVerificationFlag() const;
     bool getPerformingVerificationFlag() const;
@@ -106,8 +100,6 @@ public:
     double getPhaseAValueBeforeControl() const;
     double getPhaseBValueBeforeControl() const;
     double getPhaseCValueBeforeControl() const;
-    const CtiTime& getLastWattPointTime() const;
-    const CtiTime& getLastVoltPointTime() const;
     long getCommsStatePointId() const;
 
     const CtiRegression& getRegression();
@@ -128,9 +120,9 @@ public:
     void figureNextCheckTime();
     void setNewPointDataReceivedFlag(bool newpointdatareceived);
     void setBusUpdatedFlag(bool busupdated);
-    void setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
-    void setEstimatedVarLoadPointId(long estimatedvarid);
-    void setEstimatedVarLoadPointValue(double estimatedvarval);
+
+    void setEstimatedVarLoadPointValue( const double aValue ) override;
+
     void setPeakTimeFlag(bool peaktime);
     void setRecentlyControlledFlag(bool recentlycontrolled);
     void setLastOperationTime(const CtiTime& lastoperation);
@@ -140,9 +132,6 @@ public:
     void setLastFeederControlled(long lastfeederpao);
     void setLastFeederControlledPosition(long lastfeederposition);
     void setKVARSolution(double solution);
-    void setCurrentVarPointQuality(long cvpq);
-    void setCurrentWattPointQuality(long cwpq);
-    void setCurrentVoltPointQuality(long cvpq);
     void setWaiveControlFlag(bool waive);
     void setOverlappingVerificationFlag( bool overlapFlag);
     void setPreOperationMonitorPointScanFlag( bool flag);
@@ -177,8 +166,6 @@ public:
     void setPhaseAValueBeforeControl(double value);
     void setPhaseBValueBeforeControl(double value);
     void setPhaseCValueBeforeControl(double value);
-    void setLastWattPointTime(const CtiTime& lastpointupdate);
-    void setLastVoltPointTime(const CtiTime& lastpointupdate);
     void setCommsStatePointId(long newId);
 
     void reOrderFeederDisplayOrders();
@@ -333,9 +320,6 @@ private:
     CtiTime _nextchecktime;
     bool _newpointdatareceivedflag;
     bool _busupdatedflag;
-    CtiTime _lastcurrentvarpointupdatetime;
-    long _estimatedvarloadpointid;
-    double _estimatedvarloadpointvalue;
     bool _peaktimeflag;
     bool _recentlycontrolledflag;
     CtiTime _lastoperationtime;
@@ -343,9 +327,6 @@ private:
     long _lastfeedercontrolledpaoid;
     long _lastfeedercontrolledposition;
     double _kvarsolution;
-    long _currentvarpointquality;
-    long _currentwattpointquality;
-    long _currentvoltpointquality;
     bool _waivecontrolflag;
 
     long _currentVerificationCapBankId;
@@ -394,8 +375,6 @@ private:
     double _phaseBvalueBeforeControl;
     double _phaseCvalueBeforeControl;
 
-    CtiTime _lastWattPointTime;
-    CtiTime _lastVoltPointTime;
     long    _commsStatePointId;
 
     std::string formatFlags() const;

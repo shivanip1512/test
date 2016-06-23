@@ -57,17 +57,12 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _currentvoltloadpointvalue( 0 ),
         _displayorder( 0 ),
         _newpointdatareceivedflag( false ),
-        _estimatedvarloadpointid( 0 ),
-        _estimatedvarloadpointvalue( 0 ),
         _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastcapbankcontrolleddeviceid( 0 ),
         _busoptimizedvarcategory( 1 ),
         _busoptimizedvaroffset( 0 ),
         _kvarsolution( 0 ),
-        _currentvarpointquality( NormalQuality ),
-        _currentwattpointquality( NormalQuality ),
-        _currentvoltpointquality( NormalQuality ),
         _waivecontrolflag( false ),
         _peakTimeFlag( false ),
         _verificationFlag( false ),
@@ -95,10 +90,7 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _likeDayControlFlag( false ),
         _porterRetFailFlag( false ),
         _solution( "IDLE" ),
-        _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
         _lastoperationtime( gInvalidCtiTime ),
-        _lastWattPointTime( gInvalidCtiTime ),
-        _lastVoltPointTime( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
@@ -113,17 +105,12 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _currentvoltloadpointvalue( 0 ),
         _displayorder( 0 ),
         _newpointdatareceivedflag( false ),
-        _estimatedvarloadpointid( 0 ),
-        _estimatedvarloadpointvalue( 0 ),
         _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastcapbankcontrolleddeviceid( 0 ),
         _busoptimizedvarcategory( 1 ),
         _busoptimizedvaroffset( 0 ),
         _kvarsolution( 0 ),
-        _currentvarpointquality( NormalQuality ),
-        _currentwattpointquality( NormalQuality ),
-        _currentvoltpointquality( NormalQuality ),
         _waivecontrolflag( false ),
         _peakTimeFlag( false ),
         _verificationFlag( false ),
@@ -151,10 +138,7 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _likeDayControlFlag( false ),
         _porterRetFailFlag( false ),
         _solution( "IDLE" ),
-        _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
         _lastoperationtime( gInvalidCtiTime ),
-        _lastWattPointTime( gInvalidCtiTime ),
-        _lastVoltPointTime( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
@@ -322,61 +306,9 @@ bool CtiCCFeeder::getNewPointDataReceivedFlag() const
     return _newpointdatareceivedflag;
 }
 
-/*---------------------------------------------------------------------------
-    getLastCurrentVarPointUpdateTime
-
-    Returns the last current var point update time of the feeder
----------------------------------------------------------------------------*/
-const CtiTime& CtiCCFeeder::getLastCurrentVarPointUpdateTime() const
-{
-
-    return _lastcurrentvarpointupdatetime;
-}
-
-/*---------------------------------------------------------------------------
-    getLastWattPointTime
-
-    Returns the last current watt point update time of the feeder
----------------------------------------------------------------------------*/
-const CtiTime& CtiCCFeeder::getLastWattPointTime() const
-{
-    return _lastWattPointTime;
-}
-
-/*---------------------------------------------------------------------------
-    getLastVoltPointTime
-
-    Returns the last current var point update time of the feeder
----------------------------------------------------------------------------*/
-const CtiTime& CtiCCFeeder::getLastVoltPointTime() const
-{
-    return _lastVoltPointTime;
-}
-
 long CtiCCFeeder::getRetryIndex() const
 {
     return _retryIndex;
-}
-
-
-/*---------------------------------------------------------------------------
-    getEstimatedVarLoadPointId
-
-    Returns the estimated var load point id of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getEstimatedVarLoadPointId() const
-{
-    return _estimatedvarloadpointid;
-}
-
-/*---------------------------------------------------------------------------
-    getEstimatedVarLoadPointValue
-
-    Returns the estimated var load point value of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getEstimatedVarLoadPointValue() const
-{
-    return _estimatedvarloadpointvalue;
 }
 
 /*---------------------------------------------------------------------------
@@ -454,36 +386,6 @@ double CtiCCFeeder::getBusOptimizedVarOffset() const
 double CtiCCFeeder::getKVARSolution() const
 {
     return _kvarsolution;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentVarPointQuality
-
-    Returns the CurrentVarPointQuality of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getCurrentVarPointQuality() const
-{
-    return _currentvarpointquality;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentWattPointQuality
-
-    Returns the CurrentWattPointQuality of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getCurrentWattPointQuality() const
-{
-    return _currentwattpointquality;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentVoltPointQuality
-
-    Returns the CurrentVoltPointQuality of the feeder
----------------------------------------------------------------------------*/
-long CtiCCFeeder::getCurrentVoltPointQuality() const
-{
-    return _currentvoltpointquality;
 }
 
 /*---------------------------------------------------------------------------
@@ -641,55 +543,6 @@ void CtiCCFeeder::setNewPointDataReceivedFlag(bool newpointdatareceived)
 }
 
 /*---------------------------------------------------------------------------
-    setLastCurrentVarPointUpdateTime
-
-    Sets the last current var point update time of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
-{
-    updateDynamicValue( _lastcurrentvarpointupdatetime, lastpointupdate );
-}
-/*---------------------------------------------------------------------------
-    setLastWattPointTime
-
-    Sets the last current Watt point update time of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setLastWattPointTime(const CtiTime& lastpointupdate)
-{
-    updateDynamicValue( _lastWattPointTime, lastpointupdate );
-}
-/*---------------------------------------------------------------------------
-    setLastVoltPointTime
-
-    Sets the last current Volt point update time of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setLastVoltPointTime(const CtiTime& lastpointupdate)
-{
-    updateDynamicValue( _lastVoltPointTime, lastpointupdate );
-}
-
-
-/*---------------------------------------------------------------------------
-    setEstimatedVarLoadPointId
-
-    Sets the estimated var load point id of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setEstimatedVarLoadPointId(long estimatedvarid)
-{
-    _estimatedvarloadpointid = estimatedvarid;
-}
-
-/*---------------------------------------------------------------------------
-    setEstimatedVarLoadPointValue
-
-    Sets the estimated var load point value of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setEstimatedVarLoadPointValue(double estimatedvarval)
-{
-    updateDynamicValue( _estimatedvarloadpointvalue, estimatedvarval );
-}
-
-/*---------------------------------------------------------------------------
     setRecentlyControlledFlag
 
     Sets the recently controlled flag of the feeder
@@ -751,36 +604,6 @@ void CtiCCFeeder::setBusOptimizedVarOffset(const double varoffset)
 void CtiCCFeeder::setKVARSolution(double solution)
 {
     updateDynamicValue( _kvarsolution, solution );
-}
-
-/*---------------------------------------------------------------------------
-    setCurrentVarPointQuality
-
-    Sets the CurrentVarPointQuality in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentVarPointQuality(long cvpq)
-{
-    updateDynamicValue( _currentvarpointquality, cvpq );
-}
-
-/*---------------------------------------------------------------------------
-    setCurrentWattPointQuality
-
-    Sets the CurrentWattPointQuality in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentWattPointQuality(long cwpq)
-{
-    updateDynamicValue( _currentwattpointquality, cwpq );
-}
-
-/*---------------------------------------------------------------------------
-    setCurrentVoltPointQuality
-
-    Sets the CurrentVoltPointQuality in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentVoltPointQuality(long cvpq)
-{
-    updateDynamicValue( _currentvoltpointquality, cvpq );
 }
 
 /*---------------------------------------------------------------------------
@@ -5097,8 +4920,8 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
         << _currentvarloadpointvalue
         << _currentwattloadpointvalue
         << serializeFlag( _newpointdatareceivedflag )
-        << _lastcurrentvarpointupdatetime
-        << _estimatedvarloadpointvalue
+        << getLastCurrentVarPointUpdateTime()
+        << getEstimatedVarLoadPointValue()
         << getCurrentDailyOperations()
         << serializeFlag( _recentlycontrolledflag )
         << _lastoperationtime
@@ -5110,15 +4933,15 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
         << getPowerFactorValue()
         << _kvarsolution
         << getEstimatedPowerFactorValue()
-        << _currentvarpointquality
+        << getCurrentVarPointQuality()
         << serializeFlag( _waivecontrolflag )
         << formatFlags()
         << _currentvoltloadpointvalue
         << _eventSeq
         << _currentVerificationCapBankId
         << _currentCapBankToVerifyAssumedOrigState
-        << _currentwattpointquality
-        << _currentvoltpointquality
+        << getCurrentWattPointQuality()
+        << getCurrentVoltPointQuality()
         << getIVControlTot()
         << getIVCount()
         << getIWControlTot()
@@ -5126,8 +4949,8 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
         << _phaseAvalue
         << _phaseBvalue
         << _phaseCvalue
-        << _lastWattPointTime
-        << _lastVoltPointTime
+        << getLastWattPointTime()
+        << getLastVoltPointTime()
         << _retryIndex
         << _phaseAvalueBeforeControl
         << _phaseBvalueBeforeControl
@@ -5157,8 +4980,8 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << _currentvarloadpointvalue
         << _currentwattloadpointvalue
         << serializeFlag( _newpointdatareceivedflag )
-        << _lastcurrentvarpointupdatetime
-        << _estimatedvarloadpointvalue
+        << getLastCurrentVarPointUpdateTime()
+        << getEstimatedVarLoadPointValue()
         << getCurrentDailyOperations()
         << serializeFlag( _recentlycontrolledflag )
         << _lastoperationtime
@@ -5170,15 +4993,15 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << getPowerFactorValue()
         << _kvarsolution
         << getEstimatedPowerFactorValue()
-        << _currentvarpointquality
+        << getCurrentVarPointQuality()
         << serializeFlag( _waivecontrolflag )
         << formatFlags()
         << _currentvoltloadpointvalue
         << _eventSeq
         << _currentVerificationCapBankId
         << _currentCapBankToVerifyAssumedOrigState
-        << _currentwattpointquality
-        << _currentvoltpointquality
+        << getCurrentWattPointQuality()
+        << getCurrentVoltPointQuality()
         << getIVControlTot()
         << getIVCount()
         << getIWControlTot()
@@ -5186,8 +5009,8 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << _phaseAvalue
         << _phaseBvalue
         << _phaseCvalue
-        << _lastWattPointTime
-        << _lastVoltPointTime
+        << getLastWattPointTime()
+        << getLastVoltPointTime()
         << _retryIndex
         << _phaseAvalueBeforeControl
         << _phaseBvalueBeforeControl
@@ -5230,9 +5053,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
 
     _newpointdatareceivedflag       = deserializeFlag( flags );
 
-    rdr["LastCurrentVarUpdateTime"] >> _lastcurrentvarpointupdatetime;
-    rdr["EstimatedVarPointValue"]   >> _estimatedvarloadpointvalue;
-
     rdr["RecentlyControlledFlag"]   >> flags;
 
     _recentlycontrolledflag         = deserializeFlag( flags );
@@ -5243,7 +5063,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["BusOptimizedVarCategory"]  >> _busoptimizedvarcategory;
     rdr["BusOptimizedVarOffset"]    >> _busoptimizedvaroffset;
     rdr["KvarSolution"]             >> _kvarsolution;
-    rdr["CurrentVarPointQuality"]   >> _currentvarpointquality;
 
     rdr["WaiveControlFlag"]         >> flags;
 
@@ -5269,15 +5088,10 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["EventSeq"]                 >> _eventSeq;
     rdr["CurrVerifyCBId"]           >> _currentVerificationCapBankId;
     rdr["CurrVerifyCBOrigState"]    >> _currentCapBankToVerifyAssumedOrigState;
-    rdr["CurrentWattPointQuality"]  >> _currentwattpointquality;
-    rdr["CurrentVoltPointQuality"]  >> _currentvoltpointquality;
 
     rdr["phaseavalue"]              >> _phaseAvalue;
     rdr["phasebvalue"]              >> _phaseBvalue;
     rdr["phasecvalue"]              >> _phaseCvalue;
-
-    rdr["LastWattPointTime"]        >> _lastWattPointTime;
-    rdr["LastVoltPointTime"]        >> _lastVoltPointTime;
 
     rdr["retryIndex"]               >> _retryIndex;
 

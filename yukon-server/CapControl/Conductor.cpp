@@ -2,6 +2,7 @@
 
 #include "Conductor.h"
 #include "database_reader.h"
+#include "ccid.h"
 #include "ccutil.h"
 #include "msg_pdata.h"
 #include "pointdefs.h"
@@ -14,12 +15,20 @@ using Cti::CapControl::deserializeFlag;
 Conductor::Conductor( StrategyManager * strategyManager )
     :   Controllable( strategyManager ),
         _currentVarLoadPointId( 0 ),
+        _currentVarPointQuality( NormalQuality ),
+        _lastCurrentVarPointUpdateTime( gInvalidCtiTime ),
+        _estimatedVarLoadPointId( 0 ),
+        _estimatedVarLoadPointValue( 0 ),
         _usePhaseData( false ),
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
         _currentWattLoadPointId( 0 ),
+        _currentWattPointQuality( NormalQuality ),
+        _lastWattPointTime( gInvalidCtiTime ),
         _currentVoltLoadPointId( 0 ),
+        _currentVoltPointQuality( NormalQuality ),
+        _lastVoltPointTime( gInvalidCtiTime ),
         _powerFactorPointId( 0 ),
         _powerFactorValue( -1.0 ),
         _estimatedPowerFactorPointId( 0 ),
@@ -43,12 +52,20 @@ Conductor::Conductor( StrategyManager * strategyManager )
 Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
     :   Controllable( rdr, strategyManager ),
         _currentVarLoadPointId( 0 ),
+        _currentVarPointQuality( NormalQuality ),
+        _lastCurrentVarPointUpdateTime( gInvalidCtiTime ),
+        _estimatedVarLoadPointId( 0 ),
+        _estimatedVarLoadPointValue( 0 ),
         _usePhaseData( false ),
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
         _currentWattLoadPointId( 0 ),
+        _currentWattPointQuality( NormalQuality ),
+        _lastWattPointTime( gInvalidCtiTime ),
         _currentVoltLoadPointId( 0 ),
+        _currentVoltPointQuality( NormalQuality ),
+        _lastVoltPointTime( gInvalidCtiTime ),
         _powerFactorPointId( 0 ),
         _powerFactorValue( -1.0 ),
         _estimatedPowerFactorPointId( 0 ),
@@ -141,6 +158,17 @@ void Conductor::restoreStaticData( Cti::RowReader & rdr )
 
 void Conductor::restoreDynamicData( Cti::RowReader & rdr )
 {
+    rdr["CurrentVarPointQuality"]   >> _currentVarPointQuality;
+    rdr["LastCurrentVarUpdateTime"] >> _lastCurrentVarPointUpdateTime;
+
+    rdr["EstimatedVarPointValue"]   >> _estimatedVarLoadPointValue;
+
+    rdr["CurrentWattPointQuality"]  >> _currentWattPointQuality;
+    rdr["LastWattPointTime"]        >> _lastWattPointTime;
+
+    rdr["CurrentVoltPointQuality"]  >> _currentVoltPointQuality;
+    rdr["LastVoltPointTime"]        >> _lastVoltPointTime;
+
     rdr["PowerFactorValue"]         >> _powerFactorValue;
     rdr["EstimatedPFValue"]         >> _estimatedPowerFactorValue;
 
@@ -150,7 +178,6 @@ void Conductor::restoreDynamicData( Cti::RowReader & rdr )
     rdr["iVControlTot"]             >> _iVControlTot;
     rdr["iWCount"]                  >> _iWCount;
     rdr["iWControlTot"]             >> _iWControlTot;
-
 }
 
 // VAr
@@ -163,6 +190,46 @@ long Conductor::getCurrentVarLoadPointId() const
 void Conductor::setCurrentVarLoadPointId( const long pointId )
 {
     updateStaticValue( _currentVarLoadPointId, pointId );
+}
+
+long Conductor::getCurrentVarPointQuality() const
+{
+    return _currentVarPointQuality;
+}
+
+void Conductor::setCurrentVarPointQuality( const long quality )
+{
+    updateDynamicValue( _currentVarPointQuality, quality );
+}
+
+const CtiTime & Conductor::getLastCurrentVarPointUpdateTime() const
+{
+    return _lastCurrentVarPointUpdateTime;
+}
+
+void Conductor::setLastCurrentVarPointUpdateTime( const CtiTime & aTime )
+{
+    updateDynamicValue( _lastCurrentVarPointUpdateTime, aTime );
+}
+
+long Conductor::getEstimatedVarLoadPointId() const
+{
+    return _estimatedVarLoadPointId;
+}
+
+void Conductor::setEstimatedVarLoadPointId( const long pointId )
+{
+    updateStaticValue( _estimatedVarLoadPointId, pointId );
+}
+
+double Conductor::getEstimatedVarLoadPointValue() const
+{
+    return _estimatedVarLoadPointValue;
+}
+
+void Conductor::setEstimatedVarLoadPointValue( const double aValue )
+{
+    updateDynamicValue( _estimatedVarLoadPointValue, aValue );
 }
 
 bool Conductor::getUsePhaseData() const
@@ -217,6 +284,26 @@ void Conductor::setCurrentWattLoadPointId( const long pointId )
     updateStaticValue( _currentWattLoadPointId, pointId );
 }
 
+long Conductor::getCurrentWattPointQuality() const
+{
+    return _currentWattPointQuality;
+}
+
+void Conductor::setCurrentWattPointQuality( const long quality )
+{
+    updateDynamicValue( _currentWattPointQuality, quality );
+}
+
+const CtiTime & Conductor::getLastWattPointTime() const
+{
+    return _lastWattPointTime;
+}
+
+void Conductor::setLastWattPointTime( const CtiTime & aTime )
+{
+    updateDynamicValue( _lastWattPointTime, aTime );
+}
+
 // Volt
 
 long Conductor::getCurrentVoltLoadPointId() const
@@ -227,6 +314,26 @@ long Conductor::getCurrentVoltLoadPointId() const
 void Conductor::setCurrentVoltLoadPointId( const long pointId )
 {
     updateStaticValue( _currentVoltLoadPointId, pointId );
+}
+
+long Conductor::getCurrentVoltPointQuality() const
+{
+    return _currentVoltPointQuality;
+}
+
+void Conductor::setCurrentVoltPointQuality( const long quality )
+{
+    updateDynamicValue( _currentVoltPointQuality, quality );
+}
+
+const CtiTime & Conductor::getLastVoltPointTime() const
+{
+    return _lastVoltPointTime;
+}
+
+void Conductor::setLastVoltPointTime( const CtiTime & aTime )
+{
+    updateDynamicValue( _lastVoltPointTime, aTime );
 }
 
 // Power Factor

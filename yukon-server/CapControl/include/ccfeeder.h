@@ -44,9 +44,6 @@ public:
     double getCurrentVoltLoadPointValue() const;
     float getDisplayOrder() const;
     bool getNewPointDataReceivedFlag() const;
-    const CtiTime& getLastCurrentVarPointUpdateTime() const;
-    long getEstimatedVarLoadPointId() const;
-    double getEstimatedVarLoadPointValue() const;
     bool getRecentlyControlledFlag() const;
     const CtiTime& getLastOperationTime() const;
     double getVarValueBeforeControl() const;
@@ -54,9 +51,6 @@ public:
     long getBusOptimizedVarCategory() const;
     double getBusOptimizedVarOffset() const;
     double getKVARSolution() const;
-    long getCurrentVarPointQuality() const;
-    long getCurrentWattPointQuality() const;
-    long getCurrentVoltPointQuality() const;
     bool getWaiveControlFlag() const;
     bool getPeakTimeFlag() const;
     bool getPorterRetFailFlag() const;
@@ -84,8 +78,6 @@ public:
     double getPhaseAValueBeforeControl() const;
     double getPhaseBValueBeforeControl() const;
     double getPhaseCValueBeforeControl() const;
-    const CtiTime& getLastWattPointTime() const;
-    const CtiTime& getLastVoltPointTime() const;
     long getRetryIndex() const;
     const CtiRegression& getRegression();
     const CtiRegression& getRegressionA();
@@ -104,9 +96,6 @@ public:
     void setCurrentVoltLoadPointValue(double currentvoltval);
     void setDisplayOrder(float order);
     void setNewPointDataReceivedFlag(bool newpointdatareceived);
-    void setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
-    void setEstimatedVarLoadPointId(long estimatedvarid);
-    void setEstimatedVarLoadPointValue(double estimatedvarval);
     void setRecentlyControlledFlag(bool recentlycontrolled);
     void setLastOperationTime(const CtiTime& lastoperation);
     void setVarValueBeforeControl(double oldvarval);
@@ -114,9 +103,6 @@ public:
     void setBusOptimizedVarCategory(const long varcategory);
     void setBusOptimizedVarOffset(const double varoffset);
     void setKVARSolution(double solution);
-    void setCurrentVarPointQuality(long cvpq);
-    void setCurrentWattPointQuality(long cwpq);
-    void setCurrentVoltPointQuality(long cvpq);
     void setWaiveControlFlag(bool waive);
     void setPeakTimeFlag(bool peakTimeFlag);
     void setPorterRetFailFlag(bool flag);
@@ -143,8 +129,6 @@ public:
     void setPhaseAValueBeforeControl(double value);
     void setPhaseBValueBeforeControl(double value);
     void setPhaseCValueBeforeControl(double value);
-    void setLastWattPointTime(const CtiTime& lastpointupdate);
-    void setLastVoltPointTime(const CtiTime& lastpointupdate);
     void setRetryIndex(long value);
 
     void figureAndSetTargetVarValue(const std::string& controlMethod, const std::string& controlUnits, bool peakTimeFlag);
@@ -277,9 +261,6 @@ private:
     float _displayorder;
 
     bool _newpointdatareceivedflag;
-    CtiTime _lastcurrentvarpointupdatetime;
-    long _estimatedvarloadpointid;
-    double _estimatedvarloadpointvalue;
     bool _recentlycontrolledflag;
     CtiTime _lastoperationtime;
     double _varvaluebeforecontrol;
@@ -287,9 +268,6 @@ private:
     long _busoptimizedvarcategory;
     double _busoptimizedvaroffset;
     double _kvarsolution;
-    long _currentvarpointquality;
-    long _currentwattpointquality;
-    long _currentvoltpointquality;
     bool _waivecontrolflag;
 
     bool _peakTimeFlag;
@@ -325,8 +303,6 @@ private:
     double _phaseBvalueBeforeControl;
     double _phaseCvalueBeforeControl;
 
-    CtiTime _lastWattPointTime;
-    CtiTime _lastVoltPointTime;
     long _retryIndex;
 
     CtiCCOriginalParent _originalParent;

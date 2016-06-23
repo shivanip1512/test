@@ -61,17 +61,12 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _eventSeq( 0 ),
         _newpointdatareceivedflag( false ),
         _busupdatedflag( false ),
-        _estimatedvarloadpointid( 0 ),
-        _estimatedvarloadpointvalue( 0 ),
         _peaktimeflag( true ),
         _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastfeedercontrolledpaoid( 0 ),
         _lastfeedercontrolledposition( 0 ),
         _kvarsolution( 0 ),
-        _currentvarpointquality( NormalQuality),
-        _currentwattpointquality( NormalQuality ),
-        _currentvoltpointquality( NormalQuality ),
         _waivecontrolflag( false ),
         _currentVerificationCapBankId( -1 ),
         _currentVerificationFeederId( -1 ),
@@ -111,11 +106,8 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _commsStatePointId( 0 ),
         _disableBusPointId( 0 ),
         _solution( "IDLE" ),
-        _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
         _lastoperationtime( gInvalidCtiTime ),
         _lastVerificationCheck( gInvalidCtiTime ),
-        _lastWattPointTime( gInvalidCtiTime ),
-        _lastVoltPointTime( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
@@ -137,17 +129,12 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _eventSeq( 0 ),
         _newpointdatareceivedflag( false ),
         _busupdatedflag( false ),
-        _estimatedvarloadpointid( 0 ),
-        _estimatedvarloadpointvalue( 0 ),
         _peaktimeflag( true ),
         _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastfeedercontrolledpaoid( 0 ),
         _lastfeedercontrolledposition( 0 ),
         _kvarsolution( 0 ),
-        _currentvarpointquality( NormalQuality),
-        _currentwattpointquality( NormalQuality ),
-        _currentvoltpointquality( NormalQuality ),
         _waivecontrolflag( false ),
         _currentVerificationCapBankId( -1 ),
         _currentVerificationFeederId( -1 ),
@@ -187,11 +174,8 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _commsStatePointId( 0 ),
         _disableBusPointId( 0 ),
         _solution( "IDLE" ),
-        _lastcurrentvarpointupdatetime( gInvalidCtiTime ),
         _lastoperationtime( gInvalidCtiTime ),
         _lastVerificationCheck( gInvalidCtiTime ),
-        _lastWattPointTime( gInvalidCtiTime ),
-        _lastVoltPointTime( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
@@ -516,57 +500,6 @@ bool CtiCCSubstationBus::getBusUpdatedFlag() const
 }
 
 /*---------------------------------------------------------------------------
-    getLastCurrentVarPointUpdateTime
-
-    Returns the last current var point update time of the substation
----------------------------------------------------------------------------*/
-const CtiTime& CtiCCSubstationBus::getLastCurrentVarPointUpdateTime() const
-{
-    return _lastcurrentvarpointupdatetime;
-}
-
-/*---------------------------------------------------------------------------
-    getLastWattPointTime
-
-    Returns the last current watt point update time of the substation
----------------------------------------------------------------------------*/
-const CtiTime& CtiCCSubstationBus::getLastWattPointTime() const
-{
-    return _lastWattPointTime;
-}
-
-/*---------------------------------------------------------------------------
-    getLastVoltPointTime
-
-    Returns the last current var point update time of the substation
----------------------------------------------------------------------------*/
-const CtiTime& CtiCCSubstationBus::getLastVoltPointTime() const
-{
-    return _lastVoltPointTime;
-}
-
-
-/*---------------------------------------------------------------------------
-    getEstimatedVarLoadPointId
-
-    Returns the estimated var load point id of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getEstimatedVarLoadPointId() const
-{
-    return _estimatedvarloadpointid;
-}
-
-/*---------------------------------------------------------------------------
-    getEstimatedVarLoadPointValue
-
-    Returns the estimated var load point value of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getEstimatedVarLoadPointValue() const
-{
-    return _estimatedvarloadpointvalue;
-}
-
-/*---------------------------------------------------------------------------
     getPeakTimeFlag
 
     Returns the flag that represents if the substation is in peak time
@@ -638,34 +571,6 @@ long CtiCCSubstationBus::getLastFeederControlledPosition() const
 double CtiCCSubstationBus::getKVARSolution() const
 {
     return _kvarsolution;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentVarPointQuality
-
-    Returns the CurrentVarPointQuality of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getCurrentVarPointQuality() const
-{
-    return _currentvarpointquality;
-}
-/*---------------------------------------------------------------------------
-    getCurrentWattPointQuality
-
-    Returns the CurrentWattPointQuality of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getCurrentWattPointQuality() const
-{
-    return _currentwattpointquality;
-}
-/*---------------------------------------------------------------------------
-    getCurrentVoltPointQuality
-
-    Returns the CurrentVoltPointQuality of the substation
----------------------------------------------------------------------------*/
-long CtiCCSubstationBus::getCurrentVoltPointQuality() const
-{
-    return _currentvoltpointquality;
 }
 
 /*---------------------------------------------------------------------------
@@ -1235,51 +1140,18 @@ void CtiCCSubstationBus::setBusUpdatedFlag(bool busupdated)
 }
 
 /*---------------------------------------------------------------------------
-    setLastCurrentVarPointUpdateTime
-
-    Sets the last current var point update time of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
-{
-    updateDynamicValue( _lastcurrentvarpointupdatetime, lastpointupdate );
-}
-/*---------------------------------------------------------------------------
-    setLastWattPointTime
-
-    Sets the last current Watt point update time of the subbus
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setLastWattPointTime(const CtiTime& lastpointupdate)
-{
-    updateDynamicValue( _lastWattPointTime, lastpointupdate );
-}
-/*---------------------------------------------------------------------------
-    setLastVoltPointTime
-
-    Sets the last current Volt point update time of the subbus
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setLastVoltPointTime(const CtiTime& lastpointupdate)
-{
-    updateDynamicValue( _lastVoltPointTime, lastpointupdate );
-}
-
-/*---------------------------------------------------------------------------
-    setEstimatedVarLoadPointId
-
-    Sets the estimated var load point id of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setEstimatedVarLoadPointId(long estimatedvarid)
-{
-    _estimatedvarloadpointid = estimatedvarid;
-}
-
-/*---------------------------------------------------------------------------
     setEstimatedVarLoadPointValue
 
     Sets the estimated var load point value of the substation
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setEstimatedVarLoadPointValue(double estimatedvarval)
+void CtiCCSubstationBus::setEstimatedVarLoadPointValue( const double aValue )
 {
-    _busupdatedflag |= updateDynamicValue( _estimatedvarloadpointvalue, estimatedvarval );
+    if ( getEstimatedVarLoadPointValue() != aValue )
+    {
+        Conductor::setEstimatedVarLoadPointValue( aValue );
+
+        _busupdatedflag = true;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -1440,38 +1312,6 @@ void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
 void CtiCCSubstationBus::setKVARSolution(double solution)
 {
     updateDynamicValue( _kvarsolution, solution );
-}
-
-/*---------------------------------------------------------------------------
-    setCurrentVarPointQuality
-
-    Sets the CurrentVarPointQuality in the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setCurrentVarPointQuality(long cvpq)
-{
-    updateDynamicValue( _currentvarpointquality, cvpq );
-}
-
-
-/*---------------------------------------------------------------------------
-    setCurrentWattPointQuality
-
-    Sets the CurrentWattPointQuality in the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setCurrentWattPointQuality(long cwpq)
-{
-    updateDynamicValue( _currentwattpointquality, cwpq );
-}
-
-
-/*---------------------------------------------------------------------------
-    setCurrentVoltPointQuality
-
-    Sets the CurrentVoltPointQuality in the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setCurrentVoltPointQuality(long cvpq)
-{
-    updateDynamicValue( _currentvoltpointquality, cvpq );
 }
 
 /*---------------------------------------------------------------------------
@@ -5719,8 +5559,8 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _nextchecktime
         << serializeFlag( _newpointdatareceivedflag )
         << serializeFlag( _busupdatedflag )
-        << _lastcurrentvarpointupdatetime
-        << _estimatedvarloadpointvalue
+        << getLastCurrentVarPointUpdateTime()
+        << getEstimatedVarLoadPointValue()
         << getCurrentDailyOperations()
         << serializeFlag( _peaktimeflag )
         << serializeFlag( _recentlycontrolledflag )
@@ -5732,7 +5572,7 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << getPowerFactorValue()
         << _kvarsolution
         << getEstimatedPowerFactorValue()
-        << _currentvarpointquality
+        << getCurrentVarPointQuality()
         << serializeFlag( _waivecontrolflag )
         << formatFlags()
         << _currentVerificationCapBankId
@@ -5744,8 +5584,8 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << serializeFlag( _switchOverStatus )
         << _altSubControlValue
         << _eventSeq
-        << _currentwattpointquality
-        << _currentvoltpointquality
+        << getCurrentWattPointQuality()
+        << getCurrentVoltPointQuality()
         << getIVControlTot()
         << getIVCount()
         << getIWControlTot()
@@ -5753,8 +5593,8 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _phaseAvalue
         << _phaseBvalue
         << _phaseCvalue
-        << _lastWattPointTime
-        << _lastVoltPointTime
+        << getLastWattPointTime()
+        << getLastVoltPointTime()
         << _phaseAvalueBeforeControl
         << _phaseBvalueBeforeControl
         << _phaseCvalueBeforeControl
@@ -5786,8 +5626,8 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _nextchecktime
         << serializeFlag( _newpointdatareceivedflag )
         << serializeFlag( _busupdatedflag )
-        << _lastcurrentvarpointupdatetime
-        << _estimatedvarloadpointvalue
+        << getLastCurrentVarPointUpdateTime()
+        << getEstimatedVarLoadPointValue()
         << getCurrentDailyOperations()
         << serializeFlag( _peaktimeflag )
         << serializeFlag( _recentlycontrolledflag )
@@ -5799,7 +5639,7 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << getPowerFactorValue()
         << _kvarsolution
         << getEstimatedPowerFactorValue()
-        << _currentvarpointquality
+        << getCurrentVarPointQuality()
         << serializeFlag( _waivecontrolflag )
         << formatFlags()
         << _currentVerificationCapBankId
@@ -5811,8 +5651,8 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << serializeFlag( _switchOverStatus )
         << _altSubControlValue
         << _eventSeq
-        << _currentwattpointquality
-        << _currentvoltpointquality
+        << getCurrentWattPointQuality()
+        << getCurrentVoltPointQuality()
         << getIVControlTot()
         << getIVCount()
         << getIWControlTot()
@@ -5820,8 +5660,8 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _phaseAvalue
         << _phaseBvalue
         << _phaseCvalue
-        << _lastWattPointTime
-        << _lastVoltPointTime
+        << getLastWattPointTime()
+        << getLastVoltPointTime()
         << _phaseAvalueBeforeControl
         << _phaseBvalueBeforeControl
         << _phaseCvalueBeforeControl;
@@ -8114,9 +7954,6 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
 
     _busupdatedflag                 = deserializeFlag( flags );
 
-    rdr["LastCurrentVarUpdateTime"] >> _lastcurrentvarpointupdatetime;
-    rdr["EstimatedVarPointValue"]   >> _estimatedvarloadpointvalue;
-
     rdr["PeakTimeFlag"]             >> flags;
 
     _peaktimeflag                   = deserializeFlag( flags );
@@ -8130,7 +7967,6 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
     rdr["LastFeederPAOid"]          >> _lastfeedercontrolledpaoid;
     rdr["LastFeederPosition"]       >> _lastfeedercontrolledposition;
     rdr["KvarSolution"]             >> _kvarsolution;
-    rdr["CurrentVarPointQuality"]   >> _currentvarpointquality;
 
     rdr["WaiveControlFlag"]         >> flags;
 
@@ -8179,20 +8015,14 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
 
     rdr["AltSubControlValue"]       >> _altSubControlValue;
     rdr["EventSeq"]                 >> _eventSeq;
-    rdr["CurrentWattPointQuality"]  >> _currentwattpointquality;
 
     _altSubWattVal                  = _currentwattloadpointvalue;
-
-    rdr["CurrentVoltPointQuality"]  >> _currentvoltpointquality;
 
     _altSubVoltVal                  = _currentvoltloadpointvalue;
 
     rdr["phaseavalue"]              >> _phaseAvalue;
     rdr["phasebvalue"]              >> _phaseBvalue;
     rdr["phasecvalue"]              >> _phaseCvalue;
-
-    rdr["LastWattPointTime"]        >> _lastWattPointTime;
-    rdr["LastVoltPointTime"]        >> _lastVoltPointTime;
 
     rdr["PhaseAValueBeforeControl"] >> _phaseAvalueBeforeControl;
     rdr["PhaseBValueBeforeControl"] >> _phaseBvalueBeforeControl;

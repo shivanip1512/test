@@ -26,6 +26,16 @@ public:
 
     long getCurrentVarLoadPointId() const;
     void setCurrentVarLoadPointId( const long pointId );
+    long getCurrentVarPointQuality() const;
+    void setCurrentVarPointQuality( const long quality );
+    const CtiTime & getLastCurrentVarPointUpdateTime() const;
+    void setLastCurrentVarPointUpdateTime( const CtiTime & aTime );
+
+    long getEstimatedVarLoadPointId() const;
+    void setEstimatedVarLoadPointId( const long pointId );
+    double getEstimatedVarLoadPointValue() const;
+    virtual void setEstimatedVarLoadPointValue( const double aValue );
+
     bool getUsePhaseData() const;
     void setUsePhaseData( const bool flag );
     long getPhaseBId() const;
@@ -39,11 +49,19 @@ public:
 
     long getCurrentWattLoadPointId() const;
     void setCurrentWattLoadPointId( const long pointId );
+    long getCurrentWattPointQuality() const;
+    void setCurrentWattPointQuality( const long quality );
+    const CtiTime & getLastWattPointTime() const;
+    void setLastWattPointTime( const CtiTime & aTime );
 
     // Volt
 
     long getCurrentVoltLoadPointId() const;
     void setCurrentVoltLoadPointId( const long pointId );
+    long getCurrentVoltPointQuality() const;
+    void setCurrentVoltPointQuality( const long quality );
+    const CtiTime & getLastVoltPointTime() const;
+    void setLastVoltPointTime( const CtiTime & aTime );
 
     // Power Factor
 
@@ -113,7 +131,13 @@ private:
 
     // VAr
 
-    long _currentVarLoadPointId;
+    long    _currentVarLoadPointId;
+    long    _currentVarPointQuality;
+    CtiTime _lastCurrentVarPointUpdateTime;
+
+    long    _estimatedVarLoadPointId;
+    double  _estimatedVarLoadPointValue;
+
     bool _usePhaseData;
     long _phaseBid;
     long _phaseCid;
@@ -121,11 +145,15 @@ private:
 
     // Watt
 
-    long _currentWattLoadPointId;
+    long    _currentWattLoadPointId;
+    long    _currentWattPointQuality;
+    CtiTime _lastWattPointTime;
 
     // Volt
 
-    long _currentVoltLoadPointId;
+    long    _currentVoltLoadPointId;
+    long    _currentVoltPointQuality;
+    CtiTime _lastVoltPointTime;
 
     // Power Factor
 
