@@ -7708,18 +7708,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CSLSE_LCSTE_A</i__foreignKeyName>
+            <i__foreignKeyName>FK_CSLSE_LCSTE</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>ACTIONID</i__columnName>
+            <i__columnName>EVENTTYPEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CSLSE_LCSTE</i__foreignKeyName>
+            <i__foreignKeyName>FK_CSLSE_LCSTE_A</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>EVENTTYPEID</i__columnName>
+            <i__columnName>ACTIONID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -24053,7 +24053,7 @@
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>18</i__columnSize>
+            <i__columnSize>22</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
@@ -24069,7 +24069,7 @@
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>5</i__columnSize>
+            <i__columnSize>22</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
@@ -24085,7 +24085,7 @@
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>5</i__columnSize>
+            <i__columnSize>22</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
@@ -24101,7 +24101,7 @@
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>5</i__columnSize>
+            <i__columnSize>22</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
@@ -24117,7 +24117,7 @@
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>5</i__columnSize>
+            <i__columnSize>22</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
