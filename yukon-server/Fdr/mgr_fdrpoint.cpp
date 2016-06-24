@@ -199,11 +199,10 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
     }
     catch(...)
     {
-        functionStatus = false;
-
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load point "<< pointId << " - will attempt to clear FDR Point list...");
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         // An error occured, so we leave the point list at status quo.
+        functionStatus = false;
     }
 
     return functionStatus;
