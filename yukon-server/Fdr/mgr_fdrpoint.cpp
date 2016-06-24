@@ -199,7 +199,7 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
     }
     catch(...)
     {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load point "<< pointId << ".");
 
         // An error occured, so we leave the point list at status quo.
         functionStatus = false;
