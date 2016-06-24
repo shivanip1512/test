@@ -1087,7 +1087,6 @@ void Mct470Device::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKey
                 }
 
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, existingLoadProfileConfig);
-                return;  //  All done with the special processing
             }
 
             break;  //  Store as normal as well
