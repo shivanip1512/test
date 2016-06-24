@@ -1087,6 +1087,7 @@ void Mct470Device::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKey
                 }
 
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, existingLoadProfileConfig);
+                return;  //  All done with the special processing
             }
 
             break;  //  Store as normal as well
@@ -1097,6 +1098,8 @@ void Mct470Device::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKey
             //  0xFF is No TOU Active -
             //  see SSPEC -S01030, S01037, S01046, MCT-470, MCT-430.doc
             //  section 8.30.   TOU Day Schedule (Function Read 0xAD)
+
+            return;  //  All done with the special processing
         }
     }
 
