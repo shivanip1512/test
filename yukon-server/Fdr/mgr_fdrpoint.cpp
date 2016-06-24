@@ -111,7 +111,7 @@ bool CtiFDRManager::loadPointList()
         std::map<long,CtiFDRPointSPtr> fdrTempMap;
         functionSuccess = getPointsFromDB(ss,fdrTempMap);
 
-        //move all from tempMap to main Map.
+        //move all from tempMap to main Map.  Note that any removed points have already been taken out of the list.
         for (std::map<long,CtiFDRPointSPtr>::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++)
         {
             pointMap.insert((*itr).second->getPointID(),(*itr).second);
@@ -122,9 +122,7 @@ bool CtiFDRManager::loadPointList()
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        CTILOG_INFO(dout, "Attempting to clear FDR Point list...");
-        pointMap.removeAll(NULL, 0);
-
+        // An error occured, so we leave the point list at status quo.
         functionSuccess = false;
     }
 
@@ -174,6 +172,7 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
         std::map<long,CtiFDRPointSPtr > fdrTempMap;
         functionStatus = getPointsFromDB(ss,fdrTempMap);
 
+        //move the point from tempMap to main Map.  Note that any removed points have already been taken out of the list.
         if (fdrTempMap.size() == 1)
         {
             std::map<long,CtiFDRPointSPtr >::iterator itr = fdrTempMap.begin();
@@ -204,7 +203,7 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
 
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load point "<< pointId << " - will attempt to clear FDR Point list...");
 
-        pointMap.removeAll(NULL, 0);
+        // An error occured, so we leave the point list at status quo.
     }
 
     return functionStatus;
@@ -326,6 +325,7 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
 */
 bool CtiFDRManager::refreshPointList()
 {
+
     pointMap.removeAll(NULL, 0);
 
     return loadPointList();
