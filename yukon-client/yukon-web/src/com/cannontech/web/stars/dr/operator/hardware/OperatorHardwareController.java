@@ -952,11 +952,11 @@ public class OperatorHardwareController {
                                           userContext);
             
             MessageSourceResolvable confirmationMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandSent");
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.disableCommandSent");
             flashScope.setConfirm(confirmationMessage);
         } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandFailed", e.getMessage());
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.disableCommandFailed", e.getMessage());
             flashScope.setError(errorMessage);
         }
         
@@ -987,11 +987,11 @@ public class OperatorHardwareController {
                                          userContext);
             
             MessageSourceResolvable confirmationMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandSent");
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.enableCommandSent");
             flashScope.setConfirm(confirmationMessage);
         } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandFailed",
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.enableCommandFailed",
                                                  e.getMessage());
             flashScope.setError(errorMessage);
         }

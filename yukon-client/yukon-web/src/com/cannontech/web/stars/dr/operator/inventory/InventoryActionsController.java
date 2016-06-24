@@ -212,11 +212,11 @@ public class InventoryActionsController {
             hardwareConfigService.disable(inventoryId, CtiUtilities.NONE_ZERO_ID, -1, userContext);
 
             MessageSourceResolvable confirmationMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandSent");
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.disableCommandSent");
             flashScope.setConfirm(confirmationMessage);
         } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandFailed",
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.disableCommandFailed",
                     e.getMessage());
             flashScope.setError(errorMessage);
         }
@@ -238,11 +238,11 @@ public class InventoryActionsController {
             hardwareConfigService.enable(inventoryId, CtiUtilities.NONE_ZERO_ID, -1, userContext);
 
             MessageSourceResolvable confirmationMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandSent");
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.enableCommandSent");
             flashScope.setConfirm(confirmationMessage);
         } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandFailed",
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.enableCommandFailed",
                     e.getMessage());
             flashScope.setError(errorMessage);
         }
