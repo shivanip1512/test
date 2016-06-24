@@ -16,8 +16,8 @@ import com.cannontech.common.bulk.collection.device.persistable.DeviceCollection
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionById;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionDbType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -53,7 +53,7 @@ public class DeviceCollectionDaoImpl implements DeviceCollectionDao {
                 SqlParameterSink sink = sql.insertInto("DeviceCollectionByField");
                 sink.addValue("CollectionId", collectionId);
                 sink.addValue("FieldName", field.getName());
-                sink.addValue("FieldValue", field.getValue());
+                sink.addValueSafe("FieldValue", field.getValue());
                 yukonJdbcTemplate.update(sql);
             }
         } else {
@@ -93,7 +93,7 @@ public class DeviceCollectionDaoImpl implements DeviceCollectionDao {
                 @Override
                 public void processRow(YukonResultSet rs) throws SQLException {
                     String name = rs.getString("FieldName");
-                    String value = rs.getString("FieldValue");
+                    String value = rs.getStringSafe("FieldValue");
                     fields.add(DeviceCollectionField.of(name, value));
                 }
             });
