@@ -4131,6 +4131,9 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pRe
     {
         long timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
 
+        // TODO: Test and remove if it doesn't work
+        auto timezoneOffsetTest = deviceConfig->findValue<long>(MCTStrings::TimeZoneOffset);
+
         if( timezoneOffset < -24 || timezoneOffset > 24 )
         {
             CTILOG_ERROR(dout, "no or bad timezone value stored");

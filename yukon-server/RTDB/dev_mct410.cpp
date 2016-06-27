@@ -4604,6 +4604,81 @@ YukonError_t Mct410Device::decodeGetConfigLongLoadProfileStorageDays( const INME
     return status;
 }
 
+YukonError_t Mct410Device::executePutConfigTimezone(CtiRequestMsg     *pReq,
+    CtiCommandParser  &parse,
+    OUTMESS          *&OutMessage,
+    CtiMessageList    &vgList,
+    CtiMessageList    &retList,
+    OutMessageList    &outList,
+    bool               readsOnly)
+{
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if (!deviceConfig)
+    {
+        CTILOG_ERROR(dout, "deviceConfig not found");
+
+        return ClientErrors::NoConfigData;
+    }
+    /* overwrite the request command                        */
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+    if (!readsOnly)
+    {
+        long timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
+
+        if (timezoneOffset < -24 || timezoneOffset > 24)
+        {
+            CTILOG_ERROR(dout, "no or bad timezone value stored");
+
+            return ClientErrors::NoConfigData;
+        }
+
+        timezoneOffset *= 4; // The timezone offset in the mct is in 15 minute increments.
+
+        if (parse.isKeyValid("force")
+            || (char)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
+        {
+            if (!parse.isKeyValid("verify"))
+            {
+                if (!getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
+                {
+                    CTILOG_ERROR(dout, "Operation PutConfig_TimeZoneOffset not found");
+
+                    return ClientErrors::NoConfigData;
+                }
+
+                //  the bstruct IO is set above by getOperation()
+                OutMessage->Buffer.BSt.Message[0] = timezoneOffset;
+                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+            }
+            else
+            {
+                return ClientErrors::ConfigNotCurrent;
+            }
+        }
+        else
+        {
+            return ClientErrors::ConfigCurrent;
+        }
+    }
+    else // getconfig install
+    {
+        if (!getOperation(EmetconProtocol::GetConfig_Time, OutMessage->Buffer.BSt))
+        {
+            CTILOG_ERROR(dout, "Operation GetConfig_Time not found");
+
+            return ClientErrors::NoConfigData;
+        }
+
+        OutMessage->Sequence = EmetconProtocol::GetConfig_Time;
+
+        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+    }
+
+    return ClientErrors::None;
+}
+
 
 }
 }
