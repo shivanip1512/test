@@ -30,7 +30,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     public YukonJob schedule(String name, String groupName, String command, DeviceRequestType type,
             String cronExpression, YukonUserContext userContext, RetryStrategy retryStrategy) {
 
-        log.info("Scheduling job.");        
+        log.info("Scheduling job. name=" + name + " groupName=" + groupName);     
         ScheduledGroupRequestExecutionTask task = buildTask(name, groupName, command, null, type, retryStrategy);
         YukonJob job = jobManager.scheduleJob(jobDefinition, task, cronExpression, userContext);
         log.info("Task=" + task);
@@ -43,7 +43,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     public YukonJob schedule(String name, String groupName, Set<? extends Attribute> attributes, DeviceRequestType type,
             String cronExpression, YukonUserContext context, RetryStrategy retryStrategy) {
 
-        log.info("Scheduling job.");      
+        log.info("Scheduling job. name=" + name + " groupName=" + groupName);    
         ScheduledGroupRequestExecutionTask task = buildTask(name, groupName, null, attributes, type, retryStrategy);
         YukonJob job = jobManager.scheduleJob(jobDefinition, task, cronExpression, context);
         log.info("Task=" + task);
@@ -56,7 +56,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, String command,
             DeviceRequestType type, String cronExpression, YukonUserContext context, RetryStrategy retryStrategy) {
 
-        log.info("Replacing job.");  
+        log.info("Replacing job. existingJobId=" + existingJobId + " name=" + name + " groupName=" + groupName);
         ScheduledGroupRequestExecutionTask task = buildTask(name, groupName, command, null, type, retryStrategy);
         YukonJob job = jobManager.replaceScheduledJob(existingJobId, jobDefinition, task, cronExpression, context);
         log.info("Task=" + task);
@@ -70,7 +70,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
             Set<? extends Attribute> attributes, DeviceRequestType type, String cronExpression,
             YukonUserContext context, RetryStrategy retryStrategy) {
 
-        log.info("Replacing job.");  
+        log.info("Replacing job. existingJobId=" + existingJobId + " name=" + name + " groupName=" + groupName);
         ScheduledGroupRequestExecutionTask task = buildTask(name, groupName, null, attributes, type, retryStrategy);
         YukonJob job =
             jobManager.replaceScheduledJob(existingJobId, jobDefinition, task, cronExpression, context);
