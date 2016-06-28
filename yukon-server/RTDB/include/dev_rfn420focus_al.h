@@ -9,7 +9,7 @@ namespace Devices {
 class IM_EX_DEVDB Rfn420FocusAlDevice
     :   public RfnResidentialVoltageDevice
 {
-    virtual ConfigMap getConfigMethods(bool readOnly);
+    virtual ConfigMap getConfigMethods(InstallType installType);
 
     YukonError_t executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);

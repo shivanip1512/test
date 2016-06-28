@@ -16,29 +16,29 @@ namespace Devices {
 
 namespace {  // anonymous namespace
 
-const std::vector<CtiDeviceBase::PaoInfoKeys> displayMetricPaoKeys = boost::assign::list_of
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem01 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem02 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem03 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem04 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem05 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem06 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem07 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem08 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem09 )
-    ( CtiTableDynamicPaoInfo::Key_DisplayItem10 );
+const std::vector<CtiDeviceBase::PaoInfoKeys> displayMetricPaoKeys {
+    CtiTableDynamicPaoInfo::Key_DisplayItem01,
+    CtiTableDynamicPaoInfo::Key_DisplayItem02,
+    CtiTableDynamicPaoInfo::Key_DisplayItem03,
+    CtiTableDynamicPaoInfo::Key_DisplayItem04,
+    CtiTableDynamicPaoInfo::Key_DisplayItem05,
+    CtiTableDynamicPaoInfo::Key_DisplayItem06,
+    CtiTableDynamicPaoInfo::Key_DisplayItem07,
+    CtiTableDynamicPaoInfo::Key_DisplayItem08,
+    CtiTableDynamicPaoInfo::Key_DisplayItem09,
+    CtiTableDynamicPaoInfo::Key_DisplayItem10 };
 
-const std::vector<std::string> displayMetricConfigKeys = boost::assign::list_of
-    ( Config::RfnStrings::displayItem01 )
-    ( Config::RfnStrings::displayItem02 )
-    ( Config::RfnStrings::displayItem03 )
-    ( Config::RfnStrings::displayItem04 )
-    ( Config::RfnStrings::displayItem05 )
-    ( Config::RfnStrings::displayItem06 )
-    ( Config::RfnStrings::displayItem07 )
-    ( Config::RfnStrings::displayItem08 )
-    ( Config::RfnStrings::displayItem09 )
-    ( Config::RfnStrings::displayItem10 );
+const std::vector<std::string> displayMetricConfigKeys {
+    Config::RfnStrings::displayItem01,
+    Config::RfnStrings::displayItem02,
+    Config::RfnStrings::displayItem03,
+    Config::RfnStrings::displayItem04,
+    Config::RfnStrings::displayItem05,
+    Config::RfnStrings::displayItem06,
+    Config::RfnStrings::displayItem07,
+    Config::RfnStrings::displayItem08,
+    Config::RfnStrings::displayItem09,
+    Config::RfnStrings::displayItem10 };
 
 typedef Commands::RfnFocusAlLcdConfigurationCommand LcdCommand;
 
@@ -67,17 +67,17 @@ const StringsToMetrics ConfigToCommand = boost::assign::list_of<StringsToMetrics
 
 } // anonymous namespace
 
-RfnMeterDevice::ConfigMap Rfn420FocusAlDevice::getConfigMethods(bool readOnly)
+RfnMeterDevice::ConfigMap Rfn420FocusAlDevice::getConfigMethods(InstallType installType)
 {
-    ConfigMap m = RfnResidentialVoltageDevice::getConfigMethods( readOnly );
+    ConfigMap m = RfnResidentialVoltageDevice::getConfigMethods( installType );
 
-    if( readOnly )
+    if( installType == InstallType::GetConfig )
     {
-        m.insert( ConfigMap::value_type( ConfigPart::display, bindConfigMethod( &Rfn420FocusAlDevice::executeGetConfigDisplay, this )));
+        m.emplace(ConfigPart::display, bindConfigMethod( &Rfn420FocusAlDevice::executeGetConfigDisplay, this ));
     }
     else
     {
-        m.insert( ConfigMap::value_type( ConfigPart::display, bindConfigMethod( &Rfn420FocusAlDevice::executePutConfigDisplay, this )));
+        m.emplace(ConfigPart::display, bindConfigMethod( &Rfn420FocusAlDevice::executePutConfigDisplay, this ));
     }
 
     return m;

@@ -5,8 +5,6 @@
 
 #include "std_helper.h"
 
-#include <boost/assign/list_of.hpp>
-
 namespace Cti {
 namespace Devices {
 
@@ -60,13 +58,13 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
     typedef std::map<int, RfnExecuteMethod> ExecuteLookup;
 
-    const ExecuteLookup executeMethods = boost::assign::map_list_of
-        (GetConfigRequest, &RfnDevice::executeGetConfig)
-        (PutConfigRequest, &RfnDevice::executePutConfig)
-        (GetValueRequest,  &RfnDevice::executeGetValue)
-        (PutValueRequest,  &RfnDevice::executePutValue)
-        (GetStatusRequest, &RfnDevice::executeGetStatus)
-        (PutStatusRequest, &RfnDevice::executePutStatus);
+    const ExecuteLookup executeMethods {
+        { GetConfigRequest, &RfnDevice::executeGetConfig },
+        { PutConfigRequest, &RfnDevice::executePutConfig },
+        { GetValueRequest,  &RfnDevice::executeGetValue  },
+        { PutValueRequest,  &RfnDevice::executePutValue  },
+        { GetStatusRequest, &RfnDevice::executeGetStatus },
+        { PutStatusRequest, &RfnDevice::executePutStatus }};
 
     YukonError_t errorCode = ClientErrors::NoMethod;
     std::string errorDescription = "Invalid command.";

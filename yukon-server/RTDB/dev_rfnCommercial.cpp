@@ -1,19 +1,8 @@
 #include "precompiled.h"
 
-#include "std_helper.h"
-#include "config_data_rfn.h"
-#include "config_device.h"
-#include "config_exceptions.h"
 #include "dev_rfnCommercial.h"
-#include "devicetypes.h"
 
-#include <boost/optional.hpp>
 #include <boost/make_shared.hpp>
-#include <boost/assign/list_of.hpp>
-#include <boost/type_traits.hpp>
-
-#include <limits>
-#include <string>
 
 
 namespace Cti {

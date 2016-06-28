@@ -14,8 +14,6 @@
 #include "std_helper.h"
 
 #include <boost/make_shared.hpp>
-#include <boost/assign/list_inserter.hpp>
-#include <boost/assign/list_of.hpp>
 
 #include <cmath>
 
@@ -31,15 +29,15 @@ enum ReadingMode
     Disabled
 };
 
-std::map<std::string, ReadingMode> ReadingModeResolver = boost::assign::map_list_of
-    ("INTERVAL", Interval)
-    ("MIDNIGHT", Midnight)
-    ("DISABLED", Disabled);
+std::map<std::string, ReadingMode> ReadingModeResolver {
+    { "INTERVAL", Interval },
+    { "MIDNIGHT", Midnight },
+    { "DISABLED", Disabled }};
 
 /**
  * Convert a set of metrics ids to a vector of ids for dynamic info
  * Note(1): will result in one metric per row in the database,
-*  Note(2): the order is garanty by the metrics set in argument
+*  Note(2): the order is guaranteed by the metrics set in argument
  *
  * @param metrics set of ids
  * @return vector of ids (ordered) for dynamic info
@@ -67,7 +65,7 @@ YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandPar
 {
     if( parse.isKeyValid("install") )
     {
-        return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, false);
+        return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, InstallType::PutConfig);
     }
     if( parse.isKeyValid("tou") )
     {
@@ -90,7 +88,7 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandPar
 {
     if( parse.isKeyValid("install") )
     {
-        return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, true);
+        return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, InstallType::GetConfig);
     }
     if( parse.isKeyValid("tou") )
     {
@@ -111,23 +109,19 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandPar
 /**
  * define in inherited device classes
  */
-RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(bool readOnly)
+RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(InstallType installType)
 {
     ConfigMap m;
 
-    if ( readOnly )
+    if( installType == InstallType::GetConfig )
     {
-        boost::assign::insert( m )
-            ( ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executeGetConfigInstallChannels,     this ) )
-            ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executeGetConfigTemperatureAlarm,    this ) )
-                ;
+        m.emplace(ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executeGetConfigInstallChannels,     this ) );
+        m.emplace(ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executeGetConfigTemperatureAlarm,    this ) );
     }
     else
     {
-        boost::assign::insert( m )
-            ( ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executePutConfigInstallChannels,     this ) )
-            ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executePutConfigTemperatureAlarm,    this ) )
-                ;
+        m.emplace(ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executePutConfigInstallChannels,     this ) );
+        m.emplace(ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executePutConfigTemperatureAlarm,    this ) );
     }
 
     return m;
@@ -136,7 +130,7 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(bool readOnly)
 /**
  * Execute putconfig/getconfig Install
  */
-YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, bool readOnly )
+YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, InstallType installType )
 {
     boost::optional<std::string> configPart = parse.findStringForKey("installvalue");
     if( ! configPart )
@@ -144,7 +138,7 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiComman
         return ClientErrors::NoMethod;
     }
 
-    const ConfigMap configMethods = getConfigMethods( readOnly );
+    const ConfigMap configMethods = getConfigMethods( installType );
     if( configMethods.empty() )
     {
         return ClientErrors::NoMethod;

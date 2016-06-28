@@ -58,32 +58,28 @@ const std::map<unsigned, DisconnectCmd::DemandInterval> intervalResolver
 
 } // anonymous namespace
 
-RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
+RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(InstallType installType)
 {
-    ConfigMap m = RfnMeterDevice::getConfigMethods( readOnly );
+    ConfigMap m = RfnMeterDevice::getConfigMethods( installType );
 
-    if( readOnly )
+    if( installType == InstallType::GetConfig )
     {
-        boost::assign::insert( m )
-            ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executeReadDemandFreezeInfo,              this ) )
-            ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ) )
-                ;
+        m.emplace(ConfigPart::freezeday, bindConfigMethod( &RfnResidentialDevice::executeReadDemandFreezeInfo,              this ) );
+        m.emplace(ConfigPart::tou,       bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ) );
 
         if( disconnectConfigSupported() )
         {
-            m.insert( ConfigMap::value_type( ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executeGetConfigDisconnect, this ) ) );
+            m.emplace(ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executeGetConfigDisconnect, this ) );
         }
     }
     else
     {
-        boost::assign::insert( m )
-            ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandFreezeDay,          this ) )
-            ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ) )
-                ;
+        m.emplace(ConfigPart::freezeday, bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandFreezeDay,          this ) );
+        m.emplace(ConfigPart::tou,       bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ) );
 
         if( disconnectConfigSupported() )
         {
-            m.insert( ConfigMap::value_type( ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executePutConfigDisconnect, this ) ) );
+            m.emplace(ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executePutConfigDisconnect, this ) );
         }
     }
 

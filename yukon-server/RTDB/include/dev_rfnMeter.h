@@ -37,8 +37,13 @@ protected:
         return boost::bind( f, c, _1, _2, _3, _4 );
     }
 
+    enum class InstallType {
+        PutConfig,
+        GetConfig
+    };
+
     /// Returns a map that contains the configuration methods.
-    virtual ConfigMap getConfigMethods(bool readOnly);
+    virtual ConfigMap getConfigMethods(InstallType installType);
 
     YukonError_t executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
     YukonError_t executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
@@ -82,7 +87,7 @@ private:
     typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
     typedef std::vector<unsigned long> PaoMetricIds;
 
-    YukonError_t executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, bool readOnly );
+    YukonError_t executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, InstallType installType);
     void executeConfigInstallSingle  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod );
     YukonError_t compareChannels(
         CtiRequestMsg    * pReq,

@@ -5,7 +5,6 @@
 #include "config_helpers.h"
 #include "std_helper.h"
 
-#include <boost/assign/list_of.hpp>
 #include <boost/make_shared.hpp>
 
 namespace Cti {

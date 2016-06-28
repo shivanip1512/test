@@ -15,7 +15,7 @@ class IM_EX_DEVDB RfnResidentialDevice
 {
 protected:
 
-    virtual ConfigMap getConfigMethods(bool readOnly);
+    virtual ConfigMap getConfigMethods(InstallType installType);
 
     YukonError_t executeImmediateDemandFreeze             (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
     YukonError_t executeTouCriticalPeak                   (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;

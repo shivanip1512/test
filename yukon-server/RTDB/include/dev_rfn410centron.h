@@ -9,7 +9,7 @@ namespace Devices {
 class IM_EX_DEVDB Rfn410CentronDevice :
     public RfnResidentialVoltageDevice
 {
-    ConfigMap getConfigMethods(bool readOnly) override;
+    ConfigMap getConfigMethods(InstallType installType) override;
 
     YukonError_t executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     virtual YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);

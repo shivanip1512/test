@@ -10,7 +10,6 @@
 
 #include <boost/optional.hpp>
 #include <boost/make_shared.hpp>
-#include <boost/assign/list_inserter.hpp>
 
 #include <limits>
 
@@ -67,12 +66,7 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
         { TYPE_RFN510FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL }
     };
 
-    if ( auto meterId = mapFind( DeviceTypeToMeterId, deviceType ) )
-    {
-        return *meterId;
-    }
-
-    return Commands::RfnOvUvConfigurationCommand::Unspecified;
+    return mapFindOrDefault(DeviceTypeToMeterId, deviceType, Commands::RfnOvUvConfigurationCommand::Unspecified);
 }
 
 }   // anonymous
@@ -88,38 +82,30 @@ double RfnResidentialVoltageDevice::getNmCompatibilityVersion() const
     return gConfigParms.getValueAsDouble( "NM_COMPATIBILITY" );
 }
 
-RfnMeterDevice::ConfigMap RfnResidentialVoltageDevice::getConfigMethods(bool readOnly)
+RfnMeterDevice::ConfigMap RfnResidentialVoltageDevice::getConfigMethods(InstallType installType)
 {
-    ConfigMap m = RfnResidentialDevice::getConfigMethods( readOnly );
+    ConfigMap m = RfnResidentialDevice::getConfigMethods( installType );
 
-    if( readOnly )
+    if( installType == InstallType::GetConfig )
     {
-        boost::assign::insert( m )
-            ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigVoltageAveragingInterval, this ) )
-            ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigOvUv,                     this ) )
-                ;
-    }
-    else
-    {
-        boost::assign::insert( m )
-            ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterval, this ) )
-            ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigOvUv,                     this ) )
-                ;
+         m.emplace(ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigVoltageAveragingInterval, this ) );
+         m.emplace(ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigOvUv,                     this ) );
+    }                                            
+    else                                         
+    {                                            
+         m.emplace(ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterval, this ) ); 
+         m.emplace(ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigOvUv,                     this ) );
     }
 
     if ( NmCompatibilityAtLeast( 7.0 ) )
     {
-        if( readOnly )
+        if( installType == InstallType::GetConfig )
         {
-            boost::assign::insert( m )
-                ( ConfigPart::voltageprofile,   bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigPermanentVoltageProfile,  this ) )
-                    ;
+            m.emplace(ConfigPart::voltageprofile, bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigPermanentVoltageProfile,  this ) );
         }
         else
         {
-            boost::assign::insert( m )
-                ( ConfigPart::voltageprofile,   bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigPermanentVoltageProfile,  this ) )
-                    ;
+            m.emplace(ConfigPart::voltageprofile, bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigPermanentVoltageProfile,  this ) );
         }
     }
 

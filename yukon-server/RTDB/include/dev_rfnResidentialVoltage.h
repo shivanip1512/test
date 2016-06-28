@@ -13,7 +13,7 @@ class IM_EX_DEVDB RfnResidentialVoltageDevice
 {
 protected:
 
-    virtual ConfigMap getConfigMethods(bool readOnly);
+    virtual ConfigMap getConfigMethods(InstallType installType);
 
     YukonError_t executeGetConfigVoltageAveragingInterval( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests );
     YukonError_t executePutConfigVoltageAveragingInterval( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests );

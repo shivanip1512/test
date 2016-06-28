@@ -77,17 +77,17 @@ const std::map<long, Commands::RfnCentronLcdConfigurationCommand::DisplayDigits>
 }
 
 
-RfnMeterDevice::ConfigMap Rfn410CentronDevice::getConfigMethods(bool readOnly)
+RfnMeterDevice::ConfigMap Rfn410CentronDevice::getConfigMethods(InstallType installType)
 {
-    ConfigMap m = RfnResidentialVoltageDevice::getConfigMethods( readOnly );
+    ConfigMap m = RfnResidentialVoltageDevice::getConfigMethods( installType );
 
-    if( readOnly )
+    if( installType == InstallType::GetConfig )
     {
-        m.insert( ConfigMap::value_type( ConfigPart::display, bindConfigMethod( &Rfn410CentronDevice::executeGetConfigDisplay, this )));
+        m.emplace(ConfigPart::display, bindConfigMethod( &Rfn410CentronDevice::executeGetConfigDisplay, this ));
     }
     else
     {
-        m.insert( ConfigMap::value_type( ConfigPart::display, bindConfigMethod( &Rfn410CentronDevice::executePutConfigDisplay, this )));
+        m.emplace(ConfigPart::display, bindConfigMethod( &Rfn410CentronDevice::executePutConfigDisplay, this ));
     }
 
     return m;
