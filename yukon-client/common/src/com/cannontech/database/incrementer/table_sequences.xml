@@ -366,5 +366,11 @@
       <sequence>
         <table name="GatewayFirmwareUpdateEntry" identitycolumn="EntryId" initsequence="true"/>
       </sequence>
+      <sequence name="Behavior">
+        <table name="Behavior" identitycolumn="BehaviorId" initsequence="true"/>
+      </sequence>
+      <sequence name="BehaviorReport">
+        <table name="BehaviorReport" identitycolumn="BehaviorReportId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

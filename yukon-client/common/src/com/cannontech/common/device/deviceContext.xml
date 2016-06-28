@@ -220,4 +220,6 @@
     <bean id="routeLocateExecutor" class="com.cannontech.common.device.routeLocate.impl.RouteLocateExecutorImpl"/>
     
     <bean id="routeBroadcastService" class="com.cannontech.common.device.service.RouteBroadcastServiceImpl"/>
+    
+    <bean class="com.cannontech.common.device.streaming.dao.impl.DeviceBehaviorDaoImpl"/>
 </beans>
