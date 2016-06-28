@@ -28,7 +28,6 @@
 <cti:msg var="executionsText" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.executions" />
 <cti:msg var="executionsButtonText" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.executionsButton" />
 <cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.popInfo.deviceGroup" />
-<cti:msg var="executionsPopupInfoText" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.popInfo.executions" />
 <cti:msg var="editScheduleButtonText" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.editScheduleButton" />
 <cti:msg var="queuedRetryCountText" key="yukon.common.device.schedules.home.retry.queuedRetryCount"/>
 <cti:msg var="nonQueuedRetryCountText" key="yukon.common.device.schedules.home.retry.nonQueuedRetryCount"/>
@@ -202,9 +201,9 @@
                 <a href="${creListUrl}" class="fl">${executionsButtonText}</a> 
                 <span class="fl">&nbsp;(<cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION"
                     identifier="${jobWrapper.job.id}/CRE_COUNT_FOR_JOB" />)</span>
-                <cti:icon icon="icon-help" id="help_icon"/>
-                <tags:simplePopup id="viewAllExecutionsInfoPopup" title="View All Executions"
-                    on="#help_icon">${executionsPopupInfoText}</tags:simplePopup>
+                <tags:helpInfoPopup title="${executionsButtonText}">
+                	<cti:msg2 key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.popInfo.executions" />
+            	</tags:helpInfoPopup>
             </form>
         </tags:nameValue>
     </tags:nameValueContainer>
