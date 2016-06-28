@@ -429,6 +429,9 @@
     <ClCompile Include="..\COMMON\boost_assert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cmd_rfn_DataStreamingConfiguration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cmd_device.h">
@@ -972,6 +975,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\dev_rfnResidentialVoltage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cmd_rfn_DataStreamingConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
