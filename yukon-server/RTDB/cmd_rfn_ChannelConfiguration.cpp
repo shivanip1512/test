@@ -244,43 +244,6 @@ const std::map<unsigned, std::string> metricQualifierResolver_ScalingFactor = bo
         ( 5, "10e-1 (deci)" )   // -3 - 101
         ( 4, "OVERFLOW" );      // -4 - 100
 
-unsigned getValueFromBytes_bEndian( const DeviceCommand::Bytes &data, unsigned offset, unsigned len )
-{
-    assert( len > 0 && len <= 4 && offset + len <= data.size() );
-
-    DeviceCommand::Bytes::const_iterator
-        itr     = data.begin() + offset,
-        itr_end = itr + len;
-
-    unsigned val = *(itr++);
-    for( ; itr != itr_end; ++itr)
-    {
-        val <<= 8;
-        val |= *itr;
-    }
-
-    return val;
-}
-
-template <unsigned byteNbr>
-void insertValue_bEndian( DeviceCommand::Bytes &data, unsigned val );
-
-template <>
-void insertValue_bEndian<2>( DeviceCommand::Bytes &data, unsigned val )
-{
-    data.push_back( (val >> 8) & 0xff );
-    data.push_back( (val >> 0) & 0xff );
-}
-
-template <>
-void insertValue_bEndian<4>( DeviceCommand::Bytes &data, unsigned val )
-{
-    data.push_back( (val >> 24) & 0xff );
-    data.push_back( (val >> 16) & 0xff );
-    data.push_back( (val >>  8) & 0xff );
-    data.push_back( (val >>  0) & 0xff );
-}
-
 std::ostream& operator<<( std::ostream& out, const std::set<unsigned char> &values )
 {
     std::set<unsigned char>::const_iterator itr = values.begin();

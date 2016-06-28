@@ -137,6 +137,7 @@ yukon-server/Simulator/Debug
 yukon-server/Simulator/Release
 yukon-server/SimulatorMemoryMaps
 yukon-server/bin
+yukon-server/ipch
 yukon-server/lib
 yukon-server/logic/Debug
 yukon-server/logic/Release

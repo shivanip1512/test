@@ -46,12 +46,26 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand)
 		RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
 		const std::string desc_exp =
-			"Data Streaming metrics:"
-			"\n3 metrics configured"
-			"\nMetric 1: DEMAND, 5 min"
-			"\nMetric 2: POWER_FACTOR, 15 min, disabled individually"
-			"\nMetric 3: VOLTAGE, 30 min"
-			"\nSequence: 3735928559";
+R"json({
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "DEMAND",
+    "interval" : 5,
+    "enabled" : true
+  },
+  {
+    "attribute" : "VOLTAGE",
+    "interval" : 15,
+    "enabled" : false
+  },
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : true
+  }],
+"sequence" : 3735928559
+})json";
 
 		BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 	}
@@ -92,13 +106,26 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_globally_disable
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-            "Data Streaming metrics:"
-            "\nData streaming DISABLED"
-            "\n3 metrics configured"
-            "\nMetric 1: DEMAND, 5 min, disabled globally"
-            "\nMetric 2: POWER_FACTOR, 15 min, disabled individually"
-            "\nMetric 3: VOLTAGE, 30 min, disabled globally"
-            "\nSequence: 3735928559";
+R"json({
+"streamingEnabled" : false,
+"configuredMetrics" : [
+  {
+    "attribute" : "DEMAND",
+    "interval" : 5,
+    "enabled" : true
+  },
+  {
+    "attribute" : "VOLTAGE",
+    "interval" : 15,
+    "enabled" : false
+  },
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : true
+  }],
+"sequence" : 3735928559
+})json";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -107,7 +134,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_globally_disable
 
 BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_enable)
 {
-    RfnDataStreamingSetMetricsCommand cmd{ RfnDataStreamingSetMetricsCommand::StreamingEnabled };
+    RfnDataStreamingSetMetricsCommand cmd{ RfnDataStreamingConfigurationCommand::StreamingEnabled };
 
     {
         RfnCommand::RfnRequestPayload rcv = cmd.executeCommand(execute_time);
@@ -139,11 +166,26 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_enable)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-            "Data Streaming metrics:"
-            "\n2 metrics configured"
-            "\nMetric 1: DEMAND, 5 min"
-            "\nMetric 2: POWER_FACTOR, 15 min, disabled individually"
-            "\nSequence: 3735928559";
+R"json({
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "DEMAND",
+    "interval" : 5,
+    "enabled" : true
+  },
+  {
+    "attribute" : "VOLTAGE",
+    "interval" : 15,
+    "enabled" : false
+  },
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : true
+  }],
+"sequence" : 3735928559
+})json";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -151,7 +193,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_enable)
 
 BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_disable)
 {
-    RfnDataStreamingSetMetricsCommand cmd{ RfnDataStreamingSetMetricsCommand::StreamingDisabled };
+    RfnDataStreamingSetMetricsCommand cmd{ RfnDataStreamingConfigurationCommand::StreamingDisabled };
 
     // execute
     {
@@ -184,12 +226,26 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_disable)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-            "Data Streaming metrics:"
-            "\nData streaming DISABLED"
-            "\n2 metrics configured"
-            "\nMetric 1: DEMAND, 5 min, disabled globally"
-            "\nMetric 2: POWER_FACTOR, 15 min, disabled individually"
-            "\nSequence: 3735928559";
+R"json({
+"streamingEnabled" : false,
+"configuredMetrics" : [
+  {
+    "attribute" : "DEMAND",
+    "interval" : 5,
+    "enabled" : true
+  },
+  {
+    "attribute" : "VOLTAGE",
+    "interval" : 15,
+    "enabled" : false
+  },
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : true
+  }],
+"sequence" : 3735928559
+})json";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -200,7 +256,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one)
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 99, 17, MetricState::Enabled } } };
+    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 5, 5, RfnDataStreamingSetMetricsCommand::StreamingEnabled } } };
 
     // execute
     {
@@ -231,10 +287,16 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-            "Data Streaming metrics:"
-            "\n1 metric configured"
-            "\nMetric 1: DEMAND, 5 min"
-            "\nSequence: 3735928559";
+R"json({
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "DEMAND",
+    "interval" : 5,
+    "enabled" : true
+  }],
+"sequence" : 3735928559
+})json";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -245,7 +307,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 99, 17, MetricState::Disabled } } };
+    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 83, 15, RfnDataStreamingSetMetricsCommand::StreamingDisabled } } };
 
     // execute
     {
@@ -276,10 +338,16 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-            "Data Streaming metrics:"
-            "\n1 metric configured"
-            "\nMetric 1: DEMAND, 5 min, disabled individually"
-            "\nSequence: 3735928559";
+R"json({
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "DEMAND",
+    "interval" : 5,
+    "enabled" : false
+  }],
+"sequence" : 3735928559
+})json";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -290,7 +358,9 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_two)
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 99, 17, MetricState::Enabled }, MetricState{ 99, 17, MetricState::Enabled } } };
+    RfnDataStreamingSetMetricsCommand cmd{ { 
+            MetricState{ 5, 5, RfnDataStreamingSetMetricsCommand::StreamingEnabled }, 
+            MetricState{ 83, 15, RfnDataStreamingSetMetricsCommand::StreamingEnabled } } };
 
     // execute
     {
@@ -316,7 +386,9 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one_disable_o
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 99, 17, MetricState::Enabled }, MetricState{ 99, 17, MetricState::Disabled } } };
+    RfnDataStreamingSetMetricsCommand cmd{ { 
+            MetricState{ 5, 5, RfnDataStreamingSetMetricsCommand::StreamingEnabled }, 
+            MetricState{ 83, 15, RfnDataStreamingSetMetricsCommand::StreamingDisabled } } };
 
     // execute
     {

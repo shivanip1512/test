@@ -3,17 +3,16 @@
 #include "ctidate.h"
 #include "cmd_rfn.h"
 
-namespace Cti        {
-namespace Devices    {
-namespace Commands   {
+namespace Cti {
+namespace Devices {
+namespace Commands {
 
 class IM_EX_DEVDB RfnDataStreamingConfigurationCommand : public RfnCommand
 {
 public:
-    virtual ~RfnDataStreamingConfigurationCommand()
-    {};
+    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
-    enum StreamingState : unsigned char 
+    enum StreamingState : unsigned char
     {
         StreamingDisabled,
         StreamingEnabled
@@ -23,16 +22,15 @@ public:
     {
         unsigned short metricId;
         unsigned char interval;
-        enum State 
-        {
-            Disabled,
-            Enabled
-        } 
-        enabled;
+        StreamingState enabled;
     };
 
 protected:
-    MetricState _deviceMetrics;
+
+    virtual unsigned char getResponseCode() const = 0;
+
+    std::vector<MetricState> _deviceMetrics;
+    StreamingState _deviceStreamingState;
 
 private:
     unsigned char getOperation() const override;
@@ -40,12 +38,8 @@ private:
 };
 
 
-class IM_EX_DEVDB RfnDataStreamingGetMetricsListCommand : public RfnDataStreamingConfigurationCommand,
-       InvokerFor<RfnDataStreamingGetMetricsListCommand>
+class IM_EX_DEVDB RfnDataStreamingGetMetricsListCommand : public RfnDataStreamingConfigurationCommand, NoResultHandler
 {
-public:
-    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
-
 private:
     enum
     {
@@ -55,17 +49,16 @@ private:
 
     unsigned char getCommandCode() const override;
     Bytes getCommandData() override;
+
+    unsigned char getResponseCode() const override;
 };
 
 
-class IM_EX_DEVDB RfnDataStreamingSetMetricsCommand : public RfnDataStreamingConfigurationCommand,
-       InvokerFor<RfnDataStreamingSetMetricsCommand>
+class IM_EX_DEVDB RfnDataStreamingSetMetricsCommand : public RfnDataStreamingConfigurationCommand, NoResultHandler
 {
 public:
-    RfnDataStreamingSetMetricsCommand(StreamingState enabled) : _enabled(enabled)  {}
-    RfnDataStreamingSetMetricsCommand(std::vector<MetricState> states) : _enabled(StreamingEnabled), _states(states) {}
-
-    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
+    RfnDataStreamingSetMetricsCommand(StreamingState enabled);
+    RfnDataStreamingSetMetricsCommand(std::vector<MetricState> states);
 
 private:
     const StreamingState _enabled;
@@ -79,6 +72,8 @@ private:
 
     unsigned char getCommandCode() const override;
     Bytes getCommandData() override;
+
+    unsigned char getResponseCode() const override;
 };
 
 }

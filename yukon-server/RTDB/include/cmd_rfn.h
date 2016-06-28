@@ -43,8 +43,6 @@ class GetConfigurationCommand;
 class GetActiveConfigurationCommand;
 class SetConfigurationCommand;
 }
-class RfnDataStreamingGetMetricsListCommand;
-class RfnDataStreamingSetMetricsCommand;
 class RfnTemperatureAlarmCommand;
 
 struct RfnCommandResult
@@ -90,8 +88,6 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnChannelIntervalRecording::SetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetActiveConfigurationCommand &)  {}
-		virtual void handleCommandResult(const RfnDataStreamingGetMetricsListCommand &)               {}
-		virtual void handleCommandResult(const RfnDataStreamingSetMetricsCommand &)                   {}
         virtual void handleCommandResult(const RfnTemperatureAlarmCommand &)                          {}
     };
 

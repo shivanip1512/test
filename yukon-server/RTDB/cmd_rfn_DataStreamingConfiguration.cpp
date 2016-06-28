@@ -2,24 +2,81 @@
 
 #include "cmd_rfn_DataStreamingConfiguration.h"
 #include "cmd_rfn_helper.h"
-
-#include <boost/optional.hpp>
+#include "MetricIdLookup.h"
 
 namespace Cti      {
 namespace Devices  {
 namespace Commands {
 
+static const size_t HeaderLength = 2;
+static const size_t BytesPerMetric = 4;
+static const size_t SequenceLength = 4;
+static const size_t ResponseHeaderLength = 1 + HeaderLength;
 
-unsigned char RfnDataStreamingConfigurationCommand::getOperation() const 
+unsigned char RfnDataStreamingConfigurationCommand::getOperation() const
 { 
     return {};  //  unused
 }
-
 
 DeviceCommand::Bytes RfnDataStreamingConfigurationCommand::getCommandHeader()
 { 
     return { getCommandCode() }; 
 }
+
+RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
+{
+    validate(Condition(response.size() >= ResponseHeaderLength, ClientErrors::InvalidData) 
+        << "Response size was less than " << ResponseHeaderLength);
+
+    const auto responseCode = response[0];
+
+    validate(Condition(responseCode == getResponseCode(), ClientErrors::InvalidData) 
+        << "Invalid response code (" << responseCode << " != " << getResponseCode() << ")");
+
+    const auto metricCount = response[1];
+    const auto streamingEnabled = response[2];
+
+    const auto expectedLength = ResponseHeaderLength + (metricCount * BytesPerMetric) + SequenceLength;
+
+    validate(Condition(response.size() >= expectedLength, ClientErrors::InvalidData)
+        << "Response size was too small for reported metric count (" << response.size() << "<" << expectedLength << ")");
+
+    StreamBuffer metricDescription;
+
+    //  Generate the response as JSON for the Java client to consume
+    
+    metricDescription << "{";
+    metricDescription << "\n\"streamingEnabled\" : " << (streamingEnabled ? "true" : "false");
+
+    metricDescription << ",\n\"configuredMetrics\" : [";
+
+    for( int i = 0; i < metricCount; ++i )
+    {
+        const auto offset = ResponseHeaderLength + i * BytesPerMetric;
+        const auto metricId = getValueFromBytes_bEndian(response, offset, 2);
+        const auto enabled  = response[offset + 2];
+        const auto interval = response[offset + 3];
+
+        if( i )
+        {
+            metricDescription << ",";
+        }
+
+        metricDescription << "\n  {"
+            "\n    \"attribute\" : \"" << MetricIdLookup::getName(metricId) << "\","
+            "\n    \"interval\" : " << interval << ","
+            "\n    \"enabled\" : " << (enabled ? "true" : "false") << "\n  }";
+    }
+
+    const auto offset = ResponseHeaderLength + metricCount * BytesPerMetric;
+
+    const unsigned sequence = getValueFromBytes_bEndian(response, offset, 4);
+
+    metricDescription << "],\n\"sequence\" : " << sequence << "\n}";
+
+    return metricDescription;
+}
+
 
 
 unsigned char RfnDataStreamingGetMetricsListCommand::getCommandCode() const 
@@ -29,31 +86,22 @@ unsigned char RfnDataStreamingGetMetricsListCommand::getCommandCode() const
 
 DeviceCommand::Bytes RfnDataStreamingGetMetricsListCommand::getCommandData() 
 { 
-    return{}; 
+    return {};  //  no data beyond the command code
 }
 
-RfnCommandResult RfnDataStreamingGetMetricsListCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
+unsigned char RfnDataStreamingGetMetricsListCommand::getResponseCode() const
 {
-    if( response[2] )
-    {
-        return
-            "Data Streaming metrics:"
-            "\n3 metrics configured"
-            "\nMetric 1: DEMAND, 5 min"
-            "\nMetric 2: POWER_FACTOR, 15 min, disabled individually"
-            "\nMetric 3: VOLTAGE, 30 min"
-            "\nSequence: 3735928559";
-    }
-    return
-        "Data Streaming metrics:"
-        "\nData streaming DISABLED"
-        "\n3 metrics configured"
-        "\nMetric 1: DEMAND, 5 min, disabled globally"
-        "\nMetric 2: POWER_FACTOR, 15 min, disabled individually"
-        "\nMetric 3: VOLTAGE, 30 min, disabled globally"
-        "\nSequence: 3735928559";
+    return CommandCode_Response;
 }
 
+
+RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(StreamingState enabled) 
+    :   _enabled(enabled) 
+{}
+
+RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(std::vector<MetricState> states) 
+    :   _enabled(StreamingEnabled), 
+        _states(states) {}
 
 
 unsigned char RfnDataStreamingSetMetricsCommand::getCommandCode() const 
@@ -63,76 +111,26 @@ unsigned char RfnDataStreamingSetMetricsCommand::getCommandCode() const
 
 DeviceCommand::Bytes RfnDataStreamingSetMetricsCommand::getCommandData()
 {
-    if( ! _states.empty() )
+    Bytes commandData;
+
+    commandData.reserve(HeaderLength + BytesPerMetric * _states.size());
+
+    commandData.push_back(_states.size());
+    commandData.push_back(_enabled);
+
+    for( const auto& s : _states )
     {
-        if( _states.size() > 1 )
-        {
-            if( _states[1].enabled )
-            {
-                return{ 0x02, 0x01, 0x00, 0x05, 0x01, 0x05, 0x00, 0x53, 0x01, 0x0f };
-            }
-            else
-            {
-                return{ 0x02, 0x01, 0x00, 0x05, 0x01, 0x05, 0x00, 0x53, 0x00, 0x0f };
-            }
-        }
-        if( _states[0].enabled )
-        {
-            return{ 0x01, 0x01, 0x00, 0x05, 0x01, 0x05 };
-        }
-        else
-        {
-            return{ 0x01, 0x01, 0x00, 0x53, 0x00, 0x0f };
-        }
+        insertValue_bEndian<2>(commandData, s.metricId);
+        commandData.push_back(s.enabled);
+        commandData.push_back(s.interval);
     }
-    return{ 0x00, _enabled };
+
+    return commandData;
 }
 
-
-RfnCommandResult RfnDataStreamingSetMetricsCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
+unsigned char RfnDataStreamingSetMetricsCommand::getResponseCode() const
 {
-    if( ! _states.empty() )
-    {
-        if( _states.size() > 1 )
-        {
-            return "";
-        }
-        if( _states[0].enabled )
-        {
-            return
-                "Data Streaming metrics:"
-                "\n1 metric configured"
-                "\nMetric 1: DEMAND, 5 min"
-                "\nSequence: 3735928559";
-        }
-        else
-        {
-            return
-                "Data Streaming metrics:"
-                "\n1 metric configured"
-                "\nMetric 1: DEMAND, 5 min, disabled individually"
-                "\nSequence: 3735928559";
-        }
-    }
-    if( _enabled )
-    {
-        return
-            "Data Streaming metrics:"
-            "\n2 metrics configured"
-            "\nMetric 1: DEMAND, 5 min"
-            "\nMetric 2: POWER_FACTOR, 15 min, disabled individually"
-            "\nSequence: 3735928559";
-    }
-    else
-    {
-        return
-            "Data Streaming metrics:"
-            "\nData streaming DISABLED"
-            "\n2 metrics configured"
-            "\nMetric 1: DEMAND, 5 min, disabled globally"
-            "\nMetric 2: POWER_FACTOR, 15 min, disabled individually"
-            "\nSequence: 3735928559";
-    }
+    return CommandCode_Response;
 }
 
 
