@@ -25,13 +25,13 @@
                             <tags:nameValue2 nameKey=".username">
                                 ${fn:escapeXml(login.username)}
                             </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".newPassword">
-                                <tags:password path="password1" cssClass="js-new-password" autocomplete="off" maxlength="64"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".confirmPassword">
-                                <tags:password path="password2" cssClass="js-confirm-password" autocomplete="off" maxlength="64"/>
-                            </tags:nameValue2>
-                            <tr>
+                                <tags:nameValue2 nameKey=".newPassword">
+                                    <tags:password path="password1" cssClass="js-new-password" autocomplete="off" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".confirmPassword">
+                                    <tags:password path="password2" cssClass="js-confirm-password" autocomplete="off" />
+                                </tags:nameValue2>
+                                <tr>
                                 <td></td>
                                 <td>
                                     <span class="js-password-mismatch error"><i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/></span>

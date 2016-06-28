@@ -13,20 +13,18 @@
             <cti:csrfToken />
             <form:hidden path="userId" cssClass="js-user-id"/>
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".oldPassword">
-                    <tags:input path="oldPassword" password="true" inputClass="js-old-password" maxlength="64" 
-                            autocomplete="off"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".newPassword">
-                    <tags:input path="password1" password="true" inputClass="js-new-password" maxlength="64" 
-                            autocomplete="off"/>
-                </tags:nameValue2>
-                
-                <tags:nameValue2 nameKey=".confirmPassword">
-                    <tags:input path="password2" password="true" inputClass="js-confirm-password" maxlength="64" 
-                            autocomplete="off" placeholder="${placeholder}"/>
-                </tags:nameValue2>
-                <tr>
+                    <tags:nameValue2 nameKey=".oldPassword">
+                        <tags:input path="oldPassword" password="true" inputClass="js-old-password" autocomplete="off"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".newPassword">
+                        <tags:input path="password1" password="true" inputClass="js-new-password" autocomplete="off"/>
+                    </tags:nameValue2>
+
+                    <tags:nameValue2 nameKey=".confirmPassword">
+                        <tags:input path="password2" password="true" inputClass="js-confirm-password" autocomplete="off"
+                            placeholder="${placeholder}" />
+                    </tags:nameValue2>
+                    <tr>
                     <td></td>
                     <td>
                         <div class="js-password-mismatch error dn">
