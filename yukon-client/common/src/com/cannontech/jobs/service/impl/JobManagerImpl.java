@@ -299,13 +299,15 @@ public class JobManagerImpl implements JobManager {
                     Date cronDate = cronExpression.getNextValidTimeAfter(new Date());
                     if (cronDate == null) {
                         throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName()
-                            + " with new cron string " + newCronString + " .This schedule will not be scheduled.");
+                            + " with new cron string " + newCronString
+                            + ". Calculated runtime was in the past. This schedule will not be scheduled.");
                     }
                 } catch (ParseException e) {
                     throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName()
-                        + " with new cron string " + newCronString + " .This schedule will not be scheduled.");
+                        + " with new cron string " + newCronString
+                        + ". Unable to parse the cron syntax. This schedule will not be scheduled.");
                 }
-                
+
                 job.setCronString(newCronString);
                 log.debug("Updating job with a new cron string:" + job.getCronString());
                 scheduledRepeatingJobDao.update(job);

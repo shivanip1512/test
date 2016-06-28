@@ -56,6 +56,7 @@
     <entry key="yukon.common.device.schedules.home.enableJobButton">Enable</entry>
     <entry key="yukon.common.device.schedules.home.disableJobButton">Disable</entry>
     <entry key="yukon.common.device.schedules.home.disableAndDeleteJobButton">Delete</entry>
+    <entry key="yukon.common.device.schedules.home.pastDate">Run Time should be in the future.</entry>
     
     <!-- ScheduledGroupRequestExecutionController jobs.jsp -->
     <!-- ================================================================================================================================================= -->

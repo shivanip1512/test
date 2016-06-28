@@ -604,7 +604,7 @@ public class ScheduledGroupRequestExecutionController {
                 jobManager.startJob(job, cronExpression);
             } catch (ScheduleException e) {
                 MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                json.put("error", messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.all.typeMismatch.java.util.Date"));
+                json.put("error", messageSourceAccessor.getMessage("yukon.common.device.schedules.home.pastDate"));
             }
 	        
 	        return json;
