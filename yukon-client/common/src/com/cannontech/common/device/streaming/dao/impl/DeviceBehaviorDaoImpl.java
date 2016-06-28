@@ -30,42 +30,28 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    private final Logger log = YukonLogManager.getLogger(DeviceBehaviorDaoImpl.class);
+    private final static Logger log = YukonLogManager.getLogger(DeviceBehaviorDaoImpl.class);
 
     @Override
     @Transactional
     public void deleteUnusedBehaviors() {
-        SqlStatementBuilder sqlDeleteValues = new SqlStatementBuilder();
-        sqlDeleteValues.append("DELETE FROM BehaviorValue");
-        sqlDeleteValues.append("WHERE BehaviorId NOT IN");
-        sqlDeleteValues.append("  (SELECT BehaviorId");
-        sqlDeleteValues.append("   FROM DeviceBehaviorMap)");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM Behavior");
+        sql.append("WHERE BehaviorId NOT IN");
+        sql.append("  (SELECT BehaviorId");
+        sql.append("   FROM DeviceBehaviorMap)");
 
-        jdbcTemplate.update(sqlDeleteValues);
-
-        SqlStatementBuilder sqlDeleteBehavior = new SqlStatementBuilder();
-        sqlDeleteBehavior.append("DELETE FROM Behavior");
-        sqlDeleteBehavior.append("WHERE BehaviorId NOT IN");
-        sqlDeleteBehavior.append("  (SELECT BehaviorId");
-        sqlDeleteBehavior.append("   FROM DeviceBehaviorMap)");
-
-        jdbcTemplate.update(sqlDeleteBehavior);
+        jdbcTemplate.update(sql);
     }
 
     @Override
     @Transactional
     public void assignBehavior(int behaviorId, List<Integer> deviceIds) {
-
-        SqlStatementBuilder insertSql = new SqlStatementBuilder();
-        insertSql.append("INSERT INTO DeviceBehaviorMap");
-        insertSql.append("(DeviceId, BehaviorId)");
-        insertSql.append("values");
-        insertSql.append("(?, ?)");
-
         log.debug("Devices to assign=" + deviceIds.size());
 
         List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
         ids.forEach(idBatch -> {
+            log.debug("Batch=" + idBatch.size());
             //unassign devices
             SqlStatementBuilder unassignSql = new SqlStatementBuilder();
             unassignSql.append("DELETE dbm");
@@ -82,8 +68,12 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             jdbcTemplate.update(unassignSql);
             
             //assign devices
-            log.debug("Batch=" + idBatch.size());
-
+            SqlStatementBuilder insertSql = new SqlStatementBuilder();
+            insertSql.append("INSERT INTO DeviceBehaviorMap");
+            insertSql.append("(DeviceId, BehaviorId)");
+            insertSql.append("values");
+            insertSql.append("(?, ?)");
+            
             jdbcTemplate.batchUpdate(insertSql.toString(), new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
