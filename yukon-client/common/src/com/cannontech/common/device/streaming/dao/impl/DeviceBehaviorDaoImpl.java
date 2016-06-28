@@ -55,19 +55,6 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     @Override
     @Transactional
     public void assignBehavior(int behaviorId, List<Integer> deviceIds) {
-        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-        deleteSql.append("DELETE dbm");
-        deleteSql.append("FROM DeviceBehaviorMap dbm");
-        deleteSql.append("INNER JOIN Behavior b");
-        deleteSql.append("ON dbm.BehaviorId=b.BehaviorId");
-        deleteSql.append("WHERE b.BehaviorType IN");
-        deleteSql.append("   (SELECT BehaviorType");
-        deleteSql.append("    FROM Behavior");
-        deleteSql.append("    WHERE BehaviorId").eq(behaviorId);
-        deleteSql.append("   )");
-        deleteSql.append("AND dbm.deviceId").in(deviceIds);
-
-        jdbcTemplate.update(deleteSql);
 
         SqlStatementBuilder insertSql = new SqlStatementBuilder();
         insertSql.append("INSERT INTO DeviceBehaviorMap");
@@ -79,6 +66,22 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
         List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
         ids.forEach(idBatch -> {
+            //unassign devices
+            SqlStatementBuilder unassignSql = new SqlStatementBuilder();
+            unassignSql.append("DELETE dbm");
+            unassignSql.append("FROM DeviceBehaviorMap dbm");
+            unassignSql.append("INNER JOIN Behavior b");
+            unassignSql.append("ON dbm.BehaviorId=b.BehaviorId");
+            unassignSql.append("WHERE b.BehaviorType IN");
+            unassignSql.append("   (SELECT BehaviorType");
+            unassignSql.append("    FROM Behavior");
+            unassignSql.append("    WHERE BehaviorId").eq(behaviorId);
+            unassignSql.append("   )");
+            unassignSql.append("AND dbm.deviceId").in(idBatch);
+            
+            jdbcTemplate.update(unassignSql);
+            
+            //assign devices
             log.debug("Batch=" + idBatch.size());
 
             jdbcTemplate.batchUpdate(insertSql.toString(), new BatchPreparedStatementSetter() {
