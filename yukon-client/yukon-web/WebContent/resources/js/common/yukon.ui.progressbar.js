@@ -23,7 +23,7 @@ yukon.ui.progressbar = (function () {
      */
     var _setupProgressBar = function (pbarId, completedCount, totalCount, completionCallback) {
         
-        var percentDone = 100+'%', width, progressContainer;
+        var percentDone = '100%', width, progressContainer;
         
         if (totalCount > 0) {
             percentDone = yukon.percent(completedCount, totalCount, 2);
@@ -33,7 +33,7 @@ yukon.ui.progressbar = (function () {
             width = percentDone;
             progressContainer = _getProgressBarContainer(pbarId);
             progressContainer.find('.progress-bar').css('width', width);
-            progressContainer.find('.progressbar-percent-complete').html(percentDone );
+            progressContainer.find('.progressbar-percent-complete').html(percentDone);
             progressContainer.find('.progressbar-completed-count').html(completedCount);
         } catch (e) {};
         
