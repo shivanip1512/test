@@ -179,6 +179,7 @@ Mct410Device::ConfigPartsList Mct410Device::initConfigParts()
 
     tempList.push_back(Mct4xxDevice::PutConfigPart_disconnect);
     tempList.push_back(Mct4xxDevice::PutConfigPart_freeze_day);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_timezone);
 
     return tempList;
 }
@@ -1514,6 +1515,11 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 OutMessage->Buffer.BSt.Message[0] = current_options;
             }
         }
+    }
+    else if (parse.isKeyValid("timezone_offset") ||
+             parse.isKeyValid("timezone_name"))
+    {
+        nRet = executePutConfigTimezone(pReq, parse, OutMessage, vgList, retList, outList);
     }
     else
     {
@@ -4605,12 +4611,12 @@ YukonError_t Mct410Device::decodeGetConfigLongLoadProfileStorageDays( const INME
 }
 
 YukonError_t Mct410Device::executePutConfigTimezone(CtiRequestMsg     *pReq,
-    CtiCommandParser  &parse,
-    OUTMESS          *&OutMessage,
-    CtiMessageList    &vgList,
-    CtiMessageList    &retList,
-    OutMessageList    &outList,
-    bool               readsOnly)
+                                                    CtiCommandParser  &parse,
+                                                    OUTMESS          *&OutMessage,
+                                                    CtiMessageList    &vgList,
+                                                    CtiMessageList    &retList,
+                                                    OutMessageList    &outList,
+                                                    bool              readsOnly)
 {
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 

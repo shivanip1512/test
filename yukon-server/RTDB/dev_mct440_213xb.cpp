@@ -301,84 +301,28 @@ std::set<UINT> Mct440_213xBDevice::initExcludedCommands()
 }
 
 
-/*
-*********************************************************************************************************
-*                                           getPartsList()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 Mct440_213xBDevice::ConfigPartsList Mct440_213xBDevice::getPartsList()
 {
     return _config_parts;
 }
 
 
-/*
-*********************************************************************************************************
-*                                         getReadValueMaps()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 const Mct440_213xBDevice::FunctionReadValueMappings *Mct440_213xBDevice::getReadValueMaps() const
 {
     return &_readValueMaps;
 }
 
 
-/*
-*********************************************************************************************************
-*                                         getExcludedCommands()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 const std::set<UINT> *Mct440_213xBDevice::getExcludedCommands() const
 {
     return &_excludedCommands;
 }
 
 
-/*
-*********************************************************************************************************
-*                                         isCommandExcluded()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 bool Mct440_213xBDevice::isCommandExcluded(const UINT &cmd) const
 {
     const std::set<UINT>         *p_cs = getExcludedCommands();
@@ -393,21 +337,7 @@ bool Mct440_213xBDevice::isCommandExcluded(const UINT &cmd) const
 }
 
 
-/*
-*********************************************************************************************************
-*                                          getOperation()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     if( getOperationFromStore(_commandStore, cmd, bst) )        /* check for commands added for mct440_213xb            */
@@ -424,21 +354,7 @@ bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-/*
-*********************************************************************************************************
-*                                            isSupported()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 bool Mct440_213xBDevice::isSupported(const Mct410Device::Features feature) const
 {
     if (feature == Feature_OutageUnits)
@@ -460,12 +376,6 @@ bool Mct440_213xBDevice::isSupported(const Mct410Device::Features feature) const
 *
 * Description : Redefines TOU / TOU frozen kWh, instant line data and outage command parsing. Other
 *               commands uses inheritance from mct420.
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
 *
 * Note(s)     :
 *********************************************************************************************************
@@ -718,21 +628,7 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 }
 
 
-/*
-*********************************************************************************************************
-*                                          executeGetValue()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executeGetStatus(CtiRequestMsg    *pReq,
                                                   CtiCommandParser  &parse,
                                                   OUTMESS           *&OutMessage,
@@ -785,42 +681,14 @@ YukonError_t Mct440_213xBDevice::executeGetStatus(CtiRequestMsg    *pReq,
     return nRet;
 }
 
-/*
-*********************************************************************************************************
-*                                              sspecValid()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 bool Mct440_213xBDevice::sspecValid(const unsigned sspec, const unsigned rev) const
 {
     return sspec == Mct440_213xBDevice::Sspec;
 }
 
 
-/*
-*********************************************************************************************************
-*                                             ModelDecode()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::ModelDecode(const INMESS    &InMessage,
                                              const CtiTime    TimeNow,
                                              CtiMessageList  &vgList,
@@ -899,21 +767,7 @@ YukonError_t Mct440_213xBDevice::ModelDecode(const INMESS    &InMessage,
 }
 
 
-/*
-*********************************************************************************************************
-*                                   decodeGetValueInstantLineData()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &InMessage,
                                                                const CtiTime    TimeNow,
                                                                CtiMessageList  &vgList,
@@ -1016,21 +870,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &
 }
 
 
-/*
-*********************************************************************************************************
-*                                       decodeGetValueTOUkWh()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage,
                                                       const CtiTime    TimeNow,
                                                       CtiMessageList  &vgList,
@@ -1150,12 +990,6 @@ YukonError_t Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage
 *
 * Description : Decode event log received (read 0x50 - 0x59)
 *
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
 * Note(s)     :
 *********************************************************************************************************
 */
@@ -1232,12 +1066,6 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    &InMess
 *
 * Description : Execute a putconfig install time of usage command: putconfig install tou [force] [verify]
 *               Command will install up to 10 rates and 9 schedule time.
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
 *
 * Note(s)     : (1) Rate0 correspond to the midnight associated rate
 *********************************************************************************************************
@@ -1555,21 +1383,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
 }
 
 
-/*
-*********************************************************************************************************
-*                                          executeGetConfig()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                                                   CtiCommandParser  &parse,
                                                   OUTMESS          *&OutMessage,
@@ -1705,21 +1519,7 @@ YukonError_t Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 }
 
 
-/*
-*********************************************************************************************************
-*                                       resolveScheduleName()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 long Mct440_213xBDevice::resolveScheduleName(const string & scheduleName)
 {
     std::string schedule = scheduleName;
@@ -1746,21 +1546,7 @@ long Mct440_213xBDevice::resolveScheduleName(const string & scheduleName)
 }
 
 
-/*
-*********************************************************************************************************
-*                                     createTOUDayScheduleString()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 void Mct440_213xBDevice::createTOUDayScheduleString(string &schedule, long (&times)[9], long (&rates)[10])
 {
     for( int time_nbr = 0; time_nbr < COUNT_OF(times); time_nbr++ )
@@ -1777,21 +1563,7 @@ void Mct440_213xBDevice::createTOUDayScheduleString(string &schedule, long (&tim
 }
 
 
-/*
-*********************************************************************************************************
-*                                    parseTOUDayScheduleString()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 void Mct440_213xBDevice::parseTOUDayScheduleString(string &schedule, long (&times)[9], long (&rates)[10])
 {
     char sep[2]; // expecting 2 characters: ", "
@@ -1811,21 +1583,7 @@ void Mct440_213xBDevice::parseTOUDayScheduleString(string &schedule, long (&time
 }
 
 
-/*
-*********************************************************************************************************
-*                                   decodeGetValueDailyReadRecent()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    &InMessage,
                                                                const CtiTime    TimeNow,
                                                                CtiMessageList  &vgList,
@@ -1947,21 +1705,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    &
 }
 
 
-/*
-*********************************************************************************************************
-*                                       executePutConfig()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
                                                   CtiCommandParser  &parse,
                                                   OUTMESS          *&OutMessage,
@@ -2002,21 +1746,7 @@ YukonError_t Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
 }
 
 
-/*
-*********************************************************************************************************
-*                                       executePutConfigHolidays()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
                                                          CtiCommandParser  &parse,
                                                          OUTMESS          *&OutMessage,
@@ -2068,21 +1798,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq
 }
 
 
-/*
-*********************************************************************************************************
-*                                       executePutConfigTOUDays()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                                                          CtiCommandParser  &parse,
                                                          OUTMESS          *&OutMessage,
@@ -2296,21 +2012,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq
 }
 
 
-/*
-*********************************************************************************************************
-*                                       describeStatusAndEvents()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 string Mct440_213xBDevice::describeStatusAndEvents(const unsigned char *buf)
 {
     if( !buf )
@@ -2340,21 +2042,7 @@ string Mct440_213xBDevice::describeStatusAndEvents(const unsigned char *buf)
 }
 
 
-/*
-*********************************************************************************************************
-*                                       decodeGetStatusInternal()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     YukonError_t status = ClientErrors::None;
@@ -2422,21 +2110,7 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusInternal( const INMESS &InMessag
 }
 
 
-/*
-*********************************************************************************************************
-*                                  decodeGetConfigPhaseLossThreshold()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(const INMESS   &InMessage,
                                                                    const CtiTime   TimeNow,
                                                                    CtiMessageList &vgList,
@@ -2465,21 +2139,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(const INMESS 
 }
 
 
-/*
-*********************************************************************************************************
-*                                  executePutConfigPhaseLossThreshold()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pReq,
                                                                     CtiCommandParser  &parse,
                                                                     OUTMESS          *&OutMessage,
@@ -2530,21 +2190,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMs
 }
 
 
-/*
-*********************************************************************************************************
-*                                      executePutConfigAlarmMask()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
                                                            CtiCommandParser  &parse,
                                                            OUTMESS          *&OutMessage,
@@ -2613,21 +2259,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pR
 }
 
 
-/*
-*********************************************************************************************************
-*                                       decodeGetConfigTOU()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
                                                     const CtiTime    TimeNow,
                                                     CtiMessageList  &vgList,
@@ -2889,21 +2521,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
 }
 
 
-/*
-*********************************************************************************************************
-*                                       decodeGetConfigModel()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetConfigModel(const INMESS   &InMessage,
                                                       const CtiTime   TimeNow,
                                                       CtiMessageList &vgList,
@@ -2935,21 +2553,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigModel(const INMESS   &InMessage,
 }
 
 
-/*
-*********************************************************************************************************
-*                                       decodeGetStatusFreeze()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    &InMessage,
                                                        const CtiTime    TimeNow,
                                                        CtiMessageList  &vgList,
@@ -2994,21 +2598,7 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    &InMessag
 }
 
 
-/*
-*********************************************************************************************************
-*                                    decodeGetConfigIntervals()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetConfigIntervals(const INMESS    &InMessage,
                                                           const CtiTime    TimeNow,
                                                           CtiMessageList  &vgList,
@@ -3034,21 +2624,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigIntervals(const INMESS    &InMes
 }
 
 
-/*
-*********************************************************************************************************
-*                                        executePutStatus()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executePutStatus(CtiRequestMsg     *pReq,
                                                   CtiCommandParser  &parse,
                                                   OUTMESS          *&OutMessage,
@@ -3086,21 +2662,7 @@ YukonError_t Mct440_213xBDevice::executePutStatus(CtiRequestMsg     *pReq,
 }
 
 
-/*
-*********************************************************************************************************
-*                                       decodeGetConfigAlarmMask()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetConfigAlarmMask(const INMESS    &InMessage,
                                                           const CtiTime    TimeNow,
                                                           CtiMessageList  &vgList,
@@ -3137,21 +2699,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigAlarmMask(const INMESS    &InMes
 }
 
 
-/*
-*********************************************************************************************************
-*                                       createTOUScheduleConfig()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 void Mct440_213xBDevice::createTOUScheduleConfig(const long     (&daySchedule)[8],
                                                  const long     (&times)[4][9],
                                                  const long     (&rates)[4][10],
@@ -3293,21 +2841,7 @@ void Mct440_213xBDevice::createTOUScheduleConfig(const long     (&daySchedule)[8
 }
 
 
-/*
-*********************************************************************************************************
-*                                         decodeGetValueKWH()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
                                                    const CtiTime   TimeNow,
                                                    CtiMessageList &vgList,
@@ -3441,21 +2975,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
 }
 
 
-/*
-*********************************************************************************************************
-*                                      decodeGetStatusDisconnect()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   &InMessage,
                                                            const CtiTime   TimeNow,
                                                            CtiMessageList &vgList,
@@ -3504,21 +3024,7 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   &InMes
 }
 
 
-/*
-*********************************************************************************************************
-*                                      decodeGetConfigDisconnect()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetConfigDisconnect(const INMESS   &InMessage,
                                                            const CtiTime   TimeNow,
                                                            CtiMessageList &vgList,
@@ -3572,21 +3078,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigDisconnect(const INMESS   &InMes
 }
 
 
-/*
-*********************************************************************************************************
-*                                       decodeDisconnectStatus()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 string Mct440_213xBDevice::decodeDisconnectStatus(const DSTRUCT &DSt) const
 {
     string resultStr;
@@ -3611,21 +3103,7 @@ unsigned Mct440_213xBDevice::getDisconnectReadDelay() const
 }
 
 
-/*
-*********************************************************************************************************
-*                                      decodeGetConfigAddressing()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetConfigAddressing(const INMESS  &InMessage,
                                                            const CtiTime   TimeNow,
                                                            CtiMessageList &vgList,
@@ -3658,21 +3136,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigAddressing(const INMESS  &InMess
 }
 
 
-/*
-*********************************************************************************************************
-*                                  decodeGetConfigTimeAdjustTolerance()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetConfigTimeAdjustTolerance(const INMESS   &InMessage,
                                                                     const CtiTime   TimeNow,
                                                                     CtiMessageList &vgList,
@@ -3695,21 +3159,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigTimeAdjustTolerance(const INMESS
 }
 
 
-/*
-*********************************************************************************************************
-*                                       decodeGetConfigOptions()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   &InMessage,
                                                         const CtiTime   TimeNow,
                                                         CtiMessageList &vgList,
@@ -3763,21 +3213,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   &InMessag
 }
 
 
-/*
-*********************************************************************************************************
-*                                     executePutConfigPhaseLossInstall()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg     *pReq,
                                                                   CtiCommandParser  &parse,
                                                                   OUTMESS          *&OutMessage,
@@ -3857,21 +3293,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg 
 }
 
 
-/*
-*********************************************************************************************************
-*                                     executePutConfigInstallAddressing()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg     *pReq,
                                                                    CtiCommandParser  &parse,
                                                                    OUTMESS          *&OutMessage,
@@ -3960,21 +3382,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg
 }
 
 
-/*
-*********************************************************************************************************
-*                                     executePutConfigInstallDST()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
                                                             CtiCommandParser  &parse,
                                                             OUTMESS          *&OutMessage,
@@ -4093,115 +3501,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *p
 }
 
 
-/*
-*********************************************************************************************************
-*                                     executePutConfigTimezone()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
-YukonError_t Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
-                                                          CtiCommandParser  &parse,
-                                                          OUTMESS          *&OutMessage,
-                                                          CtiMessageList    &vgList,
-                                                          CtiMessageList    &retList,
-                                                          OutMessageList    &outList,
-                                                          bool               readsOnly)
-{
-    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
-    if( !deviceConfig )
-    {
-        CTILOG_ERROR(dout, "deviceConfig not found");
-
-        return ClientErrors::NoConfigData;
-    }
-                                                                /* overwrite the request command                        */
-    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-
-    if( !readsOnly )
-    {
-        long timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
-
-        // TODO: Test and remove if it doesn't work
-        auto timezoneOffsetTest = deviceConfig->findValue<long>(MCTStrings::TimeZoneOffset);
-
-        if( timezoneOffset < -24 || timezoneOffset > 24 )
-        {
-            CTILOG_ERROR(dout, "no or bad timezone value stored");
-
-            return ClientErrors::NoConfigData;
-        }
-
-        timezoneOffset *= 4; // The timezone offset in the mct is in 15 minute increments.
-
-        if(parse.isKeyValid("force")
-           || (char)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
-        {
-            if( !parse.isKeyValid("verify") )
-            {
-                if( !getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt) )
-                {
-                    CTILOG_ERROR(dout, "Operation PutConfig_TimeZoneOffset not found");
-
-                    return ClientErrors::NoConfigData;
-                }
-
-                //  the bstruct IO is set above by getOperation()
-                OutMessage->Buffer.BSt.Message[0] = timezoneOffset;
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            }
-            else
-            {
-                return ClientErrors::ConfigNotCurrent;
-            }
-        }
-        else
-        {
-            return ClientErrors::ConfigCurrent;
-        }
-    }
-    else // getconfig install
-    {
-        if( !getOperation(EmetconProtocol::GetConfig_Time, OutMessage->Buffer.BSt) )
-        {
-            CTILOG_ERROR(dout, "Operation GetConfig_Time not found");
-
-            return ClientErrors::NoConfigData;
-        }
-
-        OutMessage->Sequence = EmetconProtocol::GetConfig_Time;
-
-        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    }
-
-    return ClientErrors::None;
-}
-
-
-/*
-*********************************************************************************************************
-*                                  executePutConfigTimeAdjustTolerance()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
 YukonError_t Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *pReq,
                                                                      CtiCommandParser  &parse,
                                                                      OUTMESS          *&OutMessage,
@@ -4276,21 +3576,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestM
 }
 
 
-/*
-*********************************************************************************************************
-*                                        decodePutConfig()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
+
 YukonError_t Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
                                                  const CtiTime   TimeNow,
                                                  CtiMessageList &vgList,

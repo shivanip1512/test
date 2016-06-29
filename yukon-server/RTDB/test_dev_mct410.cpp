@@ -2508,16 +2508,18 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("connectMinutes", "17");
         config.insertValue("reconnectParam", "ARM");
         config.insertValue("demandFreezeDay", "12");
+        config.insertValue("timeZoneOffset", "-6");
 
         CtiCommandParser parse("putconfig install all");
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 4 );
-        BOOST_REQUIRE_EQUAL( outList.size(), 4 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 5 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 5 );
 
         auto retList_itr = retList.begin();
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
         BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
         BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
         BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
@@ -2620,16 +2622,18 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("connectMinutes", "18");
         config.insertValue("reconnectParam", "IMMEDIATE");
         config.insertValue("demandFreezeDay", "21");
+        config.insertValue("timeZoneOffset", "-6");
 
         CtiCommandParser parse("putconfig install all");
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 4 );
-        BOOST_REQUIRE_EQUAL( outList.size(), 4 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 5 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 5 );
 
         auto retList_itr = retList.begin();
+        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
         BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
         BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
         BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );

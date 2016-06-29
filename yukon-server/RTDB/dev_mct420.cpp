@@ -284,14 +284,16 @@ Mct420Device::ConfigPartsList Mct420Device::getPartsList()
         return {
             PutConfigPart_display,
             PutConfigPart_meter_parameters,
-            PutConfigPart_freeze_day };
+            PutConfigPart_freeze_day,
+            PutConfigPart_timezone };
     }
 
     return {
         PutConfigPart_display,
         PutConfigPart_meter_parameters,
         PutConfigPart_disconnect,
-        PutConfigPart_freeze_day };
+        PutConfigPart_freeze_day,
+        PutConfigPart_timezone };
 }
 
 

@@ -2017,6 +2017,9 @@ struct putconfigInstall_helper : beginExecuteRequest_helper
         fixtureConfig->insertValue("disconnectDisplayDisabled", "true" );
         fixtureConfig->insertValue("displayDigits", "5" );
 
+        //  Time zone category
+        fixtureConfig->insertValue("timeZoneOffset", "-6");
+
         //  Display category
         fixtureConfig->insertValue("displayItem1",   "1" );
         fixtureConfig->insertValue("displayItem2",   "3" );
@@ -2058,7 +2061,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 4 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 5 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2148,7 +2151,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 7 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2275,7 +2278,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 7 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2402,7 +2405,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 7 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
