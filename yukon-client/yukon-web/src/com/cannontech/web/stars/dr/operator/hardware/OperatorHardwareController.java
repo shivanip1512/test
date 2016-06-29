@@ -929,73 +929,64 @@ public class OperatorHardwareController {
     }
     
     @RequestMapping("disable")
-    public String disable(ModelMap model, int inventoryId,
-            YukonUserContext userContext,
+    public String disable(ModelMap model, int inventoryId, YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
-        
+
         // Log hardware disable attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
         hardwareEventLogService.hardwareDisableAttempted(userContext.getYukonUser(),
-                                                         lmHardwareBase.getManufacturerSerialNumber(),
-                                                         accountInfo.getAccountNumber(),
-                                                         EventSource.OPERATOR);
-        
+            lmHardwareBase.getManufacturerSerialNumber(), accountInfo.getAccountNumber(), EventSource.OPERATOR);
+
         // Validate request
         verifyHardwareIsForAccount(inventoryId, accountInfo);
         model.addAttribute("accountId", accountInfo.getAccountId());
         model.addAttribute("inventoryId", inventoryId);
-        
+
         try {
-            hardwareConfigService.disable(inventoryId,
-                                          accountInfo.getAccountId(),
-                                          accountInfo.getEnergyCompanyId(),
-                                          userContext);
-            
+            hardwareConfigService.disable(inventoryId, accountInfo.getAccountId(), accountInfo.getEnergyCompanyId(),
+                userContext);
+
             MessageSourceResolvable confirmationMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.disableCommandSent");
             flashScope.setConfirm(confirmationMessage);
         } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.disableCommandFailed", e.getMessage());
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.disableCommandFailed",
+                    e.getMessage());
             flashScope.setError(errorMessage);
         }
-        
+
         return "redirect:view";
     }
-    
+
     @RequestMapping("enable")
-    public String enable(ModelMap model, int inventoryId,
-            YukonUserContext userContext,
+    public String enable(ModelMap model, int inventoryId, YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
-        
+
         // Log hardware enable attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
         hardwareEventLogService.hardwareEnableAttempted(userContext.getYukonUser(),
-                                                        lmHardwareBase.getManufacturerSerialNumber(),
-                                                        accountInfo.getAccountNumber(),
-                                                        EventSource.OPERATOR);
-        
+            lmHardwareBase.getManufacturerSerialNumber(), accountInfo.getAccountNumber(), EventSource.OPERATOR);
+
         // Validate request
         verifyHardwareIsForAccount(inventoryId, accountInfo);
         model.addAttribute("accountId", accountInfo.getAccountId());
         model.addAttribute("inventoryId", inventoryId);
-        
+
         try {
-            hardwareConfigService.enable(inventoryId,
-                                         accountInfo.getAccountId(),
-                                         accountInfo.getEnergyCompanyId(),
-                                         userContext);
-            
+            hardwareConfigService.enable(inventoryId, accountInfo.getAccountId(), accountInfo.getEnergyCompanyId(),
+                userContext);
+
             MessageSourceResolvable confirmationMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.enableCommandSent");
             flashScope.setConfirm(confirmationMessage);
         } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.enableCommandFailed",
-                                                 e.getMessage());
+                    e.getMessage());
             flashScope.setError(errorMessage);
         }
-        
+
         return "redirect:view";
     }
     
