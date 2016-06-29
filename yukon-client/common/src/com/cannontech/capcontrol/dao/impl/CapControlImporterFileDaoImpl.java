@@ -386,10 +386,14 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	private void validateCbcImporterRow(Map<CapControlImporterCbcField, Integer> headerColumnMap,
 			String[] line, List<CapControlImporterCbcField> missingColumns) throws CapControlCbcFileImportException {
 		Set<CapControlImporterCbcField> columns = Sets.newHashSet(headerColumnMap.keySet());
-        int cbcType = headerColumnMap.get(CapControlImporterCbcField.CBC_TYPE);
+        String paoTypeDbString = line[headerColumnMap.get(CapControlImporterCbcField.CBC_TYPE)];
         PaoType paoType = null;
-        if (!StringUtils.isBlank(line[cbcType]))
-            paoType = PaoType.getForDbString(line[cbcType]);
+        try {
+            paoType = PaoType.getForDbString(paoTypeDbString);
+        } catch (IllegalArgumentException e) {
+            throw new CapControlCbcImportException("Import failed. Unknown CBC PaoType: " + paoTypeDbString,
+                CbcImportResultType.INVALID_TYPE, e);
+        }
 		// Check to see if we're a template first.
 		if (headerColumnMap.containsKey(CapControlImporterCbcField.TEMPLATE_NAME)) {
 			int templateColumnId = headerColumnMap.get(CapControlImporterCbcField.TEMPLATE_NAME);
