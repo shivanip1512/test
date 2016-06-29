@@ -70,7 +70,6 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private final static int secondsPerYear = 31556926;
     private final static long epoch =
         (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005")) / 1000;
-    private static DateTime lastBillingGenerationTime = null;
 
     @Override
     @PostConstruct
@@ -196,13 +195,19 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         DateTime currentDateTime = now.withTimeAtStartOfDay()
                 .plusMillis(now.getZone().getOffset(now.withTimeAtStartOfDay()))
                 .minusMillis (now.getZone().getStandardOffset(now.withTimeAtStartOfDay().getMillis()));
-        if (null == lastBillingGenerationTime
-            || lastBillingGenerationTime.isBefore(currentDateTime)) {
-            // Billing data point to be generated only once in a day, no matter whatever is the reporting interval 
-            lastBillingGenerationTime = currentDateTime;
-            createAndAddArchiveRequest(device, lastBillingGenerationTime, RfnMeterReadingType.BILLING, now, requests);
+        DateTime dateTimeNowMinusInterval = null;
+        
+        if (settings.getReportingInterval()!=null){
+            dateTimeNowMinusInterval = now.minusHours(settings.getReportingInterval().getDuration().toStandardHours().getHours());
+        }else {
+            dateTimeNowMinusInterval = now.minusHours(24);
         }
-
+        if(currentDateTime.isEqualNow() || currentDateTime.isAfter(dateTimeNowMinusInterval) && currentDateTime.isBeforeNow()){
+            // Billing data point to be generated only once in a day, no matter whatever is the reporting interval
+            //If device midnight falls in the time range (now to now-interval) , generate billing data for that device
+            createAndAddArchiveRequest(device, currentDateTime, RfnMeterReadingType.BILLING, now, requests);
+        }
+        
         final ReportingInterval reportingIntervalEnum =
                 (settings == null ? ReportingInterval.REPORTING_INTERVAL_24_HOURS : settings.getReportingInterval());
         if (reportingIntervalEnum == ReportingInterval.REPORTING_INTERVAL_24_HOURS) {
