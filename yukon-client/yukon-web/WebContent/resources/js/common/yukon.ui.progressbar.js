@@ -23,17 +23,17 @@ yukon.ui.progressbar = (function () {
      */
     var _setupProgressBar = function (pbarId, completedCount, totalCount, completionCallback) {
         
-        var percentDone = 100, width, progressContainer;
+        var percentDone = 100+'%', width, progressContainer;
         
         if (totalCount > 0) {
             percentDone = yukon.percent(completedCount, totalCount, 2);
         }
         
         try {
-            width = yukon.percent(completedCount, totalCount, 2);
+            width = percentDone;
             progressContainer = _getProgressBarContainer(pbarId);
             progressContainer.find('.progress-bar').css('width', width);
-            progressContainer.find('.progressbar-percent-complete').html(percentDone);
+            progressContainer.find('.progressbar-percent-complete').html(percentDone );
             progressContainer.find('.progressbar-completed-count').html(completedCount);
         } catch (e) {};
         
@@ -60,7 +60,7 @@ yukon.ui.progressbar = (function () {
         if (progressContainer.length === 0) return;
         
         totalCompletedCount = successCompletedCount + failureCompletedCount;
-        percentDone = totalCount > 0 ? percentDone = yukon.percent(totalCompletedCount, totalCount, 2) : '100%';
+        percentDone = (totalCount > 0 ? yukon.percent(totalCompletedCount, totalCount, 2) : '100%');
         
         try {
             successWidth = yukon.percent(successCompletedCount, totalCount, 2);
