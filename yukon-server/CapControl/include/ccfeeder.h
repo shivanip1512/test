@@ -43,18 +43,12 @@ public:
     double getCurrentWattLoadPointValue() const;
     double getCurrentVoltLoadPointValue() const;
     float getDisplayOrder() const;
-    bool getNewPointDataReceivedFlag() const;
-    bool getRecentlyControlledFlag() const;
-    const CtiTime& getLastOperationTime() const;
     double getVarValueBeforeControl() const;
     long getLastCapBankControlledDeviceId() const;
     long getBusOptimizedVarCategory() const;
     double getBusOptimizedVarOffset() const;
-    double getKVARSolution() const;
-    bool getWaiveControlFlag() const;
     bool getPeakTimeFlag() const;
     bool getPorterRetFailFlag() const;
-    long getEventSequence() const;
     bool getVerificationFlag() const;
     bool getPerformingVerificationFlag() const;
     bool getVerificationDoneFlag() const;
@@ -69,15 +63,10 @@ public:
     bool getLastVerificationMsgSentSuccessfulFlag() const;
     long getCurrentVerificationCapBankId() const;
     long getCurrentVerificationCapBankOrigState() const;
-    double getTargetVarValue() const;
-    const std::string& getSolution() const;
     Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
     double getPhaseAValue() const;
     double getPhaseBValue() const;
     double getPhaseCValue() const;
-    double getPhaseAValueBeforeControl() const;
-    double getPhaseBValueBeforeControl() const;
-    double getPhaseCValueBeforeControl() const;
     long getRetryIndex() const;
     const CtiRegression& getRegression();
     const CtiRegression& getRegressionA();
@@ -95,18 +84,12 @@ public:
     void setCurrentWattLoadPointValue(double currentwattval);
     void setCurrentVoltLoadPointValue(double currentvoltval);
     void setDisplayOrder(float order);
-    void setNewPointDataReceivedFlag(bool newpointdatareceived);
-    void setRecentlyControlledFlag(bool recentlycontrolled);
-    void setLastOperationTime(const CtiTime& lastoperation);
     void setVarValueBeforeControl(double oldvarval);
     void setLastCapBankControlledDeviceId(long lastcapbank);
     void setBusOptimizedVarCategory(const long varcategory);
     void setBusOptimizedVarOffset(const double varoffset);
-    void setKVARSolution(double solution);
-    void setWaiveControlFlag(bool waive);
     void setPeakTimeFlag(bool peakTimeFlag);
     void setPorterRetFailFlag(bool flag);
-    void setEventSequence(long eventSeq);
     void setVerificationFlag(bool verificationFlag);
     void setPerformingVerificationFlag(bool performingVerificationFlag);
     void setVerificationDoneFlag(bool verificationDoneFlag);
@@ -121,14 +104,9 @@ public:
     void setLastVerificationMsgSentSuccessfulFlag(bool flag);
     void setCurrentVerificationCapBankId(long capBankId);
     void setCurrentVerificationCapBankState(long status);
-    void setTargetVarValue(double value);
-    void setSolution(const std::string& text);
     void setPhaseAValue(double value, CtiTime timestamp);
     void setPhaseBValue(double value, CtiTime timestamp);
     void setPhaseCValue(double value, CtiTime timestamp);
-    void setPhaseAValueBeforeControl(double value);
-    void setPhaseBValueBeforeControl(double value);
-    void setPhaseCValueBeforeControl(double value);
     void setRetryIndex(long value);
 
     void figureAndSetTargetVarValue(const std::string& controlMethod, const std::string& controlUnits, bool peakTimeFlag);
@@ -260,15 +238,10 @@ private:
 
     float _displayorder;
 
-    bool _newpointdatareceivedflag;
-    bool _recentlycontrolledflag;
-    CtiTime _lastoperationtime;
     double _varvaluebeforecontrol;
     long _lastcapbankcontrolleddeviceid;
     long _busoptimizedvarcategory;
     double _busoptimizedvaroffset;
-    double _kvarsolution;
-    bool _waivecontrolflag;
 
     bool _peakTimeFlag;
 
@@ -288,20 +261,12 @@ private:
     bool _likeDayControlFlag;
     bool _lastVerificationMsgSentSuccessful;
 
-    long   _eventSeq;
-
     long _currentVerificationCapBankId;
     long _currentCapBankToVerifyAssumedOrigState;
-
-    double _targetvarvalue;
-    std::string _solution;
 
     double _phaseAvalue;
     double _phaseBvalue;
     double _phaseCvalue;
-    double _phaseAvalueBeforeControl;
-    double _phaseBvalueBeforeControl;
-    double _phaseCvalueBeforeControl;
 
     long _retryIndex;
 

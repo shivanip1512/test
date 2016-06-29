@@ -48,16 +48,11 @@ public:
     double getRawCurrentWattLoadPointValue() const;
     double getCurrentVoltLoadPointValue() const;
     const CtiTime& getNextCheckTime() const;
-    bool getNewPointDataReceivedFlag() const;
     bool getBusUpdatedFlag() const;
     bool getPeakTimeFlag() const;
-    bool getRecentlyControlledFlag() const;
-    const CtiTime& getLastOperationTime() const;
     double getVarValueBeforeControl() const;
     long getLastFeederControlledPAOId() const;
     long getLastFeederControlledPosition() const;
-    double getKVARSolution() const;
-    bool getWaiveControlFlag() const;
     bool getVerificationFlag() const;
     bool getPerformingVerificationFlag() const;
     bool getVerificationDoneFlag() const;
@@ -75,7 +70,6 @@ public:
     bool getSwitchOverStatus() const;
     bool getPrimaryBusFlag() const;
     bool getDualBusEnable() const;
-    long getEventSequence() const;
     bool getReEnableBusFlag() const;
     bool getWaitForReCloseDelayFlag() const;
     bool getWaitToFinishRegularControlFlag() const;
@@ -88,8 +82,6 @@ public:
     long getDisableBusPointId() const;
     bool getSendMoreTimeControlledCommandsFlag() const;
 
-    const std::string& getSolution() const;
-    double getTargetVarValue() const;
     long getDisplayOrder() const;
 
     bool getTotalizedControlFlag() const;
@@ -97,9 +89,6 @@ public:
     double getPhaseAValue() const;
     double getPhaseBValue() const;
     double getPhaseCValue() const;
-    double getPhaseAValueBeforeControl() const;
-    double getPhaseBValueBeforeControl() const;
-    double getPhaseCValueBeforeControl() const;
     long getCommsStatePointId() const;
 
     const CtiRegression& getRegression();
@@ -118,21 +107,16 @@ public:
     void setCurrentWattLoadPointValue(double currentwattval);
     void setCurrentVoltLoadPointValue(double currentvoltval);
     void figureNextCheckTime();
-    void setNewPointDataReceivedFlag(bool newpointdatareceived);
     void setBusUpdatedFlag(bool busupdated);
 
     void setEstimatedVarLoadPointValue( const double aValue ) override;
 
     void setPeakTimeFlag(bool peaktime);
-    void setRecentlyControlledFlag(bool recentlycontrolled);
-    void setLastOperationTime(const CtiTime& lastoperation);
     void setLastVerificationCheck(const CtiTime& checkTime);
     void setVarValueBeforeControl(double oldvarval, long originalParentId = 0);
     void setLastFeederControlledPAOId(long lastfeederpao);
     void setLastFeederControlled(long lastfeederpao);
     void setLastFeederControlledPosition(long lastfeederposition);
-    void setKVARSolution(double solution);
-    void setWaiveControlFlag(bool waive);
     void setOverlappingVerificationFlag( bool overlapFlag);
     void setPreOperationMonitorPointScanFlag( bool flag);
     void setOperationSentWaitFlag( bool flag);
@@ -143,7 +127,6 @@ public:
     void setSwitchOverStatus(bool status);
     void setPrimaryBusFlag(bool status);
     void setDualBusEnable(bool flag);
-    void setEventSequence(long eventSeq);
     void setReEnableBusFlag(bool flag);
     void setWaitForReCloseDelayFlag(bool flag);
     void setWaitToFinishRegularControlFlag(bool flag);
@@ -157,15 +140,10 @@ public:
     void setSendMoreTimeControlledCommandsFlag(bool flag);
 
     void setAllAltSubValues(double volt, double var, double watt);
-    void setSolution(const std::string& text);
-    void setTargetVarValue(double value);
     void setDisplayOrder(long displayOrder);
     void setPhaseAValue(double value, CtiTime time);
     void setPhaseBValue(double value, CtiTime time);
     void setPhaseCValue(double value, CtiTime time);
-    void setPhaseAValueBeforeControl(double value);
-    void setPhaseBValueBeforeControl(double value);
-    void setPhaseCValueBeforeControl(double value);
     void setCommsStatePointId(long newId);
 
     void reOrderFeederDisplayOrders();
@@ -315,19 +293,13 @@ private:
     bool   _switchOverStatus;
     bool   _primaryBusFlag;
     bool   _dualBusEnable;
-    long   _eventSeq;
 
     CtiTime _nextchecktime;
-    bool _newpointdatareceivedflag;
     bool _busupdatedflag;
     bool _peaktimeflag;
-    bool _recentlycontrolledflag;
-    CtiTime _lastoperationtime;
     double _varvaluebeforecontrol;
     long _lastfeedercontrolledpaoid;
     long _lastfeedercontrolledposition;
-    double _kvarsolution;
-    bool _waivecontrolflag;
 
     long _currentVerificationCapBankId;
     long _currentVerificationFeederId;
@@ -359,8 +331,6 @@ private:
     bool _disableOvUvVerificationFlag;
     long _capBankToVerifyInactivityTime;
 
-    double _targetvarvalue;
-    std::string _solution;  //text field to be added to messaging indicating status/thinking
     long _displayOrder;
 
     double _altSubVoltVal;
@@ -371,9 +341,6 @@ private:
     double _phaseAvalue;
     double _phaseBvalue;
     double _phaseCvalue;
-    double _phaseAvalueBeforeControl;
-    double _phaseBvalueBeforeControl;
-    double _phaseCvalueBeforeControl;
 
     long    _commsStatePointId;
 

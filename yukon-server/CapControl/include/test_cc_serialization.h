@@ -528,53 +528,52 @@ struct TestCase<CtiCCFeeder> : public TestCase<CapControlPao>
     {
         TestCase<CapControlPao>::Populate();
 
-        Conductor   &c_imsg = static_cast<Conductor&>(*_imsg);
         CtiCCFeeder &imsg = static_cast<CtiCCFeeder&>(*_imsg);
 
-        GenerateRandom( c_imsg._parentId );
-        GenerateRandom( c_imsg._currentVarLoadPointId );
+        GenerateRandom( imsg._parentId );
+        GenerateRandom( imsg._currentVarLoadPointId );
         GenerateRandom( imsg._currentvarloadpointvalue );
-        GenerateRandom( c_imsg._currentWattLoadPointId );
+        GenerateRandom( imsg._currentWattLoadPointId );
         GenerateRandom( imsg._currentwattloadpointvalue );
-        GenerateRandom( c_imsg._mapLocationId );
+        GenerateRandom( imsg._mapLocationId );
         GenerateRandom( imsg._displayorder );
-        GenerateRandom( imsg._newpointdatareceivedflag );
-        GenerateRandom( c_imsg._lastCurrentVarPointUpdateTime );
-        GenerateRandom( c_imsg._estimatedVarLoadPointId );
-        GenerateRandom( c_imsg._estimatedVarLoadPointValue );
-        GenerateRandom( c_imsg._dailyOperationsAnalogPointId );
-        GenerateRandom( c_imsg._powerFactorPointId );
-        GenerateRandom( c_imsg._estimatedPowerFactorPointId );
-        GenerateRandom( c_imsg._currentDailyOperations );
+        GenerateRandom( imsg._newPointDataReceivedFlag );
+        GenerateRandom( imsg._lastCurrentVarPointUpdateTime );
+        GenerateRandom( imsg._estimatedVarLoadPointId );
+        GenerateRandom( imsg._estimatedVarLoadPointValue );
+        GenerateRandom( imsg._dailyOperationsAnalogPointId );
+        GenerateRandom( imsg._powerFactorPointId );
+        GenerateRandom( imsg._estimatedPowerFactorPointId );
+        GenerateRandom( imsg._currentDailyOperations );
 
         {
             bool recentlyControlledFlag_or_performingVerificationFlag;
             GenerateRandom( recentlyControlledFlag_or_performingVerificationFlag );
 
-            imsg._recentlycontrolledflag     = recentlyControlledFlag_or_performingVerificationFlag;
+            imsg._recentlyControlledFlag   = recentlyControlledFlag_or_performingVerificationFlag;
             imsg._performingVerificationFlag = recentlyControlledFlag_or_performingVerificationFlag;
         }
 
-        GenerateRandom( imsg._lastoperationtime );
+        GenerateRandom( imsg._lastOperationTime );
         GenerateRandom( imsg._varvaluebeforecontrol );
-        GenerateRandom( c_imsg._powerFactorValue );
-        GenerateRandom( c_imsg._estimatedPowerFactorValue );
-        GenerateRandom( c_imsg._currentVarPointQuality );
-        GenerateRandom( imsg._waivecontrolflag );
-        GenerateRandom( c_imsg._decimalPlaces );
+        GenerateRandom( imsg._powerFactorValue );
+        GenerateRandom( imsg._estimatedPowerFactorValue );
+        GenerateRandom( imsg._currentVarPointQuality );
+        GenerateRandom( imsg._waiveControlFlag );
+        GenerateRandom( imsg._decimalPlaces );
         GenerateRandom( imsg._peakTimeFlag );
-        GenerateRandom( c_imsg._currentVoltLoadPointId );
+        GenerateRandom( imsg._currentVoltLoadPointId );
         GenerateRandom( imsg._currentvoltloadpointvalue );
-        GenerateRandom( c_imsg._currentWattPointQuality );
-        GenerateRandom( c_imsg._currentVoltPointQuality );
-        GenerateRandom( imsg._targetvarvalue );
+        GenerateRandom( imsg._currentWattPointQuality );
+        GenerateRandom( imsg._currentVoltPointQuality );
+        GenerateRandom( imsg._targetVarValue );
         GenerateRandom( imsg._solution );
         GenerateRandom( imsg._ovUvDisabledFlag );
         GenerateRandom( imsg._phaseAvalue );
         GenerateRandom( imsg._phaseBvalue );
         GenerateRandom( imsg._phaseCvalue );
         GenerateRandom( imsg._likeDayControlFlag );
-        GenerateRandom( c_imsg._usePhaseData );
+        GenerateRandom( imsg._usePhaseData );
         GenerateRandom( imsg.getOriginalParent()._originalParentId );
 
         // careful here, this is a sorted vector (just generate 1)
@@ -606,40 +605,39 @@ struct TestCase<CtiCCSubstationBus> : public TestCase<CapControlPao>
     {
         TestCase<CapControlPao>::Populate();
 
-        Conductor          &c_imsg = static_cast<Conductor&>(*_imsg);
         CtiCCSubstationBus &imsg = static_cast<CtiCCSubstationBus&>(*_imsg);
 
-        GenerateRandom( c_imsg._parentId );
-        GenerateRandom( c_imsg._currentVarLoadPointId );
+        GenerateRandom( imsg._parentId );
+        GenerateRandom( imsg._currentVarLoadPointId );
         GenerateRandom( imsg._currentvarloadpointvalue );
-        GenerateRandom( c_imsg._currentWattLoadPointId );
+        GenerateRandom( imsg._currentWattLoadPointId );
         GenerateRandom( imsg._currentwattloadpointvalue );
-        GenerateRandom( c_imsg._mapLocationId );
-        GenerateRandom( c_imsg._decimalPlaces );
-        GenerateRandom( imsg._newpointdatareceivedflag );
+        GenerateRandom( imsg._mapLocationId );
+        GenerateRandom( imsg._decimalPlaces );
+        GenerateRandom( imsg._newPointDataReceivedFlag );
         GenerateRandom( imsg._busupdatedflag );
-        GenerateRandom( c_imsg._lastCurrentVarPointUpdateTime );
-        GenerateRandom( c_imsg._estimatedVarLoadPointId );
-        GenerateRandom( c_imsg._estimatedVarLoadPointValue );
-        GenerateRandom( c_imsg._dailyOperationsAnalogPointId );
-        GenerateRandom( c_imsg._powerFactorPointId );
-        GenerateRandom( c_imsg._estimatedPowerFactorPointId );
-        GenerateRandom( c_imsg._currentDailyOperations );
+        GenerateRandom( imsg._lastCurrentVarPointUpdateTime );
+        GenerateRandom( imsg._estimatedVarLoadPointId );
+        GenerateRandom( imsg._estimatedVarLoadPointValue );
+        GenerateRandom( imsg._dailyOperationsAnalogPointId );
+        GenerateRandom( imsg._powerFactorPointId );
+        GenerateRandom( imsg._estimatedPowerFactorPointId );
+        GenerateRandom( imsg._currentDailyOperations );
         GenerateRandom( imsg._peaktimeflag );
-        GenerateRandom( imsg._recentlycontrolledflag );
-        GenerateRandom( imsg._lastoperationtime );
+        GenerateRandom( imsg._recentlyControlledFlag );
+        GenerateRandom( imsg._lastOperationTime );
         GenerateRandom( imsg._varvaluebeforecontrol );
-        GenerateRandom( c_imsg._powerFactorValue );
-        GenerateRandom( c_imsg._estimatedPowerFactorValue );
-        GenerateRandom( c_imsg._currentVarPointQuality );
-        GenerateRandom( imsg._waivecontrolflag );
-        GenerateRandom( c_imsg._currentVoltLoadPointId );
+        GenerateRandom( imsg._powerFactorValue );
+        GenerateRandom( imsg._estimatedPowerFactorValue );
+        GenerateRandom( imsg._currentVarPointQuality );
+        GenerateRandom( imsg._waiveControlFlag );
+        GenerateRandom( imsg._currentVoltLoadPointId );
         GenerateRandom( imsg._currentvoltloadpointvalue );
         GenerateRandom( imsg._verificationFlag );
         GenerateRandom( imsg._switchOverStatus );
-        GenerateRandom( c_imsg._currentWattPointQuality );
-        GenerateRandom( c_imsg._currentVoltPointQuality );
-        GenerateRandom( imsg._targetvarvalue );
+        GenerateRandom( imsg._currentWattPointQuality );
+        GenerateRandom( imsg._currentVoltPointQuality );
+        GenerateRandom( imsg._targetVarValue );
         GenerateRandom( imsg._solution );
         GenerateRandom( imsg._ovUvDisabledFlag );
         GenerateRandom( imsg._phaseAvalue );
@@ -648,7 +646,7 @@ struct TestCase<CtiCCSubstationBus> : public TestCase<CapControlPao>
         GenerateRandom( imsg._likeDayControlFlag );
         GenerateRandom( imsg._displayOrder );
         GenerateRandom( imsg._voltReductionFlag );
-        GenerateRandom( c_imsg._usePhaseData );
+        GenerateRandom( imsg._usePhaseData );
 
         // imsg._primaryBusFlag should remain false in this test
 

@@ -58,16 +58,11 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _switchOverStatus( false ),
         _primaryBusFlag( false ),
         _dualBusEnable( false ),
-        _eventSeq( 0 ),
-        _newpointdatareceivedflag( false ),
         _busupdatedflag( false ),
         _peaktimeflag( true ),
-        _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastfeedercontrolledpaoid( 0 ),
         _lastfeedercontrolledposition( 0 ),
-        _kvarsolution( 0 ),
-        _waivecontrolflag( false ),
         _currentVerificationCapBankId( -1 ),
         _currentVerificationFeederId( -1 ),
         _percentToClose( 0 ),
@@ -92,7 +87,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _verificationStrategy( CtiPAOScheduleManager::Undefined ),
         _disableOvUvVerificationFlag( false ),
         _capBankToVerifyInactivityTime( -1 ),
-        _targetvarvalue( 0 ),
         _displayOrder( 0 ),
         _altSubVoltVal( 0 ),
         _altSubVarVal( 0 ),
@@ -100,13 +94,8 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
-        _phaseAvalueBeforeControl( 0 ),
-        _phaseBvalueBeforeControl( 0 ),
-        _phaseCvalueBeforeControl( 0 ),
         _commsStatePointId( 0 ),
         _disableBusPointId( 0 ),
-        _solution( "IDLE" ),
-        _lastoperationtime( gInvalidCtiTime ),
         _lastVerificationCheck( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
@@ -126,16 +115,11 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _switchOverStatus( false ),
         _primaryBusFlag( false ),
         _dualBusEnable( false ),
-        _eventSeq( 0 ),
-        _newpointdatareceivedflag( false ),
         _busupdatedflag( false ),
         _peaktimeflag( true ),
-        _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastfeedercontrolledpaoid( 0 ),
         _lastfeedercontrolledposition( 0 ),
-        _kvarsolution( 0 ),
-        _waivecontrolflag( false ),
         _currentVerificationCapBankId( -1 ),
         _currentVerificationFeederId( -1 ),
         _percentToClose( 0 ),
@@ -160,7 +144,6 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _verificationStrategy( CtiPAOScheduleManager::Undefined ),
         _disableOvUvVerificationFlag( false ),
         _capBankToVerifyInactivityTime( -1 ),
-        _targetvarvalue( 0 ),
         _displayOrder( 0 ),
         _altSubVoltVal( 0 ),
         _altSubVarVal( 0 ),
@@ -168,13 +151,8 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
-        _phaseAvalueBeforeControl( 0 ),
-        _phaseBvalueBeforeControl( 0 ),
-        _phaseCvalueBeforeControl( 0 ),
         _commsStatePointId( 0 ),
         _disableBusPointId( 0 ),
-        _solution( "IDLE" ),
-        _lastoperationtime( gInvalidCtiTime ),
         _lastVerificationCheck( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
@@ -256,35 +234,6 @@ double CtiCCSubstationBus::getPhaseBValue() const
 double CtiCCSubstationBus::getPhaseCValue() const
 {
     return _phaseCvalue;
-}
-/*---------------------------------------------------------------------------
-    getPhaseAValue
-
-    Returns the getPhaseAValue VAR of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getPhaseAValueBeforeControl() const
-{
-    return _phaseAvalueBeforeControl;
-}
-
-/*---------------------------------------------------------------------------
-    getPhaseBValue
-
-    Returns the getPhaseBValue VAR of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getPhaseBValueBeforeControl() const
-{
-    return _phaseBvalueBeforeControl;
-}
-
-/*---------------------------------------------------------------------------
-    getPhaseCValue
-
-    Returns the getPhaseCValue VAR of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getPhaseCValueBeforeControl() const
-{
-    return _phaseCvalueBeforeControl;
 }
 
 /**
@@ -396,27 +345,6 @@ double CtiCCSubstationBus::getCurrentVoltLoadPointValue() const
 }
 
 /*---------------------------------------------------------------------------
-    getSolution
-
-    Returns the solution of the substation
----------------------------------------------------------------------------*/
-const string& CtiCCSubstationBus::getSolution() const
-{
-    return _solution;
-}
-
-/*---------------------------------------------------------------------------
-    getTargetVarValue
-
-    Returns the target var value of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getTargetVarValue() const
-{
-    return _targetvarvalue;
-}
-
-
-/*---------------------------------------------------------------------------
     getControlSendRetries
 
     Returns the ControlSendRetries of the substation
@@ -480,16 +408,6 @@ const CtiTime& CtiCCSubstationBus::getNextCheckTime() const
 }
 
 /*---------------------------------------------------------------------------
-    getNewPointDataReceivedFlag
-
-    Returns the new point data received flag of the substation
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBus::getNewPointDataReceivedFlag() const
-{
-    return _newpointdatareceivedflag;
-}
-
-/*---------------------------------------------------------------------------
     getBusUpdatedFlag
 
     Returns the substation updated flag of the substation
@@ -507,26 +425,6 @@ bool CtiCCSubstationBus::getBusUpdatedFlag() const
 bool CtiCCSubstationBus::getPeakTimeFlag() const
 {
     return _peaktimeflag;
-}
-
-/*---------------------------------------------------------------------------
-    getRecentlyControlledFlag
-
-    Returns the flag if the substation has been recently controlled
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBus::getRecentlyControlledFlag() const
-{
-    return _recentlycontrolledflag;
-}
-
-/*---------------------------------------------------------------------------
-    getLastOperationTime
-
-    Returns the last operation time of the substation
----------------------------------------------------------------------------*/
-const CtiTime& CtiCCSubstationBus::getLastOperationTime() const
-{
-    return _lastoperationtime;
 }
 
 /*---------------------------------------------------------------------------
@@ -561,26 +459,6 @@ long CtiCCSubstationBus::getLastFeederControlledPosition() const
     else
         return 0;
 
-}
-
-/*---------------------------------------------------------------------------
-    getKVARSolution
-
-    Returns the KVARSolution of the substation
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::getKVARSolution() const
-{
-    return _kvarsolution;
-}
-
-/*---------------------------------------------------------------------------
-    getWaiveControlFlag
-
-    Returns the WaiveControlFlag of the substation
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBus::getWaiveControlFlag() const
-{
-    return _waivecontrolflag;
 }
 
 /*---------------------------------------------------------------------------
@@ -720,10 +598,6 @@ bool CtiCCSubstationBus::getDualBusEnable() const
     return _dualBusEnable;
 }
 
-long CtiCCSubstationBus::getEventSequence() const
-{
-    return _eventSeq;
-}
 bool CtiCCSubstationBus::getReEnableBusFlag() const
 {
     return _reEnableBusFlag;
@@ -883,38 +757,6 @@ void CtiCCSubstationBus::setPhaseCValue(double value, CtiTime timestamp)
 }
 
 /*---------------------------------------------------------------------------
-    setPhaseAValue
-
-    Sets the setPhaseAValue Var of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setPhaseAValueBeforeControl(double value)
-{
-    _phaseAvalueBeforeControl = value;
-}
-
-/*---------------------------------------------------------------------------
-    setPhaseBValue
-
-    Sets the setPhaseBValue Var of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setPhaseBValueBeforeControl(double value)
-{
-    _phaseBvalueBeforeControl = value;
-}
-
-
-
-/*---------------------------------------------------------------------------
-    setPhaseCValue
-
-    Sets the setPhaseCValue Var of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setPhaseCValueBeforeControl(double value)
-{
-    _phaseCvalueBeforeControl = value;
-}
-
-/*---------------------------------------------------------------------------
     setCurrentVarLoadPointValue
 
     Sets the current var load point value of the substation
@@ -951,25 +793,6 @@ void CtiCCSubstationBus::setCurrentWattLoadPointValue(double currentwattval)
 void CtiCCSubstationBus::setCurrentVoltLoadPointValue(double currentvoltval)
 {
     updateDynamicValue( _currentvoltloadpointvalue, currentvoltval );
-}
-
-/*---------------------------------------------------------------------------
-    setSolution
-
-    Sets the Solution of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setSolution(const string& text)
-{
-    _solution = text;
-}
-/*---------------------------------------------------------------------------
-    setTargetVarValue
-
-    Sets the target var value of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setTargetVarValue(double value)
-{
-    _targetvarvalue = value;
 }
 
 long CtiCCSubstationBus::getNextTODStartTime()
@@ -1120,16 +943,6 @@ double CtiCCSubstationBus::getSetPoint()
 }
 
 /*---------------------------------------------------------------------------
-    setNewPointDataReceivedFlag
-
-    Sets the new point data received flag of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setNewPointDataReceivedFlag(bool newpointdatareceived)
-{
-    updateDynamicValue( _newpointdatareceivedflag, newpointdatareceived );
-}
-
-/*---------------------------------------------------------------------------
     setBusUpdatedFlag
 
     Sets the substation updated flag of the substation
@@ -1162,16 +975,6 @@ void CtiCCSubstationBus::setEstimatedVarLoadPointValue( const double aValue )
 void CtiCCSubstationBus::setPeakTimeFlag(bool peaktime)
 {
     updateDynamicValue( _peaktimeflag, peaktime );
-}
-
-/*---------------------------------------------------------------------------
-    setRecentlyControlledFlag
-
-    Sets the recently controlled flag of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setRecentlyControlledFlag(bool recentlycontrolled)
-{
-    updateDynamicValue( _recentlycontrolledflag, recentlycontrolled );
 }
 
 /*---------------------------------------------------------------------------
@@ -1216,17 +1019,6 @@ void CtiCCSubstationBus::checkAndUpdateRecentlyControlledFlag()
     {
         setRecentlyControlledFlag(false);
     }
-}
-
-
-/*---------------------------------------------------------------------------
-    setLastOperationTime
-
-    Sets the last operation time of the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setLastOperationTime(const CtiTime& lastoperation)
-{
-    updateDynamicValue( _lastoperationtime, lastoperation );
 }
 
 void CtiCCSubstationBus::setLastVerificationCheck(const CtiTime& checkTime)
@@ -1304,25 +1096,6 @@ void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
         setBusUpdatedFlag(true);
     }
 }
-/*---------------------------------------------------------------------------
-    setKVARSolution
-
-    Sets the KVARSolution in the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setKVARSolution(double solution)
-{
-    updateDynamicValue( _kvarsolution, solution );
-}
-
-/*---------------------------------------------------------------------------
-    setWaiveControlFlag
-
-    Sets the WaiveControlFlag in the substation
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setWaiveControlFlag(bool waive)
-{
-    updateDynamicValue( _waivecontrolflag, waive );
-}
 
 void CtiCCSubstationBus::setAltDualSubId(long altDualSubId)
 {
@@ -1355,11 +1128,6 @@ void CtiCCSubstationBus::setPrimaryBusFlag(bool status)
 void CtiCCSubstationBus::setDualBusEnable(bool flag)
 {
     updateDynamicValue( _dualBusEnable, flag );
-}
-
-void CtiCCSubstationBus::setEventSequence(long eventSeq)
-{
-    updateDynamicValue( _eventSeq, eventSeq );
 }
 
 void CtiCCSubstationBus::setReEnableBusFlag(bool flag)
@@ -2881,7 +2649,7 @@ bool CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                     returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                        failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
                                                        getPhaseBValueBeforeControl(),getPhaseCValueBeforeControl(),
-                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), regressionA, regressionB, regressionC);
+                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), getRegressionA(), getRegressionB(), getRegressionC());
 
                 }
                 else
@@ -2905,7 +2673,7 @@ bool CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                    {
                        returnBoolean = currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),
                                                               getCurrentVarLoadPointValue(), getCurrentVarPointQuality(), getPhaseAValue(),
-                                                              getPhaseBValue(), getPhaseCValue(), regression);
+                                                              getPhaseBValue(), getPhaseCValue(), getRegression());
                    }
                 }
                 setWaitToFinishRegularControlFlag(false);
@@ -2942,7 +2710,7 @@ bool CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                                                            getPhaseBValueBeforeControl(), getPhaseCValueBeforeControl(),
                                                            getPhaseAValue(), getPhaseBValue(), getPhaseCValue(),
                                                            getVarValueBeforeControl(), getCurrentVarLoadPointValue(),
-                                                           regression, regressionA, regressionB, regressionC,
+                                                           getRegression(), getRegressionA(), getRegressionB(), getRegressionC(),
                                                            getUsePhaseData(), (getTotalizedControlFlag() || getPrimaryBusFlag())  )
                             || currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries)
                           )
@@ -2976,14 +2744,14 @@ bool CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                             returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                                failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
                                                                getPhaseBValueBeforeControl(),getPhaseCValueBeforeControl(),
-                                                               getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), regressionA, regressionB, regressionC);
+                                                               getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), getRegressionA(), getRegressionB(), getRegressionC());
 
                         }
                         else
                         {
                             returnBoolean = currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),
                                                                       getCurrentVarLoadPointValue(), getCurrentVarPointQuality(), getPhaseAValue(),
-                                                                      getPhaseBValue(), getPhaseCValue(), regression);
+                                                                      getPhaseBValue(), getPhaseCValue(), getRegression());
                         }
                         figureEstimatedVarLoadPointValue();
                     }
@@ -3109,7 +2877,7 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    else
                                    {
                                        newValue =  getCurrentVarLoadPointValue();
-                                       if( _RATE_OF_CHANGE && regression.depthMet() )
+                                       if( _RATE_OF_CHANGE && getRegression().depthMet() )
                                        {
                                            oldValue =  getRegression().regression(timeNow.seconds());
                                        }
@@ -3239,9 +3007,9 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    else
                                    {
                                        newValue =  getCurrentVarLoadPointValue();
-                                       if( _RATE_OF_CHANGE && regression.depthMet() )
+                                       if( _RATE_OF_CHANGE && getRegression().depthMet() )
                                        {
-                                           oldValue =  regression.regression(timeNow.seconds());
+                                           oldValue =  getRegression().regression(timeNow.seconds());
                                        }
                                        else
                                        {
@@ -3595,8 +3363,8 @@ bool CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                }
                                else
                                {
-                                   if( _RATE_OF_CHANGE && regressionA.depthMet() &&
-                                       regressionB.depthMet() && regressionC.depthMet() )
+                                   if( _RATE_OF_CHANGE && getRegressionA().depthMet() &&
+                                       getRegressionB().depthMet() && getRegressionC().depthMet() )
                                    {
                                        varValueAbc = getRegressionA().regression( timeNow.seconds() );
                                        varValueBbc = getRegressionB().regression( timeNow.seconds() );
@@ -3780,8 +3548,8 @@ bool CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                }
                                else
                                {
-                                   if( _RATE_OF_CHANGE && regressionA.depthMet() &&
-                                       regressionB.depthMet() && regressionC.depthMet() )
+                                   if( _RATE_OF_CHANGE && getRegressionA().depthMet() &&
+                                       getRegressionB().depthMet() && getRegressionC().depthMet() )
                                    {
                                        varValueAbc = getRegressionA().regression( timeNow.seconds() );
                                        varValueBbc = getRegressionB().regression( timeNow.seconds() );
@@ -4119,7 +3887,7 @@ bool CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                     }
                     //only try to control bus optimized if we have new var values
                     //for the bus and all feeders off the bus
-                    else if( _newpointdatareceivedflag )
+                    else if( getNewPointDataReceivedFlag() )
                     {
                         returnBoolean = true;
                         for(long i=0;i<_ccfeeders.size();i++)
@@ -4171,12 +3939,12 @@ bool CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
             {
                 if( _ccfeeders.size() > 0 )
                 {
-                    returnBoolean = _newpointdatareceivedflag;
+                    returnBoolean = getNewPointDataReceivedFlag();
                 }
             }
             else if ( getStrategy()->getMethodType() == ControlStrategy::ManualOnly )
             {
-                if( _newpointdatareceivedflag )
+                if( getNewPointDataReceivedFlag() )
                 {
                     returnBoolean = true;
                 }
@@ -4308,14 +4076,14 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
             {
                 if( _ccfeeders.size() > 0 )
                 {
-                    returnBoolean = _newpointdatareceivedflag;
+                    returnBoolean = getNewPointDataReceivedFlag();
                 }
             }
             else if ( getStrategy()->getMethodType() == ControlStrategy::ManualOnly )
             {
                 if( _ccfeeders.size() > 0 )
                 {
-                    returnBoolean = _newpointdatareceivedflag;
+                    returnBoolean = getNewPointDataReceivedFlag();
                     if( !returnBoolean )
                     {
                         for(long i=0;i<_ccfeeders.size();i++)
@@ -4333,7 +4101,7 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
             {
                 if( _ccfeeders.size() > 0 )
                 {
-                    returnBoolean = _newpointdatareceivedflag;
+                    returnBoolean = getNewPointDataReceivedFlag();
                 }
             }
             else
@@ -4362,7 +4130,7 @@ bool CtiCCSubstationBus::isConfirmCheckNeeded()
             {
                 if( _ccfeeders.size() > 0 )
                 {
-                    returnBoolean = _newpointdatareceivedflag;
+                    returnBoolean = getNewPointDataReceivedFlag();
                 }
             }
         }
@@ -4477,7 +4245,7 @@ bool CtiCCSubstationBus::isAlreadyControlled()
                 returnBoolean = currentFeeder->isAlreadyControlled(minConfirmPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
                                            getPhaseBValueBeforeControl(), getPhaseCValueBeforeControl(),
                                            getPhaseAValue(), getPhaseBValue(), getPhaseCValue(),
-                                           getVarValueBeforeControl(), getCurrentVarLoadPointValue(), regression, regressionA, regressionB, regressionC,
+                                           getVarValueBeforeControl(), getCurrentVarLoadPointValue(), getRegression(), getRegressionA(), getRegressionB(), getRegressionC(),
                                            getUsePhaseData(), (getTotalizedControlFlag() || getPrimaryBusFlag())  );
 
                 break;
@@ -4523,7 +4291,7 @@ bool CtiCCSubstationBus::isAlreadyControlled()
                     if( currentFeeder->isAlreadyControlled(minConfirmPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
                                                getPhaseBValueBeforeControl(), getPhaseCValueBeforeControl(),
                                                getPhaseAValue(), getPhaseBValue(), getPhaseCValue(),
-                                               getVarValueBeforeControl(), getCurrentVarLoadPointValue(), regression, regressionA, regressionB, regressionC,
+                                               getVarValueBeforeControl(), getCurrentVarLoadPointValue(), getRegression(), getRegressionA(), getRegressionB(), getRegressionC(),
                                                getUsePhaseData(), (getTotalizedControlFlag()||getPrimaryBusFlag())  ))
                     {
                         returnBoolean = true;
@@ -5557,23 +5325,23 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _currentvarloadpointvalue
         << _currentwattloadpointvalue
         << _nextchecktime
-        << serializeFlag( _newpointdatareceivedflag )
+        << serializeFlag( getNewPointDataReceivedFlag() )
         << serializeFlag( _busupdatedflag )
         << getLastCurrentVarPointUpdateTime()
         << getEstimatedVarLoadPointValue()
         << getCurrentDailyOperations()
         << serializeFlag( _peaktimeflag )
-        << serializeFlag( _recentlycontrolledflag )
-        << _lastoperationtime
-        << _varvaluebeforecontrol
+        << serializeFlag( getRecentlyControlledFlag() )
+        << getLastOperationTime()
+        << getVarValueBeforeControl()
         << _lastfeedercontrolledpaoid
         << _lastfeedercontrolledposition
         << currentDateTime
         << getPowerFactorValue()
-        << _kvarsolution
+        << getKVARSolution()
         << getEstimatedPowerFactorValue()
         << getCurrentVarPointQuality()
-        << serializeFlag( _waivecontrolflag )
+        << serializeFlag( getWaiveControlFlag() )
         << formatFlags()
         << _currentVerificationCapBankId
         << _currentVerificationFeederId
@@ -5583,7 +5351,7 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _currentvoltloadpointvalue
         << serializeFlag( _switchOverStatus )
         << _altSubControlValue
-        << _eventSeq
+        << getEventSequence()
         << getCurrentWattPointQuality()
         << getCurrentVoltPointQuality()
         << getIVControlTot()
@@ -5595,9 +5363,9 @@ bool CtiCCSubstationBus::updateDynamicData( Cti::Database::DatabaseConnection & 
         << _phaseCvalue
         << getLastWattPointTime()
         << getLastVoltPointTime()
-        << _phaseAvalueBeforeControl
-        << _phaseBvalueBeforeControl
-        << _phaseCvalueBeforeControl
+        << getPhaseAValueBeforeControl()
+        << getPhaseBValueBeforeControl()
+        << getPhaseCValueBeforeControl()
         << getPaoId();
 
     return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
@@ -5624,23 +5392,23 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _currentvarloadpointvalue
         << _currentwattloadpointvalue
         << _nextchecktime
-        << serializeFlag( _newpointdatareceivedflag )
+        << serializeFlag( getNewPointDataReceivedFlag() )
         << serializeFlag( _busupdatedflag )
         << getLastCurrentVarPointUpdateTime()
         << getEstimatedVarLoadPointValue()
         << getCurrentDailyOperations()
         << serializeFlag( _peaktimeflag )
-        << serializeFlag( _recentlycontrolledflag )
-        << _lastoperationtime
-        << _varvaluebeforecontrol
+        << serializeFlag( getRecentlyControlledFlag() )
+        << getLastOperationTime()
+        << getVarValueBeforeControl()
         << _lastfeedercontrolledpaoid
         << _lastfeedercontrolledposition
         << currentDateTime
         << getPowerFactorValue()
-        << _kvarsolution
+        << getKVARSolution()
         << getEstimatedPowerFactorValue()
         << getCurrentVarPointQuality()
-        << serializeFlag( _waivecontrolflag )
+        << serializeFlag( getWaiveControlFlag() )
         << formatFlags()
         << _currentVerificationCapBankId
         << _currentVerificationFeederId
@@ -5650,7 +5418,7 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _currentvoltloadpointvalue
         << serializeFlag( _switchOverStatus )
         << _altSubControlValue
-        << _eventSeq
+        << getEventSequence()
         << getCurrentWattPointQuality()
         << getCurrentVoltPointQuality()
         << getIVControlTot()
@@ -5662,9 +5430,9 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
         << _phaseCvalue
         << getLastWattPointTime()
         << getLastVoltPointTime()
-        << _phaseAvalueBeforeControl
-        << _phaseBvalueBeforeControl
-        << _phaseCvalueBeforeControl;
+        << getPhaseAValueBeforeControl()
+        << getPhaseBValueBeforeControl()
+        << getPhaseCValueBeforeControl();
 
     return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
@@ -7299,7 +7067,7 @@ bool CtiCCSubstationBus::isMultiVoltBusAnalysisNeeded(const CtiTime& currentDate
             }
         }
 
-        if (_newpointdatareceivedflag )
+        if ( getNewPointDataReceivedFlag() )
         {
             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
             {
@@ -7326,7 +7094,7 @@ bool CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
         if ( getStrategy()->getUnitType() == ControlStrategy::MultiVolt ||
              getStrategy()->getUnitType() == ControlStrategy::MultiVoltVar )
         {
-            if (_newpointdatareceivedflag || getVerificationFlag())
+            if ( getNewPointDataReceivedFlag() || getVerificationFlag() )
                 retVal = true;
 
         }
@@ -7946,10 +7714,6 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
     rdr["CurrentWattPointValue"]    >> _currentwattloadpointvalue;
     rdr["NextCheckTime"]            >> _nextchecktime;
 
-    rdr["NewPointDataReceivedFlag"] >> flags;
-
-    _newpointdatareceivedflag       = deserializeFlag( flags );
-
     rdr["BusUpdatedFlag"]           >> flags;
 
     _busupdatedflag                 = deserializeFlag( flags );
@@ -7958,19 +7722,9 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
 
     _peaktimeflag                   = deserializeFlag( flags );
 
-    rdr["RecentlyControlledFlag"]   >> flags;
-
-    _recentlycontrolledflag         = deserializeFlag( flags );
-
-    rdr["LastOperationTime"]        >> _lastoperationtime;
     rdr["VarValueBeforeControl"]    >> _varvaluebeforecontrol;
     rdr["LastFeederPAOid"]          >> _lastfeedercontrolledpaoid;
     rdr["LastFeederPosition"]       >> _lastfeedercontrolledposition;
-    rdr["KvarSolution"]             >> _kvarsolution;
-
-    rdr["WaiveControlFlag"]         >> flags;
-
-    _waivecontrolflag               = deserializeFlag( flags );
 
     rdr["AdditionalFlags"]          >> flags;
 
@@ -8014,7 +7768,6 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
     _switchOverStatus               = deserializeFlag( flags );
 
     rdr["AltSubControlValue"]       >> _altSubControlValue;
-    rdr["EventSeq"]                 >> _eventSeq;
 
     _altSubWattVal                  = _currentwattloadpointvalue;
 
@@ -8023,10 +7776,6 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
     rdr["phaseavalue"]              >> _phaseAvalue;
     rdr["phasebvalue"]              >> _phaseBvalue;
     rdr["phasecvalue"]              >> _phaseCvalue;
-
-    rdr["PhaseAValueBeforeControl"] >> _phaseAvalueBeforeControl;
-    rdr["PhaseBValueBeforeControl"] >> _phaseBvalueBeforeControl;
-    rdr["PhaseCValueBeforeControl"] >> _phaseCvalueBeforeControl;
 }
 
 /*---------------------------------------------------------------------------

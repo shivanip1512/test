@@ -45,6 +45,13 @@ public:
     bool getTotalizedControlFlag() const;
     void setTotalizedControlFlag( const bool flag );
 
+    double getPhaseAValueBeforeControl() const;
+    void setPhaseAValueBeforeControl( const double aValue );
+    double getPhaseBValueBeforeControl() const;
+    void setPhaseBValueBeforeControl( const double aValue );
+    double getPhaseCValueBeforeControl() const;
+    void setPhaseCValueBeforeControl( const double aValue );
+
     // Watt
 
     long getCurrentWattLoadPointId() const;
@@ -117,6 +124,29 @@ public:
     long getDecimalPlaces() const;
     void setDecimalPlaces( const long places );
 
+    bool getNewPointDataReceivedFlag() const;
+    void setNewPointDataReceivedFlag( const bool flag );
+
+    bool getRecentlyControlledFlag() const;
+    void setRecentlyControlledFlag( const bool flag );
+
+    const CtiTime & getLastOperationTime() const;
+    void setLastOperationTime( const CtiTime & aTime );
+
+    long getEventSequence() const;
+    void setEventSequence( const long sequence );
+
+    bool getWaiveControlFlag() const;
+    void setWaiveControlFlag( const bool flag );
+
+    double getKVARSolution() const;
+    void setKVARSolution( const double aValue );
+
+    const std::string & getSolution() const;
+    void setSolution( const std::string & text );
+
+    double getTargetVarValue() const;
+    void setTargetVarValue( const double aValue );
 
 protected:
 
@@ -142,6 +172,10 @@ private:
     long _phaseBid;
     long _phaseCid;
     bool _totalizedControlFlag;
+
+    double _phaseAvalueBeforeControl;
+    double _phaseBvalueBeforeControl;
+    double _phaseCvalueBeforeControl;
 
     // Watt
 
@@ -186,5 +220,22 @@ private:
     std::string _mapLocationId;
     bool _multiMonitorFlag;
     long _decimalPlaces;
+
+    bool _newPointDataReceivedFlag;
+    bool _recentlyControlledFlag;
+
+    CtiTime _lastOperationTime;
+
+    long   _eventSequence;
+
+    bool _waiveControlFlag;
+
+    double _kvarSolution;
+
+    std::string _solution;
+
+    double _targetVarValue;
+
+
 };
 

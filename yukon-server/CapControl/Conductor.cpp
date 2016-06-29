@@ -23,6 +23,9 @@ Conductor::Conductor( StrategyManager * strategyManager )
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
+        _phaseAvalueBeforeControl( 0 ),
+        _phaseBvalueBeforeControl( 0 ),
+        _phaseCvalueBeforeControl( 0 ),
         _currentWattLoadPointId( 0 ),
         _currentWattPointQuality( NormalQuality ),
         _lastWattPointTime( gInvalidCtiTime ),
@@ -44,7 +47,15 @@ Conductor::Conductor( StrategyManager * strategyManager )
         _parentId( 0 ),
         _parentName( "none" ),
         _multiMonitorFlag( false ),
-        _decimalPlaces( 0 )
+        _decimalPlaces( 0 ),
+        _newPointDataReceivedFlag( false ),
+        _recentlyControlledFlag( false ),
+        _lastOperationTime( gInvalidCtiTime ),
+        _eventSequence( 0 ),
+        _waiveControlFlag( false ),
+        _kvarSolution( 0 ),
+        _solution( "IDLE" ),
+        _targetVarValue( 0 )
 {
 
 }
@@ -60,6 +71,9 @@ Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
+        _phaseAvalueBeforeControl( 0 ),
+        _phaseBvalueBeforeControl( 0 ),
+        _phaseCvalueBeforeControl( 0 ),
         _currentWattLoadPointId( 0 ),
         _currentWattPointQuality( NormalQuality ),
         _lastWattPointTime( gInvalidCtiTime ),
@@ -81,7 +95,15 @@ Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
         _parentId( 0 ),
         _parentName( "none" ),
         _multiMonitorFlag( false ),
-        _decimalPlaces( 0 )
+        _decimalPlaces( 0 ),
+        _newPointDataReceivedFlag( false ),
+        _recentlyControlledFlag( false ),
+        _lastOperationTime( gInvalidCtiTime ),
+        _eventSequence( 0 ),
+        _waiveControlFlag( false ),
+        _kvarSolution( 0 ),
+        _solution( "IDLE" ),
+        _targetVarValue( 0 )
 {
     restoreStaticData( rdr );
 
@@ -158,10 +180,16 @@ void Conductor::restoreStaticData( Cti::RowReader & rdr )
 
 void Conductor::restoreDynamicData( Cti::RowReader & rdr )
 {
+    std::string flags;
+
     rdr["CurrentVarPointQuality"]   >> _currentVarPointQuality;
     rdr["LastCurrentVarUpdateTime"] >> _lastCurrentVarPointUpdateTime;
 
     rdr["EstimatedVarPointValue"]   >> _estimatedVarLoadPointValue;
+
+    rdr["PhaseAValueBeforeControl"] >> _phaseAvalueBeforeControl;
+    rdr["PhaseBValueBeforeControl"] >> _phaseBvalueBeforeControl;
+    rdr["PhaseCValueBeforeControl"] >> _phaseCvalueBeforeControl;
 
     rdr["CurrentWattPointQuality"]  >> _currentWattPointQuality;
     rdr["LastWattPointTime"]        >> _lastWattPointTime;
@@ -178,6 +206,26 @@ void Conductor::restoreDynamicData( Cti::RowReader & rdr )
     rdr["iVControlTot"]             >> _iVControlTot;
     rdr["iWCount"]                  >> _iWCount;
     rdr["iWControlTot"]             >> _iWControlTot;
+
+    rdr["NewPointDataReceivedFlag"] >> flags;
+
+    _newPointDataReceivedFlag       = deserializeFlag( flags );
+
+    rdr["RecentlyControlledFlag"]   >> flags;
+
+    _recentlyControlledFlag         = deserializeFlag( flags );
+
+    rdr["LastOperationTime"]        >> _lastOperationTime;
+
+    rdr["EventSeq"]                 >> _eventSequence;
+
+    rdr["WaiveControlFlag"]         >> flags;
+
+    _waiveControlFlag               = deserializeFlag( flags );
+
+    rdr["KvarSolution"]             >> _kvarSolution;
+
+
 }
 
 // VAr
@@ -270,6 +318,36 @@ bool Conductor::getTotalizedControlFlag() const
 void Conductor::setTotalizedControlFlag( const bool flag )
 {
     updateStaticValue( _totalizedControlFlag, flag );
+}
+
+double Conductor::getPhaseAValueBeforeControl() const
+{
+    return _phaseAvalueBeforeControl;
+}
+
+void Conductor::setPhaseAValueBeforeControl( const double aValue )
+{
+    updateDynamicValue( _phaseAvalueBeforeControl, aValue );
+}
+
+double Conductor::getPhaseBValueBeforeControl() const
+{
+    return _phaseBvalueBeforeControl;
+}
+
+void Conductor::setPhaseBValueBeforeControl( const double aValue )
+{
+    updateDynamicValue( _phaseBvalueBeforeControl, aValue );
+}
+
+double Conductor::getPhaseCValueBeforeControl() const
+{
+    return _phaseCvalueBeforeControl;
+}
+
+void Conductor::setPhaseCValueBeforeControl( const double aValue )
+{
+    updateDynamicValue( _phaseCvalueBeforeControl, aValue );
 }
 
 // Watt
@@ -538,5 +616,85 @@ long Conductor::getDecimalPlaces() const
 void Conductor::setDecimalPlaces( const long places )
 {
     updateStaticValue( _decimalPlaces, places );
+}
+
+bool Conductor::getNewPointDataReceivedFlag() const
+{
+    return _newPointDataReceivedFlag;
+}
+
+void Conductor::setNewPointDataReceivedFlag( const bool flag )
+{
+    updateDynamicValue( _newPointDataReceivedFlag, flag );
+}
+
+bool Conductor::getRecentlyControlledFlag() const
+{
+    return _recentlyControlledFlag;
+}
+
+void Conductor::setRecentlyControlledFlag( const bool flag )
+{
+    updateDynamicValue( _recentlyControlledFlag, flag );
+}
+
+const CtiTime & Conductor::getLastOperationTime() const
+{
+    return _lastOperationTime;
+}
+
+void Conductor::setLastOperationTime( const CtiTime & aTime )
+{
+    updateDynamicValue( _lastOperationTime, aTime );
+}
+
+long Conductor::getEventSequence() const
+{
+    return _eventSequence;
+}
+
+void Conductor::setEventSequence( const long sequence )
+{
+    updateDynamicValue( _eventSequence, sequence );
+}
+
+bool Conductor::getWaiveControlFlag() const
+{
+    return _waiveControlFlag;
+}
+
+void Conductor::setWaiveControlFlag( const bool flag )
+{
+    updateDynamicValue( _waiveControlFlag, flag );
+}
+
+double Conductor::getKVARSolution() const
+{
+    return _kvarSolution;
+}
+
+void Conductor::setKVARSolution( const double aValue )
+{
+    updateDynamicValue( _kvarSolution, aValue );
+}
+
+const std::string & Conductor::getSolution() const
+{
+    return _solution;
+}
+
+void Conductor::setSolution( const std::string & text )
+{
+    updateStaticValue( _solution, text );   // feeder had this as dynamic - but not stored in dynamic table..?
+}
+
+double Conductor::getTargetVarValue() const
+{
+    return _targetVarValue;
+}
+
+void Conductor::setTargetVarValue( const double aValue )
+{
+    updateStaticValue( _targetVarValue, aValue );   // feeder had this as dynamic - but not stored in dynamic table..?
 }
 

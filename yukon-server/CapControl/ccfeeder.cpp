@@ -56,14 +56,10 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _currentwattloadpointvalue( 0 ),
         _currentvoltloadpointvalue( 0 ),
         _displayorder( 0 ),
-        _newpointdatareceivedflag( false ),
-        _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastcapbankcontrolleddeviceid( 0 ),
         _busoptimizedvarcategory( 1 ),
         _busoptimizedvaroffset( 0 ),
-        _kvarsolution( 0 ),
-        _waivecontrolflag( false ),
         _peakTimeFlag( false ),
         _verificationFlag( false ),
         _performingVerificationFlag( false ),
@@ -76,21 +72,14 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _ovUvDisabledFlag( false ),
         _correctionNeededNoBankAvailFlag( false ),
         _lastVerificationMsgSentSuccessful( false ),
-        _eventSeq( 0 ),
         _currentVerificationCapBankId( -1 ),
         _currentCapBankToVerifyAssumedOrigState( 0 ),
-        _targetvarvalue( 0 ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
-        _phaseAvalueBeforeControl( 0 ),
-        _phaseBvalueBeforeControl( 0 ),
-        _phaseCvalueBeforeControl( 0 ),
         _retryIndex( 0 ),
         _likeDayControlFlag( false ),
         _porterRetFailFlag( false ),
-        _solution( "IDLE" ),
-        _lastoperationtime( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
@@ -104,14 +93,10 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _currentwattloadpointvalue( 0 ),
         _currentvoltloadpointvalue( 0 ),
         _displayorder( 0 ),
-        _newpointdatareceivedflag( false ),
-        _recentlycontrolledflag( false ),
         _varvaluebeforecontrol( 0 ),
         _lastcapbankcontrolleddeviceid( 0 ),
         _busoptimizedvarcategory( 1 ),
         _busoptimizedvaroffset( 0 ),
-        _kvarsolution( 0 ),
-        _waivecontrolflag( false ),
         _peakTimeFlag( false ),
         _verificationFlag( false ),
         _performingVerificationFlag( false ),
@@ -124,21 +109,14 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _ovUvDisabledFlag( false ),
         _correctionNeededNoBankAvailFlag( false ),
         _lastVerificationMsgSentSuccessful( false ),
-        _eventSeq( 0 ),
         _currentVerificationCapBankId( -1 ),
         _currentCapBankToVerifyAssumedOrigState( 0 ),
-        _targetvarvalue( 0 ),
         _phaseAvalue( 0 ),
         _phaseBvalue( 0 ),
         _phaseCvalue( 0 ),
-        _phaseAvalueBeforeControl( 0 ),
-        _phaseBvalueBeforeControl( 0 ),
-        _phaseCvalueBeforeControl( 0 ),
         _retryIndex( 0 ),
         _likeDayControlFlag( false ),
         _porterRetFailFlag( false ),
-        _solution( "IDLE" ),
-        _lastoperationtime( gInvalidCtiTime ),
         regression( _RATE_OF_CHANGE_DEPTH ),
         regressionA( _RATE_OF_CHANGE_DEPTH ),
         regressionB( _RATE_OF_CHANGE_DEPTH ),
@@ -268,67 +246,10 @@ double CtiCCFeeder::getPhaseCValue() const
 {
     return _phaseCvalue;
 }
-/*---------------------------------------------------------------------------
-    getPhaseAValue
-
-    Returns the PhaseAValue VAr of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getPhaseAValueBeforeControl() const
-{
-    return _phaseAvalueBeforeControl;
-}
-/*---------------------------------------------------------------------------
-    getPhaseBValue
-
-    Returns the PhaseBValue VAr of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getPhaseBValueBeforeControl() const
-{
-    return _phaseBvalueBeforeControl;
-}
-/*---------------------------------------------------------------------------
-    getPhaseCValue
-
-    Returns the PhaseCValue VAr of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getPhaseCValueBeforeControl() const
-{
-    return _phaseCvalueBeforeControl;
-}
-
-/*---------------------------------------------------------------------------
-    getNewPointDataReceivedFlag
-
-    Returns the new point data received flag of the feeder
----------------------------------------------------------------------------*/
-bool CtiCCFeeder::getNewPointDataReceivedFlag() const
-{
-    return _newpointdatareceivedflag;
-}
 
 long CtiCCFeeder::getRetryIndex() const
 {
     return _retryIndex;
-}
-
-/*---------------------------------------------------------------------------
-    getRecentlyControlledFlag
-
-    Returns the flag if the feeder has been recently controlled
----------------------------------------------------------------------------*/
-bool CtiCCFeeder::getRecentlyControlledFlag() const
-{
-    return _recentlycontrolledflag;
-}
-
-/*---------------------------------------------------------------------------
-    getLastOperationTime
-
-    Returns the last operation time of the feeder
----------------------------------------------------------------------------*/
-const CtiTime& CtiCCFeeder::getLastOperationTime() const
-{
-    return _lastoperationtime;
 }
 
 /*---------------------------------------------------------------------------
@@ -379,26 +300,6 @@ double CtiCCFeeder::getBusOptimizedVarOffset() const
 }
 
 /*---------------------------------------------------------------------------
-    getKVARSolution
-
-    Returns the kvar solution of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getKVARSolution() const
-{
-    return _kvarsolution;
-}
-
-/*---------------------------------------------------------------------------
-    getWaiveControlFlag
-
-    Returns the WaiveControlFlag of the feeder
----------------------------------------------------------------------------*/
-bool CtiCCFeeder::getWaiveControlFlag() const
-{
-    return _waivecontrolflag;
-}
-
-/*---------------------------------------------------------------------------
     getPeakTimeFlag
 
     Returns the PeakTimeFlag of the feeder
@@ -411,11 +312,6 @@ bool CtiCCFeeder::getPeakTimeFlag() const
 bool CtiCCFeeder::getPorterRetFailFlag() const
 {
     return _porterRetFailFlag;
-}
-
-long CtiCCFeeder::getEventSequence() const
-{
-    return _eventSeq;
 }
 
 /*---------------------------------------------------------------------------
@@ -531,37 +427,6 @@ void CtiCCFeeder::setDisplayOrder(float order)
     _displayorder = order;
 }
 
-
-/*---------------------------------------------------------------------------
-    setNewPointDataReceivedFlag
-
-    Sets the new point data received flag of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setNewPointDataReceivedFlag(bool newpointdatareceived)
-{
-    updateDynamicValue( _newpointdatareceivedflag, newpointdatareceived );
-}
-
-/*---------------------------------------------------------------------------
-    setRecentlyControlledFlag
-
-    Sets the recently controlled flag of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setRecentlyControlledFlag(bool recentlycontrolled)
-{
-    updateDynamicValue( _recentlycontrolledflag, recentlycontrolled );
-}
-
-/*---------------------------------------------------------------------------
-    setLastOperationTime
-
-    Sets the last operation time of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setLastOperationTime(const CtiTime& lastoperation)
-{
-    updateDynamicValue( _lastoperationtime, lastoperation );
-}
-
 /*---------------------------------------------------------------------------
     setVarValueBeforeControl
 
@@ -597,26 +462,6 @@ void CtiCCFeeder::setBusOptimizedVarOffset(const double varoffset)
 }
 
 /*---------------------------------------------------------------------------
-    setKVARSolution
-
-    Sets the KVARSolution in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setKVARSolution(double solution)
-{
-    updateDynamicValue( _kvarsolution, solution );
-}
-
-/*---------------------------------------------------------------------------
-    setWaiveControlFlag
-
-    Sets the WaiveControlFlag in the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setWaiveControlFlag(bool waive)
-{
-    updateDynamicValue( _waivecontrolflag, waive );
-}
-
-/*---------------------------------------------------------------------------
     setParentPeakTimeFlag
 
     Sets the ParentPeakTimeFlag in the feeder
@@ -629,11 +474,6 @@ void CtiCCFeeder::setPeakTimeFlag(bool peakTimeFlag)
 void CtiCCFeeder::setPorterRetFailFlag(bool flag)
 {
     updateDynamicValue( _porterRetFailFlag, flag );
-}
-
-void CtiCCFeeder::setEventSequence(long eventSeq)
-{
-    updateDynamicValue( _eventSeq, eventSeq );
 }
 
 CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMultiMsg_vec& pointChanges, double leadLevel, double lagLevel, double currentVarValue,
@@ -2317,7 +2157,7 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
             {
                 if( !_IGNORE_NOT_NORMAL_FLAG || currentVarPointQuality == NormalQuality )
                 {
-                    if( _RATE_OF_CHANGE && regressionA.depthMet() && regressionB.depthMet() && regressionC.depthMet() )
+                    if( _RATE_OF_CHANGE && getRegressionA().depthMet() && getRegressionB().depthMet() && getRegressionC().depthMet() )
                     {
                         CtiTime timeNow;
                         //This will only be called if we intend to do rate of change and the regression depth is met.
@@ -2433,7 +2273,7 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
             {
                 if( !_IGNORE_NOT_NORMAL_FLAG || currentVarPointQuality == NormalQuality )
                 {
-                    if( _RATE_OF_CHANGE && regressionA.depthMet() && regressionB.depthMet() && regressionC.depthMet() )
+                    if( _RATE_OF_CHANGE && getRegressionA().depthMet() && getRegressionB().depthMet() && getRegressionC().depthMet() )
                     {
                         CtiTime timeNow;
                         //This will only be called if we intend to do rate of change and the regression depth is met.
@@ -2621,10 +2461,10 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                {
                    if( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality )
                    {
-                        if( _RATE_OF_CHANGE && regression.depthMet() )
+                        if( _RATE_OF_CHANGE && getRegression().depthMet() )
                         {
                             //This will only be called if we intend to do rate of change and the regression depth is met.
-                            double varValueReg = regression.regression( CtiTime().seconds() );
+                            double varValueReg = getRegression().regression( CtiTime().seconds() );
 
                             if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                             {
@@ -2637,9 +2477,9 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                         {
                            change = getCurrentVarLoadPointValue() - getVarValueBeforeControl();
                         }
-                        if( _RATE_OF_CHANGE && !regression.depthMet() )
+                        if( _RATE_OF_CHANGE && !getRegression().depthMet() )
                         {
-                            CTILOG_INFO(dout, "Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth());
+                            CTILOG_INFO(dout, "Rate of Change Depth not met: " << getRegression().getCurDepth() << " / " << getRegression().getRegDepth());
                         }
                         if( change < 0 )
                         {
@@ -2737,10 +2577,10 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                {
                    if( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality )
                    {
-                        if( _RATE_OF_CHANGE && regression.depthMet() )
+                        if( _RATE_OF_CHANGE && getRegression().depthMet() )
                         {
                             //This will only be called if we intend to do rate of change and the regression depth is met.
-                            double varValueReg = regression.regression( CtiTime().seconds() );
+                            double varValueReg = getRegression().regression( CtiTime().seconds() );
                             CTILOG_INFO(dout, "Rate of Change Value: " << varValueReg);
                             // is estimated within Percent of currentVar?
                             change = varValueReg - getCurrentVarLoadPointValue();
@@ -2749,9 +2589,9 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                         {
                             change = getVarValueBeforeControl() - getCurrentVarLoadPointValue();
                         }
-                        if( _RATE_OF_CHANGE && !regression.depthMet() )
+                        if( _RATE_OF_CHANGE && !getRegression().depthMet() )
                         {
-                            CTILOG_INFO(dout, "Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth());
+                            CTILOG_INFO(dout, "Rate of Change Depth not met: " << getRegression().getCurDepth() << " / " << getRegression().getRegDepth());
                         }
                         if( change < 0 )
                         {
@@ -2955,8 +2795,8 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
            {
                if( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality )
                {
-                    if( _RATE_OF_CHANGE && regressionA.depthMet() &&
-                        regressionB.depthMet() && regressionC.depthMet() )
+                    if( _RATE_OF_CHANGE && getRegressionA().depthMet() &&
+                        getRegressionB().depthMet() && getRegressionC().depthMet() )
                     {
 
                         CtiTime timeNow;
@@ -3092,8 +2932,8 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
            {
                if( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality )
                {
-                    if( _RATE_OF_CHANGE && regressionA.depthMet() &&
-                        regressionB.depthMet() && regressionC.depthMet() )
+                    if( _RATE_OF_CHANGE && getRegressionA().depthMet() &&
+                        getRegressionB().depthMet() && getRegressionC().depthMet() )
                     {
 
                         CtiTime timeNow;
@@ -4071,17 +3911,6 @@ void CtiCCFeeder::setCurrentVerificationCapBankState(long status)
     updateDynamicValue( _currentCapBankToVerifyAssumedOrigState, status );
 }
 
-void CtiCCFeeder::setTargetVarValue(double value)
-{
-    updateDynamicValue( _targetvarvalue, value );
-}
-
-void CtiCCFeeder::setSolution(const string &text)
-{
-    string temp = text;
-    updateDynamicValue( _solution, temp );
-}
-
 /*---------------------------------------------------------------------------
     setPhaseAValue
 
@@ -4135,34 +3964,6 @@ void CtiCCFeeder::setPhaseCValue(double value, CtiTime timestamp)
             CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionC  " << timestamp.seconds() << "  and " << value);
         }
     }
-}
-
-/*---------------------------------------------------------------------------
-    setPhaseAValue
-
-    Sets the PhaseAValue VAr  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPhaseAValueBeforeControl(double value)
-{
-    _phaseAvalueBeforeControl = value;
-}
-/*---------------------------------------------------------------------------
-    setPhaseBValue
-
-    Sets the PhaseBValue VAr  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPhaseBValueBeforeControl(double value)
-{
-    _phaseBvalueBeforeControl = value;
-}
-/*---------------------------------------------------------------------------
-    setPhaseCValue
-
-    Sets the PhaseCValue VAr  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPhaseCValueBeforeControl(double value)
-{
-    _phaseCvalueBeforeControl = value;
 }
 
 void CtiCCFeeder::setRetryIndex(long value)
@@ -4236,16 +4037,6 @@ long CtiCCFeeder::getCurrentVerificationCapBankId() const
 long CtiCCFeeder::getCurrentVerificationCapBankOrigState() const
 {
     return _currentCapBankToVerifyAssumedOrigState;
-
-}
-double CtiCCFeeder::getTargetVarValue() const
-{
-    return _targetvarvalue;
-
-}
-const string& CtiCCFeeder::getSolution() const
-{
-    return _solution;
 
 }
 
@@ -4919,25 +4710,25 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
     writer
         << _currentvarloadpointvalue
         << _currentwattloadpointvalue
-        << serializeFlag( _newpointdatareceivedflag )
+        << serializeFlag( getNewPointDataReceivedFlag() )
         << getLastCurrentVarPointUpdateTime()
         << getEstimatedVarLoadPointValue()
         << getCurrentDailyOperations()
-        << serializeFlag( _recentlycontrolledflag )
-        << _lastoperationtime
-        << _varvaluebeforecontrol
+        << serializeFlag( getRecentlyControlledFlag() )
+        << getLastOperationTime()
+        << getVarValueBeforeControl()
         << _lastcapbankcontrolleddeviceid
         << _busoptimizedvarcategory
         << _busoptimizedvaroffset
         << currentDateTime
         << getPowerFactorValue()
-        << _kvarsolution
+        << getKVARSolution()
         << getEstimatedPowerFactorValue()
         << getCurrentVarPointQuality()
-        << serializeFlag( _waivecontrolflag )
+        << serializeFlag( getWaiveControlFlag() )
         << formatFlags()
         << _currentvoltloadpointvalue
-        << _eventSeq
+        << getEventSequence()
         << _currentVerificationCapBankId
         << _currentCapBankToVerifyAssumedOrigState
         << getCurrentWattPointQuality()
@@ -4952,9 +4743,9 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
         << getLastWattPointTime()
         << getLastVoltPointTime()
         << _retryIndex
-        << _phaseAvalueBeforeControl
-        << _phaseBvalueBeforeControl
-        << _phaseCvalueBeforeControl
+        << getPhaseAValueBeforeControl()
+        << getPhaseBValueBeforeControl()
+        << getPhaseCValueBeforeControl()
         << getPaoId();
 
     return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
@@ -4979,25 +4770,25 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << getPaoId()
         << _currentvarloadpointvalue
         << _currentwattloadpointvalue
-        << serializeFlag( _newpointdatareceivedflag )
+        << serializeFlag( getNewPointDataReceivedFlag() )
         << getLastCurrentVarPointUpdateTime()
         << getEstimatedVarLoadPointValue()
         << getCurrentDailyOperations()
-        << serializeFlag( _recentlycontrolledflag )
-        << _lastoperationtime
-        << _varvaluebeforecontrol
+        << serializeFlag( getRecentlyControlledFlag() )
+        << getLastOperationTime()
+        << getVarValueBeforeControl()
         << _lastcapbankcontrolleddeviceid
         << _busoptimizedvarcategory
         << _busoptimizedvaroffset
         << currentDateTime
         << getPowerFactorValue()
-        << _kvarsolution
+        << getKVARSolution()
         << getEstimatedPowerFactorValue()
         << getCurrentVarPointQuality()
-        << serializeFlag( _waivecontrolflag )
+        << serializeFlag( getWaiveControlFlag() )
         << formatFlags()
         << _currentvoltloadpointvalue
-        << _eventSeq
+        << getEventSequence()
         << _currentVerificationCapBankId
         << _currentCapBankToVerifyAssumedOrigState
         << getCurrentWattPointQuality()
@@ -5012,9 +4803,9 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << getLastWattPointTime()
         << getLastVoltPointTime()
         << _retryIndex
-        << _phaseAvalueBeforeControl
-        << _phaseBvalueBeforeControl
-        << _phaseCvalueBeforeControl;
+        << getPhaseAValueBeforeControl()
+        << getPhaseBValueBeforeControl()
+        << getPhaseCValueBeforeControl();
 
     return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
@@ -5049,24 +4840,10 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["CurrentVarPointValue"]     >> _currentvarloadpointvalue;
     rdr["CurrentWattPointValue"]    >> _currentwattloadpointvalue;
 
-    rdr["NewPointDataReceivedFlag"] >> flags;
-
-    _newpointdatareceivedflag       = deserializeFlag( flags );
-
-    rdr["RecentlyControlledFlag"]   >> flags;
-
-    _recentlycontrolledflag         = deserializeFlag( flags );
-
-    rdr["LastOperationTime"]        >> _lastoperationtime;
     rdr["VarValueBeforeControl"]    >> _varvaluebeforecontrol;
     rdr["LastCapBankDeviceID"]      >> _lastcapbankcontrolleddeviceid;
     rdr["BusOptimizedVarCategory"]  >> _busoptimizedvarcategory;
     rdr["BusOptimizedVarOffset"]    >> _busoptimizedvaroffset;
-    rdr["KvarSolution"]             >> _kvarsolution;
-
-    rdr["WaiveControlFlag"]         >> flags;
-
-    _waivecontrolflag               = deserializeFlag( flags );
 
     rdr["AdditionalFlags"]          >> flags;
 
@@ -5085,7 +4862,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     _lastVerificationMsgSentSuccessful  = deserializeFlag( flags, 12 );
 
     rdr["CurrentVoltPointValue"]    >> _currentvoltloadpointvalue;
-    rdr["EventSeq"]                 >> _eventSeq;
     rdr["CurrVerifyCBId"]           >> _currentVerificationCapBankId;
     rdr["CurrVerifyCBOrigState"]    >> _currentCapBankToVerifyAssumedOrigState;
 
@@ -5094,10 +4870,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["phasecvalue"]              >> _phaseCvalue;
 
     rdr["retryIndex"]               >> _retryIndex;
-
-    rdr["PhaseAValueBeforeControl"] >> _phaseAvalueBeforeControl;
-    rdr["PhaseBValueBeforeControl"] >> _phaseBvalueBeforeControl;
-    rdr["PhaseCValueBeforeControl"] >> _phaseCvalueBeforeControl;
 }
 
 /*---------------------------------------------------------------------------
