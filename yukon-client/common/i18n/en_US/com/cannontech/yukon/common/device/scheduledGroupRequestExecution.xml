@@ -130,6 +130,7 @@
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.user">User</entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.executions">Executions</entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.executionsButton">View All Executions</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.runningWarning">Edit functionality is disabled while schedule is running.</entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.popInfo.deviceGroup"><![CDATA[
     	 <br>
 	     View the device group in the Device Group Editor page.

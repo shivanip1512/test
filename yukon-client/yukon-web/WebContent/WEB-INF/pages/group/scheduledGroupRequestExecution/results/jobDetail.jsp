@@ -7,6 +7,10 @@
 
 <cti:standardPage page="schedules.VIEW" module="tools">
 
+<div class="dn js-running-warning warning">
+    <i:inline key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.runningWarning"/>
+</div>
+
 <cti:msg var="pageTitle" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.pageTitle" />
 <cti:msg var="infoSectionText" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.section" />
 <cti:msg var="scheduleNameText" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.scheduleName" />
@@ -49,6 +53,20 @@
             }
         };
     }
+    
+    function enableDisableEdit() {
+        return function (data) {
+            var state = data.state;
+            
+            if (state === 'Running') {
+                $('.js-edit-btn').attr('disabled','disabled');
+                $('.js-running-warning').removeClass('dn');
+            } else {
+                $('.js-edit-btn').removeAttr('disabled');
+                $('.js-running-warning').addClass('dn');
+            }
+        };
+      }
 </script>
     
 <%-- JOB INFO --%>
@@ -133,6 +151,7 @@
         <%-- enabled --%>
         <tags:nameValue name="${scheduleStatusText}">
             <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
+            <cti:dataUpdaterCallback function="enableDisableEdit()" initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>
         </tags:nameValue>
         
         <%-- schedule description --%>
@@ -215,7 +234,7 @@
         <cti:url value="/group/scheduledGroupRequestExecution/home" var="editUrl">
             <cti:param name="editJobId" value="${jobWrapper.job.id}"/>
         </cti:url>
-        <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+        <cti:button disabled="${jobWrapper.jobStatus eq 'RUNNING'}" classes="js-edit-btn" nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
     </div>
 </c:if>
 
