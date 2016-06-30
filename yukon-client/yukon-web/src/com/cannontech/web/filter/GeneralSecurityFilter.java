@@ -24,6 +24,7 @@ public class GeneralSecurityFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         response.addHeader("X-Frame-Options", "SAMEORIGIN"); // click jacking prevention
         response.addHeader("X-Content-Type-Options", "nosniff"); // avoid mime sniffing
+        response.setHeader("X-XSS-Protection", "1; mode=block"); // avoid XSS attack
         response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubdomains");//HTTP Strict Transport Security 1 year as max-age
         chain.doFilter(request, servletResponse);
     }
