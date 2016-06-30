@@ -272,4 +272,5 @@ std::string parse_asString[] = {
 "command=2:flags=0::asciiraw=abc jimmy,-1,-1.000:type=versacom,0,0.000",
 "command=2:flags=0::hexraw=badf00d,-1,-1.000:type=versacom,0,0.000",
 "command=6:flags=0::template=sauce,-2147483648,0.000:templateinservice=(none),-2147483648,0.000:type=versacom,0,0.000",
+"command=6:flags=0::behavior=rfndatastreaming,-2147483648,0.000:type=versacom,0,0.000",
 };

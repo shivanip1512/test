@@ -368,18 +368,18 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="config_device.cpp">
-    </ClCompile>
-    <ClCompile Include="config_strings.cpp">
-    </ClCompile>
-    <ClCompile Include="da_lp_deviceconfig.cpp">
-    </ClCompile>
-    <ClCompile Include="id_dcdll.cpp">
-    </ClCompile>
-    <ClCompile Include="mgr_config.cpp">
-    </ClCompile>
+    <ClCompile Include="behavior_device.cpp" />
+    <ClCompile Include="behavior_rfnDataStreaming.cpp" />
+    <ClCompile Include="config_device.cpp" />
+    <ClCompile Include="config_strings.cpp" />
+    <ClCompile Include="da_lp_deviceconfig.cpp" />
+    <ClCompile Include="id_dcdll.cpp" />
+    <ClCompile Include="mgr_behavior.cpp" />
+    <ClCompile Include="mgr_config.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\behavior_device.h" />
+    <ClInclude Include="include\behavior_rfnDataStreaming.h" />
     <ClInclude Include="include\config_data_dnp.h" />
     <ClInclude Include="include\config_data_mct.h" />
     <ClInclude Include="include\config_data_regulator.h" />
@@ -387,6 +387,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\config_device.h" />
     <ClInclude Include="include\da_lp_deviceconfig.h" />
     <ClInclude Include="include\id_dcdll.h" />
+    <ClInclude Include="include\mgr_behavior.h" />
     <ClInclude Include="include\mgr_config.h" />
   </ItemGroup>
   <ItemGroup>

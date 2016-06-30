@@ -273,5 +273,6 @@ std::string inputStrings[] = {
 "putvalue asciiraw \"abc jimmy\"",
 "putvalue hexraw 0xbadf00d",
 "putconfig template \"sauce\"",
+"putconfig behavior rfnDataStreaming",
 };
 

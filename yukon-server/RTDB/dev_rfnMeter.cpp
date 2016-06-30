@@ -4,6 +4,8 @@
 #include "tbl_rfnidentifier.h"
 #include "config_data_rfn.h"
 #include "config_helpers.h"
+#include "mgr_behavior.h"
+#include "behavior_rfnDataStreaming.h"
 
 #include "cmd_rfn_TemperatureAlarm.h"
 #include "cmd_rfn_ChannelConfiguration.h"
@@ -67,6 +69,10 @@ YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandPar
     {
         return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, InstallType::PutConfig);
     }
+    if( parse.isKeyValid("behavior") )
+    {
+        return executePutConfigBehavior(pReq, parse, returnMsgs, rfnRequests);
+    }
     if( parse.isKeyValid("tou") )
     {
         return executePutConfigTou(pReq, parse, returnMsgs, rfnRequests);
@@ -90,6 +96,10 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandPar
     {
         return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, InstallType::GetConfig);
     }
+    if( parse.isKeyValid("behavior") )
+    {
+        return executeGetConfigBehavior(pReq, parse, returnMsgs, rfnRequests);
+    }
     if( parse.isKeyValid("tou") )
     {
         return executeGetConfigTou(pReq, parse, returnMsgs, rfnRequests);
@@ -104,6 +114,24 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandPar
     }
 
     return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnMeterDevice::executeGetConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    if( auto behaviorType = parse.findStringForKey("behaviorType") )
+    {
+        if( *behaviorType == "rfndatastreaming" )
+        {
+            auto behavior = BehaviorManager::getBehaviorForPao<Behaviors::RfnDataStreamingBehavior>(getID());
+        }
+    }
+
+    return ClientErrors::None;
+}
+
+YukonError_t RfnMeterDevice::executePutConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+{
+    return ClientErrors::None;
 }
 
 /**
@@ -126,6 +154,7 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(InstallType installTy
 
     return m;
 }
+
 
 /**
  * Execute putconfig/getconfig Install

@@ -87,6 +87,9 @@ private:
     typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
     typedef std::vector<unsigned long> PaoMetricIds;
 
+    YukonError_t executeGetConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executePutConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
     YukonError_t executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, InstallType installType);
     void executeConfigInstallSingle  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod );
     YukonError_t compareChannels(
@@ -96,9 +99,6 @@ private:
         std::string prefix, 
         const PaoMetricIds &cfgMidnightMetrics, 
         const boost::optional<PaoMetricIds> &paoMidnightMetrics);
-
-public:
-    RfnMeterDevice() {};
 };
 
 typedef RfnMeterDevice Rfn410flDevice;  //  kWh only

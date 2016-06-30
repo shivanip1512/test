@@ -1680,6 +1680,16 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 _cmd["installvalue"] = CtiParseValue(cmdtok());
             }
         }
+        if(containsString(CmdStr, " behavior"))
+        {
+            if( !(token = matchRegex(CmdStr, "behavior +[a-z0-9]+")).empty() )
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "behavior"
+
+                _cmd["behavior"] = CtiParseValue(cmdtok());
+            }
+        }
         if(containsString(CmdStr, " options"))
         {
             _cmd["options"] = CtiParseValue( "TRUE" );
@@ -2022,6 +2032,16 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
                 {
                     _cmd["verify"] = CtiParseValue(true);
                 }
+            }
+        }
+        else if(containsString(CmdStr, " behavior"))
+        {
+            if( !(token = matchRegex(CmdStr, "behavior +[a-z0-9]+")).empty() )
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "behavior"
+
+                _cmd["behavior"] = CtiParseValue(cmdtok());
             }
         }
         else if(containsString(CmdStr, " tou"))
