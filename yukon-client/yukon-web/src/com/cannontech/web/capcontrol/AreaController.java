@@ -29,12 +29,14 @@ import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.Substation;
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.HolidayScheduleDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
@@ -58,7 +60,9 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.area.dao.AreaDao;
 import com.cannontech.web.capcontrol.area.model.Area;
 import com.cannontech.web.capcontrol.models.Assignment;
+import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.service.StrategyService;
+import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
@@ -79,6 +83,8 @@ public class AreaController {
     @Autowired private StrategyService strategyService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DurationFormattingService durationFormatting;
+    @Autowired private CapControlWebUtilsService capControlWebUtilsService;
+    @Autowired private CapControlCache capControlCache;
 
     private static final Logger log = YukonLogManager.getLogger(AreaController.class);
     private final static String areaKey = "yukon.web.modules.capcontrol.area.";
@@ -173,6 +179,17 @@ public class AreaController {
         if(area.getId() != null){
             int areaId = area.getId();
             
+            boolean specialArea = area.getType().equals(PaoType.CAP_CONTROL_SPECIAL_AREA);
+            
+            //needed for trends/events
+            try {
+                com.cannontech.message.capcontrol.streamable.StreamableCapObject cachedArea = specialArea ? capControlCache.getSpecialArea(areaId) : capControlCache.getArea(areaId);
+                List<ViewableArea> viewableArea = capControlWebUtilsService.createViewableAreas(Arrays.asList(cachedArea), capControlCache, specialArea);
+                model.addAttribute("viewableArea", viewableArea.get(0));
+            } catch (NotFoundException e) {
+                //area was most likely newly created and not in cache yet
+            }
+
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(area.getId());
             model.addAttribute("points", points);
             

@@ -18,6 +18,8 @@
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 <tags:setFormEditMode mode="${mode}"/>
 
+<flot:defaultIncludes/>
+
 <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="areaState_"]');
@@ -34,6 +36,18 @@
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <li class="divider" />
     </cti:checkRolesAndProperties>
+    <c:if test="${showAnalysis}">
+        <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
+            <%@ include file="../tier/analysisTrendsOptions.jspf" %>
+        </i:simplePopup>
+        <cm:dropdownOption key=".analysis.label" id="analysisTrendsButton" icon="icon-chart-line" />
+    </c:if>
+
+    <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
+        <%@ include file="../tier/recentEventsOptions.jspf" %>
+    </i:simplePopup>
+    <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
+    
     <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
         <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
     </cti:checkRolesAndProperties>

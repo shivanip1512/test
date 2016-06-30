@@ -4,7 +4,7 @@ $(document).on('click', '#recentEventsView', function (event) {
     var values = $.map($('table.recentEventsCheckboxes input[type=checkbox]:checked'), function (elem, index) {
         return $(elem).val();
     });
-    window.location.href = '/capcontrol/search/recentEvents?value=' + encodeURIComponent(values.join(','));
+    window.location.href = yukon.url('/capcontrol/search/recentEvents?value=' + encodeURIComponent(values.join(',')));
 });
 </script>
 
