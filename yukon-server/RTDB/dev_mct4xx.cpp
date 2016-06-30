@@ -1855,7 +1855,6 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
         { PutConfigPart_display,                 &Self::executePutConfigDisplay},
         { PutConfigPart_dst,                     &Self::executePutConfigInstallDST},
         { PutConfigPart_freeze_day,              &Self::executePutConfigInstallFreezeDay},
-        { PutConfigPart_timezone,                &Self::executePutConfigInstallTimezone},
         { PutConfigPart_lpchannel,               &Self::executePutConfigLoadProfileChannel},
         { PutConfigPart_meter_parameters,        &Self::executePutConfigMeterParameters},
         { PutConfigPart_phaseloss,               &Self::executePutConfigInstallPhaseLoss},
@@ -1863,6 +1862,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
         { PutConfigPart_relays,                  &Self::executePutConfigRelays},
         { PutConfidPart_spid,                    &Self::executePutConfigSpid},
         { PutConfigPart_time_adjust_tolerance,   &Self::executePutConfigTimeAdjustTolerance},
+        { PutConfigPart_timezone,                &Self::executePutConfigInstallTimezone},
         { PutConfigPart_tou,                     &Self::executePutConfigTOU}
     };
 
