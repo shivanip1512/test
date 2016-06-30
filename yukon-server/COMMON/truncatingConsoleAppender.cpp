@@ -8,7 +8,7 @@
 #include <log4cxx/helpers/loglog.h>
 #include <log4cxx/helpers/transcoder.h>
 
-#include <boost/range/algorithm/count.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 
 #include <apr_time.h>
 
@@ -69,9 +69,9 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
 
         _currentBurst = 0;
 
-        for each(const log4cxx::spi::LoggingEventPtr &event in _burstBuffer)
+        for(const auto& bufferedEvent : _burstBuffer)
         {
-            WriterAppender::subAppend(event, p);
+            WriterAppender::subAppend(bufferedEvent, p);
         }
 
         _burstBuffer.clear();
@@ -79,11 +79,34 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
 
     if( event != PokeEvent )
     {
-        if( _currentBurst < _maxBurstSize )
-        {
-            WriterAppender::subAppend(event, p);
+		log4cxx::spi::LoggingEventPtr consoleEvent = event;
 
-            _currentBurst += 1 + boost::range::count(event->getMessage(), '\n');
+		size_t lines = 0;
+		const size_t maxNewlines = 500;
+
+		static const auto nth_newline = 
+                [&](const log4cxx::LogString::value_type c) 
+                {
+                    return c == '\n' && ++lines > maxNewlines;
+                };
+
+		const auto splitPoint = boost::range::find_if(event->getMessage(), nth_newline);
+
+		if( splitPoint != event->getMessage().end() )
+		{
+			consoleEvent = log4cxx::spi::LoggingEventPtr{
+				new log4cxx::spi::LoggingEvent(
+					event->getLoggerName(),
+					event->getLevel(),
+					log4cxx::LogString{event->getMessage().cbegin(), splitPoint} + L"\nLog entry truncated after 500 lines.",
+					event->getLocationInformation())};
+		}
+
+		if( _currentBurst < _maxBurstSize )
+        {
+			_currentBurst += 1 + lines;
+			
+			WriterAppender::subAppend(consoleEvent, p);
 
             if( _currentBurst >= _maxBurstSize )
             {
@@ -97,7 +120,7 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
         else
         {
             //  circular buffer, only retains BurstBufferLength elements
-            _burstBuffer.push_back(event);
+            _burstBuffer.push_back(consoleEvent);
         }
     }
 }
