@@ -195,8 +195,8 @@ public class YC extends Observable implements MessageListener {
     public YC(boolean loadDefaultsFromFile) {
         super();
         loadCustomCommandsFromDatabase();
-        this.ycDefaults = new YCDefaults(loadDefaultsFromFile);
-        this.systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_SYSTEM);
+        ycDefaults = new YCDefaults(loadDefaultsFromFile);
+        systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_SYSTEM);
         connection.addMessageListener(this);
     }
     
@@ -273,7 +273,8 @@ public class YC extends Observable implements MessageListener {
     
     public LiteYukonPAObject[] getAllRoutes() {
         if (allRoutes == null) {
-            allRoutes = cache.getAllRoutes().toArray(allRoutes);
+            int size = cache.getAllRoutes().size();
+            allRoutes = cache.getAllRoutes().toArray(new LiteYukonPAObject[size]);
         }
         return allRoutes;
     }
@@ -596,8 +597,8 @@ public class YC extends Observable implements MessageListener {
      * @throws PaoAuthorizationException 
      */
     public void setCommandString(String command) throws PaoAuthorizationException {
-        this.commandString = command;
-        setCommands(this.commandString);
+        commandString = command;
+        setCommands(commandString);
         
         checkCommandAuthorization();
     }
@@ -650,7 +651,7 @@ public class YC extends Observable implements MessageListener {
     }
     
     public boolean isAllowCommand(String command) {
-        return this.isAllowCommand(command, this.user);
+        return this.isAllowCommand(command, user);
     }
     
     public boolean isAllowCommand(String command, LiteYukonUser user) {
@@ -1098,7 +1099,7 @@ public class YC extends Observable implements MessageListener {
     
     public void setLiteDeviceTypeCommands(List<LiteDeviceTypeCommand> commands) {
         liteDeviceTypeCommands = commands;
-        Collections.sort(this.liteDeviceTypeCommands, LiteComparators.liteDeviceTypeCommandComparator);
+        Collections.sort(liteDeviceTypeCommands, LiteComparators.liteDeviceTypeCommandComparator);
     }
     
     /**
@@ -1135,26 +1136,26 @@ public class YC extends Observable implements MessageListener {
     }
 
     public void startStopWatch(int timeOutInMillis) {
-        if (this.stopWatch == null) {
-            this.stopWatch = new Timer(timeOutInMillis, timerPerfomer);
+        if (stopWatch == null) {
+            stopWatch = new Timer(timeOutInMillis, timerPerfomer);
         }
-        this.stopWatch.setInitialDelay(timeOutInMillis);
-        this.stopWatch.setRepeats(false);
-        this.stopWatch.start();
+        stopWatch.setInitialDelay(timeOutInMillis);
+        stopWatch.setRepeats(false);
+        stopWatch.start();
     }
     
     /**
      * Returns true if the timer is running, otherwise return false (timer has stopped).
      */
     public boolean isWatchRunning() {
-        if (this.stopWatch != null && this.stopWatch.isRunning()) {
+        if (stopWatch != null && stopWatch.isRunning()) {
             return true;
         }
         return false;
     }
     
     public int getTimeOut() {
-        return this.timeOut;
+        return timeOut;
     }
     
     public void setTimeOut(int timeOut) {
@@ -1162,8 +1163,8 @@ public class YC extends Observable implements MessageListener {
     }
     
     public ActionListener getTimerPerfomer() {
-        if (this.timerPerfomer == null) {
-            this.timerPerfomer = new ActionListener() {
+        if (timerPerfomer == null) {
+            timerPerfomer = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     setTimeOut(0);
@@ -1171,7 +1172,7 @@ public class YC extends Observable implements MessageListener {
                 }
             };
         }
-        return this.timerPerfomer;
+        return timerPerfomer;
     }
     
     /**
@@ -1414,16 +1415,16 @@ public class YC extends Observable implements MessageListener {
     }
     
     public String getLogUserName() {
-        return this.logUserName;
+        return logUserName;
     }
     
     public void setLiteUser(LiteYukonUser user) {
         this.user  = user;
-        this.logUserName = user.getUsername();
+        logUserName = user.getUsername();
     }
     
     public String getErrorMsg() {
-        return this.errorMsg;
+        return errorMsg;
     }
     
     public void setErrorMsg(String errorMsg) {
