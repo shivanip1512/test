@@ -167,110 +167,101 @@ RowReader &DatabaseReader::operator[](int columnNumber)
     return *this;
 }
 
-RowReader &DatabaseReader::operator>>(bool &operand)
+DatabaseReader::operator bool()
 {
-    operand = _command[_currentIndex++];
-    return *this;
+    return _command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(short &operand)
+DatabaseReader::operator short()
 {
-    operand = _command[_currentIndex++];
-    return *this;
+    return _command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(unsigned short &operand)
+DatabaseReader::operator unsigned short()
 {
-    operand = _command[_currentIndex++];
-    return *this;
+    return _command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(long &operand)
+DatabaseReader::operator long()
 {
-    operand = _command[_currentIndex++];
-    return *this;
+    return _command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(INT &operand)
+DatabaseReader::operator int()
 {
-    operand = (long)_command[_currentIndex++];
-    return *this;
+    return (long)_command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(UINT &operand)
+DatabaseReader::operator unsigned()
 {
-    operand = (long)_command[_currentIndex++];
-    return *this;
+    return (long)_command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(UCHAR &operand)
+DatabaseReader::operator unsigned char()
 {
-    operand = (long)_command[_currentIndex++];
-    return *this;
+    return (long)_command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(unsigned long &operand)
+DatabaseReader::operator unsigned long()
 {
-    operand = _command[_currentIndex++];
-    return *this;
+    return _command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(long long &operand)
+DatabaseReader::operator long long()
 {
-    operand = _command[_currentIndex++].asNumeric();
-    return *this;
+    return _command[_currentIndex].asNumeric();
 }
 
-RowReader &DatabaseReader::operator>>(double &operand)
+DatabaseReader::operator double()
 {
-    operand = _command[_currentIndex++];
-    return *this;
+    return _command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(float &operand)
+DatabaseReader::operator float()
 {
-    operand = (double)_command[_currentIndex++];
-    return *this;
+    return (double)_command[_currentIndex];
 }
 
-RowReader &DatabaseReader::operator>>(CtiTime &operand)
+DatabaseReader::operator CtiTime()
 {
-    operand = CtiTime::CtiTime((struct tm*)&_command[_currentIndex++].asDateTime());
-    return *this;
+    return CtiTime{(struct tm*)&_command[_currentIndex].asDateTime()};
 }
 
-RowReader &DatabaseReader::operator>>(boost::posix_time::ptime &operand)
+DatabaseReader::operator boost::posix_time::ptime()
 {
-    operand = boost::posix_time::from_time_t(mktime((struct tm*)&_command[_currentIndex++].asDateTime()));
-    return *this;
+    return boost::posix_time::from_time_t(mktime((struct tm*)&_command[_currentIndex].asDateTime()));
 }
 
-RowReader &DatabaseReader::operator>>(std::string &operand)
+DatabaseReader::operator std::string()
 {
-    operand = _command[_currentIndex++].asString();
-    return *this;
+    return std::string{_command[_currentIndex].asString()};
+}
+
+void DatabaseReader::incrementColumnIndex()
+{
+    ++_currentIndex;
 }
 
 
 RowReader &DatabaseReader::extractChars(char *destination, unsigned count)
+{
+    SAString s = _command[_currentIndex++].asString();
+
+    auto dest = stdext::make_checked_array_iterator(destination, count);
+
+    if( count )
     {
-        SAString s = _command[_currentIndex++].asString();
+        const unsigned chars_to_extract = std::min<unsigned>(count - 1, s.GetLength());
 
-        auto dest = stdext::make_checked_array_iterator(destination, count);
+        const char *source = s.GetBuffer(chars_to_extract);
 
-        if( count )
-        {
-            const unsigned chars_to_extract = std::min<unsigned>(count - 1, s.GetLength());
+        std::copy(source, source + chars_to_extract, dest);
 
-            const char *source = s.GetBuffer(chars_to_extract);
-
-            std::copy(source, source + chars_to_extract, dest);
-
-            std::fill(dest + chars_to_extract, dest + count, 0);
-        }
-
-        return *this;
+        std::fill(dest + chars_to_extract, dest + count, 0);
     }
+
+    return *this;
+}
 
 
 

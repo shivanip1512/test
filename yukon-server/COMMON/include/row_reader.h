@@ -32,26 +32,56 @@ public:
     virtual RowReader &operator[](const std::string &columnName) = 0;
     virtual RowReader &operator[](int columnNumber) = 0;
 
-    virtual RowReader &operator>>(bool &operand) = 0;
-    virtual RowReader &operator>>(short &operand) = 0;
-    virtual RowReader &operator>>(unsigned short &operand) = 0;
-    virtual RowReader &operator>>(long &operand) = 0;
-    virtual RowReader &operator>>(INT &operand) = 0;
-    virtual RowReader &operator>>(UINT &operand) = 0;
-    virtual RowReader &operator>>(UCHAR &operand) = 0;
-    virtual RowReader &operator>>(unsigned long &operand) = 0;
-    virtual RowReader &operator>>(long long &operand) = 0;
-    virtual RowReader &operator>>(double &operand) = 0;
-    virtual RowReader &operator>>(float &operand) = 0;
-    virtual RowReader &operator>>(CtiTime &operand) = 0;
-    virtual RowReader &operator>>(boost::posix_time::ptime &operand) = 0;
-    virtual RowReader &operator>>(std::string &operand) = 0;
+protected:
+
+    using boost_ptime = boost::posix_time::ptime;
+
+private:
+
+    //  Make these private so we are the only ones who can do the typecast
+    virtual operator bool()            = 0;
+    virtual operator short()           = 0;
+    virtual operator unsigned short()  = 0;
+    virtual operator long()            = 0;
+    virtual operator int()             = 0;
+    virtual operator unsigned()        = 0;
+    virtual operator unsigned char()   = 0;
+    virtual operator unsigned long()   = 0;
+    virtual operator long long()       = 0;
+    virtual operator double()          = 0;
+    virtual operator float()           = 0;
+    virtual operator CtiTime()         = 0;
+    virtual operator boost_ptime()     = 0;
+    virtual operator std::string()     = 0;
+
+    virtual RowReader &extractChars(char *destination, unsigned count) = 0;
+
+    virtual void incrementColumnIndex() = 0;
+
+public:
+    template<typename T>
+    RowReader& operator>>(T& operand)
+    {
+        operand = as<T>();
+        incrementColumnIndex();
+        return *this;
+    }
+
     template<unsigned N>
     RowReader &operator>>(char (&operand)[N])
     {
-        return extractChars(operand, N);
+        extractChars(operand, N);
+        incrementColumnIndex();
+        return *this;
     }
-    virtual RowReader &extractChars(char *destination, unsigned count) = 0;
+
+    template<typename T>
+    T as()
+    {
+        //  Explicitly call the conversion operator.
+        //  This ensures the template will fail if operator T is not defined.
+        return operator T();  
+    }
 
     // inputs for variable binding
     virtual RowReader &operator<<(const bool operand) = 0;

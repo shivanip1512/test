@@ -39,22 +39,26 @@ public:
     RowReader &operator[](const std::string &columnName);
     RowReader &operator[](int columnNumber); // 0 based
 
-    RowReader &operator>>(bool &operand);
-    RowReader &operator>>(short &operand);
-    RowReader &operator>>(unsigned short &operand);
-    RowReader &operator>>(long &operand);
-    RowReader &operator>>(INT &operand);
-    RowReader &operator>>(UINT &operand);
-    RowReader &operator>>(UCHAR &operand);
-    RowReader &operator>>(unsigned long &operand);
-    RowReader &operator>>(long long &operand);
-    RowReader &operator>>(double &operand);
-    RowReader &operator>>(float &operand);
-    RowReader &operator>>(CtiTime &operand);
-    RowReader &operator>>(boost::posix_time::ptime &operand);
-    RowReader &operator>>(std::string &operand);
-    RowReader &extractChars(char *destination, unsigned count);
+private:
+    operator bool()           override;
+    operator short()          override;
+    operator unsigned short() override;
+    operator long()           override;
+    operator int()            override;
+    operator unsigned()       override;
+    operator unsigned char()  override;
+    operator unsigned long()  override;
+    operator long long()      override;
+    operator double()         override;
+    operator float()          override;
+    operator CtiTime()        override;
+    operator boost_ptime()    override;
+    operator std::string()    override;
+    RowReader &extractChars(char *destination, unsigned count) override;
 
+    void incrementColumnIndex() override;
+
+public:
     // inputs for variable binding
     RowReader &operator<<(const bool operand);
     RowReader &operator<<(const short operand);

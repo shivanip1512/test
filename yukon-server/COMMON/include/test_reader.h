@@ -223,69 +223,57 @@ public:
      */
     RowReader &operator[](int columnNumber) { _currentColumn = columnNumber; return *this; } // 0 based
 
-    RowReader &operator>>(bool &operand)
+    operator bool() override
     {
         checkBounds();
 
         if( _values[_currentRow][_currentColumn] == getTrueString() )
         {
-            operand = true;
+            return true;
         }
         else if( _values[_currentRow][_currentColumn] == getFalseString() )
         {
-            operand = false;
+            return false;
         }
         else
         {
             throw std::invalid_argument("Value " + _values[_currentRow][_currentColumn] + " not True or False.");
         }
-
-        _currentColumn++;
-        return *this;
     }
 
-    RowReader &operator>>(short &operand)          { operand = getNextIntegerValue(); return *this;  }
-    RowReader &operator>>(unsigned short &operand) { operand = getNextIntegerValue(); return *this;  }
-    RowReader &operator>>(long &operand)           { operand = getNextIntegerValue(); return *this;  }
-    RowReader &operator>>(INT &operand)            { operand = getNextIntegerValue(); return *this;  }
-    RowReader &operator>>(UINT &operand)           { operand = getNextIntegerValue(); return *this;  }
-    RowReader &operator>>(UCHAR &operand)          { operand = getNextIntegerValue(); return *this;  }
-    RowReader &operator>>(unsigned long &operand)  { operand = getNextIntegerValue(); return *this;  }
-    RowReader &operator>>(long long &operand)      { operand = getNextIntegerValue(); return *this;  }
+    operator short()          override { return getIntegerValue();  }
+    operator unsigned short() override { return getIntegerValue();  }
+    operator long()           override { return getIntegerValue();  }
+    operator int()            override { return getIntegerValue();  }
+    operator unsigned()       override { return getIntegerValue();  }
+    operator unsigned char()  override { return getIntegerValue();  }
+    operator unsigned long()  override { return getIntegerValue();  }
+    operator long long()      override { return getIntegerValue();  }
+                            
+    operator double()         override { return getFloatValue();    }
+    operator float()          override { return getFloatValue();    }
 
-    RowReader &operator>>(double &operand)         { operand = getNextFloatValue();   return *this;  }
-    RowReader &operator>>(float &operand)          { operand = getNextFloatValue();   return *this;  }
-
-    RowReader &operator>>(CtiTime &operand)
+    operator CtiTime() override
     {
         checkBounds();
 
-        operand = CtiTime::now();
-
-        _currentColumn++;
-        return *this;
+        return CtiTime::now();
     }
 
-    RowReader &operator>>(boost::posix_time::ptime &operand)
+    operator boost_ptime() override
     {
         checkBounds();
-        operand = boost::posix_time::from_time_t(CtiTime::now().seconds());
-
-        _currentColumn++;
-        return *this;
+        return boost::posix_time::from_time_t(CtiTime::now().seconds());
     }
 
-    RowReader &operator>>(std::string &operand)
+    operator std::string() override
     {
         checkBounds();
-        operand = _values[_currentRow][_currentColumn];
-
-        _currentColumn++;
-        return *this;
+        return _values[_currentRow][_currentColumn];
     }
 
     //  only implemented for StringRow so far
-    RowReader &extractChars(char *destination, unsigned count)
+    RowReader &extractChars(char *destination, unsigned count) override
     {
         auto dest = stdext::make_checked_array_iterator(destination, count);
 
@@ -304,8 +292,12 @@ public:
             throw;
         }
 
-        _currentColumn++;
         return *this;
+    }
+
+    void incrementColumnIndex() override
+    {
+        ++_currentColumn;
     }
 
     // inputs for variable binding
@@ -469,26 +461,24 @@ public:
 
 private:
     // helper function, returns a proper value and incrememts the column or throws.
-    int getNextIntegerValue()
+    int getIntegerValue()
     {
         int retVal = 0;
 
         checkBounds();
         retVal = atoi(_values[_currentRow][_currentColumn].c_str());
 
-        _currentColumn++;
         return retVal;
     }
 
     // helper function, returns a proper value and incrememts the column or throws.
-    double getNextFloatValue()
+    double getFloatValue()
     {
         double retVal = 0;
 
         checkBounds();
         retVal = atof(_values[_currentRow][_currentColumn].c_str());
 
-        _currentColumn++;
         return retVal;
     }
 
