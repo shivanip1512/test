@@ -89,4 +89,11 @@
 <entry key="yukon.exception.deviceCreationException.unsupportedDevice">Could not retrieve points for new device.</entry>
 <entry key="yukon.exception.deviceCreationException.invalidDeviceCreation">Exception while creating device.</entry>
 
+<entry key="yukon.exception.objectMappingException.invalidAddress">Device with address: {0} not found.</entry>
+<entry key="yukon.exception.objectMappingException.nonNumericAddress">Address {0} is not a valid address. Must be numeric.</entry>
+<entry key="yukon.exception.objectMappingException.invalidMeterNumber">Device with meter number: {0} not found.</entry>
+<entry key="yukon.exception.objectMappingException.invalidId">Device with id: {0} not found.</entry>
+<entry key="yukon.exception.objectMappingException.invalidName">Device with name {0} not found.</entry>
+<entry key="yukon.exception.objectMappingException.invalidValue">Contains invalid value: {0}</entry>
+
 </properties>

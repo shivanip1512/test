@@ -21,9 +21,9 @@ public final class AddressToYukonDeviceMapper implements ObjectMapper<String, Si
         try {
             return deviceDao.getYukonDeviceObjectByAddress(Long.valueOf(from));
         } catch (IncorrectResultSizeDataAccessException  e) {
-            throw new ObjectMappingException("Device with address: '" + from + "' not found.", e);
+            throw new ObjectMappingException("Device with address: '" + from + "' not found.", "invalidAddress", from, e);
         } catch (NumberFormatException e) {
-            throw new ObjectMappingException("Address '" + from + "' is not a valid address. Must be numeric.", e);
+            throw new ObjectMappingException("Address '" + from + "' is not a valid address. Must be numeric.", "nonNumericAddress", from, e);
         }
     }
 }

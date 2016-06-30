@@ -436,7 +436,7 @@ public abstract class BaseBulkService {
             
         }
         catch (TypeMismatchException e) {
-            throw new ObjectMappingException("Contains invalid value: " + (e.getValue() == null ? "":e.getValue()), e);
+            throw new ObjectMappingException("Contains invalid value: " + (e.getValue() == null ? "":e.getValue()), "invalidValue", (e.getValue() == null ? "":e.getValue()), e);
         }
 
         return updateableDevice;

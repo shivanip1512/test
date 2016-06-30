@@ -22,7 +22,7 @@ public final class PaoNameToYukonDeviceMapper implements ObjectMapper<String, Si
             return deviceDao.getYukonDeviceObjectByName(from);
         }
         catch (IncorrectResultSizeDataAccessException e) {
-            throw new ObjectMappingException("Device with name '" + from + "' not found.");
+            throw new ObjectMappingException("Device with name '" + from + "' not found.", "invalidName", from);
         }
     }
 }

@@ -22,7 +22,7 @@ public final class MeterNumberToYukonDeviceMapper implements ObjectMapper<String
         try {
             return deviceDao.getYukonDeviceObjectByMeterNumber(from);
         } catch (IncorrectResultSizeDataAccessException  e) {
-            throw new ObjectMappingException("Device with meter number: '" + from + "' not found.", e);
+            throw new ObjectMappingException("Device with meter number: '" + from + "' not found.","invalidMeterNumber", from, e);
         }
     }
 }
