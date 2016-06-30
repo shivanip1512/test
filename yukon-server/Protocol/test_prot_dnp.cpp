@@ -62,7 +62,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             const byte_str response(
                     "05 64 0A 44 03 00 04 00 7C AE");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -85,7 +87,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             const byte_str response(
                     "C1 C1 81 90 04 0D 14");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -132,7 +136,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             const byte_str response(
                     "05 64 0A 44 03 00 04 00 7C AE");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -155,7 +161,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             const byte_str response(
                     "C2 C2 81 10 00 11 b9");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -262,7 +270,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             const byte_str response(
                     "05 64 31 44 01 00 d2 04 61 7c");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -286,7 +296,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
                     "01 18 01 00 03 00 3f 01 00 00 01 02 18 01 00 01 e0 a6 "
                     "00 14 01 18 01 00 00 00 13 00 00 00 e1 c4");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -424,7 +436,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -449,7 +463,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
                     "18 01 00 01 00 14 01 18 01 00 "
                     "00 00 13 00 95 4f 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -578,7 +594,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -603,7 +621,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
                     "18 01 00 01 00 14 01 18 01 00 "
                     "00 00 13 00 95 4f 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -755,7 +775,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -781,7 +803,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
                     "18 01 00 02 00 14 01 18 01 00 "
                     "10 00 13 00 20 d3 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -827,7 +851,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -853,7 +879,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
                     "18 01 00 01 00 14 01 18 01 00 "
                     "00 00 13 00 95 4f 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1033,7 +1061,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1058,7 +1088,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
                     "18 01 00 01 00 14 01 18 01 00 "
                     "00 00 13 00 95 4f 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1185,7 +1217,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1210,7 +1244,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
                     "18 01 00 01 00 14 01 18 01 00 "
                     "00 00 13 00 95 4f 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1337,7 +1373,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1362,7 +1400,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
                     "18 01 00 01 00 14 01 18 01 00 "
                     "00 00 13 00 95 4f 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1513,7 +1553,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1539,7 +1581,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
                     "18 01 00 02 00 14 01 18 01 00 "
                     "10 00 13 00 20 d3 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1585,7 +1629,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1611,7 +1657,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
                     "18 01 00 01 00 14 01 18 01 00 "
                     "00 00 13 00 95 4f 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1791,7 +1839,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_reversed_start_stop)
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1815,7 +1865,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_reversed_start_stop)
                     "01 02 18 01 00 01 00 14 01 18 01 00 00 00 13 00 95 4f "
                     "00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1884,7 +1936,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
             const byte_str response(
                     "05 64 27 44 01 00 d2 04 79 6f");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -1910,7 +1964,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
                     "18 01 00 02 00 14 01 18 01 00 "
                     "10 00 13 00 20 d3 00 00 ff ff");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2047,7 +2103,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             const byte_str response(
                     "05 64 0A 44 03 00 04 00 7C AE");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2072,7 +2130,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             const byte_str response(
                     "C1 C1 81 90 04 0D 14");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2119,7 +2179,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             const byte_str response(
                     "05 64 0A 44 03 00 04 00 7C AE");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2143,7 +2205,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             const byte_str response(
                     "C2 C2 81 10 00 11 b9");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2195,7 +2259,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             const byte_str response(
                     "05 64 0A 44 03 00 04 00 7C AE");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2215,7 +2281,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             const byte_str response(
                     "C0 C3 81 00 00 DD E2");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2347,7 +2415,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
             const byte_str response(
                     "05 64 1A 44 E8 03 F6 01 20 BB");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2369,7 +2439,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
                     "DE C3 81 00 00 0C 01 17 01 00 41 01 00 00 00 00 09 D9 "
                     "00 00 00 00 0A CA 6C");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2449,7 +2521,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
             const byte_str response(
                     "05 64 1A 44 E8 03 F6 01 20 BB");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2471,7 +2545,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
                     "DE C3 81 00 00 0C 01 17 01 00 41 01 00 00 00 00 09 D9 "
                     "00 00 00 00 04 87 26");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2552,7 +2628,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
             const byte_str response(
                     "05 64 1A 44 E8 03 F6 01 20 BB");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2574,7 +2652,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
                     "DE C3 81 00 00 0C 01 17 01 00 41 01 00 00 00 00 09 D9 "
                     "00 00 00 00 00 FF FF");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2626,7 +2706,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
             const byte_str response(
                     "05 64 1A 44 E8 03 F6 01 20 BB");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -2648,7 +2730,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
                     "DF C4 81 00 00 0C 01 17 01 00 41 01 00 00 00 00 B4 D3 "
                     "00 00 00 00 00 FF FF");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }

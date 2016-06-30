@@ -663,7 +663,9 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
             BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
         }
         {
-            std::copy(header.begin(), header.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            auto inBufItr = stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected());
+            std::copy(header.begin(), header.end(), inBufItr);
 
             xfer.setInCountActual(header.size());
 
@@ -678,7 +680,9 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
             BOOST_CHECK_EQUAL(body.size(), xfer.getInCountExpected());
         }
         {
-            std::copy(body.begin(), body.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            auto inBufItr = stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected());
+            std::copy(body.begin(), body.end(), inBufItr);
 
             xfer.setInCountActual(body.size());
 

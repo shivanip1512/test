@@ -350,7 +350,8 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection)
 
     char *bufForConnection = new char[buf.size()];
 
-    std::copy(buf.begin(), buf.end(), bufForConnection);
+    std::copy(buf.begin(), buf.end(), 
+            stdext::make_checked_array_iterator(bufForConnection, buf.size()));
 
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
@@ -368,7 +369,8 @@ int DnpSlave::processDataLinkReset(ServerConnection& connection)
 
     char *bufForConnection = new char[buf.size()];
 
-    std::copy(buf.begin(), buf.end(), bufForConnection);
+    std::copy(buf.begin(), buf.end(), 
+            stdext::make_checked_array_iterator(bufForConnection, buf.size()));
 
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {

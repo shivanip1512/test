@@ -133,7 +133,9 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
             const byte_str response(
                     "05 64 1A 44 01 00 D2 04 6F 84");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -155,7 +157,9 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
                     "DE C3 81 00 00 0C 01 17 01 09 41 01 00 00 00 00 89 E7 "
                     "00 00 00 00 00 FF FF");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -198,7 +202,9 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
             const byte_str response(
                     "05 64 1A 44 01 00 D2 04 6F 84");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
@@ -220,7 +226,9 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
                     "DF C4 81 00 00 0C 01 17 01 09 41 01 01 C8 00 00 D4 3B "
                     "00 00 00 00 00 FF FF");
 
-            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
             xfer.setInCountActual(response.size());
         }
