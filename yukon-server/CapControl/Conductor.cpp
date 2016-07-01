@@ -10,11 +10,16 @@
 
 using Cti::CapControl::deserializeFlag;
 
+extern unsigned long _CC_DEBUG;
+extern bool _RATE_OF_CHANGE;
+extern unsigned long _RATE_OF_CHANGE_DEPTH;
+
 
 
 Conductor::Conductor( StrategyManager * strategyManager )
     :   Controllable( strategyManager ),
         _currentVarLoadPointId( 0 ),
+        _currentVarLoadPointValue( 0 ),
         _currentVarPointQuality( NormalQuality ),
         _lastCurrentVarPointUpdateTime( gInvalidCtiTime ),
         _estimatedVarLoadPointId( 0 ),
@@ -23,13 +28,19 @@ Conductor::Conductor( StrategyManager * strategyManager )
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
+        _phaseAvalue( 0 ),
+        _phaseBvalue( 0 ),
+        _phaseCvalue( 0 ),
         _phaseAvalueBeforeControl( 0 ),
         _phaseBvalueBeforeControl( 0 ),
         _phaseCvalueBeforeControl( 0 ),
+        _varValueBeforeControl( 0 ),
         _currentWattLoadPointId( 0 ),
+        _currentWattLoadPointValue( 0 ),
         _currentWattPointQuality( NormalQuality ),
         _lastWattPointTime( gInvalidCtiTime ),
         _currentVoltLoadPointId( 0 ),
+        _currentVoltLoadPointValue( 0 ),
         _currentVoltPointQuality( NormalQuality ),
         _lastVoltPointTime( gInvalidCtiTime ),
         _powerFactorPointId( 0 ),
@@ -46,6 +57,10 @@ Conductor::Conductor( StrategyManager * strategyManager )
         _iWControlTot( 0 ),
         _parentId( 0 ),
         _parentName( "none" ),
+        _regression( _RATE_OF_CHANGE_DEPTH ),
+        _regressionA( _RATE_OF_CHANGE_DEPTH ),
+        _regressionB( _RATE_OF_CHANGE_DEPTH ),
+        _regressionC( _RATE_OF_CHANGE_DEPTH ),
         _multiMonitorFlag( false ),
         _decimalPlaces( 0 ),
         _newPointDataReceivedFlag( false ),
@@ -55,7 +70,8 @@ Conductor::Conductor( StrategyManager * strategyManager )
         _waiveControlFlag( false ),
         _kvarSolution( 0 ),
         _solution( "IDLE" ),
-        _targetVarValue( 0 )
+        _targetVarValue( 0 ),
+        _currentCapBankToVerifyAssumedOrigState( 0 )
 {
 
 }
@@ -63,6 +79,7 @@ Conductor::Conductor( StrategyManager * strategyManager )
 Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
     :   Controllable( rdr, strategyManager ),
         _currentVarLoadPointId( 0 ),
+        _currentVarLoadPointValue( 0 ),
         _currentVarPointQuality( NormalQuality ),
         _lastCurrentVarPointUpdateTime( gInvalidCtiTime ),
         _estimatedVarLoadPointId( 0 ),
@@ -71,13 +88,19 @@ Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
         _phaseBid( 0 ),
         _phaseCid( 0 ),
         _totalizedControlFlag( false ),
+        _phaseAvalue( 0 ),
+        _phaseBvalue( 0 ),
+        _phaseCvalue( 0 ),
         _phaseAvalueBeforeControl( 0 ),
         _phaseBvalueBeforeControl( 0 ),
         _phaseCvalueBeforeControl( 0 ),
+        _varValueBeforeControl( 0 ),
         _currentWattLoadPointId( 0 ),
+        _currentWattLoadPointValue( 0 ),
         _currentWattPointQuality( NormalQuality ),
         _lastWattPointTime( gInvalidCtiTime ),
         _currentVoltLoadPointId( 0 ),
+        _currentVoltLoadPointValue( 0 ),
         _currentVoltPointQuality( NormalQuality ),
         _lastVoltPointTime( gInvalidCtiTime ),
         _powerFactorPointId( 0 ),
@@ -94,6 +117,10 @@ Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
         _iWControlTot( 0 ),
         _parentId( 0 ),
         _parentName( "none" ),
+        _regression( _RATE_OF_CHANGE_DEPTH ),
+        _regressionA( _RATE_OF_CHANGE_DEPTH ),
+        _regressionB( _RATE_OF_CHANGE_DEPTH ),
+        _regressionC( _RATE_OF_CHANGE_DEPTH ),
         _multiMonitorFlag( false ),
         _decimalPlaces( 0 ),
         _newPointDataReceivedFlag( false ),
@@ -103,7 +130,8 @@ Conductor::Conductor( Cti::RowReader & rdr, StrategyManager * strategyManager )
         _waiveControlFlag( false ),
         _kvarSolution( 0 ),
         _solution( "IDLE" ),
-        _targetVarValue( 0 )
+        _targetVarValue( 0 ),
+        _currentCapBankToVerifyAssumedOrigState( 0 )
 {
     restoreStaticData( rdr );
 
@@ -182,18 +210,27 @@ void Conductor::restoreDynamicData( Cti::RowReader & rdr )
 {
     std::string flags;
 
+    rdr["CurrentVarPointValue"]     >> _currentVarLoadPointValue;
     rdr["CurrentVarPointQuality"]   >> _currentVarPointQuality;
     rdr["LastCurrentVarUpdateTime"] >> _lastCurrentVarPointUpdateTime;
 
     rdr["EstimatedVarPointValue"]   >> _estimatedVarLoadPointValue;
 
+    rdr["phaseavalue"]              >> _phaseAvalue;
+    rdr["phasebvalue"]              >> _phaseBvalue;
+    rdr["phasecvalue"]              >> _phaseCvalue;
+
     rdr["PhaseAValueBeforeControl"] >> _phaseAvalueBeforeControl;
     rdr["PhaseBValueBeforeControl"] >> _phaseBvalueBeforeControl;
     rdr["PhaseCValueBeforeControl"] >> _phaseCvalueBeforeControl;
 
+    rdr["VarValueBeforeControl"]    >> _varValueBeforeControl;
+
+    rdr["CurrentWattPointValue"]    >> _currentWattLoadPointValue;
     rdr["CurrentWattPointQuality"]  >> _currentWattPointQuality;
     rdr["LastWattPointTime"]        >> _lastWattPointTime;
 
+    rdr["CurrentVoltPointValue"]    >> _currentVoltLoadPointValue;
     rdr["CurrentVoltPointQuality"]  >> _currentVoltPointQuality;
     rdr["LastVoltPointTime"]        >> _lastVoltPointTime;
 
@@ -225,7 +262,23 @@ void Conductor::restoreDynamicData( Cti::RowReader & rdr )
 
     rdr["KvarSolution"]             >> _kvarSolution;
 
+    rdr["CurrVerifyCBOrigState"]    >> _currentCapBankToVerifyAssumedOrigState;
+}
 
+void Conductor::updateRegression( CtiRegression & regression, const std::string & label,
+                                  const double aValue, const CtiTime & timestamp )
+{
+    if ( _RATE_OF_CHANGE && ! getRecentlyControlledFlag() )
+    {
+        const double timeSeconds = static_cast<double>( timestamp.seconds() );
+
+        regression.appendWithoutFill( std::make_pair( timeSeconds, aValue ) );
+
+        if ( _CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE )
+        {
+            CTILOG_DEBUG( dout, "RATE OF CHANGE: Adding to regression" << label << ": [" << timeSeconds << " : " << aValue << "]" );
+        }
+    }
 }
 
 // VAr
@@ -238,6 +291,23 @@ long Conductor::getCurrentVarLoadPointId() const
 void Conductor::setCurrentVarLoadPointId( const long pointId )
 {
     updateStaticValue( _currentVarLoadPointId, pointId );
+}
+
+double Conductor::getRawCurrentVarLoadPointValue() const
+{
+    return _currentVarLoadPointValue;
+}
+
+double Conductor::getCurrentVarLoadPointValue() const
+{
+    return getRawCurrentVarLoadPointValue();
+}
+
+void Conductor::setCurrentVarLoadPointValue( const double aValue, const CtiTime & timestamp )
+{
+    updateDynamicValue( _currentVarLoadPointValue, aValue );
+
+    updateRegression( _regression, "", aValue, timestamp ); 
 }
 
 long Conductor::getCurrentVarPointQuality() const
@@ -320,6 +390,42 @@ void Conductor::setTotalizedControlFlag( const bool flag )
     updateStaticValue( _totalizedControlFlag, flag );
 }
 
+double Conductor::getPhaseAValue() const
+{
+    return _phaseAvalue;
+}
+
+void Conductor::setPhaseAValue( const double aValue, const CtiTime & timestamp )
+{
+    updateDynamicValue( _phaseAvalue, aValue );
+
+    updateRegression( _regressionA, "A", aValue, timestamp ); 
+}
+
+double Conductor::getPhaseBValue() const
+{
+    return _phaseBvalue;
+}
+
+void Conductor::setPhaseBValue( const double aValue, const CtiTime & timestamp )
+{
+    updateDynamicValue( _phaseBvalue, aValue );
+
+    updateRegression( _regressionB, "B", aValue, timestamp ); 
+}
+
+double Conductor::getPhaseCValue() const
+{
+    return _phaseCvalue;
+}
+
+void Conductor::setPhaseCValue( const double aValue, const CtiTime & timestamp )
+{
+    updateDynamicValue( _phaseCvalue, aValue );
+
+    updateRegression( _regressionC, "C", aValue, timestamp ); 
+}
+
 double Conductor::getPhaseAValueBeforeControl() const
 {
     return _phaseAvalueBeforeControl;
@@ -350,6 +456,36 @@ void Conductor::setPhaseCValueBeforeControl( const double aValue )
     updateDynamicValue( _phaseCvalueBeforeControl, aValue );
 }
 
+double Conductor::getVarValueBeforeControl() const
+{
+    return _varValueBeforeControl;
+}
+
+void Conductor::setVarValueBeforeControl( const double aValue )
+{
+    updateDynamicValue( _varValueBeforeControl, aValue );
+
+    setPhaseAValueBeforeControl( getPhaseAValue() );
+    setPhaseBValueBeforeControl( getPhaseBValue() );
+    setPhaseCValueBeforeControl( getPhaseCValue() );
+}
+
+Cti::CapControl::PointIdVector Conductor::getCurrentVarLoadPoints() const
+{
+    Cti::CapControl::PointIdVector  varPointIds
+    {
+        getCurrentVarLoadPointId()
+    };
+
+    if ( getUsePhaseData() )
+    {
+        varPointIds.push_back( getPhaseBId() );
+        varPointIds.push_back( getPhaseCId() );
+    }
+
+    return varPointIds;
+}
+
 // Watt
 
 long Conductor::getCurrentWattLoadPointId() const
@@ -360,6 +496,21 @@ long Conductor::getCurrentWattLoadPointId() const
 void Conductor::setCurrentWattLoadPointId( const long pointId )
 {
     updateStaticValue( _currentWattLoadPointId, pointId );
+}
+
+double Conductor::getRawCurrentWattLoadPointValue() const
+{
+    return _currentWattLoadPointValue;
+}
+
+double Conductor::getCurrentWattLoadPointValue() const
+{
+    return getRawCurrentWattLoadPointValue();
+}
+
+void Conductor::setCurrentWattLoadPointValue( const double aValue )
+{
+    updateDynamicValue( _currentWattLoadPointValue, aValue );
 }
 
 long Conductor::getCurrentWattPointQuality() const
@@ -392,6 +543,21 @@ long Conductor::getCurrentVoltLoadPointId() const
 void Conductor::setCurrentVoltLoadPointId( const long pointId )
 {
     updateStaticValue( _currentVoltLoadPointId, pointId );
+}
+
+double Conductor::getRawCurrentVoltLoadPointValue() const
+{
+    return _currentVoltLoadPointValue;
+}
+
+double Conductor::getCurrentVoltLoadPointValue() const
+{
+    return getRawCurrentVoltLoadPointValue();
+}
+
+void Conductor::setCurrentVoltLoadPointValue( const double aValue )
+{
+    updateDynamicValue( _currentVoltLoadPointValue, aValue );
 }
 
 long Conductor::getCurrentVoltPointQuality() const
@@ -586,6 +752,28 @@ void Conductor::setParentControlUnits( const std::string & units )
     updateStaticValue( _parentControlUnits, units );    // bus and feeder had this as dynamic... why?
 }
 
+// Regression
+
+const CtiRegression & Conductor::getRegression()
+{
+    return _regression;
+}
+
+const CtiRegression & Conductor::getRegressionA()
+{
+    return _regressionA;
+}
+
+const CtiRegression & Conductor::getRegressionB()
+{
+    return _regressionB;
+}
+
+const CtiRegression & Conductor::getRegressionC()
+{
+    return _regressionC;
+}
+
 // Misc
 
 const std::string & Conductor::getMapLocationId() const
@@ -696,5 +884,15 @@ double Conductor::getTargetVarValue() const
 void Conductor::setTargetVarValue( const double aValue )
 {
     updateStaticValue( _targetVarValue, aValue );   // feeder had this as dynamic - but not stored in dynamic table..?
+}
+
+long Conductor::getCurrentVerificationCapBankOrigState() const
+{
+    return _currentCapBankToVerifyAssumedOrigState;
+}
+
+void Conductor::setCurrentVerificationCapBankState( const long state )
+{
+    updateDynamicValue( _currentCapBankToVerifyAssumedOrigState, state );
 }
 

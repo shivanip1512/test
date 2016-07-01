@@ -2,6 +2,8 @@
 
 #include "Controllable.h"
 #include "DynamicData.h"
+#include "regression.h"
+#include "cctypes.h"
 
 
 namespace Cti
@@ -26,6 +28,9 @@ public:
 
     long getCurrentVarLoadPointId() const;
     void setCurrentVarLoadPointId( const long pointId );
+    double getRawCurrentVarLoadPointValue() const;
+    virtual double getCurrentVarLoadPointValue() const;
+    void setCurrentVarLoadPointValue( const double aValue, const CtiTime & timestamp );
     long getCurrentVarPointQuality() const;
     void setCurrentVarPointQuality( const long quality );
     const CtiTime & getLastCurrentVarPointUpdateTime() const;
@@ -45,6 +50,13 @@ public:
     bool getTotalizedControlFlag() const;
     void setTotalizedControlFlag( const bool flag );
 
+    double getPhaseAValue() const;
+    void setPhaseAValue( const double aValue, const CtiTime & timestamp );
+    double getPhaseBValue() const;
+    void setPhaseBValue( const double aValue, const CtiTime & timestamp );
+    double getPhaseCValue() const;
+    void setPhaseCValue( const double aValue, const CtiTime & timestamp );
+
     double getPhaseAValueBeforeControl() const;
     void setPhaseAValueBeforeControl( const double aValue );
     double getPhaseBValueBeforeControl() const;
@@ -52,10 +64,18 @@ public:
     double getPhaseCValueBeforeControl() const;
     void setPhaseCValueBeforeControl( const double aValue );
 
+    double getVarValueBeforeControl() const;
+    void setVarValueBeforeControl( const double aValue );
+
+    Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
+
     // Watt
 
     long getCurrentWattLoadPointId() const;
     void setCurrentWattLoadPointId( const long pointId );
+    double getRawCurrentWattLoadPointValue() const;
+    virtual double getCurrentWattLoadPointValue() const;
+    void setCurrentWattLoadPointValue( const double aValue );
     long getCurrentWattPointQuality() const;
     void setCurrentWattPointQuality( const long quality );
     const CtiTime & getLastWattPointTime() const;
@@ -65,6 +85,9 @@ public:
 
     long getCurrentVoltLoadPointId() const;
     void setCurrentVoltLoadPointId( const long pointId );
+    double getRawCurrentVoltLoadPointValue() const;
+    virtual double getCurrentVoltLoadPointValue() const;
+    void setCurrentVoltLoadPointValue( const double aValue );
     long getCurrentVoltPointQuality() const;
     void setCurrentVoltPointQuality( const long quality );
     const CtiTime & getLastVoltPointTime() const;
@@ -115,6 +138,13 @@ public:
     const std::string & getParentControlUnits() const;
     void setParentControlUnits( const std::string & units );
 
+    // Regression
+
+    const CtiRegression & getRegression();
+    const CtiRegression & getRegressionA();
+    const CtiRegression & getRegressionB();
+    const CtiRegression & getRegressionC();
+
     // Misc
 
     const std::string & getMapLocationId() const;
@@ -148,20 +178,26 @@ public:
     double getTargetVarValue() const;
     void setTargetVarValue( const double aValue );
 
+    long getCurrentVerificationCapBankOrigState() const;
+    void setCurrentVerificationCapBankState( const long state );
+
 protected:
 
     Conductor( const Conductor & condutor ) = default;
     Conductor & operator=( const Conductor & rhs ) = delete;
-
 
 private:
 
     void restoreStaticData( Cti::RowReader & rdr );
     void restoreDynamicData( Cti::RowReader & rdr );
 
+    void updateRegression( CtiRegression & regression, const std::string & label,
+                           const double aValue, const CtiTime & timestamp );
+
     // VAr
 
     long    _currentVarLoadPointId;
+    double  _currentVarLoadPointValue;
     long    _currentVarPointQuality;
     CtiTime _lastCurrentVarPointUpdateTime;
 
@@ -173,19 +209,27 @@ private:
     long _phaseCid;
     bool _totalizedControlFlag;
 
+    double _phaseAvalue;
+    double _phaseBvalue;
+    double _phaseCvalue;
+
     double _phaseAvalueBeforeControl;
     double _phaseBvalueBeforeControl;
     double _phaseCvalueBeforeControl;
 
+    double _varValueBeforeControl;
+
     // Watt
 
     long    _currentWattLoadPointId;
+    double  _currentWattLoadPointValue;
     long    _currentWattPointQuality;
     CtiTime _lastWattPointTime;
 
     // Volt
 
     long    _currentVoltLoadPointId;
+    double  _currentVoltLoadPointValue;
     long    _currentVoltPointQuality;
     CtiTime _lastVoltPointTime;
 
@@ -216,6 +260,13 @@ private:
     std::string _parentName;
     std::string _parentControlUnits;
 
+    // Regression
+
+    CtiRegression _regression;
+    CtiRegression _regressionA;
+    CtiRegression _regressionB;
+    CtiRegression _regressionC;
+
     // Misc
     std::string _mapLocationId;
     bool _multiMonitorFlag;
@@ -236,6 +287,6 @@ private:
 
     double _targetVarValue;
 
-
+    long _currentCapBankToVerifyAssumedOrigState;
 };
 

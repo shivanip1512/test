@@ -15,7 +15,6 @@ using Cti::CapControl::createPorterRequestMsg;
 using Cti::CapControl::createBankOpenRequest;
 using Cti::CapControl::createBankCloseRequest;
 using Cti::CapControl::createBankFlipRequest;
-using Cti::CapControl::setVariableIfDifferent;
 using Cti::CapControl::sendCapControlOperationMessage;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
@@ -52,11 +51,7 @@ DEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 ---------------------------------------------------------------------------*/
 CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
     :   Conductor( strategyManager ),
-        _currentvarloadpointvalue( 0 ),
-        _currentwattloadpointvalue( 0 ),
-        _currentvoltloadpointvalue( 0 ),
         _displayorder( 0 ),
-        _varvaluebeforecontrol( 0 ),
         _lastcapbankcontrolleddeviceid( 0 ),
         _busoptimizedvarcategory( 1 ),
         _busoptimizedvaroffset( 0 ),
@@ -73,27 +68,15 @@ CtiCCFeeder::CtiCCFeeder( StrategyManager * strategyManager )
         _correctionNeededNoBankAvailFlag( false ),
         _lastVerificationMsgSentSuccessful( false ),
         _currentVerificationCapBankId( -1 ),
-        _currentCapBankToVerifyAssumedOrigState( 0 ),
-        _phaseAvalue( 0 ),
-        _phaseBvalue( 0 ),
-        _phaseCvalue( 0 ),
         _retryIndex( 0 ),
         _likeDayControlFlag( false ),
-        _porterRetFailFlag( false ),
-        regression( _RATE_OF_CHANGE_DEPTH ),
-        regressionA( _RATE_OF_CHANGE_DEPTH ),
-        regressionB( _RATE_OF_CHANGE_DEPTH ),
-        regressionC( _RATE_OF_CHANGE_DEPTH )
+        _porterRetFailFlag( false )
 {
 }
 
 CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
     :   Conductor( rdr, strategyManager ),
-        _currentvarloadpointvalue( 0 ),
-        _currentwattloadpointvalue( 0 ),
-        _currentvoltloadpointvalue( 0 ),
         _displayorder( 0 ),
-        _varvaluebeforecontrol( 0 ),
         _lastcapbankcontrolleddeviceid( 0 ),
         _busoptimizedvarcategory( 1 ),
         _busoptimizedvaroffset( 0 ),
@@ -110,17 +93,9 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
         _correctionNeededNoBankAvailFlag( false ),
         _lastVerificationMsgSentSuccessful( false ),
         _currentVerificationCapBankId( -1 ),
-        _currentCapBankToVerifyAssumedOrigState( 0 ),
-        _phaseAvalue( 0 ),
-        _phaseBvalue( 0 ),
-        _phaseCvalue( 0 ),
         _retryIndex( 0 ),
         _likeDayControlFlag( false ),
-        _porterRetFailFlag( false ),
-        regression( _RATE_OF_CHANGE_DEPTH ),
-        regressionA( _RATE_OF_CHANGE_DEPTH ),
-        regressionB( _RATE_OF_CHANGE_DEPTH ),
-        regressionC( _RATE_OF_CHANGE_DEPTH )
+        _porterRetFailFlag( false )
 {
     _originalParent.setPAOId( getPaoId() );
 
@@ -159,36 +134,6 @@ const CtiCCOriginalParent& CtiCCFeeder::getOriginalParent() const
 }
 
 /*---------------------------------------------------------------------------
-    getCurrentVarLoadPointValue
-
-    Returns the current var load point value of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getCurrentVarLoadPointValue() const
-{
-    return _currentvarloadpointvalue;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentWattLoadPointValue
-
-    Returns the current watt load point value of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getCurrentWattLoadPointValue() const
-{
-    return _currentwattloadpointvalue;
-}
-
-/*---------------------------------------------------------------------------
-    getCurrentVoltLoadPointValue
-
-    Returns the current volt load point value of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getCurrentVoltLoadPointValue() const
-{
-    return _currentvoltloadpointvalue;
-}
-
-/*---------------------------------------------------------------------------
     getDisplayOrder
 
     Returns the display order of the feeder
@@ -198,68 +143,9 @@ float CtiCCFeeder::getDisplayOrder() const
     return _displayorder;
 }
 
-/**
- * Returns var point id if totalized or the point ids to phase
- * A, B, and C if not.
- *
- * @return std::vector<long>
- */
-Cti::CapControl::PointIdVector CtiCCFeeder::getCurrentVarLoadPoints() const
-{
-    Cti::CapControl::PointIdVector points;
-
-    points.push_back( getCurrentVarLoadPointId() );
-
-    if ( getUsePhaseData() )
-    {
-        points.push_back( getPhaseBId() );
-        points.push_back( getPhaseCId() );
-    }
-
-    return points;
-}
-
-/*---------------------------------------------------------------------------
-    getPhaseAValue
-
-    Returns the PhaseAValue VAr of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getPhaseAValue() const
-{
-    return _phaseAvalue;
-}
-/*---------------------------------------------------------------------------
-    getPhaseBValue
-
-    Returns the PhaseBValue VAr of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getPhaseBValue() const
-{
-    return _phaseBvalue;
-}
-/*---------------------------------------------------------------------------
-    getPhaseCValue
-
-    Returns the PhaseCValue VAr of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getPhaseCValue() const
-{
-    return _phaseCvalue;
-}
-
 long CtiCCFeeder::getRetryIndex() const
 {
     return _retryIndex;
-}
-
-/*---------------------------------------------------------------------------
-    getVarValueBeforeControl
-
-    Returns the var value before control of the feeder
----------------------------------------------------------------------------*/
-double CtiCCFeeder::getVarValueBeforeControl() const
-{
-    return _varvaluebeforecontrol;
 }
 
 /*---------------------------------------------------------------------------
@@ -361,62 +247,6 @@ std::vector<CtiCCCapBankPtr> CtiCCFeeder::getAllCapBanks( )
     return banks;
 }
 
-
-const CtiRegression& CtiCCFeeder::getRegression()
-{
-    return regression;
-}
-const CtiRegression& CtiCCFeeder::getRegressionA()
-{
-    return regressionA;
-}
-const CtiRegression& CtiCCFeeder::getRegressionB()
-{
-    return regressionB;
-}
-const CtiRegression& CtiCCFeeder::getRegressionC()
-{
-    return regressionC;
-}
-
-/*---------------------------------------------------------------------------
-    setCurrentVarLoadPointValue
-
-    Sets the current var load point value of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp)
-{
-    updateDynamicValue( _currentvarloadpointvalue, currentvarval );
-
-    if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() ){
-        regression.appendWithoutFill(std::make_pair((double)timestamp.seconds(),currentvarval));
-        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
-        {
-            CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regression  " << timestamp.seconds() << "  and " << currentvarval);
-        }
-    }
-}
-
-/*---------------------------------------------------------------------------
-    setCurrentWattLoadPointValue
-
-    Sets the current watt load point value of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentWattLoadPointValue(double currentwattval)
-{
-    updateDynamicValue( _currentwattloadpointvalue, currentwattval );
-}
-
-/*---------------------------------------------------------------------------
-    setCurrentWattLoadPointValue
-
-    Sets the current watt load point value of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setCurrentVoltLoadPointValue(double currentvoltval)
-{
-    updateDynamicValue( _currentvoltloadpointvalue, currentvoltval );
-}
-
 /*---------------------------------------------------------------------------
     setDisplayOrder
 
@@ -425,20 +255,6 @@ void CtiCCFeeder::setCurrentVoltLoadPointValue(double currentvoltval)
 void CtiCCFeeder::setDisplayOrder(float order)
 {
     _displayorder = order;
-}
-
-/*---------------------------------------------------------------------------
-    setVarValueBeforeControl
-
-    Sets the var value before control of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setVarValueBeforeControl(double oldvarval)
-{
-    updateDynamicValue( _varvaluebeforecontrol, oldvarval );
-
-    setPhaseAValueBeforeControl(getPhaseAValue());
-    setPhaseBValueBeforeControl(getPhaseBValue());
-    setPhaseCValueBeforeControl(getPhaseCValue());
 }
 
 /*---------------------------------------------------------------------------
@@ -3906,65 +3722,6 @@ void CtiCCFeeder::setCurrentVerificationCapBankId(long capBankId)
 {
     updateDynamicValue( _currentVerificationCapBankId, capBankId );
 }
-void CtiCCFeeder::setCurrentVerificationCapBankState(long status)
-{
-    updateDynamicValue( _currentCapBankToVerifyAssumedOrigState, status );
-}
-
-/*---------------------------------------------------------------------------
-    setPhaseAValue
-
-    Sets the PhaseAValue VAr  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPhaseAValue(double value, CtiTime timestamp)
-{
-    updateDynamicValue( _phaseAvalue, value );
-
-    if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
-    {
-        regressionA.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
-        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
-        {
-            CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionA  " << timestamp.seconds() << "  and " << value);
-        }
-    }
-}
-/*---------------------------------------------------------------------------
-    setPhaseBValue
-
-    Sets the PhaseBValue VAr  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPhaseBValue(double value, CtiTime timestamp)
-{
-    updateDynamicValue( _phaseBvalue, value );
-
-    if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
-    {
-        regressionB.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
-        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
-        {
-            CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionB  " << timestamp.seconds() << "  and " << value);
-        }
-    }
-}
-/*---------------------------------------------------------------------------
-    setPhaseCValue
-
-    Sets the PhaseCValue VAr  of the feeder
----------------------------------------------------------------------------*/
-void CtiCCFeeder::setPhaseCValue(double value, CtiTime timestamp)
-{
-    updateDynamicValue( _phaseCvalue, value );
-
-    if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
-    {
-        regressionC.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
-        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
-        {
-            CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionC  " << timestamp.seconds() << "  and " << value);
-        }
-    }
-}
 
 void CtiCCFeeder::setRetryIndex(long value)
 {
@@ -4033,11 +3790,6 @@ bool CtiCCFeeder::getLastVerificationMsgSentSuccessfulFlag() const
 long CtiCCFeeder::getCurrentVerificationCapBankId() const
 {
     return _currentVerificationCapBankId;
-}
-long CtiCCFeeder::getCurrentVerificationCapBankOrigState() const
-{
-    return _currentCapBankToVerifyAssumedOrigState;
-
 }
 
 bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
@@ -4708,8 +4460,8 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
     Cti::Database::DatabaseWriter writer( conn, sql );
 
     writer
-        << _currentvarloadpointvalue
-        << _currentwattloadpointvalue
+        << getRawCurrentVarLoadPointValue()
+        << getRawCurrentWattLoadPointValue()
         << serializeFlag( getNewPointDataReceivedFlag() )
         << getLastCurrentVarPointUpdateTime()
         << getEstimatedVarLoadPointValue()
@@ -4727,19 +4479,19 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
         << getCurrentVarPointQuality()
         << serializeFlag( getWaiveControlFlag() )
         << formatFlags()
-        << _currentvoltloadpointvalue
+        << getRawCurrentVoltLoadPointValue()
         << getEventSequence()
         << _currentVerificationCapBankId
-        << _currentCapBankToVerifyAssumedOrigState
+        << getCurrentVerificationCapBankOrigState()
         << getCurrentWattPointQuality()
         << getCurrentVoltPointQuality()
         << getIVControlTot()
         << getIVCount()
         << getIWControlTot()
         << getIWCount()
-        << _phaseAvalue
-        << _phaseBvalue
-        << _phaseCvalue
+        << getPhaseAValue()
+        << getPhaseBValue()
+        << getPhaseCValue()
         << getLastWattPointTime()
         << getLastVoltPointTime()
         << _retryIndex
@@ -4768,8 +4520,8 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
 
     writer
         << getPaoId()
-        << _currentvarloadpointvalue
-        << _currentwattloadpointvalue
+        << getRawCurrentVarLoadPointValue()
+        << getRawCurrentWattLoadPointValue()
         << serializeFlag( getNewPointDataReceivedFlag() )
         << getLastCurrentVarPointUpdateTime()
         << getEstimatedVarLoadPointValue()
@@ -4787,19 +4539,19 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << getCurrentVarPointQuality()
         << serializeFlag( getWaiveControlFlag() )
         << formatFlags()
-        << _currentvoltloadpointvalue
+        << getRawCurrentVoltLoadPointValue()
         << getEventSequence()
         << _currentVerificationCapBankId
-        << _currentCapBankToVerifyAssumedOrigState
+        << getCurrentVerificationCapBankOrigState()
         << getCurrentWattPointQuality()
         << getCurrentVoltPointQuality()
         << getIVControlTot()
         << getIVCount()
         << getIWControlTot()
         << getIWCount()
-        << _phaseAvalue
-        << _phaseBvalue
-        << _phaseCvalue
+        << getPhaseAValue()
+        << getPhaseBValue()
+        << getPhaseCValue()
         << getLastWattPointTime()
         << getLastVoltPointTime()
         << _retryIndex
@@ -4837,10 +4589,6 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
 {
     std::string flags;
 
-    rdr["CurrentVarPointValue"]     >> _currentvarloadpointvalue;
-    rdr["CurrentWattPointValue"]    >> _currentwattloadpointvalue;
-
-    rdr["VarValueBeforeControl"]    >> _varvaluebeforecontrol;
     rdr["LastCapBankDeviceID"]      >> _lastcapbankcontrolleddeviceid;
     rdr["BusOptimizedVarCategory"]  >> _busoptimizedvarcategory;
     rdr["BusOptimizedVarOffset"]    >> _busoptimizedvaroffset;
@@ -4861,13 +4609,7 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     _likeDayControlFlag                 = deserializeFlag( flags, 11 );
     _lastVerificationMsgSentSuccessful  = deserializeFlag( flags, 12 );
 
-    rdr["CurrentVoltPointValue"]    >> _currentvoltloadpointvalue;
     rdr["CurrVerifyCBId"]           >> _currentVerificationCapBankId;
-    rdr["CurrVerifyCBOrigState"]    >> _currentCapBankToVerifyAssumedOrigState;
-
-    rdr["phaseavalue"]              >> _phaseAvalue;
-    rdr["phasebvalue"]              >> _phaseBvalue;
-    rdr["phasecvalue"]              >> _phaseCvalue;
 
     rdr["retryIndex"]               >> _retryIndex;
 }

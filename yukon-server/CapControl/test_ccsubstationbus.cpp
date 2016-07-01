@@ -573,7 +573,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction )
 
     BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentWattLoadPointValue() );
-    BOOST_CHECK_EQUAL(    0.0, bus.getCurrentvoltloadpointvalue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentVoltLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getAltSubControlValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getVarValueBeforeControl() );
@@ -692,7 +692,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_ma
 
     BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentWattLoadPointValue() );
-    BOOST_CHECK_EQUAL(    0.0, bus.getCurrentvoltloadpointvalue() );
+    BOOST_CHECK_EQUAL(    0.0, bus.getRawCurrentVoltLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getAltSubControlValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getEstimatedVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, bus.getVarValueBeforeControl() );
@@ -1018,7 +1018,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_no_dynam
 
     BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getRawCurrentVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getRawCurrentWattLoadPointValue() );
-    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getCurrentvoltloadpointvalue() );
+    BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getRawCurrentVoltLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getAltSubControlValue() );
     BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getEstimatedVarLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getVarValueBeforeControl() );
@@ -1291,7 +1291,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_creation_via_database_reader_with_dyn
 
     BOOST_CHECK_EQUAL(  550.0, busses[ 4 ].getRawCurrentVarLoadPointValue() );
     BOOST_CHECK_EQUAL( 2200.0, busses[ 4 ].getRawCurrentWattLoadPointValue() );
-    BOOST_CHECK_EQUAL(  119.0, busses[ 4 ].getCurrentvoltloadpointvalue() );
+    BOOST_CHECK_EQUAL(  119.0, busses[ 4 ].getRawCurrentVoltLoadPointValue() );
     BOOST_CHECK_EQUAL(    0.0, busses[ 4 ].getAltSubControlValue() );
     BOOST_CHECK_EQUAL(  550.0, busses[ 4 ].getEstimatedVarLoadPointValue() );
     BOOST_CHECK_EQUAL(  700.0, busses[ 4 ].getVarValueBeforeControl() );

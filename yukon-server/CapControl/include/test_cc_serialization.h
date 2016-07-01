@@ -532,9 +532,9 @@ struct TestCase<CtiCCFeeder> : public TestCase<CapControlPao>
 
         GenerateRandom( imsg._parentId );
         GenerateRandom( imsg._currentVarLoadPointId );
-        GenerateRandom( imsg._currentvarloadpointvalue );
+        GenerateRandom( imsg._currentVarLoadPointValue );
         GenerateRandom( imsg._currentWattLoadPointId );
-        GenerateRandom( imsg._currentwattloadpointvalue );
+        GenerateRandom( imsg._currentWattLoadPointValue );
         GenerateRandom( imsg._mapLocationId );
         GenerateRandom( imsg._displayorder );
         GenerateRandom( imsg._newPointDataReceivedFlag );
@@ -555,7 +555,7 @@ struct TestCase<CtiCCFeeder> : public TestCase<CapControlPao>
         }
 
         GenerateRandom( imsg._lastOperationTime );
-        GenerateRandom( imsg._varvaluebeforecontrol );
+        GenerateRandom( imsg._varValueBeforeControl );
         GenerateRandom( imsg._powerFactorValue );
         GenerateRandom( imsg._estimatedPowerFactorValue );
         GenerateRandom( imsg._currentVarPointQuality );
@@ -563,7 +563,7 @@ struct TestCase<CtiCCFeeder> : public TestCase<CapControlPao>
         GenerateRandom( imsg._decimalPlaces );
         GenerateRandom( imsg._peakTimeFlag );
         GenerateRandom( imsg._currentVoltLoadPointId );
-        GenerateRandom( imsg._currentvoltloadpointvalue );
+        GenerateRandom( imsg._currentVoltLoadPointValue );
         GenerateRandom( imsg._currentWattPointQuality );
         GenerateRandom( imsg._currentVoltPointQuality );
         GenerateRandom( imsg._targetVarValue );
@@ -609,9 +609,9 @@ struct TestCase<CtiCCSubstationBus> : public TestCase<CapControlPao>
 
         GenerateRandom( imsg._parentId );
         GenerateRandom( imsg._currentVarLoadPointId );
-        GenerateRandom( imsg._currentvarloadpointvalue );
+        GenerateRandom( imsg._currentVarLoadPointValue );
         GenerateRandom( imsg._currentWattLoadPointId );
-        GenerateRandom( imsg._currentwattloadpointvalue );
+        GenerateRandom( imsg._currentWattLoadPointValue );
         GenerateRandom( imsg._mapLocationId );
         GenerateRandom( imsg._decimalPlaces );
         GenerateRandom( imsg._newPointDataReceivedFlag );
@@ -626,13 +626,13 @@ struct TestCase<CtiCCSubstationBus> : public TestCase<CapControlPao>
         GenerateRandom( imsg._peaktimeflag );
         GenerateRandom( imsg._recentlyControlledFlag );
         GenerateRandom( imsg._lastOperationTime );
-        GenerateRandom( imsg._varvaluebeforecontrol );
+        GenerateRandom( imsg._varValueBeforeControl );
         GenerateRandom( imsg._powerFactorValue );
         GenerateRandom( imsg._estimatedPowerFactorValue );
         GenerateRandom( imsg._currentVarPointQuality );
         GenerateRandom( imsg._waiveControlFlag );
         GenerateRandom( imsg._currentVoltLoadPointId );
-        GenerateRandom( imsg._currentvoltloadpointvalue );
+        GenerateRandom( imsg._currentVoltLoadPointValue );
         GenerateRandom( imsg._verificationFlag );
         GenerateRandom( imsg._switchOverStatus );
         GenerateRandom( imsg._currentWattPointQuality );
@@ -670,9 +670,9 @@ struct TestCase<CtiCCSubstationBus> : public TestCase<CapControlPao>
 
         // re-copy to alternate (this is preferred over constraining more flags, if we randomize those with different value,
         // Java client would need a more complete model to predict values )
-        imsg._altSubVarVal  = imsg._currentvarloadpointvalue;
-        imsg._altSubWattVal = imsg._currentwattloadpointvalue;
-        imsg._altSubVoltVal = imsg._currentvoltloadpointvalue;
+        imsg._altSubVarVal  = imsg._currentVarLoadPointValue;
+        imsg._altSubWattVal = imsg._currentWattLoadPointValue;
+        imsg._altSubVoltVal = imsg._currentVoltLoadPointValue;
 
         // set and randomize the control strategy
         imsg._strategyId = TestStrategyLoader::TEST_STRATEGY_ID;

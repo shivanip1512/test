@@ -400,9 +400,9 @@ MessagePtr<Thrift::CCSubstationBusItem>::type populateThrift( const ::CtiCCSubst
     }
     else
     {
-        tempVolt = imsg.getCurrentvoltloadpointvalue();
-        tempVar  = imsg.getCurrentvarloadpointvalue();
-        tempWatt = imsg.getCurrentwattloadpointvalue();
+        tempVolt = imsg.getRawCurrentVoltLoadPointValue();
+        tempVar  = imsg.getRawCurrentVarLoadPointValue();
+        tempWatt = imsg.getRawCurrentWattLoadPointValue();
     }
 
     // Modifying the display value of pFactor to represent +100% values as a negative value.

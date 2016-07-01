@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Conductor.h"
-#include "regression.h"
 #include "ccfeeder.h"
 #include "TimeOfDayStrategy.h"
 #include "EventLogEntry.h"
 
+class CtiRegression;
 
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
 //For Sorted Vector, the vector will use this to determine position in the vector.
@@ -40,17 +40,17 @@ public:
 
     virtual ~CtiCCSubstationBus();
 
-    Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
-    double getCurrentVarLoadPointValue() const;
-    double getRawCurrentVarLoadPointValue() const;
+    double getCurrentVarLoadPointValue() const override;
+
     double getTotalizedVarLoadPointValue() const;
-    double getCurrentWattLoadPointValue() const;
-    double getRawCurrentWattLoadPointValue() const;
-    double getCurrentVoltLoadPointValue() const;
+
+    double getCurrentWattLoadPointValue() const override;
+
+    double getCurrentVoltLoadPointValue() const override;
+
     const CtiTime& getNextCheckTime() const;
     bool getBusUpdatedFlag() const;
     bool getPeakTimeFlag() const;
-    double getVarValueBeforeControl() const;
     long getLastFeederControlledPAOId() const;
     long getLastFeederControlledPosition() const;
     bool getVerificationFlag() const;
@@ -58,7 +58,6 @@ public:
     bool getVerificationDoneFlag() const;
     long getCurrentVerificationFeederId() const;
     long getCurrentVerificationCapBankId() const;
-    long getCurrentVerificationCapBankOrigState() const;
     bool getOverlappingVerificationFlag() const;
     bool getPreOperationMonitorPointScanFlag() const;
     bool getOperationSentWaitFlag() const;
@@ -86,15 +85,7 @@ public:
 
     bool getTotalizedControlFlag() const;
 
-    double getPhaseAValue() const;
-    double getPhaseBValue() const;
-    double getPhaseCValue() const;
     long getCommsStatePointId() const;
-
-    const CtiRegression& getRegression();
-    const CtiRegression& getRegressionA();
-    const CtiRegression& getRegressionB();
-    const CtiRegression& getRegressionC();
 
     CtiFeeder_vec& getCCFeeders();
     const CtiFeeder_vec& getCCFeeders() const;
@@ -103,9 +94,6 @@ public:
 
     long getControlSendRetries() const;
 
-    void setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp);
-    void setCurrentWattLoadPointValue(double currentwattval);
-    void setCurrentVoltLoadPointValue(double currentvoltval);
     void figureNextCheckTime();
     void setBusUpdatedFlag(bool busupdated);
 
@@ -113,7 +101,6 @@ public:
 
     void setPeakTimeFlag(bool peaktime);
     void setLastVerificationCheck(const CtiTime& checkTime);
-    void setVarValueBeforeControl(double oldvarval, long originalParentId = 0);
     void setLastFeederControlledPAOId(long lastfeederpao);
     void setLastFeederControlled(long lastfeederpao);
     void setLastFeederControlledPosition(long lastfeederposition);
@@ -141,9 +128,6 @@ public:
 
     void setAllAltSubValues(double volt, double var, double watt);
     void setDisplayOrder(long displayOrder);
-    void setPhaseAValue(double value, CtiTime time);
-    void setPhaseBValue(double value, CtiTime time);
-    void setPhaseCValue(double value, CtiTime time);
     void setCommsStatePointId(long newId);
 
     void reOrderFeederDisplayOrders();
@@ -222,7 +206,6 @@ public:
     void setVerificationDoneFlag(bool verificationDoneFlag);
     void setCurrentVerificationFeederId(long feederId);
     void setCurrentVerificationCapBankId(long capBankId);
-    void setCurrentVerificationCapBankState(long status);
 
     void checkAndUpdateRecentlyControlledFlag();
 
@@ -273,9 +256,6 @@ public:
     double getAltSubVoltVal() const;
     double getAltSubVarVal() const;
     double getAltSubWattVal() const;
-    double getCurrentvoltloadpointvalue() const;
-    double getCurrentvarloadpointvalue() const;
-    double getCurrentwattloadpointvalue() const;
 
 protected:
 
@@ -284,9 +264,6 @@ protected:
 
 private:
 
-    double _currentvarloadpointvalue;
-    double _currentwattloadpointvalue;
-    double _currentvoltloadpointvalue;
     long   _altDualSubId;
     double _altSubControlValue;
     long   _switchOverPointId;
@@ -297,7 +274,6 @@ private:
     CtiTime _nextchecktime;
     bool _busupdatedflag;
     bool _peaktimeflag;
-    double _varvaluebeforecontrol;
     long _lastfeedercontrolledpaoid;
     long _lastfeedercontrolledposition;
 
@@ -326,7 +302,6 @@ private:
 
     long _voltReductionControlId;
     long _disableBusPointId;
-    long _currentCapBankToVerifyAssumedOrigState;
     CtiPAOScheduleManager::VerificationStrategy _verificationStrategy;
     bool _disableOvUvVerificationFlag;
     long _capBankToVerifyInactivityTime;
@@ -337,10 +312,6 @@ private:
     double _altSubVarVal;
     double _altSubWattVal;
     CtiTime _lastVerificationCheck;
-
-    double _phaseAvalue;
-    double _phaseBvalue;
-    double _phaseCvalue;
 
     long    _commsStatePointId;
 
@@ -356,10 +327,6 @@ private:
     bool performDataOldAndFallBackNecessaryCheckOnFeeders();
 
     bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
-    CtiRegression regression;
-    CtiRegression regressionA;
-    CtiRegression regressionB;
-    CtiRegression regressionC;
 
     std::map <long, CtiCCMonitorPointPtr> _monitorPoints;
     std::map <Cti::CapControl::PointResponseKey, Cti::CapControl::PointResponsePtr> _pointResponses;

@@ -2,10 +2,11 @@
 
 #include "Conductor.h"
 #include "ccOriginalParent.h"
-#include "regression.h"
 #include "cccapbank.h"
 #include "EventLogEntry.h"
 #include "sorted_vector.h"
+
+class CtiRegression;
 
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less
@@ -39,11 +40,7 @@ public:
 
     virtual ~CtiCCFeeder();
 
-    double getCurrentVarLoadPointValue() const;
-    double getCurrentWattLoadPointValue() const;
-    double getCurrentVoltLoadPointValue() const;
     float getDisplayOrder() const;
-    double getVarValueBeforeControl() const;
     long getLastCapBankControlledDeviceId() const;
     long getBusOptimizedVarCategory() const;
     double getBusOptimizedVarOffset() const;
@@ -62,16 +59,7 @@ public:
     bool getLikeDayControlFlag() const;
     bool getLastVerificationMsgSentSuccessfulFlag() const;
     long getCurrentVerificationCapBankId() const;
-    long getCurrentVerificationCapBankOrigState() const;
-    Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
-    double getPhaseAValue() const;
-    double getPhaseBValue() const;
-    double getPhaseCValue() const;
     long getRetryIndex() const;
-    const CtiRegression& getRegression();
-    const CtiRegression& getRegressionA();
-    const CtiRegression& getRegressionB();
-    const CtiRegression& getRegressionC();
 
     CtiCCCapBank_SVector& getCCCapBanks();
     const CtiCCCapBank_SVector& getCCCapBanks() const;
@@ -80,11 +68,7 @@ public:
         std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks();
     void deleteCCCapBank(long capBankId);
 
-    void setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp);
-    void setCurrentWattLoadPointValue(double currentwattval);
-    void setCurrentVoltLoadPointValue(double currentvoltval);
     void setDisplayOrder(float order);
-    void setVarValueBeforeControl(double oldvarval);
     void setLastCapBankControlledDeviceId(long lastcapbank);
     void setBusOptimizedVarCategory(const long varcategory);
     void setBusOptimizedVarOffset(const double varoffset);
@@ -103,10 +87,6 @@ public:
     void setLikeDayControlFlag(bool flag);
     void setLastVerificationMsgSentSuccessfulFlag(bool flag);
     void setCurrentVerificationCapBankId(long capBankId);
-    void setCurrentVerificationCapBankState(long status);
-    void setPhaseAValue(double value, CtiTime timestamp);
-    void setPhaseBValue(double value, CtiTime timestamp);
-    void setPhaseCValue(double value, CtiTime timestamp);
     void setRetryIndex(long value);
 
     void figureAndSetTargetVarValue(const std::string& controlMethod, const std::string& controlUnits, bool peakTimeFlag);
@@ -232,13 +212,8 @@ protected:
 
 private:
 
-    double _currentvarloadpointvalue;
-    double _currentwattloadpointvalue;
-    double _currentvoltloadpointvalue;
-
     float _displayorder;
 
-    double _varvaluebeforecontrol;
     long _lastcapbankcontrolleddeviceid;
     long _busoptimizedvarcategory;
     double _busoptimizedvaroffset;
@@ -262,11 +237,6 @@ private:
     bool _lastVerificationMsgSentSuccessful;
 
     long _currentVerificationCapBankId;
-    long _currentCapBankToVerifyAssumedOrigState;
-
-    double _phaseAvalue;
-    double _phaseBvalue;
-    double _phaseCvalue;
 
     long _retryIndex;
 
@@ -281,10 +251,6 @@ private:
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
     bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
-    CtiRegression regression;
-    CtiRegression regressionA;
-    CtiRegression regressionB;
-    CtiRegression regressionC;
 };
 
 typedef CtiCCFeeder* CtiCCFeederPtr;
