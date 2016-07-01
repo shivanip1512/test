@@ -152,7 +152,8 @@ public:
     long getConnectionId() const;
 
     CtiMessage*  ReadConnQue  ( UINT Timeout = UINT_MAX );
-    YukonError_t WriteConnQue( CtiMessage* msg, ::Cti::CallSite cs, unsigned timeoutMillis = 0 );
+	YukonError_t WriteConnQue(CtiMessage* msg, ::Cti::CallSite cs, unsigned timeoutMillis = 0);
+	YukonError_t WriteConnQue(std::unique_ptr<CtiMessage>&& msg, ::Cti::CallSite cs, unsigned timeoutMillis = 0);
 
     Que_t& getOutQueueHandle();
     Que_t& getInQueueHandle();

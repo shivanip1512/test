@@ -378,6 +378,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="pilserver.cpp">
     </ClCompile>
+    <ClCompile Include="rf_data_streaming_processor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exe_pcreq.h" />
@@ -385,6 +386,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\pil_exefct.h" />
     <ClInclude Include="include\pilserver.h" />
     <ClInclude Include="include\rfn_statistics.h" />
+    <ClInclude Include="include\rf_data_streaming_processor.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

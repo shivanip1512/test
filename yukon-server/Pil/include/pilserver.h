@@ -14,6 +14,7 @@
 #include "amq_constants.h"
 
 #include "mgr_rfn_request.h"
+#include "rf_data_streaming_processor.h"
 
 #include <boost/thread.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -50,6 +51,8 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
    RfnRequestManager    _rfnManager;
    unsigned long        _rfnRequestId;
+
+   RfDataStreamingProcessor _rfDataStreamingProcessor;
 
    typedef std::multiset<CtiRequestMsg *, std::greater<CtiMessage *> > group_queue_t;
 

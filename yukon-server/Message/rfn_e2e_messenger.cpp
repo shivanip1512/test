@@ -132,6 +132,18 @@ void E2eMessenger::setE2eDtHandler(Indication::Callback callback)
 }
 
 
+void E2eMessenger::registerDataStreamingHandler(Indication::Callback callback)
+{
+    CTILOG_INFO(dout, "Registering Data Streaming callback");
+
+    {
+        readers_writer_lock_t::writer_lock_guard_t lock(gE2eMessenger->_callbackMux);
+
+        gE2eMessenger->_dataStreamingCallback = callback;
+    }
+}
+
+
 void E2eMessenger::registerDnpHandler(Indication::Callback callback, const RfnIdentifier rfnid)
 {
     CTILOG_INFO(dout, "Registering DNP callback for RfnIdentifier " << rfnid);
@@ -166,6 +178,11 @@ bool isE2eDt(const unsigned char &asid)
 bool isDnp3(const unsigned char &asid)
 {
     return asid == static_cast<unsigned char>(ASIDs::E2EAP_DNP3);
+}
+
+bool isDataStreaming(const unsigned char &asid)
+{
+    return asid == static_cast<unsigned char>(ASIDs::E2EAP_DataStreaming);
 }
 
 }
@@ -223,6 +240,22 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
                 return (*dnp3Callback)(ind);
             }
 
+            if( isDataStreaming(asid) )
+            {
+                if( ! _dataStreamingCallback )
+                {
+                    CTILOG_WARN(dout, "WARNING - Data Streaming ASID " << asid << " unhandled, no callback registered");
+                    return;
+                }
+
+                Indication ind;
+
+                ind.rfnIdentifier = indicationMsg->rfnIdentifier;
+                ind.payload       = indicationMsg->payload;
+
+                return (*_dataStreamingCallback)(ind);
+            }
+            
             CTILOG_WARN(dout, "WARNING - unknown ASID " << asid << " unhandled");
         }
     }

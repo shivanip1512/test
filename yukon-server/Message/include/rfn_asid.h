@@ -20,6 +20,7 @@ enum class IM_EX_MSG ApplicationServiceIdentifiers : unsigned char
     E2EDT              = 9,
     //E2EAP_SNMP       = 10,
     E2EAP_DNP3         = 11,
+    E2EAP_DataStreaming = 12,
 };
 
 }

@@ -49,6 +49,7 @@
 #include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/range/algorithm/count_if.hpp>
+#include <boost/range/algorithm/for_each.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
 
 #include <iomanip>
@@ -145,6 +146,7 @@ int PilServer::execute()
 
         Messaging::Rfn::gE2eMessenger->start();
         _rfnManager.start();
+		_rfDataStreamingProcessor.start();
 
         _periodicActionThread.start();
     }
@@ -2121,6 +2123,12 @@ void PilServer::periodicActionThread()
 
         {
             _rfnManager.tick();
+
+			auto dataStreamingResults = _rfDataStreamingProcessor.tick();
+            /*
+			boost::range::for_each(dataStreamingResults, [](std::unique_ptr<CtiMultiMsg>&& msg) {
+				VanGoghConnection.WriteConnQue(std::move(msg), CALLSITE);
+			});*/
         }
 
         if( nextRfDaCheck < Now )

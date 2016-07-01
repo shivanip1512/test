@@ -505,21 +505,27 @@ void CtiConnection::close()
     }
 }
 
+YukonError_t CtiConnection::WriteConnQue(CtiMessage *QEnt, ::Cti::CallSite cs, unsigned timeoutMillis)
+{
+	// take ownership of the message
+	return WriteConnQue(
+				std::unique_ptr<CtiMessage>{ QEnt }, 
+				cs, 
+				timeoutMillis);
+}
+
 /**
  * Write a message to send to the connection outQueue
  * @param QEnt pointer to the CtiMessage to send
  * @param timeout timeout in millisec, if the queue is full
  * @return NORMAL if the message is queued, QUEUE_WRITE if there was a timeout
  */
-YukonError_t CtiConnection::WriteConnQue( CtiMessage *QEnt, ::Cti::CallSite cs, unsigned timeoutMillis )
+YukonError_t CtiConnection::WriteConnQue(std::unique_ptr<CtiMessage>&& msg, ::Cti::CallSite cs, unsigned timeoutMillis)
 {
-    if(QEnt == nullptr)
+    if( ! msg )
     {
         CTILOG_ERROR(dout, who() << "WriteConnQue: Caller passed in null pointer from " << cs.func << ":" << cs.file << ":" << cs.line);
     }
-
-    // take ownership of the message
-    std::unique_ptr<CtiMessage> msg( QEnt );
 
     if( ! isConnectionUsable() )
     {

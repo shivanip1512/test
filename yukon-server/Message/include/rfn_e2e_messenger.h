@@ -67,6 +67,7 @@ public:
     using TimeoutCallback = std::function<void ()>;
 
     static void registerE2eDtHandler(Indication::Callback callback);
+    static void registerDataStreamingHandler(Indication::Callback callback);
     static void registerDnpHandler  (Indication::Callback callback, const RfnIdentifier rfnid);
 
     static void sendE2eDt    (const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout);
@@ -91,6 +92,7 @@ private:
     readers_writer_lock_t _callbackMux;
     boost::optional<Indication::Callback> _e2edtCallback;
     CallbacksPerRfnIdentifier _dnp3Callbacks;
+    boost::optional<Indication::Callback> _dataStreamingCallback;
 
     long long _sessionId;
     long long _messageId;
