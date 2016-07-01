@@ -20,7 +20,7 @@ public final class PaoIdToYukonDeviceMapper implements ObjectMapper<Integer, Sim
         try {
             return deviceDao.getYukonDevice(id);
         } catch (IncorrectResultSizeDataAccessException  e) {
-            throw new ObjectMappingException("Device with id: " + id + " not found.","invalidId",id, e);
+            throw new ObjectMappingException("Device with id: " + id + " not found.", "invalidId", id, e);
         }
     }
 }
