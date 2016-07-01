@@ -13,16 +13,26 @@ namespace Behaviors {
 
 struct IM_EX_CONFIG RfnDataStreamingBehavior : DeviceBehavior
 {
-    RfnDataStreamingBehavior(const std::map<std::string, std::string>&& parameters);
+    RfnDataStreamingBehavior(const long paoId, const std::map<std::string, std::string>&& parameters);
 
-    bool enabled;
-    struct ConfiguredChannel
+    const bool enabled;
+
+    struct Channel
     {
-        PointAttribute attribute;
+        Channel(std::string name, uint8_t intervalMinutes)
+            :   attribute{Attribute::Lookup(name)},
+                interval{intervalMinutes}
+        {}
+
+        Attribute attribute;
         std::chrono::minutes interval;
     };
 
-    std::vector<ConfiguredChannel> configuredChannels;
+    const std::vector<Channel> channels;
+
+private:
+
+    std::vector<Channel> parseChannels();
 };
 
 }

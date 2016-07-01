@@ -9,6 +9,7 @@
 
 #include "cmd_rfn_TemperatureAlarm.h"
 #include "cmd_rfn_ChannelConfiguration.h"
+#include "cmd_rfn_DataStreamingConfiguration.h"
 
 #include "PointAttribute.h"
 #include "MetricIdLookup.h"
@@ -122,16 +123,37 @@ YukonError_t RfnMeterDevice::executeGetConfigBehavior(CtiRequestMsg *pReq, CtiCo
     {
         if( *behaviorType == "rfndatastreaming" )
         {
-            auto behavior = BehaviorManager::getBehaviorForPao<Behaviors::RfnDataStreamingBehavior>(getID());
+            rfnRequests.push_back(boost::make_shared<Commands::RfnDataStreamingGetMetricsListCommand>());
+
+            return ClientErrors::None;
         }
     }
 
-    return ClientErrors::None;
+    return ClientErrors::NoMethod;
 }
 
 YukonError_t RfnMeterDevice::executePutConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    return ClientErrors::None;
+    if( auto behaviorType = parse.findStringForKey("behaviorType") )
+    {
+        if( *behaviorType == "rfndatastreaming" )
+        {
+            using Behaviors::RfnDataStreamingBehavior;
+            using SetMetricsCmd = Commands::RfnDataStreamingSetMetricsCommand;
+
+            auto behavior    = BehaviorManager::getBehaviorForPao<RfnDataStreamingBehavior>(getID());
+            auto deviceState = BehaviorManager::getDeviceStateForPao<RfnDataStreamingBehavior>(getID());
+
+            if( behavior.enabled )
+            {
+                //  do awesome comparison here
+            }
+
+            return ClientErrors::None;
+        }
+    }
+
+    return ClientErrors::NoMethod;
 }
 
 /**

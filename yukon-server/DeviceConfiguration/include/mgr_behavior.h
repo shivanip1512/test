@@ -18,7 +18,7 @@ public:
     static BehaviorType getBehaviorForPao(const long paoId);
 
     template<typename BehaviorType>
-    static boost::optional<BehaviorType> getBehaviorReportForPao(const long paoId);
+    static boost::optional<BehaviorType> getDeviceStateForPao(const long paoId);
 
 protected:
     template<typename BehaviorType>
@@ -31,12 +31,6 @@ private:
 struct BehaviorNotFoundException : std::exception
 {
     BehaviorNotFoundException(long paoId, std::string type)
-    {}
-};
-
-struct BehaviorItemNotFoundException : std::exception
-{
-    BehaviorItemNotFoundException(long paoId, std::string type)
     {}
 };
 

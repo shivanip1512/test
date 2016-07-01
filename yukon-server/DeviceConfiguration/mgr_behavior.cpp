@@ -58,9 +58,9 @@ BehaviorType BehaviorManager::getBehaviorForPao(const long paoId)
 }
 
 template <typename BehaviorType>
-boost::optional<BehaviorType> BehaviorManager::getBehaviorReportForPao(const long paoId)
+boost::optional<BehaviorType> BehaviorManager::getDeviceStateForPao(const long paoId)
 {
-    return gBehaviorManager->loadRfnDataStreamingBehaviorForPao(paoId, behaviorReportSql);
+    return gBehaviorManager->loadBehaviorForPao<BehaviorType>(paoId, behaviorReportSql);
 }
 
 template <typename BehaviorType>
@@ -80,10 +80,11 @@ BehaviorType BehaviorManager::loadBehaviorForPao(const long paoId, const std::st
         dbValues.emplace(rdr["name"].as<std::string>(), rdr["value"].as<std::string>());
     }
 
-    return BehaviorType{std::move(dbValues)};
+    return BehaviorType{paoId, std::move(dbValues)};
 }
 
-template IM_EX_CONFIG RfnDataStreamingBehavior BehaviorManager::getBehaviorForPao<RfnDataStreamingBehavior>(const long paoId);
+template IM_EX_CONFIG auto BehaviorManager::getBehaviorForPao   <RfnDataStreamingBehavior>(const long paoId) -> RfnDataStreamingBehavior;
+template IM_EX_CONFIG auto BehaviorManager::getDeviceStateForPao<RfnDataStreamingBehavior>(const long paoId) -> boost::optional<RfnDataStreamingBehavior>;
 
 IM_EX_CONFIG std::unique_ptr<BehaviorManager> gBehaviorManager(new BehaviorManager);
 
