@@ -9,7 +9,7 @@ import com.cannontech.common.device.streaming.model.LiteBehavior;
 
 public interface DeviceBehaviorDao {
 
-    void assignBehavior(int behaviorId, List<Integer> deviceIds);
+    void assignBehavior(int behaviorId, BehaviorType type, List<Integer> deviceIds);
 
     /**
      * Attempts to find a behavior by BehaviorId.

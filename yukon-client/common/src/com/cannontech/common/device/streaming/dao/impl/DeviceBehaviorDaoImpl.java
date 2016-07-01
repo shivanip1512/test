@@ -46,7 +46,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
     @Override
     @Transactional
-    public void assignBehavior(int behaviorId, List<Integer> deviceIds) {
+    public void assignBehavior(int behaviorId,  BehaviorType type, List<Integer> deviceIds) {
         log.debug("Devices to assign=" + deviceIds.size());
 
         List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
@@ -56,13 +56,9 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             SqlStatementBuilder unassignSql = new SqlStatementBuilder();
             unassignSql.append("DELETE dbm");
             unassignSql.append("FROM DeviceBehaviorMap dbm");
-            unassignSql.append("INNER JOIN Behavior b");
+            unassignSql.append("JOIN Behavior b");
             unassignSql.append("ON dbm.BehaviorId=b.BehaviorId");
-            unassignSql.append("WHERE b.BehaviorType IN");
-            unassignSql.append("   (SELECT BehaviorType");
-            unassignSql.append("    FROM Behavior");
-            unassignSql.append("    WHERE BehaviorId").eq(behaviorId);
-            unassignSql.append("   )");
+            unassignSql.append("WHERE b.BehaviorType").eq(type);
             unassignSql.append("AND dbm.deviceId").in(idBatch);
             
             jdbcTemplate.update(unassignSql);
@@ -195,15 +191,15 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     private void initParameterSink(BehaviorReport report, SqlParameterSink params){
         params.addValue("BehaviorReportId", report.getId());
         params.addValue("DeviceId", report.getDeviceId());
-        params.addValue("BehaviorType", report.getType().getDatabaseRepresentation());
-        params.addValue("BehaviorStatus", report.getStatus().getDatabaseRepresentation());
+        params.addValue("BehaviorType", report.getType());
+        params.addValue("BehaviorStatus", report.getStatus());
         params.addValue("TimeStamp", report.getTimestamp());
     }
     
     private void initParameterSink(Behavior behavior, SqlParameterSink params){
         params.addValue("BehaviorId", behavior.getId());
         params.addValue("BehaviorName", behavior.getName());
-        params.addValue("BehaviorType", behavior.getType().getDatabaseRepresentation());
+        params.addValue("BehaviorType", behavior.getType());
     }
 
     private List<BehaviorValue> getBehaviorValuesByBehaviorId(int behaviorId) {
