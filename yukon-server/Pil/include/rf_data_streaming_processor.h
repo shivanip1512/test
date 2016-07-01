@@ -14,18 +14,18 @@ class IM_EX_CTIPIL RfDataStreamingProcessor
 {
 public:
 
-	using ResultVector = std::vector<std::unique_ptr<CtiMultiMsg>>;
+    using ResultVector = std::vector<std::unique_ptr<CtiMultiMsg>>;
 
-	ResultVector tick();
+    ResultVector tick();
 
     void start();
 
 private:
 
-	using Packet = Messaging::Rfn::E2eMessenger::Indication;
-	using PacketQueue = std::vector<Packet>;
+    using Packet = Messaging::Rfn::E2eMessenger::Indication;
+    using PacketQueue = std::vector<Packet>;
 
-	std::unique_ptr<CtiMultiMsg> processPacket(const Packet& p);
+    std::unique_ptr<CtiMultiMsg> processPacket(const Packet& p);
     void handleStatistics();
 
     using Mutex     = std::mutex;

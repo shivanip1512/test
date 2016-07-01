@@ -507,11 +507,11 @@ void CtiConnection::close()
 
 YukonError_t CtiConnection::WriteConnQue(CtiMessage *QEnt, ::Cti::CallSite cs, unsigned timeoutMillis)
 {
-	// take ownership of the message
-	return WriteConnQue(
-				std::unique_ptr<CtiMessage>{ QEnt }, 
-				cs, 
-				timeoutMillis);
+    // take ownership of the message
+    return WriteConnQue(
+                std::unique_ptr<CtiMessage>{ QEnt }, 
+                cs, 
+                timeoutMillis);
 }
 
 /**
