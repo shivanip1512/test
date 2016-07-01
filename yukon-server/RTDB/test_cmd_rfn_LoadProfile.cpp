@@ -121,12 +121,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exce
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_exceptions )
 {
-	const std::vector< RfnCommand::RfnResponsePayload >   responses = {
-		{ 0x6f,  0x00,  0x00,  0x00 },
-		{ 0x69,  0x01,  0x00,  0x00 },
-		{ 0x69,  0x00,  0x02,  0x00 },
-		{ 0x69,  0x00,  0x00,  0x01,  0x00,  0x00 }
-	};
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+        { 0x6f,  0x00,  0x00,  0x00 },
+        { 0x69,  0x01,  0x00,  0x00 },
+        { 0x69,  0x00,  0x02,  0x00 },
+        { 0x69,  0x00,  0x00,  0x01,  0x00,  0x00 }
+    };
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x6f)" ) )
@@ -214,12 +214,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_exceptions )
 {
-	const std::vector< RfnCommand::RfnResponsePayload >   responses = {
-		{0x69,  0x00,  0x00,  0x01,  0x01,  0x02,  0x04,  0x06 },
-		{0x69,  0x01,  0x00,  0x02,  0x00,  0x00,  0x04,  0x00 },
-		{0x69,  0x01,  0x00,  0x01,  0x04,  0x00,  0x00 },
-		{0x69,  0x01,  0x00,  0x01,  0x01,  0x00,  0x01,  0x04 }
-	};
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+        {0x69,  0x00,  0x00,  0x01,  0x01,  0x02,  0x04,  0x06 },
+        {0x69,  0x01,  0x00,  0x02,  0x00,  0x00,  0x04,  0x00 },
+        {0x69,  0x01,  0x00,  0x01,  0x04,  0x00,  0x00 },
+        {0x69,  0x01,  0x00,  0x01,  0x01,  0x00,  0x01,  0x04 }
+    };
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
@@ -297,10 +297,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileTemporaryRecord
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileTemporaryRecording_decoding_exceptions )
 {
-	const std::vector< RfnCommand::RfnResponsePayload >   responses = {
-		{ 0x69, 0x03, 0x00, 0x00 },
-		{ 0x69, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00 }
-	};
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+        { 0x69, 0x03, 0x00, 0x00 },
+        { 0x69, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00 }
+    };
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x03)" ) )
@@ -376,10 +376,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableTemporaryLoadProfileRecordi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableTemporaryLoadProfileRecording_decoding_exceptions )
 {
-	const std::vector< RfnCommand::RfnResponsePayload >   responses = {
-		{ 0x69, 0x02, 0x00, 0x00 },
-		{ 0x69, 0x03, 0x00, 0x01, 0x01, 0x00, 0x00 }
-	};
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+        { 0x69, 0x02, 0x00, 0x00 },
+        { 0x69, 0x03, 0x00, 0x01, 0x01, 0x00, 0x00 }
+    };
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) )
@@ -455,10 +455,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfilePermanentRecord
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfilePermanentRecording_decoding_exceptions )
 {
-	const std::vector< RfnCommand::RfnResponsePayload >   responses = {
-		{ 0x69, 0x03, 0x00, 0x00 },
-		{ 0x69, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00 }
-	};
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+        { 0x69, 0x03, 0x00, 0x00 },
+        { 0x69, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00 }
+    };
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x03)" ) )
@@ -534,10 +534,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecordi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecording_decoding_exceptions )
 {
-	const std::vector< RfnCommand::RfnResponsePayload >   responses = {
-		{ 0x69, 0x02, 0x00, 0x00 },
-		{ 0x69, 0x06, 0x00, 0x01, 0x01, 0x00, 0x00 }
-	};
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+        { 0x69, 0x02, 0x00, 0x00 },
+        { 0x69, 0x06, 0x00, 0x01, 0x01, 0x00, 0x00 }
+    };
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) )
@@ -678,13 +678,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_exceptions )
 {
-	const std::vector< RfnCommand::RfnResponsePayload >   responses = {
-		{ 0x69, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x00 },
-		{ 0x69, 0x04, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00 },
-		{ 0x69, 0x04, 0x00, 0x01, 0x01, 0x00, 0x01, 0x00 },
-		{ 0x69, 0x04, 0x00, 0x01, 0x02, 0x00, 0x02, 0x00, 0x00 },
-		{ 0x69, 0x04, 0x00, 0x01, 0x02, 0x00, 0x01, 0x03 }
-	};
+    const std::vector< RfnCommand::RfnResponsePayload >   responses = {
+        { 0x69, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x00 },
+        { 0x69, 0x04, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00 },
+        { 0x69, 0x04, 0x00, 0x01, 0x01, 0x00, 0x01, 0x00 },
+        { 0x69, 0x04, 0x00, 0x01, 0x02, 0x00, 0x02, 0x00, 0x00 },
+        { 0x69, 0x04, 0x00, 0x01, 0x02, 0x00, 0x01, 0x03 }
+    };
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) )

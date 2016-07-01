@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE( test_lmobjects_thermostat_gear_settings_cool_mode, ther
     columnValues[ controlMethodIndex ] = "ThermostatRamping";
     columnValues[ settingsIndex      ] = "AF-I";
 
-	LMGearReader reader(columnNames, std::vector<LMGearRow>({ columnValues }));
+    LMGearReader reader(columnNames, std::vector<LMGearRow>({ columnValues }));
     reader();
 
     boost::scoped_ptr<CtiLMProgramThermostatGear>   gear( new CtiLMProgramThermostatGear( reader ) );

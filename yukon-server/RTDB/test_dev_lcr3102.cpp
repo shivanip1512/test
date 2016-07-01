@@ -236,9 +236,9 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
     BOOST_CHECK_CLOSE(pi.value, (double)relay_1_watts*1/100, 0.00000001);
 
-	delete_container(vgList);
-	delete_container(retList);
-	delete_container(outList);
+    delete_container(vgList);
+    delete_container(retList);
+    delete_container(outList);
 }
 
 BOOST_AUTO_TEST_CASE(test_decode_get_propcount)

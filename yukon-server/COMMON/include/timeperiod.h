@@ -42,7 +42,7 @@ public:
     // isValid = false if no intersection.
     TimePeriod intersection(const TimePeriod &rhs);
 
-    // 	Returns union of two periods. isValid = false if no intersection.
+    // Returns union of two periods. isValid = false if no intersection.
     TimePeriod merge(const TimePeriod &rhs);
 
     // returns first time in the period

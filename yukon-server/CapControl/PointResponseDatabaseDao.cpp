@@ -20,11 +20,11 @@ namespace Database {
 /*  - in the spirit of monitor points...
  
 SELECT
-	DMPR.DeviceID,
-	DMPR.PointID,
-	DMPR.PreOpValue,
-	DMPR.Delta,
-	DMPR.StaticDelta,
+    DMPR.DeviceID,
+    DMPR.PointID,
+    DMPR.PreOpValue,
+    DMPR.Delta,
+    DMPR.StaticDelta,
     X.SubstationBusID
 FROM (
     SELECT

@@ -3546,7 +3546,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
 
         BOOST_CHECK_EQUAL(0, rm.PointData().size());
 
-		delete ret_list.front();
+        delete ret_list.front();
     }
 
     //  set up the meter with dynamic pao info for the Alpha Power Plus

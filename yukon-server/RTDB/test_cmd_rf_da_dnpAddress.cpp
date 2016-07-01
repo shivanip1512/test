@@ -58,11 +58,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rf_da_dnpAddress )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rf_da_dnpAddress_decoding_exceptions )
 {
-	const std::vector< RfnCommand::RfnResponsePayload > responses = {
-			{ 0xcc, 0xbb},
-			{ 0xcc, 0xbb, 0xaa, 0x99},
-			{ 0xcc, 0xbb, 0xaa}
-	};
+    const std::vector< RfnCommand::RfnResponsePayload > responses = {
+            { 0xcc, 0xbb},
+            { 0xcc, 0xbb, 0xaa, 0x99},
+            { 0xcc, 0xbb, 0xaa}
+    };
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (2)" ) )

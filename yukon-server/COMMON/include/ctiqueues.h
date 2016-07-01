@@ -7,7 +7,7 @@ template < class T >
 class CtiPtrDeque{
 
     private:
-		std::queue < T* > q;
+        std::queue < T* > q;
 
     public:
         CtiPtrDeque(){}
@@ -49,7 +49,7 @@ template < class T >
 class CtiValDeque{
 
     private:
-		std::queue < T > q;
+        std::queue < T > q;
 
     public:
         CtiValDeque(){};

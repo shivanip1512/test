@@ -6,21 +6,21 @@
 
 
 /*
-3.2	Q_X_DOT_Y_BFLD
+3.2 Q_X_DOT_Y_BFLD
 Note:  meters with firmware version 5.27.0.11.4 and prior use the Q9.7 format. 
 Starting with firmware version 5.28.0.0.5, meters now use the Q10.6 format. 
 In 5.28, a new field (X_DOT_Y_FORMAT) was added to MFG table 24, so that the QX.Y format can be determined.
 For the Q10.6 Format:
 TYPE Q_X_DOT_Y_BFLD = BIT FIELD OF UINT16
-FRACTION	: UINT(0..5);
-INTEGER		: UINT(6..15);
+FRACTION    : UINT(0..5);
+INTEGER     : UINT(6..15);
 END;
 To convert this 16-bit packed value into a number, one can divide the number by 2^6 = 64 (since there are 6 fractional bits).  Thus, a packed value of 0xFFFF = 65535, is really 65535 / 64 = 1023.984375.
 
 For the Q9.7 Format:
 TYPE Q_X_DOT_Y_BFLD = BIT FIELD OF UINT16
-FRACTION	: UINT(0..6);
-INTEGER		: UINT(7..15);
+FRACTION    : UINT(0..6);
+INTEGER     : UINT(7..15);
 END;
 To convert this 16-bit packed value into a number, one can divide the number by 2^7 = 128 (since there are 7 fractional bits).  Thus, a packed value of 0xFFFF = 65535, is really 65535 / 128 = 511.9921875.
 */
