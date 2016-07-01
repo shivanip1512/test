@@ -4294,14 +4294,14 @@ std::string CtiVanGogh::displayConnections()
 
 void CtiVanGogh::sendTagUpdate(const CtiTablePointDispatch &dispatch, const std::string &addnl, const std::string &user)
 {
-	CtiSignalMsg tagSig{ dispatch.getPointID(), 0, "Tag Update", addnl };
-	
-	tagSig.setPointValue(dispatch.getValue());
-	tagSig.setMessagePriority(15);
-	tagSig.setUser(user);
-	tagSig.setTags(dispatch.getTags() & ~SIGNAL_MANAGER_MASK);
+    CtiSignalMsg tagSig{ dispatch.getPointID(), 0, "Tag Update", addnl };
+    
+    tagSig.setPointValue(dispatch.getValue());
+    tagSig.setMessagePriority(15);
+    tagSig.setUser(user);
+    tagSig.setTags(dispatch.getTags() & ~SIGNAL_MANAGER_MASK);
 
-	postMessageToClients(&tagSig);
+    postMessageToClients(&tagSig);
 }
 
 /********************
@@ -4373,7 +4373,7 @@ bool CtiVanGogh::ablementPoint(const CtiPointBase &point, bool &devicedifferent,
             pDyn->getDispatch().resetTags(tagmask);
             pDyn->getDispatch().setTags(newpttags);
 
-			sendTagUpdate(pDyn->getDispatch(), addnl, user);
+            sendTagUpdate(pDyn->getDispatch(), addnl, user);
         }
     }
 

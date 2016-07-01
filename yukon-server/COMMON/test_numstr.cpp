@@ -57,9 +57,9 @@ void numstr_test_helper(T value, int precision, int padding, const string &base,
     const string  &hex = base,  &hex_spad = base_spad,  &hex_zpad = base_zpad,
                  &xhex = base, &xhex_spad = base_spad, &xhex_zpad = base_zpad;
 
-	BOOST_TEST_MESSAGE("value="+to_string(value)+", precision=" + to_string(precision)+", padding=" + to_string(padding));
-	
-	CtiNumStr numstr(value, precision);
+    BOOST_TEST_MESSAGE("value="+to_string(value)+", precision=" + to_string(precision)+", padding=" + to_string(padding));
+    
+    CtiNumStr numstr(value, precision);
 
     //  test without formats
                           BOOST_CHECK_EQUAL(numstr.toString(), base);
@@ -374,28 +374,28 @@ BOOST_AUTO_TEST_CASE(test_float)
     numstr_test_helper(f = 0.0, 0, 12,                     "0",    "           0",    "000000000000",
                                                       "0e+000",    "      0e+000",    "0.000000e+00");
 
-	numstr_test_helper(f = 0.0, 3, 12,                 "0.000",    "       0.000",    "00000000.000",
+    numstr_test_helper(f = 0.0, 3, 12,                 "0.000",    "       0.000",    "00000000.000",
                                                    "0.000e+00",    "   0.000e+00",    "0.000000e+00");
 
-	numstr_test_helper(f = 0.0, 6, 12,              "0.000000",    "    0.000000",    "00000.000000",
+    numstr_test_helper(f = 0.0, 6, 12,              "0.000000",    "    0.000000",    "00000.000000",
                                                 "0.000000e+00",    "0.000000e+00",    "0.000000e+00");
 
-	numstr_test_helper(f = 0.1234, 0, 12,                  "0",    "           0",    "000000000000",
+    numstr_test_helper(f = 0.1234, 0, 12,                  "0",    "           0",    "000000000000",
                                                       "1e-001",    "      1e-001",    "1.234000e-01");
 
-	numstr_test_helper(f = 0.1234, 3, 12,              "0.123",    "       0.123",    "00000000.123",
+    numstr_test_helper(f = 0.1234, 3, 12,              "0.123",    "       0.123",    "00000000.123",
                                                    "1.234e-01",    "   1.234e-01",    "1.234000e-01");
 
-	numstr_test_helper(f = 0.1234, 6, 12,           "0.123400",    "    0.123400",    "00000.123400",
+    numstr_test_helper(f = 0.1234, 6, 12,           "0.123400",    "    0.123400",    "00000.123400",
                                                 "1.234000e-01",    "1.234000e-01",    "1.234000e-01");
 
-	numstr_test_helper(f = 1.0, 0, 12,                     "1",    "           1",    "000000000001",
+    numstr_test_helper(f = 1.0, 0, 12,                     "1",    "           1",    "000000000001",
                                                       "1e+000",    "      1e+000",    "1.000000e+00");
 
-	numstr_test_helper(f = 1.0, 3, 12,                 "1.000",    "       1.000",    "00000001.000",
+    numstr_test_helper(f = 1.0, 3, 12,                 "1.000",    "       1.000",    "00000001.000",
                                                    "1.000e+00",    "   1.000e+00",    "1.000000e+00");
 
-	numstr_test_helper(f = 1.0, 6, 12,              "1.000000",    "    1.000000",    "00001.000000",
+    numstr_test_helper(f = 1.0, 6, 12,              "1.000000",    "    1.000000",    "00001.000000",
                                                 "1.000000e+00",    "1.000000e+00",    "1.000000e+00");
 
 //  these doesn't make sense for float, since it only has 7 significant digits - the exp test will fail
@@ -410,13 +410,13 @@ BOOST_AUTO_TEST_CASE(test_float)
                                                "1.000000e+000", "  1.000000e+000", "1.00000000e+000");
 */
 
-	numstr_test_helper(d = 0.0, 0, 12,                     "0",    "           0",    "000000000000",
+    numstr_test_helper(d = 0.0, 0, 12,                     "0",    "           0",    "000000000000",
                                                       "0e+000",    "      0e+000",    "0.000000e+00");
 
-	numstr_test_helper(d = 0.0, 3, 12,                 "0.000",    "       0.000",    "00000000.000",
+    numstr_test_helper(d = 0.0, 3, 12,                 "0.000",    "       0.000",    "00000000.000",
                                                    "0.000e+00",    "   0.000e+00",    "0.000000e+00");
 
-	numstr_test_helper(d = 0.0, 6, 12,              "0.000000",    "    0.000000",    "00000.000000",
+    numstr_test_helper(d = 0.0, 6, 12,              "0.000000",    "    0.000000",    "00000.000000",
                                                 "0.000000e+00",    "0.000000e+00",    "0.000000e+00");
 
     numstr_test_helper(d = 0.0, 6, 15,              "0.000000", "       0.000000", "00000000.000000",

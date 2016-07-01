@@ -79,34 +79,34 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
 
     if( event != PokeEvent )
     {
-		log4cxx::spi::LoggingEventPtr consoleEvent = event;
+        log4cxx::spi::LoggingEventPtr consoleEvent = event;
 
-		size_t lines = 0;
-		const size_t maxNewlines = 500;
+        size_t lines = 0;
+        const size_t maxNewlines = 500;
 
-		static const auto nth_newline = 
+        static const auto nth_newline = 
                 [&](const log4cxx::LogString::value_type c) 
                 {
                     return c == '\n' && ++lines > maxNewlines;
                 };
 
-		const auto splitPoint = boost::range::find_if(event->getMessage(), nth_newline);
+        const auto splitPoint = boost::range::find_if(event->getMessage(), nth_newline);
 
-		if( splitPoint != event->getMessage().end() )
-		{
-			consoleEvent = log4cxx::spi::LoggingEventPtr{
-				new log4cxx::spi::LoggingEvent(
-					event->getLoggerName(),
-					event->getLevel(),
-					log4cxx::LogString{event->getMessage().cbegin(), splitPoint} + L"\nLog entry truncated after 500 lines.",
-					event->getLocationInformation())};
-		}
-
-		if( _currentBurst < _maxBurstSize )
+        if( splitPoint != event->getMessage().end() )
         {
-			_currentBurst += 1 + lines;
-			
-			WriterAppender::subAppend(consoleEvent, p);
+            consoleEvent = log4cxx::spi::LoggingEventPtr{
+                new log4cxx::spi::LoggingEvent(
+                    event->getLoggerName(),
+                    event->getLevel(),
+                    log4cxx::LogString{event->getMessage().cbegin(), splitPoint} + L"\nLog entry truncated after 500 lines.",
+                    event->getLocationInformation())};
+        }
+
+        if( _currentBurst < _maxBurstSize )
+        {
+            _currentBurst += 1 + lines;
+            
+            WriterAppender::subAppend(consoleEvent, p);
 
             if( _currentBurst >= _maxBurstSize )
             {

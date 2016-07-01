@@ -102,7 +102,7 @@ std::string CtiTableRawPointHistory::getFinalizeSql(const DbClientType clientTyp
                 "declare @maxChangeId numeric;"
                 "select @maxChangeId = max(changeid) from rawpointhistory;"
                 "insert into RAWPOINTHISTORY (changeid, pointid, timestamp, quality, value, millis)"
-				" select @maxChangeId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), pointid, timestamp, quality, value, millis"
+                " select @maxChangeId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), pointid, timestamp, quality, value, millis"
                 " FROM ##rph;";
         }
         case DbClientType::Oracle:
@@ -113,7 +113,7 @@ std::string CtiTableRawPointHistory::getFinalizeSql(const DbClientType clientTyp
                     " SELECT MAX(changeid) INTO maxChangeId"
                     " FROM RAWPOINTHISTORY;"
                 "INSERT INTO RAWPOINTHISTORY"
-					" SELECT maxChangeId + ROW_NUMBER() OVER(ORDER BY (SELECT 1 FROM DUAL)), pointid, timestamp, quality, value, millis"
+                    " SELECT maxChangeId + ROW_NUMBER() OVER(ORDER BY (SELECT 1 FROM DUAL)), pointid, timestamp, quality, value, millis"
                     " FROM Temp_RPH; "
                 "END;";
         }
