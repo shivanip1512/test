@@ -15,17 +15,19 @@ public:
     virtual ~BehaviorManager() = default;  //  for unit test override
 
     template<typename BehaviorType>
-    static BehaviorType getBehaviorForPao(const long paoId);
+    static auto getBehaviorForPao(const long paoId) -> BehaviorType;
 
     template<typename BehaviorType>
-    static boost::optional<BehaviorType> getDeviceStateForPao(const long paoId);
+    static auto getDeviceStateForPao(const long paoId) -> boost::optional<BehaviorType>;
 
 protected:
-    template<typename BehaviorType>
-    static BehaviorType loadBehaviorForPao(const long paoId, const std::string sql);
+    using BehaviorValues = std::map<std::string, std::string>;
+
+    virtual BehaviorValues loadBehavior      (const long paoId, const std::string& type);
+    virtual BehaviorValues loadBehaviorReport(const long paoId, const std::string& type);
+
 private:
-    template<typename BehaviorType>
-    static std::string getDatabaseNameFor();
+    BehaviorValues queryDatabaseForBehaviorValues(const long paoId, const std::string& type, const std::string& sql);
 };
 
 struct BehaviorNotFoundException : std::exception

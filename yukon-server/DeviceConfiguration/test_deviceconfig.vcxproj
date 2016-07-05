@@ -360,10 +360,11 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="test_device_config.cpp">
-    </ClCompile>
-    <ClCompile Include="test_main.cpp">
-    </ClCompile>
+    <ClCompile Include="test_behavior_device.cpp" />
+    <ClCompile Include="test_behavior_rfnDataStreaming.cpp" />
+    <ClCompile Include="test_device_config.cpp" />
+    <ClCompile Include="test_main.cpp" />
+    <ClCompile Include="test_mgr_behavior.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\config_data_dnp.h" />

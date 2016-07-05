@@ -16,7 +16,7 @@ public:
 protected:
     DeviceBehavior(const long paoId, const std::map<std::string, std::string>&& parameters);
 
-    template <typename T>
+    template<typename T>
     T parseItem(const std::string& itemName);
 
     struct IndexedItemDescriptor 
@@ -25,14 +25,37 @@ protected:
         size_t itemCount;
     };
 
-    IndexedItemDescriptor getIndexedItemDescriptor(const std::string &itemName);
+    template<typename T>
+    struct Param
+    {
+        const char* name;
 
-    template <typename T>
-    T parseItem(const IndexedItemDescriptor &descriptor, const size_t index, const std::string& subitemName);
+        Param(const char* behaviorValueName) : name(behaviorValueName) {}
+    };
+
+    template<typename T, class ...Types>
+    std::vector<T> parseIndexedItems(const std::string& itemName, Param<Types>... items)
+    {
+        const auto itemCount = parseItem<unsigned long>(itemName);
+
+        return 
+            boost::copy_range<std::vector<T>>(
+                boost::counting_range<size_t>(0, itemCount)
+                    | boost::adaptors::transformed([this, itemName, &items...](size_t idx) {
+                            return T { parseIndexedItem(itemName, idx, items)... }; }));
+    }
 
 private:
 
     std::string get(const std::string& itemName);
+
+    std::string makeIndexedName(const std::string& baseName, const size_t index, const std::string& subitemName);
+
+    template<typename T>
+    T parseIndexedItem(const std::string& base, const size_t idx, Param<T> value)
+    {
+        return parseItem<T>(makeIndexedName(base, idx, value.name));
+    }
 
     const ItemMap _parameters;
     const long _paoId;

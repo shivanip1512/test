@@ -21,19 +21,19 @@ std::string DeviceBehavior::get(const std::string& itemName)
     throw BehaviorItemNotFoundException(_paoId, itemName);
 }
 
-template <>
+template <> IM_EX_CONFIG
 std::string DeviceBehavior::parseItem(const std::string& itemName)
 {
     return get(itemName);
 }
 
-template <>
+template <> IM_EX_CONFIG
 unsigned long DeviceBehavior::parseItem(const std::string& itemName)
 {
     return std::stoul(get(itemName));
 }
 
-template <>
+template <> IM_EX_CONFIG
 uint8_t DeviceBehavior::parseItem(const std::string& itemName)
 {
     auto asUnsignedLong = parseItem<unsigned long>(itemName);
@@ -45,7 +45,7 @@ uint8_t DeviceBehavior::parseItem(const std::string& itemName)
     throw std::out_of_range(std::to_string(asUnsignedLong));
 }
 
-template <>
+template <> IM_EX_CONFIG
 bool DeviceBehavior::parseItem(const std::string& itemName)
 {
     auto item = get(itemName);
@@ -61,26 +61,10 @@ bool DeviceBehavior::parseItem(const std::string& itemName)
     throw std::invalid_argument(item);
 }
 
-auto DeviceBehavior::getIndexedItemDescriptor(const std::string &itemName) -> IndexedItemDescriptor
+std::string DeviceBehavior::makeIndexedName(const std::string& baseName, const size_t index, const std::string& subitemName)
 {
-    return{ itemName, parseItem<unsigned long>(itemName) };
+    return baseName + "." + std::to_string(index) + "." + subitemName;
 }
-
-template <typename T>
-T DeviceBehavior::parseItem(const IndexedItemDescriptor& descriptor, const size_t index, const std::string& subitemName)
-{
-    if( index >= descriptor.itemCount )
-    {
-        throw std::out_of_range(std::to_string(index));
-    }
-
-    return parseItem<T>(descriptor.itemName + "." + std::to_string(index) + "." + subitemName);
-}
-
-//  Explicit instantiations
-template unsigned long DeviceBehavior::parseItem(const IndexedItemDescriptor& descriptor, const size_t index, const std::string& subitemName);
-template std::string   DeviceBehavior::parseItem(const IndexedItemDescriptor& descriptor, const size_t index, const std::string& subitemName);
-template uint8_t       DeviceBehavior::parseItem(const IndexedItemDescriptor& descriptor, const size_t index, const std::string& subitemName);
 
 }
 }

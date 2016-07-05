@@ -16,13 +16,13 @@ using Behaviors::RfnDataStreamingBehavior;
     
 namespace {
 
-    static const std::string behaviorItemSql =
+    static const std::string behaviorSql =
         "SELECT"
             " BV.name, BV.value"
         " FROM"
             " DeviceBehaviorMap DBM"
             " JOIN Behavior B on B.BehaviorId=DBM.BehaviorId"
-            " JOIN BehaviorValue BV on BI.BehaviorId=B.BehaviorId"
+            " JOIN BehaviorValue BV on BV.BehaviorId=B.BehaviorId"
         " WHERE"
             " DBM.DeviceId=?"
             " AND B.BehaviorType=?";
@@ -54,33 +54,58 @@ namespace {
 template <typename BehaviorType>
 BehaviorType BehaviorManager::getBehaviorForPao(const long paoId)
 {
-    return gBehaviorManager->loadBehaviorForPao<BehaviorType>(paoId, behaviorItemSql);
+    return BehaviorType{ 
+                paoId, 
+                gBehaviorManager->loadBehavior(
+                        paoId, 
+                        DatabaseTypeNameFor<BehaviorType>::value()) };
 }
 
 template <typename BehaviorType>
 boost::optional<BehaviorType> BehaviorManager::getDeviceStateForPao(const long paoId)
 {
-    return gBehaviorManager->loadBehaviorForPao<BehaviorType>(paoId, behaviorReportSql);
+    const auto dbValues =
+            gBehaviorManager->loadBehaviorReport(
+                    paoId,
+                    DatabaseTypeNameFor<BehaviorType>::value());
+
+    if( dbValues.empty() )
+    {
+        return boost::none;
+    }
+
+    return BehaviorType{ paoId, std::move(dbValues) };
 }
 
-template <typename BehaviorType>
-BehaviorType BehaviorManager::loadBehaviorForPao(const long paoId, const std::string sql)
+
+auto BehaviorManager::loadBehavior(const long paoId, const std::string& behaviorType) -> BehaviorValues
+{
+    return queryDatabaseForBehaviorValues(paoId, behaviorType, behaviorSql);
+}
+
+auto BehaviorManager::loadBehaviorReport(const long paoId, const std::string& behaviorType) -> BehaviorValues
+{
+    return queryDatabaseForBehaviorValues(paoId, behaviorType, behaviorReportSql);
+}
+
+
+auto BehaviorManager::queryDatabaseForBehaviorValues(const long paoId, const std::string& behaviorType, const std::string& sql) -> BehaviorValues
 {
     Database::DatabaseConnection conn;
-    Database::DatabaseReader rdr(conn, behaviorItemSql);
+    Database::DatabaseReader rdr{ conn, sql };
 
-    rdr << paoId << DatabaseTypeNameFor<BehaviorType>::value();
+    rdr << paoId << behaviorType;
 
     rdr.execute();
 
-    std::map<std::string, std::string> dbValues;
+    BehaviorValues dbValues;
 
     while( rdr() )
     {
         dbValues.emplace(rdr["name"].as<std::string>(), rdr["value"].as<std::string>());
     }
 
-    return BehaviorType{paoId, std::move(dbValues)};
+    return dbValues;
 }
 
 template IM_EX_CONFIG auto BehaviorManager::getBehaviorForPao   <RfnDataStreamingBehavior>(const long paoId) -> RfnDataStreamingBehavior;

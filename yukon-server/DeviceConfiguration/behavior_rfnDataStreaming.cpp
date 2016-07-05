@@ -2,6 +2,8 @@
 
 #include "behavior_rfnDataStreaming.h"
 
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/counting_range.hpp>
 
 namespace Cti {
 namespace Behaviors {
@@ -15,18 +17,9 @@ RfnDataStreamingBehavior::RfnDataStreamingBehavior(const long paoId, const std::
 
 auto RfnDataStreamingBehavior::parseChannels() -> std::vector<Channel>
 {
-    const auto channels = getIndexedItemDescriptor("channels");
-
-    std::vector<Channel> parsedChannels;
-
-    for( size_t i = 0; i < channels.itemCount; ++i )
-    {
-        parsedChannels.emplace_back(
-            parseItem<std::string>(channels, i, "attribute"), 
-            parseItem<uint8_t>    (channels, i, "interval"));
-    }
-
-    return parsedChannels;
+    return parseIndexedItems<Channel>("channels", 
+                Param<std::string>{"attribute"}, 
+                Param<uint8_t>    {"interval"});
 }
 
 }
