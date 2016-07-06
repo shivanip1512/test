@@ -28,7 +28,7 @@ public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardw
     private final static List<OutputColumn> outputColumns;
     static {
         List<OutputColumn> columns = Lists.newArrayList();
-        String titleKeyPrefix = "yukon.web.picker.thermostat.";
+        String titleKeyPrefix = "yukon.web.picker.";
 
         columns.add(new OutputColumn("serialNumber", titleKeyPrefix + "serialNumber"));
         columns.add(new OutputColumn("deviceType", titleKeyPrefix + "deviceType"));
