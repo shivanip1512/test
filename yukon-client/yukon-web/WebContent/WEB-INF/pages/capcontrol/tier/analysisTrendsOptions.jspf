@@ -5,7 +5,7 @@
 
 <script type="text/javascript">
 function showTrends(title, url) {
-    $('#analysisTrendsOptions').dialog('close');
+    $('.js-analysis-trends').dialog('close');
     
     var selectedItems = $('table.analysisCheckboxes input:checkbox:checked');
     var targets = new Array();
@@ -74,15 +74,15 @@ function showTrends(title, url) {
 
 <script type='text/javascript'>
 function updateButtons() {
-    if ($('#analysisTrendsOptions input:checkbox:checked').length == 0) {
-        $('#analysisTrendsOptions .action-area button').attr("disabled", "disabled");
+    if ($('.js-analysis-trends input:checkbox:checked').length == 0) {
+        $('.js-analysis-trends .action-area button').attr("disabled", "disabled");
     } else {
-        $('#analysisTrendsOptions .action-area button').removeAttr("disabled");
+        $('.js-analysis-trends .action-area button').removeAttr("disabled");
     }
 }
 
 $(function() {
     updateButtons();
-    $('#analysisTrendsOptions input:checkbox').click(updateButtons);
+    $('.js-analysis-trends input:checkbox').click(updateButtons);
 });
 </script>

@@ -58,7 +58,7 @@ $(function() {
     <cm:dropdownOption key=".location.label" href="${locationsUrl}" icon="icon-interstate" />
 
     <c:if test="${showAnalysis}">
-        <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
+        <i:simplePopup styleClass="js-analysis-trends" titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
             <%@ include file="analysisTrendsOptions.jspf" %>
         </i:simplePopup>
         <cm:dropdownOption key=".analysis.label" id="analysisTrendsButton" icon="icon-chart-line" />

@@ -75,7 +75,7 @@
                             </cti:checkRolesAndProperties>
 
                             <c:if test="${showAnalysis}">
-                                <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions_${areaId}" on="#showTrendsPopup_${areaId}">
+                                <i:simplePopup styleClass="js-analysis-trends" titleKey=".analysisTrends" id="analysisTrendsOptions_${areaId}" on="#showTrendsPopup_${areaId}">
                                     <%@ include file="analysisTrendsOptions.jspf" %>
                                 </i:simplePopup>
                                 <cm:dropdownOption key=".analysis.label" id="showTrendsPopup_${areaId}" icon="icon-chart-line" />
