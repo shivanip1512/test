@@ -116,9 +116,12 @@
                             data-width="750"
                             data-url="<cti:url value="/admin/users/${user.userId}/change-password"/>"></div>
                         </c:if>
-                        
+                        <c:set var="disabled" value="false"/>
+                        <c:if test="${isLoggedInUser}">
+                            <c:set var="disabled" value="true"/>
+                        </c:if>
                         <cti:url var="url" value="/admin/users/${user.userId}/unlock"/>
-                        <cti:button href="${url}" nameKey="unlockUser" icon="icon-lock-open"/>
+                        <cti:button href="${url}" nameKey="unlockUser" icon="icon-lock-open" disabled="${disabled}"/>
                         
                     </cti:displayForPageEditModes>
                 </div>

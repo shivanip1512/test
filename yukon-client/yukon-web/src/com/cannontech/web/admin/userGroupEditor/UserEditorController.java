@@ -77,12 +77,14 @@ public class UserEditorController {
     /* VIEW PAGE */
     @RequestMapping("users/{userId}")
     public String view(YukonUserContext userContext, ModelMap model, @PathVariable int userId) {
-        
+        boolean isLoggedInUser = false;
         LiteYukonUser lyu = yukonUserDao.getLiteYukonUser(userId);
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
         User user = new User(lyu, userAuthenticationInfo);
         setupModelMap(model, user, PageEditMode.VIEW, userContext);
-        
+        if (userContext.getYukonUser().getLiteID() == userId)
+            isLoggedInUser = true;
+        model.addAttribute("isLoggedInUser", isLoggedInUser);
         LiteYukonUser me = userContext.getYukonUser();
         boolean showPermissions = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, me);
         model.addAttribute("showPermissions", showPermissions);
