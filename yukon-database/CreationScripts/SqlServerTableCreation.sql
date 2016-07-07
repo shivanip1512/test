@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/6/2016 5:23:57 PM                          */
+/* Created on:     7/7/2016 2:48:04 PM                          */
 /*==============================================================*/
 
 
@@ -545,7 +545,7 @@ insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
 create table Behavior (
    BehaviorId           numeric              not null,
    BehaviorType         varchar(60)          not null,
-   constraint PK_BEHAVIORID primary key (BehaviorId)
+   constraint PK_BEHAVIOR primary key (BehaviorId)
 )
 go
 
@@ -557,8 +557,8 @@ create table BehaviorReport (
    DeviceId             numeric              not null,
    BehaviorType         varchar(60)          not null,
    BehaviorStatus       varchar(60)          not null,
-   TimeStamp            timestamp            not null,
-   constraint PK_BEHAVIORREPORTID primary key nonclustered (BehaviorReportId, DeviceId)
+   TimeStamp            datetime             not null,
+   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId, DeviceId)
 )
 go
 
@@ -567,9 +567,9 @@ go
 /*==============================================================*/
 create table BehaviorReportValue (
    BehaviorReportId     numeric              not null,
-   Value                varchar(100)         not null,
    Name                 varchar(60)          not null,
-   constraint PK_BEHAVIORREPORTID primary key (BehaviorReportId, Name)
+   Value                varchar(100)         not null,
+   constraint PK_BEHAVIORREPORTVALUE primary key (BehaviorReportId, Name)
 )
 go
 
@@ -578,9 +578,9 @@ go
 /*==============================================================*/
 create table BehaviorValue (
    BehaviorId           numeric              not null,
-   Value                varchar(100)         not null,
    Name                 varchar(60)          not null,
-   constraint PK_BEHAVIORID primary key (BehaviorId, Name)
+   Value                varchar(100)         not null,
+   constraint PK_BEHAVIORVALUE primary key (BehaviorId, Name)
 )
 go
 
@@ -2932,7 +2932,7 @@ go
 create table DeviceBehaviorMap (
    DeviceId             numeric              not null,
    BehaviorId           numeric              not null,
-   constraint PK_DEVICEID primary key (DeviceId, BehaviorId)
+   constraint PK_DEVICEBEHAVIORMAP primary key (DeviceId, BehaviorId)
 )
 go
 
@@ -11299,19 +11299,19 @@ alter table BaseLine
 go
 
 alter table Behavior
-   add constraint FK_Behavior_BehaviorValue foreign key (BehaviorId, )
-      references BehaviorValue (BehaviorId, Name)
+   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
+      references BehaviorValue (BehaviorId)
          on delete cascade
 go
 
 alter table BehaviorReport
-   add constraint FK_BehaviorReport_BehRepVal foreign key (BehaviorReportId, )
-      references BehaviorReportValue (BehaviorReportId, Name)
+   add constraint FK_BehaviorReportValue_BehaviorReport foreign key (BehaviorReportId)
+      references BehaviorReportValue (BehaviorReportId)
          on delete cascade
 go
 
 alter table BehaviorReport
-   add constraint FK_BehaviorReport_Device foreign key (DeviceId)
+   add constraint FK_Device_BehaviorReport foreign key (DeviceId)
       references DEVICE (DEVICEID)
          on delete cascade
 go
@@ -12133,13 +12133,13 @@ alter table DeviceAddress
 go
 
 alter table DeviceBehaviorMap
-   add constraint FK_DevBehMap_Behavior foreign key (BehaviorId)
+   add constraint FK_Behavior_DeviceBehaviorMap foreign key (BehaviorId)
       references Behavior (BehaviorId)
          on delete cascade
 go
 
 alter table DeviceBehaviorMap
-   add constraint FK_DevBehMap_Device foreign key (DeviceId)
+   add constraint FK_Device_DeviceBehaviorMap foreign key (DeviceId)
       references DEVICE (DEVICEID)
          on delete cascade
 go
