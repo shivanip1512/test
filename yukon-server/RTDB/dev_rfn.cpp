@@ -74,17 +74,27 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         try
         {
             errorCode = (this->**executeMethod)(pReq, parse, returnMsgs, rfnRequests);
+
+            if( errorCode )
+            {
+                errorDescription = GetErrorString(errorCode);
+            }
         }
-        catch( const Commands::RfnCommand::CommandException &ce )
+        catch( const YukonErrorException &ce )
         {
             errorCode        = ce.error_code;
             errorDescription = ce.error_description;
+        }
+        catch( std::exception &e )
+        {
+            errorCode        = ClientErrors::Unknown;
+            errorDescription = e.what();
         }
     }
 
     if( errorCode )
     {
-        CTILOG_ERROR(dout, "Couldn't come up with an operation for device " << getName() <<". Command: "<< pReq->CommandString());
+        CTILOG_ERROR(dout, "Execute error for device " << getName() <<". Command: "<< pReq->CommandString());
 
         std::auto_ptr<CtiReturnMsg> executeError(
                 new CtiReturnMsg(

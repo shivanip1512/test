@@ -1116,7 +1116,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile )
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
     }
 }
 
@@ -1196,7 +1196,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getconfig_voltage_profile )
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
     }
 }
 
@@ -1254,7 +1254,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid command." );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
         }
     }
 }

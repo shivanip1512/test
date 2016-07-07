@@ -4496,7 +4496,9 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                                            expectMoreExp.begin() , expectMoreExp.end() );
         }
     }
-}
+
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
 
 
 BOOST_AUTO_TEST_CASE(test_executeGetStatusEventLog)

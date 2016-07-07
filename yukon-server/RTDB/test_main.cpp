@@ -25,34 +25,48 @@ ostream &operator<<( ostream &os, const unsigned char &uc )
 
 ostream &operator<<(ostream &o, const std::vector<unsigned char> &bytes)
 {
-    o << "(";
+    o << "{";
 
     const unsigned char oldfill = o.fill('0');
     const ios::fmtflags oldformat = o.setf(ios_base::hex, ios::basefield);
 
-    for each( unsigned char b in bytes )
+    int idx = 0;
+
+    for( unsigned char b : bytes )
     {
-        o << "(0x" << setw(2) << (unsigned)b << ")";
+        if( idx++ )
+        {
+            o << ", ";
+        }
+
+        o << "0x" << setw(2) << (unsigned)b;
     }
 
     o.setf(oldformat, ios::basefield);
     o.fill(oldfill);
 
-    o << ")";
+    o << "}";
 
     return o;
 }
 
 ostream &operator<<(ostream &o, const std::vector<bool> &v)
 {
-    o << "(";
+    o << "{";
 
-    for each( bool b in v )
+    int idx = 0;
+
+    for( bool b : v )
     {
-        o << "(" << b << ")";
+        if( idx++ )
+        {
+            o << ", ";
+        }
+
+        o << b;
     }
 
-    o << ")";
+    o << "}";
 
     return o;
 }
