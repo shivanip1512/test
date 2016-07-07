@@ -5,11 +5,8 @@ import java.util.List;
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorType;
-import com.cannontech.common.device.streaming.model.LiteBehavior;
 
 public interface DeviceBehaviorDao {
-
-    void assignBehavior(int behaviorId, BehaviorType type, List<Integer> deviceIds);
 
     /**
      * Attempts to find a behavior by BehaviorId.
@@ -21,9 +18,9 @@ public interface DeviceBehaviorDao {
     int saveBehavior(Behavior behavior);
 
     /**
-     * Returns the list of Behaviors by BehaviorType. This list doesn't have the BehaviorItem information.
+     * Returns the list of Behaviors by BehaviorType.
      */
-    List<LiteBehavior> getLiteBehaviorsByType(BehaviorType type);
+    List<Behavior> getBehaviorsByType(BehaviorType type);
 
     /**
      * Deletes Behavior
@@ -47,4 +44,15 @@ public interface DeviceBehaviorDao {
      * Deletes all Behaviors that have no devices associated with them.
      */
     void deleteUnusedBehaviors();
+
+    /**
+     * Assigns behavior from devices.
+     */
+    void unassignBehavior(int behaviorId, BehaviorType type, List<Integer> deviceIds);
+    
+    /**
+     * Assigns behavior to devices.
+     */
+    void assignBehavior(int behaviorId, BehaviorType type, List<Integer> deviceIds);
+
 }

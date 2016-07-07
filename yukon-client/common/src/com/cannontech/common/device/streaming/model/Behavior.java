@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Behavior {
     private int id;
-    private String name;
     private BehaviorType type;
     private List<BehaviorValue> values = new ArrayList<>();
 
@@ -17,14 +16,6 @@ public class Behavior {
         this.type = type;
     }
     
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getId() {
         return id;
     }

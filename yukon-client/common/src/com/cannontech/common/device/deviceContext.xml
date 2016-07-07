@@ -222,4 +222,6 @@
     <bean id="routeBroadcastService" class="com.cannontech.common.device.service.RouteBroadcastServiceImpl"/>
     
     <bean class="com.cannontech.common.device.streaming.dao.impl.DeviceBehaviorDaoImpl"/>
+    
+    <bean class="com.cannontech.common.device.streaming.service.impl.DeviceBehaviorServiceImpl"/>
 </beans>

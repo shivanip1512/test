@@ -16,7 +16,6 @@ import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.device.streaming.model.BehaviorValue;
-import com.cannontech.common.device.streaming.model.LiteBehavior;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
@@ -51,17 +50,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
         List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
         ids.forEach(idBatch -> {
-            log.debug("Batch=" + idBatch.size());
-            //unassign devices
-            SqlStatementBuilder unassignSql = new SqlStatementBuilder();
-            unassignSql.append("DELETE dbm");
-            unassignSql.append("FROM DeviceBehaviorMap dbm");
-            unassignSql.append("JOIN Behavior b");
-            unassignSql.append("ON dbm.BehaviorId=b.BehaviorId");
-            unassignSql.append("WHERE b.BehaviorType").eq(type);
-            unassignSql.append("AND dbm.deviceId").in(idBatch);
-            
-            jdbcTemplate.update(unassignSql);
+            unassignBehaviorFoBatch(behaviorId, type, idBatch);
             
             //assign devices
             SqlStatementBuilder insertSql = new SqlStatementBuilder();
@@ -84,18 +73,34 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             });
         });
     }
-
+    
     @Override
-    public List<LiteBehavior> getLiteBehaviorsByType(BehaviorType type) {
+    @Transactional
+    public void unassignBehavior(int behaviorId,  BehaviorType type, List<Integer> deviceIds) {
+        log.debug("Devices to ussign=" + deviceIds.size());
+
+        List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
+        ids.forEach(idBatch -> {
+            unassignBehaviorFoBatch(behaviorId, type, idBatch);
+        });
+    }
+    
+    @Override
+    public List<Behavior> getBehaviorsByType(BehaviorType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT BehaviorId, BehaviorName");
+        sql.append("SELECT BehaviorId");
         sql.append("FROM Behavior");
         sql.append("WHERE BehaviorType").eq_k(type);
 
-        return jdbcTemplate.query(sql, new YukonRowMapper<LiteBehavior>() {
+        return jdbcTemplate.query(sql, new YukonRowMapper<Behavior>() {
             @Override
-            public LiteBehavior mapRow(YukonResultSet rs) throws SQLException {
-                return new LiteBehavior(rs.getInt("BehaviorId"), rs.getString("BehaviorName"));
+            public Behavior mapRow(YukonResultSet rs) throws SQLException {
+                Behavior behavior = new Behavior();
+                rs.getInt("BehaviorId");
+                behavior.setType(type);
+                List<BehaviorValue> values = getBehaviorValuesByBehaviorId(behavior.getId());
+                behavior.setValues(values);
+                return behavior;
             }
         });
     }
@@ -141,7 +146,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     @Override
     public Behavior getBehaviorById(int behaviorId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT BehaviorId, BehaviorName, BehaviorType");
+        sql.append("SELECT BehaviorId, BehaviorType");
         sql.append("FROM Behavior");
         sql.append("WHERE BehaviorId").eq(behaviorId);
 
@@ -149,8 +154,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             @Override
             public Behavior mapRow(YukonResultSet rs) throws SQLException {
                 Behavior behavior = new Behavior();
-                behavior.setId(rs.getInt("BehaviorId"));
-                behavior.setName(rs.getString("BehaviorName"));
+                behavior.setId(behaviorId);
                 behavior.setType(rs.getEnum("BehaviorType", BehaviorType.class));
                 return behavior;
             }
@@ -198,7 +202,6 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     
     private void initParameterSink(Behavior behavior, SqlParameterSink params){
         params.addValue("BehaviorId", behavior.getId());
-        params.addValue("BehaviorName", behavior.getName());
         params.addValue("BehaviorType", behavior.getType());
     }
 
@@ -257,5 +260,20 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
             jdbcTemplate.update(sql);
         });
+    }
+    
+    private void unassignBehaviorFoBatch(int behaviorId, BehaviorType type, List<Integer> deviceIds) {
+
+        log.debug("Batch=" + deviceIds.size());
+        // unassign devices
+        SqlStatementBuilder unassignSql = new SqlStatementBuilder();
+        unassignSql.append("DELETE dbm");
+        unassignSql.append("FROM DeviceBehaviorMap dbm");
+        unassignSql.append("JOIN Behavior b");
+        unassignSql.append("ON dbm.BehaviorId=b.BehaviorId");
+        unassignSql.append("WHERE b.BehaviorType").eq(type);
+        unassignSql.append("AND dbm.deviceId").in(deviceIds);
+
+        jdbcTemplate.update(unassignSql);
     }
 }
