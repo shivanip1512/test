@@ -89,6 +89,7 @@ private:
 
     YukonError_t executeGetConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     YukonError_t executePutConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executePutConfigBehaviorRfnDataStreaming(ReturnMsgList& returnMsgs, RfnCommandList& rfnRequests);
 
     YukonError_t executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, InstallType installType);
     void executeConfigInstallSingle  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod );

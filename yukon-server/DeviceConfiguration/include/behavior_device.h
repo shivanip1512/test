@@ -3,6 +3,9 @@
 #include "yukon.h"
 #include "dllbase.h"
 
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/counting_range.hpp>
+
 #include <map>
 
 namespace Cti {
@@ -12,6 +15,8 @@ class IM_EX_CONFIG DeviceBehavior
 {
 public:
     using ItemMap = std::map<std::string, std::string>;
+    
+    struct behavior_report_tag {};
 
 protected:
     DeviceBehavior(const long paoId, const std::map<std::string, std::string>&& parameters);
@@ -34,7 +39,7 @@ protected:
     };
 
     template<typename T, class ...Types>
-    std::vector<T> parseIndexedItems(const std::string& itemName, Param<Types>... items)
+    std::vector<T> parseIndexedItems(const std::string& itemName, Types... items)  //  This should technically be Param<Types>... items, but that caused an ICE in VS2015u2.  Maybe try again in u3?
     {
         const auto itemCount = parseItem<unsigned long>(itemName);
 

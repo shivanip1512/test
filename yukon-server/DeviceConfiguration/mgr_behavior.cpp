@@ -52,13 +52,19 @@ namespace {
 
 
 template <typename BehaviorType>
-BehaviorType BehaviorManager::getBehaviorForPao(const long paoId)
+boost::optional<BehaviorType> BehaviorManager::getBehaviorForPao(const long paoId)
 {
-    return BehaviorType{ 
-                paoId, 
-                gBehaviorManager->loadBehavior(
-                        paoId, 
-                        DatabaseTypeNameFor<BehaviorType>::value()) };
+    const auto dbValues = 
+            gBehaviorManager->loadBehavior(
+                    paoId,
+                    DatabaseTypeNameFor<BehaviorType>::value());
+
+    if( dbValues.empty() )
+    {
+        return boost::none;
+    }
+
+    return BehaviorType{ paoId, std::move(dbValues) };
 }
 
 template <typename BehaviorType>
@@ -74,7 +80,7 @@ boost::optional<BehaviorType> BehaviorManager::getDeviceStateForPao(const long p
         return boost::none;
     }
 
-    return BehaviorType{ paoId, std::move(dbValues) };
+    return BehaviorType{ paoId, std::move(dbValues), Behaviors::DeviceBehavior::behavior_report_tag{} };
 }
 
 
@@ -108,7 +114,7 @@ auto BehaviorManager::queryDatabaseForBehaviorValues(const long paoId, const std
     return dbValues;
 }
 
-template IM_EX_CONFIG auto BehaviorManager::getBehaviorForPao   <RfnDataStreamingBehavior>(const long paoId) -> RfnDataStreamingBehavior;
+template IM_EX_CONFIG auto BehaviorManager::getBehaviorForPao   <RfnDataStreamingBehavior>(const long paoId) -> boost::optional<RfnDataStreamingBehavior>;
 template IM_EX_CONFIG auto BehaviorManager::getDeviceStateForPao<RfnDataStreamingBehavior>(const long paoId) -> boost::optional<RfnDataStreamingBehavior>;
 
 IM_EX_CONFIG std::unique_ptr<BehaviorManager> gBehaviorManager(new BehaviorManager);

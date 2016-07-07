@@ -22,14 +22,15 @@ public:
     {
         unsigned short metricId;
         unsigned char interval;
-        StreamingState enabled;
     };
+
+    using MetricList = std::vector<MetricState>;
 
 protected:
 
     virtual unsigned char getResponseCode() const = 0;
 
-    std::vector<MetricState> _deviceMetrics;
+    MetricList _deviceMetrics;
     StreamingState _deviceStreamingState;
 
 private:
@@ -58,11 +59,11 @@ class IM_EX_DEVDB RfnDataStreamingSetMetricsCommand : public RfnDataStreamingCon
 {
 public:
     RfnDataStreamingSetMetricsCommand(StreamingState enabled);
-    RfnDataStreamingSetMetricsCommand(std::vector<MetricState> states);
+    RfnDataStreamingSetMetricsCommand(MetricList&& states);
 
 private:
     const StreamingState _enabled;
-    const std::vector<MetricState> _states;
+    const MetricList _states;
 
     enum
     {

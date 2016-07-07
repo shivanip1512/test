@@ -7,6 +7,7 @@
 #include "config_device.h"
 #include "config_data_rfn.h"
 #include "rtdb_test_helpers.h"
+#include "deviceconfig_test_helpers.h"
 #include "boost_test_helpers.h"
 
 using namespace Cti::Devices;
@@ -58,7 +59,7 @@ const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
 BOOST_FIXTURE_TEST_SUITE( test_dev_rfnMeter, test_state_rfnMeter )
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_temperaturealarm_success_no_tlv )
+BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_no_tlv )
 {
     test_RfnMeterDevice dut;
 
@@ -136,7 +137,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_temperaturealarm_succe
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_temperaturealarm_success_returnMismatch )
+BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_returnMismatch )
 {
     test_RfnMeterDevice dut;
 
@@ -219,7 +220,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_temperaturealarm_succe
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_temperaturealarm_failure )
+BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_failure )
 {
     test_RfnMeterDevice dut;
 
@@ -282,7 +283,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_temperaturealarm_failu
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_temperaturealarm_unsupported )
+BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_unsupported )
 {
     test_RfnMeterDevice dut;
 
@@ -391,7 +392,7 @@ Device is a subset of the configuration.
 This test does a "putconfig install channelconfig verify" and checks that it properly notices that the 
 device configuration is missing several midnight and interval channel settings.
 */
-BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify_missing )
+BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_missing )
 {
     test_RfnMeterDevice dut;
 
@@ -477,7 +478,7 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_extra)
 This test does a "putconfig install channelconfig verify" and checks that it properly notices that the 
 device configuration is missing several midnight and interval channel settings.
 */
-BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify_match )
+BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_match )
 {
     test_RfnMeterDevice dut;
 
@@ -551,7 +552,7 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_disjoint
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify_uninitialized )
+BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_uninitialized )
 {
     test_RfnMeterDevice dut;
 
@@ -586,5 +587,490 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnMeter_putconfig_install_channel_verify_uniniti
         } );
     }
 }
+
+BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+    }
+
+    auto rfnRequest_itr = rfnRequests.begin();
+    {
+        const auto& command = *rfnRequest_itr++;
+        {
+            auto rcv = command->executeCommand(execute_time);
+
+            const std::vector<unsigned char> exp {
+                0x86,  //  command code
+                0x00,  //  number of metrics
+                0x00 };//  data streaming OFF
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+        }
+
+        {
+            const std::vector<unsigned char> response{
+                0x87,       //  command code
+                0x03,  //  number of metrics
+                0x00,  //  data streaming on/off
+                0x00, 0x05,  //  metric ID 1
+                0x01,        //  metric ID 1 enable/disable
+                0x05,        //  metric ID 1 interval
+                0x00, 0x73,  //  metric ID 2
+                0x00,        //  metric ID 2 enable/disable
+                0x0f,        //  metric ID 2 interval
+                0x00, 0x53,  //  metric ID 3
+                0x01,        //  metric ID 3 enable/disable
+                0x1e,        //  metric ID 3 interval
+                0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
+
+            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand(decode_time, response);
+
+            const std::string exp =
+                R"json({
+"streamingEnabled" : false,
+"configuredMetrics" : [
+  {
+    "attribute" : "DEMAND",
+    "interval" : 5,
+    "enabled" : true
+  },
+  {
+    "attribute" : "VOLTAGE",
+    "interval" : 15,
+    "enabled" : false
+  },
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : true
+  }],
+"sequence" : 3735928559
+})json";
+
+            BOOST_CHECK_EQUAL(rcv.description, exp);
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_no_channels )
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    b.behaviorManagerHandle->behaviorValues.emplace("channels", "0");
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK(rfnRequests.empty());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 284);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Configuration data is invalid.");
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_two_channels_no_device_report )
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    b.behaviorManagerHandle->behaviorValues = std::map<std::string, std::string> {
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" }};
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            const std::vector<unsigned char> exp {
+                0x86,  //  command code
+                0x02,  //  number of metrics
+                0x01,  //  data streaming ON
+                0x00, 0x73,  //  metric ID 1
+                0x01,        //  metric ID 1 enable/disable
+                0x04,        //  metric ID 1 interval
+                0x00, 0x05,  //  metric ID 2
+                0x01,        //  metric ID 2 enable/disable
+                0x07         //  metric ID 2 interval
+            };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_matches)
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    b.behaviorManagerHandle->behaviorValues = std::map<std::string, std::string> {
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" }};
+
+    b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
+        { "enabled", "true" },
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.0.enabled", "true" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" },
+        { "channels.1.enabled", "true" }};
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK(rfnRequests.empty());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 220);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Unknown Error Code (220)");
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_disabled)
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    b.behaviorManagerHandle->behaviorValues = std::map<std::string, std::string> {
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" }};
+
+    b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
+        { "enabled", "false" },
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.0.enabled", "true" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" },
+        { "channels.1.enabled", "true" }};
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            const std::vector<unsigned char> exp {
+                0x86,  //  command code
+                0x00,  //  number of metrics
+                0x01   //  data streaming ON
+            };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_device_channel_disabled)
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    b.behaviorManagerHandle->behaviorValues = std::map<std::string, std::string> {
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" }};
+
+    b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
+        { "enabled", "true" },
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.0.enabled", "true" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" },
+        { "channels.1.enabled", "false" }};
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            const std::vector<unsigned char> exp {
+                0x86,  //  command code
+                0x01,  //  number of metrics
+                0x01,  //  data streaming ON
+                0x00, 0x05, 
+                0x01, 
+                0x07
+            };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_channel_interval_mismatch)
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    b.behaviorManagerHandle->behaviorValues = std::map<std::string, std::string> {
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" }};
+
+    b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
+        { "enabled", "true" },
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.0.enabled", "true" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "17" },
+        { "channels.1.enabled", "true" }};
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            const std::vector<unsigned char> exp {
+                0x86,  //  command code 
+                0x01,  //  number of metrics 
+                0x01,  //  data streaming ON 
+                0x00, 0x05, 
+                0x01, 
+                0x07
+            };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_opposite)
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    b.behaviorManagerHandle->behaviorValues = std::map<std::string, std::string> {
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" }};
+
+    b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
+        { "enabled", "true" },
+        { "channels", "4" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "40" },
+        { "channels.0.enabled", "false" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "17" },
+        { "channels.1.enabled", "false" },
+        { "channels.2.attribute", "KVAR" },
+        { "channels.2.interval", "9" },
+        { "channels.2.enabled", "true" },
+        { "channels.3.attribute", "POWER_FACTOR" },
+        { "channels.3.interval", "11" },
+        { "channels.3.enabled", "true" }};
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            const std::vector<unsigned char> exp {
+                0x86,  //  command code
+                0x04,  //  number of metrics
+                0x01,  //  data streaming ON
+                0x00, 0x05,  //  metric ID 1
+                0x01,        //  metric ID 1 enable/disable
+                0x07,        //  metric ID 1 interval
+                0x00, 0x73,  //  metric ID 2
+                0x01,        //  metric ID 2 enable/disable
+                0x04,        //  metric ID 2 interval
+                0x00, 0x20,  //  metric ID 3
+                0x00,        //  metric ID 3 enable/disable
+                0x1e,        //  metric ID 3 interval
+                0x00, 0x53,  //  metric ID 4
+                0x00,        //  metric ID 4 enable/disable
+                0x1e         //  metric ID 4 interval
+            };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_unsupported_attribute)
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    b.behaviorManagerHandle->behaviorValues = std::map<std::string, std::string> {
+        { "channels", "1" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" }};
+
+    b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
+        { "enabled", "true" },
+        { "channels", "3" },
+        { "channels.0.attribute", "DEMAND" },
+        { "channels.0.interval", "17" },
+        { "channels.0.enabled", "false" },
+        { "channels.1.attribute", "KVAR" },
+        { "channels.1.interval", "9" },
+        { "channels.1.enabled", "true" },
+        { "channels.2.attribute", "POWER_FACTOR" },
+        { "channels.2.interval", "11" },
+        { "channels.2.enabled", "true" }};
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK(rfnRequests.empty());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 284);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Configuration data is invalid.");
+        }
+    }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

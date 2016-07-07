@@ -15,7 +15,7 @@ public:
     virtual ~BehaviorManager() = default;  //  for unit test override
 
     template<typename BehaviorType>
-    static auto getBehaviorForPao(const long paoId) -> BehaviorType;
+    static auto getBehaviorForPao(const long paoId) -> boost::optional<BehaviorType>;
 
     template<typename BehaviorType>
     static auto getDeviceStateForPao(const long paoId) -> boost::optional<BehaviorType>;
@@ -28,12 +28,6 @@ protected:
 
 private:
     BehaviorValues queryDatabaseForBehaviorValues(const long paoId, const std::string& type, const std::string& sql);
-};
-
-struct BehaviorNotFoundException : std::exception
-{
-    BehaviorNotFoundException(long paoId, std::string type)
-    {}
 };
 
 extern IM_EX_CONFIG std::unique_ptr<BehaviorManager> gBehaviorManager;

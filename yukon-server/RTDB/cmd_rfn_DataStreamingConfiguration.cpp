@@ -109,9 +109,9 @@ RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(StreamingSt
     :   _enabled(enabled) 
 {}
 
-RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(std::vector<MetricState> states) 
+RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(MetricList&& states) 
     :   _enabled(StreamingEnabled), 
-        _states(states) {}
+        _states(std::move(states)) {}
 
 
 unsigned char RfnDataStreamingSetMetricsCommand::getCommandCode() const 
@@ -131,8 +131,8 @@ DeviceCommand::Bytes RfnDataStreamingSetMetricsCommand::getCommandData()
     for( const auto& s : _states )
     {
         insertValue_bEndian<2>(commandData, s.metricId);
-        commandData.push_back(s.enabled);
-        commandData.push_back(s.interval);
+        commandData.push_back(s.interval > 0);
+        commandData.push_back(s.interval ? s.interval : 30);
     }
 
     return commandData;
