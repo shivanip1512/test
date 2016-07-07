@@ -294,12 +294,10 @@ inline bool list_contains( const std::list<T> &V, T x )
 
 namespace Cti
 {
-    using boost::adaptors::transformed;
-
     template <class Container>
     inline std::string join(const Container &V, std::string sep)
     {
-        return boost::algorithm::join(V | transformed(static_cast<std::string(*)(Container::value_type)>(std::to_string)), sep);
+        return boost::algorithm::join(V | boost::adaptors::transformed(static_cast<std::string(*)(Container::value_type)>(std::to_string)), sep);
     }
 
     template <>

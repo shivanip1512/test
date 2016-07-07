@@ -17,6 +17,7 @@
 #include "std_helper.h"
 
 #include <boost/make_shared.hpp>
+#include <boost/range/algorithm/set_algorithm.hpp>
 
 #include <cmath>
 
@@ -585,21 +586,19 @@ YukonError_t RfnMeterDevice::compareChannels(
     const PaoMetricIds &cfgMetrics,
     const boost::optional<PaoMetricIds> &paoMetrics)
 {
+    using boost::adaptors::transformed;
+
     if (paoMetrics)
     {
         /* If we have device/config channels mismatched */
 
-        auto metric_to_string = [](const MetricIdLookup::MetricId i) { return MetricIdLookup::getName(i); };
+        auto metric_to_string = [](const MetricIdLookup::MetricId i) { return MetricIdLookup::getAttribute(i).getName(); };
 
         PaoMetricIds cfgOnly, meterOnly;
 
-        std::set_difference(cfgMetrics.begin(), cfgMetrics.end(),
-            paoMetrics.get().begin(), paoMetrics.get().end(),
-            std::inserter(cfgOnly, cfgOnly.begin()));
+        boost::set_difference(cfgMetrics, *paoMetrics, std::inserter(cfgOnly, cfgOnly.begin()));
 
-        std::set_difference(paoMetrics.get().begin(), paoMetrics.get().end(),
-            cfgMetrics.begin(), cfgMetrics.end(),
-            std::inserter(meterOnly, meterOnly.begin()));
+        boost::set_difference(*paoMetrics, cfgMetrics, std::inserter(meterOnly, meterOnly.begin()));
 
         if (cfgOnly.size() != 0 && meterOnly.size() == 0)
         {
@@ -612,13 +611,13 @@ YukonError_t RfnMeterDevice::compareChannels(
                 std::string msg;
 
                 msg = prefix + " channel config possibly not supported by meter.  "
-                    "Meter is missing " + join(cfgOnly | transformed(metric_to_string), ", ");
+                    "Meter is missing " + boost::algorithm::join(cfgOnly | transformed(metric_to_string), ", ");
                 reportConfigDetails(msg, pReq, returnMsgs);
 
-                msg = "Config: " + join(cfgMetrics | transformed(metric_to_string), ", ");
+                msg = "Config: " + boost::algorithm::join(cfgMetrics | transformed(metric_to_string), ", ");
                 reportConfigDetails(msg, pReq, returnMsgs);
 
-                msg = "Meter: " + join(paoMetrics.get() | transformed(metric_to_string), ", ");
+                msg = "Meter: " + boost::algorithm::join(paoMetrics.get() | transformed(metric_to_string), ", ");
                 reportConfigDetails(msg, pReq, returnMsgs);
             }
         }
@@ -628,13 +627,13 @@ YukonError_t RfnMeterDevice::compareChannels(
             std::string msg;
 
             msg = prefix + " channel program mismatch.  "
-                "Meter also contains " + join(meterOnly | transformed(metric_to_string), ", ");
+                "Meter also contains " + boost::algorithm::join(meterOnly | transformed(metric_to_string), ", ");
             reportConfigDetails(msg, pReq, returnMsgs);
 
-            msg = "Config: " + join(cfgMetrics | transformed(metric_to_string), ", ");
+            msg = "Config: " + boost::algorithm::join(cfgMetrics | transformed(metric_to_string), ", ");
             reportConfigDetails(msg, pReq, returnMsgs);
 
-            msg = "Meter: " + join(paoMetrics.get() | transformed(metric_to_string), ", ");
+            msg = "Meter: " + boost::algorithm::join(paoMetrics.get() | transformed(metric_to_string), ", ");
             reportConfigDetails(msg, pReq, returnMsgs);
         }
         else if ((cfgOnly.size() != 0 && meterOnly.size() != 0))
@@ -644,10 +643,10 @@ YukonError_t RfnMeterDevice::compareChannels(
             msg = prefix + " channel program mismatch.";
             reportConfigDetails(msg, pReq, returnMsgs);
 
-            msg = "Config: " + join(cfgMetrics | transformed(metric_to_string), ", ");
+            msg = "Config: " + boost::algorithm::join(cfgMetrics | transformed(metric_to_string), ", ");
             reportConfigDetails(msg, pReq, returnMsgs);
 
-            msg = "Meter: " + join(paoMetrics.get() | transformed(metric_to_string), ", ");
+            msg = "Meter: " + boost::algorithm::join(paoMetrics.get() | transformed(metric_to_string), ", ");
             reportConfigDetails(msg, pReq, returnMsgs);
         }
         return ClientErrors::ConfigNotCurrent;

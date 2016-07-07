@@ -2,6 +2,8 @@
 
 #include "PointAttribute.h"
 
+#include "std_helper.h"
+
 PointAttribute::AttributeMap PointAttribute::nameToAttributeMap = PointAttribute::AttributeMap();
 
 const PointAttribute PointAttribute::Unknown                       = PointAttribute(PointAttribute::UnknownAttribute,                      "UNKNOWN");
@@ -134,11 +136,12 @@ Attribute::Attribute( const std::string & name )
 
 const Attribute & Attribute::Lookup( const std::string & name )
 {
-    NameToAttributeMap::const_iterator searchResult = _lookup.find( name );
+    if( auto attribute = Cti::mapFind(_lookup, name) )
+    {
+        return **attribute;
+    }
 
-    return ( searchResult != _lookup.end() )
-                ?   *searchResult->second
-                :   Unknown;
+    throw AttributeNotFound(name);
 }
 
 
@@ -501,3 +504,39 @@ const Attribute Attribute::DiversifiedLoad                                  = At
 const Attribute Attribute::MaxLoadReduction                                 = Attribute( "MAX_LOAD_REDUCTION" );
 const Attribute Attribute::AvailableLoadReduction                           = Attribute( "AVAILABLE_LOAD_REDUCTION" );
 
+const Attribute Attribute::PorterCpuUtilization                             = Attribute( "PORTER_CPU_UTILIZATION" );
+const Attribute Attribute::DispatchCpuUtilization                           = Attribute( "DISPATCH_CPU_UTILIZATION" );
+const Attribute Attribute::ScannerCpuUtilization                            = Attribute( "SCANNER_CPU_UTILIZATION" );
+const Attribute Attribute::CalcCpuUtilization                               = Attribute( "CALC_CPU_UTILIZATION" );
+const Attribute Attribute::CapcontrolCpuUtilization                         = Attribute( "CAPCONTROL_CPU_UTILIZATION" );
+const Attribute Attribute::FdrCpuUtilization                                = Attribute( "FDR_CPU_UTILIZATION" );
+const Attribute Attribute::MacsCpuUtilization                               = Attribute( "MACS_CPU_UTILIZATION" );
+
+const Attribute Attribute::NotificationServerCpuUtilization                 = Attribute( "NOTIFICATION_SERVER_CPU_UTILIZATION" );
+const Attribute Attribute::ServiceManagerCpuUtilization                     = Attribute( "SERVICE_MANAGER_CPU_UTILIZATION" );
+const Attribute Attribute::WebServiceCpuUtilization                         = Attribute( "WEB_SERVICE_CPU_UTILIZATION" );
+
+const Attribute Attribute::PorterMemoryUtilization                          = Attribute( "PORTER_MEMORY_UTILIZATION" );
+const Attribute Attribute::DispatchMemoryUtilization                        = Attribute( "DISPATCH_MEMORY_UTILIZATION" );
+const Attribute Attribute::ScannerMemoryUtilization                         = Attribute( "SCANNER_MEMORY_UTILIZATION" );
+const Attribute Attribute::CalcMemoryUtilization                            = Attribute( "CALC_MEMORY_UTILIZATION" );
+const Attribute Attribute::CapcontrolMemoryUtilization                      = Attribute( "CAPCONTROL_MEMORY_UTILIZATION" );
+const Attribute Attribute::FdrMemoryUtilization                             = Attribute( "FDR_MEMORY_UTILIZATION" );
+const Attribute Attribute::MacsMemoryUtilization                            = Attribute( "MACS_MEMORY_UTILIZATION" );
+
+const Attribute Attribute::NotificationServerMemoryUtilization              = Attribute( "NOTIFICATION_SERVER_MEMORY_UTILIZATION" );
+const Attribute Attribute::ServiceManagerMemoryUtilization                  = Attribute( "SERVICE_MANAGER_MEMORY_UTILIZATION" );
+const Attribute Attribute::WebServiceMemoryUtilization                      = Attribute( "WEB_SERVICE_MEMORY_UTILIZATION" );
+
+const Attribute Attribute::LoadManagementCpuUtilization                     = Attribute( "LOAD_MANAGEMENT_CPU_UTILIZATION" );
+const Attribute Attribute::LoadManagementMemoryUtilization                  = Attribute( "LOAD_MANAGEMENT_MEMORY_UTILIZATION" );
+
+AttributeNotFound::AttributeNotFound(const std::string &name)
+{
+    desc = "Attribute not found: " + name;
+}
+
+const char* AttributeNotFound::what() const
+{
+    return desc.c_str();
+}

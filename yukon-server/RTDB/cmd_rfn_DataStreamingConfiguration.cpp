@@ -50,22 +50,32 @@ RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTi
 
     metricDescription << ",\n\"configuredMetrics\" : [";
 
-    for( int i = 0; i < metricCount; ++i )
+    for( int i = 0, metricsPrinted = 0; i < metricCount; ++i )
     {
         const auto offset = ResponseHeaderLength + i * BytesPerMetric;
         const auto metricId = getValueFromBytes_bEndian(response, offset, 2);
         const auto enabled  = response[offset + 2];
         const auto interval = response[offset + 3];
 
-        if( i )
+        try
         {
-            metricDescription << ",";
+            const auto attribute = MetricIdLookup::getAttribute(metricId);
+            
+            if( metricsPrinted++ )
+            {
+                metricDescription << ",";
+            }
+            
+            metricDescription << "\n  {"
+                "\n    \"attribute\" : \"" << attribute.getName() << "\","
+                "\n    \"interval\" : " << interval << ","
+                "\n    \"enabled\" : " << (enabled ? "true" : "false") << "\n  }";
         }
-
-        metricDescription << "\n  {"
-            "\n    \"attribute\" : \"" << MetricIdLookup::getName(metricId) << "\","
-            "\n    \"interval\" : " << interval << ","
-            "\n    \"enabled\" : " << (enabled ? "true" : "false") << "\n  }";
+        catch( AttributeMappingNotFound &ex )
+        {
+            //  Exclude it from the JSON response, but log loudly.
+            CTILOG_EXCEPTION_ERROR(dout, ex);
+        }
     }
 
     const auto offset = ResponseHeaderLength + metricCount * BytesPerMetric;

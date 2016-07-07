@@ -17,34 +17,54 @@ void MetricIdLookup::AddMetricForAttribute(const Attribute &attrib, const Metric
 
 MetricIdLookup::MetricId MetricIdLookup::GetForAttribute(const Attribute &attrib)
 {
-    return attributes.left.at(attrib);
+    try
+    {
+        return attributes.left.at(attrib);
+    }
+    catch( std::out_of_range )
+    {
+        throw MetricIdNotFound(attrib);
+    }
 }
 
-std::string Cti::MetricIdLookup::getName(const MetricId metric)
+Attribute MetricIdLookup::getAttribute(const MetricId metric)
 {
-    auto found = Cti::mapFind(attributes.right, metric);
-    if (found)
+    try
     {
-        return found->getName();
+        return attributes.right.at(metric);
     }
-    else
+    catch( std::out_of_range )
     {
-        return std::to_string(metric);
+        throw AttributeMappingNotFound(metric);
     }
 }
 
 MetricIdLookup::MetricIds MetricIdLookup::GetForAttributes(const std::set<Attribute> & attribs)
 {
-    MetricIds result;
-
-    std::transform(
-            attribs.begin(),
-            attribs.end(),
-            std::inserter(result, result.begin()),
-            &GetForAttribute);
-
-    return result;
+    return boost::copy_range<MetricIds>(
+                attribs | boost::adaptors::transformed(&GetForAttribute));
 }
 
+
+MetricIdNotFound::MetricIdNotFound(const Attribute &attrib)
+{
+    detail = "Metric ID not found for attribute " + attrib.getName();
+}
+
+const char* MetricIdNotFound::what() const
+{
+    return detail.c_str();
+}
+
+
+AttributeMappingNotFound::AttributeMappingNotFound(const unsigned short metricId)
+{
+    detail = "Attribute mapping not found for metric ID " + std::to_string(metricId);
+}
+
+const char* AttributeMappingNotFound::what() const
+{
+    return detail.c_str();
+}
 
 }

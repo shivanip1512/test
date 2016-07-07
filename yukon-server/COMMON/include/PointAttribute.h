@@ -546,6 +546,41 @@ public:
     static const Attribute  DiversifiedLoad;
     static const Attribute  MaxLoadReduction;
     static const Attribute  AvailableLoadReduction;
+
+    static const Attribute PorterCpuUtilization;
+    static const Attribute DispatchCpuUtilization;
+    static const Attribute ScannerCpuUtilization;
+    static const Attribute CalcCpuUtilization;
+    static const Attribute CapcontrolCpuUtilization;
+    static const Attribute FdrCpuUtilization;
+    static const Attribute MacsCpuUtilization;
+
+    static const Attribute NotificationServerCpuUtilization;
+    static const Attribute ServiceManagerCpuUtilization;
+    static const Attribute WebServiceCpuUtilization;
+
+    static const Attribute PorterMemoryUtilization;
+    static const Attribute DispatchMemoryUtilization;
+    static const Attribute ScannerMemoryUtilization;
+    static const Attribute CalcMemoryUtilization;
+    static const Attribute CapcontrolMemoryUtilization;
+    static const Attribute FdrMemoryUtilization;
+    static const Attribute MacsMemoryUtilization;
+
+    static const Attribute NotificationServerMemoryUtilization;
+    static const Attribute ServiceManagerMemoryUtilization;
+    static const Attribute WebServiceMemoryUtilization;
+
+    static const Attribute LoadManagementCpuUtilization;
+    static const Attribute LoadManagementMemoryUtilization;
 };
 
 
+struct IM_EX_CTIBASE AttributeNotFound : std::exception
+{
+    std::string desc;
+
+    AttributeNotFound(const std::string &name);
+
+    const char* what() const override;
+};

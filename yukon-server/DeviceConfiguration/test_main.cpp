@@ -8,7 +8,7 @@
 namespace std {
     ostream &operator<<(ostream& os, const chrono::minutes& m)
     {
-        return os << m.count() << "minutes";
+        return os << m.count() << "min";
     }
 }
 
