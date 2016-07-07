@@ -126,12 +126,14 @@ public class DeviceGroupUpdaterController {
                         DeviceGroupProcessorFactory deviceGroupProcessorFactory = new DeviceGroupProcessorFactory();
                         
                         List<BulkFieldProcessor<SimpleDevice, String>> processors = new ArrayList<BulkFieldProcessor<SimpleDevice, String>>();
+                        Boolean[] isInvalidColumnByIndex = new Boolean[headerRow.length];
                         for (int columnIdx = 1; columnIdx < headerRow.length; columnIdx++) {
-
+                            isInvalidColumnByIndex[columnIdx] = false; // All columns by default marked, invalid = false
                             header = headerRow[columnIdx].trim();
                             String[] columnTypeParts = header.split(":");
                             columnType = columnTypeParts[0];
                             if (ignoreInvalidHeaders && columnTypeParts.length < 2) {
+                                isInvalidColumnByIndex[columnIdx] = true; // Mark column as invalid = true
                                 continue;
                             } else {
                                 String[] valueParts = columnTypeParts[1].split("=");
@@ -142,7 +144,8 @@ public class DeviceGroupUpdaterController {
                             }
                         }
                         // process rows
-                        ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, processors);
+                        ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, 
+                            processors, isInvalidColumnByIndex);
                         error = processingResultInfo.getError();
                         deviceCount = processingResultInfo.getDeviceCount();
                         
@@ -181,7 +184,7 @@ public class DeviceGroupUpdaterController {
         }
     }
     
-    private ProcessingResultInfo runProcessing(final CSVReader csvReader, final BulkField<?, SimpleDevice> identifierBulkField, final List<BulkFieldProcessor<SimpleDevice, String>> processors) {
+    private ProcessingResultInfo runProcessing(final CSVReader csvReader, final BulkField<?, SimpleDevice> identifierBulkField, final List<BulkFieldProcessor<SimpleDevice, String>> processors, Boolean[] isInvalidColumnByIndex) {
         
         ProcessingResultInfo processingResultInfo = transactionTemplate.execute(new TransactionCallback<ProcessingResultInfo>() {
             public ProcessingResultInfo doInTransaction(TransactionStatus status) {
@@ -192,25 +195,21 @@ public class DeviceGroupUpdaterController {
                 String currentColumnValue = "";
                 int deviceCount = 0;
                 String [] line = null;
-                
                 try {
-                    
                     while((line = csvReader.readNext()) != null) {
-                            
                         currentIdentifier = StringUtils.trim(line[0]);
                         SimpleDevice device = bulkFieldService.getYukonDeviceForIdentifier(identifierBulkField, currentIdentifier);
-                        
                         int idx = 1;
                         for (BulkFieldProcessor<SimpleDevice, String> processor : processors) {
-                            
+                            while (isInvalidColumnByIndex[idx]) {
+                                idx++;
+                            }
                             currentColumnValue = line[idx++].trim();
                             processor.updateField(device, currentColumnValue);
                         }
-                        
                         currentLineNumber++;
                         deviceCount++;
                     }
-                    
                 } catch (IOException e) {
                     status.setRollbackOnly();
                     processError = "Can't read file";
