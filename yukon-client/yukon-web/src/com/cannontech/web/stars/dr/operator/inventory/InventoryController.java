@@ -1,15 +1,10 @@
 package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpSession;
 
@@ -22,10 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -74,7 +66,6 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
-import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareShedLoadServiceImpl;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -103,7 +94,6 @@ public class InventoryController {
     @Autowired private YukonListDao listDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PointDao pointDao;
-    @Autowired private HardwareShedLoadServiceImpl hardwareServiceImpl;
     
     private static final String key = "yukon.web.modules.operator.hardware.";
     
@@ -145,6 +135,8 @@ public class InventoryController {
         InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
         model.addAttribute("canEnableDisable", !inventory.getHardwareType().isZigbee()
             && !inventory.getHardwareType().isEcobee());
+        model.addAttribute("canSendShed", !inventory.getHardwareType().isZigbee()
+                           && !inventory.getHardwareType().isEcobee() && !inventory.getHardwareType().isSA());
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
         setupModel(model, userContext, hardware);
         
@@ -344,39 +336,6 @@ public class InventoryController {
         model.addAttribute("inventoryId", inventoryId);
         
         return "redirect:view";
-    }
-    
-    @RequestMapping(value = "/shedLoad", method = RequestMethod.POST)
-    @ResponseBody
-    public void shedLoad(@ModelAttribute("shedLoadBean") ShedLoadBean shedLoadBean,
-            YukonUserContext userContext, FlashScope flash) {
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap = hardwareServiceImpl.shedLoad(shedLoadBean.getInventoryId(),
-                                                 shedLoadBean.getDuration(),
-                                                 shedLoadBean.getRelayNo(),
-                                                 userContext);
-
-        MessageSourceResolvable responseMsg = YukonMessageSourceResolvable.createDefaultWithoutCode((String) resultMap.get("message"));
-        if ((boolean) resultMap.get("success")) {
-            flash.setMessage(responseMsg, FlashScopeMessageType.SUCCESS);
-        } else {
-            flash.setMessage(responseMsg, FlashScopeMessageType.ERROR);
-        }
-    }
-
-    @RequestMapping("/shedLoadPopup/{inventoryId}")
-    public String shedLoadPopup(@PathVariable int inventoryId, ModelMap model) {
-        List<Integer> duration = new ArrayList<>(Stream.of(1,2,3,4,5).collect(Collectors.toList()));
-        List<Integer> relayNo = new ArrayList<>(Stream.of(1,2,3,4,5).collect(Collectors.toList()));
-        
-        model.addAttribute("duration", duration);
-        model.addAttribute("relayNo", relayNo);
-        
-        ShedLoadBean shedLoadBean = new ShedLoadBean(inventoryId);
-        model.addAttribute("shedLoadBean", shedLoadBean);
-        
-        return "operator/inventory/shedLoad.jsp";
     }
     
     private String returnToEditWithErrors(YukonUserContext userContext, ModelMap model, FlashScope flash,

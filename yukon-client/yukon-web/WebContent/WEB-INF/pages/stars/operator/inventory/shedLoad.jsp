@@ -4,7 +4,7 @@
 
 <cti:msgScope paths="modules.operator.hardware.shedLoad">
 
-<form:form id="shed-load-form" method="post" commandName="shedLoadBean" onsubmit="return false;">
+<form:form id="shed-load-form" method="post" commandName="shedLoad" onsubmit="return false;">
   <cti:csrfToken/>
   <form:hidden path="inventoryId" value="${inventoryId}"/>
   

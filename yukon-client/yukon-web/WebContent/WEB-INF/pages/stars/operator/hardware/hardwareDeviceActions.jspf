@@ -19,7 +19,9 @@
     </li>
 </c:if>
 <li>
-    <cti:button nameKey="testShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="testShed"/>
+    <c:if test="${canSendShed}">
+        <cti:button nameKey="testShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="testShed"/>
+    </c:if>    
 </li>
 
 

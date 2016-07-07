@@ -70,4 +70,11 @@ public interface LmHardwareCommandService {
      * Will send a command to the entire LM network.
      */
     void sendBroadcastCommand(LmCommand command);
+    
+    /**
+     * Will attempt to send an shed load command to the dr device
+     * @throws {@link CommandCompletionException}
+     */
+    public void sendShedLoadCommand(LmHardwareCommand command) throws CommandCompletionException;
+    
 }

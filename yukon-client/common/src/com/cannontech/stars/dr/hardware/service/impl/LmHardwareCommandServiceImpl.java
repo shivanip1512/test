@@ -245,6 +245,12 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         sendCommand(command);
     }
 
+    @Override
+    public void sendShedLoadCommand(LmHardwareCommand command) throws CommandCompletionException {
+        
+        sendCommand(command);
+    }
+    
     private HardwareStrategyType getStrategy(HardwareType type) throws CommandCompletionException {
         for (HardwareStrategyType strategyType : strategies.keySet()) {
             LmHardwareCommandStrategy impl = strategies.get(strategyType);

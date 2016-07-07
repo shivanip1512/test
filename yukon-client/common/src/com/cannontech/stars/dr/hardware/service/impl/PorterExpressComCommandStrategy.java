@@ -176,6 +176,11 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
             
             commands = xcomCommandBuilder.getCancelOptOutCommands(device, trackAddressing);
             
+        } else if (parameters.getType() == LmHardwareCommandType.SHED) {
+            
+            commands = xcomCommandBuilder.getShedLoadCommand(device, 
+                                              (Duration) parameters.getParams().get(LmHardwareCommandParam.DURATION),
+                                              (Integer) parameters.getParams().get(LmHardwareCommandParam.RELAY));
         }
         
         Integer param = parameters.findParam(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, Integer.class);

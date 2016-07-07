@@ -1,15 +1,15 @@
-package com.cannontech.web.stars.dr.operator.inventory;
+package com.cannontech.web.stars.dr.operator.inventory.model;
 
-public class ShedLoadBean {
+public class ShedLoad {
 
     private int inventoryId;
     private int relayNo;
-    private int duration;
+    private String duration;
    
-    public ShedLoadBean() {
+    public ShedLoad() {
     }
     
-    public ShedLoadBean(int inventoryId) {
+    public ShedLoad(int inventoryId) {
         this.inventoryId = inventoryId;
     }
 
@@ -29,11 +29,11 @@ public class ShedLoadBean {
         this.relayNo = relayNo;
     }
 
-    public int getDuration() {
+    public String getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
     }
 }

@@ -355,6 +355,8 @@ public class OperatorHardwareController {
         InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
         model.addAttribute("canEnableDisable", !inventory.getHardwareType().isZigbee()
             && !inventory.getHardwareType().isEcobee());
+        model.addAttribute("canSendShed", !inventory.getHardwareType().isZigbee()
+                           && !inventory.getHardwareType().isEcobee() && !inventory.getHardwareType().isSA());
         if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
             return "redirect:/stars/operator/hardware/mp/view";
         }

@@ -92,14 +92,5 @@ public interface RfnExpressComMessageService {
      * @param callback
      */
     void readDevice(RfnDevice device, RfnUnicastCallback callback);
-    
-    /**
-     * Sends a shed message to a RF ExpressCom device.  Will only expect a status response.  
-     * @param device
-     * @param relay
-     * @param duration
-     * @param callback
-     */
-    void shedLoad(RfnDevice device, Integer relay, Integer duration, final RfnUnicastCallback callback);
-    
+
 }

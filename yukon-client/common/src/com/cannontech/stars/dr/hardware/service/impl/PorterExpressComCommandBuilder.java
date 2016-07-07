@@ -188,6 +188,27 @@ public class PorterExpressComCommandBuilder {
         return Lists.newArrayList(cmd.toString());
     }
     
+    public List<String> getShedLoadCommand(LiteLmHardwareBase lmhb, Duration duration, Integer relayNo) {
+
+        String serialNo = lmhb.getManufacturerSerialNumber();
+
+        if (StringUtils.isBlank(serialNo)) {
+            throw new IllegalArgumentException("Cannot send shed load command. "
+                    + "The serial # of inventory with id: " + lmhb.getInventoryID() + " is empty.");
+        }
+
+        // Build the command
+        StringBuilder commandString = new StringBuilder("control shed ");
+        commandString.append(duration.getStandardMinutes());
+        commandString.append("m ");
+        commandString.append("relay ");
+        commandString.append(relayNo);
+        commandString.append(" serial ");
+        commandString.append(serialNo);
+
+        return Lists.newArrayList(commandString.toString());
+    }
+    
     public List<String> getCancelOptOutCommands(LiteLmHardwareBase lmhb, boolean useHardwareAddressing) {
         
         String sn = lmhb.getManufacturerSerialNumber();

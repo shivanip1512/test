@@ -7,13 +7,13 @@
         data-url="<cti:url value="/stars/operator/inventory/shedLoadPopup/${hardware.inventoryId}"/>" 
         data-width="300" 
         data-min-width="300" 
-        data-event="yukon:assets:shedload:save" 
+        data-event="yukon:assets:shedload:send" 
         data-ok-text="<cti:msg2 key="components.button.send.label"/>" 
         ></div>
         
 <script>
-/** 'Save' button clicked on the shed load configuration popup. */
-$(document).on('yukon:assets:shedload:save', function (ev) {
+/** 'Send' button clicked on the shed load configuration popup. */
+$(document).on('yukon:assets:shedload:send', function (ev) {
     var data = $('#shed-load-form').serialize();
     $('#device-shedload-popup').dialog('close');
     yukon.ui.busy('#testShed');

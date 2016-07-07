@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,8 +17,10 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
@@ -48,9 +52,12 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareShedLoadServiceImpl;
 import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.model.ControlAuditTask;
+import com.cannontech.web.stars.dr.operator.inventory.model.ShedLoad;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper.ChangeDeviceStatusTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeServiceCompanyHelper.ChangeServiceCompanyTask;
@@ -79,6 +86,7 @@ public class InventoryActionsController {
     @Autowired private HardwareConfigService hardwareConfigService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
+    @Autowired private HardwareShedLoadServiceImpl hardwareServiceImpl;
     
     private static final int maxInventory = 1000;
     private static final String idListKey = "yukon.common.device.bulk.bulkAction.collection.idList";
@@ -278,4 +286,39 @@ public class InventoryActionsController {
         return view + "selectedInventoryPopup.jsp";
     }
     
+    @RequestMapping(value = "/shedLoad", method = RequestMethod.POST)
+    @ResponseBody
+    public void shedLoad(@ModelAttribute("shedLoad") ShedLoad shedLoad,
+            YukonUserContext userContext, FlashScope flash) {
+
+        Map<String, Object> resultMap = new HashMap<>();
+        int duration =  Integer.parseInt(shedLoad.getDuration().substring(0, shedLoad.getDuration().indexOf("Minute")).trim());
+        
+        resultMap = hardwareServiceImpl.shedLoad(shedLoad.getInventoryId(),
+                                                 duration,
+                                                 shedLoad.getRelayNo(),
+                                                 userContext);
+
+        MessageSourceResolvable responseMsg = YukonMessageSourceResolvable.createDefaultWithoutCode((String) resultMap.get("message"));
+        if ((boolean) resultMap.get("success")) {
+            flash.setMessage(responseMsg, FlashScopeMessageType.SUCCESS);
+        } else {
+            flash.setMessage(responseMsg, FlashScopeMessageType.ERROR);
+        }
+    }
+
+    @RequestMapping("/shedLoadPopup/{inventoryId}")
+    public String shedLoadPopup(@PathVariable int inventoryId, ModelMap model) {
+        List<String> duration = new ArrayList<>(Stream.of("1 Minute","2 Minute","3 Minute","4 Minute","5 Minute").collect(Collectors.toList()));
+        List<Integer> relayNo = new ArrayList<>(Stream.of(1,2,3,4,5).collect(Collectors.toList()));
+        
+        model.addAttribute("duration", duration);
+        model.addAttribute("relayNo", relayNo);
+        
+        ShedLoad shedLoad = new ShedLoad(inventoryId);
+        model.addAttribute("shedLoad", shedLoad);
+        
+        return "operator/inventory/shedLoad.jsp";
+    }
+
 }

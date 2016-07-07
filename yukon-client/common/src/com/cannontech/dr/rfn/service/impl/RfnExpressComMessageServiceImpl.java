@@ -207,25 +207,6 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     }
     
     @Override
-    public void shedLoad(RfnDevice device, Integer relay, Integer duration, final RfnUnicastCallback callback) {
-        LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByDeviceId(device.getPaoIdentifier().getPaoId());
-        LmHardwareCommand lmhc = new LmHardwareCommand();
-        lmhc.setDevice(lmhb);
-        lmhc.setType(LmHardwareCommandType.SHED);
-        lmhc.getParams().put(LmHardwareCommandParam.RELAY, relay);
-        lmhc.getParams().put(LmHardwareCommandParam.DURATION, Duration.standardMinutes(duration));
-        
-        RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
-        request.setMessageId(nextMessageId());
-        request.setMessagePriority(6);
-        request.setPayload(commandBuilder.getCommandAsHexStringByteArray(lmhc));
-        request.setResponseExpected(false);
-        request.setRfnMessageClass(RfnMessageClass.DR);
-        
-        sendUnicastRequest(request, callback);
-    }
-    
-    @Override
     public void readDevice(RfnDevice device, final RfnDeviceReadCompletionCallback<RfnExpressComUnicastReplyType, RfnExpressComUnicastDataReplyType> delegateCallback) {
         RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
         request.setMessageId(nextMessageId());
