@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/17/2016 12:16:14 AM                        */
+/* Created on:     7/6/2016 5:25:32 PM                          */
 /*==============================================================*/
 
 
@@ -508,6 +508,47 @@ create table BaseLine  (
 );
 
 insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
+
+/*==============================================================*/
+/* Table: Behavior                                              */
+/*==============================================================*/
+create table Behavior  (
+   BehaviorId           NUMBER                          not null,
+   BehaviorType         VARCHAR2(60)                    not null,
+   constraint PK_BEHAVIORID primary key (BehaviorId)
+);
+
+/*==============================================================*/
+/* Table: BehaviorReport                                        */
+/*==============================================================*/
+create table BehaviorReport  (
+   BehaviorReportId     NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   BehaviorType         VARCHAR2(60)                    not null,
+   BehaviorStatus       VARCHAR2(60)                    not null,
+   TimeStamp            TIMESTAMP                       not null,
+   constraint PK_BEHAVIORREPORTID primary key (BehaviorReportId, DeviceId)
+);
+
+/*==============================================================*/
+/* Table: BehaviorReportValue                                   */
+/*==============================================================*/
+create table BehaviorReportValue  (
+   BehaviorReportId     NUMBER                          not null,
+   Value                VARCHAR2(100)                   not null,
+   Name                 VARCHAR2(60)                    not null,
+   constraint PK_BEHAVIORREPORTID primary key (BehaviorReportId, Name)
+);
+
+/*==============================================================*/
+/* Table: BehaviorValue                                         */
+/*==============================================================*/
+create table BehaviorValue  (
+   BehaviorId           NUMBER                          not null,
+   Value                VARCHAR2(100)                   not null,
+   Name                 VARCHAR2(60)                    not null,
+   constraint PK_BEHAVIORID primary key (BehaviorId, Name)
+);
 
 /*==============================================================*/
 /* Table: BillingFileFormats                                    */
@@ -2707,6 +2748,15 @@ create table DeviceAddress  (
    SlaveAddress         NUMBER                          not null,
    PostCommWait         NUMBER                          not null,
    constraint PK_DEVICEADDRESS primary key (DeviceID)
+);
+
+/*==============================================================*/
+/* Table: DeviceBehaviorMap                                     */
+/*==============================================================*/
+create table DeviceBehaviorMap  (
+   DeviceId             NUMBER                          not null,
+   BehaviorId           NUMBER                          not null,
+   constraint PK_DEVICEID primary key (DeviceId, BehaviorId)
 );
 
 /*==============================================================*/
@@ -10596,6 +10646,21 @@ alter table BaseLine
    add constraint FK_BASELINE_HOLIDAYS foreign key (HolidayScheduleId)
       references HolidaySchedule (HolidayScheduleID);
 
+alter table Behavior
+   add constraint FK_Behavior_BehaviorValue foreign key (BehaviorId, )
+      references BehaviorValue (BehaviorId, Name)
+      on delete cascade;
+
+alter table BehaviorReport
+   add constraint FK_BehaviorReport_BehRepVal foreign key (BehaviorReportId, )
+      references BehaviorReportValue (BehaviorReportId, Name)
+      on delete cascade;
+
+alter table BehaviorReport
+   add constraint FK_BehaviorReport_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
 alter table CALCBASE
    add constraint FK_CalcBase_Point foreign key (POINTID)
       references POINT (POINTID);
@@ -11255,6 +11320,16 @@ alter table DeliverySchedule
 alter table DeviceAddress
    add constraint FK_Dev_DevDNP foreign key (DeviceID)
       references DEVICE (DEVICEID);
+
+alter table DeviceBehaviorMap
+   add constraint FK_DevBehMap_Behavior foreign key (BehaviorId)
+      references Behavior (BehaviorId)
+      on delete cascade;
+
+alter table DeviceBehaviorMap
+   add constraint FK_DevBehMap_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table DeviceCBC
    add constraint FK_DeviceCbc_Device foreign key (DEVICEID)

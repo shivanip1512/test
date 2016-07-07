@@ -235,6 +235,68 @@ WHERE p.PAObjectID = 0
   AND p.PointId NOT IN (SELECT PointId FROM PointAlarming);
 /* End YUK-15271 */
 
+/* Start YUK-15438 */
+create table Behavior  (
+   BehaviorId           NUMBER                          not null,
+   BehaviorType         VARCHAR2(60)                    not null,
+   constraint PK_BEHAVIORID primary key (BehaviorId)
+);
+
+create table BehaviorReport  (
+   BehaviorReportId     NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   BehaviorType         VARCHAR2(60)                    not null,
+   BehaviorStatus       VARCHAR2(60)                    not null,
+   TimeStamp            TIMESTAMP                       not null,
+   constraint PK_BEHAVIORREPORTID primary key (BehaviorReportId, DeviceId)
+);
+
+create table BehaviorReportValue  (
+   BehaviorReportId     NUMBER                          not null,
+   Value                VARCHAR2(100)                   not null,
+   Name                 VARCHAR2(60)                    not null,
+   constraint PK_BEHAVIORREPORTID primary key (BehaviorReportId, Name)
+);
+
+create table BehaviorValue  (
+   BehaviorId           NUMBER                          not null,
+   Value                VARCHAR2(100)                   not null,
+   Name                 VARCHAR2(60)                    not null,
+   constraint PK_BEHAVIORID primary key (BehaviorId, Name)
+);
+
+create table DeviceBehaviorMap  (
+   DeviceId             NUMBER                          not null,
+   BehaviorId           NUMBER                          not null,
+   constraint PK_DEVICEID primary key (DeviceId, BehaviorId)
+);
+
+alter table Behavior
+   add constraint FK_Behavior_BehaviorValue foreign key (BehaviorId, )
+      references BehaviorValue (BehaviorId, Name)
+      on delete cascade;
+
+alter table BehaviorReport
+   add constraint FK_BehaviorReport_BehRepVal foreign key (BehaviorReportId, )
+      references BehaviorReportValue (BehaviorReportId, Name)
+      on delete cascade;
+
+alter table BehaviorReport
+   add constraint FK_BehaviorReport_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table DeviceBehaviorMap
+   add constraint FK_DevBehMap_Behavior foreign key (BehaviorId)
+      references Behavior (BehaviorId)
+      on delete cascade;
+
+alter table DeviceBehaviorMap
+   add constraint FK_DevBehMap_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+/* End YUK-15438 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
