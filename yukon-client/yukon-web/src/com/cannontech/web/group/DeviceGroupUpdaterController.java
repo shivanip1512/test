@@ -62,6 +62,11 @@ public class DeviceGroupUpdaterController {
         String error = ServletRequestUtils.getStringParameter(request, "error", null);
         boolean success = ServletRequestUtils.getBooleanParameter(request, "success", false);
         int deviceCount = ServletRequestUtils.getIntParameter(request, "deviceCount", 0);
+        // options checked included? pass along
+        Boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", true);
+        Boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", false);
+        model.addAttribute("ignoreInvalidHeaders", ignoreInvalidHeaders);
+        model.addAttribute("createGroups", createGroups);
         
         model.addAttribute("error", error);
         model.addAttribute("success", success);
@@ -72,7 +77,7 @@ public class DeviceGroupUpdaterController {
     public String parseUpload(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException, IOException {
 
         boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", false);
-        
+        boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidHeaders", false);
         String error = null;
         int deviceCount = 0;
         
@@ -122,17 +127,20 @@ public class DeviceGroupUpdaterController {
                         
                         List<BulkFieldProcessor<SimpleDevice, String>> processors = new ArrayList<BulkFieldProcessor<SimpleDevice, String>>();
                         for (int columnIdx = 1; columnIdx < headerRow.length; columnIdx++) {
-                            
+
                             header = headerRow[columnIdx].trim();
                             String[] columnTypeParts = header.split(":");
                             columnType = columnTypeParts[0];
-                            String[] valueParts = columnTypeParts[1].split("=");
-                            String dataName = valueParts[0];
-                            String dataValue = valueParts[1];
-                                
-                            processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName, dataValue, createGroups));
+                            if (ignoreInvalidHeaders && columnTypeParts.length < 2) {
+                                continue;
+                            } else {
+                                String[] valueParts = columnTypeParts[1].split("=");
+                                String dataName = valueParts[0];
+                                String dataValue = valueParts[1];
+                                processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName,
+                                    dataValue, createGroups));
+                            }
                         }
-                        
                         // process rows
                         ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, processors);
                         error = processingResultInfo.getError();

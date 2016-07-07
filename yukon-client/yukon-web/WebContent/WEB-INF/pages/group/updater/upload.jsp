@@ -49,6 +49,9 @@
                     <tags:nameValue2 excludeColon="true" nameKey="yukon.common.blank">
                         <label><input type="checkbox" name="createGroups" class="fl"><span class="fl"><i:inline key=".autoCreate"/></span></label><cti:icon icon="icon-help" id="help_icon" classes="cp"/>
                     </tags:nameValue2>
+                    <tags:nameValue2 excludeColon="true" nameKey="yukon.common.blank">
+                        <label><input type="checkbox" name="ignoreInvalidHeaders" class="fl"<c:if test="${ignoreInvalidHeaders}">checked</c:if>><cti:msg key="yukon.common.device.bulk.options.update.ignoreInvalidHeaders"/></label>
+                    </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="action-area">
                     <cti:button nameKey="upload" type="submit" classes="primary action"/>
