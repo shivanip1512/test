@@ -909,7 +909,22 @@
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.CONFIGURATION">Configuration to assign to the Regulator.&lt;br&gt;If not present for add, the default configuration will be used.</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.REGULATOR NAME">Parent regulator to map the point to</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.ACTION">Options: Add, Update, or Remove</entry>
-    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.MAPPING">Attribute the point will be associated with on the parent regulator&lt;br&gt;Options: Auto/Remote Control, Auto Block Enable, Raise Tap Position, Lower Tap Position, Tap Position, Terminate, Voltage X, Voltage Y, Keep Alive</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.MAPPING">Attribute the point will be associated with on the parent regulator&lt;br&gt;
+    <![CDATA[Mapping Options are as below -
+    <ul>
+    <li>Auto/Remote Control - AUTO_REMOTE_CONTROL</li>
+	<li>Auto Block Enable - AUTO_BLOCK_ENABLE</li>
+	<li>Raise Tap Position - TAP_UP</li>
+	<li>Lower Tap Position - TAP_DOWN</li>
+	<li>Tap Position - TAP_POSITION</li>
+	<li>Terminate - TERMINATE</li>
+	<li>Voltage X - VOLTAGE_X</li>
+	<li>Voltage Y - VOLTAGE_Y</li>
+	<li>Keep Alive - KEEP_ALIVE</li>
+	<li>Forward Set Point - FORWARD_SET_POINT</li>
+	<li>Forward Bandwidth - FORWARD_BANDWIDTH</li>
+    </ul>
+    ]]></entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.POINT NAME">Required when ACTION is Add or Update&lt;br&gt;Name of the point to map</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.DEVICE TYPE">Required when ACTION is Add or Update&lt;br&gt;Type of physical device which reports points&lt;br&gt;Ex. RTU_DNP</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.DEVICE NAME">Required when ACTION is Add or Update&lt;br&gt;Name of the Physical device</entry>
