@@ -105,9 +105,12 @@ public class NewUserController {
             
             return "userGroupEditor/new-user.jsp";
         }
-        
-        LiteYukonUser lyu = userDao.create(user, true);
-        
+        LiteYukonUser lyu;
+        if (user.getAuthCategory() != AuthenticationCategory.ENCRYPTED) {
+            lyu = userDao.create(user, false);
+        } else {
+            lyu = userDao.create(user, true);
+        }
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
         result.put("userId", lyu.getUserID());
