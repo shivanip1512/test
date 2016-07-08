@@ -242,7 +242,7 @@ create table BehaviorReport  (
    BehaviorType         VARCHAR2(60)                    not null,
    BehaviorStatus       VARCHAR2(60)                    not null,
    TimeStamp            DATE                            not null,
-   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId, DeviceId)
+   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId)
 );
 
 create table BehaviorReportValue  (
@@ -253,9 +253,9 @@ create table BehaviorReportValue  (
 );
 
 create table DeviceBehaviorMap  (
-   DeviceId             NUMBER                          not null,
    BehaviorId           NUMBER                          not null,
-   constraint PK_DEVICEBEHAVIORMAP primary key (DeviceId, BehaviorId)
+   DeviceId             NUMBER                          not null,
+   constraint PK_DEVICEBEHAVIORMAP primary key (BehaviorId, DeviceId)
 );
 
 create table Behavior  (
@@ -271,9 +271,14 @@ create table BehaviorValue  (
    constraint PK_BEHAVIORVALUE primary key (BehaviorId, Name)
 );
 
-alter table Behavior
-   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
-      references BehaviorValue (BehaviorId)
+alter table BehaviorReport
+   add constraint FK_Device_BehaviorReport foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+	  
+alter table BehaviorReportValue
+   add constraint FK_BehaviorRptVal_BehaviorRpt foreign key (BehaviorReportId)
+      references BehaviorReport (BehaviorReportId)
       on delete cascade;
 
 alter table DeviceBehaviorMap
@@ -286,15 +291,11 @@ alter table DeviceBehaviorMap
       references DEVICE (DEVICEID)
       on delete cascade;
 
-alter table BehaviorReport
-   add constraint FK_BehaviorReportValue_BehaviorReport foreign key (BehaviorReportId)
-      references BehaviorReportValue (BehaviorReportId)
+alter table BehaviorValue
+   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
+      references Behavior (BehaviorId)
       on delete cascade;
 
-alter table BehaviorReport
-   add constraint FK_Device_BehaviorReport foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-      on delete cascade;
 /* End YUK-15438 */
 
 /**************************************************************/

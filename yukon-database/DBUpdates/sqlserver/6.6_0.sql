@@ -332,7 +332,7 @@ create table BehaviorReport (
    BehaviorType         varchar(60)          not null,
    BehaviorStatus       varchar(60)          not null,
    TimeStamp            datetime             not null,
-   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId, DeviceId)
+   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId)
 )
 go
 
@@ -345,9 +345,9 @@ create table BehaviorReportValue (
 go
 
 create table DeviceBehaviorMap (
-   DeviceId             numeric              not null,
    BehaviorId           numeric              not null,
-   constraint PK_DEVICEBEHAVIORMAP primary key (DeviceId, BehaviorId)
+   DeviceId             numeric              not null,
+   constraint PK_DEVICEBEHAVIORMAP primary key (BehaviorId, DeviceId)
 )
 go
 
@@ -366,9 +366,15 @@ create table BehaviorValue (
 )
 go
 
-alter table Behavior
-   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
-      references BehaviorValue (BehaviorId)
+alter table BehaviorReport
+   add constraint FK_Device_BehaviorReport foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+         on delete cascade
+go
+
+alter table BehaviorReportValue
+   add constraint FK_BehaviorRptVal_BehaviorRpt foreign key (BehaviorReportId)
+      references BehaviorReport (BehaviorReportId)
          on delete cascade
 go
 
@@ -384,15 +390,9 @@ alter table DeviceBehaviorMap
          on delete cascade
 go
 
-alter table BehaviorReport
-   add constraint FK_BehaviorReportValue_BehaviorReport foreign key (BehaviorReportId)
-      references BehaviorReportValue (BehaviorReportId)
-         on delete cascade
-go
-
-alter table BehaviorReport
-   add constraint FK_Device_BehaviorReport foreign key (DeviceId)
-      references DEVICE (DEVICEID)
+alter table BehaviorValue
+   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
+      references Behavior (BehaviorId)
          on delete cascade
 go
 /* End YUK-15438 */
