@@ -9,6 +9,11 @@ import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfiguration;
 public interface DataStreamingService {
     
     /**
+     * @return The DataStreamingConfiguration assigned to the device, or null if no configuration is assigned.
+     */
+    DataStreamingConfiguration findDataStreamingConfigurationForDevice(int deviceId);
+    
+    /**
      * @return All data streaming configurations in use.
      */
     List<DataStreamingConfiguration> getAllDataStreamingConfigurations();
@@ -40,4 +45,6 @@ public interface DataStreamingService {
      * Save the reported data streaming configuration that was reported to us from the device, via Porter.
      */
     void saveReportedConfig(DataStreamingConfiguration config, int deviceId);
+    
+    //TODO: retrieve all mismatches (reported config and stored config don't match)
 }

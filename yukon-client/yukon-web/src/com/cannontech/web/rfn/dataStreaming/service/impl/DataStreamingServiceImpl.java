@@ -10,6 +10,15 @@ import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 public class DataStreamingServiceImpl implements DataStreamingService {
     
     @Override
+    public DataStreamingConfiguration findDataStreamingConfigurationForDevice(int deviceId) {
+        //TODO
+        //Retrieve behavior of type data streaming config for deviceId
+        //Convert behavior into DataStreamingConfiguration
+        //Return DataStreamingConfiguration
+        return null;
+    }
+    
+    @Override
     public List<DataStreamingConfiguration> getAllDataStreamingConfigurations() {
         //TODO
         //Retrieve all behaviors of type data streaming config
