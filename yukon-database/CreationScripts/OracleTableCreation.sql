@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/7/2016 2:43:50 PM                          */
+/* Created on:     7/8/2016 9:22:39 AM                          */
 /*==============================================================*/
 
 
@@ -527,7 +527,7 @@ create table BehaviorReport  (
    BehaviorType         VARCHAR2(60)                    not null,
    BehaviorStatus       VARCHAR2(60)                    not null,
    TimeStamp            DATE                            not null,
-   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId, DeviceId)
+   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId)
 );
 
 /*==============================================================*/
@@ -2754,9 +2754,9 @@ create table DeviceAddress  (
 /* Table: DeviceBehaviorMap                                     */
 /*==============================================================*/
 create table DeviceBehaviorMap  (
-   DeviceId             NUMBER                          not null,
    BehaviorId           NUMBER                          not null,
-   constraint PK_DEVICEBEHAVIORMAP primary key (DeviceId, BehaviorId)
+   DeviceId             NUMBER                          not null,
+   constraint PK_DEVICEBEHAVIORMAP primary key (BehaviorId, DeviceId)
 );
 
 /*==============================================================*/
@@ -10646,19 +10646,19 @@ alter table BaseLine
    add constraint FK_BASELINE_HOLIDAYS foreign key (HolidayScheduleId)
       references HolidaySchedule (HolidayScheduleID);
 
-alter table Behavior
-   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
-      references BehaviorValue (BehaviorId)
-      on delete cascade;
-
-alter table BehaviorReport
-   add constraint FK_BehaviorReportValue_BehaviorReport foreign key (BehaviorReportId)
-      references BehaviorReportValue (BehaviorReportId)
-      on delete cascade;
-
 alter table BehaviorReport
    add constraint FK_Device_BehaviorReport foreign key (DeviceId)
       references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table BehaviorReportValue
+   add constraint FK_BehaviorRptVal_BehaviorRpt foreign key (BehaviorReportId)
+      references BehaviorReport (BehaviorReportId)
+      on delete cascade;
+
+alter table BehaviorValue
+   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
+      references Behavior (BehaviorId)
       on delete cascade;
 
 alter table CALCBASE
