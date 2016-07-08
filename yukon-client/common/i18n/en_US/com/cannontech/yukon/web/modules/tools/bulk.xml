@@ -373,10 +373,6 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.attribute">Attribute</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.minute">minute</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.minutes">minutes</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.attributes.KVAR">kVar</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.attributes.DEMAND">Demand</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.attributes.DELIVERED_KWH">Delivered kWh</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.attributes.RECEIVED_KWH">Received kWh</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.next.label">Next</entry>
     
     <!-- REMOVE DATA STREAMING -->

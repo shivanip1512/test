@@ -63,7 +63,7 @@
                         <c:forEach var="attribute" varStatus="status" items="${configuration.attributes}">
                             <c:set var="idx" value="${status.index}" />
                             <form:hidden path="attributes[${idx}].attribute" />
-                            <tags:nameValue2 nameKey="yukon.web.modules.tools.bulk.dataStreaming.attributes.${attribute.attribute}">
+                            <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.${attribute.attribute}">
                                 <tags:switchButton path="attributes[${idx}].attributeOn" offNameKey=".off.label" onNameKey=".on.label" classes="js-attribute"/>
                             </tags:nameValue2>
                         </c:forEach>
