@@ -54,6 +54,10 @@
         <cti:msg var="readConfigDescription" key="yukon.common.device.bulk.collectionActions.readConfigDescription"/>
         <cti:msg var="verifyConfigLabel" key="yukon.common.device.bulk.collectionActions.verifyConfigLabel"/>
         <cti:msg var="verifyConfigDescription" key="yukon.common.device.bulk.collectionActions.verifyConfigDescription"/>
+        <cti:msg var="configureDataStreamingLabel" key="yukon.common.device.bulk.collectionActions.configureDataStreamingLabel"/>
+        <cti:msg var="configureDataStreamingDescription" key="yukon.common.device.bulk.collectionActions.configureDataStreamingDescription"/>
+        <cti:msg var="removeDataStreamingLabel" key="yukon.common.device.bulk.collectionActions.removeDataStreamingLabel"/>
+        <cti:msg var="removeDataStreamingDescription" key="yukon.common.device.bulk.collectionActions.removeDataStreamingDescription"/>
 
         <cti:msg var="headerPointActions" key="yukon.common.device.bulk.collectionActions.header.pointActions"/>
         <cti:msg var="addPointsLabel" key="yukon.common.device.bulk.collectionActions.addPointsLabel"/>
@@ -81,6 +85,8 @@
         <cti:url var="sendConfigUrl" value="/bulk/config/sendConfig"/>
         <cti:url var="readConfigUrl" value="/bulk/config/readConfig"/>
         <cti:url var="verifyConfigUrl" value="/bulk/config/verifyConfig"/>
+        <cti:url var="configureDataStreamingUrl" value="/bulk/dataStreaming/configure"/>
+        <cti:url var="removeDataStreamingUrl" value="/bulk/dataStreaming/remove"/>
         
         <cti:url var="deviceCollectionReportUrl" value="/bulk/deviceCollectionReport"/>
         <cti:url var="dataAnalysisUrl" value="/bulk/archiveDataAnalysis/home/setup"/>
@@ -203,6 +209,14 @@
                             <%-- VERIFY CONFIG --%>
                             <tags:collectionActionTr buttonValue="${verifyConfigLabel}" description="${verifyConfigDescription}"
                                 action="${verifyConfigUrl}" deviceCollection="${deviceCollection}"/>
+                                
+                            <%-- CONFIGURE DATA STREAMING --%>
+                            <tags:collectionActionTr buttonValue="${configureDataStreamingLabel}" description="${configureDataStreamingDescription}"
+                                action="${configureDataStreamingUrl}" deviceCollection="${deviceCollection}"/>
+                                
+                            <%-- REMOVE DATA STREAMING --%>
+                            <tags:collectionActionTr buttonValue="${removeDataStreamingLabel}" description="${removeDataStreamingDescription}"
+                                action="${removeDataStreamingUrl}" deviceCollection="${deviceCollection}"/>
                         </table>
                     </tags:sectionContainer>
                 </cti:dataGridCell>

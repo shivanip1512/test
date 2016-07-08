@@ -96,7 +96,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             @Override
             public Behavior mapRow(YukonResultSet rs) throws SQLException {
                 Behavior behavior = new Behavior();
-                rs.getInt("BehaviorId");
+                behavior.setId(rs.getInt("BehaviorId"));
                 behavior.setType(type);
                 List<BehaviorValue> values = getBehaviorValuesByBehaviorId(behavior.getId());
                 behavior.setValues(values);
