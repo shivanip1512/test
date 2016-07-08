@@ -34,7 +34,7 @@
                                     </thead>
                                     <c:forEach var="attribute" varStatus="status" items="${config.attributes}">
                                     <tr>
-                                        <td>${attribute.name}</td>
+                                        <td>${attribute.attribute.description}</td>
                                         <td>${attribute.interval}
                                             <c:choose>
                                                 <c:when test="${attribute.interval > 1}">
@@ -62,8 +62,8 @@
                      <tags:sectionContainer2 nameKey="attributes" styleClass="dn js-new-configuration">
                         <c:forEach var="attribute" varStatus="status" items="${configuration.attributes}">
                             <c:set var="idx" value="${status.index}" />
-                            <form:hidden path="attributes[${idx}].name" />
-                            <tags:nameValue2 nameKey="yukon.web.modules.tools.bulk.dataStreaming.attributes.${attribute.name}">
+                            <form:hidden path="attributes[${idx}].attribute" />
+                            <tags:nameValue2 nameKey="yukon.web.modules.tools.bulk.dataStreaming.attributes.${attribute.attribute}">
                                 <tags:switchButton path="attributes[${idx}].attributeOn" offNameKey=".off.label" onNameKey=".on.label" classes="js-attribute"/>
                             </tags:nameValue2>
                         </c:forEach>

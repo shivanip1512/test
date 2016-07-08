@@ -46,10 +46,10 @@ public class DataStreamingHelper {
             //TODO: get this list from somewhere
             List<DataStreamingAttribute> attributes = new ArrayList<>();
             List<String> attributeStrings = new ArrayList<>();
-            attributeStrings.add("kVar");
-            attributeStrings.add("Demand");
-            attributeStrings.add("DeliveredkWh");
-            attributeStrings.add("ReceivedkWh");
+            attributeStrings.add("KVAR");
+            attributeStrings.add("DEMAND");
+            attributeStrings.add("DELIVERED_KWH");
+            attributeStrings.add("RECEIVED_KWH");
             for (String attString : attributeStrings) {
                 DataStreamingAttribute attribute = new DataStreamingAttribute();
                 attribute.setAttribute(BuiltInAttribute.valueOf(attString));
@@ -77,7 +77,7 @@ public class DataStreamingHelper {
                 if (att.isAttributeOn()) {
                     BehaviorValue value = new BehaviorValue();
                     value.setName("channels." + index + ".attribute");
-                    value.setValue(att.getAttribute().getDescription());
+                    value.setValue(att.getAttribute().getKey());
                     behavior.getValues().add(value);
                     BehaviorValue value2 = new BehaviorValue();
                     value2.setName("channels." + index + ".interval");
