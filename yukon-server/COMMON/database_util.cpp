@@ -106,48 +106,6 @@ void executeWriter( DatabaseWriter &writer, const char* file, const int line, co
 }
 
 
-/**
- * Helper method to create a string of the format
- * "table.column in (x, y, z)" or
- * "table.column = x" or
- * "table.column in ()"
- */
-std::string createIdSqlClause(const id_set &paoids, const std::string &table, const std::string &column)
-{
-    if( paoids.empty() )
-    {
-        return std::string();
-    }
-
-    Cti::StreamBuffer sql;
-
-    sql << table << "." << column;
-
-    //  special single id case
-    if( paoids.size() == 1 )
-    {
-        sql << " = " << *paoids.begin();
-    }
-    else
-    {
-        sql << " IN (";
-        sql << Cti::join(paoids, ",");
-        sql << ")";
-    }
-
-    return sql.extractToString();
-}
-
-std::string createIdSqlClause(const long id, const std::string &table, const std::string &column)
-{
-    Cti::StreamBuffer sql;
-
-    sql << table << "." << column << " = " << id;
-
-    return sql.extractToString();
-}
-
-
 std::string createPlaceholderList(const size_t count)
 {
     if( count == 0 )

@@ -3,6 +3,7 @@
 #include "tbl_pt_limit.h"
 #include "resolvers.h"
 #include "logger.h"
+#include "database_util.h"
 
 using namespace std;
 
@@ -27,28 +28,42 @@ DOUBLE CtiTablePointLimit::getLowLimit()      const  {  return _lowLimit;       
 INT    CtiTablePointLimit::getLimitDuration() const  {  return _limitDuration;  }
 
 
-void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds)
+std::string CtiTablePointLimit::getSqlForFullLoad()
 {
-    ostringstream sql_stream;
+    return
+        "SELECT "
+            "PL.POINTID, "
+            "PL.LIMITNUMBER, "
+            "PL.HIGHLIMIT, "
+            "PL.LOWLIMIT, "
+            "PL.LIMITDURATION "
+        "FROM "
+            "POINTLIMITS PL";
+}
 
-    sql_stream << "select pointid, limitnumber, highlimit, lowlimit, limitduration from pointlimits";
+std::string CtiTablePointLimit::getSqlForPointId()
+{
+    return
+        getSqlForFullLoad()
+            + " WHERE "
+            + Cti::Database::createIdEqualClause( "PL", "POINTID" );
+}
 
-    if( pointID )
-    {
-        sql_stream << " where pointid = " << pointID;
-    }
-    else if( paoID )
-    {
-        sql_stream << " where pointid in (select pointid from point where paobjectid = " << paoID << ")";
-    }
-    else if( !pointIds.empty() )
-    {
-        sql_stream << " where pointid in (";
-        sql_stream << Cti::join(pointIds, ",");
-        sql_stream << ")";
-    }
+std::string CtiTablePointLimit::getSqlForPaoId()
+{
+    return
+        getSqlForFullLoad()
+            + " WHERE PL.POINTID IN (SELECT P.POINTID FROM POINT P WHERE "
+            + Cti::Database::createIdEqualClause( "P", "PAObjectID" )
+            + ")";
+}
 
-    sql = sql_stream.str();
+std::string CtiTablePointLimit::getSqlForPointIds(const size_t count)
+{
+    return
+        getSqlForFullLoad()
+            + " WHERE "
+            + Cti::Database::createIdInClause( "PL", "POINTID", count );
 }
 
 std::string CtiTablePointLimit::toString() const

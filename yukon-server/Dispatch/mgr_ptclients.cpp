@@ -8,6 +8,7 @@
 #include "database_reader.h"
 #include "database_connection.h"
 #include "database_transaction.h"
+#include "database_util.h"
 #include "devicetypes.h"
 #include "msg_ptreg.h"
 #include "msg_pcreturn.h"
@@ -25,13 +26,17 @@
 #include "desolvers.h"
 #include "tbl_pt_alarm.h"
 
+#include "coroutine_util.h"
+
+#include <boost/range/algorithm/for_each.hpp>
+
 #include <list>
 
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 
-#define POINT_REFRESH_SIZE 1000 //This is overriden by cparm.
+#define POINT_REFRESH_SIZE 950 //This is overriden by cparm.
 
 /*
  *  This method initializes each point's dynamic data to it's default/initial values.
@@ -203,70 +208,58 @@ std::set<long> CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPoi
     return pointsFound;
 }
 
-/**
- * Loads the data from the database for all point id's
- * requested. Recursively calls itself if more id's are
- * requested than the max number allowed.
- *
- * @param ids const set<long>&
- */
 void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
 {
     unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_POINT_SELECT", POINT_REFRESH_SIZE);
 
-    if( ids.size() > max_size )
+    for( const auto& id_chunk : Cti::Coroutines::chunked(ids, max_size) )
     {
-        set<long> tempIds;
+        std::set<long> idSubset{ id_chunk.begin(), id_chunk.end() };
 
-        for( set<long>::const_iterator iter = ids.begin(); iter != ids.end(); )
-        {
-            tempIds.insert(*iter);
-            iter++;
-            if( tempIds.size() == max_size || iter == ids.end() )
-            {
-                refreshListByPointIDs(tempIds);
-                tempIds.clear();
-            }
-        }
+        Inherited::refreshListByPointIDs(idSubset);
+        refreshAlarming(0, 0, idSubset);
+        refreshReasonabilityLimits(0, 0, idSubset);
+        refreshPointLimits(0, 0, idSubset);
+        processPointDynamicData(0, idSubset);
+        //refreshProperties(0, 0, idSubset);
     }
-    else
-    {
-        Inherited::refreshListByPointIDs(ids);
-        refreshAlarming(0, 0, ids);
-        refreshReasonabilityLimits(0, 0, ids);
-        refreshPointLimits(0, 0, ids);
-        processPointDynamicData(0, ids);
-        //refreshProperties(0, 0, ids);
-    }
-
-
 }
+
 
 void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    string         sql;
-    CtiTime start, stop;
-
-    if( DebugLevel & DEBUGLEVEL_MGR_POINT )
-    {
-        CTILOG_DEBUG(dout, "Looking for Alarming");
-    }
-
-    start = start.now();
-    CtiTablePointAlarming::getSQL(sql, pntID, paoID, pointIds);
+    Cti::Timing::DebugTimer timer{ "Looking for Alarming", !!(DebugLevel & DEBUGLEVEL_MGR_POINT) };
 
     DatabaseConnection conn;
-    DatabaseReader rdr(conn, sql);
-    rdr.execute();
+    DatabaseReader rdr(conn);
 
-    if( ! rdr.isValid() )
+    //  This case doesn't make sense, and should probably be prevented by splitting this method into a couple of different overloads.
+    if( pntID && paoID )
     {
-        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        rdr.setCommandText(CtiTablePointAlarming::getSqlForPaoIdAndPointId());
+        rdr << paoID << pntID;
     }
-    else if( DebugLevel & DEBUGLEVEL_MGR_POINT )
+    else if( pntID )
     {
-        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+        rdr.setCommandText(CtiTablePointAlarming::getSqlForPointId());
+        rdr << pntID;
     }
+    else if( paoID )
+    {
+        rdr.setCommandText(CtiTablePointAlarming::getSqlForPaoId());
+        rdr << paoID;
+    }
+    else if( ! pointIds.empty() )
+    {
+        rdr.setCommandText(CtiTablePointAlarming::getSqlForPointIds(pointIds.size()));
+        rdr << pointIds;
+    }
+    else
+    {
+        rdr.setCommandText(CtiTablePointAlarming::getSqlForFullLoad());
+    }
+
+    rdr.execute();
 
     LONG pID;
     ptr_type pPt;
@@ -297,16 +290,6 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
             }
             addAlarming(*iter);
         }
-    }
-
-    if((stop = stop.now()).seconds() - start.seconds() > 5 )
-    {
-        CTILOG_INFO(dout, (stop.seconds() - start.seconds()) <<" seconds for Alarming");
-    }
-
-    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
-    {
-        CTILOG_DEBUG(dout, "Done looking for Alarming");
     }
 }
 
@@ -1028,42 +1011,53 @@ void CtiPointClientManager::loadDynamicPoint(Cti::Database::DatabaseReader &rdr)
 //Grab reasonability limits from TBL_UOM
 void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    CtiTime start, stop;
-    string sql;
+    Cti::Timing::DebugTimer timer{ "Looking for Reasonability limits",  !!(DebugLevel & DEBUGLEVEL_MGR_POINT) };
 
-    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
-    {
-        CTILOG_DEBUG(dout, "Looking for Reasonability limits");
-    }
+    const auto baseSql = 
+        "select PU.pointid, PU.highreasonabilitylimit, PU.lowreasonabilitylimit from pointunit PU"s;
+    const auto whereSql = 
+        " where (highreasonabilitylimit != 1E30 OR lowreasonabilitylimit != -1E30)"
+        " AND highreasonabilitylimit != lowreasonabilitylimit"s;
 
-    sql = "select pointid, highreasonabilitylimit, lowreasonabilitylimit from pointunit where "
-          "(highreasonabilitylimit != 1E30 OR lowreasonabilitylimit != -1E30) "
-          "AND highreasonabilitylimit != lowreasonabilitylimit";
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn);
 
     if(pntID)
     {
-        sql += " AND pointid = " + CtiNumStr(pntID);
+        rdr.setCommandText(
+            baseSql 
+            + whereSql 
+            + " AND " + Cti::Database::createIdEqualClause("PU", "pointid"));
+        
+        rdr << pntID;
     }
     else if(paoID)
     {
         //This assumes it is an ADD, an update needs to do an erase here!
-        sql += " AND pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
+        rdr.setCommandText(
+            baseSql
+            + " join Point P on PU.pointid = P.pointid"
+            + whereSql
+            + " AND " + Cti::Database::createIdEqualClause("P", "paobjectid"));
+
+        rdr << paoID;
     }
     else if(!pointIds.empty())
     {
-        sql += " AND pointid in (";
-        sql += Cti::join(pointIds, ",");
-        sql += ")";
+        rdr.setCommandText(
+            baseSql
+            + whereSql
+            + " AND " + Cti::Database::createIdInClause("PU", "pointid", pointIds.size()));
+
+        rdr << pointIds;
     }
     else
     {
+        rdr.setCommandText(baseSql + whereSql);
+
         _reasonabilityLimits.clear();
     }
 
-    start = start.now();
-
-    DatabaseConnection conn;
-    DatabaseReader rdr(conn, sql);
     rdr.execute();
 
     if( ! rdr.isValid() )
@@ -1106,37 +1100,41 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
             _reasonabilityLimits.insert(*iter);
         }
     }
-
-    if((stop = stop.now()).seconds() - start.seconds() > 5 )
-    {
-        CTILOG_INFO(dout , (stop.seconds() - start.seconds()) <<" seconds for Reasonability Limits");
-    }
-
-    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
-    {
-        CTILOG_DEBUG(dout, "Done looking for Reasonability Limits");
-    }
 }
 
 
 void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    LONG   lTemp = 0;
-    string sql;
-
-    CtiTime         start, stop;
-
-    start = start.now();
-
-    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
-    {
-        CTILOG_DEBUG(dout, "Looking for Limits");
-    }
-    /* Go after the point limits! */
-    CtiTablePointLimit::getSQL( sql, pntID, paoID, pointIds );
+    Cti::Timing::DebugTimer timer{ "Looking for Limits",  !!(DebugLevel & DEBUGLEVEL_MGR_POINT) };
 
     DatabaseConnection conn;
-    DatabaseReader rdr(conn, sql);
+    DatabaseReader     rdr(conn);
+
+    /* Go after the point limits! */
+
+    if ( pntID )
+    {
+        rdr.setCommandText( CtiTablePointLimit::getSqlForPointId() );
+
+        rdr << pntID;
+    }
+    else if ( paoID )
+    {
+        rdr.setCommandText( CtiTablePointLimit::getSqlForPaoId() );
+
+        rdr << paoID;
+    }
+    else if ( ! pointIds.empty() )
+    {
+        rdr.setCommandText( CtiTablePointLimit::getSqlForPointIds( pointIds.size() ) ); 
+
+        rdr << pointIds;
+    }
+    else
+    {
+        rdr.setCommandText( CtiTablePointLimit::getSqlForFullLoad() );
+    }
+
     rdr.execute();
 
     if( ! rdr.isValid() )
@@ -1177,16 +1175,6 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
             }
             _limits.insert(CtiTablePointLimit(*iter));
         }
-    }
-
-    if((stop = stop.now()).seconds() - start.seconds() > 5 )
-    {
-        CTILOG_INFO(dout , (stop.seconds() - start.seconds()) <<" seconds for Limits");
-    }
-
-    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
-    {
-        CTILOG_DEBUG(dout, "Done looking for Limits");
     }
 }
 

@@ -103,15 +103,6 @@ IM_EX_CTIBASE void executeWriter( DatabaseWriter &writer, const char* file, cons
 
 /**
  * Helper method to create a string of the format
- * "table.column in (x, y, z)" or
- * "table.column = x" or
- * "table.column in ()"
- */
-std::string IM_EX_CTIBASE createIdSqlClause(const id_set &ids, const std::string &table, const std::string &column);
-std::string IM_EX_CTIBASE createIdSqlClause(const long id, const std::string &table, const std::string &column);
-
-/**
- * Helper method to create a string of the format
  * "table.column in (?, ?, ?)" or
  * "table.column = ?" or
  * "table.column in ()"

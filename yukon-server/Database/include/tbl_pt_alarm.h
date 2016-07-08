@@ -99,7 +99,12 @@ public:
 
    static std::string getTableName();
 
-   static void getSQL(std::string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds);
+   static std::string getSqlForFullLoad();
+   static std::string getSqlForPaoId();
+   static std::string getSqlForPaoIdAndPointId();
+   static std::string getSqlForPointId();
+   static std::string getSqlForPointIds(const size_t count);
+
    virtual UINT getAlarmCategory(const INT offset)  const;
    virtual UINT getExcludeNotifyStates()            const;
    virtual UINT getAutoAckStates()                  const;
@@ -112,14 +117,4 @@ public:
    virtual bool isAutoAcked     ( int alarm ) const;
    virtual bool alarmOn         ( int alarm ) const;
    virtual INT  alarmPriority   ( int alarm ) const;
-};
-
-class IM_EX_CTIYUKONDB Test_CtiTablePointAlarming : public CtiTablePointAlarming
-{
-private:
-   typedef CtiTablePointAlarming Inherited;
-public:
-   CtiTablePointAlarming& operator=(const CtiTablePointAlarming& aRef) { Inherited::operator=(aRef); return *this; }
-
-   CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt ) { return Inherited::setAlarmCategory(offset,aInt); }
 };

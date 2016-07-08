@@ -551,21 +551,25 @@ bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const strin
 
     string       sql        = device.getSQLCoreStatement();
     const string typeClause = createTypeSqlClause(type, include_type);
-    const string idClause   = Cti::Database::createIdSqlClause(paoids, "YP", "paobjectid");
 
     if( !typeClause.empty() )
     {
         sql += " ";
         sql += typeClause;
     }
-    if( !idClause.empty() )
+
+    if ( ! paoids.empty() )
     {
-        sql += " AND ";
-        sql += idClause;
+        sql += " AND " + Cti::Database::createIdInClause( "YP", "paobjectid", paoids.size() );
     }
 
     Cti::Database::DatabaseConnection connection;
     DatabaseReader rdr(connection, sql);
+
+    if ( ! paoids.empty() )
+    {
+        rdr << paoids;
+    }
 
     rdr.execute();
 
@@ -1094,19 +1098,20 @@ void CtiDeviceManager::refreshExclusions(Cti::Database::id_set &paoids)
         CTILOG_DEBUG(dout, "Looking for Device Exclusions");
     }
 
-    static const string sqlCore = CtiTablePaoExclusion::getSQLCoreStatement();
-    const string idClause = Cti::Database::createIdSqlClause(paoids, "PEX", "paoid");
+    string sql = CtiTablePaoExclusion::getSQLCoreStatement();
 
-    string sql = sqlCore;
-
-    if(!idClause.empty())
+    if ( ! paoids.empty() )
     {
-        sql += " AND ";
-        sql += idClause;
+        sql += " AND " + Cti::Database::createIdInClause( "PEX", "paoid", paoids.size() );
     }
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sql);
+
+    if ( ! paoids.empty() )
+    {
+        rdr << paoids;
+    }
 
     rdr.execute();
 
@@ -1196,18 +1201,21 @@ void CtiDeviceManager::refreshIONMeterGroups(Cti::Database::id_set &paoids)
     static const string sqlCore = "SELECT DMG.DeviceID, DMG.MeterNumber "
                                   "FROM devicemetergroup DMG, yukonpaobject YP "
                                   "WHERE DMG.DeviceID = YP.PAObjectID AND YP.Type LIKE 'ION%'";
-    const string idClause = Cti::Database::createIdSqlClause(paoids, "YP", "paobjectid");
 
     string sql = sqlCore;
 
-    if(!idClause.empty())
+    if ( ! paoids.empty() )
     {
-        sql += " AND ";
-        sql += idClause;
+        sql += " AND " + Cti::Database::createIdInClause( "YP", "paobjectid", paoids.size() );
     }
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sql);
+
+    if ( ! paoids.empty() )
+    {
+        rdr << paoids;
+    }
 
     rdr.execute();
 
@@ -1261,18 +1269,21 @@ void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
         const string childCountQuery = "SELECT COUNT ('ChildID') as childcount "
                                        "FROM GenericMacro GM "
                                        "WHERE GM.MacroType = 'GROUP'";
-        const string idClause = Cti::Database::createIdSqlClause(paoids, "GM", "OwnerID");
 
         string sql = childCountQuery;
 
-        if(!idClause.empty())
+        if ( ! paoids.empty() ) 
         {
-            sql += " AND ";
-            sql += idClause;
+            sql += " AND " + Cti::Database::createIdInClause( "GM", "OwnerID", paoids.size() );
         }
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
+
+        if ( ! paoids.empty() ) 
+        {
+            rdr << paoids;
+        }
 
         rdr.execute();
 
@@ -1285,26 +1296,24 @@ void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
     const string sqlCore =  "SELECT GM.ChildID, GM.OwnerID "
                             "FROM GenericMacro GM "
                             "WHERE GM.MacroType = 'GROUP'";
-    const string idClause = Cti::Database::createIdSqlClause(paoids, "GM", "OwnerID");
     const string orderBy  = "ORDER BY GM.ChildOrder ASC";
 
     string sql = sqlCore;
 
-    if(!idClause.empty())
+    if ( ! paoids.empty() ) 
     {
-        sql += " AND ";
-        sql += idClause;
-        sql += " ";
-        sql += orderBy;
+        sql += " AND " + Cti::Database::createIdInClause( "GM", "OwnerID", paoids.size() );
     }
-    else
-    {
-        sql += " ";
-        sql += orderBy;
-    }
+
+    sql += " " + orderBy;
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sql);
+
+    if ( ! paoids.empty() ) 
+    {
+        rdr << paoids;
+    }
 
     rdr.execute();
 
@@ -1381,18 +1390,20 @@ void CtiDeviceManager::refreshMCTConfigs(Cti::Database::id_set &paoids)
                                  "CFG.mctwire2, CFG.mctwire3, CFG.ke1, CFG.ke2, CFG.ke3 "
                                "FROM mctconfigmapping MCM, mctconfig CFG, yukonpaobject YP "
                                "WHERE MCM.mctid = YP.paobjectid AND MCM.configid = CFG.configid";
-        const string idClause = Cti::Database::createIdSqlClause(paoids, "YP", "paobjectid");
-
         string sql = sqlCore;
 
-        if(!idClause.empty())
+        if ( ! paoids.empty() ) 
         {
-            sql += " AND ";
-            sql += idClause;
+            sql += " AND " + Cti::Database::createIdInClause( "YP", "paobjectid", paoids.size() );
         }
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
+
+        if ( ! paoids.empty() ) 
+        {
+            rdr << paoids;
+        }
 
         rdr.execute();
 
@@ -1456,18 +1467,20 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
 
         static const string sqlCore = "SELECT DMS.deviceid, DMS.disconnectaddress "
                                       "FROM devicemct400series DMS";
-        const string idClause = Cti::Database::createIdSqlClause(paoids, "DMS", "deviceid");
-
         string sql = sqlCore;
 
-        if(!idClause.empty())
+        if ( ! paoids.empty() ) 
         {
-            sql += " WHERE ";
-            sql += idClause;
+            sql += " WHERE " + Cti::Database::createIdInClause( "DMS", "deviceid", paoids.size() );
         }
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
+
+        if ( ! paoids.empty() )
+        {
+            rdr << paoids;
+        }
 
         rdr.execute();
 
@@ -1553,24 +1566,22 @@ void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
             CTILOG_DEBUG(dout, "Looking for Static PAO Info");
         }
 
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
         string sql = CtiTableStaticPaoInfo::getSQLCoreStatement();
 
-        if( !sql.empty() )
+        if ( ! paoids.empty() )
         {
-            if(!paoids.empty())
-            {
-                sql += " AND " + Cti::Database::createIdSqlClause(paoids, "SPI", "paobjectid");
-            }
-            rdr.setCommandText(sql);
-            rdr.execute();
+            sql += " AND " + Cti::Database::createIdInClause( "SPI", "paobjectid", paoids.size() );
         }
-        else
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+
+        if ( ! paoids.empty() )
         {
-            return;
+            rdr << paoids;
         }
+
+        rdr.execute();
 
         if( ! rdr.isValid() )
         {

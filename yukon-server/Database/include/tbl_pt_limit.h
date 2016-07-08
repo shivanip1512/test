@@ -52,6 +52,11 @@ public:
    LONG   getPointID()       const;
 
    static std::string getTableName();
-   static void getSQL(std::string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds = std::set<long>());
+
+   static std::string getSqlForFullLoad();
+   static std::string getSqlForPointId();
+   static std::string getSqlForPaoId();
+   static std::string getSqlForPointIds(const size_t count);
+
    virtual std::string toString() const override;
 };

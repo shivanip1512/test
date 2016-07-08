@@ -174,10 +174,12 @@ void DynamicPaoInfoManager::loadInfo(const long paoId)
         return;
     }
 
-    sql += " WHERE owner = ? AND " + Database::createIdSqlClause(paoId, "DPI", "paobjectid");
+    sql += " WHERE owner = ? AND " + Database::createIdEqualClause("DPI", "paobjectid");
 
     rdr.setCommandText(sql);
-    rdr << *ownerString;
+    rdr << *ownerString
+        << paoId;
+
     Database::executeCommand(rdr, __FILE__, __LINE__, Database::LogDebug(DebugLevel & 0x00020000));
 
     if(rdr.isValid())

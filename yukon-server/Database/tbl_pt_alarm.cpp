@@ -5,6 +5,7 @@
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_pt_alarm.h"
+#include "database_util.h"
 
 using namespace std;
 
@@ -162,36 +163,53 @@ bool CtiTablePointAlarming::operator<(const CtiTablePointAlarming &rhs) const
     return _pointID < rhs._pointID;
 }
 
+static const auto baseSql = 
+    "select"
+        " PA.pointid"
+        ", PA.alarmstates"
+        ", PA.excludenotifystates"
+        ", PA.notifyonacknowledge"
+        ", PA.notificationgroupid"
+    " from"
+        " pointalarming PA"s;
 
 //This SQL is only proper when we assume some things about alarmstates
-void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds)
+static const auto whereSql =
+    " where"
+        " PA.alarmstates != '\001\001\001\001\001\001\001\001"  //  32 \001 chars, 4 rows of 8
+                            "\001\001\001\001\001\001\001\001"
+                            "\001\001\001\001\001\001\001\001"
+                            "\001\001\001\001\001\001\001\001'"s;
+
+std::string CtiTablePointAlarming::getSqlForFullLoad()
 {
-    ostringstream sql_stream;
+    return baseSql + whereSql;
+}
 
-    sql_stream << "select pointid, alarmstates, excludenotifystates, notifyonacknowledge,";
-    sql_stream << " notificationgroupid from pointalarming";
+std::string CtiTablePointAlarming::getSqlForPaoId()
+{
+    return baseSql 
+        + " join point P on P.pointid = PA.pointid " 
+        + whereSql
+        + " AND " + Cti::Database::createIdEqualClause("P", "paobjectid");
+}
 
-    {
-        sql_stream << " where alarmstates != '\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001'";
-    }
+std::string CtiTablePointAlarming::getSqlForPaoIdAndPointId()
+{
+    return getSqlForPaoId()
+        + " AND " + Cti::Database::createIdEqualClause("PA", "pointid");
+}
 
-    if( pointID )
-    {
-        sql_stream << " AND pointid = " << pointID;
-    }
+std::string CtiTablePointAlarming::getSqlForPointId()
+{
+    return getSqlForFullLoad()
+        + " AND " + Cti::Database::createIdEqualClause("PA", "pointid");
+}
 
-    if( paoID )
-    {
-        sql_stream << " AND pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
-    }
-    else if( !pointIds.empty() )
-    {
-        sql_stream << " AND pointid in (";
-        sql_stream << Cti::join(pointIds, ",");
-        sql_stream << ")";
-    }
-
-    sql = sql_stream.str();
+std::string CtiTablePointAlarming::getSqlForPointIds(const size_t count)
+{
+    return getSqlForFullLoad()
+        + " AND " + Cti::Database::createIdInClause("PA", "pointid", count);
 }
 
 CtiTablePointAlarming::~CtiTablePointAlarming()

@@ -588,9 +588,16 @@ void CtiRouteManager::refreshStaticPaoInfo(const Cti::Database::id_set &paoids)
         {
             if(!paoids.empty())
             {
-                sql += " AND " + Cti::Database::createIdSqlClause(paoids, "SPI", "paobjectid");
+                sql += " AND " + Cti::Database::createIdInClause("SPI", "paobjectid", paoids.size());
+
+                rdr.setCommandText(sql);
+
+                rdr << paoids;
             }
-            rdr.setCommandText(sql);
+            else
+            {
+                rdr.setCommandText(sql);
+            }
             rdr.execute();
         }
         else
@@ -668,10 +675,12 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
 
     std::string sql =   "SELECT Y.PAObjectID, E.Name, E.Value "
                         "FROM   EncryptionKey E JOIN YukonPAObjectEncryptionKey Y ON E.EncryptionKeyId = Y.EncryptionKeyId "
-                        "WHERE " + Cti::Database::createIdSqlClause( paoids, "Y", "PAObjectID" );
+                        "WHERE " + Cti::Database::createIdInClause( "Y", "PAObjectID", paoids.size() );
 
     Cti::Database::DatabaseConnection   connection;
     Cti::Database::DatabaseReader       rdr( connection, sql );
+
+    rdr << paoids;
 
     rdr.execute();
 
