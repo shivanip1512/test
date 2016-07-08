@@ -4,13 +4,13 @@ import java.util.List;
 
 import com.cannontech.common.device.streaming.model.VerificationInfo;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfiguration;
+import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 
 public class DataStreamingServiceImpl implements DataStreamingService {
     
     @Override
-    public DataStreamingConfiguration findDataStreamingConfigurationForDevice(int deviceId) {
+    public DataStreamingConfig findDataStreamingConfigurationForDevice(int deviceId) {
         //TODO
         //Retrieve behavior of type data streaming config for deviceId
         //Convert behavior into DataStreamingConfiguration
@@ -19,7 +19,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
-    public List<DataStreamingConfiguration> getAllDataStreamingConfigurations() {
+    public List<DataStreamingConfig> getAllDataStreamingConfigurations() {
         //TODO
         //Retrieve all behaviors of type data streaming config
         //Convert behaviors into DataStreamingConfiguration
@@ -28,7 +28,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
-    public VerificationInfo verifyConfiguration(DataStreamingConfiguration config, List<Integer> deviceIds) {
+    public VerificationInfo verifyConfiguration(DataStreamingConfig config, List<Integer> deviceIds) {
         //TODO
         //Build verification message for NM
         //Send verification message
@@ -37,6 +37,18 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         //Return VerificationInfo
         return null;
     }
+    
+    @Override
+    public VerificationInfo verifyConfiguration(int configId, List<Integer> deviceIds) {
+        //TODO
+        //Build verification message for NM
+        //Send verification message
+          //Wait for response message
+        //Build VerificationInfo from response message
+        //Return VerificationInfo
+        return null;
+    }
+    
     
     @Override
     public void assignDataStreamingConfig(int configId, List<Integer> deviceIds, LiteYukonUser user) {
@@ -49,7 +61,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
-    public void assignDataStreamingConfig(DataStreamingConfiguration config, List<Integer> deviceIds, LiteYukonUser user) {
+    public void assignDataStreamingConfig(DataStreamingConfig config, List<Integer> deviceIds, LiteYukonUser user) {
         //TODO
         //Send notification message to NM for the pending configuration change
           //If NM rejects/errors, abort the operation
@@ -68,7 +80,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
-    public void saveReportedConfig(DataStreamingConfiguration config, int deviceId) {
+    public void saveReportedConfig(DataStreamingConfig config, int deviceId) {
         //TODO
         //Create BehaviorReport based on config
         //Update for device

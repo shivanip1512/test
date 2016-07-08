@@ -4,25 +4,25 @@ import java.util.List;
 
 import com.cannontech.common.device.streaming.model.VerificationInfo;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfiguration;
+import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 
 public interface DataStreamingService {
     
     /**
      * @return The DataStreamingConfiguration assigned to the device, or null if no configuration is assigned.
      */
-    DataStreamingConfiguration findDataStreamingConfigurationForDevice(int deviceId);
+    DataStreamingConfig findDataStreamingConfigurationForDevice(int deviceId);
     
     /**
      * @return All data streaming configurations in use.
      */
-    List<DataStreamingConfiguration> getAllDataStreamingConfigurations();
+    List<DataStreamingConfig> getAllDataStreamingConfigurations();
     
     /**
      * Requests Network Manager to simulate the effects of assigning the specified configuration to these devices.
      * @return VerificationInfo containing the results of the Network manager check.
      */
-    VerificationInfo verifyConfiguration(DataStreamingConfiguration config, List<Integer> deviceIds);
+    VerificationInfo verifyConfiguration(DataStreamingConfig config, List<Integer> deviceIds);
     
     /**
      * Assign an existing data streaming configuration to the devices.
@@ -33,7 +33,7 @@ public interface DataStreamingService {
     /**
      * Assign a new data streaming configuration to the devices.
      */
-    void assignDataStreamingConfig(DataStreamingConfiguration config, List<Integer> deviceIds, LiteYukonUser user);
+    void assignDataStreamingConfig(DataStreamingConfig config, List<Integer> deviceIds, LiteYukonUser user);
     
     /**
      * Unassign the data streaming configuration currently assigned to the specified devices. (They will no longer 
@@ -44,7 +44,9 @@ public interface DataStreamingService {
     /**
      * Save the reported data streaming configuration that was reported to us from the device, via Porter.
      */
-    void saveReportedConfig(DataStreamingConfiguration config, int deviceId);
+    void saveReportedConfig(DataStreamingConfig config, int deviceId);
+
+    VerificationInfo verifyConfiguration(int configId, List<Integer> deviceIds);
     
     //TODO: retrieve all mismatches (reported config and stored config don't match)
 }

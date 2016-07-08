@@ -1,17 +1,12 @@
 package com.cannontech.web.rfn.dataStreaming.model;
 
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+
 public class DataStreamingAttribute {
-    private String name;
+    private BuiltInAttribute attribute;
     private Boolean attributeOn = Boolean.FALSE;
     private int interval;
     
-    
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
     public Boolean getAttributeOn() {
         return attributeOn;
     }
@@ -26,6 +21,12 @@ public class DataStreamingAttribute {
     }
     public void setInterval(int interval) {
         this.interval = interval;
+    }
+    public BuiltInAttribute getAttribute() {
+        return attribute;
+    }
+    public void setAttribute(BuiltInAttribute attribute) {
+        this.attribute = attribute;
     }
 
 }

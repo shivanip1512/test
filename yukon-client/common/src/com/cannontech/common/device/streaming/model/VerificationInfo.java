@@ -1,5 +1,5 @@
 package com.cannontech.common.device.streaming.model;
 
 public class VerificationInfo {
-    // contains information needed by
+    // contains information needed by confirmation page
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.device.streaming.model.BehaviorValue;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public class DataStreamingHelper {
         
@@ -14,13 +15,13 @@ public class DataStreamingHelper {
             DataStreamingConfig config = new DataStreamingConfig();
             
             config.setId(behavior.getId());
-            List<DataStreamingAttribute> atts = new ArrayList<DataStreamingAttribute>();
+            List<DataStreamingAttribute> atts = new ArrayList<>();
             List<BehaviorValue> values = behavior.getValues();
             for (BehaviorValue value : values) {
                 String name = value.getName();
                 if (name.contains("attribute")){
                     DataStreamingAttribute att = new DataStreamingAttribute();
-                    att.setName(value.getValue());
+                    att.setAttribute(BuiltInAttribute.valueOf(value.getValue()));
                     att.setAttributeOn(true);
                     String intervalSearch = name.substring(0, name.lastIndexOf("."));
                     BehaviorValue interval = (BehaviorValue) Arrays
@@ -43,15 +44,15 @@ public class DataStreamingHelper {
         
         public static void addAllAttributesToConfig(DataStreamingConfig config) {
             //TODO: get this list from somewhere
-            List<DataStreamingAttribute> attributes = new ArrayList<DataStreamingAttribute>();
-            List<String> attributeStrings = new ArrayList<String>();
+            List<DataStreamingAttribute> attributes = new ArrayList<>();
+            List<String> attributeStrings = new ArrayList<>();
             attributeStrings.add("kVar");
             attributeStrings.add("Demand");
             attributeStrings.add("DeliveredkWh");
             attributeStrings.add("ReceivedkWh");
             for (String attString : attributeStrings) {
                 DataStreamingAttribute attribute = new DataStreamingAttribute();
-                attribute.setName(attString);
+                attribute.setAttribute(BuiltInAttribute.valueOf(attString));
                 attributes.add(attribute);
             }
             config.setAttributes(attributes);
@@ -59,7 +60,7 @@ public class DataStreamingHelper {
         
         public static List<Integer> getAllIntervals() {
             //TODO: get these from somewhere?
-            List<Integer> intervals = new ArrayList<Integer>();
+            List<Integer> intervals = new ArrayList<>();
             intervals.add(1);
             intervals.add(3);
             intervals.add(5);
@@ -76,7 +77,7 @@ public class DataStreamingHelper {
                 if (att.isAttributeOn()) {
                     BehaviorValue value = new BehaviorValue();
                     value.setName("channels." + index + ".attribute");
-                    value.setValue(att.getName());
+                    value.setValue(att.getAttribute().getDescription());
                     behavior.getValues().add(value);
                     BehaviorValue value2 = new BehaviorValue();
                     value2.setName("channels." + index + ".interval");

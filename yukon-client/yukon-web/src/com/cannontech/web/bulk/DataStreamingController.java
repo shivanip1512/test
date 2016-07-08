@@ -18,7 +18,6 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorType;
-import com.cannontech.common.device.streaming.model.VerificationInfo;
 import com.cannontech.common.device.streaming.service.DeviceBehaviorService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
@@ -43,7 +42,7 @@ public class DataStreamingController {
         DataStreamingHelper.addAllAttributesToConfig(newConfig);
         model.addAttribute("configuration", newConfig);
         model.addAttribute("intervals", DataStreamingHelper.getAllIntervals());
-        List<DataStreamingConfig> existingConfigs = new ArrayList<DataStreamingConfig>();
+        List<DataStreamingConfig> existingConfigs = new ArrayList<>();
         List<Behavior> existingBehaviors = deviceBehaviorDao.getBehaviorsByType(BehaviorType.DATA_STREAMING);
         existingBehaviors.forEach(behavior->existingConfigs.add(DataStreamingHelper.convertBehaviorToConfig(behavior)));
         model.addAttribute("existingConfigs", existingConfigs);
@@ -72,10 +71,11 @@ public class DataStreamingController {
         model.addAttribute("configuration", configuration);
         model.addAttribute("remove", false);
         
-        List<Integer> deviceIds = new ArrayList<Integer>();
+        List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
-        VerificationInfo verifyInfo = deviceBehaviorService.verify(behavior, deviceIds);
-        model.addAttribute("verificationInfo", verifyInfo);
+        
+    //    VerificationInfo verifyInfo = deviceBehaviorService.verify(behavior, deviceIds);
+     //   model.addAttribute("verificationInfo", verifyInfo);
 
         return "dataStreaming/verification.jsp";
     }
@@ -96,10 +96,10 @@ public class DataStreamingController {
         model.addAttribute("behavior", behavior);
         model.addAttribute("remove", true);
         
-        List<Integer> deviceIds = new ArrayList<Integer>();
+        List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
-        VerificationInfo verifyInfo = deviceBehaviorService.verify(behavior, deviceIds);
-        model.addAttribute("verificationInfo", verifyInfo);
+       // VerificationInfo verifyInfo = deviceBehaviorService.verify(behavior, deviceIds);
+       // model.addAttribute("verificationInfo", verifyInfo);
 
         return "dataStreaming/verification.jsp";
     }
@@ -109,7 +109,7 @@ public class DataStreamingController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         
-        List<Integer> deviceIds = new ArrayList<Integer>();
+        List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
         int behaviorId = behavior.getId();

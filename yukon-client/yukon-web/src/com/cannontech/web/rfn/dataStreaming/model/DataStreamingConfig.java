@@ -9,7 +9,7 @@ public class DataStreamingConfig {
     private int selectedInterval;
     private int selectedConfiguration;
     private String name;
-    private List<DataStreamingAttribute> attributes = new ArrayList<DataStreamingAttribute>();
+    private List<DataStreamingAttribute> attributes = new ArrayList<>();
 
     public boolean isNewConfiguration() {
         return newConfiguration;
@@ -52,7 +52,7 @@ public class DataStreamingConfig {
             if (count > 1) {
                 configName.append(", ");
             }
-            configName.append(att.getName());
+            configName.append(att.getAttribute().getDescription());
             
             interval = att.getInterval();
             count++;
