@@ -119,13 +119,9 @@
 
 <!-- Available Switch Picker -->
 <entry key="yukon.web.picker.availableSwitchPicker.dialogTitle">Select A Switch</entry>
-<entry key="yukon.web.picker.switch.serialNumber">Serial Number</entry>
-<entry key="yukon.web.picker.switch.deviceType">Switch Type</entry>
 
 <!-- Available Thermostat Picker -->
 <entry key="yukon.web.picker.availableThermostatPicker.dialogTitle">Select A Thermostat</entry>
-<entry key="yukon.web.picker.thermostat.serialNumber">Serial Number</entry>
-<entry key="yukon.web.picker.thermostat.deviceType">Thermostat Type</entry>
 
 <!-- Available pickers for Gateway/Switch/Thermostat -->
 <entry key="yukon.web.picker.serialNumber">Serial Number</entry>
@@ -133,8 +129,6 @@
 
 <!-- Available Gateway Picker -->
 <entry key="yukon.web.picker.availableGatewayPicker.dialogTitle">Select A Gateway</entry>
-<entry key="yukon.web.picker.gateway.serialNumber">Serial Number</entry>
-<entry key="yukon.web.picker.gateway.deviceType">Gateway Type</entry>
 
 <!-- Database migration pickers -->
 <entry key="yukon.web.picker.databaseMigrationDIRECT_PROGRAMPicker.dialogTitle">Select Direct Load Program</entry>
