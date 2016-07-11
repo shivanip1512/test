@@ -93,6 +93,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                     memset (&data, '\0',8172);
                     // attempt to find out what type of message we're dealing with
                     retVal = readSocket((CHAR*)&data, 4, bytesRead);
+                    int lastError = WSAGetLastError();
 
                     // reset this every time through
                     connectionBadCount = 0;
@@ -100,10 +101,11 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                     // this where we re-initialize if needed
                     if (retVal == SOCKET_ERROR)
                     {
+                        CTILOG_ERROR(dout, "Read failed for client "<< getParent()->getName() << 
+                            ": error code " << lastError);
+
                         // closes and marks as failed
                         closeAndFailConnection();
-
-                        CTILOG_ERROR(dout, "Read failed for client "<< getParent()->getName());
                     }
                     else
                     {
@@ -114,6 +116,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                         if (totalMsgSize > 4)
                         {
                             retVal = readSocket((CHAR*)&data[4], totalMsgSize - 4, bytesRead);
+                            int lastError = WSAGetLastError();
 
                             // this where we re-initialize if needed
                             if (retVal == SOCKET_ERROR)
@@ -121,10 +124,25 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                                 // closes and marks as failed
                                 closeAndFailConnection();
 
-                                CTILOG_ERROR(dout, "Read failed for client "<< getParent()->getName());
+                                CTILOG_ERROR(dout, "Read failed for client "<< getParent()->getName() << 
+                                    ": error code " << lastError);
                             }
                             else
                             {
+                                if (getParent()->getDebugLevel() & DATA_RECV_DEBUGLEVEL)
+                                {
+                                    Cti::StreamBuffer outLog;
+
+                                    outLog << "\nReceived message from " << getAddr() << ": " << std::hex << std::setfill('0');
+
+                                    for (int i = 0; i < totalMsgSize; i++)
+                                    {
+                                        outLog << " " << std::setw(2) << (unsigned)data[i];
+                                    }
+
+                                    CTILOG_INFO(dout, outLog);
+                                }
+
                                 /******************
                                 * we may not know who connected to us so establish
                                 * the return connection if the outboundconnection was

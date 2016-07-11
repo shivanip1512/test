@@ -72,10 +72,26 @@ IM_EX_CTIBASE std::string socketAddressToString(const SOCKADDR *addr, int addrle
 //-----------------------------------------------------------------------------
 IM_EX_CTIBASE std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, int addrlen)
 {
-    // 0000:0000:0000:0000:0000:0000:127.127.127.127
-    // maximum length of address (IPV6) including null terminator = 46
+    char host[INET6_ADDRSTRLEN]; // array of byte that can contain the largest IP address (IPV6)
 
-    char host[46]; // array of byte that can contain the largest IP address (IPV6)
+    if (addr->sa_family == AF_INET6)
+    {
+        struct sockaddr_in6 *addr6 = (struct sockaddr_in6*)(addr);
+        if (IN6_IS_ADDR_V4MAPPED(&addr6->sin6_addr))
+        {
+            SOCKADDR_IN addr4{};
+            addr4.sin_family = AF_INET;
+            memcpy(&addr4.sin_addr, ((in_addr*)(addr6->sin6_addr.s6_addr + 12)), sizeof addr4.sin_addr);
+            addr4.sin_port = addr6->sin6_port;
+
+            char host6[46]; // array of byte that can contain the largest IP address (IPV6)
+            if (getnameinfo((SOCKADDR *)(&addr4), sizeof(SOCKADDR), host6, sizeof(host), 0, 0, NI_NUMERICHOST) != 0)
+            {
+                return std::string();   // on error, return an empty string
+            }
+            return host6;
+        }
+    }
 
     if (getnameinfo(addr, addrlen, host, sizeof(host), 0, 0, NI_NUMERICHOST) != 0)
     {

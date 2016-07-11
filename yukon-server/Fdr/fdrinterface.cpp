@@ -678,7 +678,7 @@ bool CtiFDRInterface::readConfig()
         CTILOG_INFO(dout, "Loaded Debug Level Text " << tempStr);
 
         iDebugLevel = strtoul(tempStr.c_str(), &eptr, 16);
-        CTILOG_INFO(dout, "Loaded Debug Level "<< myKeyName <<" Value is: "<< iDebugLevel);
+        CTILOG_INFO(dout, "Loaded Debug Level "<< myKeyName <<" Value is: " << std::hex << iDebugLevel);
     }
 
     iCparmReloadSeconds = gConfigParms.getValueAsInt(KEY_CPARM_RELOAD_RATE_SECONDS,300);

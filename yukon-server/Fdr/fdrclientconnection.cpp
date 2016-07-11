@@ -176,7 +176,23 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                         else if (queueReturn == ClientErrors::None)
                         {
                             Cti::WorkerThread::interruptionPoint();
+
+                            if (getParent()->getDebugLevel() & DATA_SEND_DEBUGLEVEL)
+                            {
+                                Cti::StreamBuffer outLog;
+
+                                outLog << "\nSending message to " << getAddr() << ":" << std::hex << std::setfill('0');
+
+                                for (int i = 0; i < getParent()->getMessageSize(buffer); i++)
+                                {
+                                    outLog << " " << std::setw(2) << (unsigned)buffer[i];
+                                }
+
+                                CTILOG_INFO(dout, outLog);
+                            }
+
                             retVal = writeSocket(buffer, getParent()->getMessageSize(buffer), bytesSent);
+                            int lastError = WSAGetLastError();
 
                             // reset this every time through
                             connectionBadCount = 0;
@@ -185,10 +201,13 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                             // this where we re-initialize if needed
                             if (retVal == SOCKET_ERROR)
                             {
+                                CTILOG_ERROR(dout, "writeSocket() failed - client "<< getParent()->getName() << 
+                                    " at " <<  getAddr() << 
+                                    ": error code=" << lastError);
+
                                 // closes and marks as failed
                                 closeAndFailConnection();
 
-                                CTILOG_ERROR(dout, "writeSocket() failed - client "<< getParent()->getName());
 
                                 outCount=0;
                             }
@@ -344,12 +363,16 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
     SOCKET tmpConnection = socket(aAddr._addr.sa.sa_family, SOCK_STREAM, IPPROTO_TCP);
     if( tmpConnection == INVALID_SOCKET )
     {
+        int lastError = WSAGetLastError();
+        CTILOG_ERROR(dout, "Invalid Socket: " << lastError);
         return SOCKET_ERROR;
     }
 
     BOOL ka=true;
     if( setsockopt(tmpConnection, SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL) ))
     {
+        int lastError = WSAGetLastError();
+        CTILOG_ERROR(dout, "Failed sockopt: " << lastError);
         shutdown(tmpConnection, SD_BOTH);
         closesocket(tmpConnection);
         return SOCKET_ERROR;
@@ -370,7 +393,6 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
 
         if( bind( tmpConnection, ai->ai_addr, ai->ai_addrlen ) == SOCKET_ERROR )
         {
-            const int errorCode = WSAGetLastError();
             CTILOG_ERROR(dout, "Failed to bind to: "<< ai <<" (Error: "<< ai.getError() <<")");
 
             shutdown(tmpConnection, SD_BOTH);
@@ -383,6 +405,8 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
 
     if( connect( tmpConnection, &aAddr._addr.sa, aAddr._addrlen ) == SOCKET_ERROR )
     {
+        int lastError = WSAGetLastError();
+        CTILOG_ERROR(dout, "Failed to connect: " << lastError);
         shutdown(tmpConnection, SD_BOTH);
         closesocket(tmpConnection);
         return SOCKET_ERROR;
