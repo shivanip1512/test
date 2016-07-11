@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -125,9 +124,9 @@ public class DataStreamingController {
         int configId = configuration.getId();
         
         if (configId > 0) {
-            dataStreamingService.assignDataStreamingConfig(configId, BehaviorType.DATA_STREAMING, deviceIds);
+            dataStreamingService.assignDataStreamingConfig(configId, deviceIds);
         } else {
-            dataStreamingService.unassignDataStreamingConfig(configId, BehaviorType.DATA_STREAMING, deviceIds);
+            dataStreamingService.unassignDataStreamingConfig(configId, deviceIds);
         }
 
         //TODO: display results page

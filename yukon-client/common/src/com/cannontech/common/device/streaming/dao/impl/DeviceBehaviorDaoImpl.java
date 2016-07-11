@@ -72,6 +72,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
                 }
             });
         });
+        
+        deleteUnusedBehaviors();
     }
     
     @Override
@@ -83,6 +85,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         ids.forEach(idBatch -> {
             unassignBehaviorFoBatch(behaviorId, type, idBatch);
         });
+        
+        deleteUnusedBehaviors();
     }
     
     @Override

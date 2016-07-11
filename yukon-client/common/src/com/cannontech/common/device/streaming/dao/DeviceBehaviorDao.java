@@ -46,12 +46,12 @@ public interface DeviceBehaviorDao {
     void deleteUnusedBehaviors();
 
     /**
-     * Assigns behavior from devices.
+     * Assigns behavior from devices and deletes unused behaviors.
      */
     void unassignBehavior(int behaviorId, BehaviorType type, List<Integer> deviceIds);
     
     /**
-     * Assigns behavior to devices.
+     * Assigns behavior to devices and deletes unused behaviors..
      */
     void assignBehavior(int behaviorId, BehaviorType type, List<Integer> deviceIds);
 

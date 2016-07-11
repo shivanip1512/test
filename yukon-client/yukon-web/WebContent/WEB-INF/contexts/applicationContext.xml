@@ -1257,4 +1257,6 @@
     <bean class="com.cannontech.web.support.systemMetrics.criteria.GatewayDataQueueSizeCriteria"/>
     <bean class="com.cannontech.web.support.systemMetrics.criteria.GatewayDataRequestQueueSizeCriteria"/>
     <bean class="com.cannontech.web.support.systemMetrics.criteria.GatewayArchiveRequestQueueSizeCriteria"/>
+    
+    <bean class="com.cannontech.web.rfn.dataStreaming.service.impl.DataStreamingServiceImpl"/>
 </beans>

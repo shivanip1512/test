@@ -73,18 +73,18 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     
     
     @Override
-    public void assignDataStreamingConfig(int configId, BehaviorType type, List<Integer> deviceIds) {
+    public void assignDataStreamingConfig(int configId, List<Integer> deviceIds) {
         //TODO
         //Send notification message to NM for the pending configuration change
           //If NM rejects/errors, abort the operation
         //Update behavior assignment for devices based on id
-        deviceBehaviorDao.assignBehavior(configId, type, deviceIds);
+        deviceBehaviorDao.assignBehavior(configId, BehaviorType.DATA_STREAMING, deviceIds);
         //Send configs via porter //DataStreamingPorterConnection.sendConfiguration(...)
         //return an identifier for getting results of this operation (sendConfiguration will return this id)
     }
     
     @Override
-    public void unassignDataStreamingConfig(int configId, BehaviorType type, List<Integer> deviceIds) {
+    public void unassignDataStreamingConfig(int configId, List<Integer> deviceIds) {
         //TODO
         //Send notification message to NM for the pending configuration change
           //If NM rejects/errors, abort the operation
@@ -92,7 +92,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         //Check for existing identical behavior
           //otherwise insert new behavior
         //Update behavior assignment for devices
-        deviceBehaviorDao.unassignBehavior(configId, type, deviceIds);
+        deviceBehaviorDao.unassignBehavior(configId, BehaviorType.DATA_STREAMING, deviceIds);
         //Send configs via porter //DataStreamingPorterConnection.sendConfiguration(...)
         //return an identifier for getting results of this operation (sendConfiguration will return this id)
     }
