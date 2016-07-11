@@ -32,6 +32,7 @@ import com.cannontech.core.authentication.service.PasswordEncrypter;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -333,5 +334,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         STATIC,
         INCREMENTAL,
         ;
+    }
+
+    @Override
+    public void setForceResetForUser(LiteYukonUser user, YNBoolean isForceReset) {
+        yukonUserPasswordDao.setForceResetForUser(user, isForceReset);
     }
 }
