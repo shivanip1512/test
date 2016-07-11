@@ -193,13 +193,15 @@ public class UserEditorController {
         boolean isOldPasswordRequired = true;
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
         AuthenticationCategory authCategory = userAuthenticationInfo.getAuthenticationCategory();
-        if(authCategory.equals(AuthenticationCategory.ENCRYPTED) && userContext.getYukonUser().getUserID()!=userId){
+        if (authCategory.equals(AuthenticationCategory.ENCRYPTED) && userContext.getYukonUser().getUserID() != userId) {
             isOldPasswordRequired = false;
         }
-        if(isOldPasswordRequired){
-            boolean isValidPassword = authService.validateOldPassword(yukonUser.getUsername(), password.getOldPassword());
+        if (isOldPasswordRequired) {
+            boolean isValidPassword =
+                authService.validateOldPassword(yukonUser.getUsername(), password.getOldPassword());
             if (!isValidPassword) {
-                flash.setMessage(new YukonMessageSourceResolvable(key + "incorrectPassword"), FlashScopeMessageType.ERROR);
+                flash.setMessage(new YukonMessageSourceResolvable(key + "incorrectPassword"),
+                    FlashScopeMessageType.ERROR);
                 return null;
             }
 
@@ -219,7 +221,7 @@ public class UserEditorController {
         }
         
         authService.setPassword(yukonUser, password.getPassword());
-        if(!isOldPasswordRequired){
+        if (!isOldPasswordRequired) {
             authService.setForceResetForUser(yukonUser, YNBoolean.YES);
         }
         flash.setConfirm(new YukonMessageSourceResolvable(key + "passwordUpdateSuccessful"));
