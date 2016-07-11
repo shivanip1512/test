@@ -91,6 +91,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_PHASE_A">Current (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_PHASE_B">Current (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_PHASE_C">Current (Phase C)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CURRENT_ANGLE">Current Angle</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_ANGLE_PHASE_A">Current Angle (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_ANGLE_PHASE_B">Current Angle (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_ANGLE_PHASE_C">Current Angle (Phase C)</entry>

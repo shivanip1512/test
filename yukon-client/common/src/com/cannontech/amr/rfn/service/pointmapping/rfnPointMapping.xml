@@ -4244,7 +4244,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Voltage Phase A">
+        <point name="Voltage">
             <uom>V</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4252,7 +4252,7 @@
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Avg Voltage Phase A">
+        <point name="Avg Voltage">
             <uom>V</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4261,7 +4261,7 @@
                 <modifier>Avg</modifier>
             </modifiers>
         </point>
-        <point name="Min Voltage Phase A">
+        <point name="Min Voltage">
             <uom>V</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4270,7 +4270,7 @@
                 <modifier>Min</modifier>
             </modifiers>
         </point>
-        <point name="Max Voltage Phase A">
+        <point name="Max Voltage">
             <uom>V</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4279,7 +4279,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Current Phase A">
+        <point name="Current">
             <uom>A</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4287,7 +4287,7 @@
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Current Angle Phase A">
+        <point name="Current Angle">
             <uom>A degree</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4295,7 +4295,7 @@
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Power Factor Degrees Phase A">
+        <point name="Power Factor Degrees">
             <uom>PF degree</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

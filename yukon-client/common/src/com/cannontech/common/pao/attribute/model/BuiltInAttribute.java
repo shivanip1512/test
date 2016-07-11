@@ -33,6 +33,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     CURRENT_PHASE_A("Current (Phase A)", AttributeGroup.CURRENT),
     CURRENT_PHASE_B("Current (Phase B)", AttributeGroup.CURRENT),
     CURRENT_PHASE_C("Current (Phase C)", AttributeGroup.CURRENT),
+    CURRENT_ANGLE("Current Angle", AttributeGroup.CURRENT, false),   
     CURRENT_ANGLE_PHASE_A("Current Angle (Phase A)", AttributeGroup.CURRENT, false),   //440 types only
     CURRENT_ANGLE_PHASE_B("Current Angle (Phase B)", AttributeGroup.CURRENT, false),   //440 types only
     CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)", AttributeGroup.CURRENT, false),   //440 types only

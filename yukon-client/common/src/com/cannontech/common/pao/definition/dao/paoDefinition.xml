@@ -10043,6 +10043,12 @@
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="4" />
             </point>
+            <point type="Analog" offset="226">
+                <name>Current Angle</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="4" />
+            </point>
         </points>
         <attributes>
             <attribute name="VOLTAGE">
@@ -10056,6 +10062,9 @@
             </attribute>
             <attribute name="CURRENT">
                 <basicLookup point="Current"/>
+            </attribute>
+            <attribute name="CURRENT_ANGLE">
+                <basicLookup point="Current Angle"/>
             </attribute>
         </attributes>
     </pao>
