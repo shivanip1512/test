@@ -41,6 +41,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -189,11 +190,21 @@ public class UserEditorController {
             FlashScope flash, @PathVariable int userId, @ModelAttribute Password password, BindingResult result) {
         
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
-        boolean isValidPassword = authService.validateOldPassword(yukonUser.getUsername(), password.getOldPassword());
-        if (!isValidPassword) {
-            flash.setMessage(new YukonMessageSourceResolvable(key + "incorrectPassword"), FlashScopeMessageType.ERROR);
-            return null;
+        boolean isOldPasswordRequired = true;
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
+        AuthenticationCategory authCategory = userAuthenticationInfo.getAuthenticationCategory();
+        if(authCategory.equals(AuthenticationCategory.ENCRYPTED) && userContext.getYukonUser().getUserID()!=userId){
+            isOldPasswordRequired = false;
         }
+        if(isOldPasswordRequired){
+            boolean isValidPassword = authService.validateOldPassword(yukonUser.getUsername(), password.getOldPassword());
+            if (!isValidPassword) {
+                flash.setMessage(new YukonMessageSourceResolvable(key + "incorrectPassword"), FlashScopeMessageType.ERROR);
+                return null;
+            }
+
+        }
+
         PasswordValidator validator = new PasswordValidator(yukonUser, "password", "confirmPassword");
         validator.validate(password, result);
         
@@ -208,6 +219,9 @@ public class UserEditorController {
         }
         
         authService.setPassword(yukonUser, password.getPassword());
+        if(!isOldPasswordRequired){
+            authService.setForceResetForUser(yukonUser, YNBoolean.YES);
+        }
         flash.setConfirm(new YukonMessageSourceResolvable(key + "passwordUpdateSuccessful"));
         
         resp.setStatus(HttpStatus.NO_CONTENT.value());
@@ -220,8 +234,13 @@ public class UserEditorController {
     }
 
     @RequestMapping(value = "users/{userId}/change-password", method = RequestMethod.GET)
-    public String changePassword(ModelMap model, @PathVariable int userId) {
+    public String changePassword(ModelMap model, @PathVariable int userId, LiteYukonUser user) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
+        AuthenticationCategory authCategory = userAuthenticationInfo.getAuthenticationCategory();
+        if(authCategory.equals(AuthenticationCategory.ENCRYPTED) && user.getUserID()!=userId){
+            model.addAttribute("otherUser","true");
+        }
         Password password = new Password();
         model.addAttribute("password", password);
         model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(yukonUser));
