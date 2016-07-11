@@ -13,7 +13,7 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
             <div class="page-action-area">
-                <cti:button nameKey="remove" type="submit" name="removeButton" value="${unassign}" classes="primary action" busy="true"/>
+                <cti:button nameKey="remove" type="submit" name="removeButton" value="${unassign}" classes="primary action"/>
             </div>
         </form>
             

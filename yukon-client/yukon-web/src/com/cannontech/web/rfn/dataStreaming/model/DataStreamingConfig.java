@@ -99,4 +99,12 @@ public class DataStreamingConfig {
     public void addAttribute(DataStreamingAttribute attribute) {
         attributes.add(attribute);
     }
+    
+    public MessageSourceAccessor getAccessor() {
+        return accessor;
+    }
+
+    public void setAccessor(MessageSourceAccessor accessor) {
+        this.accessor = accessor;
+    }
 }

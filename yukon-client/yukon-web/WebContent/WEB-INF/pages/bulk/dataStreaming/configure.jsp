@@ -6,6 +6,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="tools" page="bulk.dataStreaming.configure">
+
+    <div class="dn js-none-selected warning">
+        <i:inline key=".noneSelected"/>
+    </div>
+
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.dataStreaming.configure" deviceCollection="${deviceCollection}">
         <div class="page-action-area">
             <cti:url var="assignUrl"  value="/bulk/dataStreaming/configure" />
@@ -17,7 +22,7 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".configurationType">
                          <tags:switchButton path="newConfiguration" offNameKey=".existingConfiguration" onNameKey=".newConfiguration" classes="js-configuration-type" color="false"
-                         toggleGroup="existingConfiguration" toggleAction="hide" toggleInverse="true"/>
+                         toggleGroup="existingConfiguration" toggleAction="hide" toggleInverse="true" checked="${config.newConfiguration}"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".configuration" data-toggle-group="existingConfiguration">
                         <tags:selectWithItems id="selectedConfiguration" path="selectedConfiguration" items="${existingConfigs}" itemValue="id" itemLabel="name" onchange="showSelectedConfiguration(this);" defaultItemValue="0" defaultItemLabel="Please select"/>
@@ -71,7 +76,7 @@
                 </tags:nameValueContainer2>
         
                 <div class="page-action-area">
-                    <cti:button nameKey="next" type="submit" name="nextButton" classes="primary action" busy="true"/>
+                    <cti:button nameKey="next" name="nextButton" classes="primary action js-next-button"/>
                 </div>
             </form:form>
         </div>

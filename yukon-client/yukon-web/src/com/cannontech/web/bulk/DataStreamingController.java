@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -45,7 +44,7 @@ public class DataStreamingController {
     public String configure(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("deviceCollection", deviceCollection);
-        
+
         DataStreamingConfig newConfig = new DataStreamingConfig(accessor);
         attributes.forEach(a -> {
             DataStreamingAttribute attribute = new DataStreamingAttribute();
@@ -53,11 +52,15 @@ public class DataStreamingController {
             newConfig.addAttribute(attribute);
         });
         
+        List<DataStreamingConfig> existingConfigs = dataStreamingService.getAllDataStreamingConfigurations();
+        existingConfigs.forEach(config -> config.setAccessor(accessor));
+        model.addAttribute("existingConfigs", existingConfigs);
+        
+        if (existingConfigs.size() == 0) {
+            newConfig.setNewConfiguration(true);
+        }
         model.addAttribute("configuration", newConfig);
         model.addAttribute("intervals", intervals);
-        List<DataStreamingConfig> existingConfigs = new ArrayList<>();
-        
-        model.addAttribute("existingConfigs", existingConfigs);
 
         return "dataStreaming/configure.jsp";
     }
@@ -67,23 +70,20 @@ public class DataStreamingController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         
-        Behavior behavior = new Behavior();
-        int behaviorId = 0;
+        int configId = 0;
         
         if (configuration.isNewConfiguration()) {
-            behaviorId = dataStreamingService.saveConfig(configuration);
-            behavior.setId(behaviorId);
+            configuration.getAttributes().forEach(attribute -> attribute.setInterval(configuration.getSelectedInterval()));
+            configId = dataStreamingService.saveConfig(configuration);
+            configuration.setId(configId);
         } else {
-            behaviorId = configuration.getSelectedConfiguration();
-           // behavior = dataStreamingService.findDataStreamingConfigurationForDevice((behaviorId);
+            configId = configuration.getSelectedConfiguration();
         }
         
-        model.addAttribute("behavior", behavior);
         model.addAttribute("configuration", configuration);
-        model.addAttribute("remove", false);
         
         List<Integer> deviceIds = new ArrayList<>();
-        deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
+        deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));     
         
     //    VerificationInfo verifyInfo = deviceBehaviorService.verify(behavior, deviceIds);
      //   model.addAttribute("verificationInfo", verifyInfo);
@@ -103,12 +103,11 @@ public class DataStreamingController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         
-        Behavior behavior = new Behavior();
-        model.addAttribute("behavior", behavior);
-        model.addAttribute("remove", true);
-        
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
+        
+        model.addAttribute("configuration", new DataStreamingConfig());
+
        // VerificationInfo verifyInfo = deviceBehaviorService.verify(behavior, deviceIds);
        // model.addAttribute("verificationInfo", verifyInfo);
 
@@ -116,19 +115,19 @@ public class DataStreamingController {
     }
     
     @RequestMapping(value="verification", method=RequestMethod.POST)
-    public String verificationSubmit(@ModelAttribute("behavior") Behavior behavior, ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
+    public String verificationSubmit(@ModelAttribute("configuration") DataStreamingConfig configuration, ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
-        int behaviorId = behavior.getId();
+        int configId = configuration.getId();
         
-        if (behaviorId > 0) {
-            dataStreamingService.assignDataStreamingConfig(behaviorId, BehaviorType.DATA_STREAMING, deviceIds);
+        if (configId > 0) {
+            dataStreamingService.assignDataStreamingConfig(configId, BehaviorType.DATA_STREAMING, deviceIds);
         } else {
-            dataStreamingService.unassignDataStreamingConfig(behaviorId, BehaviorType.DATA_STREAMING, deviceIds);
+            dataStreamingService.unassignDataStreamingConfig(configId, BehaviorType.DATA_STREAMING, deviceIds);
         }
 
         //TODO: display results page

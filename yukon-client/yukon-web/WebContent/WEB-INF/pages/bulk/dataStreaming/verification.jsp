@@ -9,7 +9,7 @@
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.dataStreaming.verification" deviceCollection="${deviceCollection}">
         <div class="page-action-area">
             <cti:url var="assignUrl"  value="/bulk/dataStreaming/verification" />
-            <form:form id="configureForm" method="post" commandName="behavior" action="${assignUrl}">
+            <form:form id="configureForm" method="post" commandName="configuration" action="${assignUrl}">
                 <cti:csrfToken/>
                 <form:hidden path="id" />
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
@@ -17,8 +17,8 @@
                 <i:inline key=".message"/>
                 
                 <div class="page-action-area">
-                    <cti:button nameKey="back" href="javascript:window.history.back()" name="backButton" classes="action" busy="true"/>
-                    <cti:button nameKey="send" type="submit" name="sendButton" classes="primary action" busy="true"/>
+                    <cti:button nameKey="back" href="javascript:window.history.back()" name="backButton" classes="action" />
+                    <cti:button nameKey="send" type="submit" name="sendButton" classes="primary action" />
                 </div>
             </form:form>
         </div>
