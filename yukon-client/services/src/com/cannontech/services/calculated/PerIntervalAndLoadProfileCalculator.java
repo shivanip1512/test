@@ -1,8 +1,10 @@
 package com.cannontech.services.calculated;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
 
@@ -101,6 +103,13 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         PaoIdentifier pao = data.getPaoPointValue().getPaoIdentifier();
         PointValueQualityHolder pvqh = data.getPaoPointValue().getPointValueQualityHolder();
         Date timestamp = pvqh.getPointDataTimeStamp();
+        final TimeZone timeZone = TimeZone.getDefault();
+        ZonedDateTime zoneDateTime = ZonedDateTime.ofInstant(timestamp.toInstant(), timeZone.toZoneId());
+        boolean isInDayLightTime = timeZone.inDaylightTime(timestamp);
+        if (isInOverlap(zoneDateTime) && !isInDayLightTime) {
+            log.info("Discarding duplicate pointdata for device " + pao.getPaoId() + " : " + pointData);
+        }
+
         CacheKey currentKey = CacheKey.of(pvqh.getId(), timestamp.getTime());
         CacheValue currentValue = recentReadings.getIfPresent(currentKey);
         
@@ -257,6 +266,15 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
             }
         }
         return point;
+    }
+
+    /**
+     * Check whether the zoneDateTime present in overlap duration in DST fall-back transition.
+     */
+    private boolean isInOverlap(ZonedDateTime zoneDateTime) {
+        ZonedDateTime zdtWithErOffset = zoneDateTime.withEarlierOffsetAtOverlap();
+        ZonedDateTime zdtWithLaOffset = zoneDateTime.withLaterOffsetAtOverlap();
+        return zdtWithErOffset.getOffset() != zdtWithLaOffset.getOffset();
     }
     
     @PostConstruct
