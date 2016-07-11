@@ -6,6 +6,7 @@ import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -140,4 +141,10 @@ public interface AuthenticationService {
      * Returns true if the old Password entered is correct else returns false.
      */
     boolean validateOldPassword(String username, String password);
+    
+    /**
+     * This method set forceReset for a given user so that user is asked to reset his password once he logs in
+     * on change password
+     */
+    void setForceResetForUser(LiteYukonUser user, YNBoolean isForceReset);
 }

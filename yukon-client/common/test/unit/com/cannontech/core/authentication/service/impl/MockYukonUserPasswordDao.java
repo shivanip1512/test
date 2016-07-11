@@ -2,6 +2,7 @@ package com.cannontech.core.authentication.service.impl;
 
 import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 final class MockYukonUserPasswordDao implements YukonUserPasswordDao {
@@ -29,5 +30,10 @@ final class MockYukonUserPasswordDao implements YukonUserPasswordDao {
 
     @Override
     public void setAuthType(LiteYukonUser user, AuthType authType) {
+    }
+
+    @Override
+    public void setForceResetForUser(LiteYukonUser user, YNBoolean isForceReset) {
+        
     }
 }

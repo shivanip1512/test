@@ -2,9 +2,11 @@ package com.cannontech.support.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,6 +18,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
+//import org.apache.commons.net.ftp.FTPClient;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -40,7 +43,7 @@ public class SupportBundleServiceImpl implements SupportBundleService {
     private static final int PAST_BUNDLES_TO_KEEP = 5; // -1 to never delete old bundles
     private static final String DEFAULT_FTP_USER = "yukwrite";
     private static final String DEFAULT_FTP_PASSWORD = "P4ssw0rd";
-    private static final String DEFAULT_FTP_HOST = "sftp.cooperpowereas.net";
+    private static final String DEFAULT_FTP_HOST = "ftp.etn.com";
 
     private ConfigurationSource configurationSource;
     private Executor executor;
@@ -97,9 +100,12 @@ public class SupportBundleServiceImpl implements SupportBundleService {
                     for (SupportBundleWriter writer : writerList) {
                         if (!writer.isOptional()
                                     || optionalWritersToInclude.contains(writer.getName())) {
+                            if(!writer.getName().equalsIgnoreCase("storedProcedureLogTableCsvSource")){
+
                             writer.addToZip(zipWriter, start, stop.toInstant().plus(halfHour));
                             writersDoneMap.put(writer.getName(), true);
                             log.info("Support Bundle - Added Writer: '" + writer.getName() + "'");
+                            }
                         }
                     }
                     zipWriter.close();
@@ -208,7 +214,7 @@ public class SupportBundleServiceImpl implements SupportBundleService {
 
     @Override
     public Status uploadViaSftp(File file) {
-        String ftpUser = configurationSource.getString(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_USER,
+/*        String ftpUser = configurationSource.getString(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_USER,
                                                        DEFAULT_FTP_USER);
         String ftpPassword = configurationSource.getString(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD,
                                                            DEFAULT_FTP_PASSWORD);
@@ -216,9 +222,40 @@ public class SupportBundleServiceImpl implements SupportBundleService {
                                                        DEFAULT_FTP_HOST);
         SftpWriter ftp = new SftpWriter(ftpUser, ftpPassword, ftpHost);
         Status ftpStatus = ftp.sendFile(file);
-        return ftpStatus;
+*/        
+        uploadToFtp(file);
+        
+        return null;
     }
 
+    private boolean uploadToFtp(File file){
+        return false;/*
+        FTPClient client = new FTPClient();
+        FileInputStream fis = null;
+        boolean uploaded = false;
+
+        try {
+            client.connect("ftp.etn.com");
+            client.login("anonymous", "anonymous");
+
+            String filename = "pub/outgoing/test1.zip";
+            fis = new FileInputStream(file);
+            //fis = new FileInputStream("C:/Users/e9987213/Desktop/test1.txt");
+
+            uploaded = client.storeFile(filename, fis);
+            System.out.println("File uploaded == " + uploaded);
+            client.logout();
+
+        } catch (SocketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return uploaded;
+    */
+        }
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;

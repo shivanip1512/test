@@ -2,6 +2,7 @@ package com.cannontech.core.authentication.dao;
 
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -38,4 +39,10 @@ public interface YukonUserPasswordDao {
      * This method should ONLY be used for authentication types that don't support passwords.}
      */
     void setAuthType(LiteYukonUser user, AuthType authType);
+    
+    /**
+     * This method set forceReset for a given user so that user is asked to reset his password once he logs in
+     * on change password
+     */
+    void setForceResetForUser(LiteYukonUser user, YNBoolean isForceReset);
 }

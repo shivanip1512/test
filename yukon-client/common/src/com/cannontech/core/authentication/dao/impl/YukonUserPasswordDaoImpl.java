@@ -57,4 +57,12 @@ public class YukonUserPasswordDaoImpl implements YukonUserPasswordDao {
         sql.append("WHERE UserId").eq(user.getUserID());
         jdbcTemplate.update(sql);
     }
+
+    @Override
+    public void setForceResetForUser(LiteYukonUser user, YNBoolean forceReset) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE YukonUser").set("ForceReset", forceReset);
+        sql.append("WHERE UserId").eq(user.getUserID());
+        jdbcTemplate.update(sql);
+    }
 }

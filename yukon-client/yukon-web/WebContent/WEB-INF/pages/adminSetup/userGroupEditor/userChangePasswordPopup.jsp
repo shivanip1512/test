@@ -15,9 +15,11 @@
                 <cti:csrfToken />
                 <input type="hidden" name="userId" value="${userId}">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".oldPassword">
-                        <tags:password path="oldPassword" autocomplete="off" />
-                    </tags:nameValue2>
+                    <c:if test="${!otherUser}">
+                        <tags:nameValue2 nameKey=".oldPassword">
+                            <tags:password path="oldPassword" autocomplete="off" />
+                        </tags:nameValue2>
+                    </c:if>
                     <tags:nameValue2 nameKey=".newPassword">
                         <tags:password path="password" cssClass="js-new-password" autocomplete="off" />
                     </tags:nameValue2>
