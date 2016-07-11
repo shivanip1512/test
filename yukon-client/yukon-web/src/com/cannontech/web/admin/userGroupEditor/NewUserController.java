@@ -105,12 +105,9 @@ public class NewUserController {
             
             return "userGroupEditor/new-user.jsp";
         }
-        LiteYukonUser lyu;
-        if (user.getAuthCategory() != AuthenticationCategory.ENCRYPTED) {
-            lyu = userDao.create(user, false);
-        } else {
-            lyu = userDao.create(user, true);
-        }
+        // Force reset only when Yukon is managing the password
+        boolean forceReset = user.getAuthCategory() == AuthenticationCategory.ENCRYPTED;
+        LiteYukonUser lyu = userDao.create(user, forceReset);
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
         result.put("userId", lyu.getUserID());
