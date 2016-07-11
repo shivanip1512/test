@@ -241,7 +241,7 @@ public class UserEditorController {
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
         AuthenticationCategory authCategory = userAuthenticationInfo.getAuthenticationCategory();
         if(authCategory.equals(AuthenticationCategory.ENCRYPTED) && user.getUserID()!=userId){
-            model.addAttribute("otherUser","true");
+            model.addAttribute("otherUser",true);
         }
         Password password = new Password();
         model.addAttribute("password", password);
