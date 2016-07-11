@@ -15,36 +15,48 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorType;
-import com.cannontech.common.device.streaming.service.DeviceBehaviorService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
-import com.cannontech.web.rfn.dataStreaming.model.DataStreamingHelper;
+import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.ImmutableList;
 
 @Controller
 @RequestMapping("/dataStreaming/*")
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
 public class DataStreamingController {
 
-    @Autowired private DeviceBehaviorDao deviceBehaviorDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
-    @Autowired private DeviceBehaviorService deviceBehaviorService;
+    @Autowired private DataStreamingService dataStreamingService;
+    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
+    private static final List<BuiltInAttribute> attributes = ImmutableList.of(BuiltInAttribute.KVAR,
+        BuiltInAttribute.DEMAND, BuiltInAttribute.DELIVERED_KWH, BuiltInAttribute.RECEIVED_KWH);
     
     @RequestMapping("configure")
     public String configure(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("deviceCollection", deviceCollection);
         
-        DataStreamingConfig newConfig = new DataStreamingConfig();
-        DataStreamingHelper.addAllAttributesToConfig(newConfig);
+        DataStreamingConfig newConfig = new DataStreamingConfig(accessor);
+        attributes.forEach(a -> {
+            DataStreamingAttribute attribute = new DataStreamingAttribute();
+            attribute.setAttribute(a);
+            newConfig.addAttribute(attribute);
+        });
+        
         model.addAttribute("configuration", newConfig);
-        model.addAttribute("intervals", DataStreamingHelper.getAllIntervals());
+        model.addAttribute("intervals", intervals);
         List<DataStreamingConfig> existingConfigs = new ArrayList<>();
-        List<Behavior> existingBehaviors = deviceBehaviorDao.getBehaviorsByType(BehaviorType.DATA_STREAMING);
-        existingBehaviors.forEach(behavior->existingConfigs.add(DataStreamingHelper.convertBehaviorToConfig(behavior)));
+        
         model.addAttribute("existingConfigs", existingConfigs);
 
         return "dataStreaming/configure.jsp";
@@ -59,12 +71,11 @@ public class DataStreamingController {
         int behaviorId = 0;
         
         if (configuration.isNewConfiguration()) {
-            behavior = DataStreamingHelper.convertConfigToBehavior(configuration);
-            behaviorId = deviceBehaviorDao.saveBehavior(behavior);
+            behaviorId = dataStreamingService.saveConfig(configuration);
             behavior.setId(behaviorId);
         } else {
             behaviorId = configuration.getSelectedConfiguration();
-            behavior = deviceBehaviorDao.getBehaviorById(behaviorId);
+           // behavior = dataStreamingService.findDataStreamingConfigurationForDevice((behaviorId);
         }
         
         model.addAttribute("behavior", behavior);
@@ -115,9 +126,9 @@ public class DataStreamingController {
         int behaviorId = behavior.getId();
         
         if (behaviorId > 0) {
-            deviceBehaviorService.assignBehavior(behaviorId, BehaviorType.DATA_STREAMING, deviceIds);
+            dataStreamingService.assignDataStreamingConfig(behaviorId, BehaviorType.DATA_STREAMING, deviceIds);
         } else {
-            deviceBehaviorService.unassignBehavior(behaviorId, BehaviorType.DATA_STREAMING, deviceIds);
+            dataStreamingService.unassignDataStreamingConfig(behaviorId, BehaviorType.DATA_STREAMING, deviceIds);
         }
 
         //TODO: display results page

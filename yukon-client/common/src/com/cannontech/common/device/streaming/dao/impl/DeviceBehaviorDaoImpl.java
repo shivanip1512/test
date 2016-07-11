@@ -214,9 +214,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         return jdbcTemplate.query(sql, new YukonRowMapper<BehaviorValue>() {
             @Override
             public BehaviorValue mapRow(YukonResultSet rs) throws SQLException {
-                BehaviorValue value = new BehaviorValue();
-                value.setName(rs.getString("Name"));
-                value.setValue(rs.getString("Value"));
+                BehaviorValue value = new BehaviorValue(rs.getString("Name"), rs.getString("Value"));
                 return value;
             }
         });

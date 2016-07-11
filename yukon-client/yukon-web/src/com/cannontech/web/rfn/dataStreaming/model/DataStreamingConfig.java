@@ -3,14 +3,28 @@ package com.cannontech.web.rfn.dataStreaming.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
+
 public class DataStreamingConfig {
+    
+    private static final String nameKey= "yukon.web.modules.tools.bulk.dataStreaming.configuration.name";
+    
     private int id;
     private boolean newConfiguration;
     private int selectedInterval;
     private int selectedConfiguration;
     private String name;
     private List<DataStreamingAttribute> attributes = new ArrayList<>();
+    private MessageSourceAccessor accessor;
 
+    public DataStreamingConfig() {
+
+    }
+
+    public DataStreamingConfig(MessageSourceAccessor accessor) {
+        this.accessor = accessor;
+    }
+    
     public boolean isNewConfiguration() {
         return newConfiguration;
     }
@@ -34,39 +48,36 @@ public class DataStreamingConfig {
     public void setSelectedConfiguration(int selectedConfiguration) {
         this.selectedConfiguration = selectedConfiguration;
     }
-
+    
+    /**
+     * Returns name
+     * 
+     * kVar - 10 minutes
+     * kVar, Demand - 10 minutes
+     * kVar - 20 minutes
+     * Demand - 30 minutes
+     * kVar, Demand and 2 others - 10 minutes
+     * 
+     * 
+     * If there are 1 or 2 attributes list the attributes (comma separated) followed by – and interval
+     * If there are more than 2 attributes, display the first 2 attributes followed by ‘and # others’ followed by –
+     * and interval
+     * 
+     */
     public String getName() {
-        StringBuffer configName = new StringBuffer();
-        int interval = 0;
-        int count = 1;
-        for (DataStreamingAttribute att : getAttributes()) {
-            if (count > 2) {
-                int totalCount = getAttributes().size();
-                int countLeft = totalCount - count + 1;
-                configName.append(" and " + countLeft + " other");
-                if (countLeft > 1) {
-                    configName.append("s");
-                }
-                break;
+        if (accessor != null && attributes.size() > 0) {
+            if (attributes.size() == 1) {
+                String attrName = accessor.getMessage(attributes.get(0).getAttribute());
+                int interval = attributes.get(0).getInterval();
+                name = accessor.getMessage(nameKey, attrName, 0, interval);
+            } else {
+                String attrName1 = accessor.getMessage(attributes.get(0).getAttribute());
+                int interval1 = attributes.get(0).getInterval();
+                String attrName2 = accessor.getMessage(attributes.get(1).getAttribute());
+                name = accessor.getMessage(nameKey, attrName1 + ", " + attrName2, attributes.size() - 2, interval1);
             }
-            if (count > 1) {
-                configName.append(", ");
-            }
-            configName.append(att.getAttribute().getDescription());
-            
-            interval = att.getInterval();
-            count++;
         }
-        configName.append(" - " + interval + " minute");
-        if (interval > 1) {
-            configName.append("s");
-        }
-        name = configName.toString();
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public int getId() {
@@ -83,5 +94,9 @@ public class DataStreamingConfig {
 
     public void setAttributes(List<DataStreamingAttribute> attributes) {
         this.attributes = attributes;
+    }
+    
+    public void addAttribute(DataStreamingAttribute attribute) {
+        attributes.add(attribute);
     }
 }

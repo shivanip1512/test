@@ -224,4 +224,6 @@
     <bean class="com.cannontech.common.device.streaming.dao.impl.DeviceBehaviorDaoImpl"/>
     
     <bean class="com.cannontech.common.device.streaming.service.impl.DeviceBehaviorServiceImpl"/>
+    
+    <bean class="com.cannontech.web.rfn.dataStreaming.service.impl.DataStreamingServiceImpl"/>
 </beans>

@@ -1058,5 +1058,7 @@
     <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.failed">Failed</entry>
     <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.startTime">Start Time</entry>
     <entry key="yukon.web.modules.tools.bulk.demandReset.results.recent.notAttempted">Not Attempted</entry>
+    
+     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configuration.name"><![CDATA[{0}{1,choice,0#|1# and 1 other|1< and {1} others} - {2,choice, 1#1 minute|1<{2} minutes}.]]></entry>
       
 </properties>
