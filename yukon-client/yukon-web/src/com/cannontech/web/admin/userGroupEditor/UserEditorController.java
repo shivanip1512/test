@@ -82,8 +82,9 @@ public class UserEditorController {
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
         User user = new User(lyu, userAuthenticationInfo);
         setupModelMap(model, user, PageEditMode.VIEW, userContext);
-        if (userContext.getYukonUser().getLiteID() == userId)
+        if (userContext.getYukonUser().getLiteID() == userId) {
             isLoggedInUser = true;
+        }
         model.addAttribute("isLoggedInUser", isLoggedInUser);
         LiteYukonUser me = userContext.getYukonUser();
         boolean showPermissions = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, me);
