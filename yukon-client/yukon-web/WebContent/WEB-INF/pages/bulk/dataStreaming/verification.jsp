@@ -9,10 +9,22 @@
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.dataStreaming.verification" deviceCollection="${deviceCollection}">
         <div class="page-action-area">
             <cti:url var="assignUrl"  value="/bulk/dataStreaming/verification" />
-            <form:form id="configureForm" method="post" commandName="configuration" action="${assignUrl}">
+            <form:form id="configureForm" method="post" commandName="verificationInfo" action="${assignUrl}">
                 <cti:csrfToken/>
-                <form:hidden path="id" />
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                <form:hidden path="configuration.id" />
+                <c:forEach var="deviceUnsupported" varStatus="status" items="${verificationInfo.deviceUnsupported}">
+                    <div class="user-message warning">${deviceUnsupported.detail}<tags:selectedDevicesPopup deviceCollection="${deviceUnsupported.deviceCollection}"/></div>
+                </c:forEach>
+                
+                <c:forEach var="gateway" varStatus="status" items="${verificationInfo.gatewayLoadingInfo}">
+                    <c:set var="msgType" value="success"/>
+                    <c:if test="${gateway.proposedPercent >= 100}">
+                        <c:set var="msgType" value="error"/>
+                    </c:if>
+                    <div class="user-message ${msgType}">${gateway.detail}</div>
+                </c:forEach>
+                
         
                 <i:inline key=".message"/>
                 
