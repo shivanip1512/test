@@ -210,6 +210,7 @@ public:
     static const Attribute  CurrentPhaseA;
     static const Attribute  CurrentPhaseB;
     static const Attribute  CurrentPhaseC;
+    static const Attribute  CurrentAngle;
     static const Attribute  CurrentAnglePhaseA;
     static const Attribute  CurrentAnglePhaseB;
     static const Attribute  CurrentAnglePhaseC;

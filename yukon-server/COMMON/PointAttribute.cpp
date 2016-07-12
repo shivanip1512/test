@@ -167,6 +167,7 @@ const Attribute Attribute::Current                                          = At
 const Attribute Attribute::CurrentPhaseA                                    = Attribute( "CURRENT_PHASE_A" );
 const Attribute Attribute::CurrentPhaseB                                    = Attribute( "CURRENT_PHASE_B" );
 const Attribute Attribute::CurrentPhaseC                                    = Attribute( "CURRENT_PHASE_C" );
+const Attribute Attribute::CurrentAngle                                     = Attribute( "CURRENT_ANGLE" );
 const Attribute Attribute::CurrentAnglePhaseA                               = Attribute( "CURRENT_ANGLE_PHASE_A" );
 const Attribute Attribute::CurrentAnglePhaseB                               = Attribute( "CURRENT_ANGLE_PHASE_B" );
 const Attribute Attribute::CurrentAnglePhaseC                               = Attribute( "CURRENT_ANGLE_PHASE_C" );
