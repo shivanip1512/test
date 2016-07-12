@@ -2970,7 +2970,7 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
         if( ! parse.isKeyValid("force")
             && dynTouEnabled == cfgTouEnabled
             && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable) == dayTable
-            && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate) == defaultTOURate
+            && (cfgTouEnabled == false || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate) == defaultTOURate)
             && dynDaySchedule1 == daySchedule1
             && dynDaySchedule2 == daySchedule2
             && dynDaySchedule3 == daySchedule3
@@ -2986,7 +2986,7 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
         OutMessage->Buffer.BSt.Function   = cfgTouEnabled ? Command_TOUEnable : Command_TOUDisable;
         OutMessage->Buffer.BSt.Length     = 0;
-        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
+        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Write;
 
         outList.push_back( new OUTMESS(*OutMessage) );
 
