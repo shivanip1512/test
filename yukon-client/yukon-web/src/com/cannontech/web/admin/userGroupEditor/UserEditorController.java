@@ -236,8 +236,8 @@ public class UserEditorController {
     @RequestMapping(value = "users/{userId}/change-password", method = RequestMethod.GET)
     public String changePassword(ModelMap model, @PathVariable int userId, LiteYukonUser user) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
-        if(user.getUserID()!=userId){
-            model.addAttribute("otherUser",true);
+        if (user.getUserID() != userId) {
+            model.addAttribute("otherUser", true);
         }
         Password password = new Password();
         model.addAttribute("password", password);
