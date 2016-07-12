@@ -167,6 +167,7 @@
         <boolean field="enableUnsolicitedMessagesClass1" default="true"/>
         <boolean field="enableUnsolicitedMessagesClass2" default="true"/>
         <boolean field="enableUnsolicitedMessagesClass3" default="true"/>
+		<boolean field="disableFailedScanUpdates" default="false"/>
     </category>
 
     <category type="demand">
