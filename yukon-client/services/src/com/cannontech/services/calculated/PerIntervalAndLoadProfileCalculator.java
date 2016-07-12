@@ -31,6 +31,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -103,11 +104,13 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         PaoIdentifier pao = data.getPaoPointValue().getPaoIdentifier();
         PointValueQualityHolder pvqh = data.getPaoPointValue().getPointValueQualityHolder();
         Date timestamp = pvqh.getPointDataTimeStamp();
-        final TimeZone timeZone = TimeZone.getDefault();
+        
+        final TimeZone timeZone = YukonUserContext.system.getTimeZone();
         ZonedDateTime zoneDateTime = ZonedDateTime.ofInstant(timestamp.toInstant(), timeZone.toZoneId());
-        boolean isInDayLightTime = timeZone.inDaylightTime(timestamp);
-        if (isInOverlap(zoneDateTime) && !isInDayLightTime) {
-            log.info("Discarding duplicate pointdata for device " + pao.getPaoId() + " : " + pointData);
+        boolean isInDaylightTime = timeZone.inDaylightTime(timestamp);
+        if (isInOverlap(zoneDateTime) && !isInDaylightTime) {
+            log.info("Interval and profile data calculations being skipped for " + timestamp + " for Id : "
+                + pao.getPaoId() + " : " + pointData);
         }
 
         CacheKey currentKey = CacheKey.of(pvqh.getId(), timestamp.getTime());
@@ -272,9 +275,9 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
      * Check whether the zoneDateTime present in overlap duration in DST fall-back transition.
      */
     private boolean isInOverlap(ZonedDateTime zoneDateTime) {
-        ZonedDateTime zdtWithErOffset = zoneDateTime.withEarlierOffsetAtOverlap();
-        ZonedDateTime zdtWithLaOffset = zoneDateTime.withLaterOffsetAtOverlap();
-        return zdtWithErOffset.getOffset() != zdtWithLaOffset.getOffset();
+        ZonedDateTime withEarlierOffset = zoneDateTime.withEarlierOffsetAtOverlap();
+        ZonedDateTime withLaterOffset = zoneDateTime.withLaterOffsetAtOverlap();
+        return withEarlierOffset.getOffset() != withLaterOffset.getOffset();
     }
     
     @PostConstruct
