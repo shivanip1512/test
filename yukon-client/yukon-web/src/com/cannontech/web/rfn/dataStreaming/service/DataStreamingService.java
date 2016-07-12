@@ -2,8 +2,8 @@ package com.cannontech.web.rfn.dataStreaming.service;
 
 import java.util.List;
 
-import com.cannontech.common.device.streaming.model.VerificationInfo;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 
 public interface DataStreamingService {
     
@@ -21,7 +21,7 @@ public interface DataStreamingService {
      * Requests Network Manager to simulate the effects of assigning the specified configuration to these devices.
      * @return VerificationInfo containing the results of the Network manager check.
      */
-    VerificationInfo verifyConfiguration(DataStreamingConfig config, List<Integer> deviceIds);
+    VerificationInformation verifyConfiguration(DataStreamingConfig config, List<Integer> deviceIds);
     
     /**
      * Assign an existing data streaming configuration to the devices.
@@ -40,7 +40,7 @@ public interface DataStreamingService {
      */
     void saveReportedConfig(DataStreamingConfig config, int deviceId);
 
-    VerificationInfo verifyConfiguration(int configId, List<Integer> deviceIds);
+    VerificationInformation verifyConfiguration(int configId, List<Integer> deviceIds);
 
     int saveConfig(DataStreamingConfig config);
 

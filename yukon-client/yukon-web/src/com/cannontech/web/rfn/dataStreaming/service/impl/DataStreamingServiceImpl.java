@@ -10,10 +10,10 @@ import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.device.streaming.model.BehaviorValue;
-import com.cannontech.common.device.streaming.model.VerificationInfo;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 
 public class DataStreamingServiceImpl implements DataStreamingService {
@@ -50,7 +50,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
-    public VerificationInfo verifyConfiguration(DataStreamingConfig config, List<Integer> deviceIds) {
+    public VerificationInformation verifyConfiguration(DataStreamingConfig config, List<Integer> deviceIds) {
         //TODO
         //Build verification message for NM
         //Send verification message
@@ -61,7 +61,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
-    public VerificationInfo verifyConfiguration(int configId, List<Integer> deviceIds) {
+    public VerificationInformation verifyConfiguration(int configId, List<Integer> deviceIds) {
         //TODO
         //Build verification message for NM
         //Send verification message
