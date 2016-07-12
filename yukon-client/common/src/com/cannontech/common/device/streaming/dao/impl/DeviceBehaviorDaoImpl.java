@@ -148,6 +148,33 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     }
 
     @Override
+    public Behavior getBehaviorByDeviceId(int deviceId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BehaviorId, BehaviorType");
+        sql.append("FROM Behavior");
+        sql.append("WHERE BehaviorId =");
+        sql.append("  (SELECT BehaviorId");
+        sql.append("   FROM DeviceBehaviorMap");
+        sql.append("   WHERE DeviceId").eq(deviceId);
+        sql.append("   )");
+
+        Behavior behavior = jdbcTemplate.queryForObject(sql, new YukonRowMapper<Behavior>() {
+            @Override
+            public Behavior mapRow(YukonResultSet rs) throws SQLException {
+                Behavior behavior = new Behavior();
+                behavior.setId(rs.getInt("BehaviorId"));
+                behavior.setType(rs.getEnum("BehaviorType", BehaviorType.class));
+                return behavior;
+            }
+        });
+
+        List<BehaviorValue> values = getBehaviorValuesByBehaviorId(behavior.getId());
+        behavior.setValues(values);
+        return behavior;
+    }
+    
+    @Override
     public Behavior getBehaviorById(int behaviorId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT BehaviorId, BehaviorType");

@@ -50,7 +50,8 @@ public class DataStreamingController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("deviceCollection", deviceCollection);
 
-        DataStreamingConfig newConfig = new DataStreamingConfig(accessor);
+        DataStreamingConfig newConfig = new DataStreamingConfig();
+        newConfig.setAccessor(accessor);
         attributes.forEach(a -> {
             DataStreamingAttribute attribute = new DataStreamingAttribute();
             attribute.setAttribute(a);
@@ -107,8 +108,6 @@ public class DataStreamingController {
         verifyInfo.getGatewayLoadingInfo().add(loading);
         
         model.addAttribute("verificationInfo", verifyInfo);
-    //    VerificationInfo verifyInfo = deviceBehaviorService.verify(behavior, deviceIds);
-     //   model.addAttribute("verificationInfo", verifyInfo);
 
         return "dataStreaming/verification.jsp";
     }
@@ -137,9 +136,6 @@ public class DataStreamingController {
         verifyInfo.getGatewayLoadingInfo().add(loading);
         
         model.addAttribute("verificationInfo", verifyInfo);
-
-       // VerificationInfo verifyInfo = deviceBehaviorService.verify(behavior, deviceIds);
-       // model.addAttribute("verificationInfo", verifyInfo);
 
         return "dataStreaming/verification.jsp";
     }

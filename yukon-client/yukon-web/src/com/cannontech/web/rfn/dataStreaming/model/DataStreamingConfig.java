@@ -16,14 +16,6 @@ public class DataStreamingConfig {
     private String name;
     private List<DataStreamingAttribute> attributes = new ArrayList<>();
     private MessageSourceAccessor accessor;
-
-    public DataStreamingConfig() {
-
-    }
-
-    public DataStreamingConfig(MessageSourceAccessor accessor) {
-        this.accessor = accessor;
-    }
     
     public boolean isNewConfiguration() {
         return newConfiguration;
@@ -100,10 +92,6 @@ public class DataStreamingConfig {
         attributes.add(attribute);
     }
     
-    public MessageSourceAccessor getAccessor() {
-        return accessor;
-    }
-
     public void setAccessor(MessageSourceAccessor accessor) {
         this.accessor = accessor;
     }

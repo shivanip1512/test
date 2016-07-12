@@ -55,4 +55,6 @@ public interface DeviceBehaviorDao {
      */
     void assignBehavior(int behaviorId, BehaviorType type, List<Integer> deviceIds);
 
+    Behavior getBehaviorByDeviceId(int deviceId);
+
 }

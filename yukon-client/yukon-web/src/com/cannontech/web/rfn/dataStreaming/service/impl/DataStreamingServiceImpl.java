@@ -32,7 +32,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     
     @Override
     public DataStreamingConfig findDataStreamingConfigurationForDevice(int deviceId) {
-       return null;
+        Behavior behavior = deviceBehaviorDao.getBehaviorByDeviceId(deviceId);
+        return convertBehaviorToConfig(behavior);
     }
     
     @Override
