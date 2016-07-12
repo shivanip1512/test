@@ -62,11 +62,8 @@ public class DeviceGroupUpdaterController {
         String error = ServletRequestUtils.getStringParameter(request, "error", null);
         boolean success = ServletRequestUtils.getBooleanParameter(request, "success", false);
         int deviceCount = ServletRequestUtils.getIntParameter(request, "deviceCount", 0);
-        // options checked included? pass along
-        Boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", true);
-        Boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", false);
+        Boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", true);
         model.addAttribute("ignoreInvalidHeaders", ignoreInvalidHeaders);
-        model.addAttribute("createGroups", createGroups);
         
         model.addAttribute("error", error);
         model.addAttribute("success", success);
