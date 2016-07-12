@@ -191,9 +191,7 @@ public class UserEditorController {
         
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         boolean isOldPasswordRequired = true;
-        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
-        AuthenticationCategory authCategory = userAuthenticationInfo.getAuthenticationCategory();
-        if (authCategory.equals(AuthenticationCategory.ENCRYPTED) && userContext.getYukonUser().getUserID() != userId) {
+        if (userContext.getYukonUser().getUserID() != userId) {
             isOldPasswordRequired = false;
         }
         if (isOldPasswordRequired) {
@@ -238,9 +236,7 @@ public class UserEditorController {
     @RequestMapping(value = "users/{userId}/change-password", method = RequestMethod.GET)
     public String changePassword(ModelMap model, @PathVariable int userId, LiteYukonUser user) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
-        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
-        AuthenticationCategory authCategory = userAuthenticationInfo.getAuthenticationCategory();
-        if(authCategory.equals(AuthenticationCategory.ENCRYPTED) && user.getUserID()!=userId){
+        if(user.getUserID()!=userId){
             model.addAttribute("otherUser",true);
         }
         Password password = new Password();
