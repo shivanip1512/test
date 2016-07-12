@@ -267,6 +267,8 @@
     <entry key="yukon.web.modules.tools.configs.category.dnp.enableUnsolicitedMessagesClass2.description">When true, allow sending of unsolicited class 2 messages following a device restart, else disallow. Default: true.</entry>
     <entry key="yukon.web.modules.tools.configs.category.dnp.enableUnsolicitedMessagesClass3">Enable Unsolicited Class 3 Messages</entry>
     <entry key="yukon.web.modules.tools.configs.category.dnp.enableUnsolicitedMessagesClass3.description">When true, allow sending of unsolicited class 3 messages following a device restart, else disallow. Default: true.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.disableFailedScanUpdates">Disable Failed Scan Updates</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.disableFailedScanUpdates.description">When true, prevents failed scans from setting device points to the non-updated state, else allowed. Default: false.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.demand.title">Demand</entry>
     <entry key="yukon.web.modules.tools.configs.category.demand.definition">General demand settings.</entry>
