@@ -25,7 +25,11 @@ public class DSTOverlapTest {
         Calendar cal = Calendar.getInstance(timeZone);
         cal.set(2016, 10, 6, 1, 10, 0);
         ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(cal.getTime().toInstant(), timeZone.toZoneId());
-        Assert.assertEquals(true, isInOverlap(zonedDateTime));
+        if (timeZone.useDaylightTime()) {
+            Assert.assertEquals(true, isInOverlap(zonedDateTime));
+        } else {
+            Assert.assertEquals(false, isInOverlap(zonedDateTime));
+        }
     }
 
     @Test
