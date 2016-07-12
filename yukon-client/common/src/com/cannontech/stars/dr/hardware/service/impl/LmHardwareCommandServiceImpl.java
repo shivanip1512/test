@@ -20,6 +20,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -248,7 +249,21 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Override
     public void sendShedLoadCommand(LmHardwareCommand command) throws CommandCompletionException {
         
+        verifyCanSendShed(command);
         sendCommand(command);
+    }
+    
+    /*
+     * Throws CommandCompletionException if shed command is not allowed for a device type.
+     */
+    private void verifyCanSendShed(LmHardwareCommand command) throws CommandCompletionException {
+        LiteLmHardwareBase lhb = command.getDevice();
+        InventoryIdentifier inventory = inventoryDao.getYukonInventory(lhb.getInventoryID());
+
+        if (inventory.getHardwareType().isZigbee() || inventory.getHardwareType().isEcobee() || inventory.getHardwareType()
+                                                                                                         .isSA()) {
+            throw new CommandCompletionException("Cannot send shed for " + inventory.getHardwareType());
+        }
     }
     
     private HardwareStrategyType getStrategy(HardwareType type) throws CommandCompletionException {
