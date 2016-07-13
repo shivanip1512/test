@@ -571,6 +571,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\DSM2ERR.H" />
     <ClInclude Include="include\Elogger.h" />
     <ClInclude Include="include\encryption.h" />
+    <ClInclude Include="include\error_helper.h" />
     <ClInclude Include="include\exception_helper.h" />
     <ClInclude Include="include\Exceptions.h" />
     <ClInclude Include="include\fileint.h" />

@@ -1,11 +1,8 @@
 #pragma once
 
-#include "cmd_helper.h"
 #include "cmd_rfn.h"
-#include <string>
-#include <sstream>
 
-#include <boost/scoped_ptr.hpp>
+#include "error_helper.h"
 
 namespace Cti {
 namespace Devices {

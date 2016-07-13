@@ -1,11 +1,10 @@
 #pragma once
 
 #include "dlldefs.h"
-#include "dev_rfn.h"
-#include "rfn_asid.h"
 #include "rfn_e2e_messenger.h"
-
-#include <boost/ptr_container/ptr_deque.hpp>
+#include "PointAttribute.h"
+#include "pointdefs.h"
+#include "msg_pdata.h"
 
 namespace Cti {
 namespace Pil {
@@ -14,18 +13,35 @@ class IM_EX_CTIPIL RfDataStreamingProcessor
 {
 public:
 
-    using ResultVector = std::vector<std::unique_ptr<CtiMultiMsg>>;
-
-    ResultVector tick();
+    void tick();
 
     void start();
 
-private:
+protected:
+
+    struct Value
+    {
+        Attribute attribute;
+        std::chrono::system_clock::time_point timestamp;
+        double value;
+        PointQuality_t quality;
+    };
+
+    struct DeviceReport
+    {
+        RfnIdentifier rfnId;
+        std::vector<Value> values;
+    };
 
     using Packet = Messaging::Rfn::E2eMessenger::Indication;
+
+    static DeviceReport processPacket(const Packet& p);
+    std::unique_ptr<CtiPointDataMsg> processDeviceReport(const DeviceReport &deviceReport);
+
+private:
+
     using PacketQueue = std::vector<Packet>;
 
-    std::unique_ptr<CtiMultiMsg> processPacket(const Packet& p);
     void handleStatistics();
 
     using Mutex     = std::mutex;
@@ -34,7 +50,7 @@ private:
     Mutex        _packetMux;
     PacketQueue  _packets;
 
-    ResultVector _results;
+    std::vector<std::unique_ptr<CtiPointDataMsg>> _results;
 };
 
 }

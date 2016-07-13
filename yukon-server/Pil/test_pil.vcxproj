@@ -366,6 +366,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="test_pilserver.cpp">
     </ClCompile>
+    <ClCompile Include="test_rfn_data_streaming_processor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exe_pcreq.h" />

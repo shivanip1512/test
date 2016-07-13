@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(test_std_chrono_system_clock_time_since_epoch)
     }
 
     {
-        //  January 1, 2015, 0:00 GMT
+        //  January 1, 2015, 0:00 CST
         time_t tm = 1420092000;
 
         auto time_point = std::chrono::system_clock::from_time_t(tm);
@@ -179,13 +179,46 @@ BOOST_AUTO_TEST_CASE(test_std_chrono_system_clock_time_since_epoch)
     }
 
     {
-        //  January 1, 2015, 0:00 GMT
+        //  January 1, 2015, 0:00 CST
         time_t tm = 1420092000;
 
         auto time_point = std::chrono::system_clock::from_time_t(tm);
 
         BOOST_CHECK_EQUAL(std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count(), 1420092000000LL);
     }
+}
+
+BOOST_AUTO_TEST_CASE(test_mkgmtime)
+{
+    tm t {};
+
+    //  Jan 1 1970, 0:00 GMT
+    t.tm_year = 70;
+    t.tm_mday = 1;
+
+    BOOST_CHECK_EQUAL(0, _mkgmtime(&t));
+
+    //  Jan 1 1970, 0:01 GMT
+    t.tm_min = 1;
+
+    BOOST_CHECK_EQUAL(60, _mkgmtime(&t));
+
+    //  Jan 1 1970, 1:01 GMT
+    t.tm_hour = 1;
+
+    BOOST_CHECK_EQUAL(3600 + 60, _mkgmtime(&t));
+
+    //  Jan 2 1970, 1:01 GMT
+    t.tm_mday = 2;
+
+    BOOST_CHECK_EQUAL(86400 + 3600 + 60, _mkgmtime(&t));
+
+    //  Jan 1 2015, 0:00 GMT
+    t = {};
+    t.tm_year = 115;
+    t.tm_mday = 1;
+
+    BOOST_CHECK_EQUAL(1'420'070'400, _mkgmtime(&t));
 }
 
 

@@ -623,6 +623,9 @@
     <ClInclude Include="include\coroutine_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\error_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc">

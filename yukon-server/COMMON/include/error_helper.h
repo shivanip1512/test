@@ -8,9 +8,6 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace Cti {
-namespace Devices {
-namespace Commands {
-
 
 /**
  * Verify condition and save error description if condition is false
@@ -25,7 +22,7 @@ public:
     {
         if( ! valid )
         {
-            description.reset( new std::ostringstream );
+            description = std::make_unique<std::ostringstream>();
         }
     }
 
@@ -61,7 +58,7 @@ public:
     {
         if( ! description )
         {
-            return std::string();
+            return {};
         }
 
         return description->str();
@@ -72,7 +69,7 @@ private:
     const bool valid;
     const YukonError_t errorCode;
 
-    boost::scoped_ptr<std::ostringstream> description;
+    std::unique_ptr<std::ostringstream> description;
 
     template <typename T>
     inline Condition& insert( T item )
@@ -98,13 +95,12 @@ inline void validate( const Condition & condition )
 {
     if( ! condition )
     {
-        throw DeviceCommand::CommandException( condition.getErrorCode(),
-                                               condition.getErrorDescription() );
+        throw YukonErrorException { 
+                    condition.getErrorCode(),
+                    condition.getErrorDescription() };
     }
 }
 
 
-}
-}
 }
 

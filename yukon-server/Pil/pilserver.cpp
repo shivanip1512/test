@@ -2124,11 +2124,10 @@ void PilServer::periodicActionThread()
         {
             _rfnManager.tick();
 
-            auto dataStreamingResults = _rfDataStreamingProcessor.tick();
-            /*
-            boost::range::for_each(dataStreamingResults, [](std::unique_ptr<CtiMultiMsg>&& msg) {
+            /*for( auto& msg : _rfDataStreamingProcessor.tick() )
+            {
                 VanGoghConnection.WriteConnQue(std::move(msg), CALLSITE);
-            });*/
+            }*/
         }
 
         if( nextRfDaCheck < Now )
