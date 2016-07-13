@@ -53,9 +53,9 @@ std::string CtiTablePointLimit::getSqlForPaoId()
 {
     return
         getSqlForFullLoad()
-            + " WHERE PL.POINTID IN (SELECT P.POINTID FROM POINT P WHERE "
-            + Cti::Database::createIdEqualClause( "P", "PAObjectID" )
-            + ")";
+            + " JOIN POINT P ON PL.POINTID = P.POINTID"
+            + " WHERE "
+            + Cti::Database::createIdEqualClause( "P", "PAObjectID" );
 }
 
 std::string CtiTablePointLimit::getSqlForPointIds(const size_t count)
