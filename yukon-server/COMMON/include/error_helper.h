@@ -1,11 +1,9 @@
 #pragma once
 
-#include "cmd_device.h"
+#include "yukon.h"
 
 #include <string>
 #include <sstream>
-
-#include <boost/scoped_ptr.hpp>
 
 namespace Cti {
 
