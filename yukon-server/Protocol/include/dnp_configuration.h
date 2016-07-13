@@ -18,7 +18,8 @@ struct config_data
                  const bool       omitTimeRequest_,
                  const bool       enableUnsolicitedClass1_,
                  const bool       enableUnsolicitedClass2_,
-                 const bool       enableUnsolicitedClass3_ )
+                 const bool       enableUnsolicitedClass3_,
+                 const bool       disableFailedScanUpdates_ )
     :
         internalRetries( internalRetries_ ),
         timeOffset( timeOffset_ ),
@@ -26,7 +27,8 @@ struct config_data
         omitTimeRequest( omitTimeRequest_ ),
         enableUnsolicitedClass1( enableUnsolicitedClass1_ ),
         enableUnsolicitedClass2( enableUnsolicitedClass2_ ),
-        enableUnsolicitedClass3( enableUnsolicitedClass3_ )
+        enableUnsolicitedClass3( enableUnsolicitedClass3_ ),
+        disableFailedScanUpdates( disableFailedScanUpdates_ )
     {
     }
 
@@ -44,6 +46,7 @@ struct config_data
     const bool       enableUnsolicitedClass1;
     const bool       enableUnsolicitedClass2;
     const bool       enableUnsolicitedClass3;
+    const bool       disableFailedScanUpdates;
 
 private:
     config_data();

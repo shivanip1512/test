@@ -519,6 +519,7 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
     config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
     config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
     config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
+    config.insertValue(Cti::Config::DNPStrings::disableFailedScanUpdates,"false");
 
     //  start the request
     BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());

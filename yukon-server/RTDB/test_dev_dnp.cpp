@@ -77,6 +77,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
     config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
     config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
     config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
+    config.insertValue(Cti::Config::DNPStrings::disableFailedScanUpdates,"false");
 
     //  set up the control point
     dev.initControlPointOffset(10, ControlType_SBOPulse);

@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
     CtiXfer xfer;
 
-    dnp.setConfigData( 2, DNP::TimeOffset::Utc, false, false, false, false, false );
+    dnp.setConfigData( 2, DNP::TimeOffset::Utc, false, false, false, false, false, false );
 
     {
         BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
     dnp.setName("Test DNP device");
     dnp.setCommand(DnpProtocol::Command_Class1230Read_WithTime);
 
-    dnp.setConfigData( 2, DNP::TimeOffset::Utc, false, false, false, false, false );
+    dnp.setConfigData( 2, DNP::TimeOffset::Utc, false, false, false, false, false, false );
 
     CtiXfer xfer;
 
@@ -2065,7 +2065,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
     CtiXfer xfer;
 
     // Enable DNP timesync
-    dnp.setConfigData( 1, DNP::TimeOffset::Utc, true, false, false, false, false );
+    dnp.setConfigData( 1, DNP::TimeOffset::Utc, true, false, false, false, false, false );
 
     {
         BOOST_CHECK_EQUAL(0, dnp.generate(xfer));

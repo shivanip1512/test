@@ -702,9 +702,10 @@ void DnpDevice::loadConfigData()
     const bool enableUnsolicitedClass1 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass1));
     const bool enableUnsolicitedClass2 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass2));
     const bool enableUnsolicitedClass3 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass3));
+    const bool disableFailedScanUpdates= isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::disableFailedScanUpdates));
 
     _dnp.setConfigData(internalRetries, timeOffset, enableDnpTimesyncs, omitTimeRequest,
-                       enableUnsolicitedClass1, enableUnsolicitedClass2, enableUnsolicitedClass3);
+                       enableUnsolicitedClass1, enableUnsolicitedClass2, enableUnsolicitedClass3, disableFailedScanUpdates);
 }
 
 bool DnpDevice::isConfigurationValueTrue(const std::string &configKey) const
@@ -1029,6 +1030,15 @@ YukonError_t DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeN
     CtiPointDataMsg  *commFailed;
     CtiPointSPtr     commPoint;
 
+    Cti::Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+    if (!deviceConfig)
+    {
+        CTILOG_ERROR(dout, "DNP configuration missing for DNP device \"" << getName() << "\"");
+
+        retCode = ClientErrors::MissingConfig;
+        return retCode;
+    }
+
     CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
     if( strstr(InMessage.Return.CommandStr, "scan integrity") )
@@ -1042,21 +1052,24 @@ YukonError_t DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeN
         setScanFlag(ScanRateGeneral, false);
     }
 
-    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
-
-    if(pMsg != NULL)
+    if(ciStringEqual(deviceConfig->getValueFromKey(DNPStrings::disableFailedScanUpdates), "false"))
     {
-        pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
-        pMsg->insert(CtiCommandMsg::OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-        pMsg->insert(getID());          // The id (device or point which failed)
-        pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+        CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
-        pMsg->insert(
+        if (pMsg != NULL)
+        {
+            pMsg->insert(-1);             // This is the dispatch token and is unimplemented at this time
+            pMsg->insert(CtiCommandMsg::OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+            pMsg->insert(getID());          // The id (device or point which failed)
+            pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+
+            pMsg->insert(
                 InMessage.ErrorCode
-                    ? InMessage.ErrorCode
-                    : ClientErrors::GeneralScanAborted);
+                ? InMessage.ErrorCode
+                : ClientErrors::GeneralScanAborted);
 
-        retList.push_back( pMsg );
+            retList.push_back(pMsg);
+        }
     }
 
     return retCode;

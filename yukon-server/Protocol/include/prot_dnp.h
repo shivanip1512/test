@@ -67,7 +67,7 @@ public:
 
     void setConfigData( unsigned internalRetries, DNP::TimeOffset timeOffset, bool enableDnpTimesyncs,
                         bool omitTimeRequest, bool enableUnsolicitedClass1,
-                        bool enableUnsolicitedClass2, bool enableUnsolicitedClass3 );
+                        bool enableUnsolicitedClass2, bool enableUnsolicitedClass3, bool disableFailedScanUpdates );
 
     void setInternalRetries( unsigned retries ) const;
 
