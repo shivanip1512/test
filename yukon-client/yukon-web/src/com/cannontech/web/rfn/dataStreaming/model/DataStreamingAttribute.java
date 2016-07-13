@@ -10,9 +10,6 @@ public class DataStreamingAttribute {
     public Boolean getAttributeOn() {
         return attributeOn;
     }
-    public Boolean isAttributeOn() {
-        return attributeOn;
-    }
     public void setAttributeOn(Boolean attributeOn) {
         this.attributeOn = attributeOn;
     }

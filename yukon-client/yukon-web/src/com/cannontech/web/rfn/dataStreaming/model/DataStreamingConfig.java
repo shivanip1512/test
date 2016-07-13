@@ -58,15 +58,13 @@ public class DataStreamingConfig {
      */
     public String getName() {
         if (accessor != null && attributes.size() > 0) {
+            String attrName = accessor.getMessage(attributes.get(0).getAttribute());
+            int interval = attributes.get(0).getInterval();
             if (attributes.size() == 1) {
-                String attrName = accessor.getMessage(attributes.get(0).getAttribute());
-                int interval = attributes.get(0).getInterval();
                 name = accessor.getMessage(nameKey, attrName, 0, interval);
             } else {
-                String attrName1 = accessor.getMessage(attributes.get(0).getAttribute());
-                int interval1 = attributes.get(0).getInterval();
                 String attrName2 = accessor.getMessage(attributes.get(1).getAttribute());
-                name = accessor.getMessage(nameKey, attrName1 + ", " + attrName2, attributes.size() - 2, interval1);
+                name = accessor.getMessage(nameKey, attrName + ", " + attrName2, attributes.size() - 2, interval);
             }
         }
         return name;
