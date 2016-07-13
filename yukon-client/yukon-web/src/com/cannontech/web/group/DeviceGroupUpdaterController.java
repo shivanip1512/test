@@ -62,7 +62,7 @@ public class DeviceGroupUpdaterController {
         String error = ServletRequestUtils.getStringParameter(request, "error", null);
         boolean success = ServletRequestUtils.getBooleanParameter(request, "success", false);
         int deviceCount = ServletRequestUtils.getIntParameter(request, "deviceCount", 0);
-        Boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", true);
+        Boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidHeaders", true);
         model.addAttribute("ignoreInvalidHeaders", ignoreInvalidHeaders);
         
         model.addAttribute("error", error);
@@ -136,16 +136,27 @@ public class DeviceGroupUpdaterController {
                                 String[] valueParts = columnTypeParts[1].split("=");
                                 String dataName = valueParts[0];
                                 String dataValue = valueParts[1];
+                                if(ignoreInvalidHeaders){
+                                    try{
+                                        DeviceGroupUpdaterColumn.valueOf(columnType);
+                                    } catch (IllegalArgumentException e) {
+                                        isInvalidColumnByIndex[columnIdx] = true; // Mark column as invalid = true
+                                        continue; 
+                                    }
+                                }
                                 processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName,
                                     dataValue, createGroups));
                             }
                         }
-                        // process rows
-                        ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, 
+                        if (processors.size() != 0) {
+                            // process rows
+                            ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, 
                             processors, isInvalidColumnByIndex);
-                        error = processingResultInfo.getError();
-                        deviceCount = processingResultInfo.getDeviceCount();
-                        
+                            error = processingResultInfo.getError();
+                            deviceCount = processingResultInfo.getDeviceCount();
+                        } else {
+                            error = "File should contain at least one update column.";
+                        }
                     } catch (InvalidIndentifierException e) {
                         Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
                         error = "Error (line 1): Invalid identifier type: " + e.getIdentifier() + ". Valid identifier types are: " + StringUtils.join(identifierFields, " ,");
@@ -193,7 +204,7 @@ public class DeviceGroupUpdaterController {
                 int deviceCount = 0;
                 String [] line = null;
                 try {
-                    while((line = csvReader.readNext()) != null) {
+                    while ((line = csvReader.readNext()) != null) {
                         currentIdentifier = StringUtils.trim(line[0]);
                         SimpleDevice device = bulkFieldService.getYukonDeviceForIdentifier(identifierBulkField, currentIdentifier);
                         int idx = 1;
