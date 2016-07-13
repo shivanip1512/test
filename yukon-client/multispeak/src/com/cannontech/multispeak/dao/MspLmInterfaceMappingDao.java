@@ -19,6 +19,17 @@ public interface MspLmInterfaceMappingDao {
      */
     public boolean updatePaoIdForStrategyAndSubstation(String strategyName, String substationName, int paobjectId);
 
+    /**
+     * Updates entire row for a given mappingId (MspLMInterfaceMappingId)
+     * Returns true if an a row was affected.
+     * @param mappingId 
+     * @param strategyName
+     * @param substationName
+     * @param paobjectId Name of pao
+     * @return true if successful
+     */
+    public boolean updateMappingById(int mappingId, String strategy, String substation, String paobject);
+    
     public boolean remove(int mspLMInterfaceMappingId);
 
     public boolean removeAllByStrategyName(String strategyName);
@@ -26,6 +37,7 @@ public interface MspLmInterfaceMappingDao {
     public MspLmMapping getForId(int mspLMInterfaceMappingId) throws NotFoundException;
     
     public MspLmMapping getForStrategyAndSubstation(String strategyName, String substationName) throws NotFoundException;
+    
     
     /**
      * Search for a mapping for a given strategy and substation.
@@ -38,5 +50,6 @@ public interface MspLmInterfaceMappingDao {
     public Integer findIdForStrategyAndSubstation(String strategyName, String substationName);
 			
     public List<MspLmMapping> getAllMappings();
+
 
 }

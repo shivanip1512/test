@@ -185,7 +185,7 @@
     // Jquery dialogs get moved to the end of the body. When pickers are ajaxed
     // in and replaced, the dialogs might still be left over. Here we will remove any
     // still hanging around.
-    $(document.getElementById('${id}')).remove();
+    $('#${id}').remove();
     
     var picker;
     var data = $('#picker-${id}-input-area');

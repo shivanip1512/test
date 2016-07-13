@@ -16,6 +16,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.multispeak.dao.MspLmInterfaceMappingDao;
@@ -83,6 +84,27 @@ public class LMMappingsController {
             }
         }
         return response;
+    }
+    
+    @RequestMapping("updateMappingById")
+    public @ResponseBody Map<String, Object> updateMappingById(Integer mappingId, String strategyName, String substationName, String mappedName){
+    	Map<String,Object> response = new HashMap<>();
+    	Integer existingMspLmInterfaceid = mspLMMappingDao.findIdForStrategyAndSubstation(strategyName, substationName);
+    	
+    	if (mappedName == null) {
+            response.put("error", "mappedName not found");
+        } else if (mappedName.length() <= 0) {
+            response.put("error", "mappedName must have a character");
+        } else if (mappingId == null){
+        	response.put("error", "mappingId not found");
+        } else if (existingMspLmInterfaceid != null && existingMspLmInterfaceid != mappingId){
+        	response.put("error", "Selected strategy name and substation name already exist.");
+        } else {
+            response.put("action", "update");
+            boolean updated = mspLMMappingDao.updateMappingById(mappingId, strategyName, substationName, mappedName);
+            response.put("success", updated);            
+        }
+    	return response;
     }
 
     @RequestMapping("reloadAllMappingsTable")

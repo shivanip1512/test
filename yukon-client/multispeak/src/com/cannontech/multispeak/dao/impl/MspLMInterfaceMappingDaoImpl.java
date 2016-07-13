@@ -59,6 +59,20 @@ public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
         int result = jdbcTemplate.update(sql.getSql(), sql.getArguments());
         return (result == 1);
     }
+    
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public boolean updateMappingById(int mappingId, String strategy, String substation, String paobject){
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("UPDATE " + TABLENAME + " SET");
+        sql.append("PaobjectId = (SELECT p.PAObjectID FROM YukonPAObject p WHERE p.PAONAME = ").appendArgument(paobject).append("),");
+        sql.append("StrategyName = ").appendArgument(strategy).append(",");
+        sql.append("SubstationName = ").appendArgument(substation);
+        sql.append("WHERE MspLMInterfaceMappingId = ").appendArgument(mappingId);
+        
+        int result = jdbcTemplate.update(sql.getSql(), sql.getArguments());
+        return (result == 1);
+    }
 
     @Override
     public MspLmMapping getForId(int mspLMInterfaceMappingId) throws NotFoundException {
