@@ -125,7 +125,8 @@ public class DeviceGroupUpdaterController {
                         List<BulkFieldProcessor<SimpleDevice, String>> processors = new ArrayList<BulkFieldProcessor<SimpleDevice, String>>();
                         Boolean[] isInvalidColumnByIndex = new Boolean[headerRow.length];
                         for (int columnIdx = 1; columnIdx < headerRow.length; columnIdx++) {
-                            isInvalidColumnByIndex[columnIdx] = false; // All columns by default marked, invalid = false
+                            isInvalidColumnByIndex[columnIdx] = false; // All columns by default marked,
+                                                                       // invalid = false
                             header = headerRow[columnIdx].trim();
                             String[] columnTypeParts = header.split(":");
                             columnType = columnTypeParts[0];
@@ -136,12 +137,12 @@ public class DeviceGroupUpdaterController {
                                 String[] valueParts = columnTypeParts[1].split("=");
                                 String dataName = valueParts[0];
                                 String dataValue = valueParts[1];
-                                if(ignoreInvalidHeaders){
-                                    try{
+                                if (ignoreInvalidHeaders) {
+                                    try {
                                         DeviceGroupUpdaterColumn.valueOf(columnType);
                                     } catch (IllegalArgumentException e) {
                                         isInvalidColumnByIndex[columnIdx] = true; // Mark column as invalid = true
-                                        continue; 
+                                        continue;
                                     }
                                 }
                                 processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName,
