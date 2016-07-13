@@ -62,8 +62,8 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
                 try {
                     JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
 
-                    if (rfnLogger.isInfoEnabled()) {
-                        rfnLogger.info("<<< " + requestPayload.toString());
+                    if (log.isInfoEnabled()) {
+                        log.info("<<< " + requestPayload.toString());
                     }
                     if (log.isTraceEnabled()) {
                         log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());

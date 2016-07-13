@@ -14,7 +14,7 @@ public class DeviceDataMonitorStatusRequest implements Serializable{
 
     @Override
     public String toString() {
-        return "monitor id=" + getMonitorId();
+        return "Device Data Monitor id=" + getMonitorId();
     }
 
     public int getMonitorId() {
