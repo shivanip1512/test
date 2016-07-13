@@ -33,7 +33,7 @@ public interface DataStreamingService {
      * Unassign the data streaming configuration currently assigned to the specified devices. (They will no longer 
      * stream data.)
      */
-    void unassignDataStreamingConfig(int configId, List<Integer> deviceIds);
+    void unassignDataStreamingConfig(List<Integer> deviceIds);
     
     /**
      * Save the reported data streaming configuration that was reported to us from the device, via Porter.

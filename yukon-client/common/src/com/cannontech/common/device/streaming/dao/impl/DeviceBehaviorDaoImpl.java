@@ -50,7 +50,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
         List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
         ids.forEach(idBatch -> {
-            unassignBehaviorFoBatch(behaviorId, type, idBatch);
+            unassignBehaviorFoBatch(type, idBatch);
             
             //assign devices
             SqlStatementBuilder insertSql = new SqlStatementBuilder();
@@ -78,12 +78,12 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     
     @Override
     @Transactional
-    public void unassignBehavior(int behaviorId,  BehaviorType type, List<Integer> deviceIds) {
+    public void unassignBehavior(BehaviorType type, List<Integer> deviceIds) {
         log.debug("Devices to ussign=" + deviceIds.size());
 
         List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
         ids.forEach(idBatch -> {
-            unassignBehaviorFoBatch(behaviorId, type, idBatch);
+            unassignBehaviorFoBatch(type, idBatch);
         });
         
         deleteUnusedBehaviors();
@@ -291,7 +291,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         });
     }
     
-    private void unassignBehaviorFoBatch(int behaviorId, BehaviorType type, List<Integer> deviceIds) {
+    private void unassignBehaviorFoBatch(BehaviorType type, List<Integer> deviceIds) {
 
         log.debug("Batch=" + deviceIds.size());
         // unassign devices

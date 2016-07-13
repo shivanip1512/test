@@ -158,7 +158,7 @@ public class DataStreamingController {
         if (configId > 0) {
             dataStreamingService.assignDataStreamingConfig(configId, deviceIds);
         } else {
-            dataStreamingService.unassignDataStreamingConfig(configId, deviceIds);
+            dataStreamingService.unassignDataStreamingConfig(deviceIds);
         }
 
         //TODO: display results page
