@@ -37,12 +37,12 @@
                                             <th><i:inline key=".interval"/></th>
                                         </tr>
                                     </thead>
-                                    <c:forEach var="attribute" varStatus="status" items="${config.attributes}">
+                                    <c:forEach var="configAtt" varStatus="status" items="${config.attributes}">
                                     <tr>
-                                        <td>${attribute.attribute.description}</td>
-                                        <td>${attribute.interval}
+                                        <td>${configAtt.attribute.description}</td>
+                                        <td>${configAtt.interval}
                                             <c:choose>
-                                                <c:when test="${attribute.interval > 1}">
+                                                <c:when test="${configAtt.interval > 1}">
                                                     <i:inline key=".minutes"/>
                                                 </c:when>
                                                 <c:otherwise>

@@ -17,16 +17,24 @@
                     <div class="user-message warning">${deviceUnsupported.detail}<tags:selectedDevicesPopup deviceCollection="${deviceUnsupported.deviceCollection}"/></div>
                 </c:forEach>
                 
+                <tags:sectionContainer title="Gateway Impact">
+                <div style="max-height:250px;overflow-y:auto">
                 <c:forEach var="gateway" varStatus="status" items="${verificationInfo.gatewayLoadingInfo}">
                     <c:set var="msgType" value="success"/>
+                    <c:set var="msgIcon" value="icon-accept"/>
                     <c:if test="${gateway.proposedPercent >= 100}">
                         <c:set var="msgType" value="error"/>
+                        <c:set var="msgIcon" value="icon-exclamation"/>
                     </c:if>
-                    <div class="user-message ${msgType}">${gateway.detail}</div>
+<%--                     <div class="user-message ${msgType}"> --%>
+                    <div><cti:icon icon="${msgIcon}"/>${gateway.detail}</div>
+<!--                     </div> -->
                 </c:forEach>
+                </div>
+                </tags:sectionContainer>
                 
         
-                <i:inline key=".message"/>
+                <div style="margin-top:50px;"><b><i:inline key=".message"/></b></div>
                 
                 <div class="page-action-area">
                     <cti:button nameKey="back" href="javascript:window.history.back()" name="backButton" classes="action" />

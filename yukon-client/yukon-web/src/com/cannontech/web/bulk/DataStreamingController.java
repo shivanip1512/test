@@ -101,11 +101,16 @@ public class DataStreamingController {
         deviceUnsupported.setDeviceIds(unsupportedDevices);
         deviceUnsupported.setDeviceCollection(dcProducer.createDeviceCollection(unsupportedDevices, null));
         verifyInfo.getDeviceUnsupported().add(deviceUnsupported);
-        GatewayLoading loading = new GatewayLoading();
-        loading.setGatewayName("Gateway 1");
-        loading.setCurrentPercent(85.5);
-        loading.setProposedPercent(93.5);
-        verifyInfo.getGatewayLoadingInfo().add(loading);
+        int currentPercent = 65;
+        for (int i = 0; i < 3; i++) {
+            GatewayLoading loading = new GatewayLoading();
+            loading.setGatewayName("Gateway " + i);
+            loading.setCurrentPercent(currentPercent);
+            loading.setProposedPercent(currentPercent + 5);
+            currentPercent += 6;
+            verifyInfo.getGatewayLoadingInfo().add(0, loading);
+        }
+
         
         model.addAttribute("verificationInfo", verifyInfo);
 
@@ -158,7 +163,7 @@ public class DataStreamingController {
 
         //TODO: display results page
 
-        return "dataStreaming/verification.jsp";
+        return "dataStreaming/results.jsp";
     }
 
 

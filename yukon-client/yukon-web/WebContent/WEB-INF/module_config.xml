@@ -340,6 +340,12 @@
                   </page>
                   <page name="bulk.dataStreaming.verification" type="BASIC">
                     <link>/bulk/dataStreaming/verification?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                    <pages>
+                      <page name="bulk.dataStreaming.results" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.dataStreaming.results" type="BASIC">
+                    <link>/bulk/dataStreaming/results?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
                   </page>
                   <page name="bulk.addPointsHome" type="BASIC">
                     <link>/bulk/addPoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
