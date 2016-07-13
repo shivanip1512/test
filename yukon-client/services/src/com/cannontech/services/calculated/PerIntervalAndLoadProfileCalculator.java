@@ -108,9 +108,10 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         final TimeZone timeZone = YukonUserContext.system.getTimeZone();
         ZonedDateTime zoneDateTime = ZonedDateTime.ofInstant(timestamp.toInstant(), timeZone.toZoneId());
         boolean isInDaylightTime = timeZone.inDaylightTime(timestamp);
-        if (isInOverlap(zoneDateTime) && !isInDaylightTime) {
+        if (!isInDaylightTime && isInOverlap(zoneDateTime)) {
             log.info("Interval and profile data calculations being skipped for " + timestamp + " for Id : "
                 + pao.getPaoId() + " : " + pointData);
+            return;
         }
 
         CacheKey currentKey = CacheKey.of(pvqh.getId(), timestamp.getTime());
