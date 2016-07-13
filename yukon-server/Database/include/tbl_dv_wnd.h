@@ -66,7 +66,6 @@ public:
     LONG calculateClose(LONG aOpen, LONG aDuration) const;
 
    static std::string getSQLCoreStatement();
-   static std::string addIDSQLClause(const Cti::Database::id_set &paoids);
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 

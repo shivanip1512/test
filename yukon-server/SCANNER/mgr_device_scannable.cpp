@@ -8,6 +8,7 @@
 #include "debug_timer.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "database_util.h"
 
 using namespace std;
 
@@ -123,19 +124,20 @@ void ScannableDeviceManager::refreshScanRates(Database::id_set &paoids)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
-    const string sqlCore  = CtiTableDeviceScanRate::getSQLCoreStatement();
-    const string idClause = CtiTableDeviceScanRate::addIDSQLClause(paoids);
+    string sql = CtiTableDeviceScanRate::getSQLCoreStatement();
 
-    string sql = sqlCore;
-
-    if( !idClause.empty() )
+    if ( ! paoids.empty() )
     {
-        sql += " ";
-        sql += idClause;
+        sql += " AND " + Cti::Database::createIdInClause( "DV", "deviceid", paoids.size() );
     }
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sql);
+
+    if ( ! paoids.empty() )
+    {
+        rdr << paoids;
+    }
 
     rdr.execute();
 
@@ -227,19 +229,20 @@ void ScannableDeviceManager::refreshDeviceWindows(Database::id_set &paoids)
         }
     }
 
-    static const string sqlCore = CtiTableDeviceWindow::getSQLCoreStatement();
-    const string idClause = CtiTableDeviceWindow::addIDSQLClause(paoids);
+    string sql = CtiTableDeviceWindow::getSQLCoreStatement();
 
-    string sql = sqlCore;
-
-    if( !idClause.empty() )
+    if ( ! paoids.empty() )
     {
-        sql += " ";
-        sql += idClause;
+        sql += " AND " + Cti::Database::createIdInClause( "DV", "deviceid", paoids.size() );
     }
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sql);
+
+    if ( ! paoids.empty() )
+    {
+        rdr << paoids;
+    }
 
     rdr.execute();
 

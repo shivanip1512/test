@@ -75,39 +75,6 @@ CtiTableDeviceScanRate& CtiTableDeviceScanRate::setUpdated( const BOOL aBool )
     return *this;
 }
 
-string CtiTableDeviceScanRate::addIDSQLClause(const Cti::Database::id_set &paoids)
-{
-    string sqlIDs;
-
-    if( !paoids.empty() )
-    {
-        std::ostringstream in_list;
-
-        if( paoids.size() == 1 )
-        {
-            //  special single id case
-
-            in_list << *(paoids.begin());
-
-            sqlIDs += "AND DV.deviceid = " + in_list.str();
-
-            return sqlIDs;
-        }
-        else
-        {
-            in_list << "(";
-            in_list << Cti::join(paoids, ",");
-            in_list << ")";
-
-            sqlIDs += "AND DV.deviceid IN " + in_list.str();
-
-            return sqlIDs;
-        }
-    }
-
-    return string();
-}
-
 string CtiTableDeviceScanRate::getSQLCoreStatement()
 {
     static const string sqlCore =  "SELECT DV.deviceid, DSR.scantype, DSR.intervalrate, DSR.scangroup, DSR.alternaterate "

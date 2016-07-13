@@ -321,10 +321,7 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
     if(!pointIds.empty())
     {
         sql += ((!pntID && !paoID) ? " WHERE" : " AND");
-        sql += " PPV.pointid IN ";
-        sql += "(";
-        sql += Cti::join(pointIds, ",");
-        sql += ")";
+        sql += Cti::Database::createIdInClause( "PPV", "pointid", pointIds.size() );
     }
 
     Cti::Database::DatabaseConnection connection;
@@ -337,6 +334,11 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
     if(paoID)
     {
         rdr << paoID;
+    }
+
+    if(!pointIds.empty())
+    {
+        rdr << pointIds;
     }
 
     rdr.execute();
@@ -385,28 +387,38 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
 
     if(pntID)
     {
-        sql += " AND point.pointid = ";
-        sql += CtiNumStr(pntID);
+        sql += " AND " + Cti::Database::createIdEqualClause( "point", "pointid" );
     }
 
     //  pao is assumed to be an add
     if(paoID)
     {
-        sql += " AND point.paobjectid = ";
-        sql += CtiNumStr(paoID);
+        sql += " AND " + Cti::Database::createIdEqualClause( "point", "paobjectid" );
     }
 
     if(!pointIds.empty())
     {
-
-        sql += " AND point.pointid in ";
-        sql += "(";
-        sql += Cti::join(pointIds, ",");
-        sql += ")";
+        sql += " AND " + Cti::Database::createIdInClause( "point", "pointid", pointIds.size() );
     }
 
     DatabaseConnection conn;
     DatabaseReader rdr(conn, sql);
+
+    if(pntID)
+    {
+        rdr << pntID;
+    }
+
+    if(paoID)
+    {
+        rdr << paoID;
+    }
+
+    if(!pointIds.empty())
+    {
+        rdr << pointIds;
+    }
+
     rdr.execute();
 
     std::list<CtiTablePointProperty*> tempList;

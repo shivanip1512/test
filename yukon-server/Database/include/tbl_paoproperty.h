@@ -29,8 +29,6 @@ public:
 
     static std::string getTableName();
     static std::string getSQLCoreStatement();
-
-    static std::string addIDSQLClause(const std::set<long> &deviceids);
 };
 
 }

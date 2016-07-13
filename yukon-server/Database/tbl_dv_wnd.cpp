@@ -163,39 +163,6 @@ string CtiTableDeviceWindow::getSQLCoreStatement()
     return sqlCore;
 }
 
-string CtiTableDeviceWindow::addIDSQLClause(const Cti::Database::id_set &paoids)
-{
-    string sqlIDs;
-
-    if( !paoids.empty() )
-    {
-        std::ostringstream in_list;
-
-        if( paoids.size() == 1 )
-        {
-            //  special single id case
-
-            in_list << *(paoids.begin());
-
-            sqlIDs += "AND DV.deviceid = " + in_list.str();
-
-            return sqlIDs;
-        }
-        else
-        {
-            in_list << "(";
-            in_list << Cti::join(paoids, ",");
-            in_list << ")";
-
-            sqlIDs += "AND DV.deviceid IN " + in_list.str();
-
-            return sqlIDs;
-        }
-    }
-
-    return string();
-}
-
 void CtiTableDeviceWindow::DecodeDatabaseReader(Cti::RowReader &aRdr)
 {
     LONG close,alternateClose;

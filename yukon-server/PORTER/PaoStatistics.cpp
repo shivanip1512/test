@@ -3,6 +3,7 @@
 #include "PaoStatistics.h"
 
 #include "database_reader.h"
+#include "database_util.h"
 #include "InvalidReaderException.h"
 #include "logger.h"
 
@@ -77,20 +78,20 @@ void PaoStatistics::buildDatabaseReader(Database::DatabaseReader &rdr, const Cti
             "LEFT OUTER JOIN DynamicPaoStatistics d ON (m.PAObjectID = d.PAObjectID AND d.StatisticType = 'Daily'   AND d.StartDateTime = ?) "
             "LEFT OUTER JOIN DynamicPaoStatistics h ON (d.PAObjectID = h.PAObjectID AND h.StatisticType = 'Hourly'  AND h.StartDateTime = ?) "
         "WHERE "
-            "l.StatisticType = 'Lifetime' AND "
-            "l.PAObjectId IN ";
+            "l.StatisticType = 'Lifetime' AND ";
 
-    std::ostringstream in_list;
-
-    sql += "(";
-    sql += Cti::join(std::set<long>(id_begin, id_end), ",");
-    sql += ")";
+    sql += Cti::Database::createIdInClause( "l", "PAObjectId", std::distance( id_begin, id_end ) );
 
     rdr.setCommandText(sql);
 
     rdr << PaoStatisticsRecord::monthStart(reader_time);
     rdr << PaoStatisticsRecord::dayStart  (reader_time);
     rdr << PaoStatisticsRecord::hourStart (reader_time);
+
+    for ( ; id_begin != id_end ; ++id_begin )
+    {
+        rdr << *id_begin;
+    }
 }
 
 

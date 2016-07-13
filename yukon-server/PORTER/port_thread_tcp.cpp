@@ -18,6 +18,7 @@
 #include "boostutil.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "database_util.h"
 #include "std_helper.h"
 
 using namespace std;
@@ -133,21 +134,22 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
        CTILOG_DEBUG(dout, "Looking for TCP port-related Pao Properties");
     }
 
-    const string sqlCore = Database::Tables::PaoPropertyTable::getSQLCoreStatement() +
-                           " WHERE (PPR.propertyname = 'TcpPort' OR PPR.propertyname = 'TcpIpAddress')";
+    string sql = Database::Tables::PaoPropertyTable::getSQLCoreStatement() +
+                 " WHERE (PPR.propertyname = 'TcpPort' OR PPR.propertyname = 'TcpIpAddress')";
 
-    const string idClause = Database::Tables::PaoPropertyTable::addIDSQLClause(device_ids);
-
-    string sql = sqlCore;
-
-    if( !idClause.empty() )
+    if ( ! device_ids.empty() )
     {
-        sql += " ";
-        sql += idClause;
+        sql += " AND " + Cti::Database::createIdInClause( "PPR", "paobjectid", device_ids.size() );
     }
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sql);
+
+    if ( ! device_ids.empty() )
+    {
+        rdr << device_ids;
+    }
+
     rdr.execute();
 
     if( ! rdr.isValid() )

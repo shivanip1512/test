@@ -52,8 +52,6 @@ public:
 
    static std::string getSQLCoreStatement();
 
-   static std::string addIDSQLClause(const Cti::Database::id_set &paoids);
-
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual std::string toString() const override;
