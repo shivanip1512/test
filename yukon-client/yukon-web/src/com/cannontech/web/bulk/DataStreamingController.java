@@ -20,6 +20,7 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
@@ -146,7 +147,7 @@ public class DataStreamingController {
     }
     
     @RequestMapping(value="verification", method=RequestMethod.POST)
-    public String verificationSubmit(@ModelAttribute("verificationInfo") VerificationInformation verificationInfo, ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
+    public String verificationSubmit(@ModelAttribute("verificationInfo") VerificationInformation verificationInfo, ModelMap model, HttpServletRequest request, LiteYukonUser user) throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         
@@ -156,9 +157,9 @@ public class DataStreamingController {
         int configId = verificationInfo.getConfiguration().getId();
         
         if (configId > 0) {
-            dataStreamingService.assignDataStreamingConfig(configId, deviceIds);
+            dataStreamingService.assignDataStreamingConfig(configId, deviceIds, user);
         } else {
-            dataStreamingService.unassignDataStreamingConfig(deviceIds);
+            dataStreamingService.unassignDataStreamingConfig(deviceIds, user);
         }
 
         //TODO: display results page

@@ -50,7 +50,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
         List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
         ids.forEach(idBatch -> {
-            unassignBehaviorFoBatch(type, idBatch);
+            unassignBehaviorForBatch(type, idBatch);
             
             //assign devices
             SqlStatementBuilder insertSql = new SqlStatementBuilder();
@@ -83,7 +83,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
         List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
         ids.forEach(idBatch -> {
-            unassignBehaviorFoBatch(type, idBatch);
+            unassignBehaviorForBatch(type, idBatch);
         });
         
         deleteUnusedBehaviors();
@@ -108,7 +108,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         });
     }
-
+    
     @Override
     @Transactional
     public int saveBehavior(Behavior behavior) {
@@ -148,16 +148,14 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     }
 
     @Override
-    public Behavior getBehaviorByDeviceId(int deviceId) {
+    public Behavior getBehaviorByDeviceIdAndType(int deviceId, BehaviorType type) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT BehaviorId, BehaviorType");
+        sql.append("SELECT Behavior.BehaviorId, BehaviorType");
         sql.append("FROM Behavior");
-        sql.append("WHERE BehaviorId =");
-        sql.append("  (SELECT BehaviorId");
-        sql.append("   FROM DeviceBehaviorMap");
-        sql.append("   WHERE DeviceId").eq(deviceId);
-        sql.append("   )");
+        sql.append("JOIN DeviceBehaviorMap ON DeviceBehaviorMap.BehaviorId = Behavior.BehaviorId");
+        sql.append("WHERE BehaviorType").eq_k(type);
+        sql.append("AND DeviceId").eq(deviceId);
 
         Behavior behavior = jdbcTemplate.queryForObject(sql, new YukonRowMapper<Behavior>() {
             @Override
@@ -195,7 +193,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         behavior.setValues(values);
         return behavior;
     }
-
+    
+    //TODO: save only if newer?
     @Override
     @Transactional
     public int saveBehaviorReport(BehaviorReport report) {
@@ -235,7 +234,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         params.addValue("BehaviorId", behavior.getId());
         params.addValue("BehaviorType", behavior.getType());
     }
-
+    
+    @Transactional
     private List<BehaviorValue> getBehaviorValuesByBehaviorId(int behaviorId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Name, Value");
@@ -250,7 +250,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         });
     }
-
+    
+    @Transactional
     private void saveBehaviorValues(int behaviorId, List<BehaviorValue> values) {
         values.forEach(value -> {
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -291,7 +292,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         });
     }
     
-    private void unassignBehaviorFoBatch(BehaviorType type, List<Integer> deviceIds) {
+    private void unassignBehaviorForBatch(BehaviorType type, List<Integer> deviceIds) {
 
         log.debug("Batch=" + deviceIds.size());
         // unassign devices

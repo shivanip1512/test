@@ -34,4 +34,5 @@
         <constructor-arg index="10" value="0" />
     </bean>
     <bean class="com.cannontech.web.dev.service.SystemHealthMetricSimulatorService"/>
+    <bean class="com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings"/>
 </beans>

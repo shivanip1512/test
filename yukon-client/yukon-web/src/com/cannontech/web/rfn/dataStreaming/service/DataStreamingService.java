@@ -2,6 +2,8 @@ package com.cannontech.web.rfn.dataStreaming.service;
 
 import java.util.List;
 
+import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 
@@ -26,19 +28,21 @@ public interface DataStreamingService {
     /**
      * Assign an existing data streaming configuration to the devices.
      * @param configId The behaviorId of the existing config.
+     * @return The resultId to look up the results in recentResultsCache.
      */
-    void assignDataStreamingConfig(int configId, List<Integer> deviceIds);
+    String assignDataStreamingConfig(int configId, List<Integer> deviceIds, LiteYukonUser user);
     
     /**
      * Unassign the data streaming configuration currently assigned to the specified devices. (They will no longer 
      * stream data.)
+     * @return The resultId to look up the results in recentResultsCache.
      */
-    void unassignDataStreamingConfig(List<Integer> deviceIds);
+    String unassignDataStreamingConfig(List<Integer> deviceIds, LiteYukonUser user);
     
     /**
      * Save the reported data streaming configuration that was reported to us from the device, via Porter.
      */
-    void saveReportedConfig(DataStreamingConfig config, int deviceId);
+    void saveReportedConfig(ReportedDataStreamingConfig config, int deviceId);
 
     VerificationInformation verifyConfiguration(int configId, List<Integer> deviceIds);
 
