@@ -152,7 +152,7 @@ public class DeviceGroupUpdaterController {
                         if (processors.size() != 0) {
                             // process rows
                             ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, 
-                            processors, isInvalidColumnByIndex);
+                                processors, isInvalidColumnByIndex);
                             error = processingResultInfo.getError();
                             deviceCount = processingResultInfo.getDeviceCount();
                         } else {
