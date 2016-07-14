@@ -8,6 +8,10 @@
 #include "std_helper.h"
 #include "error_helper.h"
 #include "MetricIdLookup.h"
+#include "DeviceAttributeLookup.h"
+#include "mgr_device.h"
+#include "mgr_point.h"
+#include "pt_numeric.h"
 
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/count_if.hpp>
@@ -16,8 +20,8 @@
 
 #include <chrono>
 
-using Cti::Logging::Vector::Hex::operator<<;
 using Cti::Messaging::Rfn::E2eMessenger;
+using Cti::Logging::Vector::Hex::operator<<;
 
 static const auto RF_DATA_STREAMING_STATS_REPORTING_INTERVAL = 86400;
 
@@ -28,13 +32,23 @@ namespace {
 
     //  Jan 1 2016 0:00 GMT
     static const auto DataStreamingEpoch = std::chrono::system_clock::from_time_t(1'451'606'400);
+
+    unsigned statsReportFrequency = gConfigParms.getValueAsInt("RF_DATA_STREAMING_STATS_REPORTING_INTERVAL", RF_DATA_STREAMING_STATS_REPORTING_INTERVAL);
+    CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
 }
+
+RfDataStreamingProcessor::RfDataStreamingProcessor(CtiDeviceManager *deviceManager, CtiPointManager *pointManager)
+    :   _deviceManager{ deviceManager },
+        _pointManager { pointManager  }
+{}
 
 void RfDataStreamingProcessor::start()
 {
     E2eMessenger::registerDataStreamingHandler(
             [&](const E2eMessenger::Indication &msg)
             {
+                CTILOG_INFO(dout, "Data streaming packet received for " << msg.rfnIdentifier << "\n" << msg.payload);
+
                 LockGuard guard(_packetMux);
 
                 _packets.push_back(msg);
@@ -42,7 +56,7 @@ void RfDataStreamingProcessor::start()
 }
 
 
-void RfDataStreamingProcessor::tick()
+auto RfDataStreamingProcessor::tick() -> ResultVector
 {
     PacketQueue newPackets;
 
@@ -52,22 +66,24 @@ void RfDataStreamingProcessor::tick()
         newPackets.swap(_packets);
     }
 
-    std::vector<DeviceReport> results;
+    std::vector<DeviceReport> reports;
 
     boost::range::transform(
         newPackets, 
-        std::back_inserter(results),
+        std::back_inserter(reports),
         [](const auto& packet) { return processPacket(packet); });
 
     std::vector<std::unique_ptr<CtiPointDataMsg>> pointData;
 
-    boost::range::transform(
-        results, 
-        std::back_inserter(pointData),
-        [this](const auto& deviceReport) { return processDeviceReport(deviceReport); });
+    for( auto& report : reports )
+    {
+        auto reportPointData = processDeviceReport(report);
+        std::move(reportPointData.begin(), reportPointData.end(), std::back_inserter(pointData));
+    }
 
     handleStatistics();
 
+    return pointData;
 }
 
 
@@ -181,29 +197,158 @@ auto RfDataStreamingProcessor::processPacket(const Packet &p) -> DeviceReport
     return dr;
 }
 
-auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceReport) -> std::unique_ptr<CtiPointDataMsg>
+StreamBufferSink& operator<<(StreamBufferSink& s, const RfDataStreamingProcessor::Value &v)
 {
-    //  To be implemented under YUK-15553
-    return nullptr;
+    FormattedList l;
+
+    l.add("Attribute") << v.attribute.getName();
+    l.add("Timestamp") << v.timestamp;
+    l.add("Value")     << v.value;
+    l.add("Quality")   << v.quality;
+
+    return s << l;
 }
 
-/*
-unsigned statsReportFrequency = gConfigParms.getValueAsInt("RF_DATA_STREAMING_STATS_REPORTING_INTERVAL", RF_DATA_STREAMING_STATS_REPORTING_INTERVAL);
-CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
-*/
+StreamBufferSink& operator<<(StreamBufferSink& s, const RfDataStreamingProcessor::DeviceReport &dr)
+{
+    FormattedList l;
+
+    l.add("RfnIdentifier") << dr.rfnId;
+
+    l.add("Values") << dr.values.size();
+
+    size_t value = 1;
+
+    for( const auto& v : dr.values )
+    {
+        l.add("Value " + std::to_string(value++)) << v;
+    }
+
+    return s << l;
+}
+
+std::map<long, std::map<Attribute, size_t>> stats;
+
+auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceReport) -> std::vector<std::unique_ptr<CtiPointDataMsg>>
+{
+    std::vector<std::unique_ptr<CtiPointDataMsg>> pointdata;
+
+    long deviceId{};
+
+    if( const auto device = _deviceManager->getDeviceByRfnIdentifier(deviceReport.rfnId) )
+    {
+        deviceId = device->getID();
+
+        for( const auto& drValue : deviceReport.values )
+        {
+            if( const auto pointOffset = DeviceAttributeLookup::Lookup(device->getDeviceType(), drValue.attribute) )
+            {
+                if( const auto point = _pointManager->getOffsetTypeEqual(device->getID(), pointOffset->offset, pointOffset->type) )
+                {
+                    double value = drValue.value;
+
+                    if( point->isNumeric() )
+                    {
+                        auto& numeric = static_cast<CtiPointNumeric&>(*point);
+
+                        value = numeric.computeValueForUOM(value);
+                    }
+
+                    CtiTime timestamp { drValue.timestamp };
+
+                    auto pdata =                         
+                            std::make_unique<CtiPointDataMsg>(
+                                    point->getID(),
+                                    value,
+                                    drValue.quality,
+                                    point->getType(),
+                                    device->getName() + " / " + point->getName() + " = " + std::to_string(value) + " @ " + timestamp.asString());
+
+                    pdata->setTime(timestamp);
+
+                    pointdata.emplace_back(std::move(pdata));
+                }
+                else
+                {
+                    FormattedList l;
+
+                    l << "Point not found for offset+type";
+                    l.add("Device ID")   << device->getID();
+                    l.add("Device name") << device->getName();
+                    l.add("Device type") << device->getDeviceType();
+                    l.add("Offset") << pointOffset->offset;
+                    l.add("Type")   << pointOffset->type;
+                    l << drValue;
+
+                    CTILOG_WARN(dout, l);
+                }
+            }
+            else
+            {
+                FormattedList l;
+
+                l << "Attribute mapping not found";
+                l.add("Device ID")   << device->getID();
+                l.add("Device name") << device->getName();
+                l.add("Device type") << device->getDeviceType();
+                l << drValue;
+
+                CTILOG_WARN(dout, l);
+            }
+        }
+    }
+    else
+    {
+        CTILOG_WARN(dout, "Device not found" << deviceReport);
+    }
+
+    //  Increment data streaming stats for each received attribute
+    for( auto &dv : deviceReport.values )
+    {
+        stats[deviceId][dv.attribute]++;
+    }
+
+    return pointdata;
+}
+
 
 void RfDataStreamingProcessor::handleStatistics()
-{/*
+{
     if( CtiTime::now() > nextStatisticsReport )
     {
         nextStatisticsReport = nextScheduledTimeAlignedOnRate(nextStatisticsReport, statsReportFrequency);
 
-        StreamBuffer report;
+        FormattedTable report;
 
-        report << "RFN data streaming statistics report:" << std::endl;
+        report.setHorizontalBorders(FormattedTable::Borders_Outside_Bottom, 0);
+        report.setVerticalBorders  (FormattedTable::Borders_Inside);
 
-        CTILOG_INFO(dout, report);
-    }*/
+        std::map<Attribute, size_t> attributeColumns;
+
+        size_t row {}, maxCol {};
+
+        report.setCell(row++, maxCol++) << "Device ID";
+
+        for( const auto& dev : stats )
+        {
+             report.setCell(row, maxCol) << dev.first;
+
+             for( const auto& attribCounts : dev.second )
+             {
+                 auto indexItr = attributeColumns.find(attribCounts.first);
+                 if( indexItr == attributeColumns.end() )
+                 {
+                     indexItr = attributeColumns.emplace(attribCounts.first, maxCol++).first;
+                 }
+                 report.setCell(row, indexItr->second) << attribCounts.second;
+             }
+             row++;
+        }
+
+        CTILOG_INFO(dout, "RFN data streaming statistics report:" << report);
+    }
+
+    stats.clear();
 }
 
 }

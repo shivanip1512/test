@@ -109,7 +109,8 @@ PilServer::PilServer(CtiDeviceManager *DM, CtiPointManager *PM, CtiRouteManager 
     _nexusWriteThread    (WorkerThread::Function([this]{ nexusWriteThread();     }).name("_nexusWriteThread")),
     _vgConnThread        (WorkerThread::Function([this]{ vgConnThread();         }).name("_vgConnThread")),
     _schedulerThread     (WorkerThread::Function([this]{ schedulerThread();      }).name("_schedulerThread")),
-    _periodicActionThread(WorkerThread::Function([this]{ periodicActionThread(); }).name("_periodicActionThread"))
+    _periodicActionThread(WorkerThread::Function([this]{ periodicActionThread(); }).name("_periodicActionThread")),
+    _rfDataStreamingProcessor { DM, PM }
 {
     serverClosingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if( serverClosingEvent == (HANDLE)NULL )
@@ -1542,6 +1543,8 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
 
     if( parse.isKeyValid("serial") )
     {
+        static const auto SYS_DID_SYSTEM = 0;
+
         pReq->setDeviceId( SYS_DID_SYSTEM );    // Make sure we are targeting the serial/system device;
     }
 
@@ -2124,10 +2127,10 @@ void PilServer::periodicActionThread()
         {
             _rfnManager.tick();
 
-            /*for( auto& msg : _rfDataStreamingProcessor.tick() )
+            for( auto& msg : _rfDataStreamingProcessor.tick() )
             {
                 VanGoghConnection.WriteConnQue(std::move(msg), CALLSITE);
-            }*/
+            }
         }
 
         if( nextRfDaCheck < Now )

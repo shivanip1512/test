@@ -6,14 +6,21 @@
 #include "pointdefs.h"
 #include "msg_pdata.h"
 
+class CtiDeviceManager;
+class CtiPointManager;
+
 namespace Cti {
 namespace Pil {
 
 class IM_EX_CTIPIL RfDataStreamingProcessor
 {
 public:
+    
+    using ResultVector = std::vector<std::unique_ptr<CtiPointDataMsg>>;
 
-    void tick();
+    RfDataStreamingProcessor( CtiDeviceManager *deviceManager, CtiPointManager *pointManager );
+
+    ResultVector tick();
 
     void start();
 
@@ -27,16 +34,20 @@ protected:
         PointQuality_t quality;
     };
 
+    friend Cti::StreamBufferSink& operator<<(Cti::StreamBufferSink& os, const Value& v);
+
     struct DeviceReport
     {
         RfnIdentifier rfnId;
         std::vector<Value> values;
     };
 
+    friend Cti::StreamBufferSink& operator<<(Cti::StreamBufferSink& os, const DeviceReport& dr);
+
     using Packet = Messaging::Rfn::E2eMessenger::Indication;
 
     static DeviceReport processPacket(const Packet& p);
-    std::unique_ptr<CtiPointDataMsg> processDeviceReport(const DeviceReport &deviceReport);
+    ResultVector processDeviceReport(const DeviceReport &deviceReport);
 
 private:
 
@@ -50,7 +61,10 @@ private:
     Mutex        _packetMux;
     PacketQueue  _packets;
 
-    std::vector<std::unique_ptr<CtiPointDataMsg>> _results;
+    ResultVector _results;
+
+    CtiDeviceManager *_deviceManager;
+    CtiPointManager  *_pointManager;
 };
 
 }

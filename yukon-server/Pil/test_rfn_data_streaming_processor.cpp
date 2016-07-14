@@ -2,7 +2,17 @@
 
 #include "rf_data_streaming_processor.h"
 
+#include "mgr_device.h"
+#include "mgr_point.h"
+#include "pt_analog.h"
+#include "dev_rfnResidential.h"
+#include "dev_rfnCommercial.h"
+
+#include "rtdb_test_helpers.h"
+
 #include "boost_test_helpers.h"
+
+using std::operator ""s;
 
 namespace std {
     ostream& operator<<(ostream& os, const std::chrono::system_clock::time_point &t)
@@ -19,7 +29,7 @@ std::ostream& operator<<(std::ostream& os, const Attribute &attrib)
     return os << attrib.getName();
 }
 
-std::chrono::system_clock::time_point make_time_point(unsigned year, unsigned month, unsigned day, unsigned hour, unsigned minute, unsigned second)
+std::chrono::system_clock::time_point make_time_point(int year, int month, int day, int hour, int minute, int second)
 {
     tm t {
         second,
@@ -40,9 +50,93 @@ using Cti::Messaging::Rfn::E2eDataRequestMsg;
 
 struct test_RfDataStreamingProcessor : Cti::Pil::RfDataStreamingProcessor
 {
+    test_RfDataStreamingProcessor(CtiDeviceManager *DM, CtiPointManager *PM)
+        :   RfDataStreamingProcessor(DM, PM)
+    {}
+
     using Packet = RfDataStreamingProcessor::Packet;
+    using DeviceReport = RfDataStreamingProcessor::DeviceReport;
+    using Value = RfDataStreamingProcessor::Value;
 
     using RfDataStreamingProcessor::processPacket;
+    using RfDataStreamingProcessor::processDeviceReport;
+};
+
+struct test_Rfn410flDevice : Cti::Devices::Rfn410flDevice
+{
+    test_Rfn410flDevice(std::string& name)
+    {
+        _name = name;
+        setDeviceType(TYPE_RFN410FL);
+    }
+};
+
+struct test_Rfn430sl1Device : Cti::Devices::Rfn430sl1Device
+{
+    test_Rfn430sl1Device(std::string& name)
+    {
+        _name = name;
+        setDeviceType(TYPE_RFN430SL1);
+    }
+};
+
+struct test_DeviceManager : CtiDeviceManager
+{
+    std::map<int, CtiDeviceSPtr> devices {
+        { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
+        {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
+        { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) }};
+
+    test_DeviceManager()
+    {
+        for( auto& device : devices )
+        {
+            device.second->setID(device.first);
+        }
+    }
+
+    ptr_type getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId) override
+    {
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" } )
+        {
+            return devices[123];
+        }
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "VITO" } )
+        {
+            return devices[49];
+        }
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "TURKEY TOM" } )
+        {
+            return devices[499];
+        }
+
+        return nullptr;
+    }
+};
+
+struct test_PointManager : CtiPointManager
+{
+    ptr_type getOffsetTypeEqual(long pao, int offset, CtiPointType_t type) override
+    {
+        //  We only expect analog points to come out of RFN Data Streaming
+        BOOST_REQUIRE_EQUAL( type, AnalogPointType );
+
+        if( pao > 100 )
+        {
+            auto pt = Cti::Test::makeAnalogPoint(pao, pao * 1000 + offset, offset);
+
+            //  Pao 499 gets non-default multipliers
+            if( pao == 499 )
+            {
+                pt->multiplier = 3;
+                pt->offset = 100;
+            }
+
+            return ptr_type{pt};
+        }
+
+        return nullptr;
+    }
 };
 
 BOOST_AUTO_TEST_CASE( test_processPacket_no_points )
@@ -168,23 +262,150 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
     {
         const auto& reportValue = *report_itr++;
 
-        tm t {};
-
-        //  Feb 7, 2152, 6:28:15 GMT
-        t.tm_year = 252;
-        t.tm_mon  = 1;
-        t.tm_mday = 7;
-        t.tm_hour = 6;
-        t.tm_min  = 28;
-        t.tm_sec  = 15;
-
-        const auto feb_07_2152_06_28_15 = std::chrono::system_clock::from_time_t(_mkgmtime(&t));
-
         BOOST_CHECK_EQUAL( reportValue.attribute, Attribute::PowerFactor );
         BOOST_CHECK_EQUAL( reportValue.quality, UnknownQuality );
         BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2152, 2, 7, 6, 28, 15) );
         BOOST_CHECK_CLOSE( reportValue.value, 4.294967295e+18, 0.000'000'01 );
     }
 }
+
+BOOST_AUTO_TEST_CASE(test_processDeviceReport)
+{
+    test_DeviceManager dm;
+    test_PointManager pm;
+
+    test_RfDataStreamingProcessor p{ &dm, &pm };
+
+    Cti::Test::set_to_eastern_timezone();
+
+    {
+        test_RfDataStreamingProcessor::DeviceReport r {
+            { "JIMMY", "JOHNS", "GARGANTUAN" },
+            {   
+                {   Attribute::Demand,
+                    make_time_point(2016, 7, 12, 22, 13, 18),  //  GMT
+                    3.735928559,
+                    AbnormalQuality },
+                {   Attribute::Voltage,
+                    make_time_point(2016, 7, 12, 22, 13, 17),  //  GMT
+                    245.678,
+                    InvalidQuality },
+                {   Attribute::PowerFactor,
+                    make_time_point(2152, 2, 7, 6, 28, 15),    //  GMT
+                    4.294967295e+18,
+                    UnknownQuality } } };
+
+        auto pdata = p.processDeviceReport(r);
+
+        BOOST_REQUIRE_EQUAL(pdata.size(), 2);  //  RFN-410 does not support PowerFactor
+        
+        auto pdata_itr = pdata.begin();
+
+        {
+            auto& pdatum = *pdata_itr++;
+
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 3.735928559, 0.000'000'01);
+            BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 18 ));
+            BOOST_CHECK_EQUAL(pdatum->getId(), 123101);  //  device ID 123, point offset 101
+            BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS GARGANTUAN (123) / Analog101 = 3.735929 @ 07/12/2016 18:13:18");
+        }
+        {
+            auto& pdatum = *pdata_itr++;
+
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 245.678, 0.000'000'01);
+            BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 17 ));
+            BOOST_CHECK_EQUAL(pdatum->getId(), 123005);
+            BOOST_CHECK_EQUAL(pdatum->getType(), 1);
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS GARGANTUAN (123) / Analog5 = 245.678000 @ 07/12/2016 18:13:17");
+        }
+    }
+    {
+        test_RfDataStreamingProcessor::DeviceReport r {
+            { "JIMMY", "JOHNS", "VITO" },
+            {   
+                {   Attribute::Demand,
+                    make_time_point(2016, 7, 12, 22, 13, 18),
+                    3.735928559,
+                    AbnormalQuality } } };
+
+        auto pdata = p.processDeviceReport(r);
+
+        BOOST_REQUIRE_EQUAL(pdata.size(), 0);  //  VITO has no points
+    }
+    {
+        test_RfDataStreamingProcessor::DeviceReport r {
+            { "JIMMY", "JOHNS", "TURKEY TOM" },
+            {   
+                {   Attribute::PowerFactor,
+                    make_time_point(2016, 7, 12, 22, 13, 18),
+                    3.735928559,
+                    AbnormalQuality },
+                {   Attribute::VoltagePhaseA,
+                    make_time_point(2016, 7, 12, 22, 13, 17),
+                    245.678,
+                    InvalidQuality },
+                {   Attribute::CurrentPhaseA,
+                    make_time_point(2152, 2, 7, 6, 28, 15),
+                    4.294967295e+18,
+                    UnknownQuality } } };
+
+        auto pdata = p.processDeviceReport(r);
+
+        BOOST_REQUIRE_EQUAL(pdata.size(), 3);
+
+        auto pdata_itr = pdata.begin();
+
+        {
+            auto& pdatum = *pdata_itr++;
+
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 111.207785677, 0.000'000'01);
+            BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 18 ));
+            BOOST_CHECK_EQUAL(pdatum->getId(), 499133);  //  device ID 123, point offset 10
+            BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS TURKEY TOM (499) / Analog133 = 111.207786 @ 07/12/2016 18:13:18");
+        }
+        {
+            auto& pdatum = *pdata_itr++;
+
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 837.034, 0.000'000'01);
+            BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 17 ));
+            BOOST_CHECK_EQUAL(pdatum->getId(), 499070);
+            BOOST_CHECK_EQUAL(pdatum->getType(), 1);
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS TURKEY TOM (499) / Analog70 = 837.034000 @ 07/12/2016 18:13:17");
+        }
+        {
+            auto& pdatum = *pdata_itr++;
+
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 1.2884901885e+19, 0.000'000'01);
+            BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 7, 2, 2152 ), 1, 28, 15 ));
+            BOOST_CHECK_EQUAL(pdatum->getId(), 499073);  
+            BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS TURKEY TOM (499) / Analog73 = 12884901884999999488.000000 @ 02/07/2152 01:28:15");
+        }
+    }
+    {
+        test_RfDataStreamingProcessor::DeviceReport r {
+            { "BANANA", "BOAT", "DAY-O" },
+            {   
+                {   Attribute::Demand,
+                    make_time_point(2016, 7, 12, 22, 13, 18),
+                    3.735928559,
+                    AbnormalQuality },
+                {   Attribute::Voltage,
+                    make_time_point(2016, 7, 12, 22, 13, 17),
+                    245.678,
+                    InvalidQuality },
+                {   Attribute::PowerFactor,
+                    make_time_point(2152, 2, 7, 6, 28, 15),
+                    4.294967295e+18,
+                    UnknownQuality } } };
+
+        auto pdata = p.processDeviceReport(r);
+
+        BOOST_REQUIRE_EQUAL(pdata.size(), 0);  //  Invalid device
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
