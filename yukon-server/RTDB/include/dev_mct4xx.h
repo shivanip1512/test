@@ -46,6 +46,9 @@ private:
 
 protected:
 
+    static const std::map<std::string, long> scheduleMap;
+    static const std::map<std::string, long> timezoneMap;
+
     static std::string printTimestamp(unsigned long seconds);
     static std::string printDate(unsigned long seconds);
     static std::string printDate(const CtiDate &dt);

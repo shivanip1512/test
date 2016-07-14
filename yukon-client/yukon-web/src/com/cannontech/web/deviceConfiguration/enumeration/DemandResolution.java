@@ -24,14 +24,8 @@ public final class DemandResolution implements DeviceConfigurationInputEnumerati
      * Enum values represent the order of magnitude of the resolution in Wh.
      */
     public enum Resolution implements DisplayableEnum {
-        ZERO("1.0"),
-        ONE("10.0");
-
-        private final String dbValue;
-
-        private Resolution(String dbValue) {
-            this.dbValue = dbValue;
-        }
+        ZERO,
+        ONE;
 
         @Override
         public String getFormatKey() {
@@ -46,7 +40,7 @@ public final class DemandResolution implements DeviceConfigurationInputEnumerati
         List<InputOption> resolutions = new ArrayList<>();
 
         for (Resolution resolution : Resolution.values()) {
-            resolutions.add( new InputOption(resolution.dbValue, messageAccessor.getMessage(resolution)));
+            resolutions.add( new InputOption(resolution.name(), messageAccessor.getMessage(resolution)));
         }
 
         return resolutions;

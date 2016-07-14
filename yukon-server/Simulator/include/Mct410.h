@@ -85,6 +85,9 @@ private:
     void processFlags(Logger &logger);
 
     void putScheduledFreezeDay(const bytes &data);
+    void putDisplayParameters(const bytes &data);
+    void putLcdConfiguration1(const bytes &data);
+    void putLcdConfiguration2(const bytes &data);
     void putIntervals(const bytes &data);
 
     // Data Reads
@@ -107,6 +110,9 @@ private:
     bytes getAllCurrentPeakDemandReadings();
     bytes getAllCurrentVoltageReadings();
     bytes getFrozenMinMaxVoltageReadings();
+    bytes getDisplayParameters();
+    bytes getLcdConfiguration1();
+    bytes getLcdConfiguration2();
     bytes getLongLoadProfile(const unsigned offset);
     bytes getLoadProfile(const unsigned offset, const unsigned channel);
 
@@ -163,13 +169,24 @@ private:
         FR_AllFrozenChannel1Readings = 0x94,
         FR_AllCurrentVoltageReadings = 0x95,
         FR_FrozenMinMaxVoltageReadings = 0x96,
+
+        // Note that in Porter, the function bit is included in the function
+        // code, so that the function 0x1f3 in porter corresponds to 0xf3 here.
+        FR_DisplayParameters       = 0xf3,
+        FR_LcdConfiguration1       = 0xf6,
+        FR_LcdConfiguration2       = 0xf7,
     };
 
     enum FunctionWrites
     {
         FW_Intervals       = 0x03,
         FW_PointOfInterest = 0x05,
-        FW_ScheduledFreezeDay = 0x4f
+        FW_ScheduledFreezeDay = 0x4f,
+        // TODO: These are unique to the MCT-420.  They should be broken out 
+        //       into a specialization eventually.
+        FW_DisplayParameters = 0xf3,
+        FW_LcdConfiguration1 = 0xf6,
+        FW_LcdConfiguration2 = 0xf7
     };
 
     enum DataReads
@@ -178,6 +195,7 @@ private:
         DR_ScheduledFreezeDay = 0x4f
     };
 
+    // TODO: Since adding function information to this map, it probably should be turned into a structure.
     enum MemoryMap
     {
         MM_EventFlags1  = 0x06,
@@ -197,7 +215,13 @@ private:
         MM_CurrentPeakDemand1 = 0x88,
         MM_FrozenPeakDemand1 = 0x8a,
         MM_CurrentPeakDemand1Timestamp = 0x91,
-        MM_FrozenPeakDemand1Timestamp = 0x95
+        MM_FrozenPeakDemand1Timestamp = 0x95,
+
+        // These are really function write codes, but we need to make this persistent so 
+        // the data got stuck in here.
+        MM_DisplayParameters = 0xf3,
+        MM_LcdConfiguration1 = 0xf6,    // This involves 13 bytes that would overlap the    
+        MM_LcdConfiguration2 = 0x103    // next memory, so we moved LcdConfiguration2 down.
     };
 
     enum MemoryMapLengths
@@ -209,7 +233,10 @@ private:
         MML_LastFreezeTimestamp = 4,
         MML_LastVoltageFreezeTimestamp = 4,
         MML_FrozenPeakDemandTimestamp = 4,
-        MML_CurrentPeakDemand1Timestamp = 4
+        MML_CurrentPeakDemand1Timestamp = 4,
+        MML_DisplayParameters = 3,
+        MML_LcdConfiguration1 = 13,
+        MML_LcdConfiguration2 = 13
     };
 
     enum EventFlags1StatusFlags

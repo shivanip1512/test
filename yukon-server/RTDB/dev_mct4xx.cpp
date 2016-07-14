@@ -54,18 +54,36 @@ const char *Mct4xxDevice::PutConfigPart_phaseloss       = "phaseloss";
 const char *Mct4xxDevice::PutConfigPart_meter_parameters = "meterparameters";
 const char *Mct4xxDevice::PutConfigPart_freeze_day      = "freezeday";
 
-
 const std::string Mct4xxDevice::ErrorText_OutOfRange = "Requested interval outside of valid range";
 
 const std::string PeakString_Day = "day";
 const std::string PeakString_Hour = "hour";
 const std::string PeakString_Interval = "interval";
 
-
 const Mct4xxDevice::CommandSet Mct4xxDevice::_commandStore = Mct4xxDevice::initCommandStore();
 
 const CtiDate                  Mct4xxDevice::DawnOfTime_Date = CtiDate(CtiTime(Mct4xxDevice::DawnOfTime_UtcSeconds));
 
+/** Map to translate Device Config Schedules to an enuneration */
+const std::map<std::string, long> Mct4xxDevice::scheduleMap {
+    {"SCHEDULE_1", 0},
+    {"SCHEDULE_2", 1},
+    {"SCHEDULE_3", 2},
+    {"SCHEDULE_4", 3}
+};
+
+/** Map to translate Device Config Timezones to an enuneration */
+const std::map<std::string, long> Mct4xxDevice::timezoneMap {
+    {"NORONHA", -2},
+    {"SAO_PAULO", -3},
+    {"MANAUS", -4},
+    {"NEW_YORK", -5},
+    {"CHICAGO", -6},
+    {"DENVER", -7},
+    {"LOS_ANGELES", -8},
+    {"ANCHORAGE", -9},
+    {"HONOLULU", -10}
+};
 
 bool Mct4xxDevice::llp_peak_report_interest_t::tryContinueRequest(long &incoming_request)
 {
@@ -2204,6 +2222,11 @@ YukonError_t Mct4xxDevice::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq,
     return ClientErrors::NoMethod;
 }
 
+YukonError_t Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+{
+    return ClientErrors::NoMethod;
+}
+
 YukonError_t Mct4xxDevice::executePutConfigInstallTimezone(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
@@ -2216,7 +2239,7 @@ YukonError_t Mct4xxDevice::executePutConfigInstallTimezone(CtiRequestMsg *pReq, 
     if( ! readsOnly )
     {
         const boost::optional<long> timezoneOffset =
-                deviceConfig->findValue<long>(MCTStrings::TimeZoneOffset);
+                deviceConfig->findValue<long>(MCTStrings::TimeZoneOffset, timezoneMap);
 
         if( ! getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt) )
         {
@@ -2326,75 +2349,6 @@ YukonError_t Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandP
     }
 
     return nRet;
-}
-
-YukonError_t Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
-{
-    DeviceConfigSPtr deviceConfig = getDeviceConfig();
-
-    if( ! deviceConfig )
-    {
-        return ClientErrors::NoConfigData;
-    }
-
-    if( ! readsOnly )
-    {
-        const boost::optional<bool> dstEnabled          = deviceConfig->findValue<bool>(MCTStrings::EnableDst);
-        const boost::optional<long> electronicMeterType = deviceConfig->findValue<long>(MCTStrings::ElectronicMeter);
-
-        long dynamicPaoConfigByte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
-        boost::optional<long> configuration;
-
-        if( dstEnabled )
-        {
-            if( isMct430(getType()) )
-            {
-                //  ignore the electronic meter type when comparing with the expected device config value
-                dynamicPaoConfigByte &= 0x0F;
-
-                configuration   =  *dstEnabled & 0x01;
-            }
-            else if( electronicMeterType )
-            {
-                configuration   =  *dstEnabled & 0x01;
-                *configuration |= (*electronicMeterType & 0x0f) << 4;
-            }
-        }
-
-        if( ! configuration )
-        {
-            CTILOG_ERROR(dout, "no or bad configuration value stored");
-
-            return ClientErrors::NoConfigData;
-        }
-
-        if( dynamicPaoConfigByte == configuration )
-        {
-            if( ! parse.isKeyValid("force") )
-            {
-                return ClientErrors::ConfigCurrent;
-            }
-        }
-
-        if( parse.isKeyValid("verify") )
-        {
-            return ClientErrors::ConfigNotCurrent;
-        }
-
-        OutMessage->Buffer.BSt.Message[0] = *configuration;
-        OutMessage->Buffer.BSt.Function = FuncWrite_ConfigAlarmMaskPos;
-        OutMessage->Buffer.BSt.Length = 1; //We are only writing a single byte, the command supports more.
-        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
-        outList.push_back( new OUTMESS(*OutMessage) );
-    }
-
-    OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-    OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
-    OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
-
-    insertConfigReadOutMessage("getconfig install configbyte", *OutMessage, outList);
-
-    return ClientErrors::None;
 }
 
 YukonError_t Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)

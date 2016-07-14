@@ -44,6 +44,35 @@ const Mct470Device::error_map Mct470Device::_error_info_alphapp   = Mct470Device
 const Mct470Device::error_map Mct470Device::_error_info_gekv      = Mct470Device::initErrorInfoGEkV();
 const Mct470Device::error_map Mct470Device::_error_info_sentinel  = Mct470Device::initErrorInfoSentinel();
 
+/** Map to translate Device Config Electronic Meter Types to an enuneration */
+const std::map<std::string, long> Mct470Device::IED_TypeMap {
+    {"NONE", Mct470Device::IED_Types::IED_Type_None},
+    {"S4", Mct470Device::IED_Types::IED_Type_LG_S4},
+    {"ALPHA_A3", Mct470Device::IED_Types::IED_Type_Alpha_A3},
+    {"ALPHA_P_PLUS", Mct470Device::IED_Types::IED_Type_Alpha_PP},
+    {"GEKV", Mct470Device::IED_Types::IED_Type_GE_kV},
+    {"GEKV2", Mct470Device::IED_Types::IED_Type_GE_kV2},
+    {"SENTINEL", Mct470Device::IED_Types::IED_Type_Sentinel},
+    {"DNP", Mct470Device::IED_Types::IED_Type_DNP},
+    {"GEKV2C", Mct470Device::IED_Types::IED_Type_GE_kV2c}
+};
+
+/** Map to translate Device Config Meter Types to an enuneration */
+const std::map<std::string, long> Mct470Device::channelTypeMap {
+    {"CHANNEL_NOT_USED", 0},
+    {"ELECTRONIC_METER", 1},
+    {"TWO_WIRE_KYZ_FORM_A", 2},
+    {"THREE_WIRE_KYZ_FORM_C", 3}
+};
+
+/** Map to translate Device Config Resolutions to an enuneration */
+const std::map<std::string, double> Mct470Device::resolutionMap {
+    {"MINUS_TWO", 0.01},
+    {"MINUS_ONE", 0.1},
+    {"ZERO", 1},
+    {"ONE", 10}
+};
+
 Mct470Device::Mct470Device( ) :
     _lastConfigRequest(0)
 {
@@ -2512,7 +2541,7 @@ boost::optional<Mct470Device::IED_Types> Mct470Device::tryFindIedTypeInCommandSt
 }
 
 
-boost::optional<int> Mct470Device::tryDetermineIedTypeFromDeviceConfiguration()
+boost::optional<long> Mct470Device::tryDetermineIedTypeFromDeviceConfiguration()
 {
     //  Try to look it up by the device configs or by the config byte
     if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
@@ -2521,12 +2550,11 @@ boost::optional<int> Mct470Device::tryDetermineIedTypeFromDeviceConfiguration()
     }
     else if( DeviceConfigSPtr deviceConfig = getDeviceConfig() )
     {
-        return deviceConfig->getLongValueFromKey(MCTStrings::ElectronicMeter);
+        return deviceConfig->findValue(MCTStrings::ElectronicMeter, IED_TypeMap);
     }
 
     return boost::none;
 }
-
 
 boost::optional<Mct470Device::IED_Types> Mct470Device::tryDetermineIedTypeFromDeviceType(const int deviceType)
 {
@@ -2755,25 +2783,14 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
         const bool cfgTouEnabled = *optTouEnabled;
 
-        // Unfortunatelly the arrays have a 0 offset, while the schedules times/rates are referenced with a 1 offset
-        // Also note that rate "0" is the midnight rate.
-        const string mondayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::MondaySchedule);
-        const string tuesdayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::TuesdaySchedule);
-        const string wednesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::WednesdaySchedule);
-        const string thursdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::ThursdaySchedule);
-        const string fridayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::FridaySchedule);
-        const string saturdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule);
-        const string sundayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::SundaySchedule);
-        const string holidayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule);
-
-        const long mondaySchedule    = resolveScheduleName(mondayScheduleStr);
-        const long tuesdaySchedule   = resolveScheduleName(tuesdayScheduleStr);
-        const long wednesdaySchedule = resolveScheduleName(wednesdayScheduleStr);
-        const long thursdaySchedule  = resolveScheduleName(thursdayScheduleStr);
-        const long fridaySchedule    = resolveScheduleName(fridayScheduleStr);
-        const long saturdaySchedule  = resolveScheduleName(saturdayScheduleStr);
-        const long sundaySchedule    = resolveScheduleName(sundayScheduleStr);
-        const long holidaySchedule   = resolveScheduleName(holidayScheduleStr);
+        const boost::optional<long> mondaySchedule    = deviceConfig->findValue(MCTStrings::MondaySchedule, scheduleMap);
+        const boost::optional<long> tuesdaySchedule   = deviceConfig->findValue(MCTStrings::TuesdaySchedule, scheduleMap);
+        const boost::optional<long> wednesdaySchedule = deviceConfig->findValue(MCTStrings::WednesdaySchedule, scheduleMap);
+        const boost::optional<long> thursdaySchedule  = deviceConfig->findValue(MCTStrings::ThursdaySchedule, scheduleMap);
+        const boost::optional<long> fridaySchedule    = deviceConfig->findValue(MCTStrings::FridaySchedule, scheduleMap);
+        const boost::optional<long> saturdaySchedule  = deviceConfig->findValue(MCTStrings::SaturdaySchedule, scheduleMap);
+        const boost::optional<long> sundaySchedule    = deviceConfig->findValue(MCTStrings::SundaySchedule, scheduleMap);
+        const boost::optional<long> holidaySchedule   = deviceConfig->findValue(MCTStrings::HolidaySchedule, scheduleMap);
 
         //These are all string values
         timeStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time1);
@@ -2932,14 +2949,14 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
             return ClientErrors::NoConfigData;
         }
 
-        if( mondaySchedule    == std::numeric_limits<long>::min() ||
-            tuesdaySchedule   == std::numeric_limits<long>::min() ||
-            fridaySchedule    == std::numeric_limits<long>::min() ||
-            saturdaySchedule  == std::numeric_limits<long>::min() ||
-            sundaySchedule    == std::numeric_limits<long>::min() ||
-            holidaySchedule   == std::numeric_limits<long>::min() ||
-            wednesdaySchedule == std::numeric_limits<long>::min() ||
-            thursdaySchedule  == std::numeric_limits<long>::min() )
+        if( !mondaySchedule    ||
+            !tuesdaySchedule   ||
+            !fridaySchedule    ||
+            !saturdaySchedule  ||
+            !sundaySchedule    ||
+            !holidaySchedule   ||
+            !wednesdaySchedule ||
+            !thursdaySchedule )
         {
             CTILOG_ERROR(dout, "device "<< getName() <<" no or bad schedule value stored");
 
@@ -2947,14 +2964,14 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
         }
 
         long dayTable;
-        dayTable = holidaySchedule    << 14;
-        dayTable |= saturdaySchedule  << 12;
-        dayTable |= fridaySchedule    << 10;
-        dayTable |= thursdaySchedule  << 8;
-        dayTable |= wednesdaySchedule << 6;
-        dayTable |= tuesdaySchedule   << 4;
-        dayTable |= mondaySchedule    << 2;
-        dayTable |= sundaySchedule;
+        dayTable =  *holidaySchedule   << 14;
+        dayTable |= *saturdaySchedule  << 12;
+        dayTable |= *fridaySchedule    << 10;
+        dayTable |= *thursdaySchedule  << 8;
+        dayTable |= *wednesdaySchedule << 6;
+        dayTable |= *tuesdaySchedule   << 4;
+        dayTable |= *mondaySchedule    << 2;
+        dayTable |= *sundaySchedule;
 
         createTOUDayScheduleString(daySchedule1, durations[0], rates[0]);
         createTOUDayScheduleString(daySchedule2, durations[1], rates[1]);
@@ -3082,17 +3099,17 @@ YukonError_t Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pRe
         {
             const boost::optional<long>
                 channel1physical = deviceConfig->findValue<long>(MCTStrings::Channel1PhysicalChannel),
-                channel1type     = deviceConfig->findValue<long>(MCTStrings::Channel1Type),
+                channel1type     = deviceConfig->findValue<long>(MCTStrings::Channel1Type, channelTypeMap),
                 channel2physical = deviceConfig->findValue<long>(MCTStrings::Channel2PhysicalChannel),
-                channel2type     = deviceConfig->findValue<long>(MCTStrings::Channel2Type);
+                channel2type     = deviceConfig->findValue<long>(MCTStrings::Channel2Type, channelTypeMap);
 
             const boost::optional<double>
-                peakKwResolution1             = deviceConfig->findValue<double>(MCTStrings::PeakKwResolution1),
-                lastIntervalDemandResolution1 = deviceConfig->findValue<double>(MCTStrings::LastIntervalDemandResolution1),
-                lpResolution1                 = deviceConfig->findValue<double>(MCTStrings::ProfileResolution1),
-                peakKwResolution2             = deviceConfig->findValue<double>(MCTStrings::PeakKwResolution2),
-                lastIntervalDemandResolution2 = deviceConfig->findValue<double>(MCTStrings::LastIntervalDemandResolution2),
-                lpResolution2                 = deviceConfig->findValue<double>(MCTStrings::ProfileResolution2);
+                peakKwResolution1             = deviceConfig->findValue<double>(MCTStrings::PeakKwResolution1, resolutionMap),
+                lastIntervalDemandResolution1 = deviceConfig->findValue<double>(MCTStrings::LastIntervalDemandResolution1, resolutionMap),
+                lpResolution1                 = deviceConfig->findValue<double>(MCTStrings::ProfileResolution1, resolutionMap),
+                peakKwResolution2             = deviceConfig->findValue<double>(MCTStrings::PeakKwResolution2, resolutionMap),
+                lastIntervalDemandResolution2 = deviceConfig->findValue<double>(MCTStrings::LastIntervalDemandResolution2, resolutionMap),
+                lpResolution2                 = deviceConfig->findValue<double>(MCTStrings::ProfileResolution2, resolutionMap);
 
             if (   ! channel1physical  || ! channel1type
                 || ! channel2physical  || ! channel2type
@@ -3174,17 +3191,17 @@ YukonError_t Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pRe
         {
             const boost::optional<long>
                 channel3physical = deviceConfig->findValue<long>(MCTStrings::Channel3PhysicalChannel),
-                channel3type     = deviceConfig->findValue<long>(MCTStrings::Channel3Type),
+                channel3type     = deviceConfig->findValue<long>(MCTStrings::Channel3Type, channelTypeMap),
                 channel4physical = deviceConfig->findValue<long>(MCTStrings::Channel4PhysicalChannel),
-                channel4type     = deviceConfig->findValue<long>(MCTStrings::Channel4Type);
+                channel4type     = deviceConfig->findValue<long>(MCTStrings::Channel4Type, channelTypeMap);
 
             const boost::optional<double>
-                peakKwResolution3             = deviceConfig->findValue<double>(MCTStrings::PeakKwResolution3),
-                lastIntervalDemandResolution3 = deviceConfig->findValue<double>(MCTStrings::LastIntervalDemandResolution3),
-                lpResolution3                 = deviceConfig->findValue<double>(MCTStrings::ProfileResolution3),
-                peakKwResolution4             = deviceConfig->findValue<double>(MCTStrings::PeakKwResolution4),
-                lastIntervalDemandResolution4 = deviceConfig->findValue<double>(MCTStrings::LastIntervalDemandResolution4),
-                lpResolution4                 = deviceConfig->findValue<double>(MCTStrings::ProfileResolution4);
+                peakKwResolution3             = deviceConfig->findValue<double>(MCTStrings::PeakKwResolution3, resolutionMap),
+                lastIntervalDemandResolution3 = deviceConfig->findValue<double>(MCTStrings::LastIntervalDemandResolution3, resolutionMap),
+                lpResolution3                 = deviceConfig->findValue<double>(MCTStrings::ProfileResolution3, resolutionMap),
+                peakKwResolution4             = deviceConfig->findValue<double>(MCTStrings::PeakKwResolution4, resolutionMap),
+                lastIntervalDemandResolution4 = deviceConfig->findValue<double>(MCTStrings::LastIntervalDemandResolution4, resolutionMap),
+                lpResolution4                 = deviceConfig->findValue<double>(MCTStrings::ProfileResolution4, resolutionMap);
 
             if (   ! channel3physical  || ! channel3type
                 || ! channel4physical  || ! channel4type
@@ -3282,9 +3299,9 @@ YukonError_t Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommand
             boost::optional<long>
                 spid        = CtiDeviceBase::findDynamicInfo<long>(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
-            const boost::optional<long>
-                relayATimer = deviceConfig->findValue<long>(MCTStrings::RelayATimer),
-                relayBTimer = deviceConfig->findValue<long>(MCTStrings::RelayBTimer);
+            const boost::optional<double>
+                relayATimer = deviceConfig->findValue<double>(MCTStrings::RelayATimer),
+                relayBTimer = deviceConfig->findValue<double>(MCTStrings::RelayBTimer);
 
             if ( ! spid )       // we don't have it in dynamic pao info, try the device config
             {
@@ -3299,9 +3316,14 @@ YukonError_t Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommand
             }
             else
             {
+                double dynRelayATimer;
+                double dynRelayBTimer;
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayATimer, dynRelayATimer);
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer, dynRelayBTimer);
+
                 if (parse.isKeyValid("force")
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayATimer) != relayATimer
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer) != relayBTimer)
+                    || dynRelayATimer != (*relayATimer * 4.0)
+                    || dynRelayBTimer != (*relayBTimer * 4.0))
                 {
                     if (!parse.isKeyValid("verify"))
                     {
@@ -3309,8 +3331,10 @@ YukonError_t Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommand
                         OutMessage->Buffer.BSt.Length     = FuncWrite_RelaysLen;
                         OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
                         OutMessage->Buffer.BSt.Message[0] = *spid;
-                        OutMessage->Buffer.BSt.Message[1] = *relayATimer;
-                        OutMessage->Buffer.BSt.Message[2] = *relayBTimer;
+                        // From S01030 Software Specification for MCT-470:
+                        // relayTimer: a value of 1 corresponds to 250 ms, a value of 4 corresponds to 1 second...  
+                        OutMessage->Buffer.BSt.Message[1] = static_cast<unsigned char>((*relayATimer)*4);
+                        OutMessage->Buffer.BSt.Message[2] = static_cast<unsigned char>((*relayBTimer)*4);
 
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     }
@@ -3341,7 +3365,7 @@ YukonError_t Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommand
         nRet = ClientErrors::NoConfigData;
     }
 
-    return ClientErrors::None;
+    return nRet;
 }
 
 YukonError_t Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
@@ -3431,7 +3455,9 @@ YukonError_t Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,Ct
             {
                 bool stale = false;
 
-                stale |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval) != *tableReadInterval;
+                // Dyn data is device value, database is seconds. 
+                stale |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval) != (*tableReadInterval) / 15; 
+
                 stale |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType)         != *tableType;
                 stale |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID)   != *spid;
 
@@ -3448,7 +3474,10 @@ YukonError_t Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,Ct
                         OutMessage->Buffer.BSt.Length     = FuncWrite_PrecannedTableLen;
                         OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
                         OutMessage->Buffer.BSt.Message[0] = *spid;
-                        OutMessage->Buffer.BSt.Message[1] = *tableReadInterval;
+                        // From S01030 Software Specification for MCT-470:
+                        // This interval is stored in 15 second increments (i.e. 3 = 45 seconds, 4 = 60 seconds, etc.).  
+                        // The (hardware) default is 20 (5 minutes). 
+                        OutMessage->Buffer.BSt.Message[1] = (*tableReadInterval) / 15;
                         OutMessage->Buffer.BSt.Message[2] = isMct470(getType())
                                                                 ? *meterNumber
                                                                 : 0;  //  0 for MCT-430s
@@ -3495,6 +3524,75 @@ YukonError_t Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,Ct
     }
 
     return nRet;
+}
+
+YukonError_t Mct470Device::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+{
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( ! deviceConfig )
+    {
+        return ClientErrors::NoConfigData;
+    }
+
+    if( ! readsOnly )
+    {
+        const boost::optional<bool> dstEnabled          = deviceConfig->findValue<bool>(MCTStrings::EnableDst);
+        const boost::optional<long> electronicMeterType = deviceConfig->findValue<long>(MCTStrings::ElectronicMeter, IED_TypeMap);
+
+        long dynamicPaoConfigByte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+        boost::optional<long> configuration;
+
+        if( dstEnabled )
+        {
+            if( isMct430(getType()) )
+            {
+                //  ignore the electronic meter type when comparing with the expected device config value
+                dynamicPaoConfigByte &= 0x0F;
+
+                configuration   =  *dstEnabled & 0x01;
+            }
+            else if( electronicMeterType )
+            {
+                configuration   =  *dstEnabled & 0x01;
+                *configuration |= (*electronicMeterType & 0x0f) << 4;
+            }
+        }
+
+        if( ! configuration )
+        {
+            CTILOG_ERROR(dout, "no or bad configuration value stored");
+
+            return ClientErrors::NoConfigData;
+        }
+
+        if( dynamicPaoConfigByte == configuration )
+        {
+            if( ! parse.isKeyValid("force") )
+            {
+                return ClientErrors::ConfigCurrent;
+            }
+        }
+
+        if( parse.isKeyValid("verify") )
+        {
+            return ClientErrors::ConfigNotCurrent;
+        }
+
+        OutMessage->Buffer.BSt.Message[0] = *configuration;
+        OutMessage->Buffer.BSt.Function = FuncWrite_ConfigAlarmMaskPos;
+        OutMessage->Buffer.BSt.Length = 1; //We are only writing a single byte, the command supports more.
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
+        outList.push_back( new OUTMESS(*OutMessage) );
+    }
+
+    OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
+    OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
+    OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
+
+    insertConfigReadOutMessage("getconfig install configbyte", *OutMessage, outList);
+
+    return ClientErrors::None;
 }
 
 int Mct470Device::sendDNPConfigMessages(int startMCTID, OutMessageList &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly)
@@ -5607,29 +5705,6 @@ Mct470Device::IED_Types Mct470Device::resolveIEDType(const string &iedType)
     else if( iedString == "sentinel" )  retVal = IED_Type_Sentinel;
 
     return retVal;
-}
-
-long Mct470Device::resolveScheduleName(const string & scheduleName)
-{
-    std::string schedule = scheduleName;
-    CtiToLower(schedule);
-
-    if (schedule == "schedule 1")
-    {
-        return 0;
-    }
-    else if( schedule == "schedule 2" )
-    {
-        return 1;
-    }
-    else if( schedule == "schedule 3" )
-    {
-        return 2;
-    }
-    else //schedule 4
-    {
-        return 3;
-    }
 }
 
 unsigned char Mct470Device::computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution)

@@ -192,12 +192,15 @@ class IM_EX_DEVDB Mct470Device : public Mct4xxDevice
 
     static boost::optional<IED_Types> tryFindIedTypeInCommandString(const std::string &commandString);
     static boost::optional<IED_Types> tryDetermineIedTypeFromDeviceType(const int deviceType);
-    boost::optional<int> tryDetermineIedTypeFromDeviceConfiguration();
+    boost::optional<long> tryDetermineIedTypeFromDeviceConfiguration();
 
-    static IED_Types resolveIEDType(const std::string &iedType);
+    static IED_Types      resolveIEDType(const std::string &iedType);
     static std::string    resolveIEDName(int bits);
     static std::string    resolveDNPStatus(int status);
-    static long      resolveScheduleName(const std::string & scheduleName);
+
+    static const std::map<std::string, long> IED_TypeMap;
+    static const std::map<std::string, long> channelTypeMap;
+    static const std::map<std::string, double> resolutionMap;
 
 protected:
 
@@ -488,6 +491,7 @@ protected:
     YukonError_t executePutConfigPrecannedTable       (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly = false);
     YukonError_t executePutConfigDemandLP             (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly = false);
     YukonError_t executePutConfigTOU                  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly = false);
+    YukonError_t executePutConfigConfigurationByte    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly = false);
 
     void reportPointData(const CtiPointType_t pointType, const int pointOffset, CtiReturnMsg &ReturnMsg, const INMESS &InMessage, const point_info &pi, const std::string pointName="");
 

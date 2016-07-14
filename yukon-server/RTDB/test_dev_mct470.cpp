@@ -731,7 +731,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-        config.insertValue("tableReadInterval", "7");
+        config.insertValue("tableReadInterval", "105");     // 7 minutes
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
         config.insertValue("meterNumber", "3");
@@ -789,7 +789,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-        config.insertValue("tableReadInterval", "7");
+        config.insertValue("tableReadInterval", "105");     // 7 minutes
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
 
@@ -847,7 +847,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-        config.insertValue("tableReadInterval", "7");
+        config.insertValue("tableReadInterval", "105");     // 7 minutes
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
         config.insertValue("meterNumber", "3");
@@ -929,7 +929,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
-        config.insertValue("electronicMeter", "5");
+        config.insertValue("electronicMeter", "GEKV2");
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x51);
 
@@ -955,7 +955,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
-        config.insertValue("electronicMeter", "5");
+        config.insertValue("electronicMeter", "GEKV2");
 
         CtiCommandParser parse("putconfig install configbyte");
 
@@ -1002,7 +1002,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
-        config.insertValue("electronicMeter", "5");
+        config.insertValue("electronicMeter", "GEKV2");
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x40);
 
@@ -1111,14 +1111,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue( MCTStrings::Schedule4Rate5, "C" );
 
         // day table
-        config.insertValue( MCTStrings::SundaySchedule,    "Schedule 1" );
-        config.insertValue( MCTStrings::MondaySchedule,    "Schedule 1" );
-        config.insertValue( MCTStrings::TuesdaySchedule,   "Schedule 3" );
-        config.insertValue( MCTStrings::WednesdaySchedule, "Schedule 2" );
-        config.insertValue( MCTStrings::ThursdaySchedule,  "Schedule 4" );
-        config.insertValue( MCTStrings::FridaySchedule,    "Schedule 2" );
-        config.insertValue( MCTStrings::SaturdaySchedule,  "Schedule 3" );
-        config.insertValue( MCTStrings::HolidaySchedule,   "Schedule 3" );
+        config.insertValue( MCTStrings::SundaySchedule,    "SCHEDULE_1" );
+        config.insertValue( MCTStrings::MondaySchedule,    "SCHEDULE_1" );
+        config.insertValue( MCTStrings::TuesdaySchedule,   "SCHEDULE_3" );
+        config.insertValue( MCTStrings::WednesdaySchedule, "SCHEDULE_2" );
+        config.insertValue( MCTStrings::ThursdaySchedule,  "SCHEDULE_4" );
+        config.insertValue( MCTStrings::FridaySchedule,    "SCHEDULE_2" );
+        config.insertValue( MCTStrings::SaturdaySchedule,  "SCHEDULE_3" );
+        config.insertValue( MCTStrings::HolidaySchedule,   "SCHEDULE_3" );
 
         // default rate
         config.insertValue( MCTStrings::DefaultTOURate, "B" );
@@ -1323,14 +1323,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue( MCTStrings::Schedule4Rate5, "C" );
 
         // day table
-        config.insertValue( MCTStrings::SundaySchedule,    "Schedule 1" );
-        config.insertValue( MCTStrings::MondaySchedule,    "Schedule 1" );
-        config.insertValue( MCTStrings::TuesdaySchedule,   "Schedule 3" );
-        config.insertValue( MCTStrings::WednesdaySchedule, "Schedule 2" );
-        config.insertValue( MCTStrings::ThursdaySchedule,  "Schedule 4" );
-        config.insertValue( MCTStrings::FridaySchedule,    "Schedule 2" );
-        config.insertValue( MCTStrings::SaturdaySchedule,  "Schedule 3" );
-        config.insertValue( MCTStrings::HolidaySchedule,   "Schedule 3" );
+        config.insertValue( MCTStrings::SundaySchedule,    "SCHEDULE_1" );
+        config.insertValue( MCTStrings::MondaySchedule,    "SCHEDULE_1" );
+        config.insertValue( MCTStrings::TuesdaySchedule,   "SCHEDULE_3" );
+        config.insertValue( MCTStrings::WednesdaySchedule, "SCHEDULE_2" );
+        config.insertValue( MCTStrings::ThursdaySchedule,  "SCHEDULE_4" );
+        config.insertValue( MCTStrings::FridaySchedule,    "SCHEDULE_2" );
+        config.insertValue( MCTStrings::SaturdaySchedule,  "SCHEDULE_3" );
+        config.insertValue( MCTStrings::HolidaySchedule,   "SCHEDULE_3" );
 
         // default rate
         config.insertValue( MCTStrings::DefaultTOURate, "B" );
@@ -1534,14 +1534,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue( MCTStrings::Schedule4Rate5, "C" );
 
         // day table
-        config.insertValue( MCTStrings::SundaySchedule,    "Schedule 1" );
-        config.insertValue( MCTStrings::MondaySchedule,    "Schedule 1" );
-        config.insertValue( MCTStrings::TuesdaySchedule,   "Schedule 3" );
-        config.insertValue( MCTStrings::WednesdaySchedule, "Schedule 2" );
-        config.insertValue( MCTStrings::ThursdaySchedule,  "Schedule 4" );
-        config.insertValue( MCTStrings::FridaySchedule,    "Schedule 2" );
-        config.insertValue( MCTStrings::SaturdaySchedule,  "Schedule 3" );
-        config.insertValue( MCTStrings::HolidaySchedule,   "Schedule 3" );
+        config.insertValue( MCTStrings::SundaySchedule,    "SCHEDULE_1" );
+        config.insertValue( MCTStrings::MondaySchedule,    "SCHEDULE_1" );
+        config.insertValue( MCTStrings::TuesdaySchedule,   "SCHEDULE_3" );
+        config.insertValue( MCTStrings::WednesdaySchedule, "SCHEDULE_2" );
+        config.insertValue( MCTStrings::ThursdaySchedule,  "SCHEDULE_4" );
+        config.insertValue( MCTStrings::FridaySchedule,    "SCHEDULE_2" );
+        config.insertValue( MCTStrings::SaturdaySchedule,  "SCHEDULE_3" );
+        config.insertValue( MCTStrings::HolidaySchedule,   "SCHEDULE_3" );
 
         // default rate
         config.insertValue( MCTStrings::DefaultTOURate, "B" );
@@ -1573,7 +1573,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-        config.insertValue("timeZoneOffset", "-6");
+        config.insertValue("timeZoneOffset", "CHICAGO");
 
         config.insertValue("timeAdjustTolerance", "3");
 
@@ -1583,30 +1583,30 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("profileInterval", "98");
 
         config.insertValue("channel1PhysicalChannel",   "7");
-        config.insertValue("channel1Type",              "1");  //  Electronic
-        config.insertValue("channel1PeakKWResolution",  "10.0");
-        config.insertValue("channel1LastIntervalDemandResolution", "1");
-        config.insertValue("channel1ProfileResolution", "0.1");
+        config.insertValue("channel1Type",              "ELECTRONIC_METER");  //  Electronic
+        config.insertValue("channel1PeakKWResolution",  "ONE");
+        config.insertValue("channel1LastIntervalDemandResolution", "ZERO");
+        config.insertValue("channel1ProfileResolution", "MINUS_ONE");
         //---
         config.insertValue("channel2PhysicalChannel",   "6");
-        config.insertValue("channel2Type",              "1");  //  Electronic
-        config.insertValue("channel2PeakKWResolution",  "10.0");
-        config.insertValue("channel2LastIntervalDemandResolution", "1");
-        config.insertValue("channel2ProfileResolution", "0.1");
+        config.insertValue("channel2Type",              "ELECTRONIC_METER");  //  Electronic
+        config.insertValue("channel2PeakKWResolution",  "ONE");
+        config.insertValue("channel2LastIntervalDemandResolution", "ZERO");
+        config.insertValue("channel2ProfileResolution", "MINUS_ONE");
         //---
         config.insertValue("channel3PhysicalChannel",   "5");
-        config.insertValue("channel3Type",              "0");  //  Disabled
-        config.insertValue("channel3PeakKWResolution",  "10.0");
-        config.insertValue("channel3LastIntervalDemandResolution", "1");
-        config.insertValue("channel3ProfileResolution", "0.1");
+        config.insertValue("channel3Type",              "CHANNEL_NOT_USED");  //  Disabled
+        config.insertValue("channel3PeakKWResolution",  "ONE");
+        config.insertValue("channel3LastIntervalDemandResolution", "ZERO");
+        config.insertValue("channel3ProfileResolution", "MINUS_ONE");
         //---
         config.insertValue("channel4PhysicalChannel",   "4");
-        config.insertValue("channel4Type",              "0");  //  Disabled
-        config.insertValue("channel4PeakKWResolution",  "10.0");
-        config.insertValue("channel4LastIntervalDemandResolution", "1");
-        config.insertValue("channel4ProfileResolution", "0.1");
+        config.insertValue("channel4Type",              "CHANNEL_NOT_USED");  //  Disabled
+        config.insertValue("channel4PeakKWResolution",  "ONE");
+        config.insertValue("channel4LastIntervalDemandResolution", "ZERO");
+        config.insertValue("channel4ProfileResolution", "MINUS_ONE");
 
-        config.insertValue("tableReadInterval", "5");
+        config.insertValue("tableReadInterval", "75");
         config.insertValue("tableType",         "11");
         config.insertValue("meterNumber",       "6");
 
@@ -1667,14 +1667,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue( MCTStrings::Schedule4Rate5, "C" );
 
         // day table
-        config.insertValue( MCTStrings::SundaySchedule,    "Schedule 1" );
-        config.insertValue( MCTStrings::MondaySchedule,    "Schedule 1" );
-        config.insertValue( MCTStrings::TuesdaySchedule,   "Schedule 3" );
-        config.insertValue( MCTStrings::WednesdaySchedule, "Schedule 2" );
-        config.insertValue( MCTStrings::ThursdaySchedule,  "Schedule 4" );
-        config.insertValue( MCTStrings::FridaySchedule,    "Schedule 2" );
-        config.insertValue( MCTStrings::SaturdaySchedule,  "Schedule 3" );
-        config.insertValue( MCTStrings::HolidaySchedule,   "Schedule 3" );
+        config.insertValue( MCTStrings::SundaySchedule,    "SCHEDULE_1" );
+        config.insertValue( MCTStrings::MondaySchedule,    "SCHEDULE_1" );
+        config.insertValue( MCTStrings::TuesdaySchedule,   "SCHEDULE_3" );
+        config.insertValue( MCTStrings::WednesdaySchedule, "SCHEDULE_2" );
+        config.insertValue( MCTStrings::ThursdaySchedule,  "SCHEDULE_4" );
+        config.insertValue( MCTStrings::FridaySchedule,    "SCHEDULE_2" );
+        config.insertValue( MCTStrings::SaturdaySchedule,  "SCHEDULE_3" );
+        config.insertValue( MCTStrings::HolidaySchedule,   "SCHEDULE_3" );
 
         // default rate
         config.insertValue( MCTStrings::DefaultTOURate, "B" );
@@ -1683,7 +1683,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue( MCTStrings::touEnabled, "true" );
 
         config.insertValue("enableDst", "true");
-        config.insertValue("electronicMeter", "5");
+        config.insertValue("electronicMeter", "GEKV2");
+
+        config.insertValue("relayATimer", "4");
+        config.insertValue("relayBTimer", "8");
 
         CtiCommandParser parse("putconfig install all");
         request.setConnectionHandle(Cti::ConnectionHandle{ 1 });  //  so the OMs report that they were sent
@@ -1694,9 +1697,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         {
             const std::vector<std::string> resultString_exp = boost::assign::list_of
-                ("Emetcon DLC command sent on route ").repeat(22, "Emetcon DLC command sent on route ");
+                ("Emetcon DLC command sent on route ").repeat(24, "Emetcon DLC command sent on route ");
             const std::vector<long> status_exp = boost::assign::list_of
-                (0).repeat(22, 0);
+                (0).repeat(24, 0);
 
             std::vector<std::string> resultString_rcv;
             std::vector<long> status_rcv;
@@ -1717,7 +1720,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
                                      status_rcv);
         }
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 23 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 25 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2087,7 +2090,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-        config.insertValue("timeZoneOffset", "-6");
+        config.insertValue("timeZoneOffset", "CHICAGO");
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset, 0xe8);
 
@@ -2112,7 +2115,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-        config.insertValue("timeZoneOffset", "-6");
+        config.insertValue("timeZoneOffset", "CHICAGO");
 
         CtiCommandParser parse("putconfig install timezone");
 
@@ -2158,7 +2161,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-        config.insertValue("timeZoneOffset", "-6");
+        config.insertValue("timeZoneOffset", "CHICAGO");
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset, 0xe9);
 
@@ -2206,7 +2209,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-        config.insertValue("timeZoneOffset", "-6");
+        config.insertValue("timeZoneOffset", "CHICAGO");
 
         config.insertValue("timeAdjustTolerance", "3");
 
@@ -2215,30 +2218,30 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         config.insertValue("demandInterval",  "87");
 
         config.insertValue("channel1PhysicalChannel",   "7");
-        config.insertValue("channel1Type",              "1");  //  Electronic
-        config.insertValue("channel1PeakKWResolution",  "10.0");
-        config.insertValue("channel1LastIntervalDemandResolution", "1");
-        config.insertValue("channel1ProfileResolution", "0.1");
+        config.insertValue("channel1Type",              "ELECTRONIC_METER");  //  Electronic
+        config.insertValue("channel1PeakKWResolution",  "ONE");
+        config.insertValue("channel1LastIntervalDemandResolution", "ZERO");
+        config.insertValue("channel1ProfileResolution", "MINUS_ONE");
         //---
         config.insertValue("channel2PhysicalChannel",   "6");
-        config.insertValue("channel2Type",              "1");  //  Electronic
-        config.insertValue("channel2PeakKWResolution",  "10.0");
-        config.insertValue("channel2LastIntervalDemandResolution", "1");
-        config.insertValue("channel2ProfileResolution", "0.1");
+        config.insertValue("channel2Type",              "ELECTRONIC_METER");  //  Electronic
+        config.insertValue("channel2PeakKWResolution",  "ONE");
+        config.insertValue("channel2LastIntervalDemandResolution", "ZERO");
+        config.insertValue("channel2ProfileResolution", "MINUS_ONE");
         //---
         config.insertValue("channel3PhysicalChannel",   "5");
-        config.insertValue("channel3Type",              "0");  //  Disabled
-        config.insertValue("channel3PeakKWResolution",  "10.0");
-        config.insertValue("channel3LastIntervalDemandResolution", "1");
-        config.insertValue("channel3ProfileResolution", "0.1");
+        config.insertValue("channel3Type",              "CHANNEL_NOT_USED");  //  Disabled
+        config.insertValue("channel3PeakKWResolution",  "ONE");
+        config.insertValue("channel3LastIntervalDemandResolution", "ZERO");
+        config.insertValue("channel3ProfileResolution", "MINUS_ONE");
         //---
         config.insertValue("channel4PhysicalChannel",   "4");
-        config.insertValue("channel4Type",              "0");  //  Disabled
-        config.insertValue("channel4PeakKWResolution",  "10.0");
-        config.insertValue("channel4LastIntervalDemandResolution", "1");
-        config.insertValue("channel4ProfileResolution", "0.1");
+        config.insertValue("channel4Type",              "CHANNEL_NOT_USED");  //  Disabled
+        config.insertValue("channel4PeakKWResolution",  "ONE");
+        config.insertValue("channel4LastIntervalDemandResolution", "ZERO");
+        config.insertValue("channel4ProfileResolution", "MINUS_ONE");
 
-        config.insertValue("tableReadInterval", "5");
+        config.insertValue("tableReadInterval", "75");
         config.insertValue("tableType",         "11");
 
         config.insertValue("enableDst", "true");
@@ -2553,7 +2556,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
-        config.insertValue("electronicMeter", "3");
+        config.insertValue("electronicMeter", "ALPHA_P_PLUS");
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -2665,7 +2668,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
-        config.insertValue("electronicMeter", "1");
+        config.insertValue("electronicMeter", "S4");
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -2777,7 +2780,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
-        config.insertValue("electronicMeter", "2");
+        config.insertValue("electronicMeter", "ALPHA_A3");
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -2889,7 +2892,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
-        config.insertValue("electronicMeter", "8");
+        config.insertValue("electronicMeter", "GEKV2C");
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -2975,7 +2978,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
-        config.insertValue("electronicMeter", "5");
+        config.insertValue("electronicMeter", "GEKV2");
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -3061,7 +3064,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
-        config.insertValue("electronicMeter", "4");
+        config.insertValue("electronicMeter", "GEKV");
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -3147,7 +3150,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
-        config.insertValue("electronicMeter", "6");
+        config.insertValue("electronicMeter", "SENTINEL");
 
         CtiCommandParser parse("putvalue ied reset");
 

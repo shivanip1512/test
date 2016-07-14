@@ -20,21 +20,15 @@ public final class TimeZoneInput implements DeviceConfigurationInputEnumeration 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public enum TimeZone implements DisplayableEnum {
-        NORONHA("-2"),
-        SAO_PAULO("-3"),
-        MANAUS("-4"),
-        NEW_YORK("-5"),
-        CHICAGO("-6"),
-        DENVER("-7"),
-        LOS_ANGELES("-8"),
-        ANCHORAGE("-9"),
-        HONOLULU("-10");
-
-        private final String dbValue;
-
-        private TimeZone(String dbValue) {
-            this.dbValue = dbValue;
-        }
+        NORONHA,
+        SAO_PAULO,
+        MANAUS,
+        NEW_YORK,
+        CHICAGO,
+        DENVER,
+        LOS_ANGELES,
+        ANCHORAGE,
+        HONOLULU;
 
         @Override
         public String getFormatKey() {
@@ -49,7 +43,7 @@ public final class TimeZoneInput implements DeviceConfigurationInputEnumeration 
         List<InputOption> timeZones = new ArrayList<>();
 
         for (TimeZone zone : TimeZone.values()) {
-            timeZones.add( new InputOption( zone.dbValue, messageAccessor.getMessage(zone)));
+            timeZones.add( new InputOption( zone.name(), messageAccessor.getMessage(zone)));
         }
         return timeZones;
     }

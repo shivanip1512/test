@@ -1522,26 +1522,11 @@ YukonError_t Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 
 long Mct440_213xBDevice::resolveScheduleName(const string & scheduleName)
 {
-    std::string schedule = scheduleName;
-    CtiToLower(schedule);
-
-    if( schedule == "schedule 1" )
+    boost::optional<long> value = Cti::mapFind(scheduleMap, scheduleName);
+    if (value)
     {
-        return 0;
+        return *value;
     }
-    else if( schedule == "schedule 2" )
-    {
-        return 1;
-    }
-    else if( schedule == "schedule 3" )
-    {
-        return 2;
-    }
-    else if( schedule == "schedule 4" )
-    {
-        return 3;
-    }
-
     return -1;
 }
 

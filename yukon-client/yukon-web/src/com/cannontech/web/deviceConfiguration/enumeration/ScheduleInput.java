@@ -21,16 +21,10 @@ public final class ScheduleInput implements DeviceConfigurationInputEnumeration 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public enum Schedule implements DisplayableEnum {
-        SCHEDULE_1("Schedule 1"),
-        SCHEDULE_2("Schedule 2"),
-        SCHEDULE_3("Schedule 3"),
-        SCHEDULE_4("Schedule 4");
-
-        private final String dbValue;
-
-        private Schedule(String dbValue) {
-            this.dbValue = dbValue;
-        }
+        SCHEDULE_1,
+        SCHEDULE_2,
+        SCHEDULE_3,
+        SCHEDULE_4;
 
         @Override
         public String getFormatKey() {
@@ -45,7 +39,7 @@ public final class ScheduleInput implements DeviceConfigurationInputEnumeration 
         List<InputOption> validSchedules = new ArrayList<>();
 
         for (Schedule schedule : Schedule.values()) {
-            validSchedules.add( new InputOption( schedule.dbValue, messageAccessor.getMessage(schedule)));
+            validSchedules.add( new InputOption( schedule.name(), messageAccessor.getMessage(schedule)));
         }
         return validSchedules;
     }

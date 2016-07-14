@@ -22,7 +22,7 @@ namespace Simulator {
 const double   Mct410Sim::Pi              = 4.0 * atan(1.0);
 const CtiTime  Mct410Sim::DawnOfTime      = CtiTime::CtiTime(0x41D63C60);  // Jan 1, 2005 CST
 const double   Mct410Sim::alarmFlagChance = gConfigParms.getValueAsDouble("SIMULATOR_ALARM_FLAG_CHANCE_PERCENT");
-const unsigned Mct410Sim::MemoryMapSize   = 256;
+const unsigned Mct410Sim::MemoryMapSize   = 284;
 
 bool Mct410Sim::_behaviorsInited = false;
 
@@ -82,6 +82,14 @@ Mct410Sim::Mct410Sim(int address) :
                 lastFreezeSeconds       & 0xff};
 
         _memory.writeDataToMemoryMap(MM_LastFreezeTimestamp, lastFreezeBytes);
+
+        const bytes displayParameters = {
+            0x08,   // displayParams !displayDisabled, displayDigits(not supported), cycleTime = 8
+            0x01,   // transformerRatio = 1
+            0x08    // displayDigits
+        };
+
+        _memory.writeDataToMemoryMap(MM_DisplayParameters, displayParameters);
     }
 }
 
@@ -109,6 +117,9 @@ Mct410Sim::function_reads_t Mct410Sim::initFunctionReads()
     reads[FR_AllFrozenChannel1Readings]    = function_read_t(&Mct410Sim::getAllFrozenChannel1Readings);
     reads[FR_AllCurrentVoltageReadings]    = function_read_t(&Mct410Sim::getAllCurrentVoltageReadings);
     reads[FR_FrozenMinMaxVoltageReadings]  = function_read_t(&Mct410Sim::getFrozenMinMaxVoltageReadings);
+    reads[FR_DisplayParameters]            = function_read_t(&Mct410Sim::getDisplayParameters);
+    reads[FR_LcdConfiguration1]            = function_read_t(&Mct410Sim::getLcdConfiguration1);
+    reads[FR_LcdConfiguration2]            = function_read_t(&Mct410Sim::getLcdConfiguration2);
 
     read_range = makeFunctionReadRange(FR_LongLoadProfileTableMin,
                                        FR_LongLoadProfileTableMax, &Mct410Sim::getLongLoadProfile);
@@ -149,6 +160,9 @@ Mct410Sim::function_writes_t Mct410Sim::initFunctionWrites()
     writes[FW_Intervals]          = function_write_t(&Mct410Sim::putIntervals);
     writes[FW_PointOfInterest]    = function_write_t(&Mct410Sim::putPointOfInterest);
     writes[FW_ScheduledFreezeDay] = function_write_t(&Mct410Sim::putScheduledFreezeDay);
+    writes[FW_DisplayParameters] = function_write_t(&Mct410Sim::putDisplayParameters);
+    writes[FW_LcdConfiguration1] = function_write_t(&Mct410Sim::putLcdConfiguration1);
+    writes[FW_LcdConfiguration2] = function_write_t(&Mct410Sim::putLcdConfiguration2);
 
     return writes;
 }
@@ -312,9 +326,17 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words, Logg
     }
 }
 
+auto byte_to_string = [](unsigned char i) { 
+    stringstream s;
+    s << setfill('0') << setw(2) << hex << (unsigned)i;
+    return s.str();
+};
+
 bytes Mct410Sim::processRead(bool function_read, unsigned function, Logger &logger)
 {
     bytes read_bytes = bytes(ReadLength, '\0');
+
+    cout << "processRead(" << function_read << ", 0x" << hex << function << ")" << endl;
 
     if( function_read )
     {
@@ -348,6 +370,8 @@ bytes Mct410Sim::processRead(bool function_read, unsigned function, Logger &logg
             read_bytes = _memory.getValueVectorFromMemoryMap(function, ReadLength);
         }
     }
+
+    cout << join(read_bytes | boost::adaptors::transformed(byte_to_string), " ") << endl;
 
     MctMessageContext context = { read_bytes, function, function_read };
 
@@ -415,6 +439,9 @@ bool Mct410Sim::write(const words_t &request_words)
 
 bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
 {
+    cout << "processWrite(" << function_write << ", 0x" << hex << function << ")" << endl;
+    cout << join(data | boost::adaptors::transformed(byte_to_string), " ") << endl;
+
     if( function_write )
     {
         function_writes_t::const_iterator fn_itr = _function_writes.find(function);
@@ -685,6 +712,33 @@ void Mct410Sim::putScheduledFreezeDay(const bytes &data)
     }
 }
 
+void Mct410Sim::putDisplayParameters(const bytes &data)
+{
+    if( !data.empty() )
+    {
+        unsigned char newbyte=data[0] & 0x7f;
+        _memory.writeValueToMemoryMap(MM_DisplayParameters, newbyte);
+        _memory.writeValueToMemoryMap(MM_DisplayParameters+1, data[1]);
+        _memory.writeValueToMemoryMap(MM_DisplayParameters+2, data[2]);
+    }
+}
+
+void Mct410Sim::putLcdConfiguration1(const bytes &data)
+{
+    if( !data.empty() )
+    {
+        _memory.writeDataToMemoryMap(MM_LcdConfiguration1, data);
+    }
+}
+
+void Mct410Sim::putLcdConfiguration2(const bytes &data)
+{
+    if( !data.empty() )
+    {
+        _memory.writeDataToMemoryMap(MM_LcdConfiguration2, data);
+    }
+}
+
 void Mct410Sim::putIntervals(const bytes &data)
 {
     // This should always be 4 bytes of data.
@@ -694,6 +748,10 @@ void Mct410Sim::putIntervals(const bytes &data)
         setLpInterval(data[1]);
         setVoltageDemandInterval(data[2]);
         setVoltageLpInterval(data[3]);
+    }
+    else
+    {
+        _memory.writeDataToMemoryMap(MM_DemandInterval, data);
     }
 }
 
@@ -1028,6 +1086,21 @@ bytes Mct410Sim::getFrozenMinMaxVoltageReadings()
     }
 
     return result;
+}
+
+bytes Mct410Sim::getDisplayParameters()
+{
+    return _memory.getValueVectorFromMemoryMap(MM_DisplayParameters, MML_DisplayParameters);
+}
+
+bytes Mct410Sim::getLcdConfiguration1()
+{
+    return _memory.getValueVectorFromMemoryMap(MM_LcdConfiguration1, MML_LcdConfiguration1);
+}
+
+bytes Mct410Sim::getLcdConfiguration2()
+{
+    return _memory.getValueVectorFromMemoryMap(MM_LcdConfiguration2, MML_LcdConfiguration2);
 }
 
 double Mct410Sim::getConsumptionMultiplier(const unsigned address)

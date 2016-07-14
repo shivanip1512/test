@@ -21,14 +21,8 @@ public final class Mct430MeterType implements DeviceConfigurationInputEnumeratio
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public enum MeterType implements DisplayableEnum{
-        CHANNEL_NOT_USED("0"),
-        ELECTRONIC_METER("1");
-
-        private final String dbValue;
-
-        private MeterType(String dbValue) {
-            this.dbValue = dbValue;
-        }
+        CHANNEL_NOT_USED,
+        ELECTRONIC_METER;
 
         @Override
         public String getFormatKey() {
@@ -43,7 +37,7 @@ public final class Mct430MeterType implements DeviceConfigurationInputEnumeratio
         List<InputOption> meterTypes = new ArrayList<>();
 
         for (MeterType meterType : MeterType.values()) {
-            meterTypes.add( new InputOption( meterType.dbValue, messageAccessor.getMessage(meterType)));
+            meterTypes.add( new InputOption( meterType.name(), messageAccessor.getMessage(meterType)));
         }
 
         return meterTypes;

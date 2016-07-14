@@ -24,17 +24,10 @@ public final class LastIntervalDemandResolution implements DeviceConfigurationIn
      * Enum values represent the order of magnitude of the resolution in Wh.
      */
     public enum Resolution implements DisplayableEnum {
-        MINUS_TWO("0.01"),
-        MINUS_ONE("0.1"),
-        ZERO("1.0"),
-        ONE("10.0");
-
-        private final String dbValue; // represented as string because of poor double representation.
-
-        private Resolution(String dbValue) {
-            this.dbValue = dbValue;
-        }
-
+        MINUS_TWO,
+        MINUS_ONE,
+        ZERO,
+        ONE;
 
         @Override
         public String getFormatKey() {
@@ -49,7 +42,7 @@ public final class LastIntervalDemandResolution implements DeviceConfigurationIn
         List<InputOption> resolutions = new ArrayList<>();
 
         for (Resolution resolution : Resolution.values()) {
-            resolutions.add( new InputOption( resolution.dbValue, messageAccessor.getMessage(resolution)));
+            resolutions.add( new InputOption( resolution.name(), messageAccessor.getMessage(resolution)));
         }
         return resolutions;
     }

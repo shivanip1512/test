@@ -2021,32 +2021,32 @@ struct putconfigInstall_helper : beginExecuteRequest_helper
         fixtureConfig->insertValue("timeZoneOffset", "-6");
 
         //  Display category
-        fixtureConfig->insertValue("displayItem1",   "1" );
-        fixtureConfig->insertValue("displayItem2",   "3" );
-        fixtureConfig->insertValue("displayItem3",   "5" );
-        fixtureConfig->insertValue("displayItem4",   "7" );
-        fixtureConfig->insertValue("displayItem5",   "9" );
-        fixtureConfig->insertValue("displayItem6",  "11" );
-        fixtureConfig->insertValue("displayItem7",  "13" );
-        fixtureConfig->insertValue("displayItem8",  "15" );
-        fixtureConfig->insertValue("displayItem9",  "17" );
-        fixtureConfig->insertValue("displayItem10", "19" );
-        fixtureConfig->insertValue("displayItem11", "21" );
-        fixtureConfig->insertValue("displayItem12", "23" );
-        fixtureConfig->insertValue("displayItem13", "25" );
-        fixtureConfig->insertValue("displayItem14", "27" );
-        fixtureConfig->insertValue("displayItem15", "29" );
-        fixtureConfig->insertValue("displayItem16", "31" );
-        fixtureConfig->insertValue("displayItem17", "33" );
-        fixtureConfig->insertValue("displayItem18", "35" );
-        fixtureConfig->insertValue("displayItem19", "37" );
-        fixtureConfig->insertValue("displayItem20", "39" );
-        fixtureConfig->insertValue("displayItem21",  "0" );
-        fixtureConfig->insertValue("displayItem22",  "0" );
-        fixtureConfig->insertValue("displayItem23",  "0" );
-        fixtureConfig->insertValue("displayItem24",  "0" );
-        fixtureConfig->insertValue("displayItem25",  "0" );
-        fixtureConfig->insertValue("displayItem26",  "0" );
+        fixtureConfig->insertValue("displayItem1", Cti::Config::DisplayItemValues::NO_SEGMENTS);    //1
+        fixtureConfig->insertValue("displayItem2", Cti::Config::DisplayItemValues::ALL_SEGMENTS);   //2
+        fixtureConfig->insertValue("displayItem3", Cti::Config::DisplayItemValues::CURRENT_LOCAL_DATE);
+        fixtureConfig->insertValue("displayItem4", Cti::Config::DisplayItemValues::NET_KWH );
+        fixtureConfig->insertValue("displayItem5", Cti::Config::DisplayItemValues::RECEIVED_KWH );
+        fixtureConfig->insertValue("displayItem6", Cti::Config::DisplayItemValues::PEAK_KW);
+        fixtureConfig->insertValue("displayItem7", Cti::Config::DisplayItemValues::PEAK_KW_TIME);
+        fixtureConfig->insertValue("displayItem8", Cti::Config::DisplayItemValues::PEAK_VOLTAGE);
+        fixtureConfig->insertValue("displayItem9", Cti::Config::DisplayItemValues::PEAK_VOLTAGE_TIME);
+        fixtureConfig->insertValue("displayItem10", Cti::Config::DisplayItemValues::MINIMUM_VOLTAGE_DATE);
+        fixtureConfig->insertValue("displayItem11", Cti::Config::DisplayItemValues::TOU_RATE_A_KWH);
+        fixtureConfig->insertValue("displayItem12", Cti::Config::DisplayItemValues::TOU_RATE_A_DATE_OF_PEAK_KW);
+        fixtureConfig->insertValue("displayItem13", Cti::Config::DisplayItemValues::TOU_RATE_B_KWH);
+        fixtureConfig->insertValue("displayItem14", Cti::Config::DisplayItemValues::TOU_RATE_B_DATE_OF_PEAK_KW);
+        fixtureConfig->insertValue("displayItem15", Cti::Config::DisplayItemValues::TOU_RATE_C_KWH);
+        fixtureConfig->insertValue("displayItem16", Cti::Config::DisplayItemValues::TOU_RATE_C_DATE_OF_PEAK_KW);
+        fixtureConfig->insertValue("displayItem17", Cti::Config::DisplayItemValues::TOU_RATE_D_KWH);
+        fixtureConfig->insertValue("displayItem18", Cti::Config::DisplayItemValues::TOU_RATE_D_DATE_OF_PEAK_KW);
+        fixtureConfig->insertValue("displayItem19", Cti::Config::DisplayItemValues::SLOT_DISABLED);
+        fixtureConfig->insertValue("displayItem20", Cti::Config::DisplayItemValues::SLOT_DISABLED);
+        fixtureConfig->insertValue("displayItem21", Cti::Config::DisplayItemValues::SLOT_DISABLED);
+        fixtureConfig->insertValue("displayItem22", Cti::Config::DisplayItemValues::SLOT_DISABLED);
+        fixtureConfig->insertValue("displayItem23", Cti::Config::DisplayItemValues::SLOT_DISABLED);
+        fixtureConfig->insertValue("displayItem24", Cti::Config::DisplayItemValues::SLOT_DISABLED);
+        fixtureConfig->insertValue("displayItem25", Cti::Config::DisplayItemValues::SLOT_DISABLED);
+        fixtureConfig->insertValue("displayItem26", Cti::Config::DisplayItemValues::SLOT_DISABLED);
     }
 };
 
@@ -2077,7 +2077,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf6 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
 
-            const std::vector<unsigned> expected = { 0x01, 0x03, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
+            const std::vector<unsigned> expected = { 0x01, 0x02, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -2167,7 +2167,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf6 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
 
-            const std::vector<unsigned> expected = { 0x01, 0x03, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
+            const std::vector<unsigned> expected = { 0x01, 0x02, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -2294,7 +2294,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf6 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
 
-            const std::vector<unsigned> expected = { 0x01, 0x03, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
+            const std::vector<unsigned> expected = { 0x01, 0x02, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
@@ -2421,7 +2421,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf6 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
 
-            const std::vector<unsigned> expected = { 0x01, 0x03, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
+            const std::vector<unsigned> expected = { 0x01, 0x02, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f, 0x11, 0x13, 0x15, 0x17, 0x19 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),

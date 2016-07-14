@@ -12,6 +12,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.web.deviceConfiguration.enumeration.CentronDisplayItemEnumeration;
 import com.cannontech.web.deviceConfiguration.enumeration.DisconnectMode.ConfigurationType;
 import com.cannontech.web.deviceConfiguration.enumeration.ReconnectParameter.ReconnectType;
 import com.cannontech.web.deviceConfiguration.model.CategoryEditBean;
@@ -43,12 +44,13 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
 
         List<Field<?>> fields = categoryTemplate.getFields();
 
-        if (CategoryType.CENTRON_420_DISPLAY_ITEMS.value().equals(categoryTemplate.getCategoryType()) 
+        if (CategoryType.CENTRON_420_DISPLAY_ITEMS.value().equals(categoryTemplate.getCategoryType())
                 || CategoryType.CENTRON_410_DISPLAY_ITEMS.value().equals(categoryTemplate.getCategoryType())) {
             // Handle this guy differently.
             boolean slotDisabledHit = false;
             for (Field<?> field : fields) {
-                if (Integer.parseInt(target.getCategoryInputs().get(field.getFieldName())) == 0) {
+                if (target.getCategoryInputs().get(field.getFieldName()).equals(
+                		CentronDisplayItemEnumeration.Item.SLOT_DISABLED.name())) {
                     slotDisabledHit = true;
                 } else if (slotDisabledHit) {
                     // Error
@@ -70,11 +72,11 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
 
                             if (thisTime <= prevTime) {
                                 if (thisTime == 0) {
-                                    // As long as the rest are midnights, this is okay. 
+                                    // As long as the rest are midnights, this is okay.
                                     midnightHit = true;
                                     prevTime = thisTime;
                                 } else {
-                                    // Problem. This is never okay 
+                                    // Problem. This is never okay
                                     String path = "scheduleInputs[" + field.getFieldName() + "].rateInputs[" + entry.getKey() + "].time";
                                     errors.rejectValue(path, baseKey + ".invalidTime");
                                 }

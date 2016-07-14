@@ -9,6 +9,8 @@
 
 #include <boost/assign/list_of.hpp>
 
+#include <iostream>
+
 using namespace Cti::Devices::Commands;
 using namespace Cti::Protocols;
 using namespace Cti::Config;
@@ -470,18 +472,20 @@ YukonError_t Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiComman
 
         vector<unsigned char> paoinfo_metrics;
 
+        // Look through the deviceConfig for each possible dynamicConfigKeys 
         for( const auto paoConfigKey : dynamicConfigKeys )
         {
+            // pao_key=dpi::Key_MCT_LcdMetricXX, config_key=MCTStrings::displayItemXX
             const PaoInfoKeys pao_key    = paoConfigKey.first;
             const std::string config_key = paoConfigKey.second;
 
             const boost::optional<long>
-                config_value = deviceConfig->findValue<long>(config_key);
+                config_value = deviceConfig->findValue<long>(config_key, Cti::Config::displayItemMap);
 
             if ( ! config_value )
             {
+                // Oops, not found.  
                 CTILOG_ERROR(dout, "Device \"" << getName() << "\" - invalid value (" << deviceConfig->getValueFromKey(config_key) << ") for config key \"" << config_key << "\"");
-
                 return ClientErrors::NoConfigData;
             }
 

@@ -3183,10 +3183,10 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
     {
         Cti::Test::test_DeviceConfig &test_cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-        test_cfg.insertValue("sunday",   "schedule 1");
-        test_cfg.insertValue("weekday", "schedule 2");
-        test_cfg.insertValue("saturday", "schedule 3");
-        test_cfg.insertValue("holiday",  "schedule 4");
+        test_cfg.insertValue("sunday",   "SCHEDULE_1");
+        test_cfg.insertValue("weekday",  "SCHEDULE_2");
+        test_cfg.insertValue("saturday", "SCHEDULE_3");
+        test_cfg.insertValue("holiday",  "SCHEDULE_4");
 
         char cfg_key[20];
         char cfg_val[10];
@@ -4288,10 +4288,10 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
         }
 
         // add TOU config
-        test_cfg.insertValue("sunday",   "schedule 1");
-        test_cfg.insertValue("weekday",  "schedule 2");
-        test_cfg.insertValue("saturday", "schedule 3");
-        test_cfg.insertValue("holiday",  "schedule 4");
+        test_cfg.insertValue("sunday",   "SCHEDULE_1");
+        test_cfg.insertValue("weekday",  "SCHEDULE_2");
+        test_cfg.insertValue("saturday", "SCHEDULE_3");
+        test_cfg.insertValue("holiday",  "SCHEDULE_4");
 
         char cfg_key[20];
         char cfg_val[10];

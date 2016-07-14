@@ -16,7 +16,7 @@ public final class PhysicalChannel implements DeviceConfigurationInputEnumeratio
         List<InputOption> channels = new ArrayList<>();
 
         for (int i=1; i <= 16; i++) {
-            channels.add( new InputOption(Integer.toString(i-1), Integer.toString(i)));
+            channels.add( new InputOption(Integer.toString(i), Integer.toString(i)));
         }
         return channels;
     }

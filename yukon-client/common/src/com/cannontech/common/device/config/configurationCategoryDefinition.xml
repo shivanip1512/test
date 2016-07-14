@@ -182,30 +182,30 @@
         <!-- Channel 1 Inputs -->
         <enum field="channel1Type" type="Mct470MeterType" default="0"/>
         <enum field="channel1PhysicalChannel" type="PhysicalChannel" default="0"/>
-        <enum field="channel1ProfileResolution" type="ProfileResolution" default="10.0"/>
-        <enum field="channel1PeakKWResolution" type="DemandResolution" default="10.0"/>
-        <enum field="channel1LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <enum field="channel1ProfileResolution" type="ProfileResolution" default="ONE"/>
+        <enum field="channel1PeakKWResolution" type="DemandResolution" default="ONE"/>
+        <enum field="channel1LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="ONE"/>
         <float field="channel1Multiplier" minValue="0.0001" maxValue="50000.0" default="1.0"/>
         <!-- Channel 2 Inputs -->
         <enum field="channel2Type" type="Mct470MeterType" default="0"/>
         <enum field="channel2PhysicalChannel" type="PhysicalChannel" default="1"/>
-        <enum field="channel2ProfileResolution" type="ProfileResolution" default="10.0"/>
-        <enum field="channel2PeakKWResolution" type="DemandResolution" default="10.0"/>
-        <enum field="channel2LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <enum field="channel2ProfileResolution" type="ProfileResolution" default="ONE"/>
+        <enum field="channel2PeakKWResolution" type="DemandResolution" default="ONE"/>
+        <enum field="channel2LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="ONE"/>
         <float field="channel2Multiplier" minValue="0.0001" maxValue="50000.0" default="1.0"/>
         <!-- Channel 3 Inputs -->
         <enum field="channel3Type" type="Mct470MeterType" default="0"/>
         <enum field="channel3PhysicalChannel" type="PhysicalChannel" default="2"/>
-        <enum field="channel3ProfileResolution" type="ProfileResolution" default="10.0"/>
-        <enum field="channel3PeakKWResolution" type="DemandResolution" default="10.0"/>
-        <enum field="channel3LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <enum field="channel3ProfileResolution" type="ProfileResolution" default="ONE"/>
+        <enum field="channel3PeakKWResolution" type="DemandResolution" default="ONE"/>
+        <enum field="channel3LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="ONE"/>
         <float field="channel3Multiplier" minValue="0.0001" maxValue="50000.0" default="1.0"/>
         <!-- Channel 4 Inputs -->
         <enum field="channel4Type" type="Mct470MeterType" default="0"/>
         <enum field="channel4PhysicalChannel" type="PhysicalChannel" default="3"/>
-        <enum field="channel4ProfileResolution" type="ProfileResolution" default="10.0"/>
-        <enum field="channel4PeakKWResolution" type="DemandResolution" default="10.0"/>
-        <enum field="channel4LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <enum field="channel4ProfileResolution" type="ProfileResolution" default="ONE"/>
+        <enum field="channel4PeakKWResolution" type="DemandResolution" default="ONE"/>
+        <enum field="channel4LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="ONE"/>
         <float field="channel4Multiplier" minValue="0.0001" maxValue="50000.0" default="1.0"/>
     </category>
     
@@ -236,7 +236,7 @@
     </category>
     
     <category type="mct470PrecannedTable">
-        <enum field="tableReadInterval" type="TableReadInterval" default="20"/>
+        <enum field="tableReadInterval" type="TableReadInterval" default="300"/>
         <integer field="meterNumber" minValue="0" maxValue="500" default="0"/>
         <integer field="tableType" minValue="1" maxValue="11" default="1"/>
     </category>
@@ -290,27 +290,27 @@
         <!-- Channel 1 Inputs -->
         <enum field="channel1Type" type="Mct430MeterType" default="0"/>
         <enum field="channel1PhysicalChannel" type="PhysicalChannel" default="0"/>
-        <enum field="channel1ProfileResolution" type="ProfileResolution" default="10.0"/>
-        <enum field="channel1PeakKWResolution" type="DemandResolution" default="10.0"/>
-        <enum field="channel1LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <enum field="channel1ProfileResolution" type="ProfileResolution" default="ONE"/>
+        <enum field="channel1PeakKWResolution" type="DemandResolution" default="ONE"/>
+        <enum field="channel1LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="ONE"/>
         <!-- Channel 2 Inputs -->
         <enum field="channel2Type" type="Mct430MeterType" default="0"/>
         <enum field="channel2PhysicalChannel" type="PhysicalChannel" default="1"/>
-        <enum field="channel2ProfileResolution" type="ProfileResolution" default="10.0"/>
-        <enum field="channel2PeakKWResolution" type="DemandResolution" default="10.0"/>
-        <enum field="channel2LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <enum field="channel2ProfileResolution" type="ProfileResolution" default="ONE"/>
+        <enum field="channel2PeakKWResolution" type="DemandResolution" default="ONE"/>
+        <enum field="channel2LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="ONE"/>
         <!-- Channel 3 Inputs -->
         <enum field="channel3Type" type="Mct430MeterType" default="0"/>
         <enum field="channel3PhysicalChannel" type="PhysicalChannel" default="2"/>
-        <enum field="channel3ProfileResolution" type="ProfileResolution" default="10.0"/>
-        <enum field="channel3PeakKWResolution" type="DemandResolution" default="10.0"/>
-        <enum field="channel3LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <enum field="channel3ProfileResolution" type="ProfileResolution" default="ONE"/>
+        <enum field="channel3PeakKWResolution" type="DemandResolution" default="ONE"/>
+        <enum field="channel3LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="ONE"/>
         <!-- Channel 4 Inputs -->
         <enum field="channel4Type" type="Mct430MeterType" default="0"/>
         <enum field="channel4PhysicalChannel" type="PhysicalChannel" default="3"/>
-        <enum field="channel4ProfileResolution" type="ProfileResolution" default="10.0"/>
-        <enum field="channel4PeakKWResolution" type="DemandResolution" default="10.0"/>
-        <enum field="channel4LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <enum field="channel4ProfileResolution" type="ProfileResolution" default="ONE"/>
+        <enum field="channel4PeakKWResolution" type="DemandResolution" default="ONE"/>
+        <enum field="channel4LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="ONE"/>
     </category>
 
     <category type="mct430ConfigurationByte">
@@ -319,7 +319,7 @@
     </category>
 
     <category type="mct430PrecannedTable">
-        <enum field="tableReadInterval" type="TableReadInterval" default="20"/>
+        <enum field="tableReadInterval" type="TableReadInterval" default="300"/>
         <integer field="tableType" minValue="1" maxValue="11" default="1"/>
     </category>
 

@@ -1,5 +1,6 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +46,12 @@ public final class RelayTiming implements DeviceConfigurationInputEnumeration {
     @Override
     public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
         MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
-
+        final DecimalFormat decimalFormatter = new DecimalFormat("0.00");
         List<InputOption> validTimings = new ArrayList<>();
 
         for (int dbValue = 1; dbValue <= 50; dbValue++) {
-            validTimings.add( new InputOption( Integer.toString(dbValue), messageAccessor.getMessage(formatDbValue(dbValue))));
+            validTimings.add(new InputOption(decimalFormatter.format((double) dbValue / 4),
+                                             messageAccessor.getMessage(formatDbValue(dbValue))));
         }
         return validTimings;
     }
