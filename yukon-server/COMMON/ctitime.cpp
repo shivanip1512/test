@@ -119,6 +119,10 @@ CtiTime::CtiTime(struct tm* ctm) :
     }
 }
 
+CtiTime::CtiTime(const std::chrono::system_clock::time_point time_point)
+{
+    _seconds = std::chrono::duration_cast<std::chrono::seconds>(time_point.time_since_epoch()).count();
+}
 
 CtiTime::CtiTime(const CtiTime& ct) :
   _seconds(ct._seconds)

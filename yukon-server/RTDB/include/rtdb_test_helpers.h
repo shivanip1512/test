@@ -105,10 +105,12 @@ struct Test_CtiPointAccumulator : public CtiPointAccumulator
 
 struct Test_CtiPointAnalog : public CtiPointAnalog
 {
-    double computeValueForUOM( double value ) const  {  return value;  }
+    double multiplier = 1.0, offset = 0.0;
+
+    double computeValueForUOM( double value ) const  {  return value * multiplier + offset;  }
 };
 
-CtiPointAccumulator *makePulseAccumulatorPoint(long deviceid, long pointid, int offset)
+Test_CtiPointAccumulator *makePulseAccumulatorPoint(long deviceid, long pointid, int offset)
 {
     typedef Cti::Test::StringRow<20> AccumRow;
     typedef Cti::Test::TestReader<AccumRow> AccumReader;
@@ -131,7 +133,7 @@ CtiPointAccumulator *makePulseAccumulatorPoint(long deviceid, long pointid, int 
 
     AccumReader reader(keys, rows);
 
-    CtiPointAccumulator *accum = new Test_CtiPointAccumulator;
+    Test_CtiPointAccumulator *accum = new Test_CtiPointAccumulator;
 
     if( reader() )
     {
@@ -141,7 +143,7 @@ CtiPointAccumulator *makePulseAccumulatorPoint(long deviceid, long pointid, int 
     return accum;
 }
 
-CtiPointAccumulator *makeDemandAccumulatorPoint(long deviceid, long pointid, int offset)
+Test_CtiPointAccumulator *makeDemandAccumulatorPoint(long deviceid, long pointid, int offset)
 {
     typedef Cti::Test::StringRow<20> AccumRow;
     typedef Cti::Test::TestReader<AccumRow> AccumReader;
@@ -164,7 +166,7 @@ CtiPointAccumulator *makeDemandAccumulatorPoint(long deviceid, long pointid, int
 
     AccumReader reader(keys, rows);
 
-    CtiPointAccumulator *accum = new Test_CtiPointAccumulator;
+    Test_CtiPointAccumulator *accum = new Test_CtiPointAccumulator;
 
     if( reader() )
     {
@@ -174,7 +176,7 @@ CtiPointAccumulator *makeDemandAccumulatorPoint(long deviceid, long pointid, int
     return accum;
 }
 
-CtiPointAnalog *makeAnalogPoint(long deviceid, long pointid, int offset)
+Test_CtiPointAnalog *makeAnalogPoint(long deviceid, long pointid, int offset)
 {
     typedef Cti::Test::StringRow<20> AnalogRow;
     typedef Cti::Test::TestReader<AnalogRow> AnalogReader;
@@ -197,7 +199,7 @@ CtiPointAnalog *makeAnalogPoint(long deviceid, long pointid, int offset)
 
     AnalogReader reader(keys, rows);
 
-    CtiPointAnalog *analog = new Test_CtiPointAnalog;
+    Test_CtiPointAnalog *analog = new Test_CtiPointAnalog;
 
     if( reader() )
     {

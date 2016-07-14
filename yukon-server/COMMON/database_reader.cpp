@@ -2,6 +2,7 @@
 #include "database_reader.h"
 #include "logger.h"
 #include "CParms.h"
+#include "database_exceptions.h"
 
 #include <boost/date_time/posix_time/conversion.hpp>
 
@@ -98,7 +99,7 @@ void DatabaseReader::executeCommand()
     catch(SAException &x)
     {
         _isValid = false;
-        throw x;
+        DatabaseConnection::throwDatabaseException(_command.Connection(), x);
     }
 }
 
@@ -109,7 +110,7 @@ bool DatabaseReader::execute()
         executeCommand();
         return true;
     }
-    catch(SAException &x)
+    catch(DatabaseException &x)
     {
         CTILOG_EXCEPTION_ERROR(dout, x, "DB Reader execute command failed for SQL query: "<< asString());
     }

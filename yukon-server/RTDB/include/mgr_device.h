@@ -8,8 +8,10 @@
 #include <map>
 
 namespace Cti {
+struct RfnIdentifier;
+
 namespace Database {
-    class DatabaseReaderInterface;
+class DatabaseReaderInterface;
 }
 }
 
@@ -113,6 +115,7 @@ public:
     virtual ptr_type getDeviceByID(LONG Remote);
     void     getDevicesByPortID(long portid, std::vector<ptr_type> &devices);
     void     getDevicesByType  (int  type,   std::vector<ptr_type> &devices);
+    virtual ptr_type getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId);
     ptr_type RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
     ptr_type RemoteGetPortRemoteTypeEqual (LONG Port, LONG Remote, INT Type);
     ptr_type RemoteGetPortMasterSlaveTypeEqual (LONG Port, LONG Master, LONG Slave, INT Type);

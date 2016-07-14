@@ -407,6 +407,34 @@ void CtiDeviceManager::getDevicesByType(int type, vector<ptr_type> &devices)
 }
 
 
+auto CtiDeviceManager::getDeviceByRfnIdentifier(const RfnIdentifier& rfnId) -> ptr_type
+{
+    const auto sql = 
+        "SELECT"
+            " DeviceId"
+        " FROM"
+            " RfnAddress"
+        " WHERE"
+            " SerialNumber=?"
+            " AND Manufacturer=?"
+            " AND Model=?"s;
+
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+
+    rdr << rfnId.serialNumber << rfnId.manufacturer << rfnId.model;
+
+    rdr.executeCommand();
+
+    if( rdr() )
+    {
+        return getDeviceByID(rdr["DeviceId"].as<long>());
+    }
+
+    return nullptr;
+}
+
+
 bool CtiDeviceManager::containsType(int type)
 {
     coll_type::reader_lock_guard_t guard(getLock());

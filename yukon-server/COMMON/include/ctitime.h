@@ -7,7 +7,7 @@
 #include <string>
 #include <ostream>
 #include <time.h>
-
+#include <chrono>
 
 class CtiDate;
 
@@ -31,6 +31,7 @@ public:
     CtiTime(unsigned hour, unsigned minute, unsigned int second=0);
     CtiTime(const CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
     CtiTime(struct tm*);
+    CtiTime(const std::chrono::system_clock::time_point time_point);
 
     CtiTime(const CtiTime&);
 

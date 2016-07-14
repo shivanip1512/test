@@ -89,7 +89,7 @@ public:
 
     virtual ptr_type getPoint(LONG Pt, LONG pao = 0);
     ptr_type getControlOffsetEqual(LONG pao, INT Offset);
-    ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
+    virtual ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
     ptr_type getEqualByName(LONG pao, std::string pname);
     void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);
