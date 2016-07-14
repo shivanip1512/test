@@ -1,6 +1,5 @@
 #pragma once
 
-// #define SYS_DID_SYSTEM        0    // A catchall for any op which needs an ID
 #define SYS_PID_SYSTEM                    0        // Catch all
 #define SYS_PID_PORTER                    -1       //
 #define SYS_PID_SCANNER                   -2       //

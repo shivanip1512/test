@@ -491,6 +491,26 @@ void CtiDeviceBase::clearParameters()
 
 }
 
+
+void CtiDeviceBase::setPaoType(const std::string& category, const std::string& type)
+{
+    const auto deviceType = resolveDeviceType(type);
+
+    setDeviceType(deviceType);
+}
+
+void CtiDeviceBase::setDeviceType(const DeviceTypes type)
+{
+    _deviceType = type;
+
+    setType(_deviceType);
+}
+
+DeviceTypes CtiDeviceBase::getDeviceType() const
+{
+    return _deviceType;
+}
+
 /*
  *  Virtuals to let my inheritors play ball with me...
  *

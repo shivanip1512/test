@@ -20,9 +20,9 @@ typedef CtiTableDynamicPaoInfo Dpi;
 
 struct test_Mct420Device : Cti::Devices::Mct420Device
 {
-    test_Mct420Device(int type, const string &name)
+    test_Mct420Device(DeviceTypes type, const string &name)
     {
-        setType(type);
+        setDeviceType(type);
         _name = name;
         _paObjectID = 123456;
     }
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE( test_decodeDisconnectConfig )
 
     struct test_case
     {
-        const int mct_type;
+        const DeviceTypes mct_type;
         const int config_byte;
         const string expected;
     }

@@ -45,9 +45,9 @@ struct test_CtiRouteCCU : CtiRouteCCU
 
 struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
 {
-    test_Mct440_213xBDevice(/*int type,*/ const string &name)
+    test_Mct440_213xBDevice(/*DeviceTypes type,*/ const string &name)
     {
-        // setType(type);
+        // setDeviceType(type);
         _name = name;
         _paObjectID = 123456;
     }

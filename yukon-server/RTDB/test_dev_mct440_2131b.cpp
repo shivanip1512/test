@@ -19,9 +19,9 @@ using std::vector;
 
 struct test_Mct440_2131BDevice : Cti::Devices::Mct440_2131BDevice
 {
-    test_Mct440_2131BDevice(int type, const string &name)
+    test_Mct440_2131BDevice(DeviceTypes type, const string &name)
     {
-        setType(type);
+        setDeviceType(type);
         _name = name;
     }
 

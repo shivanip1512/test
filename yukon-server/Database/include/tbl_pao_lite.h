@@ -13,12 +13,14 @@ class IM_EX_CTIYUKONDB CtiTblPAOLite : public CtiMemDBObject, private boost::non
 {
 protected:
 
-    LONG           _paObjectID;
-    INT            _class;
-    std::string         _name;
-    INT            _type;
+    long           _paObjectID;
+    int            _class;
+    std::string    _name;
+    int            _type;
 
     bool           _disableFlag;
+
+    virtual void setPaoType(const std::string& category, const std::string& type);
 
 public:
 
@@ -27,13 +29,13 @@ public:
     CtiTblPAOLite();
     virtual ~CtiTblPAOLite();
 
-    LONG   getID()    const;
-    INT    getClass() const;
+    long   getID()    const;
+    int    getClass() const;
     std::string getName()  const;
-    INT    getType()  const;
+    int    getType()  const;
 
-    CtiTblPAOLite& setID( LONG paoid );
-    CtiTblPAOLite& setType(const INT &type);
+    void setID( LONG paoid );
+    void setType(const int type);
 
     bool isInhibited() const;
 

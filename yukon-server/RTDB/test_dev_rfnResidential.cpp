@@ -13,7 +13,7 @@ using namespace Cti::Config;
 struct test_RfnResidentialDevice : RfnResidentialDevice
 {
     using RfnResidentialDevice::handleCommandResult;
-    using CtiTblPAOLite::_type;
+    using CtiDeviceBase::setDeviceType;
 
     test_RfnResidentialDevice()
     {
@@ -952,7 +952,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_on_demand )
 {
     test_RfnResidentialDevice dut;
 
-    dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
+    dut.setDeviceType(TYPE_RFN420CD); // Make it a disconnect type.
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
@@ -1026,7 +1026,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_demand_thresh
 {
     test_RfnResidentialDevice dut;
 
-    dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
+    dut.setDeviceType(TYPE_RFN420CD); // Make it a disconnect type.
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
@@ -1106,7 +1106,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_cycling )
 {
     test_RfnResidentialDevice dut;
 
-    dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
+    dut.setDeviceType(TYPE_RFN420CD); // Make it a disconnect type.
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
@@ -1177,7 +1177,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_disconnect_inval
 {
     test_RfnResidentialDevice dut;
 
-    dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
+    dut.setDeviceType(TYPE_RFN420CD); // Make it a disconnect type.
 
     {
         ///// Missing config data /////
@@ -1460,7 +1460,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
 
     cfg.insertValue( RfnStrings::demandFreezeDay, "7" );
 
-    dut._type = TYPE_RFN410FX;
+    dut.setDeviceType(TYPE_RFN410FX);
 
     BOOST_CHECK( ! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
 
@@ -1667,7 +1667,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_device )
     using boost::assign::map_list_of;
 
     test_RfnResidentialDevice dut;
-    dut._type = TYPE_RFN410FX;
+    dut.setDeviceType(TYPE_RFN410FX);
 
     typedef std::map<std::string, std::string>    CategoryItems;
     typedef std::pair<std::string, CategoryItems> CategoryDefinition;
@@ -1851,7 +1851,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_groupMessageCoun
     using boost::assign::map_list_of;
 
     test_RfnResidentialDevice dut;
-    dut._type = TYPE_RFN410FX;
+    dut.setDeviceType(TYPE_RFN410FX);
 
     typedef std::map<std::string, std::string>    CategoryItems;
     typedef std::pair<std::string, CategoryItems> CategoryDefinition;
@@ -2130,7 +2130,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_disconnect_m
     using boost::assign::map_list_of;
 
     test_RfnResidentialDevice dut;
-    dut._type = TYPE_RFN410FD;
+    dut.setDeviceType(TYPE_RFN410FD);
 
     typedef std::map<std::string, std::string>    CategoryItems;
     typedef std::pair<std::string, CategoryItems> CategoryDefinition;

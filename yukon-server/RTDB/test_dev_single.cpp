@@ -14,6 +14,7 @@ struct test_CtiDeviceSingle : CtiDeviceSingle
 
     using CtiDeviceSingle::isDeviceAddressGlobal;
     using CtiDeviceSingle::intervalsPerDay;
+    using CtiDeviceBase::setDeviceType;
 
     LONG getAddress() const                 { return address; }
     void setAddress(const LONG &address_)   { address = address_; }
@@ -38,7 +39,7 @@ BOOST_AUTO_TEST_CASE(test_is_device_address_global)
 
     {
         test_CtiDeviceSingle test;
-        test.setType(TYPE_LCU415);
+        test.setDeviceType(TYPE_LCU415);
 
         test.address = CCUGLOBAL;
         BOOST_CHECK( test.isDeviceAddressGlobal() );
@@ -52,7 +53,7 @@ BOOST_AUTO_TEST_CASE(test_is_device_address_global)
 
     {
         test_CtiDeviceSingle test;
-        test.setType(TYPE_ALPHA_A3);
+        test.setDeviceType(TYPE_ALPHA_A3);
 
         test.address = NONGLOBAL_ADDRESS;
         BOOST_CHECK( ! test.isDeviceAddressGlobal() );

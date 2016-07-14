@@ -45,10 +45,10 @@ struct test_Mct410Device : Cti::Devices::Mct410Device
 protected:
     CtiRouteSPtr rte;
 
-    test_Mct410Device(int type, const string &name) :
+    test_Mct410Device(DeviceTypes type, const string &name) :
         rte(new test_CtiRouteCCU)
     {
-        setType(type);
+        setDeviceType(type);
         _name = name;
         _paObjectID = 123456;
     }

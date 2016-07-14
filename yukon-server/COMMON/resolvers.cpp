@@ -159,7 +159,7 @@ INT resolvePAOCategory(const string& _category)
 }
 
 
-static const std::map<std::string, int> device_lookups
+static const std::map<std::string, DeviceTypes> device_lookups
 {
     //  --- GridSmart ---
     { "capacitor bank neutral monitor",  TYPE_NEUTRAL_MONITOR },
@@ -323,8 +323,8 @@ static const std::map<std::string, int> device_lookups
 
     //  --- System ---
     { "macro group",        TYPE_MACRO },
-    { "script",             0 },
-    { "simple",             0 },
+    { "script",             TYPE_NONE },
+    { "simple",             TYPE_NONE },
     { "system",             TYPE_SYSTEM },
     { "virtual system",     TYPE_VIRTUAL_SYSTEM },
 
@@ -368,11 +368,11 @@ static const std::map<std::string, int> device_lookups
 };
 
 
-INT resolveDeviceType(const string& _typeStr)
+DeviceTypes resolveDeviceType(const string& _typeStr)
 {
     string typestr = sanitizeInput( _typeStr );
 
-    if( const boost::optional<int> deviceType = Cti::mapFind(device_lookups, typestr) )
+    if( const auto deviceType = Cti::mapFind(device_lookups, typestr) )
     {
         return *deviceType;
     }
@@ -382,7 +382,7 @@ INT resolveDeviceType(const string& _typeStr)
         CTILOG_ERROR(dout, "Unsupported DEVICE type \"" << typestr << "\"");
     }
 
-    return 0;
+    return TYPE_NONE;
 }
 
 /**

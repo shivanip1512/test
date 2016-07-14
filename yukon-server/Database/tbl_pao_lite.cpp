@@ -20,18 +20,17 @@ CtiTblPAOLite::CtiTblPAOLite() :
 
 CtiTblPAOLite::~CtiTblPAOLite() {}
 
-LONG CtiTblPAOLite::getID() const
+long CtiTblPAOLite::getID() const
 {
     return _paObjectID;
 }
 
-CtiTblPAOLite& CtiTblPAOLite::setID( LONG paObjectID )
+void CtiTblPAOLite::setID( long paObjectID )
 {
     _paObjectID = paObjectID;
-    return *this;
 }
 
-INT CtiTblPAOLite::getClass() const
+int CtiTblPAOLite::getClass() const
 {
     return _class;
 }
@@ -41,15 +40,19 @@ string CtiTblPAOLite::getName() const
     return _name;
 }
 
-INT CtiTblPAOLite::getType() const
+int CtiTblPAOLite::getType() const
 {
     return _type;
 }
 
-CtiTblPAOLite& CtiTblPAOLite::setType( const INT &type )
+void CtiTblPAOLite::setType( const int type )
 {
     _type = type;
-    return *this;
+}
+
+void CtiTblPAOLite::setPaoType( const std::string& category, const std::string& type )
+{
+    _type = resolvePAOType(category, type);
 }
 
 string CtiTblPAOLite::getTableName()
@@ -76,7 +79,7 @@ void CtiTblPAOLite::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr >> _name;
     rdr >> tmpStr; // type
 
-    _type = resolvePAOType(category, tmpStr);
+    setPaoType(category, tmpStr);
 
     rdr >> tmpStr;
     transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), tolower);

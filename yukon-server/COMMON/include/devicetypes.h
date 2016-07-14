@@ -5,6 +5,8 @@ enum DeviceTypes {
     // A catchall for any op which needs an ID
     SYS_DID_SYSTEM = 0,
 
+    TYPE_NONE = 0,
+
     // Definitions for Device types
     TYPELMT2,
     TYPEDCT501,
@@ -173,6 +175,10 @@ enum DeviceTypes {
     TYPE_LMGROUP_SA305,
 
     TYPEMCTBCAST,
+
+    //  Several of the following are NOT devices and should be moved out into 
+    //    separate LmTypes/CcTypes/PortTypes enums 
+    //  OR this enum should be renamed to PaoTypes.
 
     // LM category objects...
     TYPE_LMPROGRAM_DIRECT,
