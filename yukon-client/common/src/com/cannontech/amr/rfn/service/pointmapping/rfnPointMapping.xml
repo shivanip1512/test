@@ -4246,7 +4246,6 @@
         </point>
         <point name="Voltage">
             <uom>V</uom>
-            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
@@ -4254,7 +4253,6 @@
         </point>
         <point name="Avg Voltage">
             <uom>V</uom>
-            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
@@ -4263,7 +4261,6 @@
         </point>
         <point name="Min Voltage">
             <uom>V</uom>
-            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
@@ -4272,7 +4269,6 @@
         </point>
         <point name="Max Voltage">
             <uom>V</uom>
-            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
@@ -4281,7 +4277,6 @@
         </point>
         <point name="Current">
             <uom>A</uom>
-            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
@@ -4289,7 +4284,6 @@
         </point>
         <point name="Current Angle">
             <uom>A degree</uom>
-            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
