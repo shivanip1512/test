@@ -702,10 +702,10 @@ void DnpDevice::loadConfigData()
     const bool enableUnsolicitedClass1 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass1));
     const bool enableUnsolicitedClass2 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass2));
     const bool enableUnsolicitedClass3 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass3));
-    const bool disableFailedScanUpdates= isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::disableFailedScanUpdates));
+    const bool enableNonUpdatedOnFailedScan = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableNonUpdatedOnFailedScan));
 
-    _dnp.setConfigData(internalRetries, timeOffset, enableDnpTimesyncs, omitTimeRequest,
-                       enableUnsolicitedClass1, enableUnsolicitedClass2, enableUnsolicitedClass3, disableFailedScanUpdates);
+    _dnp.setConfigData(internalRetries, timeOffset, enableDnpTimesyncs, omitTimeRequest, enableUnsolicitedClass1,
+                       enableUnsolicitedClass2, enableUnsolicitedClass3, enableNonUpdatedOnFailedScan);
 }
 
 bool DnpDevice::isConfigurationValueTrue(const std::string &configKey) const
@@ -1052,7 +1052,7 @@ YukonError_t DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeN
         setScanFlag(ScanRateGeneral, false);
     }
 
-    if(ciStringEqual(deviceConfig->getValueFromKey(DNPStrings::disableFailedScanUpdates), "false"))
+    if(ciStringEqual(deviceConfig->getValueFromKey(DNPStrings::enableNonUpdatedOnFailedScan), "true"))
     {
         CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 

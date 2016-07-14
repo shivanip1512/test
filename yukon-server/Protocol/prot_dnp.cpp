@@ -82,8 +82,8 @@ bool DnpProtocol::setCommand( Command command, output_point &point )
 }
 
 void DnpProtocol::setConfigData( unsigned internalRetries, TimeOffset timeOffset, bool enableDnpTimesyncs,
-                                  bool omitTimeRequest, bool enableUnsolicitedClass1,
-                                  bool enableUnsolicitedClass2, bool enableUnsolicitedClass3, bool disableFailedScanUpdates )
+                                  bool omitTimeRequest, bool enableUnsolicitedClass1, bool enableUnsolicitedClass2,
+                                  bool enableUnsolicitedClass3, bool enableNonUpdatedOnFailedScan)
 {
     _config.reset(
        new DNP::config_data(
@@ -94,7 +94,7 @@ void DnpProtocol::setConfigData( unsigned internalRetries, TimeOffset timeOffset
           enableUnsolicitedClass1,
           enableUnsolicitedClass2,
           enableUnsolicitedClass3,
-          disableFailedScanUpdates));
+          enableNonUpdatedOnFailedScan));
 
     _app_layer.setConfigData(_config.get());
 }

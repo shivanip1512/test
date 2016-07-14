@@ -207,7 +207,7 @@ const string DNPStrings::internalRetries = "internalRetries";
 const string DNPStrings::enableUnsolicitedClass1 = "enableUnsolicitedMessagesClass1";
 const string DNPStrings::enableUnsolicitedClass2 = "enableUnsolicitedMessagesClass2";
 const string DNPStrings::enableUnsolicitedClass3 = "enableUnsolicitedMessagesClass3";
-const string DNPStrings::disableFailedScanUpdates = "disableFailedScanUpdates";
+const string DNPStrings::enableNonUpdatedOnFailedScan = "enableNonUpdatedOnFailedScan";
 const string DNPStrings::enableDnpTimesyncs = "enableDnpTimesyncs";
 const string DNPStrings::timeOffset = "timeOffset";
 

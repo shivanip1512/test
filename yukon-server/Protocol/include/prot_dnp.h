@@ -66,8 +66,8 @@ public:
     bool setCommand( Command command, output_point &point );
 
     void setConfigData( unsigned internalRetries, DNP::TimeOffset timeOffset, bool enableDnpTimesyncs,
-                        bool omitTimeRequest, bool enableUnsolicitedClass1,
-                        bool enableUnsolicitedClass2, bool enableUnsolicitedClass3, bool disableFailedScanUpdates );
+                        bool omitTimeRequest, bool enableUnsolicitedClass1, bool enableUnsolicitedClass2,
+                        bool enableUnsolicitedClass3, bool enableNonUpdatedOnFailedScan);
 
     void setInternalRetries( unsigned retries ) const;
 

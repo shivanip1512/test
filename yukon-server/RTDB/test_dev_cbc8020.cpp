@@ -512,14 +512,14 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
     //  set up the config
     Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-    config.insertValue(Cti::Config::DNPStrings::internalRetries,         "3");
-    config.insertValue(Cti::Config::DNPStrings::timeOffset,              "LOCAL");
-    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs,      "true");
-    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest,         "false");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
-    config.insertValue(Cti::Config::DNPStrings::disableFailedScanUpdates,"false");
+    config.insertValue(Cti::Config::DNPStrings::internalRetries,              "3");
+    config.insertValue(Cti::Config::DNPStrings::timeOffset,                   "LOCAL");
+    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs,           "true");
+    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest,              "false");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1,      "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2,      "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3,      "true");
+    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "true");
 
     //  start the request
     BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
