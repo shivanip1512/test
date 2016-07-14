@@ -658,7 +658,7 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         return result->second;
     }
 
-    return SYS_DID_SYSTEM;
+    return TYPE_NONE;
 }
 
 
