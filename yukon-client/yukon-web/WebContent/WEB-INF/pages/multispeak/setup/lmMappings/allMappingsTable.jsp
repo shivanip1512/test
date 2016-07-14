@@ -14,31 +14,31 @@
     class="dn">       
         <tags:nameValueContainer2 tableClass="with-form-controls">
             <tags:nameValue2 nameKey=".strategy">
-                <input type="text" class="js-mapping-input2 js-strategy2">
-                <span class="errors dn js-mapping-errors2 js-strategy2"><i:inline key=".error.noStrategy"/></span>
+                <input type="text" class="js-edit-mapping-popup js-strategy-popup">
+                <span class="errors dn js-edit-mapping-popup-errors js-strategy-popup"><i:inline key=".error.noStrategy"/></span>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".substation">
-                <input type="text" class="js-mapping-input2 js-substation2" >
-                <span class="errors dn js-mapping-errors2 js-substation2"><i:inline key=".error.noSubstation"/></span>
+                <input type="text" class="js-edit-mapping-popup js-substation-popup" >
+                <span class="errors dn js-edit-mapping-popup-errors js-substation-popup"><i:inline key=".error.noSubstation"/></span>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".pao" valueClass="pao-values">
-                <cti:msg2  var="notFound2" key=".error.notFound"/>
-                <span class="mapped-pao-name2" data-empty-text="${notFound2}"></span>
+                <cti:msg2  var="notFound-edit" key=".error.notFound"/>
+                <span class="mapped-pao-name-popup" data-empty-text="${notFound-edit}"></span>
 
-                <cti:msg2 var="message2" key=".changeMapping.message"/>
-                <cti:msg2 var="title2" key=".changeMapping.title"/>
-                <cti:msg2 var="editText2" key="components.button.edit.label"/>
-                <cti:button nameKey="edit" busy="true" classes="js-add-btnam fn vat" data-ok-event="yukon_substation_mappings_add2"
-                    data-message="${message2}" data-title="${title2}" data-edit-text="${editText2}"/>
+                <cti:msg2 var="message-popup" key=".changeMapping.message"/>
+                <cti:msg2 var="title-popup" key=".changeMapping.title"/>
+                <cti:msg2 var="editText-popup" key="components.button.edit.label"/>
+                <cti:button nameKey="edit" busy="true" classes="js-edit-btn fn vat"
+                    data-message="${message-popup}" data-title="${title-popup}" data-edit-text="${editText-popup}"/>
 
                 <%-- These inputs are used by the picker --%>
-                <input type="hidden" id="mappedNameId2" >
-                <input id="mappedName2" class="dn" >
-                <tags:pickerDialog id="paoPicker2"
+                <input type="hidden" id="mappedNameId-popup" >
+                <input id="mappedName-popup" class="dn" >
+                <tags:pickerDialog id="paoPickerEditPopup"
                     type="lmProgramOrScenarioPicker"
-                    destinationFieldId="mappedNameId2"
-                    extraDestinationFields="paoName:mappedName2;"
-                    endAction="yukon.substation.mappings.setMappedNameId2"
+                    destinationFieldId="mappedNameId-popup"
+                    extraDestinationFields="paoName:mappedName-popup;"
+                    endAction="yukon.substation.mappings.setMappedNameIdOnEdit"
                     linkType="none"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>		

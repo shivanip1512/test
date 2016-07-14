@@ -38,6 +38,17 @@ yukon.substation.mappings = (function () {
                     callback(data);
                 });
         },
+        
+        _getMappedId = function (callback) {
+        	$.getJSON(yukon.url('/multispeak/setup/lmMappings/find-mappingId'),
+                    {
+                        'strategyName': $('.js-strategy-popup.js-edit-mapping-popup').val(),
+                        'substationName': $('.js-substation-popup.js-edit-mapping-popup').val()
+                    })
+                    .done(function (data, textStatus, jqXHR) {
+                        callback(data);
+                    });
+        },
 
         mod = {
             init : function () {
@@ -56,7 +67,7 @@ yukon.substation.mappings = (function () {
 
                 $(document).on('click', '.js-add-btn', function () {
                     var btn = $(this),
-                        errors = false,
+                    	errors = false,
                         strategyName = $('.js-strategy.js-mapping-input').val(),
                         substationName = $('.js-substation.js-mapping-input').val();
 
@@ -64,11 +75,11 @@ yukon.substation.mappings = (function () {
                     $('.js-mapping-input').removeClass('error');
 
                     if (strategyName === '') {
-                        errors = true;
+                    	errors = true;
                         $('.js-strategy').show().addClass('error');
                     }
                     if (substationName === '') {
-                        errors = true;
+                    	errors = true;
                         $('.js-substation').show().addClass('error');
                     }
 
@@ -87,32 +98,40 @@ yukon.substation.mappings = (function () {
                 });
                 
                 $(document).on('click','.js-edit-mapping', function() {
-                	var rowId = $(this).attr('data-mapping-id'),
-                	    errors = false;
-                		$('.js-strategy2.js-mapping-input2').val($('#strategy'+rowId).html());
-                		$('.js-substation2.js-mapping-input2').val($('#substation'+rowId).html());
-                		$('span.mapped-pao-name2').text($('#tpao-name'+rowId).html());
+                	var rowId = $(this).attr('data-mapping-id');
+                		$('.js-strategy-popup.js-edit-mapping-popup').val($('#strategy'+rowId).html());
+                		$('.js-substation-popup.js-edit-mapping-popup').val($('#substation'+rowId).html());
+                		$('span.mapped-pao-name-popup').text($('#tpao-name'+rowId).html());
+                		_getMappedId(function (data) {
+                			if(data.found){
+                				$('#mappedNameId-popup').val(data.mappedNameId);
+                			}
+                		});
+                		$('.js-edit-mapping-popup').removeClass('error');
                 		$('#edit-mapping').attr('data-mapping-id', rowId);
                 });
                 
-                $(document).on('click', '.js-add-btnam', function () {
+                $(document).on('click', '.js-edit-btn', function () {
                     var btn = $(this),
-                        errors = false,
-                        strategyName = $('.js-strategy2.js-mapping-input2').val(),
-                        substationName = $('.js-substation2.js-mapping-input2').val();
+                    	errors = false,
+                        strategyName = $('.js-edit-mapping-popup.js-strategy-popup').val(),
+                        substationName = $('.js-edit-mapping-popup.js-substation-popup').val();
 
-                    $('.js-mapping-errors2').hide();
-                    $('.js-mapping-input2').removeClass('error');
+                    $('.js-edit-mapping-popup-errors').hide();
+                    $('.js-edit-mapping-popup').removeClass('error');
 
                     if (strategyName === '') {
-                        errors = true;
-                        $('.js-strategy2').show().addClass('error');
+                    	errors = true;
+                        $('.js-edit-mapping-popup-errors.js-strategy-popup').show().addClass('error');
                     }
                     if (substationName === '') {
-                        errors = true;
-                        $('.js-substation2').show().addClass('error');
+                    	errors = true;
+                        $('.js-edit-mapping-popup-errors.js-substation-popup').show().addClass('error');
                     }
-                    paoPicker2.show();
+                    
+                    if(!errors){
+                        paoPickerEditPopup.show();                    	
+                    }
                     yukon.ui.unbusy(btn);
                 });
                 
@@ -148,28 +167,46 @@ yukon.substation.mappings = (function () {
                 
                 $(document).on('yukon.substation.mappings.updateMap', function(ev) {
                 	 var mappingId = $(ev.target).attr('data-mapping-id'),
-                	 	strategyName = $('.js-strategy2.js-mapping-input2').val().trim(),
-                	 	substationName = $('.js-substation2.js-mapping-input2').val().trim(),
-                	 	mappedName = $('span.mapped-pao-name2').text().trim();
+                	 	strategyName = $('.js-edit-mapping-popup.js-strategy-popup').val().trim(),
+                	 	substationName = $('.js-edit-mapping-popup.js-substation-popup').val().trim(),
+                	 	mappedNameId = $('#mappedNameId-popup').val(),
+                	 	errors = false;
+
+                 $('.js-mapping-errors-popup').hide();
+                 $('.js-edit-mapping-popup').removeClass('error');
+
+                 if (strategyName === '') {
+                 	errors = true;
+                     $('.js-strategy-popup').show().addClass('error');
+                 }
+                 if (substationName === '') {
+                 	errors = true;
+                     $('.js-substation-popup').show().addClass('error');
+                 }
+                 
+                 if(!errors){
+	                	 if(mappedNameId === ''){
+                			 return;
+                		 }
 	
-	                 $.getJSON(yukon.url('/multispeak/setup/lmMappings/updateMappingById'),
-	                     {
-	                	 	 'mappingId': mappingId,
-	                         'strategyName': strategyName,
-	                         'substationName': substationName,
-	                         'mappedName': mappedName
-	                     }
-	                 ).done(function (data, textStatus, jqXHR) {
-	                	 if("error" in data){
-	                		 $('div.js-map-edit-warning').removeClass('dn');
-	                	 }else{
-	                		 $('div.js-map-edit-warning').addClass('dn');
-	                		 _reloadAllMappingsTable();
-	                	 }
-	                     
-	                 });
-	                 
-	                 $('div#edit-mapping.dn.ui-dialog-content.ui-widget-content').parent().remove();
+		                 $.getJSON(yukon.url('/multispeak/setup/lmMappings/updateMappingById'),
+		                     {
+		                	     'mappingId': mappingId,
+		                         'strategyName': strategyName,
+		                         'substationName': substationName,
+		                         'mappedNameId': mappedNameId
+		                     }
+		                 ).done(function (data, textStatus, jqXHR) {
+		                	 if("error" in data){
+		                		 $('div.js-map-edit-warning').removeClass('dn');
+		                	 }else{
+		                		 $('div.js-map-edit-warning').addClass('dn');
+		                		 _reloadAllMappingsTable();
+		                	 }
+		                 });
+                	
+		                 $('div#edit-mapping.dn.ui-dialog-content.ui-widget-content').parent().remove();
+                 	}
                 });
                 
             },
@@ -190,7 +227,7 @@ yukon.substation.mappings = (function () {
                     {
                         'strategyName': strategyName,
                         'substationName': substationName,
-                        'mappedName': mappedNameId
+                        'mappedNameId': mappedNameId
                     }
                 ).done(function (data, textStatus, jqXHR) {
                     $('.mapped-pao-name').text($('#mappedName').val());
@@ -200,8 +237,8 @@ yukon.substation.mappings = (function () {
             /**
              * Sets Mapped Name Id  in pop-up 
              */
-            setMappedNameId2 : function () {            	
-                	$('span.mapped-pao-name2').text($('#mappedName2').val().trim());
+            setMappedNameIdOnEdit : function () {            	
+                	$('span.mapped-pao-name-popup').text($('#mappedName-popup').val().trim());
             }
         };
 

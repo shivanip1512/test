@@ -62,13 +62,11 @@ public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
     
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean updateMappingById(int mappingId, String strategy, String substation, String paobject){
+    public boolean updateMappingById(int mappingId, String strategyName, String substationName, int paobjectId){
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("UPDATE " + TABLENAME + " SET");
-        sql.append("PaobjectId = (SELECT p.PAObjectID FROM YukonPAObject p WHERE p.PAONAME = ").appendArgument(paobject).append("),");
-        sql.append("StrategyName = ").appendArgument(strategy).append(",");
-        sql.append("SubstationName = ").appendArgument(substation);
-        sql.append("WHERE MspLMInterfaceMappingId = ").appendArgument(mappingId);
+    	sql.append("UPDATE " + TABLENAME);
+        sql.set("PaobjectId", paobjectId, "StrategyName", strategyName, "SubstationName", substationName);
+        sql.append("WHERE MspLMInterfaceMappingId").eq(mappingId);
         
         int result = jdbcTemplate.update(sql.getSql(), sql.getArguments());
         return (result == 1);

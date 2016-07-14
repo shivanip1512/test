@@ -25,10 +25,10 @@ public interface MspLmInterfaceMappingDao {
      * @param mappingId 
      * @param strategyName
      * @param substationName
-     * @param paobjectId Name of pao
+     * @param paobjectId Id of pao
      * @return true if successful
      */
-    public boolean updateMappingById(int mappingId, String strategy, String substation, String paobject);
+    public boolean updateMappingById(int mappingId, String strategyName, String substationName, int paObjectId);
     
     public boolean remove(int mspLMInterfaceMappingId);
 

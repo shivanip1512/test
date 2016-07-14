@@ -60,6 +60,17 @@ public class LMMappingsController {
             return ImmutableMap.of("found", false);
         }
     }
+    
+    @RequestMapping("find-mappingId")
+    public @ResponseBody Map<String, ? extends Object> findMappingId(ModelMap model, String strategyName, String substationName) {
+    	int mappedNameId = findMappedId(strategyName, substationName);
+    	if(mappedNameId != 0){
+    		return ImmutableMap.of("found", true,
+    								"mappedNameId", mappedNameId);
+    	} else {
+    		return ImmutableMap.of("found", false);
+    	}
+    }
 
     @RequestMapping("addOrUpdateMapping")
     public @ResponseBody Map<String,Object> addOrUpdateMapping(String strategyName, String substationName, Integer mappedNameId) {
@@ -87,21 +98,21 @@ public class LMMappingsController {
     }
     
     @RequestMapping("updateMappingById")
-    public @ResponseBody Map<String, Object> updateMappingById(Integer mappingId, String strategyName, String substationName, String mappedName){
+    public @ResponseBody Map<String, Object> updateMappingById(Integer mappingId, String strategyName, String substationName, Integer mappedNameId){
     	Map<String,Object> response = new HashMap<>();
     	Integer existingMspLmInterfaceid = mspLMMappingDao.findIdForStrategyAndSubstation(strategyName, substationName);
     	
-    	if (mappedName == null) {
-            response.put("error", "mappedName not found");
-        } else if (mappedName.length() <= 0) {
-            response.put("error", "mappedName must have a character");
+    	if (mappedNameId == null) {
+            response.put("error", "mappedId not found");
+        } else if (mappedNameId <= 0) {
+            response.put("error", "mappedId must be greater than 0");
         } else if (mappingId == null){
         	response.put("error", "mappingId not found");
-        } else if (existingMspLmInterfaceid != null && existingMspLmInterfaceid != mappingId){
+        } else if (existingMspLmInterfaceid != null && existingMspLmInterfaceid.intValue() != mappingId.intValue()){
         	response.put("error", "Selected strategy name and substation name already exist.");
         } else {
             response.put("action", "update");
-            boolean updated = mspLMMappingDao.updateMappingById(mappingId, strategyName, substationName, mappedName);
+            boolean updated = mspLMMappingDao.updateMappingById(mappingId, strategyName, substationName, mappedNameId);
             response.put("success", updated);            
         }
     	return response;
@@ -139,6 +150,17 @@ public class LMMappingsController {
         } catch (NotFoundException e) {
         }
         return mappedName;
+    }
+    
+    private int findMappedId(String strategyName, String substationName) {
+    	int mappedId = 0;
+    	try{
+    		MspLmMapping mapping = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
+    		mappedId = mapping.getPaobjectId();
+    	}catch(NotFoundException e){
+    		
+    	}
+    	return mappedId;
     }
 
     private void addAllMapppingToModel(ModelMap model, SortingParameters sorting, YukonUserContext userContext) {
