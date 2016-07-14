@@ -512,6 +512,7 @@ UPDATE DeviceConfigCategoryItem SET ItemValue =
 		WHEN ItemName = 'timeZoneOffset' AND ItemValue = '-9' THEN 'ANCHORAGE'
 		WHEN ItemName = 'timeZoneOffset' AND ItemValue = '-10' THEN 'HONOLULU'
 		ELSE ItemValue
+	END
 
 UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue + 1
 WHERE ItemName like 'channel%PhysicalChannel' 
