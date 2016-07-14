@@ -366,10 +366,10 @@ BOOST_AUTO_TEST_CASE( test_erase )
     BOOST_CHECK( map.find( 1003 ) != map.end() );
     BOOST_CHECK( map.find( 1004 ) != map.end() );
 
-    BOOST_CHECK( manager.getPoint( 1001, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1001 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1002 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1003 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1004 ) );
 
     // Now we erase a point
     manager.erase( 1001 );
@@ -391,10 +391,10 @@ BOOST_AUTO_TEST_CASE( test_erase )
     BOOST_CHECK( map.find( 1003 ) != map.end() );
     BOOST_CHECK( map.find( 1004 ) != map.end() );
 
-    BOOST_CHECK( !manager.getPoint( 1001, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+    BOOST_CHECK( ! manager.getCachedPoint( 1001 ) );
+    BOOST_CHECK(   manager.getCachedPoint( 1002 ) );
+    BOOST_CHECK(   manager.getCachedPoint( 1003 ) );
+    BOOST_CHECK(   manager.getCachedPoint( 1004 ) );
 
     // Now we erase the last point.  Should also remove the 
     manager.erase( 1002 );
@@ -416,10 +416,10 @@ BOOST_AUTO_TEST_CASE( test_erase )
     BOOST_CHECK( map.find( 1003 ) != map.end() );
     BOOST_CHECK( map.find( 1004 ) != map.end() );
 
-    BOOST_CHECK( !manager.getPoint( 1001, 100 ) );
-    BOOST_CHECK( !manager.getPoint( 1002, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+    BOOST_CHECK( ! manager.getCachedPoint( 1001 ) );
+    BOOST_CHECK( ! manager.getCachedPoint( 1002 ) );
+    BOOST_CHECK(   manager.getCachedPoint( 1003 ) );
+    BOOST_CHECK(   manager.getCachedPoint( 1004 ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_removePointsFromConnectionManager )
@@ -471,10 +471,10 @@ BOOST_AUTO_TEST_CASE( test_removePointsFromConnectionManager )
     BOOST_CHECK( map.find( 1003 ) != map.end() );
     BOOST_CHECK( map.find( 1004 ) != map.end() );
 
-    BOOST_CHECK( manager.getPoint( 1001, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1001 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1002 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1003 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1004 ) );
 
     manager.removePointsFromConnectionManager( cm1 );
 
@@ -497,10 +497,10 @@ BOOST_AUTO_TEST_CASE( test_removePointsFromConnectionManager )
     BOOST_CHECK( map.find( 1003 ) != map.end() );
     BOOST_CHECK( map.find( 1004 ) != map.end() );   // Removing cm1 shouldn't change this
 
-    BOOST_CHECK( manager.getPoint( 1001, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1001 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1002 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1003 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1004 ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_expire )
@@ -552,10 +552,10 @@ BOOST_AUTO_TEST_CASE( test_expire )
     BOOST_CHECK( map.find( 1003 ) != map.end() );
     BOOST_CHECK( map.find( 1004 ) != map.end() );
 
-    BOOST_CHECK( manager.getPoint( 1001, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1001 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1002 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1003 ) );
+    BOOST_CHECK( manager.getCachedPoint( 1004 ) );
 
     manager.expire( 1001 );
 
@@ -578,10 +578,10 @@ BOOST_AUTO_TEST_CASE( test_expire )
     BOOST_CHECK( map.find( 1003 ) != map.end() );
     BOOST_CHECK( map.find( 1004 ) != map.end() );   // Removing cm1 shouldn't change this
 
-    BOOST_CHECK( !manager.getPoint( 1001, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1002, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1003, 100 ) );
-    BOOST_CHECK( manager.getPoint( 1004, 100 ) );
+    BOOST_CHECK( ! manager.getCachedPoint( 1001 ) );
+    BOOST_CHECK(   manager.getCachedPoint( 1002 ) );
+    BOOST_CHECK(   manager.getCachedPoint( 1003 ) );
+    BOOST_CHECK(   manager.getCachedPoint( 1004 ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
