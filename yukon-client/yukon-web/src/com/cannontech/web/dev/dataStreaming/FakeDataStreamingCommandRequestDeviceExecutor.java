@@ -23,7 +23,7 @@ import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.rfn.dataStreaming.DataStreamingMetric;
+import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.NotFoundException;
@@ -67,7 +67,7 @@ public class FakeDataStreamingCommandRequestDeviceExecutor implements CommandReq
         try {
             behavior = deviceBehaviorDao.getBehaviorByDeviceIdAndType(deviceId, BehaviorType.DATA_STREAMING);
             log.debug("Behavior found: " + behavior);
-            List<DataStreamingMetric> metrics = getMetricsFromBehavior(behavior);
+            List<ReportedDataStreamingAttribute> metrics = getMetricsFromBehavior(behavior);
             config.setStreamingEnabled(true);
             config.setConfiguredMetrics(metrics);
         } catch (NotFoundException e) {
@@ -86,8 +86,8 @@ public class FakeDataStreamingCommandRequestDeviceExecutor implements CommandReq
         return json;
     }
     
-    private List<DataStreamingMetric> getMetricsFromBehavior(Behavior behavior) {
-        List<DataStreamingMetric> metrics = new ArrayList<>();
+    private List<ReportedDataStreamingAttribute> getMetricsFromBehavior(Behavior behavior) {
+        List<ReportedDataStreamingAttribute> metrics = new ArrayList<>();
         
         String channelsString = behavior.getValue(CHANNELS_STRING);
         int channels = Integer.parseInt(channelsString);
@@ -97,7 +97,7 @@ public class FakeDataStreamingCommandRequestDeviceExecutor implements CommandReq
             String attributeValue = behavior.getValue(key + ATTRIBUTE_STRING);
             String intervalValue = behavior.getValue(key + INTERVAL_STRING);
             
-            DataStreamingMetric metric = new DataStreamingMetric();
+            ReportedDataStreamingAttribute metric = new ReportedDataStreamingAttribute();
             metric.setEnabled(true);
             metric.setInterval(Integer.parseInt(intervalValue));
             metric.setAttribute(attributeValue);

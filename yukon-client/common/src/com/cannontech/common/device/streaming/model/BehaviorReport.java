@@ -1,7 +1,7 @@
 package com.cannontech.common.device.streaming.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.joda.time.Instant;
 
@@ -11,7 +11,7 @@ public class BehaviorReport {
     private BehaviorReportStatus status;
     private BehaviorType type; 
     private Instant timestamp;
-    private List<BehaviorValue> values = new ArrayList<>();
+    private Map<String, String> values = new HashMap<>();
     
     public int getDeviceId() {
         return deviceId;
@@ -37,10 +37,10 @@ public class BehaviorReport {
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
-    public List<BehaviorValue> getValues() {
+    public Map<String, String> getValues() {
         return values;
     }
-    public void setValues(List<BehaviorValue> values) {
+    public void setValues(Map<String, String> values) {
         this.values = values;
     }
     public int getId() {

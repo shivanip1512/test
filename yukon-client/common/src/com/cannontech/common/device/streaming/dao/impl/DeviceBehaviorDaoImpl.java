@@ -2,7 +2,9 @@ package com.cannontech.common.device.streaming.dao.impl;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,12 @@ import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorType;
-import com.cannontech.common.device.streaming.model.BehaviorValue;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.Lists;
@@ -102,7 +104,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
                 Behavior behavior = new Behavior();
                 behavior.setId(rs.getInt("BehaviorId"));
                 behavior.setType(type);
-                List<BehaviorValue> values = getBehaviorValuesByBehaviorId(behavior.getId());
+                Map<String, String> values = getBehaviorValuesByBehaviorId(behavior.getId());
                 behavior.setValues(values);
                 return behavior;
             }
@@ -131,7 +133,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         }
 
         jdbcTemplate.update(updateCreateSql);
-        saveBehaviorValues(behavior.getId(), behavior.getValues());
+        saveBehaviorValues(behavior.getId(), behavior.getValuesMap());
 
         return behavior.getId();
     }
@@ -167,7 +169,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         });
 
-        List<BehaviorValue> values = getBehaviorValuesByBehaviorId(behavior.getId());
+        Map<String, String> values = getBehaviorValuesByBehaviorId(behavior.getId());
         behavior.setValues(values);
         return behavior;
     }
@@ -189,7 +191,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         });
 
-        List<BehaviorValue> values = getBehaviorValuesByBehaviorId(behaviorId);
+        Map<String, String> values = getBehaviorValuesByBehaviorId(behaviorId);
         behavior.setValues(values);
         return behavior;
     }
@@ -235,30 +237,29 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         params.addValue("BehaviorType", behavior.getType());
     }
     
-    @Transactional
-    private List<BehaviorValue> getBehaviorValuesByBehaviorId(int behaviorId) {
+    private Map<String, String> getBehaviorValuesByBehaviorId(int behaviorId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Name, Value");
         sql.append("FROM BehaviorValue");
         sql.append("WHERE BehaviorId").eq(behaviorId);
-
-        return jdbcTemplate.query(sql, new YukonRowMapper<BehaviorValue>() {
+        
+        Map<String, String> nameValueMap = new HashMap<>();
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
-            public BehaviorValue mapRow(YukonResultSet rs) throws SQLException {
-                BehaviorValue value = new BehaviorValue(rs.getString("Name"), rs.getString("Value"));
-                return value;
+            public void processRow(YukonResultSet rs) throws SQLException {
+                nameValueMap.put(rs.getString("Name"), rs.getString("Value"));
             }
         });
+        return nameValueMap;
     }
     
-    @Transactional
-    private void saveBehaviorValues(int behaviorId, List<BehaviorValue> values) {
-        values.forEach(value -> {
+    private void saveBehaviorValues(int behaviorId, Map<String, String> values) {
+        values.forEach((name, value) -> {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             SqlParameterSink params = sql.insertInto("BehaviorValue");
             params.addValue("BehaviorId", behaviorId);
-            params.addValue("Name", value.getName());
-            params.addValue("Value", value.getValue());
+            params.addValue("Name", name);
+            params.addValue("Value", value);
 
             jdbcTemplate.update(sql);
         });
@@ -280,13 +281,13 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         jdbcTemplate.update(sql);
     }
 
-    private void saveBehaviorReportValues(int behaviorReportId, List<BehaviorValue> values) {
-        values.forEach(value -> {
+    private void saveBehaviorReportValues(int behaviorReportId, Map<String, String> values) {
+        values.forEach((name, value) -> {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             SqlParameterSink params = sql.insertInto("BehaviorReportValue");
             params.addValue("BehaviorReportId", behaviorReportId);
-            params.addValue("Name", value.getName());
-            params.addValue("Value", value.getValue());
+            params.addValue("Name", name);
+            params.addValue("Value", value);
 
             jdbcTemplate.update(sql);
         });

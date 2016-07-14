@@ -2,6 +2,7 @@ package com.cannontech.web.rfn.dataStreaming.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,9 +20,8 @@ import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
-import com.cannontech.common.device.streaming.model.BehaviorValue;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.rfn.dataStreaming.DataStreamingMetric;
+import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -157,14 +157,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         deviceBehaviorDao.saveBehaviorReport(report);
     }
     
-    private List<BehaviorValue> generateBehaviorReportValues(ReportedDataStreamingConfig config) {
-        List<BehaviorValue> values = new ArrayList<>();
+    private Map<String, String> generateBehaviorReportValues(ReportedDataStreamingConfig config) {
+        Map<String, String> values = new HashMap<>();
         
         addReportValue("enabled", config.isStreamingEnabled(), values);
         addReportValue("channels", config.getConfiguredMetrics().size(), values);
         
         for (int i = 0; i < config.getConfiguredMetrics().size(); i++) {
-            DataStreamingMetric metric = config.getConfiguredMetrics().get(i);
+            ReportedDataStreamingAttribute metric = config.getConfiguredMetrics().get(i);
             addReportValue("channels." + i + ".attribute", metric.getAttribute(), values);
             addReportValue("channels." + i + ".interval", metric.getInterval(), values);
             addReportValue("channels." + i + ".enabled", metric.isEnabled(), values);
@@ -173,9 +173,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return values;
     }
     
-    private void addReportValue(String name, Object value, List<BehaviorValue> values) {
-        BehaviorValue behaviorValue = new BehaviorValue(name, String.valueOf(value));
-        values.add(behaviorValue);
+    private void addReportValue(String name, Object value, Map<String, String> values) {
+        values.put(name, String.valueOf(value));
     }
     
     /**
@@ -196,18 +195,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         DataStreamingConfig config = new DataStreamingConfig();
         config.setId(behavior.getId());
         int i = 0;
-        BehaviorValue channelValue = findBehaviorValueByName(behavior, CHANNELS_STRING);
-        int channels = Integer.parseInt(channelValue.getValue());
-        while (i < channels) {
+        int channels = behavior.getIntValue(CHANNELS_STRING);
+        for (i = 0; i < channels; i++) {
             String key = CHANNELS_STRING + "." + i;
-            BehaviorValue attributeValue = findBehaviorValueByName(behavior, key + ATTRIBUTE_STRING);
-            BehaviorValue intervalValue = findBehaviorValueByName(behavior, key + INTERVAL_STRING);
+            BuiltInAttribute attributeValue = behavior.getEnumValue(key + ATTRIBUTE_STRING, BuiltInAttribute.class);
+            int intervalValue = behavior.getIntValue(key + INTERVAL_STRING);
             DataStreamingAttribute dataStreamingAttribute = new DataStreamingAttribute();
-            dataStreamingAttribute.setAttribute(BuiltInAttribute.valueOf(attributeValue.getValue()));
-            dataStreamingAttribute.setInterval(Integer.parseInt(intervalValue.getValue()));
+            dataStreamingAttribute.setAttribute(attributeValue);
+            dataStreamingAttribute.setInterval(intervalValue);
             dataStreamingAttribute.setAttributeOn(Boolean.TRUE);
             config.addAttribute(dataStreamingAttribute);
-            i++;
         }
         return config;
     }
@@ -223,21 +220,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         List<DataStreamingAttribute> attributes =
             config.getAttributes().stream().filter(x -> x.getAttributeOn() == Boolean.TRUE).collect(
                 Collectors.toList());
-        BehaviorValue value = new BehaviorValue(CHANNELS_STRING, String.valueOf(attributes.size()));
-        behavior.getValues().add(value);
+        behavior.addValue(CHANNELS_STRING, attributes.size());
         for (int i = 0; i < attributes.size(); i++) {
             BuiltInAttribute attribute = attributes.get(i).getAttribute();
             int interval = attributes.get(i).getInterval();
             String key = CHANNELS_STRING + "." + i;
-            BehaviorValue valueAttribute = new BehaviorValue(key + ATTRIBUTE_STRING, attribute.getKey());
-            behavior.getValues().add(valueAttribute);
-            BehaviorValue intervalAttribute = new BehaviorValue(key + INTERVAL_STRING, String.valueOf(interval));
-            behavior.getValues().add(intervalAttribute);
+            behavior.addValue(key + ATTRIBUTE_STRING, attribute);
+            behavior.addValue(key + INTERVAL_STRING, interval);
         }
         return behavior;
-    }
-
-    private BehaviorValue findBehaviorValueByName(Behavior behavior, String name) {
-        return behavior.getValues().stream().filter(v -> v.getName().equals(name)).findFirst().get();
     }
 }

@@ -50,6 +50,5 @@ public interface DataStreamingService {
 
     DataStreamingConfig findDataStreamingConfiguration(int configId);
 
-    
     //TODO: retrieve all mismatches (reported config and stored config don't match)
 }

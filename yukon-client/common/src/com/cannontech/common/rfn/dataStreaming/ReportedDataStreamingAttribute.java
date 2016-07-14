@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Values within a data streaming configuration, as reported from the device.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class DataStreamingMetric {
+public class ReportedDataStreamingAttribute {
     private String attribute;
     private int interval;
     private boolean enabled;
