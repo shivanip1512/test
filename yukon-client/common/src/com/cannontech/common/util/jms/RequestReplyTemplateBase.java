@@ -15,13 +15,11 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.ExceptionHelper;
 
 public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     protected static final Logger log = YukonLogManager.getLogger(RequestReplyTemplateBase.class);
-    protected static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
     
     protected ConfigurationSource configurationSource;
     protected ConnectionFactory connectionFactory;
