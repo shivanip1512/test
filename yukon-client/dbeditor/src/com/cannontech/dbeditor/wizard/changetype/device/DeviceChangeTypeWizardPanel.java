@@ -9,6 +9,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.RfnMeterBase;
 
 public class DeviceChangeTypeWizardPanel extends WizardPanel
 {
@@ -20,19 +22,20 @@ public class DeviceChangeTypeWizardPanel extends WizardPanel
 /**
  * DeviceWizardPanel constructor comment.
  */
-public DeviceChangeTypeWizardPanel(com.cannontech.database.db.DBPersistent objectToChange) 
-{
-	super();
-	setChangeObject(objectToChange);
-	
-   if( getChangeObject() instanceof DeviceBase ) {
-   	
-		getDeviceTypesPanel().setCurrentDevice( 
-				(DeviceBase)getChangeObject() );   	
-   }
-    	  	
+    public DeviceChangeTypeWizardPanel(com.cannontech.database.db.DBPersistent objectToChange) {
+        super();
+        setChangeObject(objectToChange);
 
-}
+        if (getChangeObject() instanceof DeviceBase) {
+             getDeviceTypesPanel().setCurrentDevice((DeviceBase)getChangeObject() );
+             
+             if (getChangeObject() instanceof RfnMeterBase) {
+                 getRfnOptionPanel().setValue(getChangeObject());
+             } else if (getChangeObject() instanceof MCTBase) {
+                 getMctOptionPanel().setValue(getChangeObject());
+             }
+        }
+    }
 
 /**
  * Insert the method's description here.

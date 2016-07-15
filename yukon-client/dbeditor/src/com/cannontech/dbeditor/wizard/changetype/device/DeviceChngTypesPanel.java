@@ -126,13 +126,13 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
                             PaoType newType = paoDefinition.getType();
                             StringBuilder requiredText = new  StringBuilder();
                             
-                            if (currentDeviceType.isMct() && newType.isRfMeter()) {
+                            if (newType.isRfMeter() && (currentDeviceType.isMct() || currentDeviceType.isRfMeter())) {
                                 displayRfnOptions = true;
                                 requiredText.append("\n-- serial number\n");
                                 requiredText.append("-- model\n");
                                 requiredText.append("-- manufacturer");
                             }
-                            if (currentDeviceType.isRfMeter() && newType.isMct()) {
+                            if (newType.isMct() && (currentDeviceType.isRfMeter() || currentDeviceType.isMct())) {
                                 displayMctOptions = true;
                                 requiredText.append("\n-- physical address\n");
                                 requiredText.append("-- route");

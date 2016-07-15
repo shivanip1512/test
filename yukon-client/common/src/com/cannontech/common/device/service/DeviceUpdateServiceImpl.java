@@ -281,9 +281,12 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         if (newDevice instanceof RfnBase && oldDevice instanceof RfnBase) {
             if (info == null || info.getRfnIdentifier() == null
                 || (!info.getRfnIdentifier().isBlank() && !info.getRfnIdentifier().isNotBlank())) {
-                throw new Error("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
+                throw new ProcessingException("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.", 
+                                              "changeRfnDevice",
+                                              oldDevice.getPAObjectID());
             }
             RfnAddress rfnAddress = (((RfnBase) oldDevice).getRfnAddress());
+            
             List<RfnManufacturerModel> rfnManufacturerModels = RfnManufacturerModel.getForType(newDefinition.getType());
 
             Map<String, RfnManufacturerModel> models =
@@ -302,9 +305,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             if (null != rfnAddress.getModel() && !models.containsKey(rfnAddress.getModel())) {
                 // update model only if the model for the new device is not a valid model choice for the old
                 // device
-                rfnAddress.setModel(rfnManufacturerModels.get(0).getModel());
-                rfnAddress.setManufacturer(rfnManufacturerModels.get(0).getManufacturer());
+                rfnAddress.setRfnIdentifier(info.getRfnIdentifier());
+            } else {
+                rfnAddress.setSerialNumber(info.getRfnIdentifier().getSensorSerialNumber());
             }
+            
             ((RfnBase) newDevice).setRfnAddress(rfnAddress);
         }
 
@@ -340,7 +345,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         if (newDevice instanceof MCTBase && oldDevice instanceof RfnBase) {
             
             if (info == null || info.getRouteId() < 0) {
-                throw new ProcessingException("Address and route id are required", "addressRouteRequired");
+                throw new ProcessingException("Address and route id are required.", "addressRouteRequired");
             }
             if (!dlcAddressRangeService.isValidEnforcedAddress(newDefinition.getType(), info.getAddress())) {
                 throw new ProcessingException("Invalid address: " + info.getAddress() + ".", "invalidAddress", info.getAddress());
@@ -353,7 +358,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             
             if (info == null || info.getRfnIdentifier() == null
                 || (!info.getRfnIdentifier().isBlank() && !info.getRfnIdentifier().isNotBlank())) {
-                throw new Error("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
+                throw new ProcessingException("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.", 
+                                              "changeRfnDevice",
+                                              oldDevice.getPAObjectID());
             }
             
             RfnIdentifier rfnIdentifier = info.getRfnIdentifier();

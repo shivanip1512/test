@@ -23,7 +23,7 @@
 <entry key="yukon.exception.processingException.invalidDeviceType">Invalid device type: {0}.</entry>
 <entry key="yukon.exception.processingException.deviceNotFound">COULD NOT FIND: {0}.</entry>
 <entry key="yukon.exception.processingException.changeDeviceType">Could not change device type for device with id: {0}.</entry>
-<entry key="yukon.exception.processingException.addressRouteRequired">Address and route id are required: {0}.</entry>
+<entry key="yukon.exception.processingException.addressRouteRequired">Address and route id are required.</entry>
 <entry key="yukon.exception.processingException.invalidAddress">Invalid address: {0}.</entry>
 <entry key="yukon.exception.processingException.deviceAlreadyExists">Device: {0} already exists.</entry>
 <entry key="yukon.exception.processingException.pointAlreadyExists">Point with name {0} already exists for device {1}.</entry>

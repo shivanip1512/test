@@ -20,10 +20,16 @@ import com.cannontech.common.bulk.service.ChangeDeviceTypeService.ChangeDeviceTy
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.RfnBase;
+import com.cannontech.database.data.device.RfnMeterBase;
 import com.cannontech.spring.YukonSpringHook;
 
 public class RfnOptionPanel extends DataInputPanel implements CaretListener {
+    
+    private int currentDeviceId;
     private JLabel manufacturerLabel;
     private JLabel modelLabel;
     private JLabel serialNumberLabel;
@@ -123,8 +129,10 @@ public class RfnOptionPanel extends DataInputPanel implements CaretListener {
                 
         /* Check for duplicates */
         try {
-            rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier);
-            throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must be unique among RFN devices.");
+            RfnDevice existingRfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier);
+            if (currentDeviceId != existingRfnDevice.getPaoIdentifier().getPaoId()) {
+                throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must be unique among RFN devices.");
+            }
         } catch (NotFoundException e) { /* IGNORE */ };
         
         ChangeDeviceTypeInfo info = new ChangeDeviceTypeInfo(rfnIdentifier);
@@ -132,7 +140,15 @@ public class RfnOptionPanel extends DataInputPanel implements CaretListener {
     }
 
     @Override
-    public void setValue(Object o) {/* Nothing to setup when showing this panel. */}
+    public void setValue(Object o) {
+        if (o instanceof RfnMeterBase) {
+            RfnMeterBase rfn = (RfnMeterBase)o;
+            currentDeviceId = rfn.getPAObjectID();
+            getManufacturerTextField().setText(rfn.getRfnAddress().getManufacturer());
+            getModelTextField().setText(rfn.getRfnAddress().getModel());
+            getSerialNumberTextField().setText(rfn.getRfnAddress().getSerialNumber());
+        }
+    }
 
     public JLabel getManufacturerLabel() {
         if(manufacturerLabel == null) {

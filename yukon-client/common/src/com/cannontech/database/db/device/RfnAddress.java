@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.database.db.DBPersistent;
 
 public class RfnAddress extends DBPersistent  {
@@ -81,6 +82,11 @@ public class RfnAddress extends DBPersistent  {
         this.model = model;
     }
     
+    public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
+        setManufacturer(rfnIdentifier.getSensorManufacturer());
+        setModel(rfnIdentifier.getSensorModel());
+        setSerialNumber(rfnIdentifier.getSensorSerialNumber());
+    }
     
     public boolean isBlank() {
         return StringUtils.isBlank(manufacturer) 

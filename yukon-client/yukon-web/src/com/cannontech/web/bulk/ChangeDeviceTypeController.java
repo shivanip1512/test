@@ -84,9 +84,7 @@ public class ChangeDeviceTypeController {
                         deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
                     }
                 } else if (paoType.isRfMeter()) {
-                    if (paoDefinition.getType().isRfMeter()) {
-                        deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
-                    }
+                    // skip all RFN types. We do not have a way to pass in Model/Manufacturer in the collection action for Change Type.
                 } else {
                     deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
                 }

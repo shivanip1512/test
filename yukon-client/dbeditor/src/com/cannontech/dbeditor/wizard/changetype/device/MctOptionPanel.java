@@ -20,6 +20,7 @@ import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.spring.YukonSpringHook;
@@ -83,7 +84,7 @@ public class MctOptionPanel extends DataInputPanel implements CaretListener {
         init();
     }
     
-    private JComboBox<LiteYukonPAObject> getRouteComboBox() {
+    public JComboBox<LiteYukonPAObject> getRouteComboBox() {
         if (routeComboBox == null) {
             try {
                 routeComboBox = new JComboBox<LiteYukonPAObject>();
@@ -168,6 +169,10 @@ public class MctOptionPanel extends DataInputPanel implements CaretListener {
 
     @Override
     public void setValue(Object o) {
+        if (o instanceof MCTBase) {
+            MCTBase mct = (MCTBase)o;
+            getAddressTextField().setText(mct.getAddress().toString());
+        }
     }
 
     public JTextField getAddressTextField() {
