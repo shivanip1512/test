@@ -21,9 +21,9 @@ public class TableReadInterval implements DeviceConfigurationInputEnumeration {
     public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
         List<InputOption> readIntervals = new ArrayList<>();
 
-        for (int dbValue = 1; dbValue <= 30; dbValue++) {
-            readIntervals.add( new InputOption(Integer.toString(dbValue * 15), 
-                    durationService.formatDuration(dbValue * 15, TimeUnit.SECONDS, DurationFormat.DHMS_REDUCED, userContext)));
+        for (int interval = 1; interval <= 30; interval++) {
+            readIntervals.add( new InputOption(Integer.toString(interval * 15), 
+                    durationService.formatDuration(interval * 15, TimeUnit.SECONDS, DurationFormat.DHMS_REDUCED, userContext)));
         }
 
         return readIntervals;

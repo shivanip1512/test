@@ -20,26 +20,26 @@ public final class RelayTiming implements DeviceConfigurationInputEnumeration {
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    private YukonMessageSourceResolvable formatTimer(double timer) {
+    private YukonMessageSourceResolvable formatTimer(int timer) {
         /*
          * The integer value is written to the database, and represents a relay timing in the following fashion:
-         *    .250 = 250 ms
-         *    .500 = 500 ms
-         *    1.000 = 1 s
-         *    2.000 = 2 s 
+         *    250 = 250 ms
+         *    500 = 500 ms
+         *    1000 = 1 s
+         *    2000 = 2 s 
          * etc.
          */
-        if (timer == (int)timer) {
+        if (timer % 1000 == 0) {
             // This timer is only seconds with no millis.
-            return new YukonMessageSourceResolvable(baseKey + ".seconds", (int)timer );
-        } else if (timer < 1.0) {
+            return new YukonMessageSourceResolvable(baseKey + ".seconds", timer / 1000 );
+        } else if (timer < 1000) {
             // There aren't any seconds if the dbValue is less than 1000, just millis.
-            return new YukonMessageSourceResolvable(baseKey + ".millis", timer * 1000 );
+            return new YukonMessageSourceResolvable(baseKey + ".millis", timer );
         } else {
             // We have a dbValue representing both seconds and millis.
-            double millis = timer%1;
-            double seconds = timer-millis;
-            return new YukonMessageSourceResolvable(baseKey + ".both", seconds, millis*1000);
+            int seconds = timer / 1000;
+            int millis = timer % 1000;
+            return new YukonMessageSourceResolvable(baseKey + ".both", seconds, millis);
         }
     }
 
@@ -49,8 +49,8 @@ public final class RelayTiming implements DeviceConfigurationInputEnumeration {
         final DecimalFormat decimalFormatter = new DecimalFormat("0.00");
         List<InputOption> validTimings = new ArrayList<>();
 
-        for (double timer = .250; timer <= 63.750; timer += .250) {
-            validTimings.add(new InputOption(decimalFormatter.format(timer),
+        for (int timer = 250; timer <= 63750; timer += 250) {
+            validTimings.add(new InputOption(decimalFormatter.format((double)timer/1000),
                                              messageAccessor.getMessage(formatTimer(timer))));
         }
         return validTimings;
