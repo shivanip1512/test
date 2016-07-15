@@ -44,9 +44,8 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
     </div>
-    <div class="dn js-map-edit-warning error">
-        <cti:msg2 key="yukon.web.modules.adminSetup.lmMappings.allMappings.FAILED"/>:
-        <cti:msg2 key="yukon.web.modules.adminSetup.lmMappings.allMappings.invalidInput"/>
+    <div class="dn js-map-edit-warning">
+        <tags:alertBox key="yukon.web.modules.adminSetup.lmMappings.allMappings.invalidInput"/>
     </div>
     <table class="compact-results-table dashed with-form-controls">
         <thead>

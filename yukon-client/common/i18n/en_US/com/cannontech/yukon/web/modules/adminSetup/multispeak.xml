@@ -137,7 +137,6 @@
     <entry key="yukon.web.modules.adminSetup.lmMappings.setMappings.title">Find/Set Mapping</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.allMappings.title">All Mappings</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.allMappings.editMap">Edit Mapping</entry>
-    <entry key="yukon.web.modules.adminSetup.lmMappings.allMappings.FAILED">Error</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.allMappings.invalidInput">Updated Mapping has invalid values or the Strategy/Substation combination already exists.</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.strategy">Strategy</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.substation">Substation</entry>
