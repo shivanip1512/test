@@ -299,6 +299,27 @@ alter table BehaviorValue
 /* End YUK-15438 */
 
 /* Start YUK-13440 */
+
+/* @start-block */
+DECLARE
+  doAdd NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO doAdd from DeviceConfigCategoryItem where ItemName = 'holiday' AND ItemValue like 'SCHEDULE$_%' ESCAPE '$';
+    IF (doAdd = 0) THEN
+
+        UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue + 1
+            WHERE ItemName like 'channel%PhysicalChannel' ;
+
+        UPDATE DeviceConfigCategoryItem SET ItemValue = to_char(to_number(ItemValue, 'FM9999.90') / 4, 'fm9999.90')
+            WHERE ItemName like 'relay%Timer' ;
+
+        UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue * 15
+            WHERE ItemName = 'tableReadInterval' ;
+    END IF;
+END;
+/
+/* @end-block */
+
 UPDATE DeviceConfigCategoryItem SET ItemValue = 
     CASE
         WHEN ItemName like 'displayItem%' AND ItemValue='0'  THEN 'SLOT_DISABLED' 
@@ -413,15 +434,6 @@ UPDATE DeviceConfigCategoryItem SET ItemValue =
         WHEN ItemName = 'timeZoneOffset' AND ItemValue = '-10' THEN 'HONOLULU'
         ELSE ItemValue
     END;
-
-UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue + 1
-WHERE ItemName like 'channel%PhysicalChannel' ;
-
-UPDATE DeviceConfigCategoryItem SET ItemValue = to_char(to_number(ItemValue, 'FM9999.90') / 4, 'fm9999.90')
-WHERE ItemName like 'relay%Timer' ;
-
-UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue * 15
-WHERE ItemName = 'tableReadInterval' ;
 
 /* End YUK-13440 */
 

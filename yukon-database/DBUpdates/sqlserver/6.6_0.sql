@@ -399,6 +399,18 @@ go
 /* End YUK-15438 */
 
 /* Start YUK-13440 */
+IF NOT EXISTS (SELECT * from DeviceConfigCategoryItem where ItemName = 'holiday' AND ItemValue like 'SCHEDULE$_%' ESCAPE '$')
+BEGIN
+    UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue + 1
+    WHERE ItemName like 'channel%PhysicalChannel' 
+END
+
+UPDATE DeviceConfigCategoryItem SET ItemValue = CONVERT(DECIMAL(4,2), cast(ItemValue as decimal(4,2)) / 4)
+WHERE ItemName like 'relay%Timer' 
+
+UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue * 15
+WHERE ItemName = 'tableReadInterval' 
+
 UPDATE DeviceConfigCategoryItem SET ItemValue = 
     CASE
         WHEN ItemName like 'displayItem%' AND ItemValue='0'  THEN 'SLOT_DISABLED' 
@@ -514,14 +526,6 @@ UPDATE DeviceConfigCategoryItem SET ItemValue =
         ELSE ItemValue
     END
 
-UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue + 1
-WHERE ItemName like 'channel%PhysicalChannel' 
-
-UPDATE DeviceConfigCategoryItem SET ItemValue = CONVERT(DECIMAL(4,2), cast(ItemValue as decimal(4,2)) / 4)
-WHERE ItemName like 'relay%Timer' 
-
-UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue * 15
-WHERE ItemName = 'tableReadInterval' 
 /* End YUK-13440 */
 
 
