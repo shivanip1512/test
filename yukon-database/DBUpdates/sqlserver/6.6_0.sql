@@ -140,7 +140,7 @@ BEGIN TRY
             EXEC (@command);
         END;
 
-        SET @output = @output + N' : Time ' + CAST(DATEDIFF(millisecond, @start_time, CURRENT_TIMESTAMP) AS varchar(20)) + ' millis';
+        SET @output = @output + N' : Time ' + CAST(DATEDIFF(millisecond, @start_time, CURRENT_TIMESTAMP) AS VARCHAR(20)) + ' millis';
         INSERT INTO StoredProcedureLog VALUES (
             (SELECT ISNULL(MAX(EntryId) + 1, 1) FROM StoredProcedureLog), 
             'sp_SmartIndexMaintenance', 
@@ -326,76 +326,75 @@ WHERE p.PAObjectID = 0
 /* End YUK-15271 */
 
 /* Start YUK-15438 */
-/* Start YUK-13440 */
-create table BehaviorReport (
-   BehaviorReportId     numeric              not null,
-   DeviceId             numeric              not null,
-   BehaviorType         varchar(60)          not null,
-   BehaviorStatus       varchar(60)          not null,
-   TimeStamp            datetime             not null,
-   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId)
-)
-go
+CREATE TABLE BehaviorReport (
+   BehaviorReportId     NUMERIC              not null,
+   DeviceId             NUMERIC              not null,
+   BehaviorType         VARCHAR(60)          not null,
+   BehaviorStatus       VARCHAR(60)          not null,
+   TimeStamp            DATETIME             not null,
+   CONSTRAINT PK_BEHAVIORREPORT PRIMARY KEY (BehaviorReportId)
+);
+GO
 
-create table BehaviorReportValue (
-   BehaviorReportId     numeric              not null,
-   Name                 varchar(60)          not null,
-   Value                varchar(100)         not null,
-   constraint PK_BEHAVIORREPORTVALUE primary key (BehaviorReportId, Name)
-)
-go
+CREATE TABLE BehaviorReportValue (
+   BehaviorReportId     NUMERIC              not null,
+   Name                 VARCHAR(60)          not null,
+   Value                VARCHAR(100)         not null,
+   CONSTRAINT PK_BEHAVIORREPORTVALUE PRIMARY KEY (BehaviorReportId, Name)
+);
+GO
 
-create table DeviceBehaviorMap (
-   BehaviorId           numeric              not null,
-   DeviceId             numeric              not null,
-   constraint PK_DEVICEBEHAVIORMAP primary key (BehaviorId, DeviceId)
-)
-go
+CREATE TABLE DeviceBehaviorMap (
+   BehaviorId           NUMERIC              not null,
+   DeviceId             NUMERIC              not null,
+   CONSTRAINT PK_DEVICEBEHAVIORMAP PRIMARY KEY (BehaviorId, DeviceId)
+);
+GO
 
-create table Behavior (
-   BehaviorId           numeric              not null,
-   BehaviorType         varchar(60)          not null,
-   constraint PK_BEHAVIOR primary key (BehaviorId)
-)
-go
+CREATE TABLE Behavior (
+   BehaviorId           NUMERIC              not null,
+   BehaviorType         VARCHAR(60)          not null,
+   CONSTRAINT PK_BEHAVIOR PRIMARY KEY (BehaviorId)
+);
+GO
 
-create table BehaviorValue (
-   BehaviorId           numeric              not null,
-   Name                 varchar(60)          not null,
-   Value                varchar(100)         not null,
-   constraint PK_BEHAVIORVALUE primary key (BehaviorId, Name)
-)
-go
+CREATE TABLE BehaviorValue (
+   BehaviorId           NUMERIC              not null,
+   Name                 VARCHAR(60)          not null,
+   Value                VARCHAR(100)         not null,
+   CONSTRAINT PK_BEHAVIORVALUE PRIMARY KEY (BehaviorId, Name)
+);
+GO
 
-alter table BehaviorReport
-   add constraint FK_Device_BehaviorReport foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-         on delete cascade
-go
+ALTER TABLE BehaviorReport
+   ADD CONSTRAINT FK_Device_BehaviorReport FOREIGN KEY (DeviceId)
+      REFERENCES DEVICE (DEVICEID)
+         ON DELETE CASCADE;
+GO
 
-alter table BehaviorReportValue
-   add constraint FK_BehaviorRptVal_BehaviorRpt foreign key (BehaviorReportId)
-      references BehaviorReport (BehaviorReportId)
-         on delete cascade
-go
+ALTER TABLE BehaviorReportValue
+   ADD CONSTRAINT FK_BehaviorRptVal_BehaviorRpt FOREIGN KEY (BehaviorReportId)
+      REFERENCES BehaviorReport (BehaviorReportId)
+         ON DELETE CASCADE;
+GO
 
-alter table DeviceBehaviorMap
-   add constraint FK_Behavior_DeviceBehaviorMap foreign key (BehaviorId)
-      references Behavior (BehaviorId)
-         on delete cascade
-go
+ALTER TABLE DeviceBehaviorMap
+   ADD CONSTRAINT FK_Behavior_DeviceBehaviorMap FOREIGN KEY (BehaviorId)
+      REFERENCES Behavior (BehaviorId)
+         ON DELETE CASCADE;
+GO
 
-alter table DeviceBehaviorMap
-   add constraint FK_Device_DeviceBehaviorMap foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-         on delete cascade
-go
+ALTER TABLE DeviceBehaviorMap
+   ADD CONSTRAINT FK_Device_DeviceBehaviorMap FOREIGN KEY (DeviceId)
+      REFERENCES DEVICE (DEVICEID)
+         ON DELETE CASCADE;
+GO
 
-alter table BehaviorValue
-   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
-      references Behavior (BehaviorId)
-         on delete cascade
-go
+ALTER TABLE BehaviorValue
+   ADD CONSTRAINT FK_BehaviorValue_Behavior FOREIGN KEY (BehaviorId)
+      REFERENCES Behavior (BehaviorId)
+         ON DELETE CASCADE;
+GO
 /* End YUK-15438 */
 
 /* Start YUK-13440 */
