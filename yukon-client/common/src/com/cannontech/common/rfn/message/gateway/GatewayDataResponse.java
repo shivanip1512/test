@@ -13,7 +13,7 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
  */
 public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable {
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     
     private RfnIdentifier rfnIdentifier;
     
@@ -42,6 +42,10 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private String updateServerUrl;
     private Authentication updateServerLogin;
     
+    //Data Streaming Information
+    private double maxGatewayDataStreamingCapacity;
+    private double currentGatewayDataStreamingLoading;
+
     @Override
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
@@ -218,21 +222,40 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     public void setUpdateServerLogin(Authentication updateServerLogin) {
         this.updateServerLogin = updateServerLogin;
     }
+    
+    public double getMaxGatewayDataStreamingCapacity() {
+        return maxGatewayDataStreamingCapacity;
+    }
+
+    public void setMaxGatewayDataStreamingCapacity(double maxGatewayDataStreamingCapacity) {
+        this.maxGatewayDataStreamingCapacity = maxGatewayDataStreamingCapacity;
+    }
+
+    public double getCurrentGatewayDataStreamingLoading() {
+        return currentGatewayDataStreamingLoading;
+    }
+
+    public void setCurrentGatewayDataStreamingLoading(double currentGatewayDataStreamingLoading) {
+        this.currentGatewayDataStreamingLoading = currentGatewayDataStreamingLoading;
+    }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((admin == null) ? 0 : admin.hashCode());
-        result =
-            prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
+        result = prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
         result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
         result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(currentGatewayDataStreamingLoading);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
-        result =
-            prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
+        result = prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
+        temp = Double.doubleToLongBits(maxGatewayDataStreamingCapacity);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
         result = prime * result + ((port == null) ? 0 : port.hashCode());
         result = prime * result + ((radioVersion == null) ? 0 : radioVersion.hashCode());
@@ -243,142 +266,179 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((sequences == null) ? 0 : sequences.hashCode());
         result = prime * result + ((softwareVersion == null) ? 0 : softwareVersion.hashCode());
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
+        result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
+        result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
-        result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
-        result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         GatewayDataResponse other = (GatewayDataResponse) obj;
         if (admin == null) {
-            if (other.admin != null)
+            if (other.admin != null) {
                 return false;
-        } else if (!admin.equals(other.admin))
+            }
+        } else if (!admin.equals(other.admin)) {
             return false;
+        }
         if (collectionSchedule == null) {
-            if (other.collectionSchedule != null)
+            if (other.collectionSchedule != null) {
                 return false;
-        } else if (!collectionSchedule.equals(other.collectionSchedule))
+            }
+        } else if (!collectionSchedule.equals(other.collectionSchedule)) {
             return false;
-        if (connectionStatus != other.connectionStatus)
+        }
+        if (connectionStatus != other.connectionStatus) {
             return false;
-        if (connectionType != other.connectionType)
+        }
+        if (connectionType != other.connectionType) {
             return false;
+        }
+        if (Double.doubleToLongBits(currentGatewayDataStreamingLoading) != Double
+            .doubleToLongBits(other.currentGatewayDataStreamingLoading)) {
+            return false;
+        }
         if (hardwareVersion == null) {
-            if (other.hardwareVersion != null)
+            if (other.hardwareVersion != null) {
                 return false;
-        } else if (!hardwareVersion.equals(other.hardwareVersion))
+            }
+        } else if (!hardwareVersion.equals(other.hardwareVersion)) {
             return false;
+        }
         if (ipAddress == null) {
-            if (other.ipAddress != null)
+            if (other.ipAddress != null) {
                 return false;
-        } else if (!ipAddress.equals(other.ipAddress))
+            }
+        } else if (!ipAddress.equals(other.ipAddress)) {
             return false;
-        if (lastCommStatus != other.lastCommStatus)
+        }
+        if (lastCommStatus != other.lastCommStatus) {
             return false;
-        if (lastCommStatusTimestamp != other.lastCommStatusTimestamp)
+        }
+        if (lastCommStatusTimestamp != other.lastCommStatusTimestamp) {
             return false;
-        if (mode != other.mode)
+        }
+        if (Double.doubleToLongBits(maxGatewayDataStreamingCapacity) != Double
+            .doubleToLongBits(other.maxGatewayDataStreamingCapacity)) {
             return false;
+        }
+        if (mode != other.mode) {
+            return false;
+        }
         if (port == null) {
-            if (other.port != null)
+            if (other.port != null) {
                 return false;
-        } else if (!port.equals(other.port))
+            }
+        } else if (!port.equals(other.port)) {
             return false;
+        }
         if (radioVersion == null) {
-            if (other.radioVersion != null)
+            if (other.radioVersion != null) {
                 return false;
-        } else if (!radioVersion.equals(other.radioVersion))
+            }
+        } else if (!radioVersion.equals(other.radioVersion)) {
             return false;
+        }
         if (radios == null) {
-            if (other.radios != null)
+            if (other.radios != null) {
                 return false;
-        } else if (!radios.equals(other.radios))
+            }
+        } else if (!radios.equals(other.radios)) {
             return false;
+        }
         if (releaseVersion == null) {
-            if (other.releaseVersion != null)
+            if (other.releaseVersion != null) {
                 return false;
-        } else if (!releaseVersion.equals(other.releaseVersion))
+            }
+        } else if (!releaseVersion.equals(other.releaseVersion)) {
             return false;
+        }
         if (rfnIdentifier == null) {
-            if (other.rfnIdentifier != null)
+            if (other.rfnIdentifier != null) {
                 return false;
-        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
+            }
+        } else if (!rfnIdentifier.equals(other.rfnIdentifier)) {
             return false;
-        if (routeColor != other.routeColor)
+        }
+        if (routeColor != other.routeColor) {
             return false;
+        }
         if (sequences == null) {
-            if (other.sequences != null)
+            if (other.sequences != null) {
                 return false;
-        } else if (!sequences.equals(other.sequences))
+            }
+        } else if (!sequences.equals(other.sequences)) {
             return false;
+        }
         if (softwareVersion == null) {
-            if (other.softwareVersion != null)
+            if (other.softwareVersion != null) {
                 return false;
-        } else if (!softwareVersion.equals(other.softwareVersion))
+            }
+        } else if (!softwareVersion.equals(other.softwareVersion)) {
             return false;
+        }
         if (superAdmin == null) {
-            if (other.superAdmin != null)
+            if (other.superAdmin != null) {
                 return false;
-        } else if (!superAdmin.equals(other.superAdmin))
+            }
+        } else if (!superAdmin.equals(other.superAdmin)) {
             return false;
-        if (upperStackVersion == null) {
-            if (other.upperStackVersion != null)
-                return false;
-        } else if (!upperStackVersion.equals(other.upperStackVersion))
-            return false;
-        if (versionConflicts == null) {
-            if (other.versionConflicts != null)
-                return false;
-        } else if (!versionConflicts.equals(other.versionConflicts))
-            return false;
-        if (updateServerUrl == null) {
-            if (other.updateServerUrl != null)
-                return false;
-        } else if (!updateServerUrl.equals(other.updateServerUrl))
-            return false;
+        }
         if (updateServerLogin == null) {
-            if (other.updateServerLogin != null)
+            if (other.updateServerLogin != null) {
                 return false;
-        } else if (!updateServerLogin.equals(other.updateServerLogin))
+            }
+        } else if (!updateServerLogin.equals(other.updateServerLogin)) {
             return false;
+        }
+        if (updateServerUrl == null) {
+            if (other.updateServerUrl != null) {
+                return false;
+            }
+        } else if (!updateServerUrl.equals(other.updateServerUrl)) {
+            return false;
+        }
+        if (upperStackVersion == null) {
+            if (other.upperStackVersion != null) {
+                return false;
+            }
+        } else if (!upperStackVersion.equals(other.upperStackVersion)) {
+            return false;
+        }
+        if (versionConflicts == null) {
+            if (other.versionConflicts != null) {
+                return false;
+            }
+        } else if (!versionConflicts.equals(other.versionConflicts)) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        return String
-            .format("GatewayDataResponse [rfnIdentifier=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, routeColor=%s, superAdmin=%s, admin=%s, collectionSchedule=%s, sequences=%s, updateServerUrl=%s, updateServerLogin=%s]",
-                    rfnIdentifier,
-                    hardwareVersion,
-                    softwareVersion,
-                    upperStackVersion,
-                    radioVersion,
-                    releaseVersion,
-                    versionConflicts,
-                    mode,
-                    connectionType,
-                    ipAddress,
-                    port,
-                    connectionStatus,
-                    lastCommStatus,
-                    lastCommStatusTimestamp,
-                    radios,
-                    routeColor,
-                    superAdmin,
-                    admin,
-                    collectionSchedule,
-                    sequences,
-                    updateServerUrl,
-                    updateServerLogin);
+        return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier + ", hardwareVersion=" + hardwareVersion
+               + ", softwareVersion=" + softwareVersion + ", upperStackVersion=" + upperStackVersion
+               + ", radioVersion=" + radioVersion + ", releaseVersion=" + releaseVersion + ", versionConflicts="
+               + versionConflicts + ", mode=" + mode + ", connectionType=" + connectionType + ", ipAddress="
+               + ipAddress + ", port=" + port + ", connectionStatus=" + connectionStatus + ", lastCommStatus="
+               + lastCommStatus + ", lastCommStatusTimestamp=" + lastCommStatusTimestamp + ", radios=" + radios
+               + ", routeColor=" + routeColor + ", superAdmin=" + superAdmin + ", admin=" + admin
+               + ", collectionSchedule=" + collectionSchedule + ", sequences=" + sequences + ", updateServerUrl="
+               + updateServerUrl + ", updateServerLogin=" + updateServerLogin + ", maxGatewayDataStreamingCapacity="
+               + maxGatewayDataStreamingCapacity + ", currentGatewayDataStreamingLoading="
+               + currentGatewayDataStreamingLoading + "]";
     }
+    
 }
