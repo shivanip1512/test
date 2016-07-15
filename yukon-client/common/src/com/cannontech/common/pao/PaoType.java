@@ -140,9 +140,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFN520FAXD(DeviceTypes.RFN520FAXD, "RFN-520fAXD", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN520FRXD(DeviceTypes.RFN520FRXD, "RFN-520fRXD", PaoCategory.DEVICE, PaoClass.RFMESH),
     
-    RFN530FAXP(DeviceTypes.RFN530FAXP, "RFN-530fAXP", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN530FRXP(DeviceTypes.RFN530FRXP, "RFN-530fRXP", PaoCategory.DEVICE, PaoClass.RFMESH),
-    
     RFN530S4X(DeviceTypes.RFN530S4X, "RFN-530S4x", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN530S4EAD(DeviceTypes.RFN530S4EAD, "RFN-530S4eAD", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN530S4EAT(DeviceTypes.RFN530S4EAT, "RFN-530S4eAT", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -446,8 +443,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN520FRX,
             RFN520FAXD,
             RFN520FRXD,
-            RFN530FAXP,
-            RFN530FRXP,
             RFN530S4X,
             RFN530S4EAD,
             RFN530S4EAT,

@@ -9859,7 +9859,8 @@
 
     <pao id="RFN520_BASE" abstract="true"
         inherits="RFN_COMMON, RFN_L2_CENTRON_AND_FOCUS, RFN_TOU_FOR_ALL_EXCEPT_A3D, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS,
-            RFN_CONFIGURATION, RFN_VOLTAGE_CONFIG, RFN_TEMPERATURE_ALARM_CONFIGURATION, SUPPORTS_VOLTAGE_PROFILE_TAG">
+            RFN_CONFIGURATION, RFN_VOLTAGE_CONFIG, RFN_TEMPERATURE_ALARM_CONFIGURATION, SUPPORTS_VOLTAGE_PROFILE_TAG, 
+            THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT">
         <points>
             <point type="Analog" offset="101">
                 <name>Delivered kW</name>
@@ -9867,16 +9868,6 @@
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4" />
             </point>
-        </points>
-        <attributes>
-            <attribute name="DEMAND">
-                <basicLookup point="Delivered kW"/>
-            </attribute>
-        </attributes>
-    </pao>
-    
-    <pao id="RFN_500_POLYPHASE_BASE" abstract="true" inherits="RFN520_BASE, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT">
-        <points>
             <point type="Analog" offset="327">
                 <name>Voltage Phase A</name>
                 <multiplier value="1.0"/>
@@ -9969,6 +9960,9 @@
             </point>
         </points>
         <attributes>
+            <attribute name="DEMAND">
+                <basicLookup point="Delivered kW"/>
+            </attribute>
             <attribute name="VOLTAGE_PHASE_A">
                 <basicLookup point="Voltage Phase A"/>
             </attribute>
@@ -10013,60 +10007,6 @@
             </attribute>
             <attribute name="CURRENT_ANGLE_PHASE_C">
                 <basicLookup point="Current Angle Phase C"/>
-            </attribute>
-        </attributes>
-    </pao>
-    
-    <pao id="RFN_500_SINGLEPHASE_BASE" abstract="true" inherits="RFN520_BASE">
-        <points>
-            <point type="Analog" offset="214">
-                <name>Voltage</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="14">
-                <init>true</init>
-                <name>Daily Max Volts</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="15">
-                <init>true</init>
-                <name>Daily Min Volts</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="336">
-                <name>Current</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="4" />
-            </point>
-            <point type="Analog" offset="226">
-                <name>Current Angle</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Degrees"/>
-                <decimalplaces value="4" />
-            </point>
-        </points>
-        <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point="Voltage"/>
-            </attribute>
-            <attribute name="MINIMUM_VOLTAGE">
-                <basicLookup point="Daily Min Volts"/>
-            </attribute>
-            <attribute name="MAXIMUM_VOLTAGE">
-                <basicLookup point="Daily Max Volts"/>
-            </attribute>
-            <attribute name="CURRENT">
-                <basicLookup point="Current"/>
-            </attribute>
-            <attribute name="CURRENT_ANGLE">
-                <basicLookup point="Current Angle"/>
             </attribute>
         </attributes>
     </pao>
@@ -10176,29 +10116,21 @@
             </attribute>
         </attributes>
     </pao> 
-        
-    <pao id="RFN520FAX" inherits="RFN_500_SINGLEPHASE_BASE">
+
+    <pao id="RFN520FAX" inherits="RFN520_BASE">
         <displayName>RFN-520fAX</displayName>
     </pao>
 
-    <pao id="RFN520FRX" inherits="RFN_500_SINGLEPHASE_BASE, RFN520_REACTIVE">
+    <pao id="RFN520FRX" inherits="RFN520_BASE, RFN520_REACTIVE">
         <displayName>RFN-520fRX</displayName>
     </pao>
 
-    <pao id="RFN520FAXD" inherits="RFN_500_SINGLEPHASE_BASE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
+    <pao id="RFN520FAXD" inherits="RFN520_BASE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
         <displayName>RFN-520fAXD</displayName>
     </pao>
 
-    <pao id="RFN520FRXD" inherits="RFN_500_SINGLEPHASE_BASE, RFN520_REACTIVE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
+    <pao id="RFN520FRXD" inherits="RFN520_BASE, RFN520_REACTIVE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
         <displayName>RFN-520fRXD</displayName>
-    </pao>
-    
-    <pao id="RFN530FAXP" inherits="RFN_500_POLYPHASE_BASE">
-        <displayName>RFN-530fAXP</displayName>
-    </pao>
-
-    <pao id="RFN530FRXP" inherits="RFN_500_POLYPHASE_BASE, RFN520_REACTIVE">
-        <displayName>RFN-530fRXP</displayName>
     </pao>
 
     <pao id="RFN530_BASE" inherits="RFN_COMMON, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT" abstract="true">

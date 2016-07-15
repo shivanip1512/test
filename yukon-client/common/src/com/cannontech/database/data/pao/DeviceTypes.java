@@ -244,9 +244,6 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN520FAXD = DEVICE_OFFSET + 183;
     public final static int RFN520FRXD = DEVICE_OFFSET + 184;
     
-    public final static int RFN530FAXP = DEVICE_OFFSET + 185;
-    public final static int RFN530FRXP = DEVICE_OFFSET + 186;
-    
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
     public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};
