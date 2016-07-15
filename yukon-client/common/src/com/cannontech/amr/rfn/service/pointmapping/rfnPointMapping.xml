@@ -3754,7 +3754,7 @@
                 <modifier>Avg</modifier>
             </modifiers>
         </point>
-        <point name="Max Volts">
+        <point name="Daily Max Volts">
             <uom>V</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3762,7 +3762,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Min Volts">
+        <point name="Daily Min Volts">
             <uom>V</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

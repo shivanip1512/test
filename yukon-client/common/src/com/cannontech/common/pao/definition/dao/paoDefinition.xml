@@ -10057,10 +10057,10 @@
                 <basicLookup point="Voltage"/>
             </attribute>
             <attribute name="MINIMUM_VOLTAGE">
-                <basicLookup point="Min Voltage"/>
+                <basicLookup point="Daily Min Voltage"/>
             </attribute>
             <attribute name="MAXIMUM_VOLTAGE">
-                <basicLookup point="Max Voltage"/>
+                <basicLookup point="Daily Max Voltage"/>
             </attribute>
             <attribute name="CURRENT">
                 <basicLookup point="Current"/>
