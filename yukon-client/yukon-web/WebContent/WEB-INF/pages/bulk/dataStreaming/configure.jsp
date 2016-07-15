@@ -25,7 +25,7 @@
                          toggleGroup="existingConfiguration" toggleAction="hide" toggleInverse="true" checked="${config.newConfiguration}"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".configuration" data-toggle-group="existingConfiguration">
-                        <tags:selectWithItems id="selectedConfiguration" path="selectedConfiguration" items="${existingConfigs}" itemValue="id" itemLabel="name" onchange="showSelectedConfiguration(this);" defaultItemValue="0" defaultItemLabel="Please select"/>
+                        <tags:selectWithItems id="selectedConfiguration" inputClass="js-existing-configuration" path="selectedConfiguration" items="${existingConfigs}" itemValue="id" itemLabel="name" defaultItemValue="0" defaultItemLabel="Please select"/>
                     </tags:nameValue2>
                     <c:if test="${existingConfigs.size() > 0}">
                         <tags:nameValue2 nameKey=".selectedConfiguration" rowClass="dn js-selected-config">
