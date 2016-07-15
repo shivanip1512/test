@@ -107,6 +107,7 @@ yukon.substation.mappings = (function () {
                 				$('#mappedNameId-popup').val(data.mappedNameId);
                 			}
                 		});
+                		$('span.js-edit-mapping-popup-errors').hide();
                 		$('.js-edit-mapping-popup').removeClass('error');
                 		$('#edit-mapping').attr('data-mapping-id', rowId);
                 });
@@ -117,7 +118,7 @@ yukon.substation.mappings = (function () {
                         strategyName = $('.js-edit-mapping-popup.js-strategy-popup').val(),
                         substationName = $('.js-edit-mapping-popup.js-substation-popup').val();
 
-                    $('.js-edit-mapping-popup-errors').hide();
+                    $('span.js-edit-mapping-popup-errors').hide();
                     $('.js-edit-mapping-popup').removeClass('error');
 
                     if (strategyName === '') {

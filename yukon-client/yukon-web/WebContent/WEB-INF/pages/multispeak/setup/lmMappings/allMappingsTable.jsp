@@ -1,17 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.adminSetup.lmMappings">
-	
-	<div data-dialog
+
+    <div data-dialog
     id="edit-mapping"
-	data-event="yukon.substation.mappings.updateMap"
-    data-width="500"    
+    data-event="yukon.substation.mappings.updateMap"
+    data-width="545"
     data-title="<cti:msg2 key=".allMappings.editMap"/>"
-    class="dn">       
+    class="dn">
         <tags:nameValueContainer2 tableClass="with-form-controls">
             <tags:nameValue2 nameKey=".strategy">
                 <input type="text" class="js-edit-mapping-popup js-strategy-popup">
@@ -41,12 +42,12 @@
                     endAction="yukon.substation.mappings.setMappedNameIdOnEdit"
                     linkType="none"/>
             </tags:nameValue2>
-        </tags:nameValueContainer2>		
-	</div>
-	<div class="dn js-map-edit-warning error">
-		<cti:msg2 key="yukon.web.modules.adminSetup.lmMappings.allMappings.FAILED"/>:
-		<cti:msg2 key="yukon.web.modules.adminSetup.lmMappings.allMappings.invalidInput"/>
-	</div>
+        </tags:nameValueContainer2>
+    </div>
+    <div class="dn js-map-edit-warning error">
+        <cti:msg2 key="yukon.web.modules.adminSetup.lmMappings.allMappings.FAILED"/>:
+        <cti:msg2 key="yukon.web.modules.adminSetup.lmMappings.allMappings.invalidInput"/>
+    </div>
     <table class="compact-results-table dashed with-form-controls">
         <thead>
             <tr>
@@ -58,26 +59,26 @@
         </thead>
         <tbody>
             <c:forEach var="mapping" items="${allMappings}">
-                <cti:deviceName var="paoName" deviceId="${mapping.paobjectId}"/>                
+                <cti:deviceName var="paoName" deviceId="${mapping.paobjectId}"/>
                 <tr>
                     <td id='strategy${mapping.mspLMInterfaceMappingId}'>${fn:escapeXml(mapping.strategyName)}</td>
                     <td id='substation${mapping.mspLMInterfaceMappingId}'>${fn:escapeXml(mapping.substationName)}</td>
                     <td id='tpao-name${mapping.mspLMInterfaceMappingId}'>${fn:escapeXml(paoName)}</td>
                     <td>
-                    	<div class="button-group fr">
-                    		<cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit-mapping"
-                    			data-mapping-id="${mapping.mspLMInterfaceMappingId}"
-                    			data-popup="#edit-mapping"/>
-	                        <cti:button icon="icon-cross" classes="js-remove-mapping" renderMode="buttonImage"
-	                            data-ok-event="yukon.substation.mappings.delete"
-	                            data-mapping-id="${mapping.mspLMInterfaceMappingId}" />
-	                        <cti:list var="arguments">
-	                    		<cti:item value="${fn:escapeXml(mapping.strategyName)}"/>
-	                    		<cti:item value="${fn:escapeXml(mapping.substationName)}"/>
-	                		</cti:list>
-	                        <cti:msg2 var="argument" key=".mapKey" arguments="${arguments}"/>
-	                        <d:confirm on='[data-mapping-id="${mapping.mspLMInterfaceMappingId}"].js-remove-mapping' nameKey="confirmDelete"
-	                            argument="${argument}"/>
+                        <div class="button-group fr">
+                            <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit-mapping"
+                                data-mapping-id="${mapping.mspLMInterfaceMappingId}"
+                                data-popup="#edit-mapping"/>
+                            <cti:button icon="icon-cross" classes="js-remove-mapping" renderMode="buttonImage"
+                                data-ok-event="yukon.substation.mappings.delete"
+                                data-mapping-id="${mapping.mspLMInterfaceMappingId}" />
+                            <cti:list var="arguments">
+                                <cti:item value="${fn:escapeXml(mapping.strategyName)}"/>
+                                <cti:item value="${fn:escapeXml(mapping.substationName)}"/>
+                            </cti:list>
+                            <cti:msg2 var="argument" key=".mapKey" arguments="${arguments}"/>
+                            <d:confirm on='[data-mapping-id="${mapping.mspLMInterfaceMappingId}"].js-remove-mapping' nameKey="confirmDelete"
+                                argument="${argument}"/>
                          </div>
                     </td>
                 </tr>

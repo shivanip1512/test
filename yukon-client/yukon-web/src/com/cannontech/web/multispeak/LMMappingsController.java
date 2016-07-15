@@ -54,8 +54,7 @@ public class LMMappingsController {
         String mappedName = findMappedName(strategyName, substationName);
 
         if (mappedName != null) {
-            return ImmutableMap.of("found", true,
-                                   "mappedName", mappedName);
+            return ImmutableMap.of("found", true, "mappedName", mappedName);
         } else {
             return ImmutableMap.of("found", false);
         }
@@ -63,13 +62,12 @@ public class LMMappingsController {
     
     @RequestMapping("find-mappingId")
     public @ResponseBody Map<String, ? extends Object> findMappingId(ModelMap model, String strategyName, String substationName) {
-    	int mappedNameId = findMappedId(strategyName, substationName);
-    	if(mappedNameId != 0){
-    		return ImmutableMap.of("found", true,
-    								"mappedNameId", mappedNameId);
-    	} else {
-    		return ImmutableMap.of("found", false);
-    	}
+        int mappedNameId = findMappedId(strategyName, substationName);
+        if(mappedNameId != 0){
+            return ImmutableMap.of("found", true, "mappedNameId", mappedNameId);
+        } else {
+            return ImmutableMap.of("found", false);
+        }
     }
 
     @RequestMapping("addOrUpdateMapping")
@@ -113,7 +111,7 @@ public class LMMappingsController {
         } else {
             response.put("action", "update");
             boolean updated = mspLMMappingDao.updateMappingById(mappingId, strategyName, substationName, mappedNameId);
-            response.put("success", updated);            
+            response.put("success", updated);
         }
     	return response;
     }
@@ -153,14 +151,14 @@ public class LMMappingsController {
     }
     
     private int findMappedId(String strategyName, String substationName) {
-    	int mappedId = 0;
-    	try{
-    		MspLmMapping mapping = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
-    		mappedId = mapping.getPaobjectId();
-    	}catch(NotFoundException e){
-    		
-    	}
-    	return mappedId;
+        int mappedId = 0;
+        try{
+            MspLmMapping mapping = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
+            mappedId = mapping.getPaobjectId();
+        }catch(NotFoundException e){
+    
+        }
+        return mappedId;
     }
 
     private void addAllMapppingToModel(ModelMap model, SortingParameters sorting, YukonUserContext userContext) {
