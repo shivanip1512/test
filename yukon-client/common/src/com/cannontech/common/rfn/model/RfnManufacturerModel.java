@@ -69,8 +69,8 @@ public enum RfnManufacturerModel {
      * This is intentional- multiple meter models are functionally the same in Yukon, this should not be changed. */
     RFN_510FL(PaoType.RFN510FL, "LGYR", "FocuskWh-500"),
     RFN_520FAXD(PaoType.RFN520FAX, "LGYR", "FocusAXD-500"),
-    RFN_520FAXT(PaoType.RFN520FAX, "LGYR", "FocusAXT-500"),
-    RFN_520FAXR(PaoType.RFN520FAX, "LGYR", "FocusAXR-500"),
+    RFN_520FAXT(PaoType.RFN520FAX, "LGYR", "FocusAXT-520"),
+    RFN_520FAXR(PaoType.RFN520FAX, "LGYR", "FocusAXR-520"),
     RFN_520FRXD(PaoType.RFN520FRX, "LGYR", "FocusRXD-500"),
     RFN_520FRXT(PaoType.RFN520FRX, "LGYR", "FocusRXT-500"),
     RFN_520FRXR(PaoType.RFN520FRX, "LGYR", "FocusRXR-500"),
@@ -80,6 +80,9 @@ public enum RfnManufacturerModel {
     RFN_520FRXD_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXD-SD-500"),
     RFN_520FRXT_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXT-SD-500"),
     RFN_520FRXR_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXR-SD-500"),
+    
+    RFN_530FAXP(PaoType.RFN530FAXP, "LGYR", "FocusAXT-500"),
+    RFN_530FRXP(PaoType.RFN530FAXP, "LGYR", "FocusAXR-500"),
     
     RFN_530S4X(PaoType.RFN530S4X, "LGYR", "E650"),
     RFN_530S4AD(PaoType.RFN530S4EAD, "LGYR", "S4-AD"),
@@ -114,7 +117,7 @@ public enum RfnManufacturerModel {
         return Optional.of(
                 Stream.of(values())
                         .filter(item -> item.type == type)
-                        .collect(Collectors.toCollection(() -> new ArrayList<RfnManufacturerModel>())))
+                        .collect(Collectors.toCollection(() -> new ArrayList<>())))
                 .filter(list -> ! list.isEmpty())
                 .orElseThrow(() -> new IllegalArgumentException("Unknown template for type: " + type));
     }

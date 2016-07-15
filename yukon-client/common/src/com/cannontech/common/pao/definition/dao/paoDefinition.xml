@@ -9875,7 +9875,7 @@
         </attributes>
     </pao>
     
-    <pao id="RFN520_POLYPHASE_BASE" abstract="true" inherits="RFN520_BASE, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT">
+    <pao id="RFN_500_POLYPHASE_BASE" abstract="true" inherits="RFN520_BASE, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT">
         <points>
             <point type="Analog" offset="327">
                 <name>Voltage Phase A</name>
@@ -10017,7 +10017,7 @@
         </attributes>
     </pao>
     
-    <pao id="RFN520_SINGLEPHASE_BASE" abstract="true" inherits="RFN520_BASE">
+    <pao id="RFN_500_SINGLEPHASE_BASE" abstract="true" inherits="RFN520_BASE">
         <points>
             <point type="Analog" offset="214">
                 <name>Voltage</name>
@@ -10177,20 +10177,28 @@
         </attributes>
     </pao> 
         
-    <pao id="RFN520FAX" inherits="RFN520_POLYPHASE_BASE">
+    <pao id="RFN520FAX" inherits="RFN_500_SINGLEPHASE_BASE">
         <displayName>RFN-520fAX</displayName>
     </pao>
 
-    <pao id="RFN520FRX" inherits="RFN520_POLYPHASE_BASE, RFN520_REACTIVE">
+    <pao id="RFN520FRX" inherits="RFN_500_SINGLEPHASE_BASE, RFN520_REACTIVE">
         <displayName>RFN-520fRX</displayName>
     </pao>
 
-    <pao id="RFN520FAXD" inherits="RFN520_SINGLEPHASE_BASE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
+    <pao id="RFN520FAXD" inherits="RFN_500_SINGLEPHASE_BASE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
         <displayName>RFN-520fAXD</displayName>
     </pao>
 
-    <pao id="RFN520FRXD" inherits="RFN520_SINGLEPHASE_BASE, RFN520_REACTIVE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
+    <pao id="RFN520FRXD" inherits="RFN_500_SINGLEPHASE_BASE, RFN520_REACTIVE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
         <displayName>RFN-520fRXD</displayName>
+    </pao>
+    
+    <pao id="RFN530FAXP" inherits="RFN_500_POLYPHASE_BASE">
+        <displayName>RFN-530fAXP</displayName>
+    </pao>
+
+    <pao id="RFN530FRXP" inherits="RFN_500_POLYPHASE_BASE, RFN520_REACTIVE">
+        <displayName>RFN-530fRXP</displayName>
     </pao>
 
     <pao id="RFN530_BASE" inherits="RFN_COMMON, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT" abstract="true">

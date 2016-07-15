@@ -49,6 +49,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PaoType.IPC410FL, PaoType.IPC420FD, PaoType.IPC430S4E, PaoType.IPC430SL,
             PaoType.RFN430SL0, PaoType.RFN430SL1, PaoType.RFN430SL2, PaoType.RFN430SL3, PaoType.RFN430SL4,
             PaoType.RFN510FL, PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD,
+            PaoType.RFN530FAXP, PaoType.RFN530FRXP,
             PaoType.RFN530S4X, PaoType.RFN530S4EAD, PaoType.RFN530S4EAT, PaoType.RFN530S4ERD, PaoType.RFN530S4ERT,
             PaoType.RFN_1200, PaoType.ECOBEE_SMART_SI, PaoType.ECOBEE_3, PaoType.ECOBEE_SMART
 		},
@@ -325,8 +326,8 @@ public Object getValue(Object o) {
 public void setValue(Object val) {
 
 	//Vector to hold the panels temporarily
-	Vector<DataInputPanel> panels = new Vector<DataInputPanel>();
-	Vector<Object> tabs = new Vector<Object>();
+	Vector<DataInputPanel> panels = new Vector<>();
+	Vector<Object> tabs = new Vector<>();
 	
 	DataInputPanel tempPanel;
 

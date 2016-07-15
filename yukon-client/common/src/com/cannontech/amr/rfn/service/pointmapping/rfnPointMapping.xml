@@ -2911,10 +2911,10 @@
     </pointGroup>
     
     <pointGroup>
-        <!-- RFN-510 and RFN-520 poly-phase mappings -->
+        <!-- RFN-510 and RFN-530 poly-phase mappings -->
         <paoType value="RFN510FL"/>
-        <paoType value="RFN520FAX"/>
-        <paoType value="RFN520FRX"/>
+        <paoType value="RFN530FAXP"/>
+        <paoType value="RFN530FRXP"/>
         
         <!-- Mappings shared by RFN-510 and RFN-520 devices -->
         <point name="Delivered kWh">
@@ -3671,6 +3671,8 @@
         <!-- RFN-520 mappings for single-phase Focus meters -->
         <paoType value="RFN520FAXD"/>
         <paoType value="RFN520FRXD"/>
+        <paoType value="RFN520FAX"/>
+        <paoType value="RFN520FRX"/>
         
         <!-- RFN-520 devices -->
         <point name="Delivered kWh">
