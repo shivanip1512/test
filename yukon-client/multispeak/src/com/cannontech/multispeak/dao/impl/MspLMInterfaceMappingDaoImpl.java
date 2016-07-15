@@ -56,7 +56,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
         sql.append("WHERE StrategyName = ").appendArgument(strategyName);
         sql.append("AND SubstationName = ").appendArgument(substationName);
 
-        int result = jdbcTemplate.update(sql.getSql(), sql.getArguments());
+        int result = jdbcTemplate.update(sql);
         return (result == 1);
     }
     
@@ -68,7 +68,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
         sql.set("PaobjectId", paobjectId, "StrategyName", strategyName, "SubstationName", substationName);
         sql.append("WHERE MspLMInterfaceMappingId").eq(mappingId);
         
-        int result = jdbcTemplate.update(sql.getSql(), sql.getArguments());
+        int result = jdbcTemplate.update(sql);
         return (result == 1);
     }
 

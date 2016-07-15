@@ -50,7 +50,6 @@ public class LMMappingsController {
     @RequestMapping("find-mapping")
     public @ResponseBody Map<String, ? extends Object> findMapping(ModelMap model, String strategyName, String substationName) {
 
-
         String mappedName = findMappedName(strategyName, substationName);
 
         if (mappedName != null) {
@@ -62,9 +61,9 @@ public class LMMappingsController {
     
     @RequestMapping("find-mappingId")
     public @ResponseBody Map<String, ? extends Object> findMappingId(ModelMap model, String strategyName, String substationName) {
-        int mappedNameId = findMappedId(strategyName, substationName);
-        if(mappedNameId != 0){
-            return ImmutableMap.of("found", true, "mappedNameId", mappedNameId);
+        MspLmMapping mappedNameId = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
+        if(mappedNameId != null){
+            return ImmutableMap.of("found", true, "mappedNameId", mappedNameId.getPaobjectId());
         } else {
             return ImmutableMap.of("found", false);
         }
@@ -148,17 +147,6 @@ public class LMMappingsController {
         } catch (NotFoundException e) {
         }
         return mappedName;
-    }
-    
-    private int findMappedId(String strategyName, String substationName) {
-        int mappedId = 0;
-        try{
-            MspLmMapping mapping = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
-            mappedId = mapping.getPaobjectId();
-        }catch(NotFoundException e){
-    
-        }
-        return mappedId;
     }
 
     private void addAllMapppingToModel(ModelMap model, SortingParameters sorting, YukonUserContext userContext) {
