@@ -1,3 +1,4 @@
+/* Start YUK-15173 */
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'PKC_RawPointHistory')
 BEGIN
     DROP INDEX Index_PointID ON RawPointHistory;
@@ -7,8 +8,20 @@ BEGIN
     
     ALTER TABLE RPHTag
        DROP CONSTRAINT FK_RPHTag_RPH;
-    ALTER TABLE RawPointHistory
-        DROP CONSTRAINT PK_RawPointHistory;
+    
+    /* For systems already updated to 6.4 or greater */
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'PK_RawPointHistory')
+    BEGIN 
+        ALTER TABLE RawPointHistory
+            DROP CONSTRAINT PK_RawPointHistory;
+    END 
+    
+    /* For systems NOT yet updated to 6.4 or greater */
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'SYS_C0013322')
+    BEGIN 
+        ALTER TABLE RawPointHistory
+            DROP CONSTRAINT SYS_C0013322;
+    END
     
     /* Creating this will take a while!!!! Slightly longer than the below one */
     ALTER TABLE RawPointHistory ADD CONSTRAINT PKC_RawPointHistory PRIMARY KEY CLUSTERED 
@@ -36,3 +49,4 @@ BEGIN
           REFERENCES RawPointHistory (ChangeId)
              ON DELETE CASCADE;
 END;
+/* End YUK-15173 */

@@ -1,3 +1,5 @@
+/* Start YUK-15173 */
+/* This only works for systems that are 6.4 or greater (due to rename of SYS_C0013322 TO PK_RawPointHistory in 6.4_0.sql) */
 DECLARE
     v_count NUMBER := 0;
 BEGIN
@@ -13,3 +15,4 @@ BEGIN
     END IF;
 END;
 /
+/* End YUK-15173 */
