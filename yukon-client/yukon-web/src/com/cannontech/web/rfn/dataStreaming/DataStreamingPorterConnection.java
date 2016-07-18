@@ -1,9 +1,9 @@
 package com.cannontech.web.rfn.dataStreaming;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -48,29 +48,35 @@ public class DataStreamingPorterConnection {
     }
     
     /**
-     * Send porter a list of devices to configure data streaming. Porter will use the configurations currently in the
-     * database for those devices. All responses will be routed to the callback, which is responsible for updating the
-     * reported configuration values in the database.
+     * Build a list of data streaming configuration commands for the specified devices. Porter will use the
+     * configurations currently in the database for those devices.
      */
-    public void sendConfiguration(Collection<SimpleDevice> devices, DataStreamingConfigCallback callback, LiteYukonUser user) {
-        
-        List<CommandRequestDevice> commands = new ArrayList<>();
-        devices.forEach(
+    public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices) {
+        List<CommandRequestDevice> commands = devices.stream().map(
             device -> {
                 CommandRequestDevice command = new CommandRequestDevice();
                 command.setDevice(device);
                 command.setCommandCallback(commandCallback);
-                commands.add(command);
+                return command;
             }
-        );
+        ).collect(Collectors.toList());
         
+        return commands;
+    }
+    
+    /**
+     * Send porter a list of devices to configure data streaming. Porter will use the configurations currently in the
+     * database for those devices. All responses will be routed to the callback, which is responsible for updating the
+     * reported configuration values in the database.
+     */
+    public void sendConfiguration(List<CommandRequestDevice> commands, DataStreamingConfigCallback callback, LiteYukonUser user) {
         if (devSettings.isSimulatePorterConfigResponse()) {
             //If developer settings are set to simulate, replace the real commandExecutor with a simulator.
             log.debug("Simulating data streaming configuration via fake executor.");
             fakeCommandExecutor.execute(commands, buildCallbackProxy(callback), DeviceRequestType.DATA_STREAMING_CONFIG, user);
         } else {
             //Otherwise send the commands to Porter
-            log.debug("Sending data streaming configuration to Porter.");
+            log.info("Sending data streaming configuration to Porter. " + commands);
             commandExecutor.execute(commands, buildCallbackProxy(callback), DeviceRequestType.DATA_STREAMING_CONFIG, user);
         }
     }

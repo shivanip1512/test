@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallbackResult;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.device.streaming.model.Behavior;
@@ -40,7 +41,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     public final static String INTERVAL_STRING = ".interval";
     
     @Autowired private DeviceBehaviorDao deviceBehaviorDao;
-    @Autowired private DataStreamingPorterConnection porter;
+    @Autowired private DataStreamingPorterConnection porterConn;
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     @Autowired private IDatabaseCache serverDatabaseCache;
     
@@ -107,7 +108,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         List<SimpleDevice> devices = getDevicesByDeviceIds(deviceIds);
         DataStreamingConfigCallbackResult callbackResult = new DataStreamingConfigCallbackResult();
         String resultId = "";//TODO recentResultsCache.addResult(callbackResult);
-        porter.sendConfiguration(devices, callbackResult, user);
+        List<CommandRequestDevice> commands = porterConn.buildConfigurationCommandRequests(devices);
+        porterConn.sendConfiguration(commands, callbackResult, user);
         
         return resultId;
     }
@@ -139,7 +141,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         List<SimpleDevice> devices = getDevicesByDeviceIds(deviceIds);
         DataStreamingConfigCallbackResult callbackResult = new DataStreamingConfigCallbackResult();
         String resultId = "";//recentResultsCache.addResult(callbackResult);
-        porter.sendConfiguration(devices, callbackResult, user);
+        List<CommandRequestDevice> commands = porterConn.buildConfigurationCommandRequests(devices);
+        porterConn.sendConfiguration(commands, callbackResult, user);
         
         return resultId;
     }
