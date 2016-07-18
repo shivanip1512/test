@@ -397,6 +397,7 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.noteLabel"></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.noteText"></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.message">Are you sure you want to make these changes?  After clicking Send, messages will be sent, changing the network loading.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.gatewayOverloaded">Cannot configure data streaming when a gateway is overloaded.</entry>
     
     <!-- results.jsp -->
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.pageName">Data Streaming Results</entry>

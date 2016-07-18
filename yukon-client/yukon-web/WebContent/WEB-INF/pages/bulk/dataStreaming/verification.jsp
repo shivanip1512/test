@@ -18,27 +18,29 @@
                 </c:forEach>
                 
                 <tags:sectionContainer title="Gateway Impact">
-                <div style="max-height:250px;overflow-y:auto">
-                <c:forEach var="gateway" varStatus="status" items="${verificationInfo.gatewayLoadingInfo}">
-                    <c:set var="msgType" value="success"/>
-                    <c:set var="msgIcon" value="icon-accept"/>
-                    <c:if test="${gateway.proposedPercent >= 100}">
-                        <c:set var="msgType" value="error"/>
-                        <c:set var="msgIcon" value="icon-exclamation"/>
-                    </c:if>
-<%--                     <div class="user-message ${msgType}"> --%>
-                    <div><cti:icon icon="${msgIcon}"/>${gateway.detail}</div>
-<!--                     </div> -->
-                </c:forEach>
-                </div>
+                    <div class="scroll-md">
+                        <c:set var="sendDisabled" value="false"/>
+                        <c:forEach var="gateway" varStatus="status" items="${verificationInfo.gatewayLoadingInfo}">
+                            <c:set var="msgIcon" value="icon-accept"/>
+                            <c:if test="${gateway.proposedPercent >= 100}">
+                                <c:set var="sendDisabled" value="true"/>
+                                <c:set var="msgIcon" value="icon-exclamation"/>
+                            </c:if>
+                            <div><cti:icon icon="${msgIcon}"/>${gateway.detail}</div>
+                        </c:forEach>
+                    </div>
                 </tags:sectionContainer>
-                
         
                 <div style="margin-top:50px;"><b><i:inline key=".message"/></b></div>
                 
                 <div class="page-action-area">
                     <cti:button nameKey="back" href="javascript:window.history.back()" name="backButton" classes="action" />
-                    <cti:button nameKey="send" type="submit" name="sendButton" classes="primary action" />
+                    <cti:button disabled="${sendDisabled}" nameKey="send" type="submit" name="sendButton" classes="primary action" />
+                    <c:if test="${sendDisabled}">
+                        <div class="warning">
+                            <i:inline key=".gatewayOverloaded"/>
+                        </div>
+                    </c:if>
                 </div>
             </form:form>
         </div>
