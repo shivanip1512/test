@@ -20,7 +20,7 @@ public class RequestReplyTemplateImpl<R extends Serializable> extends RequestRep
     
     public RequestReplyTemplateImpl(String configurationName, ConfigurationSource configurationSource,
             ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
-        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain);
+        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, false);
     }
 
     @Override

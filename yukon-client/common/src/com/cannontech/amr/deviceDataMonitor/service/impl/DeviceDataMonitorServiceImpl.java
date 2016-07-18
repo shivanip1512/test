@@ -102,7 +102,6 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     
     @Override
     public boolean areViolationsBeingCalculatedForMonitor(Integer monitorId) throws ExecutionException {
-        
         log.debug("Check if violations being calculated for monitor id: " + monitorId);
         boolean isWorkingOnObject = false;
         DeviceDataMonitorStatusRequest request = new DeviceDataMonitorStatusRequest(monitorId);
@@ -129,6 +128,6 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         
         statusRequestTemplate =
             new RequestTemplateImpl<DeviceDataMonitorStatusResponse>("DEVICE_DATA_MONITOR_CALC_STATUS",
-                configSource, connectionFactory, statusRequestQueueName, false);
+                configSource, connectionFactory, statusRequestQueueName, false, true);
     }
 }

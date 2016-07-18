@@ -27,8 +27,8 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
         RequestReplyTemplate<R> {
 
     public RequestTemplateImpl(String configurationName, ConfigurationSource configurationSource,
-            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
-        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain);
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
+        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, isInternalMessage);
     }
 
     @Override

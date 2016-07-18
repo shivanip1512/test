@@ -25,7 +25,7 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
     
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
             ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
-        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain);
+        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, false);
     }
 
     @Override

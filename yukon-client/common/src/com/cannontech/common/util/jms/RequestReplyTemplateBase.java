@@ -15,11 +15,13 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.ExceptionHelper;
 
 public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     protected static final Logger log = YukonLogManager.getLogger(RequestReplyTemplateBase.class);
+    protected static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
     
     protected ConfigurationSource configurationSource;
     protected ConnectionFactory connectionFactory;
@@ -27,14 +29,16 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     protected String configurationName;
     protected String requestQueueName;
     protected boolean pubSubDomain = false;   // Queue (not a Topic)
-
+    protected boolean internalMessage = false;
+    
     public RequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource, 
-            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
         this.configurationName = configurationName;
         this.configurationSource = configurationSource;
         this.connectionFactory = connectionFactory;
         this.requestQueueName = requestQueueName;
         this.pubSubDomain = isPubSubDomain;
+        this.internalMessage = isInternalMessage;
         
         int queueSize = configurationSource.getInteger("REQUEST_REPLY_WORKER_QUEUE_SIZE", 50);
         
@@ -59,9 +63,14 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
             public void run() {
                 try {
                     JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
-
-                    if (log.isInfoEnabled()) {
-                        log.info("<<< " + requestPayload.toString());
+                    if (!internalMessage) {
+                        if (rfnLogger.isInfoEnabled()) {
+                            rfnLogger.info("<<< " + requestPayload.toString());
+                        }
+                    } else {
+                        if (log.isInfoEnabled()) {
+                            log.info("<<< " + requestPayload.toString());
+                        }
                     }
                     if (log.isTraceEnabled()) {
                         log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
