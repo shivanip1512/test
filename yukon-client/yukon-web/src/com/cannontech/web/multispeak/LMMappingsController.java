@@ -61,10 +61,11 @@ public class LMMappingsController {
     
     @RequestMapping("find-mappingId")
     public @ResponseBody Map<String, ? extends Object> findMappingId(ModelMap model, String strategyName, String substationName) {
-        MspLmMapping mappedNameId = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
-        if(mappedNameId != null){
-            return ImmutableMap.of("found", true, "mappedNameId", mappedNameId.getPaobjectId());
-        } else {
+        
+        try {
+            MspLmMapping mapping = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
+            return ImmutableMap.of("found", true, "mappedNameId", mapping.getPaobjectId());
+        } catch (NotFoundException e) {
             return ImmutableMap.of("found", false);
         }
     }
@@ -96,17 +97,17 @@ public class LMMappingsController {
     
     @RequestMapping("updateMappingById")
     public @ResponseBody Map<String, Object> updateMappingById(Integer mappingId, String strategyName, String substationName, Integer mappedNameId){
-    	Map<String,Object> response = new HashMap<>();
-    	Integer existingMspLmInterfaceid = mspLMMappingDao.findIdForStrategyAndSubstation(strategyName, substationName);
-    	
-    	if (mappedNameId == null) {
-            response.put("error", "mappedId not found");
+        Map<String,Object> response = new HashMap<>();
+        Integer existingMspLmInterfaceid = mspLMMappingDao.findIdForStrategyAndSubstation(strategyName, substationName);
+
+        if (mappedNameId == null) {
+            response.put("error", "mappedNameId not found");
         } else if (mappedNameId <= 0) {
-            response.put("error", "mappedId must be greater than 0");
-        } else if (mappingId == null){
-        	response.put("error", "mappingId not found");
-        } else if (existingMspLmInterfaceid != null && existingMspLmInterfaceid.intValue() != mappingId.intValue()){
-        	response.put("error", "Selected strategy name and substation name already exist.");
+            response.put("error", "mappedNameId must be greater than 0");
+        } else if (mappingId == null) {
+            response.put("error", "mappingId not found");
+        } else if (existingMspLmInterfaceid != null && existingMspLmInterfaceid.intValue() != mappingId.intValue()) {
+            response.put("error", "Selected strategy name and substation name already exist.");
         } else {
             response.put("action", "update");
             boolean updated = mspLMMappingDao.updateMappingById(mappingId, strategyName, substationName, mappedNameId);
