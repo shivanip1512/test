@@ -236,65 +236,65 @@ WHERE p.PAObjectID = 0
 /* End YUK-15271 */
 
 /* Start YUK-15438 */
-CREATE TABLE BehaviorReport  (
+create table BehaviorReport  (
    BehaviorReportId     NUMBER                          not null,
    DeviceId             NUMBER                          not null,
    BehaviorType         VARCHAR2(60)                    not null,
    BehaviorStatus       VARCHAR2(60)                    not null,
    TimeStamp            DATE                            not null,
-   CONSTRAINT PK_BEHAVIORREPORT PRIMARY KEY (BehaviorReportId)
+   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId)
 );
 
-CREATE TABLE BehaviorReportValue  (
+create table BehaviorReportValue  (
    BehaviorReportId     NUMBER                          not null,
    Name                 VARCHAR2(60)                    not null,
    Value                VARCHAR2(100)                   not null,
-   CONSTRAINT PK_BEHAVIORREPORTVALUE PRIMARY KEY (BehaviorReportId, Name)
+   constraint PK_BEHAVIORREPORTVALUE primary key (BehaviorReportId, Name)
 );
 
-CREATE TABLE DeviceBehaviorMap  (
+create table DeviceBehaviorMap  (
    BehaviorId           NUMBER                          not null,
    DeviceId             NUMBER                          not null,
-   CONSTRAINT PK_DEVICEBEHAVIORMAP PRIMARY KEY (BehaviorId, DeviceId)
+   constraint PK_DEVICEBEHAVIORMAP primary key (BehaviorId, DeviceId)
 );
 
-CREATE TABLE Behavior  (
+create table Behavior  (
    BehaviorId           NUMBER                          not null,
    BehaviorType         VARCHAR2(60)                    not null,
-   CONSTRAINT PK_BEHAVIOR PRIMARY KEY (BehaviorId)
+   constraint PK_BEHAVIOR primary key (BehaviorId)
 );
 
-CREATE TABLE BehaviorValue  (
+create table BehaviorValue  (
    BehaviorId           NUMBER                          not null,
    Name                 VARCHAR2(60)                    not null,
    Value                VARCHAR2(100)                   not null,
-   CONSTRAINT PK_BEHAVIORVALUE PRIMARY KEY (BehaviorId, Name)
+   constraint PK_BEHAVIORVALUE primary key (BehaviorId, Name)
 );
 
-ALTER TABLE BehaviorReport
-   ADD CONSTRAINT FK_Device_BehaviorReport foreign key (DeviceId)
-      REFERENCES DEVICE (DEVICEID)
-      ON DELETE CASCADE;
+alter table BehaviorReport
+   add constraint FK_Device_BehaviorReport foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
-ALTER TABLE BehaviorReportValue
-   ADD CONSTRAINT FK_BehaviorRptVal_BehaviorRpt foreign key (BehaviorReportId)
-      REFERENCES BehaviorReport (BehaviorReportId)
-      ON DELETE CASCADE;
+alter table BehaviorReportValue
+   add constraint FK_BehaviorRptVal_BehaviorRpt foreign key (BehaviorReportId)
+      references BehaviorReport (BehaviorReportId)
+      on delete cascade;
 
-ALTER TABLE DeviceBehaviorMap
-   ADD CONSTRAINT FK_Behavior_DeviceBehaviorMap foreign key (BehaviorId)
-      REFERENCES Behavior (BehaviorId)
-      ON DELETE CASCADE;
+alter table DeviceBehaviorMap
+   add constraint FK_Behavior_DeviceBehaviorMap foreign key (BehaviorId)
+      references Behavior (BehaviorId)
+      on delete cascade;
 
-ALTER TABLE DeviceBehaviorMap
-   ADD CONSTRAINT FK_Device_DeviceBehaviorMap foreign key (DeviceId)
-      REFERENCES DEVICE (DEVICEID)
-      ON DELETE CASCADE;
+alter table DeviceBehaviorMap
+   add constraint FK_Device_DeviceBehaviorMap foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
-ALTER TABLE BehaviorValue
-   ADD CONSTRAINT FK_BehaviorValue_Behavior foreign key (BehaviorId)
-      REFERENCES Behavior (BehaviorId)
-      ON DELETE CASCADE;
+alter table BehaviorValue
+   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
+      references Behavior (BehaviorId)
+      on delete cascade;
 
 /* End YUK-15438 */
 
