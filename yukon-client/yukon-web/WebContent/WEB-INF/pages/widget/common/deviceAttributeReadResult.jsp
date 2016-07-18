@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<c:if test="${not result.success}">
+<c:if test="${result != null && not result.success}">
     <div style="max-height: 240px; overflow: auto; padding: 1px">
         <div class="error"><i:inline key="yukon.common.device.attributeRead.general.errorHeading"/></div>
         <c:forEach items="${result.errors}" var="error">
@@ -15,6 +15,6 @@
     </div>
 </c:if>
 
-<c:if test="${result.success}">
+<c:if test="${result != null && result.success}">
     <div class="success"><i:inline key="yukon.common.device.attributeRead.general.success"/></div>
 </c:if>
