@@ -78,7 +78,6 @@ public class PerIntervalAndLoadProfileCalculatorTest {
                                                  
         buildRequestParameters(instant);
         calculator.calculate(recentReadings, calculationData, messagesToSend);
-        System.out.println(messagesToSend.size());
         Assert.assertEquals(4, messagesToSend.size());
     }
 
