@@ -25,7 +25,10 @@
 <cti:default var="format" value="DHMS_REDUCED"/>
 
 <cti:displayForPageEditModes modes="CREATE,EDIT">
-
+<spring:bind path="${path}">
+<c:if test="${status.error}">
+    <c:set var="theInputClass" value="${pageScope.inputClass} error"/>
+</c:if>
 <form:select path="${path}" id="${id}" data-toggle-group="${toggleGroup}">
         
             <c:forEach var="interval" items="${intervals}">
@@ -40,8 +43,9 @@
             </c:forEach>
         
         </form:select>
+        <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/></c:if>
     </label>
-
+</spring:bind>
 </cti:displayForPageEditModes>
 
 <cti:displayForPageEditModes modes="VIEW">

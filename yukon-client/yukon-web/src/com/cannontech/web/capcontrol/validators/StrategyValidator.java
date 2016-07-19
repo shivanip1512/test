@@ -35,6 +35,7 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
     public void doValidation(CapControlStrategy strategy, Errors errors) {
         
         validateName(strategy, errors);
+        validateIntervalSettings(strategy, errors);
         validateTargetSettings(strategy, errors);
         YukonValidationUtils.checkRange(errors, "minConfirmPercent", 
             strategy.getMinConfirmPercent(), 0, 100, true);
@@ -53,11 +54,12 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
             validateVoltageViolationSettings(strategy, errors);
             validatePowerFactorCorrectionSetting(strategy, errors);
             validateMinCommunicationPercentageSetting(strategy, errors);
+            
         }
 
     }
-    
-    private void validateName(CapControlStrategy strategy, Errors errors) {
+
+	private void validateName(CapControlStrategy strategy, Errors errors) {
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
         if (!errors.hasFieldErrors("name")) {
@@ -82,6 +84,14 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
         }
     }
     
+    private static void validateIntervalSettings(CapControlStrategy strategy, Errors errors) {
+        int integrationSeconds = strategy.getIntegratePeriod();
+        int analysisSeconds = strategy.getControlInterval();
+        if(strategy.isIntegrateFlag() && integrationSeconds > analysisSeconds) {
+            errors.rejectValue("integratePeriod", basekey + ".intervalViolation.integrationInterval");
+        }
+    }
+
     private static void validateVoltageViolationSettings(CapControlStrategy strategy, Errors errors) {
         
         Map<VoltViolationType, VoltageViolationSetting> targetSettings = strategy.getVoltageViolationSettings();
@@ -160,4 +170,5 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
             }
         }
     }
+    
 }
