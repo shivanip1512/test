@@ -8,7 +8,7 @@
 #include "logger.h"
 #include "ccid.h"
 
-#include <boost/algorithm/string/join.hpp>
+#include <boost/thread/mutex.hpp>
 
 extern unsigned long   _CC_DEBUG;
 
@@ -19,7 +19,17 @@ namespace CapControl    {
 namespace
 {
 
-CtiValueQueue<RegulatorEvent>   eventQueue;
+using EventQueueLock = boost::unique_lock<boost::mutex>;
+
+std::vector<RegulatorEvent> eventQueue;
+boost::mutex                eventQueueMux;
+
+void exchangeRegulatorEvents( std::vector<RegulatorEvent> & events )
+{
+    EventQueueLock  lock( eventQueueMux );
+
+    events.swap( eventQueue );
+}
 
 std::string desolveEventType( const RegulatorEvent::EventTypes event )
 {
@@ -34,12 +44,7 @@ std::string desolveEventType( const RegulatorEvent::EventTypes event )
         { RegulatorEvent::DisableRemoteControl, "DISABLE_REMOTE_CONTROL" }
     };
 
-    if ( auto eventStr = mapFind( eventDesolver, event ) )
-    {
-        return *eventStr;
-    }
-
-    return "UNINITIALIZED";
+    return mapFindOrDefault( eventDesolver, event, "UNINITIALIZED" );
 }
 
 boost::optional<std::string> desolveEventPhase( const Phase phase )
@@ -54,65 +59,42 @@ boost::optional<std::string> desolveEventPhase( const Phase phase )
     return mapFind( phaseDesolver, phase );
 }
 
-long GetEventID()
+long GetEventID( Database::DatabaseConnection & connection, const std::size_t reserveIdCount )
 {
-    long nextID;
+    static long nextID = -1;
 
-    static const std::string sql =
-        "SELECT "
-            "COALESCE(MAX(RegulatorEventID) + 1, 0) AS NextID "
-        "FROM "
-            "RegulatorEvents";
-
-    Database::DatabaseConnection connection;
-    Database::DatabaseReader     reader( connection, sql );
-
-    reader.execute();
-
-    if ( reader() )
+    if ( nextID < 0 )
     {
-        reader[ "NextID" ] >> nextID;
+        static const std::string sql =
+            "SELECT "
+                "COALESCE(MAX(RegulatorEventID) + 1, 0) AS NextID "
+            "FROM "
+                "RegulatorEvents";
+
+        Database::DatabaseReader    reader( connection, sql );
+
+        reader.execute();
+
+        if ( reader() )
+        {
+            reader[ "NextID" ] >> nextID;
+        }
     }
 
-    return nextID;
+    const long currentID = nextID;
+
+    nextID += reserveIdCount;
+
+    return currentID;
 }
 
-bool WriteEntryToDB( const long ID, const RegulatorEvent & event )
+bool WriteEntryToDB( Database::DatabaseConnection & connection, const long ID, const RegulatorEvent & event )
 {
-    std::vector<std::string> columnNames
-    {
-        "RegulatorEventID",
-        "EventType",
-        "RegulatorID",
-        "TimeStamp",
-        "UserName"
-    };
-
-    if ( event.setPointValue )
-    {
-        columnNames.push_back( "SetPointValue" );
-    }
-
-    if ( event.tapPosition )
-    {
-        columnNames.push_back( "TapPosition" );
-    }
-
-    boost::optional<std::string> phaseEntry = desolveEventPhase( event.phase );
-
-    if ( phaseEntry )
-    {
-        columnNames.push_back( "Phase" );
-    }
-
-    std::vector<std::string>  placeholders( columnNames.size(), "?" );
-
-    const std::string sql =
+    static const std::string sql =
         "INSERT INTO "
-            "RegulatorEvents (" + boost::algorithm::join( columnNames, ", " ) +
-        ") VALUES (" + boost::algorithm::join( placeholders, ", " ) + ")";
+            "RegulatorEvents "
+        "VALUES (?,?,?,?,?,?,?,?)";
 
-    Database::DatabaseConnection connection;
     Database::DatabaseWriter     writer( connection, sql );
 
     writer
@@ -121,25 +103,10 @@ bool WriteEntryToDB( const long ID, const RegulatorEvent & event )
         << event.regulatorID
         << CtiTime(event.timeStamp)
         << event.userName
+        << event.setPointValue
+        << event.tapPosition
+        << desolveEventPhase( event.phase )
             ;
-
-    if ( event.setPointValue )
-    {
-        writer
-            << *event.setPointValue;
-    }
-
-    if ( event.tapPosition )
-    {
-        writer
-            << *event.tapPosition;
-    }
-
-    if ( phaseEntry )
-    {
-        writer
-            << *phaseEntry;
-    }
 
     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
@@ -218,14 +185,29 @@ RegulatorEvent RegulatorEvent::makeRemoteControlEvent( const EventTypes    event
 
 void enqueueRegulatorEvent( const RegulatorEvent & event )
 {
-    eventQueue.putQueue( event );
+    EventQueueLock  lock( eventQueueMux );
+
+    eventQueue.push_back( event );
 }
 
 void writeRegulatorEventsToDatabase()
 {
-    for ( long eventID = GetEventID(); ! eventQueue.empty(); ++eventID )
+    if ( ! eventQueue.empty() )
     {
-        WriteEntryToDB( eventID, eventQueue.getQueue() );
+        std::vector<RegulatorEvent> writeEvents;
+
+        exchangeRegulatorEvents( writeEvents );
+
+        {
+            Database::DatabaseConnection connection;
+
+            long eventID = GetEventID( connection, writeEvents.size() );
+
+            for ( const RegulatorEvent & event : writeEvents )
+            {
+                WriteEntryToDB( connection, eventID++, event );
+            }
+        }
     }
 }
 
@@ -234,10 +216,7 @@ namespace Test
 
 void exportRegulatorEvents( std::vector<RegulatorEvent> & events )
 {
-    while ( ! eventQueue.empty() )
-    {
-        events.push_back( eventQueue.getQueue() );
-    }
+    exchangeRegulatorEvents( events );
 }
 
 }

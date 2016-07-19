@@ -4,6 +4,7 @@
 #include "dlldefs.h"
 #include <string>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/optional.hpp>
 
 namespace Cti {
 
@@ -40,6 +41,17 @@ public:
     virtual RowWriter &operator<<(const boost::posix_time::ptime &operand) = 0;
     virtual RowWriter &operator<<(const std::string &operand) = 0;
     virtual RowWriter &operator<<(const char *operand) = 0;
+
+    template<typename T>
+    RowWriter &operator<<(const boost::optional<T> &operand)
+    {
+        if (operand)
+        {
+            return *this << *operand;
+        }
+
+        return *this << Null;
+    }
 };
 
 }// namespace cti
