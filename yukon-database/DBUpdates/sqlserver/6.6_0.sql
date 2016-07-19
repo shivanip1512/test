@@ -542,7 +542,7 @@ BEGIN
             WHEN ItemName = 'timeZoneOffset' AND ItemValue = '-10' THEN 'HONOLULU'
             ELSE ItemValue
         END
-END
+END;
 
 /* End YUK-13440 */
 
