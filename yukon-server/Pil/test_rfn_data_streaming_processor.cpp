@@ -12,7 +12,7 @@
 
 #include "boost_test_helpers.h"
 
-using std::operator ""s;
+using namespace std::literals::string_literals;
 
 namespace std {
     ostream& operator<<(ostream& os, const std::chrono::system_clock::time_point &t)
