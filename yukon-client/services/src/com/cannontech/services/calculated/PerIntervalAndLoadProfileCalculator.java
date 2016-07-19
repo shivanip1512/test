@@ -1,6 +1,7 @@
 package com.cannontech.services.calculated;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.time.zone.ZoneOffsetTransition;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -104,11 +105,8 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         PaoIdentifier pao = data.getPaoPointValue().getPaoIdentifier();
         PointValueQualityHolder pvqh = data.getPaoPointValue().getPointValueQualityHolder();
         Date timestamp = pvqh.getPointDataTimeStamp();
-        
-        final TimeZone timeZone = YukonUserContext.system.getTimeZone();
-        ZonedDateTime zoneDateTime = ZonedDateTime.ofInstant(timestamp.toInstant(), timeZone.toZoneId());
-        boolean isInDaylightTime = timeZone.inDaylightTime(timestamp);
-        if (!isInDaylightTime && isInOverlap(zoneDateTime)) {
+
+        if (!isValidTimestamp(pointData, pao, timestamp)) {
             log.info("Interval and profile data calculations being skipped for " + timestamp + " for Id : "
                 + pao.getPaoId() + " : " + pointData);
             return;
@@ -260,6 +258,37 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         LogHelper.debug(log, "Calculated point value: %s", pd);
     }
     
+    /**
+     * Check that timestamp is less than the last DST timestamp (can't tell which is 1:00 CDT vs 1:00 CST when
+     * reading from database) AND timestamp is greater than the first non-DST timestamp that is NOT within the overlap times.
+     * (Greater than 2:00 CST) Example: For November 6, 2016 - Exclude 1:00 am CDT (inclusive) through 1:00 am CST through 2:00 am CST
+     * (inclusive) Spring DST shall not be affected.
+     */
+    private boolean isValidTimestamp(List<? super PointData> pointData, PaoIdentifier pao, Date timestamp) {
+        final TimeZone timeZone = YukonUserContext.system.getTimeZone();
+
+        boolean isInDaylightTime = timeZone.inDaylightTime(timestamp);
+
+        ZoneOffsetTransition zoneOffsetTransition =
+            timeZone.toZoneId().getRules().getTransition(
+                LocalDateTime.ofInstant(timestamp.toInstant(), timeZone.toZoneId()));
+
+        if (zoneOffsetTransition != null) {
+            if (zoneOffsetTransition.isOverlap()) { // it will skip time from 1 am to 1:59:59 and after DST rolled back ,
+                                                    // it will also skip time from 1 am to 1:59:59
+                return false;
+            }
+        } else if (!isInDaylightTime) {
+            ZoneOffsetTransition previousOffsetTransition =
+                timeZone.toZoneId().getRules().previousTransition(timestamp.toInstant());
+            // it will skip time at 2:00 am
+            if (previousOffsetTransition.getInstant().plusMillis(timeZone.getDSTSavings()).equals(timestamp.toInstant())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     private LitePoint findPoint (BuiltInAttribute attribute, PaoIdentifier pao) {
         LitePoint point = null;
         if (attribute != null) {
@@ -272,15 +301,6 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         return point;
     }
 
-    /**
-     * Check whether the zoneDateTime present in overlap duration in DST fall-back transition.
-     */
-    private boolean isInOverlap(ZonedDateTime zoneDateTime) {
-        ZonedDateTime withEarlierOffset = zoneDateTime.withEarlierOffsetAtOverlap();
-        ZonedDateTime withLaterOffset = zoneDateTime.withLaterOffsetAtOverlap();
-        return withEarlierOffset.getOffset() != withLaterOffset.getOffset();
-    }
-    
     @PostConstruct
     private void init() {
         Builder<PaoTypePointIdentifier> b = ImmutableSet.builder();
