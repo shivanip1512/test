@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -22,13 +23,17 @@ import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -42,6 +47,8 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private DeviceConfigEventLogService eventLogService;
+    @Autowired private DataStreamingService dataStreamingService;
+    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @Autowired
     public ConfigWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
@@ -63,6 +70,8 @@ public class ConfigWidget extends WidgetControllerBase {
     private ModelAndView getConfigModelAndView(HttpServletRequest request) throws ServletRequestBindingException {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
         YukonDevice device = getYukonDevice(request);
+        int deviceId = device.getPaoIdentifier().getPaoId();
+        mav.addObject("deviceId", deviceId);
         
         List<LightDeviceConfiguration> existingConfigs = 
             deviceConfigurationDao.getAllConfigurationsByType(device.getPaoIdentifier().getPaoType());
@@ -73,6 +82,18 @@ public class ConfigWidget extends WidgetControllerBase {
         
         mav.addObject("currentConfigId", config != null ? config.getConfigurationId() : null);
         mav.addObject("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);
+        
+        //check for data streaming config
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        DataStreamingConfig dsConfig = null;
+        try {
+            dsConfig = dataStreamingService.findDataStreamingConfigurationForDevice(deviceId);
+            dsConfig.setAccessor(accessor);
+        } catch (EmptyResultDataAccessException e) {
+            //just return null
+        }
+        mav.addObject("dataStreamingConfig", dsConfig);
         
         return mav;
     }
