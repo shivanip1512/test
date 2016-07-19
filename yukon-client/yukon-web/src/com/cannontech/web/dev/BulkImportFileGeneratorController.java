@@ -115,7 +115,7 @@ public class BulkImportFileGeneratorController {
         response.setContentType("application/zip");
 
         // set response header to the filename
-        response.setHeader("Content-Disposition", "attachment; filename=" + ServletUtil.urlEncode(file.getName()));
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + ServletUtil.urlEncode(file.getName())+"\"");
         response.setHeader("Content-Length", Long.toString(file.length()));
 
         // Download the file through the response object

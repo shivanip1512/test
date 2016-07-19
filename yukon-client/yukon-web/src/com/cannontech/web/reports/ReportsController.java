@@ -217,7 +217,7 @@ public class ReportsController extends MultiActionController  {
         
         //force download of PDF
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition","attachment; filename=" + ServletUtil.makeWindowsSafeFileName(reportModel.getTitle()) + ".pdf");
+        response.setHeader("Content-Disposition","attachment; filename=\"" + ServletUtil.makeWindowsSafeFileName(reportModel.getTitle()) + ".pdf\"");
         
         OutputStream outputStream = response.getOutputStream();
         simpleReportOutputter.outputPdfReport(reportDefinition, reportModel, outputStream, userContext);

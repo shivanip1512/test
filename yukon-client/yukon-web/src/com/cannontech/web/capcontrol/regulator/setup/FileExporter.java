@@ -51,7 +51,7 @@ public class FileExporter {
             
             //Set response properties for CSV file
             resp.setContentType("text/csv");
-            resp.setHeader("Content-Disposition", "attachment; filename=" + csvFile.getName());
+            resp.setHeader("Content-Disposition", "attachment; filename=\"" + csvFile.getName()+"\"");
             resp.setHeader("Content-Length", Long.toString(csvFile.length()));
             
             FileCopyUtils.copy(new FileInputStream(csvFile), resp.getOutputStream());

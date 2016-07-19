@@ -42,7 +42,7 @@ public class CreateReportController extends StarsWorkorderActionController {
         String fileName = "WorkOrders";
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         fileName += "_"+format.format(new Date()) + "." + ext;          
-        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+        response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName+"\"");
 
         JFreeReport report = createReport(user, session);
         final ServletOutputStream out = response.getOutputStream();

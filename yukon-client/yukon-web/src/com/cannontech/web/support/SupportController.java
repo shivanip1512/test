@@ -327,7 +327,7 @@ public class SupportController {
         resp.setContentType("application/zip");
 
         // set response header to the filename
-        resp.setHeader("Content-Disposition", "attachment; filename=" + ServletUtil.urlEncode(bundleToDownload.getName()));
+        resp.setHeader("Content-Disposition", "attachment; filename=\"" + ServletUtil.urlEncode(bundleToDownload.getName()) + "\"");
         resp.setHeader("Content-Length", Long.toString(bundleToDownload.length()));
 
         // Download the file through the response object

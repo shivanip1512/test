@@ -143,8 +143,7 @@ public class DeveloperController {
             }
         }
 
-        response.setHeader("Content-Disposition", "attachment; filename="
-            + getFilenameForLogComponents(logComponentTypes));
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + getFilenameForLogComponents(logComponentTypes) +"\"");
         InOrderMultiLogReader logReader = new InOrderMultiLogReader(datedLogFiles);
         logReader.prime();
         logReader.writeTo(new BufferedWriter(new OutputStreamWriter(response.getOutputStream())));

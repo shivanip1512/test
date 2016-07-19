@@ -105,7 +105,7 @@ public class BillingServlet extends HttpServlet
         
         fileName.append(FileFormatTypes.getFileExtensionByFormatId(fileFormatValue));
 
-        resp.addHeader("Content-Disposition", "attachment;filename=" + fileName.toString());
+        resp.addHeader("Content-Disposition", "attachment;filename=\"" + fileName.toString()+"\"");
         
         javax.servlet.ServletOutputStream out = null;
         try

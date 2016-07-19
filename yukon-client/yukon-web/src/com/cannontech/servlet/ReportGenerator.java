@@ -166,11 +166,11 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
             }
 
             if( param != null && param.equalsIgnoreCase("DownloadReport")) {
-                resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+                resp.addHeader("Content-Disposition", "attachment; filename=\"" + fileName+"\"");
             } else if( param != null && param.equalsIgnoreCase("GenerateMissedMeterList")) {
                 resp.addHeader("Content-Disposition", "attachment; filename=MissedList.txt");
             } else {
-                resp.setHeader("Content-Disposition", "inline; filename="+fileName);
+                resp.setHeader("Content-Disposition", "inline; filename=\"" + fileName+"\"");
             }					
 
             // Work order model specific parameters
