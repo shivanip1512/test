@@ -106,7 +106,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         PointValueQualityHolder pvqh = data.getPaoPointValue().getPointValueQualityHolder();
         Date timestamp = pvqh.getPointDataTimeStamp();
 
-        if (!isValidTimestamp(pointData, pao, timestamp)) {
+        if (!isValidTimestamp(timestamp)) {
             log.info("Interval and profile data calculations being skipped for " + timestamp + " for Id : "
                 + pao.getPaoId() + " : " + pointData);
             return;
@@ -264,7 +264,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
      * (Greater than 2:00 CST) Example: For November 6, 2016 - Exclude 1:00 am CDT (inclusive) through 1:00 am CST through 2:00 am CST
      * (inclusive) Spring DST shall not be affected.
      */
-    private boolean isValidTimestamp(List<? super PointData> pointData, PaoIdentifier pao, Date timestamp) {
+    private boolean isValidTimestamp(Date timestamp) {
         final TimeZone timeZone = YukonUserContext.system.getTimeZone();
 
         boolean isInDaylightTime = timeZone.inDaylightTime(timestamp);
