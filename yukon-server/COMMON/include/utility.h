@@ -311,6 +311,11 @@ namespace Cti
     {
         return boost::algorithm::join(V, sep);
     }
+
+namespace Test
+{
+    struct use_in_unit_tests_only;  //  tag to prevent unit-test-specific code from being run in production code
+}
 }
 
 template <class T>

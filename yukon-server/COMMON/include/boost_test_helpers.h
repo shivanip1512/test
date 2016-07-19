@@ -20,6 +20,8 @@ BOOST_REQUIRE_EQUAL_COLLECTIONS((x).begin(), (x).end(), (y).begin(), (y).end())
 
 namespace Test {
 
+struct use_in_unit_tests_only {};
+
 namespace {
 
 char fromAscii(char c)
@@ -110,7 +112,7 @@ public:
         _newNow(newEpoch),
         _oldMakeNow(Cti::Time::MakeNowTime)
     {
-        Cti::Time::MakeNowTime = boost::bind(&Override_CtiTime_Now::MakeNow, this);
+        Cti::Time::MakeNowTime = [this]{ return MakeNow(); };
     }
 
     ~Override_CtiTime_Now()
@@ -152,7 +154,7 @@ public:
     Override_CtiDate_Now(CtiDate newEpoch) :
         _newNow(newEpoch)
     {
-        _oldMakeNow = boost::bind(&Override_CtiDate_Now::MakeNow, this);
+        _oldMakeNow = [this]{ return MakeNow(); };
 
         std::swap(_oldMakeNow, Cti::Date::MakeNowDate);
     }
