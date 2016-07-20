@@ -20,6 +20,9 @@ import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 //1. Store results of the operation to be shown on the progress page
 //2. Update the database when we receive confirmation of a successful configuration from Porter?
 public class DataStreamingConfigCallbackResult implements BackgroundProcessResultHolder, DataStreamingConfigCallback {
+    
+    private DeviceCollection unsupportedDeviceCollection;
+    
     private static final Logger log = YukonLogManager.getLogger(DataStreamingConfigCallbackResult.class);
     
     @Override
@@ -130,6 +133,14 @@ public class DataStreamingConfigCallbackResult implements BackgroundProcessResul
     @Override
     public boolean isFailureFileSupported() {
         return false;
+    }
+
+    public DeviceCollection getUnsupportedDeviceCollection() {
+        return unsupportedDeviceCollection;
+    }
+
+    public void setUnsupportedDeviceCollection(DeviceCollection unsupportedDeviceCollection) {
+        this.unsupportedDeviceCollection = unsupportedDeviceCollection;
     }
 
 }

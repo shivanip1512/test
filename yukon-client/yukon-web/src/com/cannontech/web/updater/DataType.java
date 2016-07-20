@@ -47,6 +47,7 @@ public enum DataType {
     TDC,
     DISCONNECT,
     ECOBEE_READ,
-    DEMAND_RESET
+    DEMAND_RESET,
+    DATA_STREAMING
     ;
 }

@@ -79,27 +79,6 @@
 </tags:nameValueContainer2>
 
 <div data-dialog id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".dataStreamingConfiguration"/>" class="dn">
-    <table class="compact-results-table">
-        <thead>
-            <tr>
-                <th><i:inline key="yukon.web.modules.tools.bulk.dataStreaming.attribute"/></th>
-                <th><i:inline key="yukon.web.modules.tools.bulk.dataStreaming.interval"/></th>
-            </tr>
-        </thead>
-        <c:forEach var="configAtt" varStatus="status" items="${dataStreamingConfig.attributes}">
-            <tr>
-                <td>${configAtt.attribute.description}</td>
-                <td>${configAtt.interval}
-                    <c:choose>
-                        <c:when test="${configAtt.interval > 1}">
-                            <i:inline key="yukon.web.modules.tools.bulk.dataStreaming.minutes"/>
-                        </c:when>
-                        <c:otherwise>
-                            <i:inline key="yukon.web.modules.tools.bulk.dataStreaming.minute"/>
-                        </c:otherwise>
-                    </c:choose>
-               </td>
-            </tr>
-        </c:forEach>
-    </table>
+    <c:set var="config" value="${dataStreamingConfig}"/>
+    <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
 </div>

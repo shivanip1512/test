@@ -397,12 +397,24 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.noteLabel"></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.noteText"></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.message">Are you sure you want to make these changes?  After clicking Send, messages will be sent, changing the network loading.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.removeMessage">Are you sure you want to remove data streaming for the above devices?</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.gatewayOverloaded">Cannot configure data streaming when a gateway is overloaded.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.removeConfiguration">Remove Data Streaming</entry>
     
     <!-- results.jsp -->
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.pageName">Data Streaming Results</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.contextualPageName">Data Streaming Results</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.header">Data Streaming Results:</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.noteLabel">Note: </entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.noteText"><![CDATA[
+        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
+    ]]></entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.progressLabel">Progress</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.successLabel">Success</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.failedLabel">Failed</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.unsupportedLabel">Unsupported</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
+    
     
     <!-- SEND CONFIG -->
     <!-- ******************************************************************************************************************** -->

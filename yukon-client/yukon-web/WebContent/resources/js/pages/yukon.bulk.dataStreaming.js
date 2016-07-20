@@ -23,6 +23,7 @@ yukon.bulk.dataStreaming = (function () {
 
     'use strict';
     var initialized = false,
+    _canceled,
 
     mod = {
 
@@ -30,6 +31,23 @@ yukon.bulk.dataStreaming = (function () {
             init: function () {
 
                 if (initialized) return;
+                
+                $('#cancel-btn').click(function(ev) {
+                    var btn = $(this),
+                    params = {
+                        key: btn.data('key')
+                    };
+
+                    yukon.ui.busy(btn);
+                    
+                    _canceled = true;
+                    debug.log('canceling data streaming');
+        
+                    $.post(yukon.url('/bulk/dataStreaming/cancel'), params)
+                    .done(function (result) {
+                        debug.log('data streaming cancel result: ' + result);
+                    });
+                });
 
                 $(document).ready(function() {enableDisable();});
 
@@ -75,8 +93,32 @@ yukon.bulk.dataStreaming = (function () {
                 
                 
                 initialized = true;
+                _canceled = false;
 
             },
+            
+            /** Update the progress 
+             *  @param {Object} data - Progress data.
+             */
+            progress: function(data) {
+                var done = data.value === 'true';
+                if (!_canceled) {
+                    $('#cancel-btn').toggle(!done);
+                }
+                if (done) {
+                    $('.js-result').each(function(index, elem) {
+                        var result = $(elem),
+                        count = result.find('.js-count'),
+                        action = result.find('.js-action');
+                        
+                        if (parseInt(count.text(), 10) > 0) {
+                            action.show();
+                        }
+                    });
+                    
+                    $('.js-progress .js-action').show();
+                }
+            }
     };
 
     return mod;

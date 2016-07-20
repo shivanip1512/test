@@ -30,30 +30,8 @@
                     <c:if test="${existingConfigs.size() > 0}">
                         <tags:nameValue2 nameKey=".selectedConfiguration" rowClass="dn js-selected-config">
                             <c:forEach var="config" varStatus="status" items="${existingConfigs}">
-                                <table id="configTable_${config.id}" class="compact-results-table dn js-config-table">
-                                    <thead>
-                                        <tr>
-                                            <th><i:inline key=".attribute"/></th>
-                                            <th><i:inline key=".interval"/></th>
-                                        </tr>
-                                    </thead>
-                                    <c:forEach var="configAtt" varStatus="status" items="${config.attributes}">
-                                    <tr>
-                                        <td>${configAtt.attribute.description}</td>
-                                        <td>${configAtt.interval}
-                                            <c:choose>
-                                                <c:when test="${configAtt.interval > 1}">
-                                                    <i:inline key=".minutes"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key=".minute"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                       </td>
-                                    </tr>
-                                    </c:forEach>
+                                <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
                             </c:forEach>
-                            </table>
                         </tags:nameValue2>
                     </c:if>
                     

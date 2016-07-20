@@ -13,6 +13,14 @@
                 <cti:csrfToken/>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <form:hidden path="configuration.id" />
+                
+                <c:if test="${!remove}">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".configuration">
+                            <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(verificationInfo.configuration.name)}</a>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </c:if>
                 <c:forEach var="deviceUnsupported" varStatus="status" items="${verificationInfo.deviceUnsupported}">
                     <div class="user-message warning">${deviceUnsupported.detail}<tags:selectedDevicesPopup deviceCollection="${deviceUnsupported.deviceCollection}"/></div>
                 </c:forEach>
@@ -31,7 +39,16 @@
                     </div>
                 </tags:sectionContainer>
         
-                <div style="margin-top:50px;"><b><i:inline key=".message"/></b></div>
+                <div style="margin-top:50px;"><b>
+                    <c:choose>
+                        <c:when test="${remove}">
+                            <i:inline key=".removeMessage"/>
+                        </c:when>
+                        <c:otherwise>
+                            <i:inline key=".message"/>
+                        </c:otherwise>
+                    </c:choose>
+                </b></div>
                 
                 <div class="page-action-area">
                     <cti:button nameKey="back" href="javascript:window.history.back()" name="backButton" classes="action" />
@@ -45,5 +62,10 @@
             </form:form>
         </div>
     </tags:bulkActionContainer>
+    
+    <div data-dialog id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".configuration"/>" class="dn">
+        <c:set var="config" value="${verificationInfo.configuration}"/>
+        <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
+    </div>
         
 </cti:standardPage>
