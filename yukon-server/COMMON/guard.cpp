@@ -21,7 +21,7 @@ void CtiLockGuard<T>::acquireLock( T& resource, unsigned long millis, char *reso
         dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
     }
 
-    _acquired = _res.acquire(900000);
+    _acquired = _res.acquire(millis);
 
     if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
     {

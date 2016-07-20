@@ -6,6 +6,7 @@
 #include "mutex.h"
 #include "critical_section.h"
 #include "readers_writer_lock.h"
+#include "millisecond_timer.h"
 
 #include <boost/thread.hpp>
 #include <boost/format.hpp>
@@ -155,13 +156,18 @@ Guard timeout test.
 We set the lock, fire off the child and it should block until the timeout.
 */
 
+Cti::Timing::MillisecondTimer timer;
+
 template<class T>
 void lockGuardTestTimeout()
 {
+    timer.reset();
+
     BOOST_CHECK(lockGuardTestLock<T>.lastAcquiredByTID() == 0);
     boost::thread testThread;
     {
         CTILOCKGUARD(T, guard, lockGuardTestLock<T>);
+        BOOST_TEST_MESSAGE(timer.elapsed() << ": Parent: lock acquired");
 
         BOOST_CHECK(guard.isAcquired());
         BOOST_CHECK(lockGuardTestLock<T>.lastAcquiredByTID() == GetCurrentThreadId());
@@ -169,11 +175,13 @@ void lockGuardTestTimeout()
         // Fire off the child, passing out thread id as an argument
         testThread = boost::thread(&lockGuardTestTimeoutChild<T>, GetCurrentThreadId());
 
-        Sleep(600);
+        Sleep(1000);
     }  /* Lock is gone */
+    BOOST_TEST_MESSAGE(timer.elapsed() << ": Parent: lock released");
 
     Sleep(10);
     testThread.join();
+    BOOST_TEST_MESSAGE(timer.elapsed() << ": Parent: child is dead");
 
     BOOST_CHECK(lockGuardTestLock<T>.lastAcquiredByTID() == 0);
 }
@@ -184,10 +192,13 @@ Guard timeout test child.
 template<class T>
 void lockGuardTestTimeoutChild( DWORD parentTid )
 {
-    /* Try for lock, we will block */
+    BOOST_TEST_MESSAGE(timer.elapsed() << ": Child: started and waiting for lock");
+    /* Try for lock, we will block then fail after 20 ms */
     CTILOCKGUARD2( T, guard2, lockGuardTestLock<T>, 20 );
+    BOOST_TEST_MESSAGE(timer.elapsed() << ": Child: guard complete");
 
-    BOOST_CHECK( lockGuardTestLock<T>.lastAcquiredByTID() == GetCurrentThreadId() );
+    BOOST_CHECK(!guard2.isAcquired());
+    BOOST_CHECK( lockGuardTestLock<T>.lastAcquiredByTID() != GetCurrentThreadId() );
 }
 
 BOOST_AUTO_TEST_SUITE( test_guard )
@@ -297,11 +308,14 @@ extern void lockGuardTestTimeoutChildRW(DWORD parentTid);
 /** Test readers_writer timeout. **/
 BOOST_AUTO_TEST_CASE(test_guard_test_readers_writer_lock_timeout)
 {
+    timer.reset();
+
     BOOST_CHECK( lockGuardTestRW.lastAcquiredByTID() == unlocked);
     boost::thread testThread;
 
     {
         CTILOCKGUARD( Cti::readers_writer_lock_t, guard,  lockGuardTestRW );
+        BOOST_TEST_MESSAGE(timer.elapsed() << ": Parent: lock acquired");
 
         parentTID = makeTID(boost::this_thread::get_id());
 
@@ -312,21 +326,28 @@ BOOST_AUTO_TEST_CASE(test_guard_test_readers_writer_lock_timeout)
         testThread = boost::thread( &lockGuardTestTimeoutChildRW, GetCurrentThreadId() );
         childTID = makeTID( testThread.get_id() );
 
-        Sleep( 600 );
+        Sleep( 1000 );
     }  /* Guard is goes out of scope here */
+    BOOST_TEST_MESSAGE(timer.elapsed() << ": Parent: lock released");
 
     Sleep( 10 );
     testThread.join();
+    BOOST_TEST_MESSAGE(timer.elapsed() << ": Parent: child is dead");
+
     BOOST_CHECK( lockGuardTestRW.lastAcquiredByTID() == unlocked);
 }
 
 /** Readers_writer timeout child. **/
 void lockGuardTestTimeoutChildRW(DWORD parentTid)
 {
-    /* Try for lock, we will block */
-    CTILOCKGUARD2( Cti::readers_writer_lock_t , lock,  lockGuardTestRW, 20 );
+    BOOST_TEST_MESSAGE(timer.elapsed() << ": Child: started and waiting for lock");
 
-    BOOST_CHECK( lockGuardTestRW.lastAcquiredByTID() == childTID );
+    /* Try for lock, we will block then fail after 20 ms */
+    CTILOCKGUARD2( Cti::readers_writer_lock_t , guard2,  lockGuardTestRW, 20 );
+    BOOST_TEST_MESSAGE(timer.elapsed() << ": Child: guard complete");
+
+    BOOST_CHECK(!guard2.isAcquired());
+    BOOST_CHECK( lockGuardTestRW.lastAcquiredByTID() != childTID );
 }
 
 /** 
