@@ -68,7 +68,7 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
         LocalTime peakStop = strategy.getPeakStopTime();
         
         if(peakStart.isAfter(peakStop)){
-        	errors.rejectValue("peakStopTime", basekey + ".peakTimesViolation.startIsAfterStopTime");
+            errors.rejectValue("peakStopTime", basekey + ".peakTimesViolation.startIsAfterStopTime");
         }
     }
 
