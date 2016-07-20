@@ -202,6 +202,8 @@ public final class DeviceFactory {
         case RFN520FRX:
         case RFN520FAXD:
         case RFN520FRXD:
+        case RFN530FAX:
+        case RFN530FRX:
         case RFN530S4X:
         case RFN530S4EAD:
         case RFN530S4EAT:

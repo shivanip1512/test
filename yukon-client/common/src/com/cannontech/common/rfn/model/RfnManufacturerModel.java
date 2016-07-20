@@ -81,6 +81,9 @@ public enum RfnManufacturerModel {
     RFN_520FRXT_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXT-SD-500"),
     RFN_520FRXR_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXR-SD-500"),
     
+    RFN_530FAX(PaoType.RFN530FAX, "LGYR", "FocusAXT-530"),
+    RFN_530FRX(PaoType.RFN530FRX, "LGYR", "FocusAXR-530"),
+    
     RFN_530S4X(PaoType.RFN530S4X, "LGYR", "E650"),
     RFN_530S4AD(PaoType.RFN530S4EAD, "LGYR", "S4-AD"),
     RFN_530S4AT(PaoType.RFN530S4EAT, "LGYR", "S4-AT"),
@@ -114,7 +117,7 @@ public enum RfnManufacturerModel {
         return Optional.of(
                 Stream.of(values())
                         .filter(item -> item.type == type)
-                        .collect(Collectors.toCollection(() -> new ArrayList<RfnManufacturerModel>())))
+                        .collect(Collectors.toCollection(() -> new ArrayList<>())))
                 .filter(list -> ! list.isEmpty())
                 .orElseThrow(() -> new IllegalArgumentException("Unknown template for type: " + type));
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!-- RF Devices: highest Analog OFFSET=339 @ 2016-04-12 -->
+<!-- RF Devices: highest Analog OFFSET=345 @ 2016-07-19 -->
 <!-- RF Devices: highest Status OFFSET=79 @ 2014-04-30T -->
 
 <!--  Point Name naming convention: 
@@ -7067,15 +7067,8 @@
         </tags>
     </pao>
 
-    <pao id="RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE" abstract="true" inherits="SUPPORTS_VOLTAGE_PROFILE_TAG">
+    <pao id="RFN_DAILY_VOLTAGE" abstract="true">
         <points>
-            <point type="Analog" offset="214">
-                <init>true</init>
-                <name>Voltage</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="Volts" />
-                <decimalplaces value="1" />
-            </point>
             <point type="Analog" offset="14">
                 <init>true</init>
                 <name>Daily Max Volts</name>
@@ -7092,17 +7085,50 @@
             </point>
         </points>
         <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point="Voltage" />
-            </attribute>
             <attribute name="MINIMUM_VOLTAGE">
                 <basicLookup point="Daily Min Volts" />
             </attribute>
             <attribute name="MAXIMUM_VOLTAGE">
                 <basicLookup point="Daily Max Volts" />
             </attribute>
+        </attributes>
+    </pao>
+
+    <pao id="RFN_CENTRON_ADV_VOLTAGE" abstract="true" inherits="RFN_DAILY_VOLTAGE, SUPPORTS_VOLTAGE_PROFILE_TAG">
+        <points>
+            <point type="Analog" offset="214">
+                <init>true</init>
+                <name>Voltage</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="1" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage" />
+            </attribute>
             <attribute name="VOLTAGE_PROFILE">
                 <basicLookup point="Voltage" />
+            </attribute>
+        </attributes>
+    </pao>
+    <pao id="RFN_FOCUS_ADV_VOLTAGE" abstract="true" inherits="RFN_DAILY_VOLTAGE, SUPPORTS_VOLTAGE_PROFILE_TAG">
+        <points>
+            <point type="Analog" offset="214">
+                <init>true</init>
+                <name>Interval Voltage</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="1" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Interval Voltage" />
+            </attribute>
+            <attribute name="VOLTAGE_PROFILE">
+                <basicLookup point="Interval Voltage" />
             </attribute>
         </attributes>
     </pao>
@@ -7365,10 +7391,10 @@
     </pao>
 
     <pao id="RFN_L3_CENTRON" abstract="true"
-        inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE" />
+        inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_ADV_VOLTAGE" />
 
     <pao id="RFN_L3_FOCUS_420FL" abstract="true"
-        inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE, RFN_L3_FOCUS_4x0FL_2VOLTAGES" />
+        inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_FOCUS_ADV_VOLTAGE, RFN_L3_FOCUS_4x0FL_2VOLTAGES" />
 
     <pao id="RFN_L3_FOCUS_410FL" abstract="true"
         inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_L3_FOCUS_4x0FL_2VOLTAGES" />
@@ -8161,7 +8187,7 @@
     </pao>
 
     <pao id="RFN_L5_FOCUS_FR_" abstract="true"
-        inherits="RFN_L3_FOCUS_FX_FD, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE">
+        inherits="RFN_L3_FOCUS_FX_FD, RFN_FOCUS_ADV_VOLTAGE">
         <points>
             <point type="Analog" offset="7"><!-- use SAME OFFSET as other 
                     RFN's Received kVArh -->
@@ -8202,7 +8228,7 @@
         <displayName>RFN-420fL</displayName>
     </pao>
     <pao id="RFN420FX"
-        inherits="RFN410FX, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_VOLTAGE_CONFIG">
+        inherits="RFN410FX, RFN_FOCUS_ADV_VOLTAGE, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-420fX</displayName>
     </pao>
     <pao id="RFN420FD" inherits="RFN420FX, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
@@ -9819,55 +9845,19 @@
         <displayName>RFW-Meter</displayName>
     </pao>
 
+    <!--  identical to the RFN-420fL -->
     <pao id="RFN510FL"
-        inherits="RFN_COMMON, RFN_L2_CENTRON_AND_FOCUS, RFN_TOU_FOR_ALL_EXCEPT_A3D, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS,
-            FOCUS_AL_DISPLAY_CONFIGURATION, RFN_CONFIGURATION, RFN_VOLTAGE_CONFIG, RFN_TEMPERATURE_ALARM_CONFIGURATION, 
-            SUPPORTS_VOLTAGE_PROFILE_TAG">
+            inherits="RFN_L3_FOCUS_420FL, FOCUS_AL_DISPLAY_CONFIGURATION, RFN_CONFIGURATION, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-510fL</displayName>
-        <points>
-            <point type="Analog" offset="14">
-                <name>Max Volts</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
-            </point>
-            <point type="Analog" offset="15">
-                <name>Min Volts</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
-            </point>
-            <point type="Analog" offset="5">
-                <name>Voltage Primary</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
-            </point>
-        </points>
-        <attributes>
-            <attribute name="MAXIMUM_VOLTAGE">
-                <basicLookup point="Max Volts"/>
-            </attribute>
-            <attribute name="MINIMUM_VOLTAGE">
-                <basicLookup point="Min Volts"/>
-            </attribute>
-            <attribute name="VOLTAGE">
-                <basicLookup point="Voltage Primary"/>
-            </attribute>
-        </attributes>
     </pao>
 
     <pao id="RFN520_BASE" abstract="true"
-        inherits="RFN_COMMON, RFN_L2_CENTRON_AND_FOCUS, RFN_TOU_FOR_ALL_EXCEPT_A3D, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS,
-            RFN_CONFIGURATION, RFN_VOLTAGE_CONFIG, RFN_TEMPERATURE_ALARM_CONFIGURATION, SUPPORTS_VOLTAGE_PROFILE_TAG, 
-            THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT">
+        inherits="RFN_COMMON, RFN_TOU_FOR_ALL_EXCEPT_A3D, RFN_L2_CENTRON_AND_FOCUS, RFN_FOCUS_ADV_VOLTAGE, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS,
+            RFN_CONFIGURATION, RFN_VOLTAGE_CONFIG">
+    </pao>
+    
+    <pao id="RFN500_FOCUS_POLYPHASE" abstract="true" inherits="THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT">
         <points>
-            <point type="Analog" offset="101">
-                <name>Delivered kW</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
-            </point>
             <point type="Analog" offset="327">
                 <name>Voltage Phase A</name>
                 <multiplier value="1.0"/>
@@ -9882,6 +9872,24 @@
             </point>
             <point type="Analog" offset="329">
                 <name>Voltage Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="343">
+                <name>Avg Voltage Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="344">
+                <name>Avg Voltage Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="345">
+                <name>Avg Voltage Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="4" />
@@ -10010,6 +10018,103 @@
             </attribute>
         </attributes>
     </pao>
+
+    <pao id="RFN500_FOCUS_POLYPHASE_POWERFACTOR" abstract="true">
+        <points>
+            <point type="Analog" offset="80">
+                <init>true</init>
+                <name>Power Factor Degrees Phase A</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Degrees" />
+                <decimalplaces value="1" />
+            </point>
+            <point type="Analog" offset="81">
+                <init>true</init>
+                <name>Power Factor Degrees Phase B</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Degrees" />
+                <decimalplaces value="1" />
+            </point>
+            <point type="Analog" offset="82">
+                <init>true</init>
+                <name>Power Factor Degrees Phase C</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Degrees" />
+                <decimalplaces value="1" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="POWER_FACTOR_PHASE_A">
+                <basicLookup point="Power Factor Degrees Phase A"/>
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_B">
+                <basicLookup point="Power Factor Degrees Phase B"/>
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_C">
+                <basicLookup point="Power Factor Degrees Phase C"/>
+            </attribute>
+        </attributes>
+    </pao>
+        
+    <pao id="RFN500_FOCUS_SINGLEPHASE" abstract="true">
+        <points>
+            <point type="Analog" offset="327">
+                <name>Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="342">
+                <name>Avg Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="330">
+                <name>Min Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="333">
+                <name>Max Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="336">
+                <name>Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="226">
+                <name>Current Angle</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="4" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage"/>
+            </attribute>
+            <!-- Already have MINIMUM_VOLTAGE mapped to Daily Min Volts -->
+            <!-- <attribute name="MINIMUM_VOLTAGE">
+                <basicLookup point="Min Voltage"/>
+            </attribute> -->
+            <!-- Already have MAXIMUM_VOLTAGE mapped to Daily Max Volts -->
+            <!-- <attribute name="MAXIMUM_VOLTAGE_PHASE_A">
+                <basicLookup point="Max Voltage Phase A"/>
+            </attribute> -->
+            <attribute name="CURRENT">
+                <basicLookup point="Current"/>
+            </attribute>
+            <attribute name="CURRENT_ANGLE">
+                <basicLookup point="Current Angle"/>
+            </attribute>
+        </attributes>
+    </pao>
     
     <pao id="RFN520_REACTIVE" abstract="true">
         <points>
@@ -10051,6 +10156,12 @@
             </point>
             <point type="Analog" offset="263">
                 <name>Sum kVAh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVah"/>
+                <decimalplaces value="4" />
+            </point>
+            <point type="Analog" offset="341">
+                <name>Net kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
                 <decimalplaces value="4" />
@@ -10117,23 +10228,31 @@
         </attributes>
     </pao> 
 
-    <pao id="RFN520FAX" inherits="RFN520_BASE">
+    <pao id="RFN520FAX" inherits="RFN520_BASE, RFN500_FOCUS_SINGLEPHASE">
         <displayName>RFN-520fAX</displayName>
     </pao>
 
-    <pao id="RFN520FRX" inherits="RFN520_BASE, RFN520_REACTIVE">
+    <pao id="RFN520FRX" inherits="RFN520_BASE, RFN500_FOCUS_SINGLEPHASE, RFN520_REACTIVE">
         <displayName>RFN-520fRX</displayName>
     </pao>
 
-    <pao id="RFN520FAXD" inherits="RFN520_BASE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
+    <pao id="RFN520FAXD" inherits="RFN520_BASE, RFN500_FOCUS_SINGLEPHASE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
         <displayName>RFN-520fAXD</displayName>
     </pao>
 
-    <pao id="RFN520FRXD" inherits="RFN520_BASE, RFN520_REACTIVE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
+    <pao id="RFN520FRXD" inherits="RFN520_BASE, RFN500_FOCUS_SINGLEPHASE, RFN520_REACTIVE, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
         <displayName>RFN-520fRXD</displayName>
     </pao>
 
-    <pao id="RFN530_BASE" inherits="RFN_COMMON, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT" abstract="true">
+    <pao id="RFN530FAX" inherits="RFN520_BASE, RFN500_FOCUS_POLYPHASE">
+        <displayName>RFN-530fAX</displayName>
+    </pao>
+
+    <pao id="RFN530FRX" inherits="RFN520_BASE, RFN500_FOCUS_POLYPHASE, RFN520_REACTIVE">
+        <displayName>RFN-530fRX</displayName>
+    </pao>
+    
+    <pao id="RFN530_S4_BASE" inherits="RFN_COMMON, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT" abstract="true">
         <points>
             <point type="Analog" offset="265">
                 <name>Sum Peak kW</name>
@@ -10239,7 +10358,7 @@
         </attributes>
     </pao>
     
-    <pao id="RFN530S4X" inherits="RFN530_BASE">
+    <pao id="RFN530S4X" inherits="RFN530_S4_BASE">
         <displayName>RFN-530S4x</displayName>
         <points>
             <point type="Analog" offset="50">
@@ -11548,15 +11667,15 @@
         </attributes>
     </pao>
     
-    <pao id="RFN530S4EAD" inherits="RFN530_BASE">
+    <pao id="RFN530S4EAD" inherits="RFN530_S4_BASE">
         <displayName>RFN-530S4eAD</displayName>
     </pao>
     
-    <pao id="RFN530S4EAT" inherits="RFN530_BASE, RFN530_TOU_RECORDING_ACTIVE">
+    <pao id="RFN530S4EAT" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_ACTIVE">
         <displayName>RFN-530S4eAT</displayName>
     </pao>
     
-    <pao id="RFN530S4ERD" inherits="RFN530_BASE">
+    <pao id="RFN530S4ERD" inherits="RFN530_S4_BASE">
         <displayName>RFN-530S4eRD</displayName>
         <points>
             <point type="Analog" offset="215">
@@ -11609,7 +11728,7 @@
         </attributes>
     </pao>
     
-    <pao id="RFN530S4ERT" inherits="RFN530_BASE, RFN530_TOU_RECORDING_REACTIVE">
+    <pao id="RFN530S4ERT" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_REACTIVE">
         <displayName>RFN-530S4eRT</displayName>
     </pao>
     
