@@ -3,6 +3,7 @@ package com.cannontech.web.capcontrol.validators;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -42,6 +43,8 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
         YukonValidationUtils.checkRange(errors, "failurePercent", 
             strategy.getMinConfirmPercent(), 0, 100, true);
         
+        validatePeakTimes(strategy, errors);
+        
         if (strategy.isIvvc()) {
 
             YukonValidationUtils.checkRange(errors, "minCommunicationPercentageSetting.banksReportingRatio", 
@@ -59,7 +62,17 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
 
     }
 
-	private void validateName(CapControlStrategy strategy, Errors errors) {
+    private static void validatePeakTimes(CapControlStrategy strategy, Errors errors) {
+        
+        LocalTime peakStart = strategy.getPeakStartTime();
+        LocalTime peakStop = strategy.getPeakStopTime();
+        
+        if(peakStart.isAfter(peakStop)){
+        	errors.rejectValue("peakStopTime", basekey + ".peakTimesViolation.startIsAfterStopTime");
+        }
+    }
+
+    private void validateName(CapControlStrategy strategy, Errors errors) {
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
         if (!errors.hasFieldErrors("name")) {

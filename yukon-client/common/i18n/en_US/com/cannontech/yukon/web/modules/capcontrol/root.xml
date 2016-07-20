@@ -750,7 +750,8 @@
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.high.cost">Cost must be greater than or equal to zero.</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.high.emergencyCost">Emergency Cost must be greater than or equal to cost.</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.intervalViolation.integrationInterval">When using Integrate Control, the Analysis Interval must be greater than or equal to the Integration Interval.</entry>
-
+    <entry key="yukon.web.modules.capcontrol.strategy.error.peakTimesViolation.startIsAfterStopTime">Start Time must be before the Stop Time.</entry>
+    
     <!-- schedules.jsp -->
     <entry key="yukon.web.modules.capcontrol.schedules.pageName">Schedules</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.tab.title">Schedules</entry>
