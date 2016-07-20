@@ -52,6 +52,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVAH_RATE_B("kVAh Rate B", AttributeGroup.USAGE),
     KVAH_RATE_C("kVAh Rate C", AttributeGroup.USAGE),
     KVAH_RATE_D("kVAh Rate D", AttributeGroup.USAGE),
+    NET_KVAH("Net kVAh", AttributeGroup.USAGE),
     NET_KVAH_RATE_A("Net kVAh Rate A", AttributeGroup.USAGE),
     NET_KVAH_RATE_B("Net kVAh Rate B", AttributeGroup.USAGE),
     NET_KVAH_RATE_C("Net kVAh Rate C", AttributeGroup.USAGE),

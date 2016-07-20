@@ -490,6 +490,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN520FRX,
             RFN520FAXD,
             RFN520FRXD,
+            RFN530FAX,
+            RFN530FRX,
             RFN530S4X,
             RFN530S4EAD,
             RFN530S4EAT,

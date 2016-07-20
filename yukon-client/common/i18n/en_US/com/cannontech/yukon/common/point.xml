@@ -106,6 +106,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_B">kVAh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_C">kVAh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_D">kVAh Rate D</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KVAH">Net kVAh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KVAH_RATE_A">Net kVAh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KVAH_RATE_B">Net kVAh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KVAH_RATE_C">Net kVAh Rate C</entry>
