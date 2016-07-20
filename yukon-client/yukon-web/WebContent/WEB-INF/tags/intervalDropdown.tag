@@ -43,7 +43,7 @@
             </c:forEach>
         
         </form:select>
-        <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/></c:if>
+        <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="${theInputClass}"/></c:if>
     </label>
 </spring:bind>
 </cti:displayForPageEditModes>
