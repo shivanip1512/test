@@ -290,6 +290,15 @@ $(function() { updateServiceCompanyInfo();});
         
     </tags:sectionContainer2>
     
+    <%--NETWORK INFORMATION --%>
+    <c:if test="${showNetworkInfo}">
+        <tags:widgetContainer deviceId="${deviceId}" identify="false">
+            <cti:displayForPageEditModes modes="VIEW">
+                <tags:widget container="section" bean="rfnDeviceMetadataWidget" />
+            </cti:displayForPageEditModes>
+        </tags:widgetContainer>
+    </c:if>
+    
     <cti:displayForPageEditModes modes="EDIT,CREATE">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
             <cti:button nameKey="save" type="submit" name="save" classes="js-disable-after-click primary action"/>

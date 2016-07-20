@@ -360,6 +360,12 @@ public class OperatorHardwareController {
         if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
             return "redirect:/stars/operator/hardware/mp/view";
         }
+        
+        if (hardware.getHardwareType().isRf()) {
+            int deviceId = inventoryDao.getDeviceId(inventoryId);
+            model.addAttribute("deviceId", deviceId);
+            model.addAttribute("showNetworkInfo", true);
+        }
         return "operator/hardware/hardware.jsp";
     }
     

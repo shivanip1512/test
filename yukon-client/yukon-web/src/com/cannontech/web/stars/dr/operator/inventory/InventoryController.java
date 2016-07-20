@@ -138,6 +138,12 @@ public class InventoryController {
         model.addAttribute("canSendShed", !inventory.getHardwareType().isZigbee()
                            && !inventory.getHardwareType().isEcobee() && !inventory.getHardwareType().isSA());
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
+        
+        if (hardware.getHardwareType().isRf()) {
+            int deviceId = inventoryDao.getDeviceId(inventoryId);
+            model.addAttribute("deviceId", deviceId);
+            model.addAttribute("showNetworkInfo", true);
+        }
         setupModel(model, userContext, hardware);
         
         return "operator/inventory/inventory.jsp";
