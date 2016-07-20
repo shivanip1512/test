@@ -175,6 +175,8 @@ void lockGuardTestTimeout()
         // Fire off the child, passing out thread id as an argument
         testThread = boost::thread(&lockGuardTestTimeoutChild<T>, GetCurrentThreadId());
 
+        // Now we wait for the child to start and do it's 20 ms timeout thing.  If this
+        // is too short, the child may not have a chance to start, causing a false positive.
         Sleep(1000);
     }  /* Lock is gone */
     BOOST_TEST_MESSAGE(timer.elapsed() << ": Parent: lock released");
@@ -326,6 +328,8 @@ BOOST_AUTO_TEST_CASE(test_guard_test_readers_writer_lock_timeout)
         testThread = boost::thread( &lockGuardTestTimeoutChildRW, GetCurrentThreadId() );
         childTID = makeTID( testThread.get_id() );
 
+        // Now we wait for the child to start and do it's 20 ms timeout thing.  If this
+        // is too short, the child may not have a chance to start, causing a false positive.
         Sleep( 1000 );
     }  /* Guard is goes out of scope here */
     BOOST_TEST_MESSAGE(timer.elapsed() << ": Parent: lock released");
