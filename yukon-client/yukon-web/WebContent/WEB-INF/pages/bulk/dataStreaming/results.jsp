@@ -94,6 +94,28 @@
                 initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_UNSUPPORTED" />
         </c:if>
         
+        <%-- CANCELLED COUNT --%>
+        <div class="fwb stacked">
+            <i:inline key=".cancelledLabel" />
+            :&nbsp; <span class="error"><cti:dataUpdaterValue type="DATA_STREAMING"
+                    identifier="${resultsId}/CANCELLED_COUNT" /></span>
+        </div>
+
+        <%-- CANCELLED DEVICE COLLECTION --%>
+        <c:if test="${result.cancelledDeviceCollection != null}">
+            <div id="js-cancelled-actions" class="dn stacked">
+                <cti:link href="/bulk/collectionActions" key=".collectionActionOnDevicesLabel">
+                    <cti:mapParam
+                        value="${result.cancelledDeviceCollection.collectionParameters}" />
+                </cti:link>
+                <tags:selectedDevicesPopup
+                    deviceCollection="${result.cancelledDeviceCollection}" />
+            </div>
+            <cti:dataUpdaterCallback
+                function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-cancelled-actions'],true)"
+                initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_CANCELLED" />
+        </c:if>
+        
         <cti:dataUpdaterCallback function="yukon.bulk.dataStreaming.progress" initialize="true"
             value="DATA_STREAMING/${resultsId}/IS_COMPLETE" />
 

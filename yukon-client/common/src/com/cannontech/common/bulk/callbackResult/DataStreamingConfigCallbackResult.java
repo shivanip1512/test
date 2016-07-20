@@ -22,6 +22,7 @@ import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 public class DataStreamingConfigCallbackResult implements BackgroundProcessResultHolder, DataStreamingConfigCallback {
     
     private DeviceCollection unsupportedDeviceCollection;
+    private DeviceCollection cancelledDeviceCollection;
     
     private static final Logger log = YukonLogManager.getLogger(DataStreamingConfigCallbackResult.class);
     
@@ -141,6 +142,14 @@ public class DataStreamingConfigCallbackResult implements BackgroundProcessResul
 
     public void setUnsupportedDeviceCollection(DeviceCollection unsupportedDeviceCollection) {
         this.unsupportedDeviceCollection = unsupportedDeviceCollection;
+    }
+
+    public DeviceCollection getCancelledDeviceCollection() {
+        return cancelledDeviceCollection;
+    }
+
+    public void setCancelledDeviceCollection(DeviceCollection cancelledDeviceCollection) {
+        this.cancelledDeviceCollection = cancelledDeviceCollection;
     }
 
 }

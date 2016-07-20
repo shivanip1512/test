@@ -2,7 +2,6 @@ package com.cannontech.web.updater.dataStreaming;
 
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.web.updater.ResultAccessor;
-import com.cannontech.amr.disconnect.model.DisconnectResult;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallbackResult;
 
 public enum DataStreamingTypeEnum {
@@ -25,6 +24,13 @@ public enum DataStreamingTypeEnum {
         public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
             return 2;
             //return dataStreamingConfigCallbackResults.getUnsupportedCount();
+        }
+    }),
+    
+    CANCELLED_COUNT(new ResultAccessor<DataStreamingConfigCallbackResult>() {
+        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
+            return 0;
+            //return dataStreamingConfigCallbackResults.getCancelledCount();
         }
     }),
     
@@ -54,6 +60,18 @@ public enum DataStreamingTypeEnum {
     }),
     
     IS_COMPLETE_WITH_FAILURES(new ResultAccessor<DataStreamingConfigCallbackResult>() {
+        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
+            return dataStreamingConfigCallbackResults.isComplete() && dataStreamingConfigCallbackResults.getProcessingExceptionCount() > 0;
+        }
+    }),
+    
+    IS_COMPLETE_WITH_UNSUPPORTED(new ResultAccessor<DataStreamingConfigCallbackResult>() {
+        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
+            return dataStreamingConfigCallbackResults.isComplete() && dataStreamingConfigCallbackResults.getProcessingExceptionCount() > 0;
+        }
+    }),
+    
+    IS_COMPLETE_WITH_CANCELLED(new ResultAccessor<DataStreamingConfigCallbackResult>() {
         public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
             return dataStreamingConfigCallbackResults.isComplete() && dataStreamingConfigCallbackResults.getProcessingExceptionCount() > 0;
         }
