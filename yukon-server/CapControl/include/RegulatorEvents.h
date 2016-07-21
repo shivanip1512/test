@@ -2,6 +2,7 @@
 
 #include "yukon.h"
 #include "ccutil.h"
+#include "utility.h"
 
 #include <boost/optional.hpp>
 
@@ -64,7 +65,7 @@ void enqueueRegulatorEvent( const RegulatorEvent & event );
 namespace Test
 {
 
-void exportRegulatorEvents( std::vector<RegulatorEvent> & events );
+void exportRegulatorEvents( std::vector<RegulatorEvent> &events, const Cti::Test::use_in_unit_tests_only & );
 
 }
 

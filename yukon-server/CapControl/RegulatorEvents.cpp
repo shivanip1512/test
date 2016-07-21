@@ -8,7 +8,7 @@
 #include "logger.h"
 #include "ccid.h"
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 extern unsigned long   _CC_DEBUG;
 
@@ -19,10 +19,10 @@ namespace CapControl    {
 namespace
 {
 
-using EventQueueLock = boost::unique_lock<boost::mutex>;
+using EventQueueLock = std::lock_guard<std::mutex>;
 
 std::vector<RegulatorEvent> eventQueue;
-boost::mutex                eventQueueMux;
+std::mutex                  eventQueueMux;
 
 void exchangeRegulatorEvents( std::vector<RegulatorEvent> & events )
 {
@@ -198,15 +198,13 @@ void writeRegulatorEventsToDatabase()
 
         exchangeRegulatorEvents( writeEvents );
 
+        Database::DatabaseConnection connection;
+
+        long eventID = GetEventID( connection, writeEvents.size() );
+
+        for ( const RegulatorEvent & event : writeEvents )
         {
-            Database::DatabaseConnection connection;
-
-            long eventID = GetEventID( connection, writeEvents.size() );
-
-            for ( const RegulatorEvent & event : writeEvents )
-            {
-                WriteEntryToDB( connection, eventID++, event );
-            }
+            WriteEntryToDB( connection, eventID++, event );
         }
     }
 }
@@ -214,7 +212,7 @@ void writeRegulatorEventsToDatabase()
 namespace Test
 {
 
-void exportRegulatorEvents( std::vector<RegulatorEvent> & events )
+void exportRegulatorEvents( std::vector<RegulatorEvent> & events, const Cti::Test::use_in_unit_tests_only & )
 {
     exchangeRegulatorEvents( events );
 }

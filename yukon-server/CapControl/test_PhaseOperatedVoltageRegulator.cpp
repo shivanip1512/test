@@ -8,6 +8,7 @@
 #include "RegulatorEvents.h"
 
 #include "capcontrol_test_helpers.h"
+#include "boost_test_helpers.h"
 
 // Objects
 using Cti::CapControl::VoltageRegulator;
@@ -103,6 +104,8 @@ struct phase_operated_voltage_regulator_fixture_core
     }
     attributes;
 
+    Cti::Test::use_in_unit_tests_only   test_limiter;
+
     boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
 
     Cti::Test::Override_ConfigManager overrideConfigManager;
@@ -161,7 +164,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Fail, p
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -216,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -233,7 +236,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Fail, phase_ope
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -274,7 +277,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success, phase_
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_REQUIRE_EQUAL( 1, events.size() );
 
@@ -300,7 +303,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Fail, phase_o
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -341,7 +344,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success, phas
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_REQUIRE_EQUAL( 1, events.size() );
 
@@ -367,7 +370,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAlive_Fail,
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -422,7 +425,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -477,7 +480,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -618,7 +621,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -759,7 +762,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -776,7 +779,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Fail
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -816,7 +819,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Succ
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -833,7 +836,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControl_F
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -896,7 +899,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_REQUIRE_EQUAL( 1, events.size() );
 
@@ -1010,7 +1013,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_REQUIRE_EQUAL( 1, events.size() );
 
@@ -1037,7 +1040,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -1086,7 +1089,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_REQUIRE_EQUAL( 1, events.size() );
 
@@ -1172,7 +1175,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Ph
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_REQUIRE_EQUAL( 1, events.size() );
 
@@ -1199,7 +1202,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Fail, p
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -1244,7 +1247,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_REQUIRE_EQUAL( 1, events.size() );
 
@@ -1271,7 +1274,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Fail, p
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_CHECK_EQUAL( 0, events.size() );
     }
@@ -1321,7 +1324,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success
     // Validate generated RegulatorEvent messages
     {
         std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events );
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
 
         BOOST_REQUIRE_EQUAL( 1, events.size() );
 
