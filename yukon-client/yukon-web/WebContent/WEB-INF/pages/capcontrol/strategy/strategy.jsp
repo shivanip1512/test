@@ -155,9 +155,9 @@
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".peakTimes">
-                            <dt:time path="peakStartTime" wrapClass="fn"/>
+                            <dt:time id="startPeak" path="peakStartTime" wrapClass="fn"/>
                             <span class="${viewMode ? '' : 'vatb'}">&nbsp;<i:inline key="yukon.common.to"/>&nbsp;</span>
-                            <dt:time path="peakStopTime" wrapClass="fn"/>
+                            <dt:time id="stopPeak" path="peakStopTime" wrapClass="fn"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
