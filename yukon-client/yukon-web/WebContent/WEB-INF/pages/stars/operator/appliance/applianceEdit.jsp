@@ -23,9 +23,11 @@
                     <tags:nameValueContainer2>
                         <input type="hidden" name="applianceId" value="${starsAppliance.applianceID}">
                         <input type="hidden" name="accountId" value="${accountId}">
+                        <input type="hidden" name="loadNumber" value="${starsAppliance.loadNumber}">
                         
                         <form:hidden path="applianceID"/>
                         <form:hidden path="applianceCategory.applianceCategoryId"/>
+                        <form:hidden path="loadNumber"/>
                         <tags:nameValue2 nameKey=".applianceCategory">
                             ${fn:escapeXml(starsAppliance.applianceCategory.name)}
                         </tags:nameValue2>
