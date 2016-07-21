@@ -10,7 +10,6 @@ Class-Path: ./
  common.jar 
  yukonappserver.jar 
  jcpagelayout450K.jar 
- batik.jar 
  junit.jar 
  SqlServer.jar 
  ojdbc6.jar 

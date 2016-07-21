@@ -43,9 +43,6 @@
         <dependent-module archiveName="saaj.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/saaj.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="axis.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/axis.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="commons-io-2.4.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-io-2.4.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -71,9 +68,6 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jopcbridge.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jopcbridge.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="jta.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jta.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jsch-0.1.44.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jsch-0.1.44.jar">
@@ -124,12 +118,6 @@
         <dependent-module archiveName="SchemaCompare.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/SchemaCompare.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="batik.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/batik.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="asm-attrs.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/asm-attrs.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="asm.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/asm.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -139,22 +127,13 @@
         <dependent-module archiveName="commons-el-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/commons-el-1.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="antlr-2.7.6rc1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/antlr-2.7.6rc1.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="jstl-1.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/jstl-1.2.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="ezmorph-1.0.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/ezmorph-1.0.6.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jaxm-api.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jaxm-api.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jaxrpc.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jaxrpc.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="jloox30.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jloox30.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="nagasena.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/nagasena.jar">

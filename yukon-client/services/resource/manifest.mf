@@ -3,7 +3,6 @@ Main-Class: com.cannontech.services.server.YukonServicesServer
 Class-Path: ./ 
  graph.jar 
  notification.jar 
- jloox30.jar 
  cbc.jar 
  vvr_tools.jar 
  calchist.jar 
@@ -22,7 +21,6 @@ Class-Path: ./
  jcfield401K.jar 
  jcpagelayout450K.jar 
  jcchart401K.jar 
- batik.jar 
  SqlServer.jar 
  ojdbc6.jar 
  jaxrpc.jar 

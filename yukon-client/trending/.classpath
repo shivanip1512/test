@@ -10,8 +10,6 @@
 	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
-	<classpathentry kind="lib" path="/third-party/batik.jar"/>
-	<classpathentry kind="lib" path="/third-party/jloox30.jar"/>
 	<classpathentry kind="lib" path="/third-party/poi.jar"/>
 	<classpathentry kind="lib" path="/third-party/itext.jar"/>
 	<classpathentry kind="lib" path="resource"/>

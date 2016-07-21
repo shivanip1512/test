@@ -39,8 +39,6 @@ Class-Path: ./
  dom4j-1.6.1.jar 
  cglib-2.1.3.jar 
  asm.jar 
- asm-attrs.jar 
- antlr-2.7.6rc1.jar 
  log4j-1.2.17.jar 
  apache-log4j-extras-1.0.jar 
  guava-13.0.1.jar 
@@ -48,7 +46,6 @@ Class-Path: ./
  SqlServer.jar 
  jtds-1.3.0.jar 
  ojdbc6.jar 
- jta.jar 
  activation.jar 
  mailapi-1.5.1.jar 
  smtp-1.5.1.jar 

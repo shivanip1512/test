@@ -12,7 +12,6 @@ Class-Path: ./
  jcpagelayout450K.jar 
  ojdbc6.jar 
  SqlServer.jar 
- batik.jar 
  servlet-api.jar 
  ../log/ 
  ../export/ 

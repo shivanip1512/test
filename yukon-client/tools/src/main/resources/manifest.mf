@@ -3,7 +3,6 @@ Main-Class: com.cannontech.datagenerator.point.PointCreate
 Class-Path: ./ 
  graph.jar 
  notification.jar 
- jloox30.jar 
  cbc.jar 
  vvr_tools.jar 
  calchist.jar 
@@ -20,10 +19,8 @@ Class-Path: ./
  jcfield401K.jar 
  jcpagelayout450K.jar 
  jcchart401K.jar 
- batik.jar 
  SqlServer.jar 
  ojdbc6.jar 
- axis.jar 
  jaxrpc.jar 
  jaxm-runtime.jar 
  jaxm-api.jar 
