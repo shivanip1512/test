@@ -2,7 +2,7 @@
 
 #include <boost/assign/list_of.hpp>
 
-#include "dev_rfn420focus_al.h"
+#include "dev_rfn_LgyrFocus_al.h"
 #include "cmd_rfn.h"
 #include "config_data_rfn.h"
 #include "rtdb_test_helpers.h"
@@ -10,7 +10,7 @@
 #include "boost_test_helpers.h"
 
 
-struct test_state_rfn420focus_al
+struct test_state_rfn_lgyr_focus_al
 {
     CtiRequestMsg request;
     Cti::Devices::RfnDevice::ReturnMsgList  returnMsgs;
@@ -19,7 +19,7 @@ struct test_state_rfn420focus_al
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
 
-    test_state_rfn420focus_al() :
+    test_state_rfn_lgyr_focus_al() :
         fixtureConfig(new Cti::Test::test_DeviceConfig),
         overrideConfigManager(fixtureConfig)
     {
@@ -36,11 +36,11 @@ namespace std {
 const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
 const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
-BOOST_FIXTURE_TEST_SUITE( test_dev_rfn420focus_al, test_state_rfn420focus_al )
+BOOST_FIXTURE_TEST_SUITE( test_dev_rfn_lgyr_focus_al, test_state_rfn_lgyr_focus_al )
 
-BOOST_AUTO_TEST_CASE( test_dev_rfn420Focus_al_putconfig_display )
+BOOST_AUTO_TEST_CASE( test_putconfig_display )
 {
-    Cti::Devices::Rfn420FocusAlDevice dut;
+    Cti::Devices::RfnLgyrFocusAlDevice dut;
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
@@ -154,9 +154,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Focus_al_putconfig_display )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfn420Focus_al_putconfig_display_out_of_order_slot_disabled )
+BOOST_AUTO_TEST_CASE( test_putconfig_display_out_of_order_slot_disabled )
 {
-    Cti::Devices::Rfn420FocusAlDevice dut;
+    Cti::Devices::RfnLgyrFocusAlDevice dut;
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 

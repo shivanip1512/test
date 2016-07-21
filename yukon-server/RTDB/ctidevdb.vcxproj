@@ -564,14 +564,13 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="dev_repeater850.cpp">
     </ClCompile>
     <ClCompile Include="dev_rfnResidentialVoltage.cpp" />
+    <ClCompile Include="dev_rfn_LgyrFocus_al.cpp" />
     <ClCompile Include="dev_rf_da.cpp">
     </ClCompile>
     <ClCompile Include="dev_rfn.cpp">
     </ClCompile>
     <ClCompile Include="dev_rfn410centron.cpp" />
     <ClCompile Include="dev_rfn420centron.cpp" />
-    <ClCompile Include="dev_rfn420focus_al.cpp">
-    </ClCompile>
     <ClCompile Include="dev_rfnCommercial.cpp">
     </ClCompile>
     <ClCompile Include="dev_rfnMeter.cpp">
@@ -754,6 +753,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_repeater800.h" />
     <ClInclude Include="include\dev_repeater850.h" />
     <ClInclude Include="include\dev_rfnResidentialVoltage.h" />
+    <ClInclude Include="include\dev_rfn_LgyrFocus_al.h" />
     <ClInclude Include="include\dev_rf_da.h" />
     <ClInclude Include="include\dev_rfn.h" />
     <ClInclude Include="include\dev_rfn410centron.h" />

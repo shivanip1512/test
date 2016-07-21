@@ -6,7 +6,7 @@
 namespace Cti {
 namespace Devices {
 
-class IM_EX_DEVDB Rfn420FocusAlDevice
+class IM_EX_DEVDB RfnLgyrFocusAlDevice
     :   public RfnResidentialVoltageDevice
 {
     virtual ConfigMap getConfigMethods(InstallType installType);
@@ -24,11 +24,12 @@ class IM_EX_DEVDB Rfn420FocusAlDevice
                                  const unsigned char config_display_duration );
 
 public:
-    Rfn420FocusAlDevice() {};
+    RfnLgyrFocusAlDevice() {};
 };
 
 
-typedef Rfn420FocusAlDevice  Rfn420flDevice;
+typedef RfnLgyrFocusAlDevice Rfn420flDevice;
+typedef RfnLgyrFocusAlDevice Rfn510flDevice;
 
 }
 }

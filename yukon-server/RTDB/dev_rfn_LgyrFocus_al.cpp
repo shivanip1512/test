@@ -2,7 +2,7 @@
 
 #include "config_helpers.h"
 #include "config_data_rfn.h"
-#include "dev_rfn420focus_al.h"
+#include "dev_rfn_LgyrFocus_al.h"
 
 #include "std_helper.h"
 
@@ -67,23 +67,23 @@ const StringsToMetrics ConfigToCommand = boost::assign::list_of<StringsToMetrics
 
 } // anonymous namespace
 
-RfnMeterDevice::ConfigMap Rfn420FocusAlDevice::getConfigMethods(InstallType installType)
+RfnMeterDevice::ConfigMap RfnLgyrFocusAlDevice::getConfigMethods(InstallType installType)
 {
     ConfigMap m = RfnResidentialVoltageDevice::getConfigMethods( installType );
 
     if( installType == InstallType::GetConfig )
     {
-        m.emplace(ConfigPart::display, bindConfigMethod( &Rfn420FocusAlDevice::executeGetConfigDisplay, this ));
+        m.emplace(ConfigPart::display, bindConfigMethod( &RfnLgyrFocusAlDevice::executeGetConfigDisplay, this ));
     }
     else
     {
-        m.emplace(ConfigPart::display, bindConfigMethod( &Rfn420FocusAlDevice::executePutConfigDisplay, this ));
+        m.emplace(ConfigPart::display, bindConfigMethod( &RfnLgyrFocusAlDevice::executePutConfigDisplay, this ));
     }
 
     return m;
 }
 
-YukonError_t Rfn420FocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnLgyrFocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     rfnRequests.push_back(
             boost::make_shared<Commands::RfnFocusAlLcdConfigurationReadCommand>());
@@ -91,7 +91,7 @@ YukonError_t Rfn420FocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, C
     return ClientErrors::None;
 }
 
-YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnLgyrFocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     try
     {
@@ -192,7 +192,7 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
     }
 }
 
-bool Rfn420FocusAlDevice::isDisplayConfigCurrent( const std::vector<std::string> &config_display_metrics, const unsigned config_display_digits, const unsigned char config_display_duration )
+bool RfnLgyrFocusAlDevice::isDisplayConfigCurrent( const std::vector<std::string> &config_display_metrics, const unsigned config_display_digits, const unsigned char config_display_duration )
 {
     std::vector<std::string> paoinfo_metrics;
 
@@ -216,7 +216,7 @@ bool Rfn420FocusAlDevice::isDisplayConfigCurrent( const std::vector<std::string>
 }
 
 
-void Rfn420FocusAlDevice::handleCommandResult(const Commands::RfnFocusAlLcdConfigurationReadCommand &cmd)
+void RfnLgyrFocusAlDevice::handleCommandResult(const Commands::RfnFocusAlLcdConfigurationReadCommand &cmd)
 {
     typedef Commands::RfnFocusAlLcdConfigurationCommand::MetricVector MetricVector;
 
@@ -233,7 +233,7 @@ void Rfn420FocusAlDevice::handleCommandResult(const Commands::RfnFocusAlLcdConfi
 }
 
 
-void Rfn420FocusAlDevice::handleCommandResult(const Commands::RfnFocusAlLcdConfigurationWriteCommand &cmd)
+void RfnLgyrFocusAlDevice::handleCommandResult(const Commands::RfnFocusAlLcdConfigurationWriteCommand &cmd)
 {
     storeDisplayMetricInfo(cmd.metrics);
 
@@ -241,7 +241,7 @@ void Rfn420FocusAlDevice::handleCommandResult(const Commands::RfnFocusAlLcdConfi
 }
 
 
-void Rfn420FocusAlDevice::storeDisplayMetricInfo(const Commands::RfnFocusAlLcdConfigurationCommand::MetricVector &metrics)
+void RfnLgyrFocusAlDevice::storeDisplayMetricInfo(const Commands::RfnFocusAlLcdConfigurationCommand::MetricVector &metrics)
 {
     Commands::RfnFocusAlLcdConfigurationCommand::MetricVector::const_iterator received_itr = metrics.begin();
     std::vector<PaoInfoKeys>::const_iterator pao_itr = displayMetricPaoKeys.begin();

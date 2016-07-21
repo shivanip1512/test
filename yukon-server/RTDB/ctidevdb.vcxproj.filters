@@ -321,9 +321,6 @@
     <ClCompile Include="dev_rfn420centron.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dev_rfn420focus_al.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dev_rfnCommercial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -430,6 +427,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cmd_rfn_DataStreamingConfiguration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dev_rfn_LgyrFocus_al.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -978,6 +978,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\cmd_rfn_DataStreamingConfiguration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\dev_rfn_LgyrFocus_al.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
