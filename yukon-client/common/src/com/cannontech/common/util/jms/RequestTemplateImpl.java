@@ -26,6 +26,11 @@ import com.cannontech.common.config.ConfigurationSource;
 public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTemplateBase<JmsReplyHandler<R>> implements
         RequestReplyTemplate<R> {
 
+    /**
+     * @param isInternalMessage : if true, specifies that messages are being sent internally between Yukon
+     *        services (not Network Manager). This prevents message details from be logged to the RFN comms
+     *        log.
+     */
     public RequestTemplateImpl(String configurationName, ConfigurationSource configurationSource,
             ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
         super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, isInternalMessage);

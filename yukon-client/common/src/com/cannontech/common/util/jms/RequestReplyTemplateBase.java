@@ -31,6 +31,11 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     protected boolean pubSubDomain = false;   // Queue (not a Topic)
     protected boolean internalMessage = false;
     
+    /**
+     * @param isInternalMessage : if true, specifies that messages are being sent internally between Yukon
+     *        services (not Network Manager). This prevents message details from be logged to the RFN comms
+     *        log.
+     */
     public RequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource, 
             ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
         this.configurationName = configurationName;
