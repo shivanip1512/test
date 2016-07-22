@@ -156,15 +156,16 @@ public class DataStreamingController {
         verifyInfo.getGatewayLoadingInfo().add(loading);
         
         model.addAttribute("verificationInfo", verifyInfo);
-        model.addAttribute("remove", true);
 
         return "dataStreaming/verification.jsp";
     }
     
     @RequestMapping(value="verification", method=RequestMethod.POST)
-    public String verificationSubmit(@ModelAttribute("verificationInfo") VerificationInformation verificationInfo, ModelMap model, HttpServletRequest request, LiteYukonUser user) throws ServletException {
+    public String verificationSubmit(@ModelAttribute("verificationInfo") VerificationInformation verificationInfo, ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
+        
+        LiteYukonUser user = userContext.getYukonUser();
         
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
@@ -173,6 +174,10 @@ public class DataStreamingController {
         
         if (configId > 0) {
             dataStreamingService.assignDataStreamingConfig(configId, deviceIds, user);
+            DataStreamingConfig modelConfig = dataStreamingService.findDataStreamingConfiguration(configId);
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            modelConfig.setAccessor(accessor);
+            model.addAttribute("config", modelConfig);
         } else {
             dataStreamingService.unassignDataStreamingConfig(deviceIds, user);
         }

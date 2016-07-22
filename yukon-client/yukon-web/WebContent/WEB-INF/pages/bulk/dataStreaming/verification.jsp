@@ -7,20 +7,26 @@
 
 <cti:standardPage module="tools" page="bulk.dataStreaming.verification">
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.dataStreaming.verification" deviceCollection="${deviceCollection}">
+    
+        <div class="stacked notes">
+         <strong><i:inline key=".configuration"/>:</strong>&nbsp;
+            <c:choose>
+                <c:when test="${verificationInfo.configuration != null}">
+                    <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(verificationInfo.configuration.name)}</a>
+                </c:when>
+                <c:otherwise>
+                    <i:inline key=".removeConfiguration"/>
+                </c:otherwise>
+            </c:choose>
+        </div>
+
         <div class="page-action-area">
             <cti:url var="assignUrl"  value="/bulk/dataStreaming/verification" />
             <form:form id="configureForm" method="post" commandName="verificationInfo" action="${assignUrl}">
                 <cti:csrfToken/>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <form:hidden path="configuration.id" />
-                
-                <c:if test="${!remove}">
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".configuration">
-                            <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(verificationInfo.configuration.name)}</a>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </c:if>
+
                 <c:forEach var="deviceUnsupported" varStatus="status" items="${verificationInfo.deviceUnsupported}">
                     <div class="user-message warning">${deviceUnsupported.detail}<tags:selectedDevicesPopup deviceCollection="${deviceUnsupported.deviceCollection}"/></div>
                 </c:forEach>
@@ -41,11 +47,11 @@
         
                 <div style="margin-top:50px;"><b>
                     <c:choose>
-                        <c:when test="${remove}">
-                            <i:inline key=".removeMessage"/>
+                        <c:when test="${verificationInfo.configuration != null}">
+                            <i:inline key=".message"/>
                         </c:when>
                         <c:otherwise>
-                            <i:inline key=".message"/>
+                            <i:inline key=".removeMessage"/>
                         </c:otherwise>
                     </c:choose>
                 </b></div>

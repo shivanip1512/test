@@ -366,6 +366,7 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.existingConfiguration">Existing</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.newConfiguration"><![CDATA[&nbsp;&nbsp;&nbsp;New&nbsp;&nbsp;&nbsp;]]></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configuration">Configuration</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.removeConfiguration">Remove Data Streaming</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.selectedConfiguration">Selected Configuration</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.interval.label">Interval (in minutes)</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.attributes.title">Attributes</entry>
