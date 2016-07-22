@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Instant;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -37,26 +36,12 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     public DataStreamingConfigResult(){
         startTime = new Date();
     }
-    
     //This map contains failed devices
     private final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<>(100, .75f, 1);
-    
-    //This map contains successful devices
-    private final Map<SimpleDevice, Instant> timestamps = new ConcurrentHashMap<>(100, .75f, 1);
     
     @Override
     public boolean isComplete() {
         return complete;
-    }
-    
-    public void addTimestamp(SimpleDevice device, Instant timestamp) {
-        if (timestamp != null) {
-            timestamps.put(device, timestamp);
-        }
-    }
-    
-    public Instant getTimestamp(SimpleDevice device) {
-        return timestamps.get(device);
     }
     
     public void complete() {
@@ -223,7 +208,7 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     @Override
     public boolean isFailureReasonsListSupported() {
-        return false;
+        return true;
     }
 
     @Override

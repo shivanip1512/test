@@ -152,7 +152,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             @Override
             public void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config) {
                 deviceGroupMemberEditorDao.addDevices(successGroup, device);
-                result.addTimestamp(device, new Instant());
             }
 
             @Override

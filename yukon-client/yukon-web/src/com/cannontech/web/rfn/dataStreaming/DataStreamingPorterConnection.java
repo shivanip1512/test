@@ -9,8 +9,10 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
@@ -27,6 +29,7 @@ import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings;
 import com.cannontech.web.dev.dataStreaming.FakeDataStreamingCommandRequestDeviceExecutor;
 import com.cannontech.web.tools.commander.service.CommanderServiceImpl;
@@ -72,9 +75,10 @@ public class DataStreamingPorterConnection {
      * database for those devices. All responses will be routed to the callback, which is responsible for updating the
      * reported configuration values in the database.
      */
-    public void sendConfiguration(List<CommandRequestDevice> commands,
-            DataStreamingConfigResult result, LiteYukonUser user) {
-        CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback = buildCallbackProxy(result.getConfigCallback());
+    public void sendConfiguration(List<CommandRequestDevice> commands, DataStreamingConfigResult result,
+            LiteYukonUser user) {
+        CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback =
+            buildCallbackProxy(result.getConfigCallback());
         result.setCommandCompletionCallback(commandCompletionCallback);
         if (devSettings.isSimulatePorterConfigResponse()) {
             // If developer settings are set to simulate, replace the real commandExecutor with a simulator.
@@ -83,10 +87,11 @@ public class DataStreamingPorterConnection {
         } else {
             // Otherwise send the commands to Porter
             log.info("Sending data streaming configuration to Porter. " + commands);
-            commandExecutor.createTemplateAndExecute(result.getExecution(), commandCompletionCallback, commands, user, false);
+            commandExecutor.createTemplateAndExecute(result.getExecution(), commandCompletionCallback, commands, user,
+                false);
         }
     }
-    
+
     /**
      * This callback is a go-between. It receives the Porter responses from the command executor, parses the JSON into
      * a POJO, and passes it to the nested DataStreamingConfigCallback for updating the UI and database.
@@ -106,9 +111,15 @@ public class DataStreamingPorterConnection {
                     ReportedDataStreamingConfig config = JsonUtils.fromJson(value, ReportedDataStreamingConfig.class);
                     configCallback.receivedConfigReport(device, config);
                 } catch(IOException e) {
-                    log.error("Unable to parse data streaming metric response json from Porter, for device " 
-                              + device.getDeviceId() + " : \"" + value + "\"", e);
-                    configCallback.receivedConfigError(device, null); //TODO: clean this up
+                    DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(1027);
+                    String error = "Unable to parse data streaming metric response json from Porter, for device " 
+                            + device.getDeviceId() + " : \"" + value + "\"";
+                    log.error(error, e);
+                    MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                        "yukon.common.device.errorDetail", error);
+                    SpecificDeviceErrorDescription deviceError =
+                        new SpecificDeviceErrorDescription(errorDescription, error, detail);
+                    configCallback.receivedConfigError(device, deviceError);
                 }
             }
 

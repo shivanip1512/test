@@ -78,7 +78,7 @@ public class FakeDataStreamingCommandRequestDeviceExecutor {
         Thread callbackResponderThread = new Thread(callbackResponder);
         callbackResponderThread.start();
     }
-    
+
     private void saveCommandRequestExecutionResult(int execId, int deviceId, boolean isSuccess) {
         CommandRequestExecutionResult commandRequestExecutionResult = new CommandRequestExecutionResult();
         commandRequestExecutionResult.setCommandRequestExecutionId(execId);
