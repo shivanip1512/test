@@ -15,6 +15,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.impl.CommandRequestExecutionDefaults;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.exception.InvalidExpressComSerialNumberException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
@@ -197,7 +198,11 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
 
     @Override
     public void verifyCanSendConfig(LmHardwareCommand command) throws BadConfigurationException {
-        commandBuilder.getCommandAsHexStringByteArray(command);
+        try {
+            commandBuilder.getCommandAsHexStringByteArray(command);
+        } catch (InvalidExpressComSerialNumberException e) {
+            throw new BadConfigurationException(e.getMessage());
+        }
     }
     
 }
