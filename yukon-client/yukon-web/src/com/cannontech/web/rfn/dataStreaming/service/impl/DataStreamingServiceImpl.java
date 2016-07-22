@@ -133,7 +133,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         final DataStreamingConfigResult result = new DataStreamingConfigResult();
         String resultsId = resultsCache.addResult(result);
         result.setResultsId(resultsId);
-        result.setStartTime(new Date());
         final CommandRequestExecution execution = commandRequestExecutionDao.createStartedExecution(
             CommandRequestType.DEVICE, DeviceRequestType.DATA_STREAMING_CONFIG, 0, user);
 
@@ -150,8 +149,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         result.setUnsupportedCollection(deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup));
 
         DataStreamingConfigCallback callback = new DataStreamingConfigCallback() {
-            boolean complete = false;
-
             @Override
             public void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config) {
                 deviceGroupMemberEditorDao.addDevices(successGroup, device);
@@ -167,8 +164,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
             @Override
             public void complete() {
-                if (!complete) {
-                    stop();
+                if (!result.isComplete()) {
+                    result.complete();
                     log.info("Command Complete");
                     completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.COMPLETE);
                 }
@@ -181,16 +178,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
             @Override
             public void processingExceptionOccured(String reason) {
-                stop();
+                result.complete();
                 completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.FAILED);
                 result.setExceptionReason(reason);
             }
 
             @Override
             public void cancel(LiteYukonUser yukonUser) {
-                if (!complete) {
+                if (!result.isComplete()) {
                     log.info("Command Canceled");
-                    stop();
+                    result.complete();
                     List<SimpleDevice> canceledDevices = new ArrayList<>();
                     canceledDevices.addAll(deviceCollection.getDeviceList());
                     canceledDevices.removeAll(result.getSuccessDeviceCollection().getDeviceList());
@@ -202,12 +199,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                         CommandRequestUnsupportedType.CANCELED);
                     updateRequestCount(execution, result.getFailureCount() + result.getSuccessCount());
                 }
-            }
-            
-            private void stop(){
-                complete = true;
-                result.setStopTime(new Date());
-                result.complete();
             }
         };
         result.setConfigCallback(callback);

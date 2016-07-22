@@ -31,6 +31,10 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     private DataStreamingConfigCallback configCallback;
     private CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback;
     
+    public DataStreamingConfigResult(){
+        startTime = new Date();
+    }
+    
     //This map contains failed devices
     private final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<>(100, .75f, 1);
     
@@ -53,6 +57,7 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     }
     
     public void complete() {
+        stopTime = new Date();
         complete = true;
     }
     
@@ -99,10 +104,6 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     public int getCompletedCount() {
         int completed = getSuccessCount() + getFailureCount() + getCanceledCount() + getUnsupportedCount();
         return completed;
-    }
-
-    public int getTotalCount() {
-        return allDevicesCollection.getDeviceCount();
     }
 
     @Override
@@ -167,8 +168,7 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     @Override
     public int getTotalItems() {
-        // TODO Auto-generated method stub
-        return 0;
+        return allDevicesCollection.getDeviceCount();
     }
 
     @Override
@@ -235,14 +235,6 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     public void setResultsId(String resultsId) {
         this.resultsId = resultsId;
-    }
-
-    public void setStopTime(Date stopTime) {
-        this.stopTime = stopTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
     }
 
     public void setSuccessDeviceCollection(DeviceCollection successDeviceCollection) {
