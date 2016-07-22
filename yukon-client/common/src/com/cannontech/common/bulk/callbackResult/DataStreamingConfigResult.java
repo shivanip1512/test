@@ -13,6 +13,7 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 
 public class DataStreamingConfigResult implements BackgroundProcessResultHolder {
@@ -31,6 +32,7 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     
     private DataStreamingConfigCallback configCallback;
     private CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback;
+    private CommandRequestExecution execution;
     
     public DataStreamingConfigResult(){
         startTime = new Date();
@@ -163,8 +165,7 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     @Override
     public int getProcessingExceptionCount() {
-        // TODO Auto-generated method stub
-        return 0;
+        return  getFailureCount();
     }
 
     @Override
@@ -260,6 +261,14 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     public void setUnsupportedDeviceCollection(DeviceCollection unsupportedDeviceCollection) {
         this.unsupportedDeviceCollection = unsupportedDeviceCollection;
+    }
+
+    public void setExecution(CommandRequestExecution execution) {
+        this.execution = execution;
+    }
+
+    public CommandRequestExecution getExecution() {
+        return execution;
     }
 
     public int getConfigId() {

@@ -14,11 +14,12 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
-import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
@@ -42,51 +43,48 @@ public class DataStreamingPorterConnection {
     @Autowired private DeviceBehaviorDao deviceBehaviorDao;
     @Autowired private DataStreamingDevSettings devSettings;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    private CommandRequestDeviceExecutor fakeCommandExecutor;
+    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+    private FakeDataStreamingCommandRequestDeviceExecutor fakeCommandExecutor;
     
     @PostConstruct
     public void init() {
-        fakeCommandExecutor = new FakeDataStreamingCommandRequestDeviceExecutor(deviceBehaviorDao, deviceErrorTranslatorDao);
-        devSettings.setSimulatePorterConfigResponse(true);
+        fakeCommandExecutor = new FakeDataStreamingCommandRequestDeviceExecutor(deviceBehaviorDao,
+            deviceErrorTranslatorDao, commandRequestExecutionResultDao);
     }
-    
+
     /**
      * Build a list of data streaming configuration commands for the specified devices. Porter will use the
      * configurations currently in the database for those devices.
      */
     public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices) {
-        List<CommandRequestDevice> commands = devices.stream().map(
-            device -> {
-                CommandRequestDevice command = new CommandRequestDevice();
-                command.setDevice(device);
-                command.setCommandCallback(commandCallback);
-                return command;
-            }
-        ).collect(Collectors.toList());
-        
+        List<CommandRequestDevice> commands = devices.stream().map(device -> {
+            CommandRequestDevice command = new CommandRequestDevice();
+            command.setDevice(device);
+            command.setCommandCallback(commandCallback);
+            return command;
+        }).collect(Collectors.toList());
+
         return commands;
     }
-    
+
     /**
      * Send porter a list of devices to configure data streaming. Porter will use the configurations currently in the
      * database for those devices. All responses will be routed to the callback, which is responsible for updating the
-     * reported configuration values in the database. Returns CommandCompletionCallback needed if the user decides to
-     * cancel the operation.
+     * reported configuration values in the database.
      */
-    public CommandCompletionCallback<CommandRequestDevice>  sendConfiguration(List<CommandRequestDevice> commands,
-            DataStreamingConfigCallback callback, LiteYukonUser user) {
-        CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback = buildCallbackProxy(callback);
+    public void sendConfiguration(List<CommandRequestDevice> commands,
+            DataStreamingConfigResult result, LiteYukonUser user) {
+        CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback = buildCallbackProxy(result.getConfigCallback());
+        result.setCommandCompletionCallback(commandCompletionCallback);
         if (devSettings.isSimulatePorterConfigResponse()) {
             // If developer settings are set to simulate, replace the real commandExecutor with a simulator.
             log.debug("Simulating data streaming configuration via fake executor.");
-            fakeCommandExecutor.execute(commands, commandCompletionCallback, DeviceRequestType.DATA_STREAMING_CONFIG,
-                user);
+            fakeCommandExecutor.execute(result.getExecution(), commandCompletionCallback, commands, user);
         } else {
             // Otherwise send the commands to Porter
             log.info("Sending data streaming configuration to Porter. " + commands);
-            commandExecutor.execute(commands, commandCompletionCallback, DeviceRequestType.DATA_STREAMING_CONFIG, user);
+            commandExecutor.createTemplateAndExecute(result.getExecution(), commandCompletionCallback, commands, user, false);
         }
-        return commandCompletionCallback;
     }
     
     /**

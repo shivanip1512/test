@@ -21,7 +21,6 @@ import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
@@ -135,6 +134,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         result.setResultsId(resultsId);
         final CommandRequestExecution execution = commandRequestExecutionDao.createStartedExecution(
             CommandRequestType.DEVICE, DeviceRequestType.DATA_STREAMING_CONFIG, 0, user);
+        result.setExecution(execution);
 
         final StoredDeviceGroup allDevicesGroup = tempDeviceGroupService.createTempGroup();
         final StoredDeviceGroup successGroup = tempDeviceGroupService.createTempGroup();
@@ -221,9 +221,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             callback.complete();
         } else {
             List<CommandRequestDevice> commands = porterConn.buildConfigurationCommandRequests(supportedDevices);
-            CommandCompletionCallback<CommandRequestDevice> completionCallback =
-                porterConn.sendConfiguration(commands, callback, user);
-            result.setCommandCompletionCallback(completionCallback);
+            porterConn.sendConfiguration(commands, result, user);
         }
         updateRequestCount(execution, supportedDevices.size());
         return result;
