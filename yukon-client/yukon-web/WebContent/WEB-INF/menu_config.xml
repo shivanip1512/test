@@ -223,6 +223,12 @@
         </permissions>
         <link>/tools/data-exporter/view</link>
       </option>
+      <option name="dataStreaming">
+        <permissions>
+          <roleProperty name="ADMIN_VIEW_CONFIG" />
+        </permissions>
+        <link>/tools/dataStreaming/configurations</link>
+      </option>
       <option name="tdc">
         <permissions>
           <role name="TABULAR_DISPLAY_CONSOLE" />

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- DATA STREAMING CONFIGURATIONS VIEW -->
+    <entry key="yukon.web.modules.tools.dataStreaming.pageName">Data Streaming Configurations</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.pageDescription">Data Streaming Configurations</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.attributes">Attributes</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.interval">Interval</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.numberOfDevices"># of Devices</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.minute">minute</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.minutes">minutes</entry>
+    <!-- cog -->
+    <entry key="yukon.web.modules.tools.dataStreaming.configureOtherDevices">Configure Other Devices</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.configure">Configure Data Streaming</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.remove">Remove Data Streaming</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.collectionActions">Collection Actions</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.deviceGroup">Device Group</entry>
+    
+    
+    <!-- DATA STREAMING SUMMARY PAGE-->
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.pageName">Data Streaming Summary</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.pageDescription">Data Streaming Summary</entry>
+</properties>

@@ -218,6 +218,12 @@
         </pages>
       </page>
       <page name="deviceGroupUpload" type="BASIC"/>
+      <page name="dataStreaming" type="BASIC">
+        <link>/dataStreaming/configurations</link>
+      </page>
+      <page name="dataStreaming.summary" type="BASIC">
+        <link>/dataStreaming/summary</link>
+      </page>
       <page name="configs" type="BASIC">
         <link>/deviceConfiguration/home</link>
         <pages>

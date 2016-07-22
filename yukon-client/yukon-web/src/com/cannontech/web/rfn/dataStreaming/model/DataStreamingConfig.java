@@ -14,6 +14,7 @@ public class DataStreamingConfig {
     private int selectedInterval;
     private int selectedConfiguration;
     private String name;
+    private String commaDelimitedAttributes;
     private List<DataStreamingAttribute> attributes = new ArrayList<>();
     private MessageSourceAccessor accessor;
     
@@ -68,6 +69,16 @@ public class DataStreamingConfig {
             }
         }
         return name;
+    }
+    
+    /**
+     * Returns comma delimited list of attributes
+     */
+    public String getCommaDelimitedAttributes() {
+        List<String> attList = new ArrayList<String>();
+        attributes.forEach(att -> attList.add(accessor.getMessage(att.getAttribute())));
+        commaDelimitedAttributes = String.join(", ",  attList);
+        return commaDelimitedAttributes;
     }
 
     public int getId() {

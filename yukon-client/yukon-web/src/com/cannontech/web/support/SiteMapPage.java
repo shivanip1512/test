@@ -143,6 +143,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.MANAGE_SCHEDULES),
     DATA_EXPORT(SiteMapCategory.TOOLS, "yukon.web.menu.tools.dataExport", "/tools/data-exporter/view",
             MatchStyle.all, YukonRoleProperty.ARCHIVED_DATA_EXPORT),
+    DATA_STREAMING(SiteMapCategory.TOOLS, "yukon.web.menu.tools.dataStreaming", "/tools/dataStreaming/configurations",
+                MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_CONFIG),
     DEVICE_CONFIGURATION(SiteMapCategory.TOOLS, "yukon.web.menu.tools.deviceConfiguration", "/deviceConfiguration/home",
             MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_CONFIG),
     DEVICE_GROUPS(SiteMapCategory.TOOLS, "yukon.web.menu.config.amr.devicegroups", "/group/editor/home",
