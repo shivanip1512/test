@@ -67,6 +67,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Resource(name = "recentResultsCache") private RecentResultsCache<DataStreamingConfigResult> resultsCache;
 
     @Override
+    public DataStreamingConfigResult findDataStreamingResult(String resultKey) {
+        return resultsCache.getResult(resultKey);
+    }
+    
+    @Override
     public DataStreamingConfig findDataStreamingConfiguration(int configId) {
         Behavior behavior = deviceBehaviorDao.getBehaviorById(configId);
         return convertBehaviorToConfig(behavior);

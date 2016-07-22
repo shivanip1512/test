@@ -8,6 +8,8 @@
 <cti:standardPage module="tools" page="bulk.dataStreaming.results">
 
     <cti:msgScope paths="modules.tools.bulk.dataStreaming">
+    
+    <c:set var="resultsId" value="${result.resultsId}"/>
                 
         <div class="stacked notes">
              <strong><i:inline key=".configuration"/>:</strong>&nbsp;
@@ -30,7 +32,7 @@
 
         <%-- PROGRESS --%>
         <div class="stacked clearfix">
-            <tags:resultProgressBar totalCount="${deviceCollection.deviceCount}"
+            <tags:resultProgressBar totalCount="${result.allDevicesCollection.deviceCount}"
                 countKey="DATA_STREAMING/${resultsId}/COMPLETED_LINES"
                 progressLabelTextKey=".results.progressLabel"
                 statusTextKey="DATA_STREAMING/${resultsId}/STATUS_TEXT" 
@@ -57,10 +59,10 @@
                 <tags:selectedDevicesPopup
                     deviceCollection="${result.successDeviceCollection}" />
             </div>
-            <cti:dataUpdaterCallback
-                function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-success-actions'],true)"
-                initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
         </c:if>
+        <cti:dataUpdaterCallback
+            function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-success-actions'],true)"
+            initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
 
         <%-- FAILED COUNT --%>
         <div class="fwb stacked">
@@ -79,10 +81,10 @@
                 <tags:selectedDevicesPopup
                     deviceCollection="${result.failureDeviceCollection}" />
             </div>
-            <cti:dataUpdaterCallback
-                function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-error-actions'],true)"
-                initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_FAILURES" />
         </c:if>
+        <cti:dataUpdaterCallback
+            function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-error-actions'],true)"
+            initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_FAILURES" />
 
         <%-- UNSUPPORTED COUNT --%>
         <div class="fwb stacked">
@@ -101,21 +103,21 @@
                 <tags:selectedDevicesPopup
                     deviceCollection="${result.unsupportedDeviceCollection}" />
             </div>
-            <cti:dataUpdaterCallback
-                function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-unsupported-actions'],true)"
-                initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_UNSUPPORTED" />
         </c:if>
+        <cti:dataUpdaterCallback
+            function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-unsupported-actions'],true)"
+            initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_UNSUPPORTED" />
         
-        <%-- CANCELLED COUNT --%>
+        <%-- CANCELED COUNT --%>
         <div class="fwb stacked">
             <i:inline key=".results.cancelledLabel" />
             :&nbsp; <span class="error"><cti:dataUpdaterValue type="DATA_STREAMING"
-                    identifier="${resultsId}/CANCELLED_COUNT" /></span>
+                    identifier="${resultsId}/CANCELED_COUNT" /></span>
         </div>
 
-        <%-- CANCELLED DEVICE COLLECTION --%>
+        <%-- CANCELED DEVICE COLLECTION --%>
         <c:if test="${result.canceledDeviceCollection != null}">
-            <div id="js-cancelled-actions" class="dn stacked">
+            <div id="js-canceled-actions" class="dn stacked">
                 <cti:link href="/bulk/collectionActions" key=".results.collectionActionOnDevicesLabel">
                     <cti:mapParam
                         value="${result.canceledDeviceCollection.collectionParameters}" />
@@ -123,10 +125,10 @@
                 <tags:selectedDevicesPopup
                     deviceCollection="${result.canceledDeviceCollection}" />
             </div>
-            <cti:dataUpdaterCallback
-                function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-cancelled-actions'],true)"
-                initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_CANCELLED" />
         </c:if>
+        <cti:dataUpdaterCallback
+            function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-canceled-actions'],true)"
+            initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_CANCELED" />
         
         <cti:dataUpdaterCallback function="yukon.bulk.dataStreaming.progress" initialize="true"
             value="DATA_STREAMING/${resultsId}/IS_COMPLETE" />

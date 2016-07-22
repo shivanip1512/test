@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -179,7 +180,22 @@ public class DataStreamingController {
         model.addAttribute("result", result);
         model.addAttribute("resultsId", result.getResultsId());
 
+        return "redirect:reportResults";
+    }
+    
+    @RequestMapping("reportResults")
+    public String reportResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
+        retrieveResults(request, model, userContext);
         return "dataStreaming/results.jsp";
+    }
+    
+    /**
+     * Helper method for the results
+     */
+    private void retrieveResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
+        String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
+        DataStreamingConfigResult streamingResult = dataStreamingService.findDataStreamingResult(resultsId);
+        model.addAttribute("result", streamingResult);
     }
     
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)

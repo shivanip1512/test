@@ -27,7 +27,7 @@ public enum DataStreamingTypeEnum {
         }
     }),
     
-    CANCELLED_COUNT(new ResultAccessor<DataStreamingConfigResult>() {
+    CANCELED_COUNT(new ResultAccessor<DataStreamingConfigResult>() {
         @Override
         public Object getValue(DataStreamingConfigResult result) {
             return result.getCanceledCount();
@@ -69,7 +69,7 @@ public enum DataStreamingTypeEnum {
         }
     }),
     
-    IS_COMPLETE_WITH_CANCELLED(new ResultAccessor<DataStreamingConfigResult>() {
+    IS_COMPLETE_WITH_CANCELED(new ResultAccessor<DataStreamingConfigResult>() {
         @Override
         public Object getValue(DataStreamingConfigResult result) {
             return result.isComplete() && result.getCanceledCount() > 0;

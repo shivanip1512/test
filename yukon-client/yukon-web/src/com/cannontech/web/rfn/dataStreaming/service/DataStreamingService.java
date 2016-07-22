@@ -54,5 +54,7 @@ public interface DataStreamingService {
 
     void cancel(String key, LiteYukonUser user);
 
+    DataStreamingConfigResult findDataStreamingResult(String resultKey);
+
     //TODO: retrieve all mismatches (reported config and stored config don't match)
 }
