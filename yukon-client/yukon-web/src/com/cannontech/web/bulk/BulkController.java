@@ -83,7 +83,7 @@ public class BulkController {
         //------------------------------------------------------------------------------------------
         
         // bulk update operations (add both completed and pending to same list)
-        List<BackgroundProcessResultHolder> rawResultsList = new ArrayList<BackgroundProcessResultHolder>();
+        List<BackgroundProcessResultHolder> rawResultsList = new ArrayList<>();
         
         // ADD RESULTS TO LISTS
         // -----------------------------------------------------------------------------------------
@@ -95,8 +95,8 @@ public class BulkController {
         boolean hasAddRemovePointsRP = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_REMOVE_POINTS, user);
         
         // results
-        rawResultsList.addAll(new ReverseList<BackgroundProcessResultHolder>(recentResultsCache.getPending()));
-        rawResultsList.addAll(new ReverseList<BackgroundProcessResultHolder>(recentResultsCache.getCompleted()));
+        rawResultsList.addAll(new ReverseList<>(recentResultsCache.getPending()));
+        rawResultsList.addAll(new ReverseList<>(recentResultsCache.getCompleted()));
         
         BulkOpToViewableBulkOpMapper bulkOpToViewableBulkOpMapper = new BulkOpToViewableBulkOpMapper(hasBulkImportRP,
                                                                                                      hasBulkUpdateRP,
@@ -349,7 +349,8 @@ public class BulkController {
             						|| (this.hasBulkUpdateRP && opType.equals(BackgroundProcessTypeEnum.UPDATE)) 
             						|| (this.hasMassChangeRP && (opType.equals(BackgroundProcessTypeEnum.MASS_CHANGE) || opType.equals(BackgroundProcessTypeEnum.CHANGE_DEVICE_TYPE))) 
             			            || (this.hasMassDeleteRP && opType.equals(BackgroundProcessTypeEnum.MASS_DELETE)
-            			            || (this.hasAddRemovePointsRP && (opType.equals(BackgroundProcessTypeEnum.ADD_POINTS) || opType.equals(BackgroundProcessTypeEnum.REMOVE_POINTS))));
+            			            || (this.hasAddRemovePointsRP && (opType.equals(BackgroundProcessTypeEnum.ADD_POINTS) || opType.equals(BackgroundProcessTypeEnum.REMOVE_POINTS)))
+                                    || opType == BackgroundProcessTypeEnum.DATA_STREAMING);
             return detailViewable;
         }
     }

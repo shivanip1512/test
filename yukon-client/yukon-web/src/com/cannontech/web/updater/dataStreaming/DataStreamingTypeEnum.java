@@ -1,88 +1,88 @@
 package com.cannontech.web.updater.dataStreaming;
 
+import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.web.updater.ResultAccessor;
-import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallbackResult;
 
 public enum DataStreamingTypeEnum {
     
-    SUCCESS_COUNT(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return 15;
-            //return dataStreamingConfigCallbackResults.getSuccessCount();
+    SUCCESS_COUNT(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+           return result.getSuccessCount();
         }
     }),
     
-    FAILURE_COUNT(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return 3;
-            //return dataStreamingConfigCallbackResults.getFailureCount();
+    FAILURE_COUNT(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+            return result.getFailureCount();
         }
     }),
     
-    UNSUPPORTED_COUNT(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return 2;
-            //return dataStreamingConfigCallbackResults.getUnsupportedCount();
+    UNSUPPORTED_COUNT(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+            return result.getUnsupportedCount();
         }
     }),
     
-    CANCELLED_COUNT(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return 0;
-            //return dataStreamingConfigCallbackResults.getCancelledCount();
+    CANCELLED_COUNT(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+            return result.getCanceledCount();
         }
     }),
     
-    PROCESSING_EXCEPTION_COUNT(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return dataStreamingConfigCallbackResults.getProcessingExceptionCount();
+    COMPLETED_LINES(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+           return result.getCompletedCount();
         }
     }),
     
-    COMPLETED_LINES(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            //return (dataStreamingConfigCallbackResults.getSuccessCount() + dataStreamingConfigCallbackResults.getProcessingExceptionCount());
-            return 20;
+    IS_COMPLETE(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+            return result.isComplete();
         }
     }),
     
-    IS_COMPLETE(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return dataStreamingConfigCallbackResults.isComplete();
+    IS_COMPLETE_WITH_SUCCESSES(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+            return result.isComplete() && result.getSuccessCount() > 0;
         }
     }),
     
-    IS_COMPLETE_WITH_SUCCESSES(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return dataStreamingConfigCallbackResults.isComplete() && dataStreamingConfigCallbackResults.getSuccessCount() > 0;
+    IS_COMPLETE_WITH_FAILURES(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+            return result.isComplete() && result.getFailureCount() > 0;
         }
     }),
     
-    IS_COMPLETE_WITH_FAILURES(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return dataStreamingConfigCallbackResults.isComplete() && dataStreamingConfigCallbackResults.getProcessingExceptionCount() > 0;
+    IS_COMPLETE_WITH_UNSUPPORTED(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+            return result.isComplete() && result.getUnsupportedCount() > 0;
         }
     }),
     
-    IS_COMPLETE_WITH_UNSUPPORTED(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return dataStreamingConfigCallbackResults.isComplete() && dataStreamingConfigCallbackResults.getProcessingExceptionCount() > 0;
+    IS_COMPLETE_WITH_CANCELLED(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
+            return result.isComplete() && result.getCanceledCount() > 0;
         }
     }),
     
-    IS_COMPLETE_WITH_CANCELLED(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
-            return dataStreamingConfigCallbackResults.isComplete() && dataStreamingConfigCallbackResults.getProcessingExceptionCount() > 0;
-        }
-    }),
-    
-    STATUS_TEXT(new ResultAccessor<DataStreamingConfigCallbackResult>() {
-        public Object getValue(DataStreamingConfigCallbackResult dataStreamingConfigCallbackResults) {
+    STATUS_TEXT(new ResultAccessor<DataStreamingConfigResult>() {
+        @Override
+        public Object getValue(DataStreamingConfigResult result) {
             
             ResolvableTemplate resolvableTemplate = null;
             
-            if (dataStreamingConfigCallbackResults.isComplete()) {
+            if (result.isComplete()) {
                 resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT");
             } else {
                 resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_IN_PROGRESS_TEXT");
@@ -92,9 +92,9 @@ public enum DataStreamingTypeEnum {
         }
     }),
     
-    STATUS_CLASS(new ResultAccessor<DataStreamingConfigCallbackResult>() {
+    STATUS_CLASS(new ResultAccessor<DataStreamingConfigResult>() {
         @Override
-        public Object getValue(DataStreamingConfigCallbackResult result) {
+        public Object getValue(DataStreamingConfigResult result) {
             //return result.isExceptionOccured() ? "error" : "success";
             return "success";
         }
@@ -102,13 +102,13 @@ public enum DataStreamingTypeEnum {
 
     ;
     
-    private ResultAccessor<DataStreamingConfigCallbackResult> configResultValueAccessor;
+    private ResultAccessor<DataStreamingConfigResult> configResultValueAccessor;
     
-    private DataStreamingTypeEnum(ResultAccessor<DataStreamingConfigCallbackResult> configResultValueAccessor) {
+    private DataStreamingTypeEnum(ResultAccessor<DataStreamingConfigResult> configResultValueAccessor) {
         this.configResultValueAccessor = configResultValueAccessor;
     }
     
-    public Object getValue(DataStreamingConfigCallbackResult callback) {
+    public Object getValue(DataStreamingConfigResult callback) {
         return configResultValueAccessor.getValue(callback);
     }
 }

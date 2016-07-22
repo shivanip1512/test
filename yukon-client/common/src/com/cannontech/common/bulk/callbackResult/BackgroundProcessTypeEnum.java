@@ -13,6 +13,7 @@ public enum BackgroundProcessTypeEnum {
     ARCHIVE_DATA_ANALYSIS("Archive Data Analysis", "archiveDataAnalysis"),
     IMPORT_FDR_TRANSLATION("Import FDR Translation", "fdrTranslationManager"),
     IMPORT_POINT("Import Point", "importPoint"),
+    DATA_STREAMING("Data Streaming", "dataStreaming")
     ;
     
     private String title;

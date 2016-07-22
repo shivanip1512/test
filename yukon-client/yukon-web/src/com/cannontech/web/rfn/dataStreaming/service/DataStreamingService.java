@@ -2,6 +2,8 @@ package com.cannontech.web.rfn.dataStreaming.service;
 
 import java.util.List;
 
+import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
@@ -30,14 +32,14 @@ public interface DataStreamingService {
      * @param configId The behaviorId of the existing config.
      * @return The resultId to look up the results in recentResultsCache.
      */
-    String assignDataStreamingConfig(int configId, List<Integer> deviceIds, LiteYukonUser user);
+    DataStreamingConfigResult assignDataStreamingConfig(int configId, DeviceCollection deviceCollection, LiteYukonUser user);
     
     /**
      * Unassign the data streaming configuration currently assigned to the specified devices. (They will no longer 
      * stream data.)
      * @return The resultId to look up the results in recentResultsCache.
      */
-    String unassignDataStreamingConfig(List<Integer> deviceIds, LiteYukonUser user);
+    DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user);
     
     /**
      * Save the reported data streaming configuration that was reported to us from the device, via Porter.
@@ -49,6 +51,8 @@ public interface DataStreamingService {
     int saveConfig(DataStreamingConfig config);
 
     DataStreamingConfig findDataStreamingConfiguration(int configId);
+
+    void cancel(String key, LiteYukonUser user);
 
     //TODO: retrieve all mismatches (reported config and stored config don't match)
 }

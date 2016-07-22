@@ -2,13 +2,13 @@ package com.cannontech.web.updater.dataStreaming;
 
 import javax.annotation.Resource;
 
-import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallbackResult;
+import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class DataStreamingBackingService extends RecentResultUpdateBackingService{
-    RecentResultsCache<DataStreamingConfigCallbackResult> resultsCache;    
+    RecentResultsCache<DataStreamingConfigResult> resultsCache;    
     
     @Override
     public boolean isValueAvailableImmediately(String fullIdentifier, long afterDate,
@@ -18,7 +18,7 @@ public class DataStreamingBackingService extends RecentResultUpdateBackingServic
     
     @Override
     public Object getResultValue(String resultId, String resultTypeStr) {
-        DataStreamingConfigCallbackResult result = resultsCache.getResult(resultId);
+        DataStreamingConfigResult result = resultsCache.getResult(resultId);
         if(result == null) {
             return "";
         }
@@ -27,7 +27,7 @@ public class DataStreamingBackingService extends RecentResultUpdateBackingServic
     }
     
     @Resource(name="recentResultsCache")
-    public void setResultsCache(RecentResultsCache<DataStreamingConfigCallbackResult> resultsCache) {
+    public void setResultsCache(RecentResultsCache<DataStreamingConfigResult> resultsCache) {
         this.resultsCache = resultsCache;
     }
 }

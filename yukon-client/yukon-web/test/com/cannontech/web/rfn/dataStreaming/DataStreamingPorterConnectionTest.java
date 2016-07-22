@@ -202,7 +202,7 @@ public class DataStreamingPorterConnectionTest {
         public LiteYukonUser user;
         
         public MockExecutor() {
-            super(null);
+            super(null, null);
         }
         
         @Override
@@ -244,8 +244,20 @@ public class DataStreamingPorterConnectionTest {
         }
 
         @Override
-        public void cancel() {
+        public void cancel(LiteYukonUser user) {
             isCancelled = true;
+        }
+
+        @Override
+        public boolean isComplete() {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        @Override
+        public void processingExceptionOccured(String reason) {
+            // TODO Auto-generated method stub
+            
         }
     }
 }

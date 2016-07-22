@@ -2,14 +2,11 @@ package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -19,14 +16,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
-import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallbackResult;
+import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -49,7 +44,6 @@ public class DataStreamingController {
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
-    private RecentResultsCache<BackgroundProcessResultHolder> bpRecentResultsCache;
     
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
     private static final List<BuiltInAttribute> attributes = ImmutableList.of(BuiltInAttribute.KVAR,
@@ -171,40 +165,26 @@ public class DataStreamingController {
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
         int configId = verificationInfo.getConfiguration().getId();
-        
+        DataStreamingConfigResult result;
         if (configId > 0) {
-            dataStreamingService.assignDataStreamingConfig(configId, deviceIds, user);
+            result = dataStreamingService.assignDataStreamingConfig(configId, deviceCollection, user);
             DataStreamingConfig modelConfig = dataStreamingService.findDataStreamingConfiguration(configId);
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             modelConfig.setAccessor(accessor);
             model.addAttribute("config", modelConfig);
         } else {
-            dataStreamingService.unassignDataStreamingConfig(deviceIds, user);
+            result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
         }
 
-        //TODO: display results page
-        String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        DataStreamingConfigCallbackResult result = new DataStreamingConfigCallbackResult();
-        bpRecentResultsCache.addResult(resultsId, result);
-
         model.addAttribute("result", result);
-        model.addAttribute("resultsId", resultsId);
+        model.addAttribute("resultsId", result.getResultsId());
 
         return "dataStreaming/results.jsp";
     }
     
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     public void cancel(HttpServletResponse resp, String key, YukonUserContext userContext) {
-
-        //TODO: Cancel Job
-        
+        dataStreamingService.cancel(key, userContext.getYukonUser());
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
-    
-    @Resource(name="recentResultsCache")
-    public void setBackgroundProcessRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.bpRecentResultsCache = recentResultsCache;
-    }
-
-
 }

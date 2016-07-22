@@ -1,12 +1,19 @@
 package com.cannontech.web.dev.dataStreaming;
 
-import static com.cannontech.web.rfn.dataStreaming.service.impl.DataStreamingServiceImpl.*;
+import static com.cannontech.web.rfn.dataStreaming.service.impl.DataStreamingServiceImpl.ATTRIBUTE_STRING;
+import static com.cannontech.web.rfn.dataStreaming.service.impl.DataStreamingServiceImpl.CHANNELS_STRING;
+import static com.cannontech.web.rfn.dataStreaming.service.impl.DataStreamingServiceImpl.INTERVAL_STRING;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
@@ -28,14 +35,17 @@ import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class FakeDataStreamingCommandRequestDeviceExecutor implements CommandRequestDeviceExecutor {
     private static final Logger log = YukonLogManager.getLogger(FakeDataStreamingCommandRequestDeviceExecutor.class);
     private DeviceBehaviorDao deviceBehaviorDao; 
+    private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
-    public FakeDataStreamingCommandRequestDeviceExecutor(DeviceBehaviorDao deviceBehaviorDao) {
+    public FakeDataStreamingCommandRequestDeviceExecutor(DeviceBehaviorDao deviceBehaviorDao, DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
         this.deviceBehaviorDao = deviceBehaviorDao;
+        this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
     }
     
     @Override
@@ -45,11 +55,22 @@ public class FakeDataStreamingCommandRequestDeviceExecutor implements CommandReq
         
         //Just return the expected values (as pulled from the DB) as the "device response"
         //TODO: add a configurable delay, since these may take up to a day to get back in the real world
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(295);
         Runnable callbackResponder = () -> {
             commands.forEach(command -> {
                 SimpleDevice device = command.getDevice();
                 String jsonResponse = getResponseJson(device.getDeviceId());
-                callback.receivedIntermediateResultString(command, jsonResponse);
+                boolean isSuccess = new Random().nextBoolean();
+                if (isSuccess) {
+                    callback.receivedLastResultString(command, jsonResponse);
+                } else {
+                    String error = "Bad error device id=" + device.getDeviceId();
+                    MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                        "yukon.common.device.errorDetail", error);
+                    SpecificDeviceErrorDescription deviceError =
+                        new SpecificDeviceErrorDescription(errorDescription, error, detail);
+                    callback.receivedLastError(command, deviceError);
+                }
             });
             callback.complete();
         };

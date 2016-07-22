@@ -92,7 +92,7 @@
         </div>
 
         <%-- UNSUPPORTED DEVICE COLLECTION --%>
-        <c:if test="${result.unsupportedDeviceCollection != null}">
+        <c:if test="${result.getUnsupportedCount() > 0}">
             <div id="js-unsupported-actions" class="dn stacked">
                 <cti:link href="/bulk/collectionActions" key=".results.collectionActionOnDevicesLabel">
                     <cti:mapParam
@@ -114,14 +114,14 @@
         </div>
 
         <%-- CANCELLED DEVICE COLLECTION --%>
-        <c:if test="${result.cancelledDeviceCollection != null}">
+        <c:if test="${result.canceledDeviceCollection != null}">
             <div id="js-cancelled-actions" class="dn stacked">
                 <cti:link href="/bulk/collectionActions" key=".results.collectionActionOnDevicesLabel">
                     <cti:mapParam
-                        value="${result.cancelledDeviceCollection.collectionParameters}" />
+                        value="${result.canceledDeviceCollection.collectionParameters}" />
                 </cti:link>
                 <tags:selectedDevicesPopup
-                    deviceCollection="${result.cancelledDeviceCollection}" />
+                    deviceCollection="${result.canceledDeviceCollection}" />
             </div>
             <cti:dataUpdaterCallback
                 function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-cancelled-actions'],true)"

@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
@@ -40,11 +41,13 @@ public class DataStreamingPorterConnection {
     @Autowired private CommandRequestDeviceExecutor commandExecutor;
     @Autowired private DeviceBehaviorDao deviceBehaviorDao;
     @Autowired private DataStreamingDevSettings devSettings;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     private CommandRequestDeviceExecutor fakeCommandExecutor;
     
     @PostConstruct
     public void init() {
-        fakeCommandExecutor = new FakeDataStreamingCommandRequestDeviceExecutor(deviceBehaviorDao);
+        fakeCommandExecutor = new FakeDataStreamingCommandRequestDeviceExecutor(deviceBehaviorDao, deviceErrorTranslatorDao);
+        devSettings.setSimulatePorterConfigResponse(true);
     }
     
     /**
@@ -67,75 +70,67 @@ public class DataStreamingPorterConnection {
     /**
      * Send porter a list of devices to configure data streaming. Porter will use the configurations currently in the
      * database for those devices. All responses will be routed to the callback, which is responsible for updating the
-     * reported configuration values in the database.
+     * reported configuration values in the database. Returns CommandCompletionCallback needed if the user decides to
+     * cancel the operation.
      */
-    public void sendConfiguration(List<CommandRequestDevice> commands, DataStreamingConfigCallback callback, LiteYukonUser user) {
+    public CommandCompletionCallback<CommandRequestDevice>  sendConfiguration(List<CommandRequestDevice> commands,
+            DataStreamingConfigCallback callback, LiteYukonUser user) {
+        CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback = buildCallbackProxy(callback);
         if (devSettings.isSimulatePorterConfigResponse()) {
-            //If developer settings are set to simulate, replace the real commandExecutor with a simulator.
+            // If developer settings are set to simulate, replace the real commandExecutor with a simulator.
             log.debug("Simulating data streaming configuration via fake executor.");
-            fakeCommandExecutor.execute(commands, buildCallbackProxy(callback), DeviceRequestType.DATA_STREAMING_CONFIG, user);
+            fakeCommandExecutor.execute(commands, commandCompletionCallback, DeviceRequestType.DATA_STREAMING_CONFIG,
+                user);
         } else {
-            //Otherwise send the commands to Porter
+            // Otherwise send the commands to Porter
             log.info("Sending data streaming configuration to Porter. " + commands);
-            commandExecutor.execute(commands, buildCallbackProxy(callback), DeviceRequestType.DATA_STREAMING_CONFIG, user);
+            commandExecutor.execute(commands, commandCompletionCallback, DeviceRequestType.DATA_STREAMING_CONFIG, user);
         }
+        return commandCompletionCallback;
     }
     
     /**
      * This callback is a go-between. It receives the Porter responses from the command executor, parses the JSON into
      * a POJO, and passes it to the nested DataStreamingConfigCallback for updating the UI and database.
      */
-    private CommandCompletionCallback<CommandRequestDevice> buildCallbackProxy(DataStreamingConfigCallback nestedCallback) {
-        CommandCompletionCallback<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+    private CommandCompletionCallback<CommandRequestDevice> buildCallbackProxy(DataStreamingConfigCallback configCallback) {
+        CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
 
             @Override
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                nestedCallback.receivedConfigError(command.getDevice(), error);
+                configCallback.receivedConfigError(command.getDevice(), error);
             }
             
             @Override
             public void receivedLastResultString(CommandRequestDevice command, String value) {
-                processResult(command, value);
+                SimpleDevice device = command.getDevice();
+                try {
+                    ReportedDataStreamingConfig config = JsonUtils.fromJson(value, ReportedDataStreamingConfig.class);
+                    configCallback.receivedConfigReport(device, config);
+                } catch(IOException e) {
+                    log.error("Unable to parse data streaming metric response json from Porter, for device " 
+                              + device.getDeviceId() + " : \"" + value + "\"", e);
+                    configCallback.receivedConfigError(device, null); //TODO: clean this up
+                }
             }
 
             @Override
             public void complete() {
-                nestedCallback.complete();
-            }
-
-            @Override
-            public void cancel() {
-                nestedCallback.cancel();
-            }
-
-            @Override
-            public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                nestedCallback.receivedConfigError(command.getDevice(), error);
-            }
-
-            @Override
-            public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
-                processResult(command, value);
+                configCallback.complete();
             }
 
             @Override
             public void processingExceptionOccured(String reason) {
-                log.error("Processing exception occurred sending data streaming config: " + reason);
-            }
-            
-            private void processResult(CommandRequestDevice command, String value) {
-                SimpleDevice device = command.getDevice();
-                try {
-                    ReportedDataStreamingConfig config = JsonUtils.fromJson(value, ReportedDataStreamingConfig.class);
-                    nestedCallback.receivedConfigReport(device, config);
-                } catch(IOException e) {
-                    log.error("Unable to parse data streaming metric response json from Porter, for device " 
-                              + device.getDeviceId() + " : \"" + value + "\"", e);
-                    nestedCallback.receivedConfigError(device, null); //TODO: clean this up
-                }
-            }
+                configCallback.processingExceptionOccured(reason);
+            }           
         };
         
         return callback;
+    }
+
+    public void cancel(CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback, LiteYukonUser user) {
+        if (!devSettings.isSimulatePorterConfigResponse()) {
+            commandExecutor.cancelExecution(commandCompletionCallback, user, false);
+        }
     }
 }
