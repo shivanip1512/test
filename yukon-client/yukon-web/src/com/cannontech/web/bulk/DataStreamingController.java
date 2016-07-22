@@ -169,22 +169,18 @@ public class DataStreamingController {
         DataStreamingConfigResult result;
         if (configId > 0) {
             result = dataStreamingService.assignDataStreamingConfig(configId, deviceCollection, user);
-            DataStreamingConfig modelConfig = dataStreamingService.findDataStreamingConfiguration(configId);
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            modelConfig.setAccessor(accessor);
-            model.addAttribute("config", modelConfig);
+            result.setConfigId(configId);
         } else {
             result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
         }
-
-        model.addAttribute("result", result);
+        
         model.addAttribute("resultsId", result.getResultsId());
 
-        return "redirect:reportResults";
+        return "redirect:dataStreamingResults";
     }
     
-    @RequestMapping("reportResults")
-    public String reportResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
+    @RequestMapping("dataStreamingResults")
+    public String dataStreamingResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
         retrieveResults(request, model, userContext);
         return "dataStreaming/results.jsp";
     }
@@ -196,6 +192,13 @@ public class DataStreamingController {
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         DataStreamingConfigResult streamingResult = dataStreamingService.findDataStreamingResult(resultsId);
         model.addAttribute("result", streamingResult);
+        int configId = streamingResult.getConfigId();
+        if(configId > 0) {
+            DataStreamingConfig config = dataStreamingService.findDataStreamingConfiguration(configId);
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            config.setAccessor(accessor);
+            model.addAttribute("config", config);
+        }
     }
     
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)

@@ -81,8 +81,11 @@ public enum DataStreamingTypeEnum {
         public Object getValue(DataStreamingConfigResult result) {
             
             ResolvableTemplate resolvableTemplate = null;
-            
-            if (result.isComplete()) {
+
+            if (result.isExceptionOccured()) {
+                resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_EXCEPTION_OCCURED_TEXT");
+                resolvableTemplate.addData("exceptionReason", result.getExceptionReason());
+            } else if (result.isComplete()) {
                 resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT");
             } else {
                 resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_IN_PROGRESS_TEXT");
@@ -95,8 +98,7 @@ public enum DataStreamingTypeEnum {
     STATUS_CLASS(new ResultAccessor<DataStreamingConfigResult>() {
         @Override
         public Object getValue(DataStreamingConfigResult result) {
-            //return result.isExceptionOccured() ? "error" : "success";
-            return "success";
+            return result.isExceptionOccured() ? "error" : "success";
         }
     }),
 

@@ -39,6 +39,8 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT">Complete</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_IN_PROGRESS_TEXT">In Progress</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_CANCELED_TEXT">Canceled</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_EXCEPTION_OCCURED_TEXT">Error: {exceptionReason}</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.performNewActionLinkTitle">Perform another action on these devices</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.downloadErrorFileLabel">Download</entry>
@@ -414,8 +416,9 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.successLabel">Success</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.failedLabel">Failed</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.unsupportedLabel">Unsupported</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.cancelledLabel">Cancelled</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.cancelledLabel">Canceled</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.view">View Results</entry>
     
     
     <!-- SEND CONFIG -->

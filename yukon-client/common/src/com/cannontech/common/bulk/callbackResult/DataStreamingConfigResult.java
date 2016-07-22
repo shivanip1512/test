@@ -27,6 +27,7 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     private DeviceCollection failureDeviceCollection;
     private DeviceCollection canceledDeviceCollection;
     private DeviceCollection unsupportedDeviceCollection;
+    private int configId;
     
     private DataStreamingConfigCallback configCallback;
     private CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback;
@@ -259,5 +260,13 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     public void setUnsupportedDeviceCollection(DeviceCollection unsupportedDeviceCollection) {
         this.unsupportedDeviceCollection = unsupportedDeviceCollection;
+    }
+
+    public int getConfigId() {
+        return configId;
+    }
+
+    public void setConfigId(int configId) {
+        this.configId = configId;
     }
 }

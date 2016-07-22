@@ -52,10 +52,10 @@
         <%-- SUCCESS DEVICE COLLECTION --%>
         <c:if test="${result.successDeviceCollection != null}">
             <div id="js-success-actions" class="dn stacked">
-                <cti:link href="/bulk/collectionActions" key=".results.collectionActionOnDevicesLabel">
-                    <cti:mapParam
-                        value="${result.successDeviceCollection.collectionParameters}" />
-                </cti:link>
+                <cti:url var="successUrl" value="/bulk/collectionActions">
+                    <cti:mapParam value="${result.successDeviceCollection.collectionParameters}" />
+                </cti:url>
+                <a href="${successUrl}"><i:inline key=".results.collectionActionOnDevicesLabel" /></a>
                 <tags:selectedDevicesPopup
                     deviceCollection="${result.successDeviceCollection}" />
             </div>
@@ -74,10 +74,10 @@
         <%-- FAILED DEVICE COLLECTION --%>
         <c:if test="${result.failureDeviceCollection != null}">
             <div id="js-error-actions" class="dn stacked">
-                <cti:link href="/bulk/collectionActions" key=".results.collectionActionOnDevicesLabel">
-                    <cti:mapParam
-                        value="${result.failureDeviceCollection.collectionParameters}" />
-                </cti:link>
+                <cti:url var="failedUrl" value="/bulk/collectionActions">
+                    <cti:mapParam value="${result.failureDeviceCollection.collectionParameters}" />
+                </cti:url>
+                <a href="${failedUrl}"><i:inline key=".results.collectionActionOnDevicesLabel" /></a>
                 <tags:selectedDevicesPopup
                     deviceCollection="${result.failureDeviceCollection}" />
             </div>
@@ -96,10 +96,10 @@
         <%-- UNSUPPORTED DEVICE COLLECTION --%>
         <c:if test="${result.getUnsupportedCount() > 0}">
             <div id="js-unsupported-actions" class="dn stacked">
-                <cti:link href="/bulk/collectionActions" key=".results.collectionActionOnDevicesLabel">
-                    <cti:mapParam
-                        value="${result.unsupportedDeviceCollection.collectionParameters}" />
-                </cti:link>
+                <cti:url var="unsupportedUrl" value="/bulk/collectionActions">
+                    <cti:mapParam value="${result.unsupportedDeviceCollection.collectionParameters}" />
+                </cti:url>
+                <a href="${unsupportedUrl}"><i:inline key=".results.collectionActionOnDevicesLabel" /></a>
                 <tags:selectedDevicesPopup
                     deviceCollection="${result.unsupportedDeviceCollection}" />
             </div>
@@ -118,10 +118,10 @@
         <%-- CANCELED DEVICE COLLECTION --%>
         <c:if test="${result.canceledDeviceCollection != null}">
             <div id="js-canceled-actions" class="dn stacked">
-                <cti:link href="/bulk/collectionActions" key=".results.collectionActionOnDevicesLabel">
-                    <cti:mapParam
-                        value="${result.canceledDeviceCollection.collectionParameters}" />
-                </cti:link>
+                <cti:url var="canceledUrl" value="/bulk/collectionActions">
+                    <cti:mapParam value="${result.canceledDeviceCollection.collectionParameters}" />
+                </cti:url>
+                <a href="${canceledUrl}"><i:inline key=".results.collectionActionOnDevicesLabel" /></a>
                 <tags:selectedDevicesPopup
                     deviceCollection="${result.canceledDeviceCollection}" />
             </div>
