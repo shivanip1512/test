@@ -6,7 +6,24 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+
 <cti:standardPage module="user" page="profile.${mode}">
+<script type="text/javascript">
+$(document).ready(function(){
+    expirePassword();
+    });
+    
+    function expirePassword(){
+        var passwordExpired = <%=session.getAttribute("passwordExpired")%>;
+        var url = "/yukon/login/expirePassword";
+        if(passwordExpired){
+            $.ajax({
+                    type: "POST",
+                    url: url
+               });
+        }
+    }
+</script>
 
 <tags:setFormEditMode mode="${mode}"/>
 

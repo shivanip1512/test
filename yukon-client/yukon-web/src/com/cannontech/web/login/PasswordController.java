@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.tanesha.recaptcha.ReCaptchaException;
 
@@ -69,6 +70,7 @@ public class PasswordController {
     @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private LoginService loginService;
     
     @RequestMapping(value="generate-password")
     public TextView generatePassword(HttpServletResponse response, Integer userId, String userGroupName) {
@@ -184,9 +186,8 @@ public class PasswordController {
     }
     
     @RequestMapping(value = "/authenticated/change-password", method = RequestMethod.POST)
-    public String authenticatedPasswordChange(HttpServletResponse resp,
-            @ModelAttribute Login login, BindingResult result,
-            FlashScope flashScope, ModelMap model, LiteYukonUser user) {
+    public String authenticatedPasswordChange(HttpServletRequest req, HttpServletResponse resp,
+            @ModelAttribute Login login, BindingResult result, FlashScope flashScope, ModelMap model, LiteYukonUser user) {
         boolean isValidPassword = authService.validateOldPassword(user.getUsername(), login.getOldPassword());
         if (!isValidPassword) {
             flashScope.setMessage(new YukonMessageSourceResolvable(
@@ -212,9 +213,11 @@ public class PasswordController {
         
         // Update the user's password to their new supplied password.
         authService.setPassword(user, login.getPassword1());
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.login.passwordChange.successful"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.login.passwordChange.successful.reLogin"));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
-        
+       
+        HttpSession session = req.getSession(false);
+        session.setAttribute("passwordExpired", true);
         return null;
     }
     
@@ -331,6 +334,14 @@ public class PasswordController {
         return result;
     }
     
+    /**
+     * Expires the password and user is forced to re-login after changing his password
+     */
+    @RequestMapping(value = "/expirePassword", method = RequestMethod.POST)
+    public void expirePassword(HttpServletRequest req) {
+        loginService.invalidateSession(req, "Password has been changed.");
+    }
+
     /**
      * This method sets the forgottenPasswordField with the errorCode supplied 
      * and rebuilds the model for rejecting the request.
