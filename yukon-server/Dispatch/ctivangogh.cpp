@@ -96,7 +96,6 @@ using Cti::ThreadStatusKeeper;
 using Cti::DeviceBaseLite;
 
 /* Global Variables */
-CtiPointClientManager      PointMgr;   // The RTDB for memory points....
 CtiVanGoghExecutorFactory  ExecFactory;
 
 int CntlHistInterval = 3600;
@@ -4414,9 +4413,26 @@ bool CtiVanGogh::ablementDevice(DeviceBaseLite &dLite, UINT setmask, UINT tagmas
     return delta;
 }
 
-CtiVanGogh::CtiVanGogh() :
-    _notificationConnection(NULL),
-    _listenerConnection( Cti::Messaging::ActiveMQ::Queue::dispatch )
+CtiVanGogh::CtiVanGogh(CtiPointClientManager& externalMgr)
+    :   CtiVanGogh( &externalMgr )
+{}
+
+CtiVanGogh::CtiVanGogh() 
+    :   CtiVanGogh( nullptr )
+{}
+
+CtiVanGogh::CtiVanGogh(CtiPointClientManager* externalMgr)
+    :   _localPointClientMgr{
+                externalMgr 
+                    ? nullptr 
+                    : std::make_unique<CtiPointClientManager>() },
+        PointMgr{
+                externalMgr 
+                    ? *externalMgr 
+                    : *_localPointClientMgr },
+        _pendingOpThread{PointMgr},
+        _notificationConnection(NULL),
+        _listenerConnection( Cti::Messaging::ActiveMQ::Queue::dispatch )
 {
     {
         CtiServerExclusion guard(_server_exclusion);

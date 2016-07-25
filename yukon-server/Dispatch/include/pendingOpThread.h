@@ -12,6 +12,8 @@
 #include "guard.h"
 #include "mutex.h"
 
+class CtiPointClientManager;
+
 class CtiPendingOpThread : public CtiThread
 {
 public:
@@ -21,6 +23,8 @@ public:
     typedef std::map< long, CtiTableLMControlHistory >  CtiICLMControlHistMap_t;       // Contains the intial conditions for controls history and control state.
 
 private:
+
+    CtiPointClientManager &PointMgr;
 
     CtiMultiMsg *_multi;
     boost::thread _dbThread;
@@ -44,12 +48,12 @@ private:
     static CtiICLMControlHistMap_t _initialConditionControlHistMap;
 
     void dbWriterThread();
-    static PendingOpMap::iterator erasePendingControl(PendingOpMap::iterator iter);
-    static std::pair< PendingOpMap::iterator, bool > insertPendingControl(CtiPendingPointOperations &ppo);
+    PendingOpMap::iterator erasePendingControl(PendingOpMap::iterator iter);
+    std::pair< PendingOpMap::iterator, bool > insertPendingControl(CtiPendingPointOperations &ppo);
 
 public:
 
-    CtiPendingOpThread();
+    CtiPendingOpThread(CtiPointClientManager& ptClientMgr);
     virtual ~CtiPendingOpThread();
 
     enum
@@ -82,10 +86,10 @@ public:
     void writeLMControlHistoryToDB(bool justdoit = false);
     void writeDynamicLMControlHistoryToDB(bool justdoit = false);
 
-    static void resetICControlMap();
-    static bool loadICControlMap();
-    static bool getICControlHistory( CtiTableLMControlHistory &lmch );
-    static bool createOrUpdateICControl(long paoid, CtiTableLMControlHistory &lmch );
+    void resetICControlMap();
+    bool loadICControlMap();
+    bool getICControlHistory( CtiTableLMControlHistory &lmch );
+    bool createOrUpdateICControl(long paoid, CtiTableLMControlHistory &lmch );
 
     void checkForControlBegin( CtiPendable *&pendable );
     void checkControlStatusChange( CtiPendable *&pendable );
@@ -93,6 +97,6 @@ public:
     void removeLimit(CtiPendable *&pendable);
     void removePointData(CtiPendable *&pendable);
 
-    static CtiPointNumericSPtr getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff);
+    CtiPointNumericSPtr getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff);
 
 };

@@ -48,7 +48,7 @@ private:
     std::multimap< pao_offset_t, long >  _type_offsets;     //  this map contains all point offsets
     std::multimap< long, long >          _pao_pointids;     //  this map contains the loaded pointids that belong to each pao
 
-    bool _all_paoids_loaded;
+    bool _all_paoids_loaded = false;
     std::set<long> _paoids_loaded;
 
     virtual void refreshListByIDs(const std::set<long> &ids, bool paoids);
@@ -74,8 +74,7 @@ protected:
 
 public:
 
-    CtiPointManager();
-    virtual ~CtiPointManager();
+    virtual ~CtiPointManager() = default;
 
     virtual std::set<long> refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
     virtual void refreshListByPAOIDs  (const std::set<long> &ids);

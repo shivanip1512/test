@@ -7,6 +7,23 @@
 
 BOOST_AUTO_TEST_SUITE( test_vangogh )
 
+struct test_CtiVanGogh : CtiVanGogh
+{
+    test_CtiVanGogh(CtiPointClientManager& pcm)
+        : CtiVanGogh(pcm)
+    {}
+};
+
+struct test_CtiPointClientManager : CtiPointClientManager
+{
+    std::map<long, boost::shared_ptr<CtiPointBase>> points;
+
+    ptr_type getPoint(long point, long pao) override
+    {
+        return points.emplace(point, boost::make_shared<CtiPointBase>(point)).first->second;
+    }
+};
+
 struct pointdata_test_helper
 {
     struct pointdata_test_case
@@ -200,6 +217,82 @@ BOOST_AUTO_TEST_CASE( test_hasPointDataChanged )
         dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), UnintializedQuality, msg.getTags());
         BOOST_CHECK_EQUAL( true, CtiVanGogh::hasPointDataChanged(msg, dpd) );
     }
+}
+
+BOOST_AUTO_TEST_CASE( test_registration_add_remove_points )
+{
+    test_CtiPointClientManager pcm;
+    test_CtiVanGogh vg{pcm};
+
+    CtiListenerConnection lc( "test1" );
+
+    auto testQ = boost::make_shared<CtiConnection::Que_t>();
+    auto  vgcm = boost::make_shared<CtiVanGoghConnectionManager>(lc, testQ.get());
+    auto    cm = boost::static_pointer_cast<CtiConnectionManager>(vgcm);
+
+    //  Check ADD_POINTS
+    {
+        CtiPointRegistrationMsg aReg{ REG_ADD_POINTS };
+        aReg.insert( 1001 );
+        aReg.insert( 1003 );
+        aReg.insert( 1004 );
+
+        vg.registration(cm, aReg);
+
+        BOOST_CHECK( ! vgcm->getAllPoints() );
+
+        auto regMap = pcm.getRegistrationMap(cm->hash(*cm));
+
+        BOOST_REQUIRE_EQUAL(regMap.size(), 3);
+
+        auto regItr = regMap.begin();
+
+        BOOST_CHECK_EQUAL(regItr++->first, 1001);
+        BOOST_CHECK_EQUAL(regItr++->first, 1003);
+        BOOST_CHECK_EQUAL(regItr++->first, 1004);
+    }
+
+    //  Check REMOVE_POINTS
+    {
+        CtiPointRegistrationMsg aReg{ REG_REMOVE_POINTS };
+        aReg.insert( 1001 );
+        aReg.insert( 1004 );
+        aReg.insert( 1099 );
+
+        vg.registration(cm, aReg);
+
+        BOOST_CHECK( ! vgcm->getAllPoints() );
+
+        auto regMap = pcm.getRegistrationMap(cm->hash(*cm));
+
+        BOOST_REQUIRE_EQUAL(regMap.size(), 1);
+
+        auto regItr = regMap.begin();
+
+        BOOST_CHECK_EQUAL(regItr++->first, 1003);
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_registration_all_points )
+{
+    test_CtiPointClientManager pcm;
+    test_CtiVanGogh vg{pcm};
+
+    CtiListenerConnection lc( "test1" );
+
+    auto testQ = boost::make_shared<CtiConnection::Que_t>();
+    auto  vgcm = boost::make_shared<CtiVanGoghConnectionManager>(lc, testQ.get());
+    auto    cm = boost::static_pointer_cast<CtiConnectionManager>(vgcm);
+
+    CtiPointRegistrationMsg aReg{ REG_ALL_POINTS };
+
+    vg.registration(cm, aReg);
+
+    BOOST_CHECK( vgcm->getAllPoints() );
+
+    auto regMap = pcm.getRegistrationMap(cm->hash(*cm));
+
+    BOOST_CHECK_EQUAL(regMap.size(), 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

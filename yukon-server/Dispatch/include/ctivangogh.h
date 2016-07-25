@@ -39,6 +39,7 @@ class CtiPointBase;
 class CtiPointStatus;
 class CtiPointNumeric;
 class CtiDynamicPointDispatch;
+class CtiPointClientManager;
 
 class IM_EX_CTIVANGOGH CtiVanGogh : public CtiServer
 {
@@ -56,6 +57,11 @@ private:
     /*
      *  VGMain's Data Stores.
      */
+
+    CtiVanGogh(CtiPointClientManager* externalMgrPtr);  //  Delegating constructor for unit test support
+
+    std::unique_ptr<CtiPointClientManager> _localPointClientMgr;  
+    CtiPointClientManager     &PointMgr;
 
     CtiPendingOpThread _pendingOpThread;
 
@@ -153,6 +159,8 @@ protected:
 
     bool writeArchiveDataToDB(Cti::Database::DatabaseConnection& conn, const WriteMode wm);
 
+    CtiVanGogh(CtiPointClientManager& externalMgr, Cti::Test::use_in_unit_tests_only &);  //  For unit tests
+    
 public:
 
     typedef CtiServer Inherited;

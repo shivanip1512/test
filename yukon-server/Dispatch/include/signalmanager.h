@@ -26,6 +26,8 @@ protected:
     bool _dirty;
     mutable CtiMutex _mux;
 
+    virtual void deleteDynamicPointAlarming(long pointID, int condition);
+
 private:
     void removeFromMaps(long pointID, int condition);
 public:

@@ -176,7 +176,7 @@ CtiSignalMsg * CtiSignalManager::clearAlarms(long pointid)
             {
                 // This guy has already been acknowledged and now has been cleared.  Get it out of the table!
                 removeFromMaps(pointid, i);
-                CtiTableDynamicPointAlarming::Delete(pointid, i);
+                deleteDynamicPointAlarming(pointid, i);
                 pOriginalSig = 0;
             }
         }
@@ -250,7 +250,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
                         pSig = pOriginalSig;        // Just return the original.
                         pOriginalSig = 0;
 
-                        CtiTableDynamicPointAlarming::Delete(pointid, alarm_condition);
+                        deleteDynamicPointAlarming(pointid, alarm_condition);
                     }
                     else
                     {
@@ -319,7 +319,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
                         pSig = pOriginalSig;        // Just return the original.
                         pOriginalSig = 0;
 
-                        CtiTableDynamicPointAlarming::Delete(pointid, alarm_condition);
+                        deleteDynamicPointAlarming(pointid, alarm_condition);
                     }
                     else
                     {
@@ -784,4 +784,9 @@ void CtiSignalManager::removeFromMaps(long pointID, int condition)
 
         } while(pointIter != _pointMap.end() && pointIter->first == pointID);
     }
+}
+
+void CtiSignalManager::deleteDynamicPointAlarming(long pointID, int condition)
+{
+    CtiTableDynamicPointAlarming::Delete(pointID, condition);
 }

@@ -95,15 +95,6 @@ void erase_from_multimap(multimap<K, _Ty> &coll, const K key, const _Ty value)
 }
 
 
-CtiPointManager::CtiPointManager() :
-_all_paoids_loaded(false)
-{}
-
-CtiPointManager::~CtiPointManager()
-{
-}
-
-
 std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
     ptr_type pTempCtiPoint;

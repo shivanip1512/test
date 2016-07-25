@@ -7,9 +7,17 @@ using namespace std;
 
 BOOST_AUTO_TEST_SUITE( test_signalmanager )
 
+struct test_CtiSignalManager : CtiSignalManager
+{
+    void deleteDynamicPointAlarming(long pointID, int condition) override
+    {
+        //  no-op, do not connect to the DB
+    }
+};
+
 BOOST_AUTO_TEST_CASE(test_signalmanager_signal_add)
 {
-    CtiSignalManager manager;
+    test_CtiSignalManager manager;
     BOOST_CHECK(manager.empty());
 
     CtiSignalMsg testMessage1, testMessage2;
@@ -47,7 +55,7 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_signal_add)
 // Or even better dont change it and create a new test.
 BOOST_AUTO_TEST_CASE(test_signalmanager_alarming)
 {
-    CtiSignalManager manager;
+    test_CtiSignalManager manager;
     BOOST_CHECK(manager.empty());
 
     CtiSignalMsg testMessage1, testMessage2;
@@ -115,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_alarming)
 
 BOOST_AUTO_TEST_CASE(test_signalmanager_getters)
 {
-    CtiSignalManager manager;
+    test_CtiSignalManager manager;
     CtiSignalMsg *testMessage1, *testMessage2;
     testMessage1 = CTIDBG_new CtiSignalMsg(1);
     testMessage2 = CTIDBG_new CtiSignalMsg(1);

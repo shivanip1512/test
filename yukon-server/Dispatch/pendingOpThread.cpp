@@ -18,8 +18,6 @@
 
 using namespace std;
 
-extern CtiPointClientManager  PointMgr;  // The RTDB for memory points....
-
 extern int CntlHistInterval;
 extern int CntlHistPointPostInterval;
 extern int CntlStopInterval;
@@ -29,11 +27,11 @@ CtiPendingOpThread::PendingOpMap CtiPendingOpThread::_pendingPointData;
 CtiPendingOpThread::PendingOpMap CtiPendingOpThread::_pendingPointLimit;
 
 
-CtiPendingOpThread::CtiPendingOpThread() :
-_multi(0),
-_pMainQueue(0)
+CtiPendingOpThread::CtiPendingOpThread(CtiPointClientManager& pointClientMgr) 
+    :   PointMgr(pointClientMgr),
+        _multi(0),
+        _pMainQueue(0)
 {
-    _dbThread = boost::thread(&CtiPendingOpThread::dbWriterThread, this);
 }
 
 CtiPendingOpThread::~CtiPendingOpThread()
@@ -56,6 +54,8 @@ void CtiPendingOpThread::setSignalManager(CtiSignalManager *pSM)
 
 void CtiPendingOpThread::run( void )
 {
+    _dbThread = boost::thread(&CtiPendingOpThread::dbWriterThread, this);
+
     UINT sanity = 0;
 
     CTILOG_INFO(dout, "PendingOperationThread starting");
