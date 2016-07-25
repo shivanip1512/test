@@ -1,7 +1,10 @@
 #include <boost/test/unit_test.hpp>
 
 #include "ctivangogh.h"
+#include "mgr_ptclients.h"
 #include "ctidate.h"
+
+#include "boost_test_helpers.h"
 
 #include <bitset>
 
@@ -10,7 +13,7 @@ BOOST_AUTO_TEST_SUITE( test_vangogh )
 struct test_CtiVanGogh : CtiVanGogh
 {
     test_CtiVanGogh(CtiPointClientManager& pcm)
-        : CtiVanGogh(pcm)
+        : CtiVanGogh(pcm, Cti::Test::use_in_unit_tests_only{})
     {}
 };
 
@@ -239,7 +242,7 @@ BOOST_AUTO_TEST_CASE( test_registration_add_remove_points )
 
         vg.registration(cm, aReg);
 
-        BOOST_CHECK( ! vgcm->getAllPoints() );
+        BOOST_CHECK( ! vgcm->isRegForAll() );
 
         auto regMap = pcm.getRegistrationMap(cm->hash(*cm));
 
@@ -261,7 +264,7 @@ BOOST_AUTO_TEST_CASE( test_registration_add_remove_points )
 
         vg.registration(cm, aReg);
 
-        BOOST_CHECK( ! vgcm->getAllPoints() );
+        BOOST_CHECK( ! vgcm->isRegForAll() );
 
         auto regMap = pcm.getRegistrationMap(cm->hash(*cm));
 
@@ -284,11 +287,11 @@ BOOST_AUTO_TEST_CASE( test_registration_all_points )
     auto  vgcm = boost::make_shared<CtiVanGoghConnectionManager>(lc, testQ.get());
     auto    cm = boost::static_pointer_cast<CtiConnectionManager>(vgcm);
 
-    CtiPointRegistrationMsg aReg{ REG_ALL_POINTS };
+    CtiPointRegistrationMsg aReg{ REG_ALL_PTS_MASK };
 
     vg.registration(cm, aReg);
 
-    BOOST_CHECK( vgcm->getAllPoints() );
+    BOOST_CHECK( vgcm->isRegForAll() );
 
     auto regMap = pcm.getRegistrationMap(cm->hash(*cm));
 

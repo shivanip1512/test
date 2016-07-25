@@ -4413,7 +4413,7 @@ bool CtiVanGogh::ablementDevice(DeviceBaseLite &dLite, UINT setmask, UINT tagmas
     return delta;
 }
 
-CtiVanGogh::CtiVanGogh(CtiPointClientManager& externalMgr)
+CtiVanGogh::CtiVanGogh(CtiPointClientManager& externalMgr, Cti::Test::use_in_unit_tests_only&)
     :   CtiVanGogh( &externalMgr )
 {}
 
