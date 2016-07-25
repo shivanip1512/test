@@ -290,7 +290,7 @@ private void loadStateComboBoxes(int stateGroupID)
 	if( getInitialStateComboBox().getItemCount() > 0 )
 		getInitialStateComboBox().removeAllItems();
 
-	LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get( new Integer(stateGroupID) );
+	LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getStateGroup(stateGroupID);
 
 	List<LiteState> statesList = stateGroup.getStatesList();
 	for(int j=0;j<statesList.size();j++)

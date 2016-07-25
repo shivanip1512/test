@@ -810,7 +810,7 @@ public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements A
             // set the states for the JCombobox
             int stateGroupID = getJPanelTriggerID().getSelectedPoint().getStateGroupID();
 
-            LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(stateGroupID);
+            LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getStateGroup(stateGroupID);
 
             Iterator<LiteState> stateIterator = stateGroup.getStatesList().iterator();
             while (stateIterator.hasNext()) {

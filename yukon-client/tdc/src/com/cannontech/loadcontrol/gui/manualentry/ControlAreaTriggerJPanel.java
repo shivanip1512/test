@@ -727,7 +727,7 @@ public static void main(java.lang.String[] args) {
  */
 private void setComboBoxText(int groupID, javax.swing.JComboBox jCombo ) 
 {
-	LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(groupID);
+	LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getStateGroup(groupID);
 		for( int i = 0; i < stateGroup.getStatesList().size(); i++ ) {
 			jCombo.addItem( stateGroup.getStatesList().get(i) );
 		}

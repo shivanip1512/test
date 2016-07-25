@@ -650,7 +650,7 @@ public void setValue(Object val)
 		{
 			String[] stateNames = null;
 
-			LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get( point.getPoint().getStateGroupID() );
+			LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getStateGroup(point.getPoint().getStateGroupID());
 
 			stateNames = new String[stateGroup.getStatesList().size()];
 

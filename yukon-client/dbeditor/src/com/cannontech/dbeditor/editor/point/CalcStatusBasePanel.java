@@ -396,7 +396,7 @@ public class CalcStatusBasePanel extends DataInputPanel implements ActionListene
             getInitialStateComboBox().removeAllItems();
         }
 
-        LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(new Integer(stateGroupID));
+        LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getStateGroup(stateGroupID);
 
         List<LiteState> statesList = stateGroup.getStatesList();
         for (LiteState ls : statesList) {

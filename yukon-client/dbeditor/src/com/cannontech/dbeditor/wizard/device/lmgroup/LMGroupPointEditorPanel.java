@@ -340,7 +340,7 @@ public class LMGroupPointEditorPanel extends DataInputPanel implements
 
             LitePoint point = (LitePoint)getJComboBoxControlPoint().getSelectedItem();
 
-            LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(point.getStateGroupID());
+            LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getStateGroup(point.getStateGroupID());
 
             for (int j = 0; j < stateGroup.getStatesList().size(); j++) {
                 // only add the first 2 states to the ComboBoxes

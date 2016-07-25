@@ -1323,7 +1323,7 @@ public void setValue(Object val)
 	//Load all the state groups
 	int stateGroupID = point.getPoint().getStateGroupID().intValue();
     
-	LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getAllStateGroups().get(stateGroupID);
+	LiteStateGroup stateGroup = YukonSpringHook.getBean(StateGroupDao.class).getStateGroup(stateGroupID);
 
 	List<LiteState> statesList = stateGroup.getStatesList();
 	
