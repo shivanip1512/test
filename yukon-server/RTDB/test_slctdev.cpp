@@ -53,8 +53,8 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  50
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(X)  //  80
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
+        (_)(X)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
         .repeat(90, _);
 
@@ -141,11 +141,11 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::RfnResidentialVoltageDevice")
         ("class Cti::Devices::RfnResidentialVoltageDevice")
         ("class Cti::Devices::RfnResidentialVoltageDevice")
+        ("class Cti::Devices::RfnResidentialVoltageDevice")
+        ("class Cti::Devices::RfnResidentialVoltageDevice")
         ("class Cti::Devices::Rfn410CentronDevice")
         ("class Cti::Devices::Rfn420CentronDevice")
         ("class Cti::Devices::Rfn420CentronDevice")
-        ("class Cti::Devices::RfnCommercialDevice")
-        ("class Cti::Devices::RfnCommercialDevice")
         ("class Cti::Devices::RfnCommercialDevice")
         ("class Cti::Devices::RfnCommercialDevice")
         //  70
@@ -161,6 +161,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::RfnCommercialDevice")
         //  80
         ("class Cti::Devices::RfnCommercialDevice")
+        ("class Cti::Devices::RfnCommercialDevice")
+        ("class Cti::Devices::RfnCommercialDevice")
         ("class Cti::Devices::RfDaDevice")
         ("class CtiDeviceCCU710")
         ("class CtiDeviceCCU710")
@@ -168,9 +170,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::Ccu721Device")
         ("class CtiDeviceILEX")
         ("class CtiDeviceWelco")
+        //  90
         ("class CtiDeviceRemote")
         ("class Cti::Devices::DnpDevice")
-        //  90
         ("class Cti::Devices::DnpDevice")
         ("class CtiDeviceION")
         ("class CtiDeviceION")
@@ -179,9 +181,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceLCU")
         ("class CtiDeviceLCU")
         ("class CtiDeviceLCU")
-        ("class CtiDeviceTCU")
-        ("class CtiDeviceTCU")
         //  100
+        ("class CtiDeviceTCU")
+        ("class CtiDeviceTCU")
         ("class CtiDeviceMarkV")
         ("class CtiDeviceDavis")
         ("class CtiDeviceAlphaPPlus")
@@ -190,9 +192,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceVectron")
         ("class CtiDeviceAlphaA1")
         ("class CtiDeviceDR87")
+        //  110
         ("class CtiDeviceQuantum")
         ("class CtiDeviceKV2")
-        //  110
         ("class Cti::Devices::CtiDeviceSentinel")
         ("class Cti::Devices::CtiDeviceFocus")
         ("class CtiDeviceKV2")
@@ -201,9 +203,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::Ipc420ADDevice")
         ("class CtiDeviceLandisGyrS4")
         ("class Cti::Devices::CtiDeviceSentinel")
+        //  120
         ("class Cti::Devices::TapPagingTerminal")
         ("class CtiDeviceWctpTerminal")
-        //  120
         ("class Cti::Devices::RDSTransmitter")
         ("class CtiDeviceSnppPagingTerminal")
         ("class CtiDevicePagingReceiver")
@@ -212,9 +214,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceRTM")
         ("class CtiDeviceSeriesV")
         ("class CtiDeviceLMI")
+        //  130
         ("class Cti::Devices::ModbusDevice")
         ("class CtiDeviceGridAdvisor")
-        //  130
         ("class CtiDeviceGridAdvisor")
         ("class CtiDeviceGroupEmetcon")
         ("class CtiDeviceGroupVersacom")
@@ -223,22 +225,23 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceGroupExpresscom")
         ("class CtiDeviceGroupRfnExpresscom")
         ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        //  140
         ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         ("class CtiDeviceGroupMCT")
-        //  140
         ("class CtiDeviceGroupGolay")
         ("class CtiDeviceGroupSADigital")
         ("class CtiDeviceGroupSA105")
         ("class CtiDeviceGroupSA205")
         ("class CtiDeviceGroupSA305")
         ("class Cti::Devices::MctBroadcastDevice")
-        .repeat(4, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(2, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         //  150
-        .repeat(9, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("class CtiDeviceMacro")
+        .repeat(10, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         //  160
+        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        ("class CtiDeviceMacro")
         ("class CtiDeviceSystem")
-        .repeat(9839, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(9837, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
             ;
 
     std::vector<std::string> results;
