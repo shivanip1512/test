@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE( test_registration_all_points )
     auto  vgcm = boost::make_shared<CtiVanGoghConnectionManager>(lc, testQ.get());
     auto    cm = boost::static_pointer_cast<CtiConnectionManager>(vgcm);
 
-    CtiPointRegistrationMsg aReg{ REG_ALL_PTS_MASK };
+    CtiPointRegistrationMsg aReg{ REG_ALL_POINTS };
 
     vg.registration(cm, aReg);
 

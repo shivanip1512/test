@@ -19,13 +19,9 @@ class IM_EX_CTIVANGOGH CtiVanGoghConnectionManager : public CtiConnectionManager
    {
       UINT _blank;    // Used to zero the struct elements as a block
       struct {
-         UINT  _status     : 1;
-         UINT  _analog     : 1;
-         UINT  _accum      : 1;
-         UINT  _calc       : 1;
+         UINT  _allPoints  : 1;
          UINT  _event      : 1;        // This client can only handle simple event messages
          UINT  _alarm      : 1;        // This client can only handle simple alarm messages
-         UINT  _loadProfile : 1;       // This client wants load profile data too.
       };
    };
 
@@ -38,17 +34,8 @@ public:
 
    // Client connection supplied information via a Registration Message
 
-   UINT  getStatus() const;
-   CtiVanGoghConnectionManager& setStatus( const UINT a_status );
-
-   UINT  getAnalog() const;
-   CtiVanGoghConnectionManager& setAnalog( const UINT a_analog );
-
-   UINT  getAccumulator() const;
-   CtiVanGoghConnectionManager& setAccumulator( const UINT a_accum );
-
-   UINT  getCalculated() const;
-   CtiVanGoghConnectionManager& setCalculated( const UINT a_calc );
+   UINT  getAllPoints() const;
+   CtiVanGoghConnectionManager& setAllPoints( const UINT a_allPoints );
 
    UINT  getEvent() const;
    CtiVanGoghConnectionManager& setEvent( const UINT a_event );
@@ -56,12 +43,7 @@ public:
    UINT  getAlarm() const;
    CtiVanGoghConnectionManager& setAlarm( const UINT a_alarm );
 
-   UINT  getLoadProfile() const;
-   CtiVanGoghConnectionManager& setLoadProfile( const UINT a_lp );
-
    bool  isRegForAll() const;
-   bool  isRegForAnyType() const;
-   BOOL  isRegForChangeType(int type) const;
 
    void  reportRegistration() const;
 };

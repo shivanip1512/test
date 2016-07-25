@@ -824,7 +824,7 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
     string simple_registration = gConfigParms.getValueAsString("LOAD_MANAGEMENT_SIMPLE_REGISTRATION", "false");
     if( simple_registration == "true" || simple_registration == "TRUE" ) //register for all points
     {
-        regMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+        regMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_POINTS);
     }
     else //register for each point specifically*/
     {

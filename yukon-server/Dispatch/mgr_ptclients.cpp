@@ -538,7 +538,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
             CtiPointSPtr temp = getPoint(aReg[i]);
             if(temp)
             {
-                if(!((const CtiVanGoghConnectionManager *)CM.get())->isRegForChangeType(temp->getType())) // Make sure we didn't already register for ALL points of this type.
+                if(!((const CtiVanGoghConnectionManager *)CM.get())->isRegForAll()) // Make sure we didn't already register for ALL points.
                 {
                     // Prevent _pointConnectionMap from wiggling while we operate.
                     coll_type::writer_lock_guard_t guard( getLock() );

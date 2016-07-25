@@ -576,42 +576,12 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
          * We need to set up our CtiVanGoghConnectionManager according to the request!
          */
 
-        if(aReg.getFlags() & REG_ALL_PTS_MASK)     // I am registering for all/any of some type of point.
+        if(aReg.getFlags() & REG_ALL_POINTS)     // I am registering for all points.
         {
-            if(aReg.getFlags() & REG_ALL_STATUS)
+            CM->setAllPoints(TRUE);
+            if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
             {
-                CM->setStatus(TRUE);
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
-                {
-                    CTILOG_DEBUG(dout, CM->getClientName() <<" has registered for ALL status points");
-                }
-            }
-
-            if(aReg.getFlags() & REG_ALL_ANALOG)
-            {
-                CM->setAnalog(TRUE);
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
-                {
-                    CTILOG_DEBUG(dout, CM->getClientName() <<" has registered for ALL analog points");
-                }
-            }
-
-            if(aReg.getFlags() & REG_ALL_ACCUMULATOR)
-            {
-                CM->setAccumulator(TRUE);
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
-                {
-                    CTILOG_DEBUG(dout, CM->getClientName() <<" has registered for ALL accum points");
-                }
-            }
-
-            if(aReg.getFlags() & REG_ALL_CALCULATED)
-            {
-                CM->setCalculated(TRUE);
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
-                {
-                    CTILOG_DEBUG(dout, CM->getClientName() <<" has registered for ALL calc points");
-                }
+                CTILOG_DEBUG(dout, CM->getClientName() <<" has registered for ALL points");
             }
         }
 
@@ -2165,9 +2135,7 @@ BOOL CtiVanGogh::isTagForConnection(const CtiServer::ptr_type &Conn, const CtiTa
 {
     BOOL bStatus = FALSE;
 
-    CtiPointSPtr pPoint = PointMgr.getPoint(Msg.getPointID());
-
-    if( pPoint && ((const CtiVanGoghConnectionManager *)Conn.get())->isRegForChangeType(pPoint->getType()) )
+    if( ((const CtiVanGoghConnectionManager *)Conn.get())->isRegForAll() )
     {
         bStatus = TRUE;
     }
@@ -2183,7 +2151,7 @@ BOOL CtiVanGogh::isPointDataForConnection(const CtiServer::ptr_type &Conn, const
 {
     BOOL bStatus = FALSE;
 
-    if( ((const CtiVanGoghConnectionManager *)Conn.get())->isRegForChangeType(Msg.getType()))
+    if( ((const CtiVanGoghConnectionManager *)Conn.get())->isRegForAll() )
     {
             bStatus = TRUE;
     }
