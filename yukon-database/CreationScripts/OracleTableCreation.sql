@@ -9884,7 +9884,6 @@ create table YukonServices  (
 INSERT INTO YukonServices VALUES (-2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', 'ServiceManager', 'CLASS_NAME_TYPE');
 INSERT INTO YukonServices VALUES (-3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', 'ServiceManager', 'CLASS_NAME_TYPE');
 INSERT INTO YukonServices VALUES (-5, 'MCT410_BulkImporter', 'com.cannontech.jmx.services.DynamicImp', 'ServiceManager', 'CLASS_NAME_TYPE');
-INSERT INTO YukonServices VALUES (-6, 'Price_Server', 'com.cannontech.jmx.services.DynamicPriceServer', 'ServiceManager', 'CLASS_NAME_TYPE');
 INSERT INTO YukonServices VALUES (8, 'PointInjector', 'classpath:com/cannontech/services/points/pointInjectionContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (9, 'Monitors', 'classpath:com/cannontech/services/monitors/monitorsContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/services/optout/optOutContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');

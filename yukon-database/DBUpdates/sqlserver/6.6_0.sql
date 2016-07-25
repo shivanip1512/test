@@ -551,3 +551,7 @@ END;
 /* Inserted when update script is run                         */
 /**************************************************************/
 /*INSERT INTO CTIDatabase VALUES ('6.6', '31-JUN-2016', 'Latest Update', 0, GETDATE());*/
+
+/* Start YUK-15428 */
+DELETE FROM YukonServices WHERE ServiceId IN (6, -6);
+/* End YUK-15428 */
