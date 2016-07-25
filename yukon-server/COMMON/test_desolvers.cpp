@@ -78,6 +78,8 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("RFN-520FRX")
         ("RFN-520FAXD")
         ("RFN-520FRXD")
+        ("RFN-530FAX")
+        ("RFN-530FRX")
         ("RFN-410CL")
         ("RFN-420CL")
         ("RFN-420CD")
@@ -177,7 +179,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("MACRO GROUP")
         ("SYSTEM")
         ("VIRTUAL SYSTEM")
-            .repeat(9838, empty);
+            .repeat(9836, empty);
 
     std::vector<std::string> results;
 

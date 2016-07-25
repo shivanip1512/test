@@ -59,6 +59,8 @@ typedef RfnResidentialVoltageDevice Rfn520faxDevice;
 typedef RfnResidentialVoltageDevice Rfn520frxDevice;
 typedef RfnResidentialVoltageDevice Rfn520faxdDevice;
 typedef RfnResidentialVoltageDevice Rfn520frxdDevice;
+typedef RfnResidentialVoltageDevice Rfn530faxDevice;
+typedef RfnResidentialVoltageDevice Rfn530frxDevice;
 
 }   // Devices
 }   // Cti

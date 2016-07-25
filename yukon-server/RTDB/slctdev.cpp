@@ -256,6 +256,8 @@ const DeviceLookup deviceFactory = boost::assign::map_list_of
     (TYPE_RFN520FRX,    MakeDeviceFunc(makeDevice<Rfn520frxDevice>))
     (TYPE_RFN520FAXD,   MakeDeviceFunc(makeDevice<Rfn520faxdDevice>))
     (TYPE_RFN520FRXD,   MakeDeviceFunc(makeDevice<Rfn520frxdDevice>))
+    (TYPE_RFN530FAX,    MakeDeviceFunc(makeDevice<Rfn530faxDevice>))
+    (TYPE_RFN530FRX,    MakeDeviceFunc(makeDevice<Rfn530frxDevice>))
     (TYPE_RFN530S4X,    MakeDeviceFunc(makeDevice<Rfn530s4xDevice>))
     (TYPE_RFN530S4EAD,  MakeDeviceFunc(makeDevice<Rfn530s4eadDevice>))
     (TYPE_RFN530S4EAT,  MakeDeviceFunc(makeDevice<Rfn530s4eatDevice>))

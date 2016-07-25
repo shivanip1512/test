@@ -205,6 +205,8 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420frd"),  TYPE_RFN420FRD);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520fax"),  TYPE_RFN520FAX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frx"),  TYPE_RFN520FRX);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530fax"),  TYPE_RFN530FAX);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530frx"),  TYPE_RFN530FRX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520faxd"), TYPE_RFN520FAXD);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frxd"), TYPE_RFN520FRXD);
 

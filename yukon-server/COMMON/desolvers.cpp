@@ -174,6 +174,8 @@ string desolveDeviceType( int aType )
         case TYPE_RFN520FRX:    Ret = "rfn-520frx";     break;
         case TYPE_RFN520FAXD:   Ret = "rfn-520faxd";    break;
         case TYPE_RFN520FRXD:   Ret = "rfn-520frxd";    break;
+        case TYPE_RFN530FAX:    Ret = "rfn-530fax";     break;
+        case TYPE_RFN530FRX:    Ret = "rfn-530frx";     break;
         case TYPE_RFN530S4X:    Ret = "rfn-530s4x";     break;
         case TYPE_RFN530S4EAD:  Ret = "rfn-530s4ead";   break;
         case TYPE_RFN530S4EAT:  Ret = "rfn-530s4eat";   break;

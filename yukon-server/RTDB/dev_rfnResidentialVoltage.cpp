@@ -52,6 +52,7 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
         { TYPE_RFN410CL,  Commands::RfnOvUvConfigurationCommand::CentronC1SX },
         { TYPE_RFN420CL,  Commands::RfnOvUvConfigurationCommand::CentronC2SX },
         { TYPE_RFN420CD,  Commands::RfnOvUvConfigurationCommand::CentronC2SX },
+
         { TYPE_RFN410FX,  Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN410FD,  Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN420FX,  Commands::RfnOvUvConfigurationCommand::LGFocusAX },
@@ -62,6 +63,9 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
         { TYPE_RFN520FRX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN520FAXD,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN520FRXD,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
+        { TYPE_RFN530FAX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
+        { TYPE_RFN530FRX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
+        
         { TYPE_RFN420FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL },
         { TYPE_RFN510FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL }
     };
