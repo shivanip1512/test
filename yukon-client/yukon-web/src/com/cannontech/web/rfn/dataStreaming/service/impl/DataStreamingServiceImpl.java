@@ -238,7 +238,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     public void cancel(String key, LiteYukonUser user) {
         DataStreamingConfigResult result = resultsCache.getResult(key);
         result.getCommandCompletionCallback().cancel();
-        porterConn.cancel(result.getCommandCompletionCallback() ,user);
+        porterConn.cancel(result ,user);
     }
 
     @Override

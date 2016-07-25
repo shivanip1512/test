@@ -2,6 +2,7 @@ package com.cannontech.web.rfn.dataStreaming;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,10 @@ import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
@@ -47,6 +51,7 @@ public class DataStreamingPorterConnection {
     @Autowired private DataStreamingDevSettings devSettings;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+    @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     private FakeDataStreamingCommandRequestDeviceExecutor fakeCommandExecutor;
     
     @PostConstruct
@@ -137,9 +142,14 @@ public class DataStreamingPorterConnection {
         return callback;
     }
 
-    public void cancel(CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback, LiteYukonUser user) {
-        if (!devSettings.isSimulatePorterConfigResponse()) {
-            commandExecutor.cancelExecution(commandCompletionCallback, user, false);
+    public void cancel(DataStreamingConfigResult result, LiteYukonUser user) {
+        if (devSettings.isSimulatePorterConfigResponse()) {
+            CommandRequestExecution cre = result.getExecution();
+            cre.setStopTime(new Date());
+            cre.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.CANCELLED);
+            commandRequestExecutionDao.saveOrUpdate(cre);
+        }else{
+            commandExecutor.cancelExecution(result.getCommandCompletionCallback(), user, true);
         }
     }
 }
