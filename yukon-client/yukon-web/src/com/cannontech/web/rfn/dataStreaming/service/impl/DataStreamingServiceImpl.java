@@ -121,8 +121,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Override
     public DataStreamingConfigResult assignDataStreamingConfig(int configId, DeviceCollection deviceCollection,
             LiteYukonUser user) {
-        List<Integer> deviceIds = new ArrayList<>();
-        deviceCollection.getDeviceList().forEach(device -> deviceIds.add(device.getDeviceId()));
+        List<Integer> deviceIds = getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
         deviceBehaviorDao.assignBehavior(configId, BehaviorType.DATA_STREAMING, deviceIds);
         return sendConfiguration(user, deviceCollection);
     }
@@ -203,12 +202,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         result.setConfigCallback(callback);
         List<SimpleDevice> allDevices = deviceCollection.getDeviceList();
         deviceGroupMemberEditorDao.addDevices(allDevicesGroup, allDevices);
-        List<SimpleDevice> unsupportedDevices =
-            deviceCollection.getDeviceList().stream().filter((x) -> !x.getDeviceType().isRfMeter()).collect(
-                Collectors.toList());
-        List<SimpleDevice> supportedDevices = new ArrayList<>();
-        supportedDevices.addAll(allDevices);
-        supportedDevices.removeAll(unsupportedDevices);
+        List<SimpleDevice> unsupportedDevices = new ArrayList<>();
+        List<SimpleDevice> supportedDevices = getSupportedDevices(deviceCollection);
+        unsupportedDevices.addAll(allDevices);
+        unsupportedDevices.removeAll(supportedDevices);
         if (!unsupportedDevices.isEmpty()) {
             log.info(unsupportedDevices.size()+" devices are unsupported.");
             deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices);
@@ -224,6 +221,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         }
         updateRequestCount(execution, supportedDevices.size());
         return result;
+    }
+    
+    private List<SimpleDevice> getSupportedDevices(DeviceCollection deviceCollection) {
+        List<SimpleDevice> supportedDevices =
+            deviceCollection.getDeviceList().stream().filter((x) -> x.getDeviceType().isRfMeter()).collect(
+                Collectors.toList());
+        return supportedDevices;
     }
     
     private void updateRequestCount(CommandRequestExecution execution, int count){
@@ -242,9 +246,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user) {
-        List<Integer> deviceIds = new ArrayList<>();
-        deviceCollection.getDeviceList().forEach(device -> deviceIds.add(device.getDeviceId()));
+    public DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection,
+            LiteYukonUser user) {
+        List<Integer> deviceIds =
+            deviceCollection.getDeviceList().stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
         deviceBehaviorDao.unassignBehavior(BehaviorType.DATA_STREAMING, deviceIds);
         return sendConfiguration(user, deviceCollection);
     }
