@@ -41,6 +41,13 @@
             <cti:button id="cancel-btn" nameKey="cancel" data-key="${resultsId}" />
 
         </div>
+        
+        <div class="stacked js-results-detail dn">
+            <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
+                <cti:param name="commandRequestExecutionId" value="${result.execution.id}" />
+            </cti:url>
+            <a href="${creResultsUrl}"><i:inline key=".results.view" /></a>
+        </div>
 
         <%-- SUCCESS COUNT --%>
         <div class="fwb stacked">
@@ -82,6 +89,7 @@
                     deviceCollection="${result.failureDeviceCollection}" />
             </div>
         </c:if>
+        
         <cti:dataUpdaterCallback
             function="yukon.ui.progressbar.toggleElementsWhenTrue(['js-error-actions'],true)"
             initialize="true" value="DATA_STREAMING/${resultsId}/IS_COMPLETE_WITH_FAILURES" />

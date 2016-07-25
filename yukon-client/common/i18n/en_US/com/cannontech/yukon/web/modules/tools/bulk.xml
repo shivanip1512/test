@@ -418,7 +418,7 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.unsupportedLabel">Unsupported</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.cancelledLabel">Canceled</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.view">View Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.view">View Results Detail</entry>
     
     
     <!-- SEND CONFIG -->

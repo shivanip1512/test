@@ -117,6 +117,8 @@ yukon.bulk.dataStreaming = (function () {
                     });
                     
                     $('.js-progress .js-action').show();
+                    $('.js-results-detail').show();
+                    $('#cancel-btn').hide();
                 }
             }
     };
