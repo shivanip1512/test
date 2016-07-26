@@ -3,6 +3,7 @@
 #include "millisecond_timer.h"
 #include "ctitime.h"
 #include "ctidate.h"
+#include "dbaccess.h"
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -165,6 +166,16 @@ public:
     }
 };
 
+struct PreventDatabaseConnections
+{
+    PreventDatabaseConnections()
+    {
+        gDatabaseConnectionFactory = []() -> SAConnection* { throw std::exception("Database access is forbidden in unit tests"); };
+    }
+};
+
 }
 }
 }
+
+extern Cti::Test::use_in_unit_tests_only test_tag;

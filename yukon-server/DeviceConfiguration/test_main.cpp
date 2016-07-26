@@ -5,6 +5,8 @@
 #include "PointAttribute.h"
 #include <chrono>
 
+#include "test_main.hpp"
+
 namespace std {
     ostream &operator<<(ostream& os, const chrono::minutes& m)
     {

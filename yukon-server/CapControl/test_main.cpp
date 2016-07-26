@@ -6,6 +6,9 @@
 
 #include <memory>
 
+//  Prevents database connections.  Currently not enabled for Cap Control, since some tests still invoke connections to the DB.
+//#include "test_main.hpp"
+
 // Close all yukon messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 

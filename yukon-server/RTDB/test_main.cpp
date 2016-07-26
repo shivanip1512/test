@@ -7,6 +7,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "test_main.hpp"
+
 using Cti::Devices::Commands::RfnCommand;
 
 struct test_MctDevice : Cti::Devices::MctDevice

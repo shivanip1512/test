@@ -173,6 +173,11 @@ SAConnection* createDBConnection()
 DLLEXPORT
 SAConnection* getNewConnection()
 {
+    return gDatabaseConnectionFactory();
+}
+
+DLLEXPORT std::function<SAConnection*(void)> gDatabaseConnectionFactory = []()
+{
     CtiLockGuard<CtiCriticalSection> guard( DbMutex);
 
     for( auto& connHolder : connectionList )
@@ -207,7 +212,7 @@ SAConnection* getNewConnection()
     }
 
     return connHolder.connection;
-}
+};
 
 DLLEXPORT
 void releaseDBConnection(SAConnection *connection)
