@@ -6,6 +6,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="meterProfile.${mode}">
+<cti:checkAccountEnergyCompanyOperator showError="true" >
 <tags:setFormEditMode mode="${mode}"/>
     
 <script type="text/javascript">
@@ -145,4 +146,5 @@ $(document).on('click', '#cancelDeleteBtn', function() {
         </div>
 
     </form:form>
+    </cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

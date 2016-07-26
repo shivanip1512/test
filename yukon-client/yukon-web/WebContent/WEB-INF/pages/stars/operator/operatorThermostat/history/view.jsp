@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="thermostatHistory.${pageNameSuffix}">
-
+<cti:checkAccountEnergyCompanyOperator showError="true" >
 <cti:includeScript link="/resources/js/common/yukon.thermostat.js"/>
     
 <script type="text/javascript">
@@ -46,5 +46,5 @@ $(function(){
             <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp"/>
         </tags:sectionContainer>
     </div>
-
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

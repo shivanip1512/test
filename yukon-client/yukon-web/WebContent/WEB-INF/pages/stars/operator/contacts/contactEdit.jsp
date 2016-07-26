@@ -15,7 +15,7 @@ $(function() {
     });
 });
 </script>
-    
+    <cti:checkAccountEnergyCompanyOperator showError="true" >
     <tags:setFormEditMode mode="${mode}"/>
 
     <cti:url var="contactUpdateUrl" value="/stars/operator/contacts/contactUpdate"/>
@@ -127,5 +127,5 @@ $(function() {
             </cti:displayForPageEditModes>
         </div>
     </form:form>
-    
+    </cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

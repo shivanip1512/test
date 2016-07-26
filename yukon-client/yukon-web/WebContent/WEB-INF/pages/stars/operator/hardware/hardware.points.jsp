@@ -7,6 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="${page}">
+<cti:checkAccountEnergyCompanyOperator showError="true" >
     <cti:url var="url" value="/stars/operator/hardware/points">
         <cti:param name="deviceId" value="${deviceId}"/>
         <cti:param name="accountId" value="${accountId}"/>
@@ -18,4 +19,5 @@
         <cti:url var="download" value="/common/pao/${deviceId}/download"/>
         <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
     </div>
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

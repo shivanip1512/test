@@ -7,6 +7,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage module="operator" page="workOrder.${mode}">
+<cti:checkAccountEnergyCompanyOperator showError="true" >
     <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
@@ -206,5 +207,5 @@
             </cti:displayForPageEditModes>
         </div>
     </form:form>
-    
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

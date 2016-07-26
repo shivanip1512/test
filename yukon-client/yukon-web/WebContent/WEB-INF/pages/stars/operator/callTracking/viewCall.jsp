@@ -6,6 +6,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="operator" page="viewCall.${mode}">
+<cti:checkAccountEnergyCompanyOperator showError="true" >
 <tags:setFormEditMode mode="${mode}"/>
 
     <cti:url var="deleteUrl" value="/stars/operator/callTracking/deleteCall"/>
@@ -85,5 +86,5 @@
         </cti:displayForPageEditModes>
         
     </form:form>
-    
+    </cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

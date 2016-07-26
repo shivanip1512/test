@@ -148,23 +148,25 @@ public class ApplianceDaoImpl implements ApplianceDao {
         
         try {
             List<Integer> applianceIds = yukonJdbcTemplate.queryForList(applianceIdsSQL, Integer.class);
-                
-            for (int i = 0; i < ApplianceBase.DEPENDENT_TABLES.length; i++) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("DELETE FROM " + ApplianceBase.DEPENDENT_TABLES[i] + " WHERE applianceId IN (",applianceIds,")");
-                stmt.setSQLString( sql.toString() );
+            if (!applianceIds.isEmpty()) {
+                for (int i = 0; i < ApplianceBase.DEPENDENT_TABLES.length; i++) {
+                    SqlStatementBuilder sql = new SqlStatementBuilder();
+                    sql.append("DELETE FROM " + ApplianceBase.DEPENDENT_TABLES[i] + " WHERE applianceId IN (",
+                        applianceIds, ")");
+                    stmt.setSQLString(sql.toString());
+                    stmt.execute();
+                }
+                SqlStatementBuilder lmHardwareConfigurationSQL = new SqlStatementBuilder();
+                lmHardwareConfigurationSQL.append("DELETE FROM LMHardwareConfiguration WHERE applianceId IN (",
+                    applianceIds, ")");
+                stmt.setSQLString(lmHardwareConfigurationSQL.toString());
+                stmt.execute();
+
+                SqlStatementBuilder applianceBaseSQL = new SqlStatementBuilder();
+                applianceBaseSQL.append("DELETE FROM ApplianceBase " + "WHERE applianceId IN (", applianceIds, ")");
+                stmt.setSQLString(applianceBaseSQL.toString());
                 stmt.execute();
             }
-            SqlStatementBuilder lmHardwareConfigurationSQL = new SqlStatementBuilder();
-            lmHardwareConfigurationSQL.append("DELETE FROM LMHardwareConfiguration WHERE applianceId IN (",applianceIds,")");
-            stmt.setSQLString( lmHardwareConfigurationSQL.toString() );
-            stmt.execute();
-            
-            SqlStatementBuilder applianceBaseSQL = new SqlStatementBuilder();
-            applianceBaseSQL.append("DELETE FROM ApplianceBase " +
-            		                "WHERE applianceId IN (",applianceIds,")" );
-            stmt.setSQLString(applianceBaseSQL.toString());
-            stmt.execute();
         }
         catch (CommandExecutionException e) {
             CTILogger.error( e.getMessage(), e );

@@ -7,7 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="optOut.inventoryList">
-
+<cti:checkAccountEnergyCompanyOperator showError="true" >
 <script type="text/javascript">
 function createJSON () {
     var array = [],
@@ -120,5 +120,5 @@ function createJSON () {
     <form:hidden path="durationInDays"/>
     <form:hidden path="startDate"/>
 </form:form>
-
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

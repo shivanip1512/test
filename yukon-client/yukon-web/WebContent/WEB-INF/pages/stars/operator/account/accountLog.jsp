@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="accountLog">
-
+<cti:checkAccountEnergyCompanyOperator showError="true" >
     <table class="compact-results-table row-highlighting">
         <thead>
             <tr>
@@ -25,5 +25,5 @@
             </c:forEach>
         </tbody>
     </table>
-    
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

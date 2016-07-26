@@ -6,6 +6,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
+
 <h3><cti:msg key="yukon.web.modules.operator.optOut.header"/></h3>
 
 <c:if test="${!empty currentOptOutList && allOptedOut}">
@@ -14,10 +15,9 @@
 <c:if test="${!empty currentOptOutList && !optOutsAvailable}">
     <cti:msg key="yukon.web.modules.operator.optOut.noOptOutsAvailable"/>
 </c:if>
-
 <c:if test="${!allOptedOut}">
     <cti:msg key="yukon.web.modules.operator.optOut.description"/><br><br>
-
+    
     <form action="<cti:url value="stars/operator/optout/optout2"/>" method="POST">
         <cti:csrfToken/>
         <table>
@@ -245,4 +245,3 @@
         <br><cti:msg key="yukon.web.modules.operator.optOut.noPreviousOptOuts"/>
     </c:otherwise>
 </c:choose>
-    

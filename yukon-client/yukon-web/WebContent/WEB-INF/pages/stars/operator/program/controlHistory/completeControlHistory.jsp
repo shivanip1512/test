@@ -4,8 +4,8 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage module="operator" page="completeControlHistory">
+<cti:checkAccountEnergyCompanyOperator showError="true" >
     <cti:includeScript link="/resources/js/pages/yukon.assets.controlhistory.detail.js"/>
-    
     <c:set var="controls">
         <i:inline key=".viewTitle"/>
         <div data-account-id="${accountId}"
@@ -24,5 +24,5 @@
     <tags:sectionContainer2 nameKey="controlEventsTitle" controls="${controls}" styleClass="form-controls">
         <div class="js-block-this js-control-events" style="min-height: 50px;"><i:inline key=".loading"/></div>
     </tags:sectionContainer2>
-
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

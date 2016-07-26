@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
     
 <cti:standardPage module="operator" page="thermostat.schedules.${pageName}">
-
+<cti:checkAccountEnergyCompanyOperator showError="true" >
 <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
 <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
 <cti:includeScript link="${timeFormatter}"/>
@@ -189,5 +189,5 @@ $(function(){
         <cti:msg2 key="yukon.web.modules.consumer.savedSchedules.hint"/>
     </div>
 </i:simplePopup>
-
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

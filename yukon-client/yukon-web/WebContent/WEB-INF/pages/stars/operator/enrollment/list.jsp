@@ -6,7 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="enrollmentList">
-
+<cti:checkAccountEnergyCompanyOperator showError="true" >
 <cti:includeScript link="/resources/js/pages/yukon.assets.enroll.js"/>
 
 <cti:msg2 var="removeTitle" key=".remove.title"/>
@@ -123,5 +123,5 @@
 </tags:sectionContainer2>
 
 <dr:enrollmentHistory hardwareConfigActions="${hardwareConfigActions}"/>
-
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

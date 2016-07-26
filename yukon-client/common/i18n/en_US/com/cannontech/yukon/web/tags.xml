@@ -10,7 +10,8 @@
     <entry key="yukon.web.device.bulk.selectDevicesTabbed.devicesCount">Count</entry>
     
      <!-- CheckEnergyCompanyOperatorTag.java -->
-     <entry key="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator">The user must be associated with an Energy Company to access this page.</entry>
+    <entry key="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator">The user must be associated with an Energy Company to access this page.</entry>
+    <entry key="yukon.web.taglib.CheckAccountEnergyCompanyOperatorTag.userIsNotAuthorized">User is not authorized to see the account information. The user can manage the Accounts/Hardware of Member Energy Company Only if user has Admin Manage members privilege.</entry>
 
     <entry key="yukon.web.tags.dataUpdateEnabler.lostConnection">Connection to server has been lost</entry>
 
