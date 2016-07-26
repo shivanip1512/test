@@ -588,7 +588,9 @@ std::set<long> CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_typ
     }
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
-    return conIter->second;
+    return conIter != _conMgrPointMap.end() 
+		? conIter->second
+		: std::set<long>{};
 }
 
 /** Remove all points from the specified ConnectionManager */
