@@ -1,5 +1,7 @@
 package com.cannontech.clientutils;
 
+import java.util.Set;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/15/00 2:13:08 PM)
@@ -30,5 +32,5 @@ void receivedSignal( Signal msg );
  * Insert the method's description here.
  * Creation date: (6/15/00 2:14:26 PM)
  */
-void reRegister( Long[] ptIDs );
+void reRegister( Set<Integer> ptIDs );
 }

@@ -91,7 +91,7 @@ public static void main(String[] args)
 	boolean forever = ( numChanges == -1);
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 	PointRegistration pr = new PointRegistration();
-	pr.setRegFlags( PointRegistration.REG_ALL_PTS_MASK );
+	pr.setRegFlags( PointRegistration.REG_ALL_POINTS );
 	conn.setRegistrationMsg( pr );
 	conn.addMessageListener( new PointGenerator() );
 

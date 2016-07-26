@@ -8,8 +8,7 @@ package com.cannontech.clientutils;
  * @deprecated Only TDC should continue using this - UGLY
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
@@ -72,23 +71,18 @@ protected IServerConnection getConnection() {
  * Version: <version>
  * @return com.cannontech.message.dispatch.message.PointRegistration
  */
-public PointRegistration getPointRegistration( Long[] ptIDs )
+public PointRegistration getPointRegistration( Set<Integer> ptIDs )
 {
 	//Register for points
 	PointRegistration pReg = new PointRegistration();	
-    List<Integer> list = new ArrayList<Integer>();
 	
 	if( ptIDs != null )
 	{
-		for( int i = 0; i < ptIDs.length; i++ ) {
-            long id = ptIDs[i];
-			list.add((int)id);
-        }
-		pReg.setPointList( list );
-	}
-	else
+        pReg.setPointIds(ptIDs);
+    }
+    else
 	{	// just register for everything
-		pReg.setRegFlags( PointRegistration.REG_ALL_PTS_MASK | 
+		pReg.setRegFlags( PointRegistration.REG_ALL_POINTS | 
 					  PointRegistration.REG_EVENTS | 
 					  PointRegistration.REG_ALARMS );
 	}
@@ -132,7 +126,7 @@ private void initialize()
  * Creation date: (5/4/00 3:29:31 PM)
  * Version: <version>
  */
-public void reRegister( Long[] ptIDs ) 
+public void reRegister( Set<Integer> ptIDs ) 
 {
 	getConnection().write( getPointRegistration(ptIDs) );
 }

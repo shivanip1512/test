@@ -1,5 +1,8 @@
 package com.cannontech.tdc;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * This type was created in VisualAge.
  */
@@ -22,7 +25,7 @@ import com.cannontech.tdc.logbox.MessageBoxFrame;
 public class TDCClient extends com.cannontech.clientutils.ClientBase
 {
 	// points we want to register for
-	private Long[] pointIDArray = null;
+	private Set<Integer> pointIDs = null;
 	
 	private TDCMainPanel caller = null;
 	private Display2WayDataAdapter callerModel = null;
@@ -31,12 +34,12 @@ public class TDCClient extends com.cannontech.clientutils.ClientBase
 /**
  * TDCClient constructor comment.
  */
-public TDCClient( TDCMainPanel parent, Long[] pointIDs, java.util.Observer observingObject ) 
+public TDCClient( TDCMainPanel parent, Set<Integer> pointIDs, java.util.Observer observingObject ) 
 {
 	super( observingObject );
 	
 	this.caller = parent;
-	setPointIDArray( pointIDs );
+	setPointIDs( pointIDs );
 	callerModel = caller.getTableDataModel();
 }
 /**
@@ -44,8 +47,8 @@ public TDCClient( TDCMainPanel parent, Long[] pointIDs, java.util.Observer obser
  * Creation date: (11/16/2001 12:13:59 PM)
  * @return java.lang.Long[]
  */
-private java.lang.Long[] getPointIDArray() {
-	return pointIDArray;
+private Set<Integer> getPointIDs() {
+	return pointIDs;
 }
 /**
  * Insert the method's description here.
@@ -78,13 +81,14 @@ private PointRegistration getPtRegMsg()
 		StringBuffer buf = new StringBuffer(
 			"Registering display " + displayName + " for ALARMS and Point IDs : ");
 				
-		if( getPointIDArray() != null )
+		if( getPointIDs() != null )
 		{
-			for( int i = 0; i < getPointIDArray().length; i++ )
-				buf.append( getPointIDArray()[i].toString() + ",");
-				
-			pReg = super.getPointRegistration( getPointIDArray() );
-		}
+	        buf.append(getPointIDs().stream()
+		            .map(id -> id.toString())
+		            .collect(Collectors.joining(",")));
+			
+			pReg = super.getPointRegistration( getPointIDs() );
+        }
 			
 		pReg.setRegFlags( pReg.getRegFlags() | PointRegistration.REG_ALARMS );
 
@@ -152,9 +156,9 @@ public void receivedSignal( Signal signal )
 /**
  * This method was created in VisualAge.
  */
-public void reRegister( Long[] pointIDs)
+public void reRegister( Set<Integer> pointIDs)
 {
-	setPointIDArray( pointIDs );
+	setPointIDs( pointIDs );
 
 	PointRegistration pReg = getPtRegMsg();
 	
@@ -175,7 +179,7 @@ public void reRegisterForNothing()
  * Creation date: (11/16/2001 12:13:59 PM)
  * @param newPointIDArray java.lang.Long[]
  */
-private void setPointIDArray(java.lang.Long[] newPointIDArray) {
-	pointIDArray = newPointIDArray;
+private void setPointIDs(Set<Integer> newPointIDs) {
+	pointIDs = newPointIDs;
 }
 }

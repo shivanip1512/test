@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -4498,15 +4499,15 @@ public void resetFilter()
 private void setUpMainFrame( String previousItem )
 {
 	
-	Long[] allPointIDs = getMainPanel().getTableDataModel().getAllPointIDs();
+	Set<Integer> allPointIDs = getMainPanel().getTableDataModel().getAllPointIDs();
 	
 	if( allPointIDs != null ) {
-    	for (long pointId : allPointIDs) {
+    	for (int pointId : allPointIDs) {
     		
     		//fire a DBChange to allow other TDC's to refresh their display data from the DB
     		DBChangeMsg dbChange =
     				new DBChangeMsg(
-    					(int)pointId,
+    					pointId,
     					DBChangeMsg.CHANGE_TDC_DB,
     					"ALL",
     					"ALL",

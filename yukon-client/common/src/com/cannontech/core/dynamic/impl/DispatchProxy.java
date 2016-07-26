@@ -147,7 +147,7 @@ class DispatchProxy {
     public void registerForPoints() {
         validateDispatchConnection();
         PointRegistration pReg = new PointRegistration();
-        pReg.setRegFlags(PointRegistration.REG_ALL_PTS_MASK | PointRegistration.REG_NO_UPLOAD);
+        pReg.setRegFlags(PointRegistration.REG_ALL_POINTS | PointRegistration.REG_NO_UPLOAD);
         dispatchConnection.write(pReg);
     }
     

@@ -46,7 +46,7 @@ public static void main(String[] args) {
 	// Register for point changes
 	com.cannontech.clientutils.CTILogger.info("Registering for all point changes");
 	com.cannontech.message.dispatch.message.PointRegistration pReg = new com.cannontech.message.dispatch.message.PointRegistration();
-	pReg.setRegFlags( com.cannontech.message.dispatch.message.PointRegistration.REG_ALL_PTS_MASK);
+	pReg.setRegFlags( com.cannontech.message.dispatch.message.PointRegistration.REG_ALL_POINTS);
 	conn.write( pReg );
 
 	//Wait for point change messages - single or multi

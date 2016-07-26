@@ -84,7 +84,7 @@ public class VGConnPounder {
             reg.setAppKnownPort(0);
             reg.setAppExpirationDelay(5000);
             PointRegistration pReg = new PointRegistration();
-            pReg.setRegFlags(PointRegistration.REG_ALL_PTS_MASK
+            pReg.setRegFlags(PointRegistration.REG_ALL_POINTS
                     | PointRegistration.REG_ALARMS);
 
             com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
