@@ -7,6 +7,11 @@ public class DeviceCreationException extends DisplayableRuntimeException {
 
     private static final String keyBase = "yukon.exception.deviceCreationException.";
 
+    // This constructor is left for those DeviceCreationException where i18 is not required. 
+    public DeviceCreationException(String message) {
+        super(message);
+    }
+
     public DeviceCreationException(String message, String key) {
         super(message, keyBase + key);
     }

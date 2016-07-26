@@ -58,10 +58,9 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
             
             Integer routeId = paoDao.getRouteIdForRouteName(routeStr);
             if (routeId == null) {
-                throw new DeviceCreationException("Could not create device by type: Invalid route name.",
-                                                  "invalidRouteName");
+                throw new DeviceCreationException("Could not create device by type: Invalid route name.");
             }
-	
+
             device = deviceCreationService.createCarrierDeviceByDeviceType(paoType, name, address, routeId, true);
 
         } catch (NumberFormatException e) {

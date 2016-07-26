@@ -117,14 +117,14 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
         // test
         if (!dlcAddressRangeService.isValidEnforcedAddress(paoType, address)) {
-            throw new DeviceCreationException("Invalid address: " + address + ".", "invalidAddress", address );
+            throw new DeviceCreationException("Invalid address: " + address + ".");
         }
         else if (StringUtils.isBlank(name)) {
-            throw new DeviceCreationException("Device name is blank.", "blankName");
+            throw new DeviceCreationException("Device name is blank.");
         }
         
         if (!(PaoUtils.isValidPaoName(name))) {
-            throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ ,\" ' |", "invalidChars");
+            throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ ,\" ' |");
         }
 
         // create
