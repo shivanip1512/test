@@ -21,6 +21,9 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -34,6 +37,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private DbChangeManager dbChangeManager;
 
     private ChunkingSqlTemplate chunkyJdbcTemplate;
 
@@ -109,6 +113,9 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.values(energyCompanyId, userId);
         
         yukonJdbcTemplate.update(sql);
+        
+        dbChangeManager.processDbChange(userId, DBChangeMsg.CHANGE_YUKON_USER_DB, DBChangeMsg.CAT_YUKON_USER, 
+            DBChangeMsg.CAT_YUKON_USER, DbChangeType.ADD);
     }
     
     @Override
@@ -119,6 +126,9 @@ public class ECMappingDaoImpl implements ECMappingDao {
         sql.append("AND EnergyCompanyID").eq(energyCompanyId);
         
         yukonJdbcTemplate.update(sql);
+        
+        dbChangeManager.processDbChange(userId, DBChangeMsg.CHANGE_YUKON_USER_DB, DBChangeMsg.CAT_YUKON_USER, 
+            DBChangeMsg.CAT_YUKON_USER, DbChangeType.DELETE);
     }
 
     
