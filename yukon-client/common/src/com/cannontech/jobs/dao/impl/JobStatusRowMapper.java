@@ -2,6 +2,7 @@ package com.cannontech.jobs.dao.impl;
 
 import java.sql.SQLException;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.jobs.model.JobRunStatus;
@@ -23,7 +24,7 @@ final class JobStatusRowMapper<T extends YukonJob> implements YukonRowMapper<Job
         jobStatus.setJobRunStatus(jobRunStatus);
         jobStatus.setStartTime(rs.getDate("startTime"));
         jobStatus.setStopTime(rs.getDate("stopTime"));
-        jobStatus.setMessage(rs.getString("message"));
+        jobStatus.setMessage(SqlUtils.convertDbValueToString(rs.getString("message")));
 
         T job = internalJobRowMapper.mapRow(rs);
         jobStatus.setJob(job);

@@ -42,7 +42,7 @@ public class JobStatusDaoImpl implements JobStatusDao {
             p.addValue("stopTime", stopTime, Types.TIMESTAMP);
             String jobState = status.getJobRunStatus().name();
             p.addValue("jobState", jobState);
-            String message = status.getMessage();
+            String message = SqlUtils.convertStringToDbValue(status.getMessage());
             p.addValue("message", message);   
         }
 
@@ -59,7 +59,6 @@ public class JobStatusDaoImpl implements JobStatusDao {
     
     @Override
     public void saveOrUpdate(JobStatus<?> status) {
-        status.setMessage(SqlUtils.convertStringToDbValue(status.getMessage()));
         template.save(status);
     }
     
