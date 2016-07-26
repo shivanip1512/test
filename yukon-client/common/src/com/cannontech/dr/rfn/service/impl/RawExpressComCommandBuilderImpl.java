@@ -68,7 +68,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                     "Device serial number either contained alphanumeric characters or was too large. "
                             + "Non-numeric characters are not allowed in ExpressCom message serial numbers. "
                             + "Serial numbers must not be larger than 2147483647."
-                            + "Device: " + device + " did not meet these requirements.");
+                            + "Device: " + device.getName() + " did not meet these requirements.");
         }
         ByteBuffer outputBuffer = ByteBuffer.allocate(1024);
 
