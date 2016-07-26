@@ -47,7 +47,7 @@
             <cti:csrfToken/>
             <tags:hidden path="latitude"/>
             <tags:hidden path="longitude"/>
-            <div id="dispatchError2" class="error" style="display:none">
+            <div id="dispatchError-popup" class="error" style="display:none">
                 <tags:alertBox key=".error.dispatchNotConnected"/>
             </div>
             <h4><i:inline key=".name"/></h4>

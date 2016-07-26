@@ -37,7 +37,7 @@ yukon.weather = (function() {
 
     /** Saves a weather station */
     _saveWeatherStationBtnClick = function() {
-        $("#dispatchError2").hide();
+        $("#dispatchError-popup").hide();
         $("#saveWeatherStationBtn").prop('disabled', true);
         $("#saveWeatherLocationForm").ajaxSubmit({
             success: function(data) {
@@ -53,7 +53,7 @@ yukon.weather = (function() {
                 $("#saveWeatherStationBtn").prop('disabled', false);
             },
             error: function(data, xhr){
-                $("#dispatchError2").show();
+                $("#dispatchError-popup").show();
                 $("#saveWeatherStationBtn").prop('disabled', false);
             }
         });
