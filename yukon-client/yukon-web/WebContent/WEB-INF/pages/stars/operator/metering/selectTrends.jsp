@@ -48,5 +48,5 @@
         </c:choose>
     
     </tags:sectionContainer2>
-    <cti:checkAccountEnergyCompanyOperator showError="true" >
+    </cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>
