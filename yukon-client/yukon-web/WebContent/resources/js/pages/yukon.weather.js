@@ -37,17 +37,26 @@ yukon.weather = (function() {
 
     /** Saves a weather station */
     _saveWeatherStationBtnClick = function() {
-        $("#saveWeatherLocationForm").ajaxSubmit({success: function(data) {
-            $("#weatherStationDialog").fadeOut(50, function () {
-                $(this).html(data);
-                if ($("#dialogState").val() == 'done') {
-                    $("#weatherStationDialog").dialog('close');
-                    _reloadWeatherStations();
-                } else {
-                    $(this).fadeIn(50);
-                }
-            });
-        }});
+        $("#dispatchError2").hide();
+        $("#saveWeatherStationBtn").prop('disabled', true);
+        $("#saveWeatherLocationForm").ajaxSubmit({
+            success: function(data) {
+                $("#weatherStationDialog").fadeOut(50, function () {
+                    $(this).html(data);
+                    if ($("#dialogState").val() == 'done') {
+                        $("#weatherStationDialog").dialog('close');
+                        _reloadWeatherStations();
+                    } else {
+                        $(this).fadeIn(50);
+                    }
+                });
+                $("#saveWeatherStationBtn").prop('disabled', false);
+            },
+            error: function(data, xhr){
+                $("#dispatchError2").show();
+                $("#saveWeatherStationBtn").prop('disabled', false);
+            }
+        });
     },
 
     /** Reloads the weather stations */
