@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
@@ -41,11 +40,6 @@ public interface DataStreamingService {
      */
     DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user);
     
-    /**
-     * Save the reported data streaming configuration that was reported to us from the device, via Porter.
-     */
-    void saveReportedConfig(ReportedDataStreamingConfig config, int deviceId);
-
     VerificationInformation verifyConfiguration(int configId, List<Integer> deviceIds);
 
     int saveConfig(DataStreamingConfig config);

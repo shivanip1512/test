@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -16,9 +17,11 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
+import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -158,20 +161,22 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         sql.append("JOIN DeviceBehaviorMap ON DeviceBehaviorMap.BehaviorId = Behavior.BehaviorId");
         sql.append("WHERE BehaviorType").eq_k(type);
         sql.append("AND DeviceId").eq(deviceId);
-
-        Behavior behavior = jdbcTemplate.queryForObject(sql, new YukonRowMapper<Behavior>() {
-            @Override
-            public Behavior mapRow(YukonResultSet rs) throws SQLException {
-                Behavior behavior = new Behavior();
-                behavior.setId(rs.getInt("BehaviorId"));
-                behavior.setType(rs.getEnum("BehaviorType", BehaviorType.class));
-                return behavior;
-            }
-        });
-
-        Map<String, String> values = getBehaviorValuesByBehaviorId(behavior.getId());
-        behavior.setValues(values);
-        return behavior;
+        try {
+            Behavior behavior = jdbcTemplate.queryForObject(sql, new YukonRowMapper<Behavior>() {
+                @Override
+                public Behavior mapRow(YukonResultSet rs) throws SQLException {
+                    Behavior behavior = new Behavior();
+                    behavior.setId(rs.getInt("BehaviorId"));
+                    behavior.setType(rs.getEnum("BehaviorType", BehaviorType.class));
+                    return behavior;
+                }
+            });
+            Map<String, String> values = getBehaviorValuesByBehaviorId(behavior.getId());
+            behavior.setValues(values);
+            return behavior;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Behavior with deviceId=" + deviceId + " and type=" + type + " doesn't exist");
+        }
     }
     
     @Override
@@ -219,11 +224,23 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             initParameterSink(report, params);
         }
         jdbcTemplate.update(updateCreateSql);
-        saveBehaviorReportValues(report.getId(), report.getValues());
+        saveBehaviorReportValues(report.getId(), report.getValuesMap());
 
         return report.getId();
     }
     
+    @Override
+    @Transactional
+    public void updateBehaviorReportStatus(BehaviorType type, BehaviorReportStatus status, List<Integer> deviceIds) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        SqlParameterSink params = updateSql.update("BehaviorReport");
+        params.addValue("BehaviorStatus", status);
+        params.addValue("TimeStamp", new Instant());
+        updateSql.append("WHERE BehaviorType").eq_k(type);
+        updateSql.append("AND DeviceId").in(deviceIds);
+        jdbcTemplate.update(updateSql);
+    }
+
     private void initParameterSink(BehaviorReport report, SqlParameterSink params){
         params.addValue("BehaviorReportId", report.getId());
         params.addValue("DeviceId", report.getDeviceId());

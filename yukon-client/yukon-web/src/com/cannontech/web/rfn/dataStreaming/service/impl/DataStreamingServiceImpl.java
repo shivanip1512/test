@@ -1,11 +1,10 @@
 package com.cannontech.web.rfn.dataStreaming.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -47,14 +46,17 @@ import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class DataStreamingServiceImpl implements DataStreamingService {
 
     private static final Logger log = YukonLogManager.getLogger(DataStreamingServiceImpl.class);
 
+    public final static String STREAMING_ENABLED_STRING = "streamingEnabled";
     public final static String CHANNELS_STRING = "channels";
     public final static String ATTRIBUTE_STRING = ".attribute";
     public final static String INTERVAL_STRING = ".interval";
+    public final static String ENABLED_STRING = ".enabled";
 
     @Autowired private DeviceBehaviorDao deviceBehaviorDao;
     @Autowired private DataStreamingPorterConnection porterConn;
@@ -63,6 +65,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+    @Autowired private ConnPool connPool;
     @Resource(name = "recentResultsCache") private RecentResultsCache<DataStreamingConfigResult> resultsCache;
 
     @Override
@@ -117,15 +120,43 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         // Return VerificationInfo
         return null;
     }
+    
+    @Override
+    public DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection,
+            LiteYukonUser user) {
+        if (isValidPorterConnection()) {
+            List<Integer> deviceIds =
+                    getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
+            deviceIds.forEach(id -> {
+                BehaviorReport report = buildPendingReport(findDataStreamingConfigurationForDevice(id), id, false);
+                deviceBehaviorDao.saveBehaviorReport(report);
+            });
+            deviceBehaviorDao.unassignBehavior(BehaviorType.DATA_STREAMING, deviceIds);
+            return sendConfiguration(user, deviceCollection);
+        } else {
+            return createNoPorterConnectionResult(deviceCollection);
+        }
+    }
 
     @Override
     public DataStreamingConfigResult assignDataStreamingConfig(int configId, DeviceCollection deviceCollection,
             LiteYukonUser user) {
-        List<Integer> deviceIds = getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
-        deviceBehaviorDao.assignBehavior(configId, BehaviorType.DATA_STREAMING, deviceIds);
-        return sendConfiguration(user, deviceCollection);
+        if (isValidPorterConnection()) {
+            List<Integer> deviceIds =
+                getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
+            if (!deviceIds.isEmpty()) {
+                deviceBehaviorDao.assignBehavior(configId, BehaviorType.DATA_STREAMING, deviceIds);
+                deviceIds.forEach(id -> {
+                    BehaviorReport report = buildPendingReport(findDataStreamingConfiguration(configId), id, true);
+                    deviceBehaviorDao.saveBehaviorReport(report);
+                });
+            }
+            return sendConfiguration(user, deviceCollection);
+        } else {
+            return createNoPorterConnectionResult(deviceCollection);
+        }
     }
-    
+
     private DataStreamingConfigResult sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection) {
         log.info("Attemting to send configuration command to "+deviceCollection.getDeviceCount()+" devices.");
         final DataStreamingConfigResult result = new DataStreamingConfigResult();
@@ -141,7 +172,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         final StoredDeviceGroup canceledGroup = tempDeviceGroupService.createTempGroup();
         final StoredDeviceGroup unsupportedGroup = tempDeviceGroupService.createTempGroup();
 
-        result.setAllDevicesCollection(deviceCollection);
+        result.setAllDevicesCollection(deviceGroupCollectionHelper.buildDeviceCollection(allDevicesGroup));
         result.setSuccessDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(successGroup));
         result.setFailureDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(failedGroup));
         result.setCanceledDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(canceledGroup));
@@ -151,13 +182,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             @Override
             public void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config) {
                 deviceGroupMemberEditorDao.addDevices(successGroup, device);
+                BehaviorReport report = buildConfirmedReport(config, device.getDeviceId());
+                deviceBehaviorDao.saveBehaviorReport(report);
             }
 
             @Override
             public void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error) {
                 log.debug("Recived a config error for device=" + device + " error=" + error.getDescription());
                 deviceGroupMemberEditorDao.addDevices(failedGroup, device);
-                result.addError(device, error);
+                deviceBehaviorDao.updateBehaviorReportStatus(BehaviorType.DATA_STREAMING, BehaviorReportStatus.FAILED,
+                    Arrays.asList(device.getDeviceId()));
             }
 
             @Override
@@ -190,11 +224,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     canceledDevices.addAll(deviceCollection.getDeviceList());
                     canceledDevices.removeAll(result.getSuccessDeviceCollection().getDeviceList());
                     canceledDevices.removeAll(result.getFailureDeviceCollection().getDeviceList());
-                    canceledDevices.removeAll(result.getUnsupportedCollection().getDeviceList());
+                    canceledDevices.removeAll(result.getUnsupportedDeviceCollection().getDeviceList());
                     completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.CANCELING);
                     commandRequestExecutionResultDao.saveUnsupported(
                         new HashSet<>(result.getCanceledDeviceCollection().getDeviceList()), execution.getId(),
                         CommandRequestUnsupportedType.CANCELED);
+                    deviceBehaviorDao.updateBehaviorReportStatus(BehaviorType.DATA_STREAMING,
+                        BehaviorReportStatus.CANCELED,
+                        canceledDevices.stream().map(s -> s.getDeviceId()).collect(Collectors.toList()));
                     updateRequestCount(execution, result.getFailureCount() + result.getSuccessCount());
                 }
             }
@@ -237,53 +274,40 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         }
         commandRequestExecutionDao.saveOrUpdate(execution);
     }
+    
+    private boolean isValidPorterConnection() {
+        if (!connPool.getDefPorterConn().isValid()) {
+            log.error("Porter connection is invalid.");
+            return false;
+        }
+        return true;
+    }
+    
+    private DataStreamingConfigResult createNoPorterConnectionResult(DeviceCollection deviceCollection){
+        DataStreamingConfigResult result = new DataStreamingConfigResult();
+
+        StoredDeviceGroup successGroup = tempDeviceGroupService.createTempGroup();
+        StoredDeviceGroup failedGroup = tempDeviceGroupService.createTempGroup();
+        StoredDeviceGroup canceledGroup = tempDeviceGroupService.createTempGroup();
+        StoredDeviceGroup unsupportedGroup = tempDeviceGroupService.createTempGroup();
+
+        result.setAllDevicesCollection(deviceCollection);
+        result.setSuccessDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(successGroup));
+        result.setFailureDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(failedGroup));
+        result.setCanceledDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(canceledGroup));
+        result.setUnsupportedCollection(deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup));
+        result.setExceptionReason("Porter connection is invalid.");
+        String resultsId = resultsCache.addResult(result);
+        result.setResultsId(resultsId);
+        result.complete();
+        return result;
+    }
 
     @Override
     public void cancel(String key, LiteYukonUser user) {
         DataStreamingConfigResult result = resultsCache.getResult(key);
         result.getCommandCompletionCallback().cancel();
         porterConn.cancel(result ,user);
-    }
-
-    @Override
-    public DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection,
-            LiteYukonUser user) {
-        List<Integer> deviceIds =
-            deviceCollection.getDeviceList().stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
-        deviceBehaviorDao.unassignBehavior(BehaviorType.DATA_STREAMING, deviceIds);
-        return sendConfiguration(user, deviceCollection);
-    }
-
-    @Override
-    public void saveReportedConfig(ReportedDataStreamingConfig config, int deviceId) {
-        BehaviorReport report = new BehaviorReport();
-        report.setType(BehaviorType.DATA_STREAMING);
-        report.setStatus(BehaviorReportStatus.PENDING);
-        report.setTimestamp(Instant.now());
-        report.setDeviceId(deviceId);
-        report.setValues(generateBehaviorReportValues(config));
-
-        deviceBehaviorDao.saveBehaviorReport(report);
-    }
-
-    private Map<String, String> generateBehaviorReportValues(ReportedDataStreamingConfig config) {
-        Map<String, String> values = new HashMap<>();
-
-        addReportValue("enabled", config.isStreamingEnabled(), values);
-        addReportValue("channels", config.getConfiguredMetrics().size(), values);
-
-        for (int i = 0; i < config.getConfiguredMetrics().size(); i++) {
-            ReportedDataStreamingAttribute metric = config.getConfiguredMetrics().get(i);
-            addReportValue("channels." + i + ".attribute", metric.getAttribute(), values);
-            addReportValue("channels." + i + ".interval", metric.getInterval(), values);
-            addReportValue("channels." + i + ".enabled", metric.isEnabled(), values);
-        }
-
-        return values;
-    }
-
-    private void addReportValue(String name, Object value, Map<String, String> values) {
-        values.put(name, String.valueOf(value));
     }
 
     /**
@@ -324,7 +348,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     private Behavior convertConfigToBehavior(DataStreamingConfig config) {
         Behavior behavior = new Behavior();
         behavior.setType(BehaviorType.DATA_STREAMING);
-        behavior.setId(behavior.getId());
         // only enabled attributes are stored in the database
         List<DataStreamingAttribute> attributes =
             config.getAttributes().stream().filter(x -> x.getAttributeOn() == Boolean.TRUE).collect(
@@ -338,6 +361,46 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             behavior.addValue(key + INTERVAL_STRING, interval);
         }
         return behavior;
+    }
+    
+    private BehaviorReport buildConfirmedReport(ReportedDataStreamingConfig config, int deviceId) {
+        BehaviorReport report = new BehaviorReport();
+        report.setType(BehaviorType.DATA_STREAMING);
+        report.setDeviceId(deviceId);
+        report.setStatus(BehaviorReportStatus.CONFIRMED);
+        report.setTimestamp(new Instant());
+        List<ReportedDataStreamingAttribute> attributes = config.getConfiguredMetrics();
+        report.addValue(CHANNELS_STRING, attributes.size());
+        report.addValue(STREAMING_ENABLED_STRING, config.isStreamingEnabled());
+        for (int i = 0; i < attributes.size(); i++) {
+            BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributes.get(i).getAttribute());
+            int interval = attributes.get(i).getInterval();
+            String key = CHANNELS_STRING + "." + i;
+            report.addValue(key + ATTRIBUTE_STRING, attribute);
+            report.addValue(key + INTERVAL_STRING, interval);
+            report.addValue(key + ENABLED_STRING, attributes.get(i).isEnabled());
+        }
+        return report;
+    }
+
+    private BehaviorReport buildPendingReport(DataStreamingConfig config, int deviceId, boolean enabled) {
+        BehaviorReport report = new BehaviorReport();
+        report.setType(BehaviorType.DATA_STREAMING);
+        report.setDeviceId(deviceId);
+        report.setStatus(BehaviorReportStatus.PENDING);
+        report.setTimestamp(new Instant());
+        List<DataStreamingAttribute> attributes = config.getAttributes();
+        report.addValue(CHANNELS_STRING, attributes.size());
+        report.addValue(STREAMING_ENABLED_STRING, enabled);
+        for (int i = 0; i < attributes.size(); i++) {
+            BuiltInAttribute attribute = attributes.get(i).getAttribute();
+            int interval = attributes.get(i).getInterval();
+            String key = CHANNELS_STRING + "." + i;
+            report.addValue(key + ATTRIBUTE_STRING, attribute);
+            report.addValue(key + INTERVAL_STRING, interval);
+            report.addValue(key + ENABLED_STRING, true);
+        }
+        return report;
     }
 
     private void completeCommandRequestExecutionRecord(CommandRequestExecution cre,

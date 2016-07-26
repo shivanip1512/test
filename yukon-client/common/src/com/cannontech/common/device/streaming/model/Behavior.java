@@ -42,6 +42,10 @@ public class Behavior {
         nameValueMap.put(name, value);
     }
     
+    public void addValue(String name, boolean value) {
+        nameValueMap.put(name, Boolean.toString(value));
+    }
+
     public void addValue(String name, int value) {
         addValue(name, Integer.toString(value));
     }

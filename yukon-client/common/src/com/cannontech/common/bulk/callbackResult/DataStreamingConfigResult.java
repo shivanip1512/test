@@ -3,17 +3,14 @@ package com.cannontech.common.bulk.callbackResult;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.model.SimpleDevice;
 
 public class DataStreamingConfigResult implements BackgroundProcessResultHolder {
     
@@ -36,9 +33,7 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     public DataStreamingConfigResult(){
         startTime = new Date();
     }
-    //This map contains failed devices
-    private final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<>(100, .75f, 1);
-    
+  
     @Override
     public boolean isComplete() {
         return complete;
@@ -59,14 +54,6 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     public void setComplete(boolean complete) {
         this.complete = complete;
-    }
-    
-    public void addError(SimpleDevice meter, SpecificDeviceErrorDescription error) {
-        errors.put(meter, error);
-    }
-    
-    public Map<SimpleDevice, SpecificDeviceErrorDescription> getErrors() {
-        return errors;
     }
     
     public boolean isExceptionOccured() {

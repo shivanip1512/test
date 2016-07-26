@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
+import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -61,5 +62,11 @@ public interface DeviceBehaviorDao {
      * @throws NotFoundException if no behavior of the specified type is assigned to the device.
      */
     Behavior getBehaviorByDeviceIdAndType(int deviceId, BehaviorType type);
+    
+    /**
+     * Updates behavior report status and timestamp.
+     * @param status - status to update to
+     */
+    void updateBehaviorReportStatus(BehaviorType type, BehaviorReportStatus status, List<Integer> deviceIds);
 
 }
