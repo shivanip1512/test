@@ -40,13 +40,17 @@ yukon.ami.search = (function () {
             /** Clear filter but remember current sorting and paging settings. */
             $('.js-ami-search-clear').click(function (ev) {
                 
-                var sortColumn = $('.sortable.desc, .sortable.asc'),
+                var sortColumn = $('.sortable.desc, .sortable.asc');
+                var url, sortVal = sortColumn.data('sort');
+                if(sortVal && sortVal !== ''){
                     url = '/meter/search?' + $.param({
                         itemsPerPage: $('span[data-page-size]').data('pageSize'),
-                        sort: sortColumn.data('sort'),
+                        sort: sortVal,
                         dir: sortColumn.is('.desc') ? 'desc' : 'asc'
                     });
-                    
+                }else{
+                    url = '/meter/search';
+                }
                 window.location.href = yukon.url(url);
             });
             
