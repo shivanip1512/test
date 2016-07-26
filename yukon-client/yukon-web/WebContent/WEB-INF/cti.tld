@@ -221,7 +221,7 @@
       </attribute>    
   </tag>
   
-    <tag>
+  <tag>
       <name>checkAccountEnergyCompanyOperator</name>
       <tag-class>com.cannontech.web.taglib.CheckAccountEnergyCompanyOperatorTag</tag-class>
       <attribute>
