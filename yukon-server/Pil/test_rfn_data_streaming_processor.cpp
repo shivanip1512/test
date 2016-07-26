@@ -91,7 +91,7 @@ struct test_DeviceManager : CtiDeviceManager
     {
         for( auto& device : devices )
         {
-            device.second->setID(device.first);
+            device.second->setID(device.first, test_tag);
         }
     }
 

@@ -6,6 +6,8 @@
 #include "mgr_point.h"
 #include "expresscom.h"
 
+#include "boost_test_helpers.h"
+
 BOOST_AUTO_TEST_SUITE( test_dev_grp )
 
 BOOST_AUTO_TEST_CASE(test_dev_group_dynamic_text)
@@ -28,9 +30,9 @@ BOOST_AUTO_TEST_CASE(test_dev_group_parent_child)
     CtiDeviceGroupBaseSPtr group(CTIDBG_new CtiDeviceGroupExpresscom()); // Expresscom is the only one who does this right now.
     CtiDeviceGroupBaseSPtr child1(CTIDBG_new CtiDeviceGroupExpresscom());
     CtiDeviceGroupBaseSPtr child2(CTIDBG_new CtiDeviceGroupExpresscom());
-    child2->setID(2);
+    child2->setID(2, test_tag);
     long child1ID = 1;
-    child1->setID(child1ID);
+    child1->setID(child1ID, test_tag);
 
     BOOST_CHECK(!group->isAParent());
     group->addChild(child1);

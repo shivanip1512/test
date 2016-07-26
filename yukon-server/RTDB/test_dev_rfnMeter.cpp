@@ -402,7 +402,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_missing )
     std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3 };
     std::vector<unsigned long> paoIntervalMetrics = { 3, 4 };
 
-    dut.setID( 1234 );
+    dut.setID( 1234, test_tag );
     dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics );
     dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics );
     dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
@@ -446,7 +446,7 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_extra)
     std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3, 4, 5, 9 };
     std::vector<unsigned long> paoIntervalMetrics = { 1, 2, 3, 4, 5, 9 };
 
-    dut.setID(1234);
+    dut.setID(1234, test_tag);
     dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics);
     dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics);
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60);
@@ -488,7 +488,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_match )
     std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3, 4, 5 };
     std::vector<unsigned long> paoIntervalMetrics = { 3, 4, 5 };
 
-    dut.setID( 1234 );
+    dut.setID( 1234, test_tag );
     dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics );
     dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics );
     dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );
@@ -524,7 +524,7 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_disjoint
     std::vector<unsigned long> paoMidnightMetrics = { 9, 11, 12 };
     std::vector<unsigned long> paoIntervalMetrics = { 9, 11, 12 };
 
-    dut.setID(1234);
+    dut.setID(1234, test_tag);
     dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics);
     dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics);
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60);
@@ -562,7 +562,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_uninitialized )
     //std::vector<unsigned long> paoMidnightMetrics = {};
     //std::vector<unsigned long> paoIntervalMetrics = {};
 
-    dut.setID( 1234 );
+    dut.setID( 1234, test_tag );
     ////dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics );
     ////dut.setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics );
     //dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60 );

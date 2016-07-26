@@ -30,7 +30,7 @@ struct test_CtiRouteCCU : CtiRouteCCU
 
     test_CtiRouteCCU() : ccu(new test_CtiDeviceCCU)
     {
-        _tblPAO.setID(1234);
+        _tblPAO.setID(1234, test_tag);
         setDevicePointer(ccu);
     }
 };

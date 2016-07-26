@@ -25,7 +25,7 @@ long CtiTblPAOLite::getID() const
     return _paObjectID;
 }
 
-void CtiTblPAOLite::setID( long paObjectID )
+void CtiTblPAOLite::setID( long paObjectID, Cti::Test::use_in_unit_tests_only& )
 {
     _paObjectID = paObjectID;
 }

@@ -5,7 +5,7 @@
 #include "dev_rfn.h"
 #include "cmd_rfn_demandFreeze.h"
 
-#include <boost/assign/list_of.hpp>
+#include "boost_test_helpers.h"
 
 BOOST_AUTO_TEST_SUITE( test_pilserver )
 
@@ -20,8 +20,8 @@ struct test_DeviceManager : CtiDeviceManager
         devSingle(new CtiDeviceSingle),
         devRfn(new Cti::Devices::RfnDevice)
     {
-        devSingle->setID(42);
-        devRfn->setID(123);
+        devSingle->setID(42, test_tag);
+        devRfn->setID(123, test_tag);
     }
 
     ptr_type getDeviceByID(long id) override
@@ -52,7 +52,7 @@ struct test_RouteManager : CtiRouteManager
     struct test_route : CtiRouteBase
     {
         test_route() {
-            _tblPAO.setID(84);
+            _tblPAO.setID(84, test_tag);
         }
         YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override { return ClientErrors::None; }
     };

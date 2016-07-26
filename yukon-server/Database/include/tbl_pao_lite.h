@@ -3,14 +3,18 @@
 #include "dbmemobject.h"
 #include "row_reader.h"
 #include "loggable.h"
-
-#include <windows.h>
-#include <limits.h>
+#include "utility.h"
 
 
 //This is the lite version of CtiTblPAO. The only string stored by this object is the name.
-class IM_EX_CTIYUKONDB CtiTblPAOLite : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
+class IM_EX_CTIYUKONDB CtiTblPAOLite : public CtiMemDBObject, public Cti::Loggable
 {
+private:
+    CtiTblPAOLite(const CtiTblPAOLite&) = delete;
+    CtiTblPAOLite(CtiTblPAOLite&&) = delete;
+    CtiTblPAOLite& operator=(const CtiTblPAOLite&) = delete;
+    CtiTblPAOLite& operator=(CtiTblPAOLite&&) = delete;
+
 protected:
 
     long           _paObjectID;
@@ -34,7 +38,7 @@ public:
     std::string getName()  const;
     int    getType()  const;
 
-    void setID( LONG paoid );
+    void setID( long paoid, Cti::Test::use_in_unit_tests_only& );
     void setType(const int type);
 
     bool isInhibited() const;
