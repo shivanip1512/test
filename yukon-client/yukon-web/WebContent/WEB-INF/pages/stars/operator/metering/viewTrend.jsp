@@ -156,5 +156,5 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
             
         </tr>
     </table>
-    </cti:checkAccountEnergyCompanyOperator>
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

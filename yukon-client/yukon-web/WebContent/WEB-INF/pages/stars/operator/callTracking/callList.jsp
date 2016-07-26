@@ -59,5 +59,5 @@
             </form>
         </div>
     </cti:displayForPageEditModes>
-    </cti:checkAccountEnergyCompanyOperator>
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

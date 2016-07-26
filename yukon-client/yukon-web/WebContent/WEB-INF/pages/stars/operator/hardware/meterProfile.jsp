@@ -146,5 +146,5 @@ $(document).on('click', '#cancelDeleteBtn', function() {
         </div>
 
     </form:form>
-    </cti:checkAccountEnergyCompanyOperator>
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>
