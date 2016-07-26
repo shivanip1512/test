@@ -38,7 +38,7 @@ public:
    virtual CtiMessage* replicateMessage() const;
 
    // If list is empty, I assume you wanted them all!.
-   int  getCount() const;
+   size_t getCount() const;
 
    LONG& operator[](size_t i);
    LONG operator[](size_t i) const;

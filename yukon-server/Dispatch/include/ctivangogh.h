@@ -219,7 +219,7 @@ public:
     BOOL  isTagForConnection(const CtiServer::ptr_type   &Conn, const CtiTagMsg &Msg);
 
     YukonError_t processMessage(CtiMessage *pMsg);
-    INT   postMOAUploadToConnection(CtiServer::ptr_type &VGCM, int flags);
+    void postMOAUploadToConnection(CtiServer::ptr_type &CM, std::set<long> &ptIds, const bool tag_as_moa);
 
     void  loadPendingSignals();
     void  purifyClientConnectionList();

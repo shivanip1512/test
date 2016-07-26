@@ -75,6 +75,7 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/algorithm/remove_copy_if.hpp>
 
 using namespace std;
 
@@ -606,16 +607,16 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
         validateConnections();        // Make sure nobody has disappeared on us since the last registration
 
         CTILOG_DEBUG(dout, "Pre Point Mgr Insert pCM->getConnectionId()=" << pCM->getConnectionId() << ", use_count=" << pCM.use_count());
-        PointMgr.InsertConnectionManager(pCM, aReg,
-            ((gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION) ?
-            CtiPointClientManager::DebugPrint::True :
-            CtiPointClientManager::DebugPrint::False));
+        auto ptSet = PointMgr.InsertConnectionManager(pCM, aReg,
+                         ((gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION) ?
+                         CtiPointClientManager::DebugPrint::True :
+                         CtiPointClientManager::DebugPrint::False));
         CTILOG_DEBUG(dout, "Post Point Mgr Insert pCM->getConnectionId()=" << pCM->getConnectionId() << ", use_count=" << pCM.use_count());
 
 
         if(!(aReg.getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS)))
         {
-            postMOAUploadToConnection(pCM, aReg.getFlags());
+            postMOAUploadToConnection(pCM, ptSet, aReg.getFlags() & REG_TAG_MARKMOA);
         }
     }
     catch(...)
@@ -2363,46 +2364,38 @@ YukonError_t CtiVanGogh::processMessage(CtiMessage *pMsg)
     return ClientErrors::None;
 }
 
-INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
+void CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, std::set<long> &ptIds, const bool tag_as_moa)
 {
-    INT i;
-    INT status = ClientErrors::None;
-
-    CtiTableSignal *pSig;
     CtiMultiMsg    *pMulti  = CTIDBG_new CtiMultiMsg;
 
-    CtiTime now;
-
     CtiVanGoghConnectionManager *VGCM = (CtiVanGoghConnectionManager*)(CM.get());
-
 
     bool isFullBoat = ((const CtiVanGoghConnectionManager *)CM.get())->isRegForAll();                   // Is this connection asking for everything?
 
     if(isFullBoat)
     {
-        CTILOG_INFO(dout, "Client Connection "<< CM->getClientName() <<" on "<< CM->getPeer()<< " register for everything");
+        CTILOG_INFO(dout, "Client Connection "<< CM->getClientName() <<" on "<< CM->getPeer()<< " registered for everything");
     }
     else if( pMulti != NULL )
     {
         pMulti->setMessagePriority(15);
-        CtiPointManager::WeakPointMap pointMap = PointMgr.getRegistrationMap(CM->hash(*CM.get()));
 
-        for( CtiPointManager::WeakPointMap::iterator iter = pointMap.begin(); iter != pointMap.end(); iter++ )
+        for( const auto ptId : ptIds )
         {
-            if( CtiPointSPtr TempPoint = iter->second.lock() )
+            if( auto TempPoint = PointMgr.getPoint(ptId) )
             {
                 if( const CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*TempPoint) )
                 {
-                    std::auto_ptr<CtiPointDataMsg> pDat(
-                       new CtiPointDataMsg(
-                            TempPoint->getID(),
-                            pDyn->getValue(),
-                            pDyn->getQuality(),
-                            TempPoint->getType(),
-                            string(),
-                            pDyn->getDispatch().getTags()));
+                    auto pDat = 
+                            std::make_unique<CtiPointDataMsg>(
+                                    TempPoint->getID(),
+                                    pDyn->getValue(),
+                                    pDyn->getQuality(),
+                                    TempPoint->getType(),
+                                    string(),
+                                    pDyn->getDispatch().getTags());
 
-                    if(flags & REG_TAG_MARKMOA)
+                    if( tag_as_moa )
                     {
                         pDat->setTags(TAG_POINT_MOA_REPORT);
                     }
@@ -2473,8 +2466,6 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
             delete pMulti;
         }
     }
-
-    return status;
 }
 
 
@@ -6622,12 +6613,16 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         else if(MsgPtr->isA() == MSG_POINTREGISTRATION)
         {
             CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
-            for(int i = 0; i< pRegMsg->getCount(); i++)
+            if( pRegMsg->getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS) )
             {
-                if(!PointMgr.isPointLoaded((*pRegMsg)[i]))
+                //  None of these require points to be loaded.
+                return false;
+            }
+            for( auto ptId : pRegMsg->getPointList() )
+            {
+                if( ! PointMgr.isPointLoaded(ptId) )
                 {
-                    retVal = true;
-                    break;
+                    return true;
                 }
             }
         }
@@ -6764,13 +6759,15 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
         else if(MsgPtr->isA() == MSG_POINTREGISTRATION)
         {
             CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
-            for(int i = 0; i< pRegMsg->getCount(); i++)
+            if( pRegMsg->getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS) )
             {
-                if(!PointMgr.isPointLoaded((*pRegMsg)[i]))
-                {
-                    ptIdList.insert((*pRegMsg)[i]);
-                }
+                //  None of these require points to be loaded.
+                return;
             }
+            boost::remove_copy_if(
+					pRegMsg->getPointList(),
+					std::inserter(ptIdList, ptIdList.begin()),
+					[this](const long ptId) { return PointMgr.isPointLoaded(ptId); });
         }
         else if(MsgPtr->isA() == MSG_COMMAND)
         {

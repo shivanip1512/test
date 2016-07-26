@@ -26,7 +26,7 @@ public:
         double lowLimit;
     };
 private:
-   typedef std::map<LONG, WeakPointMap>             ConnectionMgrPointMap;
+   typedef std::map<long, std::set<long>>           ConnectionMgrPointMap;
    typedef std::map<LONG, ReasonabilityLimitStruct> ReasonabilityLimitMap;
    typedef std::set<CtiTablePointLimit>             PointLimitSet;
    typedef std::set<CtiTablePointAlarming>          PointAlarmingSet;
@@ -35,8 +35,6 @@ private:
    typedef DynamicPointDispatchMap::const_iterator      DynamicPointDispatchIterator;
    typedef std::map<long, CtiPointConnection>           PointConnectionMap;
 
-   // The weak pointers contained in this map are no longer guaranteed to exist.
-   // They should be assumed to exist only immediately after being entered, then never used again!
    ConnectionMgrPointMap    _conMgrPointMap;
    ReasonabilityLimitMap    _reasonabilityLimits;
    PointLimitSet            _limits;
@@ -82,6 +80,7 @@ protected:  //  for unit test access
 
    // Used for unit tests
    void refreshPoints( std::set<long> &pointIdsFound, Cti::RowReader& rdr );
+   std::set<long> getRegistrationSet(LONG mgrID, Cti::Test::use_in_unit_tests_only&);
 
    std::vector<std::string> generateSqlStatements(const std::set<long> &pointIds);
 
@@ -114,10 +113,11 @@ public:
        True
    };
 
-   int InsertConnectionManager(CtiServer::ptr_type &CM, const CtiPointRegistrationMsg &aReg, DebugPrint debugprint = DebugPrint::False);
+   //  Returns a set of all points currently registered on the specified ConnectionManager.
+   std::set<long> InsertConnectionManager(CtiServer::ptr_type &CM, const CtiPointRegistrationMsg &aReg, DebugPrint debugprint = DebugPrint::False);
 
-   /** Remove all points from the specified ConnectionManager */
-   int removePointsFromConnectionManager( CtiServer::ptr_type &CM, DebugPrint debugprint = DebugPrint::False );
+   //  Remove all points from the specified ConnectionManager.
+   void removePointsFromConnectionManager( CtiServer::ptr_type &CM, DebugPrint debugprint = DebugPrint::False );
 
    bool pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn);
 
@@ -138,7 +138,5 @@ public:
    //  I have the feeling that dynamic data and point properties should
    //    be smart pointers, since we're playing fast and loose with
    //    deletions and reloads
-   WeakPointMap getRegistrationMap(LONG mgrID);
-
 };
 

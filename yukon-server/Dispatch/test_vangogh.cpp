@@ -10,6 +10,8 @@
 
 BOOST_AUTO_TEST_SUITE( test_vangogh )
 
+Cti::Test::use_in_unit_tests_only test_tag;
+
 struct test_CtiVanGogh : CtiVanGogh
 {
     test_CtiVanGogh(CtiPointClientManager& pcm)
@@ -20,6 +22,8 @@ struct test_CtiVanGogh : CtiVanGogh
 struct test_CtiPointClientManager : CtiPointClientManager
 {
     std::map<long, boost::shared_ptr<CtiPointBase>> points;
+
+	using CtiPointClientManager::getRegistrationSet;
 
     ptr_type getPoint(long point, long pao) override
     {
@@ -244,15 +248,15 @@ BOOST_AUTO_TEST_CASE( test_registration_add_remove_points )
 
         BOOST_CHECK( ! vgcm->isRegForAll() );
 
-        auto regMap = pcm.getRegistrationMap(cm->hash(*cm));
+        auto regSet = pcm.getRegistrationSet(cm->hash(*cm), test_tag);
 
-        BOOST_REQUIRE_EQUAL(regMap.size(), 3);
+        BOOST_REQUIRE_EQUAL(regSet.size(), 3);
 
-        auto regItr = regMap.begin();
+        auto regItr = regSet.begin();
 
-        BOOST_CHECK_EQUAL(regItr++->first, 1001);
-        BOOST_CHECK_EQUAL(regItr++->first, 1003);
-        BOOST_CHECK_EQUAL(regItr++->first, 1004);
+        BOOST_CHECK_EQUAL(*regItr++, 1001);
+        BOOST_CHECK_EQUAL(*regItr++, 1003);
+        BOOST_CHECK_EQUAL(*regItr++, 1004);
     }
 
     //  Check REMOVE_POINTS
@@ -266,13 +270,13 @@ BOOST_AUTO_TEST_CASE( test_registration_add_remove_points )
 
         BOOST_CHECK( ! vgcm->isRegForAll() );
 
-        auto regMap = pcm.getRegistrationMap(cm->hash(*cm));
+        auto regSet = pcm.getRegistrationSet(cm->hash(*cm), test_tag);
 
-        BOOST_REQUIRE_EQUAL(regMap.size(), 1);
+        BOOST_REQUIRE_EQUAL(regSet.size(), 1);
 
-        auto regItr = regMap.begin();
+        auto regItr = regSet.begin();
 
-        BOOST_CHECK_EQUAL(regItr++->first, 1003);
+        BOOST_CHECK_EQUAL(*regItr++, 1003);
     }
 }
 
@@ -293,9 +297,9 @@ BOOST_AUTO_TEST_CASE( test_registration_all_points )
 
     BOOST_CHECK( vgcm->isRegForAll() );
 
-    auto regMap = pcm.getRegistrationMap(cm->hash(*cm));
+    auto regSet = pcm.getRegistrationSet(cm->hash(*cm), test_tag);
 
-    BOOST_CHECK_EQUAL(regMap.size(), 0);
+    BOOST_CHECK_EQUAL(regSet.size(), 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

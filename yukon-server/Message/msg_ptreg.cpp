@@ -69,7 +69,7 @@ CtiPointRegistrationMsg& CtiPointRegistrationMsg::operator=(const CtiPointRegist
 }
 
 // If list is empty, I assume you wanted them all!.
-int CtiPointRegistrationMsg::getCount() const       { return PointList.size(); }
+size_t CtiPointRegistrationMsg::getCount() const       { return PointList.size(); }
 
 LONG& CtiPointRegistrationMsg::operator[](size_t i)
 {

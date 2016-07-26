@@ -24,6 +24,8 @@ using namespace std;
 
 BOOST_AUTO_TEST_SUITE( test_mgr_ptclients )
 
+Cti::Test::use_in_unit_tests_only test_tag;
+
 enum
 {
     begin_id   =  9,
@@ -253,6 +255,7 @@ struct Test_CtiPointClientManager2 : CtiPointClientManager
     using CtiPointClientManager::InsertConnectionManager;
     using CtiPointClientManager::removePointsFromConnectionManager;
     using CtiPointClientManager::pointHasConnection;
+	using CtiPointClientManager::getRegistrationSet;
 
     typedef Cti::Test::TestReader<std::vector<std::string>> PointManagerReader;
 
@@ -349,22 +352,22 @@ BOOST_AUTO_TEST_CASE( test_erase )
     // Happy tests.  Make sure everything is as it should be.
     BOOST_CHECK_EQUAL( manager.entries(), 4);
 
-    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
-    // and that our points are on that map.
+    // Verify the _conMgrPointMap contains an entry,
+    // and that our points are in that set.
 
-    auto map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 3 );
-    BOOST_CHECK( map.find( 1001 ) != map.end() );
-    BOOST_CHECK( map.find( 1002 ) != map.end() );
-    BOOST_CHECK( map.find( 1003 ) == map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    auto set = manager.getRegistrationSet( cm1->hash( *cm1 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 3 );
+    BOOST_CHECK( set.find( 1001 ) != set.end() );
+    BOOST_CHECK( set.find( 1002 ) != set.end() );
+    BOOST_CHECK( set.find( 1003 ) == set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
-    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 2 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) == map.end() );
-    BOOST_CHECK( map.find( 1003 ) != map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    set = manager.getRegistrationSet( cm2->hash( *cm2 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 2 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) == set.end() );
+    BOOST_CHECK( set.find( 1003 ) != set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
     BOOST_CHECK( manager.getCachedPoint( 1001 ) );
     BOOST_CHECK( manager.getCachedPoint( 1002 ) );
@@ -377,19 +380,19 @@ BOOST_AUTO_TEST_CASE( test_erase )
     // We removed the point
     BOOST_CHECK_EQUAL(manager.entries(), 3);
 
-    map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 2 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) != map.end() );
-    BOOST_CHECK( map.find( 1003 ) == map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    set = manager.getRegistrationSet( cm1->hash( *cm1 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 2 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) != set.end() );
+    BOOST_CHECK( set.find( 1003 ) == set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
-    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 2 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) == map.end() );
-    BOOST_CHECK( map.find( 1003 ) != map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    set = manager.getRegistrationSet( cm2->hash( *cm2 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 2 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) == set.end() );
+    BOOST_CHECK( set.find( 1003 ) != set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
     BOOST_CHECK( ! manager.getCachedPoint( 1001 ) );
     BOOST_CHECK(   manager.getCachedPoint( 1002 ) );
@@ -402,19 +405,19 @@ BOOST_AUTO_TEST_CASE( test_erase )
     // We removed the point
     BOOST_CHECK_EQUAL(manager.entries(), 2);
 
-    map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 1 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) == map.end() );
-    BOOST_CHECK( map.find( 1003 ) == map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    set = manager.getRegistrationSet( cm1->hash( *cm1 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 1 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) == set.end() );
+    BOOST_CHECK( set.find( 1003 ) == set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
-    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 2 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) == map.end() );
-    BOOST_CHECK( map.find( 1003 ) != map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    set = manager.getRegistrationSet( cm2->hash( *cm2 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 2 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) == set.end() );
+    BOOST_CHECK( set.find( 1003 ) != set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
     BOOST_CHECK( ! manager.getCachedPoint( 1001 ) );
     BOOST_CHECK( ! manager.getCachedPoint( 1002 ) );
@@ -454,22 +457,22 @@ BOOST_AUTO_TEST_CASE( test_removePointsFromConnectionManager )
     // Happy tests.  Make sure everything is as it should be.
     BOOST_CHECK_EQUAL( manager.entries(), 4 );
 
-    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
-    // and that our points are on that map.
+    // Verify the _conMgrPointMap contains an entry,
+    // and that our points are in that set.
 
-    auto map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 3 );
-    BOOST_CHECK( map.find( 1001 ) != map.end() );
-    BOOST_CHECK( map.find( 1002 ) != map.end() );
-    BOOST_CHECK( map.find( 1003 ) == map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    auto set = manager.getRegistrationSet( cm1->hash( *cm1 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 3 );
+    BOOST_CHECK( set.find( 1001 ) != set.end() );
+    BOOST_CHECK( set.find( 1002 ) != set.end() );
+    BOOST_CHECK( set.find( 1003 ) == set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
-    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 2 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) == map.end() );
-    BOOST_CHECK( map.find( 1003 ) != map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    set = manager.getRegistrationSet( cm2->hash( *cm2 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 2 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) == set.end() );
+    BOOST_CHECK( set.find( 1003 ) != set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
     BOOST_CHECK( manager.getCachedPoint( 1001 ) );
     BOOST_CHECK( manager.getCachedPoint( 1002 ) );
@@ -481,21 +484,21 @@ BOOST_AUTO_TEST_CASE( test_removePointsFromConnectionManager )
     // We've removed the connection, not the point so this doesn't change
     BOOST_CHECK_EQUAL( manager.entries(), 4 );
 
-    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
-    // and that our points are on that map.
-    map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 0 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) == map.end() );
-    BOOST_CHECK( map.find( 1003 ) == map.end() );
-    BOOST_CHECK( map.find( 1004 ) == map.end() );
+    // Verify the _conMgrPointMap contains an entry,
+    // and that our points are in that set.
+    set = manager.getRegistrationSet( cm1->hash( *cm1 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 0 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) == set.end() );
+    BOOST_CHECK( set.find( 1003 ) == set.end() );
+    BOOST_CHECK( set.find( 1004 ) == set.end() );
 
-    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 2 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) == map.end() );
-    BOOST_CHECK( map.find( 1003 ) != map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );   // Removing cm1 shouldn't change this
+    set = manager.getRegistrationSet( cm2->hash( *cm2 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 2 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) == set.end() );
+    BOOST_CHECK( set.find( 1003 ) != set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );   // Removing cm1 shouldn't change this
 
     BOOST_CHECK( manager.getCachedPoint( 1001 ) );
     BOOST_CHECK( manager.getCachedPoint( 1002 ) );
@@ -535,22 +538,22 @@ BOOST_AUTO_TEST_CASE( test_expire )
     // Happy tests.  Make sure everything is as it should be.
     BOOST_CHECK_EQUAL( manager.entries(), 4 );
 
-    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
-    // and that our points are on that map.
+    // Verify the _conMgrPointMap contains an entry,
+    // and that our points are in that set.
 
-    auto map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 3 );
-    BOOST_CHECK( map.find( 1001 ) != map.end() );
-    BOOST_CHECK( map.find( 1002 ) != map.end() );
-    BOOST_CHECK( map.find( 1003 ) == map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    auto set = manager.getRegistrationSet( cm1->hash( *cm1 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 3 );
+    BOOST_CHECK( set.find( 1001 ) != set.end() );
+    BOOST_CHECK( set.find( 1002 ) != set.end() );
+    BOOST_CHECK( set.find( 1003 ) == set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
-    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 2 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) == map.end() );
-    BOOST_CHECK( map.find( 1003 ) != map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    set = manager.getRegistrationSet( cm2->hash( *cm2 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 2 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) == set.end() );
+    BOOST_CHECK( set.find( 1003 ) != set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
     BOOST_CHECK( manager.getCachedPoint( 1001 ) );
     BOOST_CHECK( manager.getCachedPoint( 1002 ) );
@@ -562,21 +565,21 @@ BOOST_AUTO_TEST_CASE( test_expire )
     // We've removed the point
     BOOST_CHECK_EQUAL( manager.entries(), 3 );
 
-    // Verify the _conMgrPointMap contains an entry for a weakPointMap, 
-    // and that our points are on that map.
-    map = manager.getRegistrationMap( cm1->hash( *cm1.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 3 );
-    BOOST_CHECK( map.find( 1001 ) != map.end() );   // Doesn't remove the point, just the cache
-    BOOST_CHECK( map.find( 1002 ) != map.end() );
-    BOOST_CHECK( map.find( 1003 ) == map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );
+    // Verify the _conMgrPointMap contains an entry,
+    // and that our points are in that set.
+    set = manager.getRegistrationSet( cm1->hash( *cm1 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 3 );
+    BOOST_CHECK( set.find( 1001 ) != set.end() );   // Doesn't remove the point, just the cache
+    BOOST_CHECK( set.find( 1002 ) != set.end() );
+    BOOST_CHECK( set.find( 1003 ) == set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );
 
-    map = manager.getRegistrationMap( cm2->hash( *cm2.get() ) );
-    BOOST_CHECK_EQUAL( map.size(), 2 );
-    BOOST_CHECK( map.find( 1001 ) == map.end() );
-    BOOST_CHECK( map.find( 1002 ) == map.end() );
-    BOOST_CHECK( map.find( 1003 ) != map.end() );
-    BOOST_CHECK( map.find( 1004 ) != map.end() );   // Removing cm1 shouldn't change this
+    set = manager.getRegistrationSet( cm2->hash( *cm2 ), test_tag );
+    BOOST_CHECK_EQUAL( set.size(), 2 );
+    BOOST_CHECK( set.find( 1001 ) == set.end() );
+    BOOST_CHECK( set.find( 1002 ) == set.end() );
+    BOOST_CHECK( set.find( 1003 ) != set.end() );
+    BOOST_CHECK( set.find( 1004 ) != set.end() );   // Removing cm1 shouldn't change this
 
     BOOST_CHECK( ! manager.getCachedPoint( 1001 ) );
     BOOST_CHECK(   manager.getCachedPoint( 1002 ) );

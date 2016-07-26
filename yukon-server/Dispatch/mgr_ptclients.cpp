@@ -27,6 +27,7 @@
 #include "tbl_pt_alarm.h"
 
 #include "coroutine_util.h"
+#include "std_helper.h"
 
 #include <boost/range/algorithm/for_each.hpp>
 
@@ -455,7 +456,7 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
     }
 }
 
-/* Insert a connection manager and register points for that connecton.
+/* Insert a connection manager and register points for that connection.
  *
  *   If the registration is a refresh (ADD and REMOVE), we remove the points from the Connection Manager.
  *   If the Connection Manager is not in _conMgrPointMap, insert it.
@@ -464,26 +465,26 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
  *       If the point is in _pointConnectionMap
  *         Call removeConnectionManagersFromPoint to remove the point from the CtiPointConnection::ConnectionManagerCollection map
  *         If this is the last point in _pointConnectionMap remove the CtiPointConnection from that map
- *       Remove the point from the WeakPointMap pointed to by the _conMgrPointMap entry
+ *       Remove the point from the _conMgrPointMap entry
  *     If the registration is an ADD
  *       Add the CtiPointConnection for the point to the _pointConnectionMap
  *       Call AddConnectionManager to add the point to the CtiPointConnection::ConnectionManagerCollection map
- *       Add the point tp the WeakPointMap pointed to by the _conMgrPointMap entry
- *    Go home exausted.
+ *       Add the point to the _conMgrPointMap entry
+ *    Go home exhausted.
  *         
  */
-int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, const CtiPointRegistrationMsg &aReg, DebugPrint debugprint)
+std::set<long> CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, const CtiPointRegistrationMsg &aReg, DebugPrint debugprint)
 {
-    int nRet = 0;
-    CTILOG_ENTRY_RC(dout, "CM=" << reinterpret_cast<size_t>(CM.get()) << ", aReg.getFlags()=" << aReg.getFlags(), nRet);
+    CTILOG_ENTRY(dout, "CM=" << reinterpret_cast<size_t>(CM.get()) << ", aReg.getFlags()=" << aReg.getFlags());
 
-    CtiTime   NowTime;
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
     const int ptcnt = aReg.getCount();
     ConnectionMgrPointMap::iterator conIter = _conMgrPointMap.end();
 
     if(!(aReg.getFlags() & (REG_ADD_POINTS | REG_REMOVE_POINTS)) )     // If add/remove is set, we are augmenting or removing an existing registration (Not the whole thing).
+    {
         removePointsFromConnectionManager( CM );
+    }
 
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
@@ -510,9 +511,8 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
         conIter = _conMgrPointMap.find(CM->hash(*CM.get()));
         if( conIter == _conMgrPointMap.end() )
         {
-            WeakPointMap tempMap;
             pair<ConnectionMgrPointMap::iterator, bool> tempVal;
-            tempVal = _conMgrPointMap.insert(ConnectionMgrPointMap::value_type(CM->hash(*CM.get()), tempMap));
+			tempVal = _conMgrPointMap.emplace(CM->hash(*CM), std::set<long>{});
             if(!tempVal.second)
             {
                 CTILOG_DEBUG(dout, "Unable to insert into _conMgrPointMap");
@@ -528,81 +528,73 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type &CM, cons
 
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
-    for( int i = 0; i < ptcnt; i++ )
+    for( const auto ptId : aReg.getPointList() )
     {
         /*
          *  OK, now I walk the list of points looking at each one's ID to find who to add this guy to
          */
-
+        if(!((const CtiVanGoghConnectionManager *)CM.get())->isRegForAll()) // Make sure we didn't already register for ALL points.
         {
-            CtiPointSPtr temp = getPoint(aReg[i]);
-            if(temp)
+            // Prevent _pointConnectionMap from wiggling while we operate.
+            coll_type::writer_lock_guard_t guard( getLock() );
+
+            if(aReg.getFlags() & REG_REMOVE_POINTS)
             {
-                if(!((const CtiVanGoghConnectionManager *)CM.get())->isRegForAll()) // Make sure we didn't already register for ALL points.
+                PointConnectionMap::iterator iter = _pointConnectionMap.find(ptId);
+                if(iter != _pointConnectionMap.end())
                 {
-                    // Prevent _pointConnectionMap from wiggling while we operate.
-                    coll_type::writer_lock_guard_t guard( getLock() );
-
-                    if(aReg.getFlags() & REG_REMOVE_POINTS)
+                    iter->second.removeConnectionManagersFromPoint( CM );
+                    if(iter->second.IsEmpty())
                     {
-                        PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
-                        if(iter != _pointConnectionMap.end())
-                        {
-                            iter->second.removeConnectionManagersFromPoint( CM );
-                            if(iter->second.IsEmpty())
-                            {
-                                _pointConnectionMap.erase(iter);
-                            }
-                        }
-
-                        if( conIter != _conMgrPointMap.end() )
-                        {
-                            conIter->second.erase(temp->getPointID());
-                            CTILOG_DEBUG(dout, "Removing point " << temp->getPointID() 
-                                << " from _conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") = 0x" << hex << &conIter->second);
-                        }
+                        _pointConnectionMap.erase(iter);
                     }
-                    else
+                }
+
+                if( conIter != _conMgrPointMap.end() )
+                {
+                    conIter->second.erase(ptId);
+                    CTILOG_DEBUG(dout, "Removing point " << ptId
+                        << " from _conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") = 0x" << hex << &conIter->second);
+                }
+            }
+            else
+            {
+                PointConnectionMap::iterator iter = _pointConnectionMap.find( ptId );
+                if(iter == _pointConnectionMap.end())
+                {
+                    auto insertResult = _pointConnectionMap.emplace(ptId, CtiPointConnection());
+                    if(insertResult.second == true)
                     {
-                        PointConnectionMap::iterator iter = _pointConnectionMap.find( temp->getPointID() );
-                        if(iter == _pointConnectionMap.end())
-                        {
-                            pair<PointConnectionMap::iterator, bool> insertResult = _pointConnectionMap.insert(PointConnectionMap::value_type(temp->getPointID(), CtiPointConnection()));
-                            if(insertResult.second == true)
-                            {
-                                iter = insertResult.first;
-                            }
-                        }
-                        if(iter != _pointConnectionMap.end())
-                        {
-                            iter->second.AddConnectionManager( CM );
-                        }
-
-                        if( conIter != _conMgrPointMap.end() )
-                        {
-                            CTILOG_DEBUG(dout, "Adding point " << temp->getPointID()
-                                << " to _conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") = 0x" << hex << &conIter->second);
-
-                            pair<WeakPointMap::iterator, bool> was = conIter->second.insert(WeakPointMap::value_type(temp->getPointID(), temp));
-
-                            CTILOG_DEBUG(dout, "_conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") has " << dec 
-                                << conIter->second.size() << " entries.  Insert return was " << was.second);
-                        }
+                        iter = insertResult.first;
                     }
+                }
+                if(iter != _pointConnectionMap.end())
+                {
+                    iter->second.AddConnectionManager( CM );
+                }
+
+                if( conIter != _conMgrPointMap.end() )
+                {
+                    CTILOG_DEBUG(dout, "Adding point " << ptId
+                        << " to _conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") = 0x" << hex << &conIter->second);
+
+                    const auto was = conIter->second.insert(ptId);
+
+                    CTILOG_DEBUG(dout, "_conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") has " << dec 
+                        << conIter->second.size() << " entries.  Insert return was " << was.second);
                 }
             }
         }
     }
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
-    return nRet;
+    return conIter->second;
 }
 
 /** Remove all points from the specified ConnectionManager */
-int CtiPointClientManager::removePointsFromConnectionManager(CtiServer::ptr_type &CM, DebugPrint debugprint)
+void CtiPointClientManager::removePointsFromConnectionManager(CtiServer::ptr_type &CM, DebugPrint debugprint)
 {
-    int nRet = 0;
-    CTILOG_ENTRY_RC(dout, "CM=" << reinterpret_cast<size_t>(CM.get()), nRet);
+    CTILOG_ENTRY(dout, "CM=" << reinterpret_cast<size_t>(CM.get()));
 
     // OK, now I walk the list of points looking at each one's list to remove the CM
     {
@@ -615,11 +607,8 @@ int CtiPointClientManager::removePointsFromConnectionManager(CtiServer::ptr_type
         {
             CTILOG_DEBUG(dout, " point list size=" << conIter->second.size());
 
-            long pointID;
-            for(WeakPointMap::iterator pointIter = conIter->second.begin(); pointIter != conIter->second.end(); pointIter++)
+            for( const auto pointID : conIter->second )
             {
-                pointID = pointIter->first;
-
                 PointConnectionMap::iterator iter = _pointConnectionMap.find( pointID );
                 if(iter != _pointConnectionMap.end())
                 {
@@ -635,7 +624,7 @@ int CtiPointClientManager::removePointsFromConnectionManager(CtiServer::ptr_type
                 }
                 else
                 {
-                    CTILOG_DEBUG(dout, "Cant find pointid " << pointID);
+                    CTILOG_DEBUG(dout, "Can't find pointid " << pointID);
                 }
             }
         }
@@ -643,11 +632,9 @@ int CtiPointClientManager::removePointsFromConnectionManager(CtiServer::ptr_type
 
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
-    _conMgrPointMap.erase(CM->hash(*CM.get()));
+    _conMgrPointMap.erase(CM->hash(*CM));
 
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
-
-    return nRet;
 }
 
 CtiTime CtiPointClientManager::findNextNearestArchivalTime()
@@ -1291,19 +1278,9 @@ CtiPointManager::ptr_type CtiPointClientManager::getPoint(LONG Pt, LONG pao)
     return retVal;
 }
 
-CtiPointClientManager::WeakPointMap CtiPointClientManager::getRegistrationMap(LONG mgrID)
+std::set<long> CtiPointClientManager::getRegistrationSet(LONG mgrID, Cti::Test::use_in_unit_tests_only&)
 {
-    WeakPointMap temp;
-    ConnectionMgrPointMap::iterator conIter;
-
-    if( (conIter = _conMgrPointMap.find(mgrID)) != _conMgrPointMap.end() )
-    {
-        return conIter->second;
-    }
-    else
-    {
-        return temp;
-    }
+	return Cti::mapFindOrDefault(_conMgrPointMap, mgrID, {});
 }
 
 
