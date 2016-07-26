@@ -6765,9 +6765,9 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
                 return;
             }
             boost::remove_copy_if(
-					pRegMsg->getPointList(),
-					std::inserter(ptIdList, ptIdList.begin()),
-					[this](const long ptId) { return PointMgr.isPointLoaded(ptId); });
+                    pRegMsg->getPointList(),
+                    std::inserter(ptIdList, ptIdList.begin()),
+                    [this](const long ptId) { return PointMgr.isPointLoaded(ptId); });
         }
         else if(MsgPtr->isA() == MSG_COMMAND)
         {

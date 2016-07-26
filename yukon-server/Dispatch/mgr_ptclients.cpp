@@ -512,7 +512,7 @@ std::set<long> CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_typ
         if( conIter == _conMgrPointMap.end() )
         {
             pair<ConnectionMgrPointMap::iterator, bool> tempVal;
-			tempVal = _conMgrPointMap.emplace(CM->hash(*CM), std::set<long>{});
+            tempVal = _conMgrPointMap.emplace(CM->hash(*CM), std::set<long>{});
             if(!tempVal.second)
             {
                 CTILOG_DEBUG(dout, "Unable to insert into _conMgrPointMap");
@@ -1280,7 +1280,7 @@ CtiPointManager::ptr_type CtiPointClientManager::getPoint(LONG Pt, LONG pao)
 
 std::set<long> CtiPointClientManager::getRegistrationSet(LONG mgrID, Cti::Test::use_in_unit_tests_only&)
 {
-	return Cti::mapFindOrDefault(_conMgrPointMap, mgrID, {});
+    return Cti::mapFindOrDefault(_conMgrPointMap, mgrID, {});
 }
 
 

@@ -255,7 +255,7 @@ struct Test_CtiPointClientManager2 : CtiPointClientManager
     using CtiPointClientManager::InsertConnectionManager;
     using CtiPointClientManager::removePointsFromConnectionManager;
     using CtiPointClientManager::pointHasConnection;
-	using CtiPointClientManager::getRegistrationSet;
+    using CtiPointClientManager::getRegistrationSet;
 
     typedef Cti::Test::TestReader<std::vector<std::string>> PointManagerReader;
 

@@ -23,7 +23,7 @@ struct test_CtiPointClientManager : CtiPointClientManager
 {
     std::map<long, boost::shared_ptr<CtiPointBase>> points;
 
-	using CtiPointClientManager::getRegistrationSet;
+    using CtiPointClientManager::getRegistrationSet;
 
     ptr_type getPoint(long point, long pao) override
     {
