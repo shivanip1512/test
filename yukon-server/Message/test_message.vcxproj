@@ -368,6 +368,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="test_PointDataRequest.cpp">
     </ClCompile>
+    <ClCompile Include="test_PointRegistration.cpp" />
     <ClCompile Include="test_serialization.cpp">
     </ClCompile>
   </ItemGroup>

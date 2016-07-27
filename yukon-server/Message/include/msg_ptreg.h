@@ -48,6 +48,14 @@ public:
    int getFlags() const;
    void setFlags(int flags);
 
+   bool isRequestingEvents() const;
+   bool isRequestingAlarms() const;
+   bool isDecliningUpload()  const;
+   bool isRequestingAllPoints() const;
+   bool isAddingPoints()     const;
+   bool isRemovingPoints()   const;
+   bool isRequestingMoaTag() const;
+
    const std::vector<LONG>& getPointList() const;
    void setPointList( const std::vector<LONG>& points );
 

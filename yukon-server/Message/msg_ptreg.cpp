@@ -111,3 +111,11 @@ void CtiPointRegistrationMsg::setPointList( const std::vector<LONG>& points )
 {
     PointList.assign( points.begin(), points.end() );
 }
+
+bool CtiPointRegistrationMsg::isRequestingEvents()    const  {  return RegFlags & REG_EVENTS;         }
+bool CtiPointRegistrationMsg::isRequestingAlarms()    const  {  return RegFlags & REG_ALARMS;         }
+bool CtiPointRegistrationMsg::isDecliningUpload()     const  {  return RegFlags & REG_NO_UPLOAD;      }
+bool CtiPointRegistrationMsg::isRequestingAllPoints() const  {  return RegFlags & REG_ALL_POINTS;     }
+bool CtiPointRegistrationMsg::isAddingPoints()        const  {  return RegFlags & REG_ADD_POINTS;     }
+bool CtiPointRegistrationMsg::isRemovingPoints()      const  {  return RegFlags & REG_REMOVE_POINTS;  }
+bool CtiPointRegistrationMsg::isRequestingMoaTag()    const  {  return RegFlags & REG_TAG_MARKMOA;    }
