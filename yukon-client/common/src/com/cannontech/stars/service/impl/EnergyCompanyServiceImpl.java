@@ -159,7 +159,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         defaultRouteService.setupNewDefaultRoute(energyCompanyDto.getName(), ecUser, energyCompanyDto.getDefaultRouteId());
         
         // Set Operator Group List
-        List<Integer> operatorUserGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorUserGroupIds());
+        List<Integer> operatorUserGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorUserGroupIds() + "," + ecAdminUserGrp.getUserGroupId());
         Iterable<Integer> operatorUserGroupIds = Iterables.concat(Collections.singleton(energyCompanyDto.getPrimaryOperatorUserGroupId()), operatorUserGroupIdsList);
         ecMappingDao.addECToOperatorUserGroupMapping(energyCompanyId, operatorUserGroupIds);
         
