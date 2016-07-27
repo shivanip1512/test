@@ -40,6 +40,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
@@ -128,7 +129,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             List<Integer> deviceIds =
                     getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
             deviceIds.forEach(id -> {
-                BehaviorReport report = buildPendingReport(findDataStreamingConfigurationForDevice(id), id, false);
+                BehaviorReport report;
+                try {
+                    report = buildPendingReport(findDataStreamingConfigurationForDevice(id), id, false);
+                } catch (NotFoundException e) {
+                    report = buildPendingReport(id);
+                }
                 deviceBehaviorDao.saveBehaviorReport(report);
             });
             deviceBehaviorDao.unassignBehavior(BehaviorType.DATA_STREAMING, deviceIds);
@@ -147,7 +153,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             if (!deviceIds.isEmpty()) {
                 deviceBehaviorDao.assignBehavior(configId, BehaviorType.DATA_STREAMING, deviceIds);
                 deviceIds.forEach(id -> {
-                    BehaviorReport report = buildPendingReport(findDataStreamingConfiguration(configId), id, true);
+                    BehaviorReport report = buildPendingReport(findDataStreamingConfigurationForDevice(id), id, true);
                     deviceBehaviorDao.saveBehaviorReport(report);
                 });
             }
@@ -362,14 +368,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         }
         return behavior;
     }
-    
+        
     private BehaviorReport buildConfirmedReport(ReportedDataStreamingConfig config, int deviceId) {
         BehaviorReport report = new BehaviorReport();
         report.setType(BehaviorType.DATA_STREAMING);
         report.setDeviceId(deviceId);
         report.setStatus(BehaviorReportStatus.CONFIRMED);
         report.setTimestamp(new Instant());
-        List<ReportedDataStreamingAttribute> attributes = config.getConfiguredMetrics();
+        List<ReportedDataStreamingAttribute> attributes = config.getAttributes();
         report.addValue(CHANNELS_STRING, attributes.size());
         report.addValue(STREAMING_ENABLED_STRING, config.isStreamingEnabled());
         for (int i = 0; i < attributes.size(); i++) {
@@ -402,6 +408,22 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         }
         return report;
     }
+    
+    /**
+     * The user is trying to remove data streaming from the device that does NOT have a data streaming assigned.
+     * This method builds a pending report that has steaming enabled set to false and has no channels.
+     */
+    private BehaviorReport buildPendingReport(int deviceId) {
+        BehaviorReport report = new BehaviorReport();
+        report.setType(BehaviorType.DATA_STREAMING);
+        report.setDeviceId(deviceId);
+        report.setStatus(BehaviorReportStatus.PENDING);
+        report.setTimestamp(new Instant());
+        report.addValue(CHANNELS_STRING, 0);
+        report.addValue(STREAMING_ENABLED_STRING, false);
+        return report;
+    }
+
 
     private void completeCommandRequestExecutionRecord(CommandRequestExecution cre,
             CommandRequestExecutionStatus status) {

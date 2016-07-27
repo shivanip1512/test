@@ -175,7 +175,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             behavior.setValues(values);
             return behavior;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Behavior with deviceId=" + deviceId + " and type=" + type + " doesn't exist");
+            throw new NotFoundException("Behavior with deviceId=" + deviceId + " and type=" + type + " doesn't exists");
         }
     }
     
@@ -230,6 +230,36 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     }
     
     @Override
+    public BehaviorReport getBehaviorReportByDeviceIdAndType(int deviceId, BehaviorType type) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BehaviorReportId, DeviceId, BehaviorType, BehaviorStatus, TimeStamp");
+        sql.append("FROM BehaviorReport");
+        sql.append("WHERE BehaviorType").eq_k(type);
+        sql.append("AND DeviceId").eq(deviceId);
+        try {
+            BehaviorReport report = jdbcTemplate.queryForObject(sql, new YukonRowMapper<BehaviorReport>() {
+                @Override
+                public BehaviorReport mapRow(YukonResultSet rs) throws SQLException {
+                    BehaviorReport report = new BehaviorReport();
+                    report.setId(rs.getInt("BehaviorReportId"));
+                    report.setType(rs.getEnum("BehaviorType", BehaviorType.class));
+                    report.setDeviceId(rs.getInt("DeviceId"));
+                    report.setStatus(rs.getEnum("BehaviorStatus", BehaviorReportStatus.class));
+                    report.setTimestamp(rs.getInstant("TimeStamp"));
+                    return report;
+                }
+            });
+            Map<String, String> values = getBehaviorReportValuesByBehaviorReportId(report.getId());
+            report.setValues(values);
+            return report;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(
+                "Behavior Report with deviceId=" + deviceId + " and type=" + type + " doesn't exists");
+        }
+    }
+    
+    @Override
     @Transactional
     public void updateBehaviorReportStatus(BehaviorType type, BehaviorReportStatus status, List<Integer> deviceIds) {
         SqlStatementBuilder updateSql = new SqlStatementBuilder();
@@ -270,6 +300,22 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         return nameValueMap;
     }
     
+    private Map<String, String> getBehaviorReportValuesByBehaviorReportId(int behaviorReportId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Name, Value");
+        sql.append("FROM BehaviorReportValue");
+        sql.append("WHERE BehaviorReportId").eq(behaviorReportId);
+
+        Map<String, String> nameValueMap = new HashMap<>();
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                nameValueMap.put(rs.getString("Name"), rs.getString("Value"));
+            }
+        });
+        return nameValueMap;
+    }
+
     private void saveBehaviorValues(int behaviorId, Map<String, String> values) {
         values.forEach((name, value) -> {
             SqlStatementBuilder sql = new SqlStatementBuilder();

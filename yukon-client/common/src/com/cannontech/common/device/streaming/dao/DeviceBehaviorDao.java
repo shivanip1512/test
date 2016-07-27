@@ -69,4 +69,6 @@ public interface DeviceBehaviorDao {
      */
     void updateBehaviorReportStatus(BehaviorType type, BehaviorReportStatus status, List<Integer> deviceIds);
 
+    BehaviorReport getBehaviorReportByDeviceIdAndType(int deviceId, BehaviorType type);
+
 }
