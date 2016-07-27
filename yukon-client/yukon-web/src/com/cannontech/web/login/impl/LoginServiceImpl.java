@@ -69,9 +69,11 @@ public class LoginServiceImpl implements LoginService {
     throws AuthenticationThrottleException, BadAuthenticationException, PasswordExpiredException {
         
         try {
-            final LiteYukonUser user = authenticationService.login(username, password);
-            
+            // Need to find the user so we can check role _before_ authentication.
+            LiteYukonUser user = yukonUserDao.findUserByUsername(username);
             rolePropertyDao.verifyRole(YukonRole.WEB_CLIENT, user);
+            
+            user = authenticationService.login(username, password);
             createSession(request, user);
             log.info("User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " 
                     + request.getRemoteAddr());
