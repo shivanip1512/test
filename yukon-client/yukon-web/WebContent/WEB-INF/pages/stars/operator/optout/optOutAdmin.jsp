@@ -7,7 +7,7 @@
 
 <cti:standardPage module="operator" page="optOutAdmin">
 
-    <cti:checkEnergyCompanyOperator showError="true" >
+    <cti:checkAccountEnergyCompanyOperator showError="true" >
 
     <cti:url var="systemOptOutsUrl" value="/stars/operator/optOut/systemOptOuts" />
     
@@ -388,5 +388,5 @@
                     </cti:checkRolesAndProperties>
                 </div>
             </div>
-    </cti:checkEnergyCompanyOperator>
+    </cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

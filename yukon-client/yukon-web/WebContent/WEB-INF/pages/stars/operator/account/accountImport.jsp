@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operator" page="accountImport">
 
-    <cti:checkEnergyCompanyOperator showError="true">
+    <cti:checkAccountEnergyCompanyOperator showError="true">
         <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT"/>
         
         <div class="column-12-12">
@@ -156,5 +156,5 @@
             </div>
         </div>
         
-  </cti:checkEnergyCompanyOperator>
+  </cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

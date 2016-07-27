@@ -23,9 +23,7 @@ import com.cannontech.util.ServletUtil;
 public class CheckAccountEnergyCompanyOperatorTag extends TagSupport {
 
     private boolean showError;
-    private RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);;
-    EnergyCompanyDao ecDao =
-            YukonSpringHook.getBean(EnergyCompanyDao.class);
+    
 
     @Override
     public int doStartTag() throws JspException {
@@ -33,6 +31,8 @@ public class CheckAccountEnergyCompanyOperatorTag extends TagSupport {
         int returnValue = EVAL_BODY_INCLUDE;
         boolean isValidUser = true;
         String errorMsg = null;
+        EnergyCompanyDao ecDao =
+                YukonSpringHook.getBean(EnergyCompanyDao.class);
 
         YukonUserContext userContext =
             YukonUserContextUtils.getYukonUserContext((HttpServletRequest) pageContext.getRequest());
@@ -45,7 +45,7 @@ public class CheckAccountEnergyCompanyOperatorTag extends TagSupport {
         String accountId = ServletUtil.getParameter((HttpServletRequest) pageContext.getRequest(), "accountId");
         if (!ecDao.isEnergyCompanyOperator(user)) {
             isValidUser = false;
-            errorMsg = messageAccessor.getMessage("yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator");
+            errorMsg = messageAccessor.getMessage("yukon.web.taglib.CheckAccountEnergyCompanyOperatorTag.userIsNotECOperator");
             returnValue = SKIP_BODY;
         } else if (accountId != null && !accountId.equals("0")) {
             // Account is linked to the page requested
@@ -59,8 +59,9 @@ public class CheckAccountEnergyCompanyOperatorTag extends TagSupport {
                         isMemberEC = true; // Account belongs to the Member EC of Operator
                     }
                 }
+                RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
                 Boolean hasAdminManageMembersPrivilege =
-                    this.rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
+                    rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
                 if (!(isMemberEC && hasAdminManageMembersPrivilege)) {
                     // Check IF user has admin manage member energy companies role property
                     errorMsg =

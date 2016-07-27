@@ -7,7 +7,7 @@
 
 <cti:standardPage module="operator" page="accountList">
 
-    <cti:checkEnergyCompanyOperator showError="true" >
+    <cti:checkAccountEnergyCompanyOperator showError="true" >
         <div class="column-12-12 stacked clearfix">
             <div class="column one">
                 <tags:widget bean="operatorAccountSearchWidget" container="section"/>
@@ -64,5 +64,5 @@
             </tags:sectionContainer>
             
         </c:if>
-    </cti:checkEnergyCompanyOperator>
+    </cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

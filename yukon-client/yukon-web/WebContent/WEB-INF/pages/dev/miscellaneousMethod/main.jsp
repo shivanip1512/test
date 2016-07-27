@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dev" page="miscellaneousMethod">
-<cti:checkEnergyCompanyOperator showError="true" >
+<cti:checkAccountEnergyCompanyOperator showError="true" >
 <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
     <cti:dataGridCell>
         <tags:sectionContainer title="ISOC">
@@ -49,5 +49,5 @@
             
     </cti:dataGridCell>
 </cti:dataGrid>
- </cti:checkEnergyCompanyOperator>
+</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>

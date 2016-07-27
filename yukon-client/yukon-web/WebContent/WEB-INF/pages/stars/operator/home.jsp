@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="home">
-    <cti:checkEnergyCompanyOperator showError="true" >
+    <cti:checkAccountEnergyCompanyOperator showError="true" >
 	   <tags:widget bean="operatorAccountSearchWidget"/>
-	</cti:checkEnergyCompanyOperator>
+	</cti:checkAccountEnergyCompanyOperator>
 </cti:standardPage>
