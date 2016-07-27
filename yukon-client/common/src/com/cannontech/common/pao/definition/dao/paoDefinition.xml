@@ -13350,6 +13350,21 @@
                 <name>Temperature Low</name>
                 <stategroup value="TrueFalse" />
             </point>
+            <point type="Status" offset="65">
+                <init>false</init>
+                <name>Phase A Reverse Power Flow</name>
+                <stategroup value="TwoStateActive" />
+            </point>
+            <point type="Status" offset="66">
+                <init>false</init>
+                <name>Phase B Reverse Power Flow</name>
+                <stategroup value="TwoStateActive" />
+            </point>
+            <point type="Status" offset="67">
+                <init>false</init>
+                <name>Phase C Reverse Power Flow</name>
+                <stategroup value="TwoStateActive" />
+            </point>
             <point type="Status" offset="68">
                 <init>true</init>
                 <name>Operation Failed</name>
@@ -13689,6 +13704,20 @@
                 <name>Voltage Control Flags</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Undefined" />
+                <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="10392">
+                <init>false</init>
+                <name>Three-Phase Voltage Average Interval</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Minutes" />
+                <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="10393">
+                <init>false</init>
+                <name>Three-Phase Current Average Interval</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Minutes" />
                 <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="20001">
