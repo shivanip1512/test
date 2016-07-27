@@ -13473,6 +13473,90 @@
                 <unitofmeasure value="Percent" />
                 <decimalplaces value="3" />
             </point>
+            <point type="Analog" offset="153">
+                <init>false</init>
+                <name>Phase A Total Voltage Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="154">
+                <init>false</init>
+                <name>Phase B Total Voltage Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="155">
+                <init>false</init>
+                <name>Phase C Total Voltage Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="156">
+                <init>false</init>
+                <name>Phase A Total Current Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Amps" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="157">
+                <init>false</init>
+                <name>Phase B Total Current Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Amps" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="158">
+                <init>false</init>
+                <name>Phase C Total Current Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Amps" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="159">
+                <init>false</init>
+                <name>Phase A Fundamental Voltage Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="160">
+                <init>false</init>
+                <name>Phase B Fundamental Voltage Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="161">
+                <init>false</init>
+                <name>Phase C Fundamental Voltage Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="162">
+                <init>false</init>
+                <name>Phase A Fundamental Current Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Amps" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="163">
+                <init>false</init>
+                <name>Phase B Fundamental Current Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Amps" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="164">
+                <init>false</init>
+                <name>Phase C Fundamental Current Average</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Amps" />
+                <decimalplaces value="3" />
+            </point>
             <point type="Analog" offset="114">
                 <init>true</init>
                 <name>Ignored Control Reason</name>
