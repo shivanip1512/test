@@ -14,8 +14,9 @@ $(document).ready(function(){
     });
     
     function expirePassword(){
+    	debugger;
         var passwordExpired = <%=session.getAttribute("passwordExpired")%>;
-        var url = "/yukon/login/expirePassword";
+        var url = "../login/expirePassword";
         if(passwordExpired){
             $.ajax({
                     type: "POST",
