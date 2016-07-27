@@ -428,7 +428,7 @@ yukon.namespace = function (ns) {
                         messages.push(args.message[i]);
                     }
                 } else {
-                    Object.keys(args.messages).forEach(function (key) {
+                    Object.keys(args.message).forEach(function (key) {
                         if (typeof (args.message[key]) === 'number' ||
                             typeof (args.message[key]) === 'string') {
                             messages.push(args.message[key]);
