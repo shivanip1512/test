@@ -41,7 +41,6 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
 
     @Override
     public void start() {
-        Instant start = new Instant();
         List<LiteYukonPAObject> weatherLocations = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION);
         Map<String, WeatherStation> weatherStationMap = noaaWeatherService.getAllWeatherStations();
 
@@ -66,15 +65,15 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
                 }
             } catch (DynamicDataAccessException e) {
                 log.warn("Unable to update weather observation for station: " + weatherStationId + ". Dispatch not connected.");
+                systemEventLogService.systemLogWeatherDataUpdate(weatherPao.getPaoName(), "Unable to update weather observation. Dispatch not connected.");
             } catch (NoaaWeatherDataServiceException e) {
                 log.warn("Unable to update weather observation for station: " + weatherStationId, e);
+                systemEventLogService.systemLogWeatherDataUpdate(weatherPao.getPaoName(), e.getMessage());
             } catch (DataAccessException e) {
                 log.error("No Weather Station Id found for weather location. Pao id: " + singlePaoId + " will not be updated", e);
+                systemEventLogService.systemLogWeatherDataUpdate(weatherPao.getPaoName(), "No Weather Station Id found. Data not updated.");
             }
         }
-        Instant finish = new Instant();
-
-        systemEventLogService.systemLogWeatherDataUpdate(weatherLocations.size(), start, finish);
     }
 
     /**

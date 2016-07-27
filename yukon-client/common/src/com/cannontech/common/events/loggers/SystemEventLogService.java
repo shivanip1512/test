@@ -87,7 +87,7 @@ public interface SystemEventLogService {
     public void systemLogDeleteDanglingEntries(int rowsDeleted, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
-    public void systemLogWeatherDataUpdate(int weatherLocationsUpdated, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
+    public void systemLogWeatherDataUpdate(@Arg(ArgEnum.name) String weatherLocationName, @Arg(ArgEnum.message) String errorMsg);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
     public void smartIndexMaintenance(@Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);

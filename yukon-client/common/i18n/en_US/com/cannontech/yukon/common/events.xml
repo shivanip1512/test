@@ -544,7 +544,7 @@
     <entry key="yukon.common.events.system.maintenance.systemLogDeleteDanglingEntries.7">Number Deleted</entry>
     <entry key="yukon.common.events.system.maintenance.rphDeleteDanglingEntries">Deleted {7} dangling RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
     <entry key="yukon.common.events.system.maintenance.rphDeleteDanglingEntries.7">Number Deleted</entry>
-    <entry key="yukon.common.events.system.maintenance.systemLogWeatherDataUpdate">Updated {7} weather stations. Start time: {11}. Finish time: {12}.</entry>
+    <entry key="yukon.common.events.system.maintenance.systemLogWeatherDataUpdate">Weather station {1} not updated. Error: {2}.</entry>
     <entry key="yukon.common.events.system.maintenance.systemLogWeatherDataUpdate.7">Number Updated</entry>
     <entry key="yukon.common.events.system.maintenance.smartIndexMaintenance">Executed sp_smartIndexMaintenance. Start time: {11}. Finish time: {12}.</entry>
     

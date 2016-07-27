@@ -707,7 +707,7 @@ public class DevEventLogCreationService {
                 systemEventLogService.rphDeleteDanglingEntries(rowsDeleted, start, finish);
                 systemEventLogService.rphDeleteDuplicates(rowsDeleted, start, finish);
                 systemEventLogService.systemLogDeleteDanglingEntries(rowsDeleted, start, finish);
-                systemEventLogService.systemLogWeatherDataUpdate(3, start, finish);
+                systemEventLogService.systemLogWeatherDataUpdate("MSP", "Error updating weather stations.");
                 systemEventLogService.smartIndexMaintenance(start, finish);
                 systemEventLogService.usernameChanged(user, oldUsername, newUsername);
             }
