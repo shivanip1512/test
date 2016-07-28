@@ -10358,7 +10358,7 @@
         </attributes>
     </pao>
     
-    <pao id="RFN530S4X" inherits="RFN530_S4_BASE">
+    <pao id="RFN530S4X" inherits="RFN530_S4_BASE, SUPPORTS_TOU_TAG">
         <displayName>RFN-530S4x</displayName>
         <points>
             <point type="Analog" offset="50">
@@ -11671,7 +11671,7 @@
         <displayName>RFN-530S4eAD</displayName>
     </pao>
     
-    <pao id="RFN530S4EAT" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_ACTIVE">
+    <pao id="RFN530S4EAT" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_ACTIVE, SUPPORTS_TOU_TAG">
         <displayName>RFN-530S4eAT</displayName>
     </pao>
     
@@ -11728,7 +11728,7 @@
         </attributes>
     </pao>
     
-    <pao id="RFN530S4ERT" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_REACTIVE">
+    <pao id="RFN530S4ERT" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_REACTIVE, SUPPORTS_TOU_TAG">
         <displayName>RFN-530S4eRT</displayName>
     </pao>
     
