@@ -24,8 +24,17 @@ msbuild yukon-server.sln %conf% %mp% %verbose% %clean%
 set rc=%ERRORLEVEL%
 
 if not "%clean%" == "" (
-  if exist bin rd /s /q bin
-  if exist lib rd /s /q lib
+  if "%conf%" == "/p:Configuration=Debug" (
+    if exist bin-debug rd /s /q bin-debug
+    if exist lib-debug rd /s /q lib-debug
+    if exist pdb-debug rd /s /q pdb-debug
+  ) else (
+    if exist bin rd /s /q bin
+    if exist lib rd /s /q lib
+    if exist pdb rd /s /q pdb
+  )
 )
+
+if %rc% gtr 0 echo build failed %rc%
 
 exit /b %rc%

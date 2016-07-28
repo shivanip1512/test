@@ -801,6 +801,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_simulator", "simulator
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yukon-prebuild", "yukon-prebuild.vcxproj", "{6362B0A7-FECA-1BAD-E66C-F9B50000002E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_base", "test_base\test_base.vcxproj", "{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -1441,6 +1443,14 @@ Global
 		{6362B0A7-FECA-1BAD-E66C-F9B50000002E}.Release|Win32.Build.0 = Release|Win32
 		{6362B0A7-FECA-1BAD-E66C-F9B50000002E}.Release|x64.ActiveCfg = Release|x64
 		{6362B0A7-FECA-1BAD-E66C-F9B50000002E}.Release|x64.Build.0 = Release|x64
+		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Debug|Win32.Build.0 = Debug|Win32
+		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Debug|x64.ActiveCfg = Debug|x64
+		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Debug|x64.Build.0 = Debug|x64
+		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Release|Win32.ActiveCfg = Release|Win32
+		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Release|Win32.Build.0 = Release|Win32
+		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Release|x64.ActiveCfg = Release|x64
+		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

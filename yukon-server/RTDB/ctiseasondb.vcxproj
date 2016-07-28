@@ -23,6 +23,7 @@
     <ProjectGuid>{43D1AAC5-FECA-1BAD-FC0E-D90600075222}</ProjectGuid>
     <RootNamespace>ctiseasondb</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -30,14 +31,12 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
     <PlatformToolset>v140</PlatformToolset>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
     <PlatformToolset>v140</PlatformToolset>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -75,9 +74,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)bin-debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\ctiseasondb\I386\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ctiseasondb</TargetName>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetPath)</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -86,7 +85,7 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\I386\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\ctiseasondb\I386\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ctiseasondb</TargetName>
@@ -152,24 +151,16 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)ctiseasondb.dll</OutputFile>
+      <AdditionalDependencies>..\lib-debug\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>
-      </ProgramDatabaseFile>
-      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+      <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
-xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
-if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
-if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
-
-if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
-if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
@@ -209,23 +200,17 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)ctiseasondb.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <LargeAddressAware>true</LargeAddressAware>
+      <ProgramDatabaseFile>$(SolutionDir)pdb\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist $(SolutionDir)bin mkdir $(SolutionDir)bin
-xcopy /d/y/f $(OutDir)$(TargetFileName) $(SolutionDir)bin
-if not exist $(SolutionDir)lib mkdir $(SolutionDir)lib
-if exist $(OutDir)$(TargetName).lib xcopy /d/y/f $(OutDir)$(TargetName).lib $(SolutionDir)lib
-
-if not exist $(SolutionDir)pdb mkdir $(SolutionDir)pdb
-if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(SolutionDir)pdb
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
@@ -265,12 +250,11 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)ctiseasondb.dll</OutputFile>
+      <AdditionalDependencies>..\lib-debug\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
-      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
       <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need
@@ -328,11 +312,10 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)ctiseasondb.dll</OutputFile>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <ImportLibrary>$(Configuration)\$(ProjectName)\I386\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
       <!--
   Though we can set TargetMachine explicitly, VC++
   can figure it out by project type. We don't need

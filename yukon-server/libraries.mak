@@ -1,4 +1,13 @@
 CONFIGURATION=$(BUILD_MODE)
+!IF "$(CONFIGURATION)"=="DEBUG"
+BIN=bin-debug
+LIB=lib-debug
+PDB=pdb-debug
+!ELSE
+BIN=bin
+LIB=lib
+PDB=pdb
+!ENDIF
 
 ACTIVEMQ_BIN    = $(ACTIVEMQ)\$(CONFIGURATION)\bin
 !IF "$(CONFIGURATION)"=="DEBUG"
@@ -73,61 +82,62 @@ XERCES_DLL      = xerces-c_3_1D.dll
 XERCES_DLL      = xerces-c_3_1.dll
 !ENDIF
 
-ALL: bin lib \
-  bin\$(ACTIVEMQ_DLL) \
-  bin\$(APR_DLL) \
-  bin\$(APR_ICONV_DLL) \
-  bin\$(APR_UTIL_DLL) \
-  bin\$(BOOST_DLL_1) \
-  bin\$(BOOST_DLL_2) \
-  bin\$(BOOST_DLL_3) \
-  bin\$(BOOST_DLL_4) \
-  bin\$(BOOST_DLL_5) \
-  bin\$(BOOST_DLL_6) \
-  bin\$(BOOST_DLL_7) \
-  bin\$(DBGHELP_DLL) \
-  bin\$(LOG4CXX_DLL) \
-  bin\$(MICROSOFT_RT_DLL) \
-  bin\$(MICROSOFT_SQL_DLL) \
-  bin\$(MICROSOFT_VCP_DLL) \
-  bin\$(OPENSSL_DLL_1) \
-  bin\$(OPENSSL_DLL_2) \
-  bin\$(SQLAPI_DLL) \
-  bin\$(TCL_DLL) \
-  bin\$(XERCES_DLL)
+ALL: $(BIN) $(LIB) $(PDB) \
+  $(BIN)\$(ACTIVEMQ_DLL) \
+  $(BIN)\$(APR_DLL) \
+  $(BIN)\$(APR_ICONV_DLL) \
+  $(BIN)\$(APR_UTIL_DLL) \
+  $(BIN)\$(BOOST_DLL_1) \
+  $(BIN)\$(BOOST_DLL_2) \
+  $(BIN)\$(BOOST_DLL_3) \
+  $(BIN)\$(BOOST_DLL_4) \
+  $(BIN)\$(BOOST_DLL_5) \
+  $(BIN)\$(BOOST_DLL_6) \
+  $(BIN)\$(BOOST_DLL_7) \
+  $(BIN)\$(DBGHELP_DLL) \
+  $(BIN)\$(LOG4CXX_DLL) \
+  $(BIN)\$(MICROSOFT_RT_DLL) \
+  $(BIN)\$(MICROSOFT_SQL_DLL) \
+  $(BIN)\$(MICROSOFT_VCP_DLL) \
+  $(BIN)\$(OPENSSL_DLL_1) \
+  $(BIN)\$(OPENSSL_DLL_2) \
+  $(BIN)\$(SQLAPI_DLL) \
+  $(BIN)\$(TCL_DLL) \
+  $(BIN)\$(XERCES_DLL)
 
-bin:; md bin
-lib:; md lib
+$(BIN):; md $(BIN)
+$(LIB):; md $(LIB)
+$(PDB):; md $(PDB)
 
-bin\$(ACTIVEMQ_DLL):$(ACTIVEMQ_BIN)\$(ACTIVEMQ_DLL); copy $? $@
+$(BIN)\$(ACTIVEMQ_DLL):$(ACTIVEMQ_BIN)\$(ACTIVEMQ_DLL); copy $? $@
 
-bin\$(APR_DLL):$(APR_BIN)\$(APR_DLL); copy $? $@
-bin\$(APR_UTIL_DLL):$(APR_UTIL_BIN)\$(APR_UTIL_DLL); copy $? $@
-bin\$(APR_ICONV_DLL):$(APR_ICONV_BIN)\$(APR_ICONV_DLL); copy $? $@
+$(BIN)\$(APR_DLL):$(APR_BIN)\$(APR_DLL); copy $? $@
+$(BIN)\$(APR_UTIL_DLL):$(APR_UTIL_BIN)\$(APR_UTIL_DLL); copy $? $@
+$(BIN)\$(APR_ICONV_DLL):$(APR_ICONV_BIN)\$(APR_ICONV_DLL); copy $? $@
 
-bin\$(BOOST_DLL_1):$(BOOST_BIN)\$(BOOST_DLL_1); copy $? $@
-bin\$(BOOST_DLL_2):$(BOOST_BIN)\$(BOOST_DLL_2); copy $? $@
-bin\$(BOOST_DLL_3):$(BOOST_BIN)\$(BOOST_DLL_3); copy $? $@
-bin\$(BOOST_DLL_4):$(BOOST_BIN)\$(BOOST_DLL_4); copy $? $@
-bin\$(BOOST_DLL_5):$(BOOST_BIN)\$(BOOST_DLL_5); copy $? $@
-bin\$(BOOST_DLL_6):$(BOOST_BIN)\$(BOOST_DLL_6); copy $? $@
-bin\$(BOOST_DLL_7):$(BOOST_BIN)\$(BOOST_DLL_7); copy $? $@
+$(BIN)\$(BOOST_DLL_1):$(BOOST_BIN)\$(BOOST_DLL_1); copy $? $@
+$(BIN)\$(BOOST_DLL_2):$(BOOST_BIN)\$(BOOST_DLL_2); copy $? $@
+$(BIN)\$(BOOST_DLL_3):$(BOOST_BIN)\$(BOOST_DLL_3); copy $? $@
+$(BIN)\$(BOOST_DLL_4):$(BOOST_BIN)\$(BOOST_DLL_4); copy $? $@
+$(BIN)\$(BOOST_DLL_5):$(BOOST_BIN)\$(BOOST_DLL_5); copy $? $@
+$(BIN)\$(BOOST_DLL_6):$(BOOST_BIN)\$(BOOST_DLL_6); copy $? $@
+$(BIN)\$(BOOST_DLL_7):$(BOOST_BIN)\$(BOOST_DLL_7); copy $? $@
 
-bin\$(DBGHELP_DLL):$(DBGHELP_BIN)\$(DBGHELP_DLL); copy $? $@
+$(BIN)\$(DBGHELP_DLL):$(DBGHELP_BIN)\$(DBGHELP_DLL); copy $? $@
 
-bin\$(LOG4CXX_DLL):$(LOG4CXX_BIN)\$(LOG4CXX_DLL); copy $? $@
+$(BIN)\$(LOG4CXX_DLL):$(LOG4CXX_BIN)\$(LOG4CXX_DLL); copy $? $@
 
-bin\$(MICROSOFT_VCP_DLL):$(MICROSOFT_VC)\$(MICROSOFT_VCP_DLL); copy $? $@
-bin\$(MICROSOFT_RT_DLL):$(MICROSOFT_VC)\$(MICROSOFT_RT_DLL);  copy $? $@
-bin\$(MICROSOFT_SQL_DLL):$(MICROSOFT_SQL)\$(MICROSOFT_SQL_DLL); copy $? $@
+$(BIN)\$(MICROSOFT_VCP_DLL):$(MICROSOFT_VC)\$(MICROSOFT_VCP_DLL); copy $? $@
+$(BIN)\$(MICROSOFT_RT_DLL):$(MICROSOFT_VC)\$(MICROSOFT_RT_DLL);  copy $? $@
+$(BIN)\$(MICROSOFT_SQL_DLL):$(MICROSOFT_SQL)\$(MICROSOFT_SQL_DLL); copy $? $@
 
-bin\$(OPENSSL_DLL_1):$(OPENSSL_BIN)\$(OPENSSL_DLL_1); copy $? $@
-bin\$(OPENSSL_DLL_2):$(OPENSSL_BIN)\$(OPENSSL_DLL_2); copy $? $@
+$(BIN)\$(OPENSSL_DLL_1):$(OPENSSL_BIN)\$(OPENSSL_DLL_1); copy $? $@
+$(BIN)\$(OPENSSL_DLL_2):$(OPENSSL_BIN)\$(OPENSSL_DLL_2); copy $? $@
 
-bin\$(SQLAPI_DLL):$(SQLAPI_BIN)\$(SQLAPI_DLL); copy $? $@
+$(BIN)\$(SQLAPI_DLL):$(SQLAPI_BIN)\$(SQLAPI_DLL); copy $? $@
 
-bin\$(TCL_DLL):$(TCL_BIN)\$(TCL_DLL); copy $? $@
+$(BIN)\$(TCL_DLL):$(TCL_BIN)\$(TCL_DLL); copy $? $@
 
-bin\$(XERCES_DLL):$(XERCES_BIN)\$(XERCES_DLL); copy $? $@
+$(BIN)\$(XERCES_DLL):$(XERCES_BIN)\$(XERCES_DLL); copy $? $@
 
 
