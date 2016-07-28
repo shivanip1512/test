@@ -78,6 +78,12 @@ public class PointModel<T extends PointBase> {
             if (!translation.isEmpty()) {
                 fdrTranslation.setTranslation(translation);
                 fdrTranslation.setPointID(id);
+                String temp = fdrTranslation.getTranslation();
+                temp = temp.toLowerCase();
+                if (temp.contains("destination")) {
+                    temp = FDRTranslation.getDestinationField(fdrTranslation.getTranslation());
+                    fdrTranslation.setDestination(temp);
+                }
                 newFdrs.add(fdrTranslation);
             }
         }
