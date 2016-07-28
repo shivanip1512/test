@@ -42,13 +42,13 @@ yukon.ami.search = (function () {
                 
                 var sortColumn = $('.sortable.desc, .sortable.asc');
                 var url, sortVal = sortColumn.data('sort');
-                if(sortVal && sortVal !== ''){
+                if (sortVal && sortVal !== '') {
                     url = '/meter/search?' + $.param({
                         itemsPerPage: $('span[data-page-size]').data('pageSize'),
                         sort: sortVal,
                         dir: sortColumn.is('.desc') ? 'desc' : 'asc'
                     });
-                }else{
+                } else {
                     url = '/meter/search';
                 }
                 window.location.href = yukon.url(url);
