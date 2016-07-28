@@ -159,7 +159,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         defaultRouteService.setupNewDefaultRoute(energyCompanyDto.getName(), ecUser, energyCompanyDto.getDefaultRouteId());
         
         // Set Operator Group List
-        
         List<Integer> operatorUserGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorUserGroupIds());
         operatorUserGroupIdsList.add(ecAdminUserGrp.getUserGroupId());
         operatorUserGroupIdsList.add(energyCompanyDto.getPrimaryOperatorUserGroupId());
