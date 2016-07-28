@@ -1,7 +1,6 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -20,10 +19,11 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
-public class CheckAccountEnergyCompanyOperatorTag extends TagSupport {
+public class CheckEnergyCompanyOperatorTag extends TagSupport {
 
     private boolean showError;
-    
+    private Integer accountId;
+    private Integer inventoryId;
 
     @Override
     public int doStartTag() throws JspException {
@@ -31,8 +31,7 @@ public class CheckAccountEnergyCompanyOperatorTag extends TagSupport {
         int returnValue = EVAL_BODY_INCLUDE;
         boolean isValidUser = true;
         String errorMsg = null;
-        EnergyCompanyDao ecDao =
-                YukonSpringHook.getBean(EnergyCompanyDao.class);
+        EnergyCompanyDao ecDao = YukonSpringHook.getBean(EnergyCompanyDao.class);
 
         YukonUserContext userContext =
             YukonUserContextUtils.getYukonUserContext((HttpServletRequest) pageContext.getRequest());
@@ -42,33 +41,41 @@ public class CheckAccountEnergyCompanyOperatorTag extends TagSupport {
         MessageSourceAccessor messageAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         LiteYukonUser user = ServletUtil.getYukonUser(pageContext.getRequest());
-        String accountId = ServletUtil.getParameter((HttpServletRequest) pageContext.getRequest(), "accountId");
         if (!ecDao.isEnergyCompanyOperator(user)) {
             isValidUser = false;
-            errorMsg = messageAccessor.getMessage("yukon.web.taglib.CheckAccountEnergyCompanyOperatorTag.userIsNotECOperator");
+            errorMsg =
+                messageAccessor.getMessage("yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator");
             returnValue = SKIP_BODY;
-        } else if (accountId != null && !accountId.equals("0")) {
+        } else if (accountId != null && accountId != 0) {
             // Account is linked to the page requested
             EnergyCompany operatorEC = ecDao.getEnergyCompany(user);
-            EnergyCompany accountEC = ecDao.getEnergyCompanyByAccountId(Integer.parseInt(accountId));
-            if (accountEC.getId() != operatorEC.getId()) {
-                List<EnergyCompany> childECs = operatorEC.getChildren();
-                boolean isMemberEC = false;
-                for (EnergyCompany child : childECs) {
-                    if (child.getId() == accountEC.getId()) {
-                        isMemberEC = true; // Account belongs to the Member EC of Operator
-                    }
-                }
-                RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-                Boolean hasAdminManageMembersPrivilege =
-                    rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
-                if (!(isMemberEC && hasAdminManageMembersPrivilege)) {
-                    // Check IF user has admin manage member energy companies role property
-                    errorMsg =
-                        messageAccessor.getMessage("yukon.web.taglib.CheckAccountEnergyCompanyOperatorTag.userIsNotAuthorized");
-                    returnValue = SKIP_BODY;
-                    isValidUser = false;
-                }
+            EnergyCompany accountEC = ecDao.getEnergyCompanyByAccountId(accountId);
+            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+            Boolean manageMembers = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
+            if (manageMembers) {
+                isValidUser = operatorEC.isDescendant(true, accountEC.getId());
+            } else {
+                isValidUser = (accountEC.getId() == operatorEC.getId());
+            }
+            if (!isValidUser) {
+                errorMsg =
+                    messageAccessor.getMessage("yukon.web.taglib.checkEnergyCompanyOperatorTag.userIsNotAuthorized");
+                returnValue = SKIP_BODY;
+            }
+        } else if (inventoryId != null && inventoryId != 0) {
+            EnergyCompany operatorEC = ecDao.getEnergyCompany(user);
+            EnergyCompany inventoryEC = ecDao.getEnergyCompanyByInventoryId(inventoryId);
+            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+            Boolean manageMembers = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
+            if (manageMembers) {
+                isValidUser = operatorEC.isDescendant(true, inventoryEC.getId());
+            } else {
+                isValidUser = (inventoryEC.getId() == operatorEC.getId());
+            }
+            if (!isValidUser) {
+                errorMsg =
+                    messageAccessor.getMessage("yukon.web.taglib.checkEnergyCompanyOperatorTag.userIsNotAuthorized");
+                returnValue = SKIP_BODY;
             }
         }
         if (showError && !isValidUser) {
@@ -86,5 +93,13 @@ public class CheckAccountEnergyCompanyOperatorTag extends TagSupport {
 
     public void setShowError(boolean showError) {
         this.showError = showError;
+    }
+
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
+    }
+
+    public void setInventoryId(Integer inventoryId) {
+        this.inventoryId = inventoryId;
     }
 }

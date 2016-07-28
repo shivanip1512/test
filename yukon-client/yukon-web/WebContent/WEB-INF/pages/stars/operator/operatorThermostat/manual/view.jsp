@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="thermostatManual.${pageNameSuffix}">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <cti:includeScript link="/resources/js/common/yukon.temperature.js"/>
     <cti:includeScript link="/resources/js/common/yukon.thermostat.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css"/>
@@ -120,5 +120,5 @@ $(function(){
         </div>
     
     </tags:sectionContainer2>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

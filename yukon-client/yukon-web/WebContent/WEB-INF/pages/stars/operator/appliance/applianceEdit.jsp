@@ -6,7 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="appliance.edit">
-    <cti:checkAccountEnergyCompanyOperator showError="true" >
+    <cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
@@ -180,5 +180,5 @@
             </c:if>          
         </div>
     </div>
-    </cti:checkAccountEnergyCompanyOperator>
+    </cti:checkEnergyCompanyOperator>
 </cti:standardPage>

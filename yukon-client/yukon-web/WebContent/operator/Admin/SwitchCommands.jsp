@@ -120,7 +120,7 @@ function validate(form) {
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> <br>
               <span class="title-header">ADMINISTRATION - SWITCH COMMANDS</span><br>
-                <cti:checkAccountEnergyCompanyOperator showError="true" >
+                <cti:checkEnergyCompanyOperator showError="true" >
                   <%
                       if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>");
                   %>
@@ -142,9 +142,9 @@ function validate(form) {
     	             </c:choose> 	
                     </tr>
                   </table>
-                </cti:checkAccountEnergyCompanyOperator>
+                </cti:checkEnergyCompanyOperator>
             </div>
-            <cti:checkAccountEnergyCompanyOperator>
+            <cti:checkEnergyCompanyOperator>
     			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
                   <cti:csrfToken/>
                   <input type="hidden" name="action" value="SendSwitchCommands">
@@ -310,7 +310,7 @@ function validate(form) {
     	}
     %>
                 </div>
-            </cti:checkAccountEnergyCompanyOperator>
+            </cti:checkEnergyCompanyOperator>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>

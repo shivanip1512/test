@@ -9,7 +9,7 @@
 <cti:standardPage module="operator" page="inventory.home">
 <cti:includeScript link="/resources/js/pages/yukon.assets.dashboard.js"/>
 
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" >
 
 <cti:url var="action" value="/stars/operator/inventory/setupFilterRules"/>
 
@@ -223,5 +223,5 @@
     
 </tags:widgetContainer>
 
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

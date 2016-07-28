@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="appliance.list">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE">
             <%-- CREATE APPLIANCE POPUP --%>
@@ -87,5 +87,5 @@
             </div>
         </cti:checkRolesAndProperties>
     </cti:checkRolesAndProperties>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

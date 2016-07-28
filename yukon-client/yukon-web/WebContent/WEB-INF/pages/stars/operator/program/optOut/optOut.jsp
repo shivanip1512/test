@@ -9,7 +9,7 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="operator" page="optOut.main">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
 <!-- Helper Popup -->
 <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
 <i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle" on="#helpIcon">
@@ -250,5 +250,5 @@
         </div>
     </c:if>
 </tags:sectionContainer2>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

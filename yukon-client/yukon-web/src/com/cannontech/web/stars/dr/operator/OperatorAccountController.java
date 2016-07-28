@@ -833,7 +833,7 @@ public class OperatorAccountController {
         
         List<EventAccount> accountEvents = EventAccount.retrieveEventAccounts(accountInfoFragment.getAccountId());
         model.addAttribute("accountEvents",accountEvents);
-        
+        model.addAttribute("accountId", accountInfoFragment.getAccountId());
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         return "operator/account/accountLog.jsp";
     }

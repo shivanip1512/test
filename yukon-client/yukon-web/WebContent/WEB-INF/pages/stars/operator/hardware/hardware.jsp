@@ -6,7 +6,7 @@
 <cti:standardPage module="operator" page="hardware.${mode}">
 
 <div id="ajaxDialog"></div>
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
 <tags:setFormEditMode mode="${mode}"/>
 <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
 
@@ -542,5 +542,5 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
             </div>
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

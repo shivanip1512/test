@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="controlHistory">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <cti:includeScript link="/resources/js/pages/yukon.assets.controlhistory.js"/>
     <div data-account-id="${accountId}">
         <tags:sectionContainer2 nameKey="currentEnrollmentControlHistory">
@@ -19,5 +19,5 @@
             </div>
         </tags:sectionContainer2>
     </div>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

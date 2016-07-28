@@ -10,7 +10,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="operator" page="hardware.list">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
 <cti:url var="hardwareListUrl" value="/stars/operator/hardware/list?accountId=${accountId}"/>
 <cti:url var="createUrl" value="/stars/operator/hardware/createPage"/>
 <cti:url var="checkSnUrl" value="/stars/operator/hardware/checkSerialNumber"/>
@@ -717,5 +717,5 @@
         </cti:checkRolesAndProperties>
     </tags:sectionContainer2>
 </c:if>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

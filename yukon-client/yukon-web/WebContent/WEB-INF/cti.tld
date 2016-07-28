@@ -212,13 +212,23 @@
   </tag>
 
   <tag>
-      <name>checkAccountEnergyCompanyOperator</name>
-      <tag-class>com.cannontech.web.taglib.CheckAccountEnergyCompanyOperatorTag</tag-class>
+      <name>checkEnergyCompanyOperator</name>
+      <tag-class>com.cannontech.web.taglib.CheckEnergyCompanyOperatorTag</tag-class>
       <attribute>
           <name>showError</name>
           <required>false</required>
           <rtexprvalue>false</rtexprvalue>
-      </attribute>    
+      </attribute>
+      <attribute>
+          <name>accountId</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>inventoryId</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
   </tag>
       
   <tag>

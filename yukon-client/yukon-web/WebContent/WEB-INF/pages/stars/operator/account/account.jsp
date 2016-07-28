@@ -16,7 +16,7 @@
     <input type="hidden" class="js-page-mode" value="${mode}">
     <input type="hidden" class="js-password-mismatch" value="<cti:msg2 key=".loginInfoError.passwordNoMatch"/>">
     
-    <cti:checkAccountEnergyCompanyOperator showError="true" >
+    <cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
         <tags:setFormEditMode mode="${mode}"/>
         
         <form id="deleteAccountForm" action="deleteAccount" method="post">
@@ -371,5 +371,5 @@
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
         
-    </cti:checkAccountEnergyCompanyOperator>
+    </cti:checkEnergyCompanyOperator>
 </cti:standardPage>

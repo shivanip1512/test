@@ -3,9 +3,9 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage module="operator" page="optOut.history">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <tags:sectionContainer2 nameKey="optOutHistory">
         <dr:optOutHistory previousOptOutList="${previousOptOutList}" />
     </tags:sectionContainer2>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

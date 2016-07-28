@@ -7,7 +7,7 @@
 <cti:standardPage module="operator" page="residence">
 
     <style>.short-select select {max-width: 150px;}</style>
-    <cti:checkAccountEnergyCompanyOperator showError="true" >
+    <cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <tags:setFormEditMode mode="${mode}"/>
 
     <cti:url var="submitUrl" value="/stars/operator/residence/residenceUpdate"/>
@@ -63,5 +63,5 @@
         </div>
 
 	</form:form>
-	</cti:checkAccountEnergyCompanyOperator>
+	</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

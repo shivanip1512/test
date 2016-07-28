@@ -1,6 +1,6 @@
 package com.cannontech.stars.energyCompany.model;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 /**
  * An immutable class representing an energy company.  This class can only be built using the builder and all
@@ -167,6 +168,12 @@ public final class EnergyCompany implements YukonEnergyCompany {
         }
         EnergyCompany other = (EnergyCompany) obj;
         return ecId == other.ecId;
+    }
+
+    public boolean isDescendant(boolean includeSelf, Integer otherEcId) {
+        List<EnergyCompany> descendantEcs = getDescendants(includeSelf);
+        List<Integer> descendantEcIds = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
+        return descendantEcIds.contains(otherEcId);
     }
     
 }

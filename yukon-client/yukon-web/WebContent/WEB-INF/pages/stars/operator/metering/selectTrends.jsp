@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <cti:standardPage module="operator" page="selectTrends">
-    <cti:checkAccountEnergyCompanyOperator showError="true" >
+    <cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <tags:sectionContainer2 nameKey="availableTrends">
     
         <c:choose>
@@ -48,5 +48,5 @@
         </c:choose>
     
     </tags:sectionContainer2>
-    </cti:checkAccountEnergyCompanyOperator>
+    </cti:checkEnergyCompanyOperator>
 </cti:standardPage>

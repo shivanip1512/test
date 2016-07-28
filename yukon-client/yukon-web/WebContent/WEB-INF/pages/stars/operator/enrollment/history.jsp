@@ -2,8 +2,8 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
 <cti:standardPage module="operator" page="enrollmentHistory">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
 <dr:enrollmentHistory hardwareConfigActions="${hardwareConfigActions}"
     isHistoryPage="true"/>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

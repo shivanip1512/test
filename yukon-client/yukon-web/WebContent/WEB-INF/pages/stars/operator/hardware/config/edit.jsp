@@ -7,7 +7,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="operator" page="hardwareConfig">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
 <c:set var="configurable" value="${hardware.hardwareType.configurable}"/>
 <cti:checkRolesAndProperties value="OPERATOR_DISABLE_SWITCH_SENDING">
     <c:set var="configurable" value="false"/>
@@ -215,5 +215,5 @@ updateSub = function (data) {
         </div>
     </tags:sectionContainer2>
 </c:if>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

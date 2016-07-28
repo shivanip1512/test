@@ -25,7 +25,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 %>
 
 <cti:standardPage module="operator" page="metering">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <%@ include file="/include/trending_functions.jspf" %>
     <cti:includeCss link="/WebConfig/yukon/CannonStyle.css"/>
     
@@ -156,5 +156,5 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
             
         </tr>
     </table>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>

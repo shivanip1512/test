@@ -369,7 +369,7 @@ public class OperatorOptOutController {
         Map<Integer, List<MessageSourceResolvable>> previousOptOutDetails =
             getHistoryActionLog(previousOptOutList, yukonUserContext);
         model.addAttribute("previousOptOutDetails", previousOptOutDetails);
-
+        model.addAttribute("accountId", accountInfoFragment.getAccountId());
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         return "operator/program/optOut/optOutHistory.jsp";
     }

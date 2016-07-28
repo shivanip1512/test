@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="contactList">
-<cti:checkAccountEnergyCompanyOperator showError="true" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <tags:setFormEditMode mode="${mode}"/>
     
     <table class="compact-results-table no-stripes">
@@ -82,5 +82,5 @@
             </tfoot>
         </cti:displayForPageEditModes>
     </div>
-</cti:checkAccountEnergyCompanyOperator>
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>
