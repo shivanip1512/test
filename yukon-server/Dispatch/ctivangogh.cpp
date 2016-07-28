@@ -577,7 +577,7 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
          * We need to set up our CtiVanGoghConnectionManager according to the request!
          */
 
-        if(aReg.getFlags() & REG_ALL_POINTS)     // I am registering for all points.
+        if(aReg.isRequestingAllPoints())
         {
             CM->setAllPoints(TRUE);
             if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
@@ -586,7 +586,7 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
             }
         }
 
-        if(aReg.getFlags() & REG_EVENTS)
+        if(aReg.isRequestingEvents())
         {
             CM->setEvent(TRUE);
             if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
@@ -595,7 +595,7 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
             }
         }
 
-        if(aReg.getFlags() & REG_ALARMS)
+        if(aReg.isRequestingAlarms())
         {
             CM->setAlarm(TRUE);
             if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
@@ -613,10 +613,9 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
                          CtiPointClientManager::DebugPrint::False));
         CTILOG_DEBUG(dout, "Post Point Mgr Insert pCM->getConnectionId()=" << pCM->getConnectionId() << ", use_count=" << pCM.use_count());
 
-
-        if(!(aReg.getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS)))
+        if(!(aReg.isDecliningUpload() || aReg.isAddingPoints() || aReg.isRemovingPoints()))
         {
-            postMOAUploadToConnection(pCM, ptSet, aReg.getFlags() & REG_TAG_MARKMOA);
+            postMOAUploadToConnection(pCM, ptSet, aReg.isRequestingMoaTag());
         }
     }
     catch(...)
@@ -6613,7 +6612,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         else if(MsgPtr->isA() == MSG_POINTREGISTRATION)
         {
             CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
-            if( pRegMsg->getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS) )
+            if( pRegMsg->isDecliningUpload() || pRegMsg->isAddingPoints() || pRegMsg->isRemovingPoints() )
             {
                 //  None of these require points to be loaded.
                 return false;
@@ -6759,7 +6758,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
         else if(MsgPtr->isA() == MSG_POINTREGISTRATION)
         {
             CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
-            if( pRegMsg->getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS) )
+            if( pRegMsg->isDecliningUpload() || pRegMsg->isAddingPoints() || pRegMsg->isRemovingPoints() )
             {
                 //  None of these require points to be loaded.
                 return;

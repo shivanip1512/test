@@ -128,8 +128,7 @@ void main(int argc, char **argv)
             Connect.start();
 
             Connect.WriteConnQue(new CtiRegistrationMsg(argv[0], GetCurrentThreadId(), false), CALLSITE);
-            CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NOTHING);
-            Connect.WriteConnQue(PtRegMsg, CALLSITE);
+            Connect.WriteConnQue(std::make_unique<CtiPointRegistrationMsg>(REG_NOTHING), CALLSITE);
 
             if( !(command == 0x03 || command == 0x04 || command == 0x05 || command == 0x06 || command == 0x07) )
             {

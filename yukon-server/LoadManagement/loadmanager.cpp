@@ -818,73 +818,62 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
         CTILOG_DEBUG(dout, "Registering for point changes.");
     }
 
-    CtiPointRegistrationMsg* regMsg;
+    auto regMsg = std::make_unique<CtiPointRegistrationMsg>();
 
-    /* This is left here as there is no other documentation of this cparm ever existing!
-    string simple_registration = gConfigParms.getValueAsString("LOAD_MANAGEMENT_SIMPLE_REGISTRATION", "false");
-    if( simple_registration == "true" || simple_registration == "TRUE" ) //register for all points
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
-        regMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_POINTS);
-    }
-    else //register for each point specifically*/
-    {
-        regMsg = CTIDBG_new CtiPointRegistrationMsg();
+        CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
 
-        for( LONG i=0;i<controlAreas.size();i++ )
+        vector<CtiLMControlAreaTrigger*>& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
+
+        for( LONG j=0;j<controlAreaTriggers.size();j++ )
         {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+            CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers.at(j);
 
-            vector<CtiLMControlAreaTrigger*>& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
-
-            for( LONG j=0;j<controlAreaTriggers.size();j++ )
+            if( currentTrigger->getPointId() > 0 )
             {
-                CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers.at(j);
-
-                if( currentTrigger->getPointId() > 0 )
-                {
-                    regMsg->insert(currentTrigger->getPointId());
-                }
-                if( currentTrigger->getPeakPointId() > 0 )
-                {
-                    regMsg->insert(currentTrigger->getPeakPointId());
-                }
-                if( currentTrigger->getThresholdPointId() > 0 )
-                {
-                    regMsg->insert(currentTrigger->getThresholdPointId());
-                }
+                regMsg->insert(currentTrigger->getPointId());
             }
-
-            vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
-
-            for( LONG k=0;k<lmPrograms.size();k++ )
+            if( currentTrigger->getPeakPointId() > 0 )
             {
-                CtiLMProgramBaseSPtr currentProgram = (CtiLMProgramBaseSPtr)lmPrograms[k];
-                if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+                regMsg->insert(currentTrigger->getPeakPointId());
+            }
+            if( currentTrigger->getThresholdPointId() > 0 )
+            {
+                regMsg->insert(currentTrigger->getThresholdPointId());
+            }
+        }
+
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
+
+        for( LONG k=0;k<lmPrograms.size();k++ )
+        {
+            CtiLMProgramBaseSPtr currentProgram = (CtiLMProgramBaseSPtr)lmPrograms[k];
+            if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+            {
+                CtiLMGroupVec groups  = boost::static_pointer_cast<CtiLMProgramDirect>(currentProgram)->getLMProgramDirectGroups();
+                for( CtiLMGroupIter iter = groups.begin(); iter != groups.end(); iter++ )
                 {
-                    CtiLMGroupVec groups  = boost::static_pointer_cast<CtiLMProgramDirect>(currentProgram)->getLMProgramDirectGroups();
-                    for( CtiLMGroupIter iter = groups.begin(); iter != groups.end(); iter++ )
+                    CtiLMGroupPtr currentGroup  = *iter;
+                    if( currentGroup->getHoursDailyPointId() > 0 )
                     {
-                        CtiLMGroupPtr currentGroup  = *iter;
-                        if( currentGroup->getHoursDailyPointId() > 0 )
-                        {
-                            regMsg->insert(currentGroup->getHoursDailyPointId());
-                        }
-                        if( currentGroup->getHoursMonthlyPointId() > 0 )
-                        {
-                            regMsg->insert(currentGroup->getHoursMonthlyPointId());
-                        }
-                        if( currentGroup->getHoursSeasonalPointId() > 0 )
-                        {
-                            regMsg->insert(currentGroup->getHoursSeasonalPointId());
-                        }
-                        if( currentGroup->getHoursAnnuallyPointId() > 0 )
-                        {
-                            regMsg->insert(currentGroup->getHoursAnnuallyPointId());
-                        }
-                        if( currentGroup->getControlStatusPointId() > 0 )
-                        {
-                            regMsg->insert(currentGroup->getControlStatusPointId());
-                        }
+                        regMsg->insert(currentGroup->getHoursDailyPointId());
+                    }
+                    if( currentGroup->getHoursMonthlyPointId() > 0 )
+                    {
+                        regMsg->insert(currentGroup->getHoursMonthlyPointId());
+                    }
+                    if( currentGroup->getHoursSeasonalPointId() > 0 )
+                    {
+                        regMsg->insert(currentGroup->getHoursSeasonalPointId());
+                    }
+                    if( currentGroup->getHoursAnnuallyPointId() > 0 )
+                    {
+                        regMsg->insert(currentGroup->getHoursAnnuallyPointId());
+                    }
+                    if( currentGroup->getControlStatusPointId() > 0 )
+                    {
+                        regMsg->insert(currentGroup->getControlStatusPointId());
                     }
                 }
             }
@@ -892,7 +881,7 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
     }
     try
     {
-        getDispatchConnection()->WriteConnQue(regMsg, CALLSITE);
+        getDispatchConnection()->WriteConnQue(std::move(regMsg), CALLSITE);
     }
     catch( ... )
     {

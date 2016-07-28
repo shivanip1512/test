@@ -12,9 +12,7 @@ DEFINE_COLLECTABLE( CtiPointRegistrationMsg, MSG_POINTREGISTRATION );
 // Return a new'ed copy of this message!
 CtiMessage* CtiPointRegistrationMsg::replicateMessage() const
 {
-   CtiPointRegistrationMsg *ret = CTIDBG_new CtiPointRegistrationMsg(*this);
-
-   return( (CtiMessage*)ret );
+   return new CtiPointRegistrationMsg(*this);
 }
 
 std::string CtiPointRegistrationMsg::toString() const
@@ -33,61 +31,19 @@ std::string CtiPointRegistrationMsg::toString() const
    return (Inherited::toString() += itemList.toString());
 }
 
-CtiPointRegistrationMsg::CtiPointRegistrationMsg(int Flag, int Pri) :
-   RegFlags(Flag),
-   CtiMessage(Pri)
+CtiPointRegistrationMsg::CtiPointRegistrationMsg()
+    :   CtiPointRegistrationMsg(REG_NOTHING)
 {}
 
-CtiPointRegistrationMsg::~CtiPointRegistrationMsg()
-{
-   PointList.clear();
-}
-
-CtiPointRegistrationMsg::CtiPointRegistrationMsg(const CtiPointRegistrationMsg &aRef)
-{
-   *this = aRef;
-}
-
-
-CtiPointRegistrationMsg& CtiPointRegistrationMsg::operator=(const CtiPointRegistrationMsg& aRef)
-{
-   int i;
-
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-      RegFlags    = aRef.getFlags();
-
-      PointList.clear();                  // Get me empty..
-
-      for(i = 0; i < aRef.getCount(); i++)     // Copy them in..
-      {
-         insert(aRef[i]);
-      }
-   }
-   return *this;
-}
+CtiPointRegistrationMsg::CtiPointRegistrationMsg(int Flag) 
+    :   RegFlags{Flag},
+        CtiMessage(14)
+{}
 
 // If list is empty, I assume you wanted them all!.
 size_t CtiPointRegistrationMsg::getCount() const       { return PointList.size(); }
 
-LONG& CtiPointRegistrationMsg::operator[](size_t i)
-{
-   return PointList[i];
-}
-
-LONG CtiPointRegistrationMsg::operator[](size_t i) const
-{
-   return PointList[i];
-}
-
-// Clear out the list.
-void CtiPointRegistrationMsg::clear()
-{
-   PointList.clear();
-}
-
-void CtiPointRegistrationMsg::insert(const LONG& a)
+void CtiPointRegistrationMsg::insert(const long a)
 {
    PointList.push_back(a);
 }

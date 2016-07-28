@@ -15,7 +15,7 @@
 #define REG_TAG_MARKMOA       0x00020000     // Dispatch will mark each pointin the MOA upload with TAG_POINT_MOA_REPORT
 
 
-class IM_EX_MSG CtiPointRegistrationMsg : public CtiMessage
+class IM_EX_MSG CtiPointRegistrationMsg final : public CtiMessage
 {
 public:
     DECLARE_COLLECTABLE( CtiPointRegistrationMsg )
@@ -29,22 +29,15 @@ public:
 
    typedef CtiMessage Inherited;
 
-   CtiPointRegistrationMsg(int Flag = (REG_NOTHING), int Pri = 14);
-   virtual ~CtiPointRegistrationMsg();
-   CtiPointRegistrationMsg(const CtiPointRegistrationMsg &aRef);
+   CtiPointRegistrationMsg(int flags);
+   CtiPointRegistrationMsg();
 
-   CtiPointRegistrationMsg& operator=(const CtiPointRegistrationMsg& aRef);
-
-   virtual CtiMessage* replicateMessage() const;
+   CtiMessage* replicateMessage() const override;
 
    // If list is empty, I assume you wanted them all!.
    size_t getCount() const;
 
-   LONG& operator[](size_t i);
-   LONG operator[](size_t i) const;
-   // Clear out the list.
-   void clear();
-   void insert(const LONG& a);
+   void insert(const long ptId);
    int getFlags() const;
    void setFlags(int flags);
 

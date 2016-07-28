@@ -100,14 +100,14 @@ void DispatchConnection::refreshPointRegistration()
 
     if (_removeList.size() > 0)
     {
-        CtiPointRegistrationMsg* msg = new CtiPointRegistrationMsg(REG_REMOVE_POINTS);
+        auto msg = std::make_unique<CtiPointRegistrationMsg>(REG_REMOVE_POINTS);
         for each (long pointId in _removeList)
         {
             msg->insert(pointId);
             _registeredPoints.erase(pointId);
         }
 
-        WriteConnQue(msg, CALLSITE);
+        WriteConnQue(std::move(msg), CALLSITE);
     }
 
     if (_addList.size() > 0)
@@ -119,14 +119,14 @@ void DispatchConnection::refreshPointRegistration()
             flag = REG_NOTHING;
         }
 
-        CtiPointRegistrationMsg* msg = new CtiPointRegistrationMsg(flag);
+        auto msg = std::make_unique<CtiPointRegistrationMsg>(flag);
         for each (long pointId in _addList)
         {
             msg->insert(pointId);
             _registeredPoints.insert(pointId);
         }
 
-        WriteConnQue(msg, CALLSITE);
+        WriteConnQue(std::move(msg), CALLSITE);
 
         //If REG_ADD_POINTS follow up with point request message
         if (flag == REG_ADD_POINTS)

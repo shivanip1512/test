@@ -481,7 +481,7 @@ std::set<long> CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_typ
     const int ptcnt = aReg.getCount();
     ConnectionMgrPointMap::iterator conIter = _conMgrPointMap.end();
 
-    if(!(aReg.getFlags() & (REG_ADD_POINTS | REG_REMOVE_POINTS)) )     // If add/remove is set, we are augmenting or removing an existing registration (Not the whole thing).
+    if( ! (aReg.isAddingPoints() || aReg.isRemovingPoints()) )     // If add/remove is set, we are augmenting or removing an existing registration (Not the whole thing).
     {
         removePointsFromConnectionManager( CM );
     }
@@ -490,14 +490,8 @@ std::set<long> CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_typ
 
     if(debugprint == DebugPrint::True)
     {
-        Cti::StreamBuffer outLog;
-        outLog << CM->getClientName() <<" " << reinterpret_cast<size_t>(CM.get()) << " has registered for "<< ptcnt <<" points:";
-        for(int pointNbr = 0 ; pointNbr < ptcnt; pointNbr++)
-        {
-            outLog << endl << aReg[pointNbr];
-        }
-
-        CTILOG_DEBUG(dout, outLog);
+        CTILOG_DEBUG(dout, CM->getClientName() <<" " << reinterpret_cast<size_t>(CM.get()) << " has registered for "<< ptcnt <<" points:" 
+                            << endl << Cti::join(aReg.getPointList(), ","));
         CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
     }
 
@@ -538,7 +532,7 @@ std::set<long> CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_typ
             // Prevent _pointConnectionMap from wiggling while we operate.
             coll_type::writer_lock_guard_t guard( getLock() );
 
-            if(aReg.getFlags() & REG_REMOVE_POINTS)
+            if( aReg.isRemovingPoints() )
             {
                 PointConnectionMap::iterator iter = _pointConnectionMap.find(ptId);
                 if(iter != _pointConnectionMap.end())
