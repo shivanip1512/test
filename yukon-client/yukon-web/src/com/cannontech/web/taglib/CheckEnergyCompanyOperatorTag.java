@@ -44,7 +44,7 @@ public class CheckEnergyCompanyOperatorTag extends TagSupport {
         if (!ecDao.isEnergyCompanyOperator(user)) {
             isValidUser = false;
             errorMsg =
-                messageAccessor.getMessage("yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator");
+                messageAccessor.getMessage("yukon.web.taglib.checkEnergyCompanyOperatorTag.userIsNotECOperator");
             returnValue = SKIP_BODY;
         } else if (accountId != null && accountId != 0) {
             // Account is linked to the page requested
