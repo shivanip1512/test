@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 
-public class DataStreamingConfig {
+public class DataStreamingConfig implements Cloneable {
     
     private static final String nameKey= "yukon.web.modules.tools.bulk.dataStreaming.configuration.name";
     
@@ -103,5 +103,60 @@ public class DataStreamingConfig {
     
     public void setAccessor(MessageSourceAccessor accessor) {
         this.accessor = accessor;
+    }
+    
+    /** This implementation doesn't compare all fields! */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((attributes == null) ? 0 : attributes.hashCode());
+        result = prime * result + id;
+        return result;
+    }
+
+    /** This implementation doesn't compare all fields! */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DataStreamingConfig other = (DataStreamingConfig) obj;
+        if (attributes == null) {
+            if (other.attributes != null) {
+                return false;
+            }
+        } else if (!attributes.equals(other.attributes)) {
+            return false;
+        }
+        if (id != other.id) {
+            return false;
+        }
+        return true;
+    }
+    
+    @Override
+    public DataStreamingConfig clone() {
+        DataStreamingConfig config = new DataStreamingConfig();
+        config.newConfiguration = newConfiguration;
+        config.selectedInterval = selectedInterval;
+        config.selectedConfiguration = selectedConfiguration;
+        config.name = name;
+        config.commaDelimitedAttributes = commaDelimitedAttributes;
+        config.accessor = accessor;
+        for (DataStreamingAttribute dsAttribute : attributes) {
+            DataStreamingAttribute newAttribute = new DataStreamingAttribute();
+            newAttribute.setAttribute(dsAttribute.getAttribute());
+            newAttribute.setAttributeOn(dsAttribute.getAttributeOn());
+            newAttribute.setInterval(dsAttribute.getInterval());
+            config.addAttribute(newAttribute);
+        }
+        return config;
     }
 }

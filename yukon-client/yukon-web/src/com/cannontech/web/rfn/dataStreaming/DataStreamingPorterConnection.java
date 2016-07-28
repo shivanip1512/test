@@ -87,7 +87,7 @@ public class DataStreamingPorterConnection {
         result.setCommandCompletionCallback(commandCompletionCallback);
         if (devSettings.isSimulatePorterConfigResponse()) {
             // If developer settings are set to simulate, replace the real commandExecutor with a simulator.
-            log.debug("Simulating data streaming configuration via fake executor.");
+            log.info("Simulating data streaming configuration via fake executor.");
             fakeCommandExecutor.execute(result.getExecution(), commandCompletionCallback, commands, user);
         } else {
             // Otherwise send the commands to Porter

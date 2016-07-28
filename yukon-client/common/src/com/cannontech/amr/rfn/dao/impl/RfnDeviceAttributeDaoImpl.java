@@ -2,11 +2,11 @@ package com.cannontech.amr.rfn.dao.impl;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -24,6 +24,8 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.util.JsonUtils;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -35,7 +37,7 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
 
     @Value("classpath:metricIdToAttributeMapping.json") private Resource inputFile;
 
-    private Map<Integer, BuiltInAttribute> attributeLookup = null;
+    private BiMap<Integer, BuiltInAttribute> attributeLookup = null;
     private Set<BuiltInAttribute> metricAttributes = null;
 
     public static class MetricIdAttributeMapping {
@@ -62,7 +64,7 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
     @PostConstruct
     public void initialize() throws IOException {
 
-        attributeLookup = new HashMap<>();
+        attributeLookup = HashBiMap.create();
         metricAttributes = new HashSet<>();
 
         String jsonString = IOUtils.toString(inputFile.getInputStream(), Charsets.UTF_8);
@@ -103,6 +105,23 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
         return paoAttributes;
     }
 
+    @Override
+    public Map<Integer, BuiltInAttribute> getMetricToAttributeMap(Collection<BuiltInAttribute> attributes) {
+        return attributes.stream()
+                         .collect(Collectors.toMap(
+                              attribute -> attributeLookup.inverse().get(attribute), 
+                              attribute -> attribute));
+    }
+    
+    @Override
+    public Integer getMetricIdForAttribute(BuiltInAttribute attribute) {
+        Integer metricId = attributeLookup.inverse().get(attribute);
+        if (metricId == null) {
+            throw new IllegalStateException("No metricId found for attribute " + attribute);
+        }
+        return metricId;
+    }
+    
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
     }

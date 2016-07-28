@@ -21,6 +21,8 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
     private Map<RfnIdentifier, Integer> devices; // Map<device, configIndex>
     
     private DeviceDataStreamingConfigRequestType requestType;
+    
+    private int expiration; //Pending time in minutes for data streaming discrepancies. Only use when request type is CONFIG
 
     public DeviceDataStreamingConfig[] getConfigs() {
         return configs;
@@ -46,12 +48,21 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
         this.requestType = requestType;
     }
 
+    public int getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(int expiration) {
+        this.expiration = expiration;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + Arrays.hashCode(configs);
         result = prime * result + ((devices == null) ? 0 : devices.hashCode());
+        result = prime * result + expiration;
         result = prime * result + ((requestType == null) ? 0 : requestType.hashCode());
         return result;
     }
@@ -78,6 +89,9 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
         } else if (!devices.equals(other.devices)) {
             return false;
         }
+        if (expiration != other.expiration) {
+            return false;
+        }
         if (requestType != other.requestType) {
             return false;
         }
@@ -87,7 +101,7 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
     @Override
     public String toString() {
         return "DeviceDataStreamingConfigRequest [configs=" + Arrays.toString(configs) + ", devices=" + devices
-               + ", requestType=" + requestType + "]";
+               + ", requestType=" + requestType + ", expiration=" + expiration + "]";
     }
-    
+
 }
