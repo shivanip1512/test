@@ -58,7 +58,7 @@
                 
                 <div class="page-action-area">
                     <cti:button nameKey="back" href="javascript:window.history.back()" name="backButton" classes="action" />
-                    <cti:button disabled="${sendDisabled}" nameKey="send" type="submit" name="sendButton" classes="primary action" />
+                    <cti:button disabled="${sendDisabled}" nameKey="send" type="submit" name="sendButton" classes="primary action" busy="true"/>
                     <c:if test="${sendDisabled}">
                         <div class="warning">
                             <i:inline key=".gatewayOverloaded"/>

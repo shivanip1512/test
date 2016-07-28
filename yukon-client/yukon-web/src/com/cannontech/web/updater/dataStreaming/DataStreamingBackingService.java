@@ -8,7 +8,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class DataStreamingBackingService extends RecentResultUpdateBackingService{
-    RecentResultsCache<DataStreamingConfigResult> resultsCache;    
+    @Resource(name = "recentResultsCache") private RecentResultsCache<DataStreamingConfigResult> resultsCache;
+
     
     @Override
     public boolean isValueAvailableImmediately(String fullIdentifier, long afterDate,
@@ -25,9 +26,5 @@ public class DataStreamingBackingService extends RecentResultUpdateBackingServic
         DataStreamingTypeEnum importTypeEnum = DataStreamingTypeEnum.valueOf(resultTypeStr);
         return importTypeEnum.getValue(result);
     }
-    
-    @Resource(name="recentResultsCache")
-    public void setResultsCache(RecentResultsCache<DataStreamingConfigResult> resultsCache) {
-        this.resultsCache = resultsCache;
-    }
+
 }
