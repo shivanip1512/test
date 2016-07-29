@@ -150,6 +150,17 @@ public final class EnergyCompany implements YukonEnergyCompany {
         return builder.build();
     }
     
+    /** Returns true if the energy company is descendent of other energy company for which the Id is passed.
+     * @param includeSelf
+     * @param otherEcId
+     * @return
+     */
+    public boolean isDescendant(boolean includeSelf, Integer otherEcId) {
+        List<EnergyCompany> descendantEcs = getDescendants(includeSelf);
+        List<Integer> descendantEcIds = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
+        return descendantEcIds.contains(otherEcId);
+    }
+    
     @Override
     public int hashCode() {
         return ecId;
@@ -169,11 +180,4 @@ public final class EnergyCompany implements YukonEnergyCompany {
         EnergyCompany other = (EnergyCompany) obj;
         return ecId == other.ecId;
     }
-
-    public boolean isDescendant(boolean includeSelf, Integer otherEcId) {
-        List<EnergyCompany> descendantEcs = getDescendants(includeSelf);
-        List<Integer> descendantEcIds = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
-        return descendantEcIds.contains(otherEcId);
-    }
-    
 }

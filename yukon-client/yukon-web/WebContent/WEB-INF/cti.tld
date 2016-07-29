@@ -214,6 +214,7 @@
   <tag>
       <name>checkEnergyCompanyOperator</name>
       <tag-class>com.cannontech.web.taglib.CheckEnergyCompanyOperatorTag</tag-class>
+      <description>Checks if User is the energy company operator.</description> 
       <attribute>
           <name>showError</name>
           <required>false</required>
@@ -221,11 +222,13 @@
       </attribute>
       <attribute>
           <name>accountId</name>
+          <description>If set, the logged in user's energy company will be checked against the accountId's owner energy company.</description> 
           <required>false</required>
           <rtexprvalue>true</rtexprvalue>
       </attribute>
       <attribute>
           <name>inventoryId</name>
+          <description>If set, the logged in user's energy company will be checked against the inventoryId's owner energy company.</description> 
           <required>false</required>
           <rtexprvalue>true</rtexprvalue>
       </attribute>
