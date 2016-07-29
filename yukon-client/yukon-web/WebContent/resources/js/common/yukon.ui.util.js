@@ -317,7 +317,7 @@ yukon.ui.util = (function () {
                     displayDataString = dataString;
                     maxLen = args.columns[col].maxLen;
                     if (maxLen && dataString.length > maxLen) {
-                        displayDataString = dataString.truncate(maxLen, '...');
+                        displayDataString = dataString.substring(0, maxLen - 3) + '...';
                         cell.setAttribute('title', dataString);
                     }
                     

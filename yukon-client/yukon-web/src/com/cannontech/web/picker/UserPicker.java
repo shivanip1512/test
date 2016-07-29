@@ -15,7 +15,6 @@ public class UserPicker extends LucenePicker<UltraLightYukonUser> {
         String titleKeyPrefix = "yukon.web.picker.user.";
         
         OutputColumn column = new OutputColumn("userName", titleKeyPrefix + "name");
-        column.setMaxCharsDisplayed(18);
         columns.add(column);
         
         columns.add(new OutputColumn("userGroupName", titleKeyPrefix + "userGroupName"));
