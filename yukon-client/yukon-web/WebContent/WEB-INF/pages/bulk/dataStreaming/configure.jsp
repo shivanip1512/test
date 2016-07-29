@@ -54,7 +54,7 @@
                 </tags:nameValueContainer2>
         
                 <div class="page-action-area">
-                    <cti:button nameKey="next" name="nextButton" classes="primary action js-next-button"/>
+                    <cti:button nameKey="next" name="nextButton" classes="primary action js-next-button" busy="true"/>
                 </div>
             </form:form>
         </div>

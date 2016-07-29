@@ -29,8 +29,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
-import com.cannontech.web.rfn.dataStreaming.model.DeviceUnsupported;
-import com.cannontech.web.rfn.dataStreaming.model.GatewayLoading;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -101,26 +99,10 @@ public class DataStreamingController {
         
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
-        
-        //TODO: change this to call service - for now mock up data
-        VerificationInformation verifyInfo = new VerificationInformation();
-        verifyInfo.setConfiguration(modelConfig);
-        DeviceUnsupported deviceUnsupported = new DeviceUnsupported();
-        deviceUnsupported.getAttributes().add(configuration.getAttributes().get(0).getAttribute());
-        List<Integer> unsupportedDevices = deviceIds.subList(0,  deviceIds.size()/2);
-        deviceUnsupported.setDeviceIds(unsupportedDevices);
-        deviceUnsupported.setDeviceCollection(dcProducer.createDeviceCollection(unsupportedDevices, null));
-        verifyInfo.getDeviceUnsupported().add(deviceUnsupported);
-        int currentPercent = 65;
-        for (int i = 0; i < 3; i++) {
-            GatewayLoading loading = new GatewayLoading();
-            loading.setGatewayName("Gateway " + i);
-            loading.setCurrentPercent(currentPercent);
-            loading.setProposedPercent(currentPercent + 5);
-            currentPercent += 6;
-            verifyInfo.getGatewayLoadingInfo().add(0, loading);
-        }
 
+        VerificationInformation verifyInfo = dataStreamingService.verifyConfiguration(configId, deviceIds);
+        verifyInfo.setConfiguration(modelConfig);
+        verifyInfo.getDeviceUnsupported().forEach(device -> device.setDeviceCollection(dcProducer.createDeviceCollection(device.getDeviceIds(), null)));
         
         model.addAttribute("verificationInfo", verifyInfo);
 
@@ -136,23 +118,18 @@ public class DataStreamingController {
     
     @RequestMapping(value="remove", method=RequestMethod.POST)
     public String removeSubmit(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
+        LiteYukonUser user = userContext.getYukonUser();
+
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
-                
-        //TODO: change this to call service - for now mock up data
-        VerificationInformation verifyInfo = new VerificationInformation();
-        GatewayLoading loading = new GatewayLoading();
-        loading.setGatewayName("Gateway 1");
-        loading.setCurrentPercent(93.5);
-        loading.setProposedPercent(85.5);
-        verifyInfo.getGatewayLoadingInfo().add(loading);
         
-        model.addAttribute("verificationInfo", verifyInfo);
+        DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
+        model.addAttribute("resultsId", result.getResultsId());
 
-        return "dataStreaming/verification.jsp";
+        return "redirect:dataStreamingResults";
     }
     
     @RequestMapping(value="verification", method=RequestMethod.POST)
@@ -166,13 +143,8 @@ public class DataStreamingController {
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
         int configId = verificationInfo.getConfiguration().getId();
-        DataStreamingConfigResult result;
-        if (configId > 0) {
-            result = dataStreamingService.assignDataStreamingConfig(configId, deviceCollection, user);
-            result.setConfigId(configId);
-        } else {
-            result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
-        }
+        DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(configId, deviceCollection, user);
+        result.setConfigId(configId);
         
         model.addAttribute("resultsId", result.getResultsId());
 

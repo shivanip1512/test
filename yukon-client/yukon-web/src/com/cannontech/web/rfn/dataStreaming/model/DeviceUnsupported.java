@@ -27,7 +27,10 @@ public class DeviceUnsupported {
         this.attributes = attributes;
     }
     public String getDetail() {
-        detail = deviceIds.size() + " devices do not support " + getAttributes().get(0).getDescription();
+        String devices = deviceIds.size() > 1 ? " devices do" : " device does";
+        List<String> attList = new ArrayList<String>();
+        getAttributes().forEach(attribute -> attList.add(attribute.getDescription()));
+        detail = deviceIds.size() + devices + " not support " + String.join(", ",  attList);
         return detail;
     }
     public void setDetail(String detail) {

@@ -27,7 +27,8 @@ public class GatewayLoading {
         this.gatewayName = gatewayName;
     }
     public String getDetail() {
-        detail = "Gateway " + gatewayName + " loading will increase from " + currentPercent + "% to " + proposedPercent + "% after making these changes.";
+        String change = proposedPercent > currentPercent ? "increase" : "decrease";
+        detail = "Gateway " + gatewayName + " loading will " + change + " from " + currentPercent + "% to " + proposedPercent + "% after making these changes.";
         return detail;
     }
     public void setDetail(String detail) {

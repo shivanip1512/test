@@ -400,9 +400,10 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.noteLabel"></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.noteText"></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.message">Are you sure you want to make these changes?  After clicking Send, messages will be sent, changing the network loading.</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.removeMessage">Are you sure you want to remove data streaming for the above devices?</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.gatewayOverloaded">Cannot configure data streaming when a gateway is overloaded.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.removeConfiguration">Remove Data Streaming</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.gatewayImpact.title">Gateway Impact</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.devicesUnsupported.title">Devices Not Supported</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.commsError">A communication error occurred between Yukon and Network Manager.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.unknownError">An unknown error occurred. See logs for additional details.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.networkManagerFailure">Network Manager encountered an error that prevented it from completing the operation.</entry>
@@ -416,7 +417,7 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.UNSUPPORTED_REPORT_INTERVAL">Device "{0}" configured with unsupported report interval.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.TOO_MANY_REPORT_INTERVALS">Device "{0}" configured with too many report intervals.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.TOO_MANY_CONFIGED_METRICS">Device "{0}" configured with too many metrics.</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.OTHER_ERROR">Device "{0}" had an unknown error in Network Manager.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.OTHER_ERROR">Device "{0}" had an unknown error in Network Manager.</entry>    
     
     <!-- results.jsp -->
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.pageName">Data Streaming Results</entry>

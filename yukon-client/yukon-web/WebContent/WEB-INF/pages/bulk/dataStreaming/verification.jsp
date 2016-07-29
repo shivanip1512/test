@@ -10,14 +10,7 @@
     
         <div class="stacked notes">
          <strong><i:inline key=".configuration"/>:</strong>&nbsp;
-            <c:choose>
-                <c:when test="${verificationInfo.configuration != null}">
-                    <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(verificationInfo.configuration.name)}</a>
-                </c:when>
-                <c:otherwise>
-                    <i:inline key=".removeConfiguration"/>
-                </c:otherwise>
-            </c:choose>
+         <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(verificationInfo.configuration.name)}</a>
         </div>
 
         <div class="page-action-area">
@@ -26,12 +19,20 @@
                 <cti:csrfToken/>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <form:hidden path="configuration.id" />
-
-                <c:forEach var="deviceUnsupported" varStatus="status" items="${verificationInfo.deviceUnsupported}">
-                    <div class="user-message warning">${deviceUnsupported.detail}<tags:selectedDevicesPopup deviceCollection="${deviceUnsupported.deviceCollection}"/></div>
-                </c:forEach>
                 
-                <tags:sectionContainer title="Gateway Impact">
+                <c:forEach var="exception" items="${verificationInfo.exceptions}">
+                    <div class="user-message error">${exception.message}</div>
+                </c:forEach>
+
+                <tags:sectionContainer2 nameKey="devicesUnsupported">
+                    <div class="scroll-md">
+                        <c:forEach var="deviceUnsupported" items="${verificationInfo.deviceUnsupported}">
+                            <div><cti:icon icon="icon-error"/>${deviceUnsupported.detail}<tags:selectedDevicesPopup deviceCollection="${deviceUnsupported.deviceCollection}"/></div>
+                        </c:forEach>
+                    </div>
+                </tags:sectionContainer2>
+                
+                <tags:sectionContainer2 nameKey="gatewayImpact">
                     <div class="scroll-md">
                         <c:set var="sendDisabled" value="false"/>
                         <c:forEach var="gateway" varStatus="status" items="${verificationInfo.gatewayLoadingInfo}">
@@ -43,17 +44,10 @@
                             <div><cti:icon icon="${msgIcon}"/>${gateway.detail}</div>
                         </c:forEach>
                     </div>
-                </tags:sectionContainer>
+                </tags:sectionContainer2>
         
                 <div style="margin-top:50px;"><b>
-                    <c:choose>
-                        <c:when test="${verificationInfo.configuration != null}">
-                            <i:inline key=".message"/>
-                        </c:when>
-                        <c:otherwise>
-                            <i:inline key=".removeMessage"/>
-                        </c:otherwise>
-                    </c:choose>
+                    <i:inline key=".message"/>
                 </b></div>
                 
                 <div class="page-action-area">
