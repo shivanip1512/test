@@ -38,6 +38,7 @@ BOOST_DLL_4 = boost_regex-$(BOOST_VERSION).dll
 BOOST_DLL_5 = boost_filesystem-$(BOOST_VERSION).dll
 BOOST_DLL_6 = boost_system-$(BOOST_VERSION).dll
 BOOST_DLL_7 = boost_unit_test_framework-$(BOOST_VERSION).dll
+BOOST_DLL_8 = boost_iostreams-$(BOOST_VERSION).dll
 
 DBGHELP_BIN       = $(DBGHELP)\bin
 DBGHELP_DLL       = dbghelp.dll
@@ -94,6 +95,7 @@ ALL: $(BIN) $(LIB) $(PDB) \
   $(BIN)\$(BOOST_DLL_5) \
   $(BIN)\$(BOOST_DLL_6) \
   $(BIN)\$(BOOST_DLL_7) \
+  $(BIN)\$(BOOST_DLL_8) \
   $(BIN)\$(DBGHELP_DLL) \
   $(BIN)\$(LOG4CXX_DLL) \
   $(BIN)\$(MICROSOFT_RT_DLL) \
@@ -122,6 +124,7 @@ $(BIN)\$(BOOST_DLL_4):$(BOOST_BIN)\$(BOOST_DLL_4); copy $? $@
 $(BIN)\$(BOOST_DLL_5):$(BOOST_BIN)\$(BOOST_DLL_5); copy $? $@
 $(BIN)\$(BOOST_DLL_6):$(BOOST_BIN)\$(BOOST_DLL_6); copy $? $@
 $(BIN)\$(BOOST_DLL_7):$(BOOST_BIN)\$(BOOST_DLL_7); copy $? $@
+$(BIN)\$(BOOST_DLL_8):$(BOOST_BIN)\$(BOOST_DLL_8); copy $? $@
 
 $(BIN)\$(DBGHELP_DLL):$(DBGHELP_BIN)\$(DBGHELP_DLL); copy $? $@
 
