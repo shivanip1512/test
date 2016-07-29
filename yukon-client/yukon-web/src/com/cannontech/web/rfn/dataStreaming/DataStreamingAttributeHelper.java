@@ -37,7 +37,7 @@ public class DataStreamingAttributeHelper {
                   /*Average Voltage*/               //metric 113
                   ),
         //C2SX
-        RFN_420CL(PaoType.RFN410CL, 
+        RFN_420CL(PaoType.RFN420CL, 
                   BuiltInAttribute.DELIVERED_KWH,   //metric 1
                   BuiltInAttribute.RECEIVED_KWH,    //metric 2
                   BuiltInAttribute.DEMAND           //metric 5

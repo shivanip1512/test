@@ -1,7 +1,6 @@
 package com.cannontech.amr.rfn.dao;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
@@ -19,11 +18,6 @@ public interface RfnDeviceAttributeDao {
      * @return attributes shared by the given paoTypes that have corresponding RFN metric IDs.
      */
     Collection<BuiltInAttribute> getAttributesForPaoTypes(Set<PaoType> paoTypes);
-    
-    /**
-     * @return a map of metricId to attribute, for the specified attributes.
-     */
-    Map<Integer, BuiltInAttribute> getMetricToAttributeMap(Collection<BuiltInAttribute> attributes);
     
     /**
      * @return The metricId corresponding to the specified attribute.

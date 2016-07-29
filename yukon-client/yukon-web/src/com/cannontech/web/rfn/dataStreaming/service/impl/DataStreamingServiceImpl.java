@@ -394,8 +394,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     
     private List<SimpleDevice> getSupportedDevices(DeviceCollection deviceCollection) {
         List<SimpleDevice> supportedDevices =
-            deviceCollection.getDeviceList().stream().filter((x) -> x.getDeviceType().isRfMeter()).collect(
-                Collectors.toList());
+                deviceCollection.getDeviceList().stream()
+                                                .filter(device -> dataStreamingAttributeHelper.supportsDataStreaming(device.getDeviceType()))
+                                                .collect(Collectors.toList());
+        
         return supportedDevices;
     }
     

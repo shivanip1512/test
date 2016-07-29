@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -72,8 +70,6 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
 
         for (MetricIdAttributeMapping.MetricIdAttribute m : metricList.metricMapping) {
             try {
-                // BuiltInAttribute attr = BuiltInAttribute.valueOf(m.attributeName);
-                // Integer metric = Integer.valueOf(m.metricId);
                 attributeLookup.put(m.metricId, m.attribute);
                 metricAttributes.add(m.attribute);
             } catch (NumberFormatException ex) {
@@ -103,14 +99,6 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
         }
 
         return paoAttributes;
-    }
-
-    @Override
-    public Map<Integer, BuiltInAttribute> getMetricToAttributeMap(Collection<BuiltInAttribute> attributes) {
-        return attributes.stream()
-                         .collect(Collectors.toMap(
-                              attribute -> attributeLookup.inverse().get(attribute), 
-                              attribute -> attribute));
     }
     
     @Override
