@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.dataStreaming;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -8,11 +9,18 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -20,15 +28,19 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -41,6 +53,11 @@ public class DataStreamingConfigurationsController {
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RfnGatewayService rfnGatewayService;
+    
+    //TODO: Move these outside to helper
+    private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
+    private static final List<BuiltInAttribute> attributes = ImmutableList.of(BuiltInAttribute.KVAR,
+        BuiltInAttribute.DEMAND, BuiltInAttribute.DELIVERED_KWH, BuiltInAttribute.RECEIVED_KWH);
     
     private Map<ConfigurationSortBy, Comparator<DataStreamingConfig>> sorters;
     
@@ -99,8 +116,29 @@ public class DataStreamingConfigurationsController {
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
+        List<DataStreamingConfig> existingConfigs = dataStreamingService.getAllDataStreamingConfigurations();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        existingConfigs.forEach(config -> config.setAccessor(accessor));
+        model.addAttribute("existingConfigs", existingConfigs);
+        model.addAttribute("attributes", attributes);
+        model.addAttribute("intervals", intervals);
+        model.addAttribute("searchFilters", new SummarySearchCriteria());
         return "../dataStreaming/summary.jsp";
     }
+    
+    @RequestMapping(value="summary", method=RequestMethod.POST)
+    public String summarySubmit(@ModelAttribute("searchFilters") SummarySearchCriteria searchFilters, BindingResult result,
+                                RedirectAttributes redirectAttributes, FlashScope flash, HttpServletRequest request) throws ServletException {
+        Integer[] gatewaysSelected = ArrayUtils.toObject(ServletRequestUtils.getIntParameters(request, "gatewaysSelect"));
+        searchFilters.setSelectedGatewayIds(Arrays.asList(gatewaysSelected));
+        String[] attributesSelected = ServletRequestUtils.getStringParameters(request, "attributesSelect");
+        searchFilters.setSelectedAttributes(Arrays.asList(attributesSelected));
+        
+        //TODO: Return search results
+
+        return "../dataStreaming/summary.jsp";
+    }
+
     
     public enum ConfigurationSortBy implements DisplayableEnum {
         

@@ -21,4 +21,11 @@
     <!-- DATA STREAMING SUMMARY PAGE-->
     <entry key="yukon.web.modules.tools.dataStreaming.summary.pageName">Data Streaming Summary</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.pageDescription">Data Streaming Summary</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filterSection.title">Search Criteria</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.gateway">Gateway(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.gatewayLoading">Gateway Loading</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.configuration">Configuration</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.attributes">Attribute(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.interval">Interval</entry>
+    
 </properties>

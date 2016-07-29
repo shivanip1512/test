@@ -16,6 +16,7 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     private RfnGatewayData data;
     private PaoLocation paoLocation;
     private String upgradeVersion;
+    private int id;
     
     public RfnGateway(String name, YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData data) {
         super(name, pao, rfnIdentifier);
@@ -113,6 +114,11 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
         this.name = name;
     }
 
+    public int getId() {
+        id = this.getPaoIdentifier().getPaoId();
+        return id;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -169,4 +175,5 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
 
         return this;
     }
+
 }
