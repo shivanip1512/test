@@ -102,7 +102,10 @@ public class DataStreamingController {
 
         VerificationInformation verifyInfo = dataStreamingService.verifyConfiguration(configId, deviceIds);
         verifyInfo.setConfiguration(modelConfig);
-        verifyInfo.getDeviceUnsupported().forEach(device -> device.setDeviceCollection(dcProducer.createDeviceCollection(device.getDeviceIds(), null)));
+        verifyInfo.getDeviceUnsupported().forEach(device -> {
+            device.setDeviceCollection(dcProducer.createDeviceCollection(device.getDeviceIds(), null));
+            device.setAccessor(accessor);
+        });
         verifyInfo.getGatewayLoadingInfo().forEach(gateway -> gateway.setAccessor(accessor));
         
         model.addAttribute("verificationInfo", verifyInfo);
