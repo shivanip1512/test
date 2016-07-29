@@ -365,7 +365,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         result.setCanceledDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(canceledGroup));
         result.setUnsupportedCollection(deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup));
         
-        DataStreamingConfigCallback callback = new DataStreamingConfigCallbackImpl(result, successGroup, failedGroup,
+        DataStreamingConfigCallback callback = new DataStreamingConfigCallbackImpl(result, successGroup, failedGroup, canceledGroup,
                                                                                    execution, deviceCollection.getDeviceList());
         
         result.setConfigCallback(callback);
@@ -647,17 +647,19 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         private DataStreamingConfigResult result; 
         private StoredDeviceGroup successGroup;
         private StoredDeviceGroup failedGroup;
+        private StoredDeviceGroup cancelGroup;
         private CommandRequestExecution execution;
         private List<SimpleDevice> deviceList;
         
-        public DataStreamingConfigCallbackImpl(DataStreamingConfigResult result, 
-                                              StoredDeviceGroup successGroup, StoredDeviceGroup failedGroup,
-                                              CommandRequestExecution execution, List<SimpleDevice> deviceList) {
+        public DataStreamingConfigCallbackImpl(DataStreamingConfigResult result, StoredDeviceGroup successGroup,
+                StoredDeviceGroup failedGroup, StoredDeviceGroup cancelGroup, CommandRequestExecution execution,
+                List<SimpleDevice> deviceList) {
             this.result = result;
             this.successGroup = successGroup;
             this.failedGroup = failedGroup;
             this.execution = execution;
             this.deviceList = deviceList;
+            this.cancelGroup = cancelGroup;
         }
         
         @Override
@@ -713,6 +715,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 deviceBehaviorDao.updateBehaviorReportStatus(BehaviorType.DATA_STREAMING,
                     BehaviorReportStatus.CANCELED,
                     canceledDevices.stream().map(s -> s.getDeviceId()).collect(Collectors.toList()));
+                deviceGroupMemberEditorDao.addDevices(cancelGroup, canceledDevices);
                 updateRequestCount(execution, result.getFailureCount() + result.getSuccessCount());
             }
         }
