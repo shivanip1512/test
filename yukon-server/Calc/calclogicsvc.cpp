@@ -1182,7 +1182,7 @@ void CtiCalcLogicService::_registerForPoints()
 
         const auto dependencies = calcThread->getPointDependencies();
 
-        auto msgPtReg = std::make_unique<CtiPointRegistrationMsg>(REG_NOTHING);  //  First one registers for nothing, then we register in chunks
+        auto msgPtReg = std::make_unique<CtiPointRegistrationMsg>(REG_NO_UPLOAD);  //  First one registers for the thread monitor point, then we register in chunks
         
         msgPtReg->insert(ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc));
 
