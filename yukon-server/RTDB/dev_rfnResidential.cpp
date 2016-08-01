@@ -30,7 +30,9 @@ const std::set<int> disconnectConfigTypes
     TYPE_RFN410FD,
     TYPE_RFN420CD,
     TYPE_RFN420FD,
-    TYPE_RFN420FRD
+    TYPE_RFN420FRD,
+    TYPE_RFN520FAXD,
+    TYPE_RFN520FRXD
 };
 
 typedef Commands::RfnRemoteDisconnectConfigurationCommand DisconnectCmd;
@@ -67,7 +69,7 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(InstallType ins
         m.emplace(ConfigPart::freezeday, bindConfigMethod( &RfnResidentialDevice::executeReadDemandFreezeInfo,              this ) );
         m.emplace(ConfigPart::tou,       bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ) );
 
-        if( disconnectConfigSupported() )
+        if( isDisconnectConfigSupported() )
         {
             m.emplace(ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executeGetConfigDisconnect, this ) );
         }
@@ -77,7 +79,7 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(InstallType ins
         m.emplace(ConfigPart::freezeday, bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandFreezeDay,          this ) );
         m.emplace(ConfigPart::tou,       bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ) );
 
-        if( disconnectConfigSupported() )
+        if( isDisconnectConfigSupported() )
         {
             m.emplace(ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executePutConfigDisconnect, this ) );
         }
@@ -715,7 +717,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    
                                                                ReturnMsgList    & returnMsgs,
                                                                RfnCommandList   & rfnRequests )
 {
-    if( ! disconnectConfigSupported() )
+    if( ! isDisconnectConfigSupported() )
     {
         return ClientErrors::NoMethod;
     }
@@ -732,7 +734,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
 {
     try
     {
-        if( ! disconnectConfigSupported() )
+        if( ! isDisconnectConfigSupported() )
         {
             return ClientErrors::NoMethod;
         }
@@ -862,9 +864,15 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
     }
 }
 
-bool RfnResidentialDevice::disconnectConfigSupported() const
+
+bool RfnResidentialDevice::isDisconnectConfigSupported(DeviceTypes t)
 {
-    return disconnectConfigTypes.count(getType());
+    return disconnectConfigTypes.count(t);
+}
+
+bool RfnResidentialDevice::isDisconnectConfigSupported() const
+{
+    return isDisconnectConfigSupported(getDeviceType());
 }
 
 

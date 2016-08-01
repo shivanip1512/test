@@ -13,6 +13,7 @@ using namespace Cti::Config;
 struct test_RfnResidentialDevice : RfnResidentialDevice
 {
     using RfnResidentialDevice::handleCommandResult;
+    using RfnResidentialDevice::isDisconnectConfigSupported;
     using CtiDeviceBase::setDeviceType;
 
     test_RfnResidentialDevice()
@@ -61,7 +62,57 @@ const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
 BOOST_FIXTURE_TEST_SUITE( test_dev_rfnResidential, test_state_rfnResidential )
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule )
+BOOST_AUTO_TEST_CASE( test_isDisconnectSupported )
+{
+    test_RfnResidentialDevice dut;
+
+    BOOST_CHECK( ! dut.isDisconnectConfigSupported() );
+
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    BOOST_CHECK(   dut.isDisconnectConfigSupported() );
+
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN410FL) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN410FX) );
+    BOOST_CHECK(   test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN410FD) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN420FL) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN420FX) );
+    BOOST_CHECK(   test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN420FD) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN420FRX) );
+    BOOST_CHECK(   test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN420FRD) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN510FL) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN520FAX) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN520FRX) );
+    BOOST_CHECK(   test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN520FAXD) );
+    BOOST_CHECK(   test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN520FRXD) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530FAX) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530FRX) );
+
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN410CL) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN420CL) );
+    BOOST_CHECK(   test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN420CD) );
+
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430A3D) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430A3T) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430A3K) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430A3R) );
+
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430KV) );
+
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430SL0) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430SL1) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430SL2) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430SL3) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430SL4) );
+
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4X) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4EAD) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4EAT) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4ERD) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4ERT) );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule )
 {
     test_RfnResidentialDevice dut;
 
@@ -118,7 +169,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule_badparam )
+BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
 {
     test_RfnResidentialDevice dut;
 
@@ -261,7 +312,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule_badparam )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_enable )
+BOOST_AUTO_TEST_CASE( test_putconfig_tou_enable )
 {
     test_RfnResidentialDevice dut;
 
@@ -291,7 +342,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_enable )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_disable )
+BOOST_AUTO_TEST_CASE( test_putconfig_tou_disable )
 {
     test_RfnResidentialDevice dut;
 
@@ -321,7 +372,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_disable )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_schedule )
+BOOST_AUTO_TEST_CASE( test_getconfig_tou_schedule )
 {
     test_RfnResidentialDevice dut;
 
@@ -351,7 +402,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_schedule )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
+BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
 {
     typedef std::map<CtiDeviceBase::PaoInfoKeys, std::string> TouScheduleCompareKeysMap;
 
@@ -821,7 +872,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday )
+BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday )
 {
     Cti::Test::set_to_central_timezone();
 
@@ -858,7 +909,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_active )
+BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday_active )
 {
     test_RfnResidentialDevice dut;
 
@@ -888,7 +939,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_active )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_cancel )
+BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday_cancel )
 {
     test_RfnResidentialDevice dut;
 
@@ -918,7 +969,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_cancel )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_holiday )
+BOOST_AUTO_TEST_CASE( test_getconfig_tou_holiday )
 {
     test_RfnResidentialDevice dut;
 
@@ -948,7 +999,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_holiday )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_on_demand )
+BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_on_demand )
 {
     test_RfnResidentialDevice dut;
 
@@ -1022,7 +1073,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_on_demand )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_demand_threshold )
+BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_demand_threshold )
 {
     test_RfnResidentialDevice dut;
 
@@ -1102,7 +1153,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_demand_thresh
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_cycling )
+BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_cycling )
 {
     test_RfnResidentialDevice dut;
 
@@ -1173,7 +1224,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_cycling )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_disconnect_invalid_config )
+BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
 {
     test_RfnResidentialDevice dut;
 
@@ -1231,7 +1282,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_disconnect_inval
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
+BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile )
 {
     test_RfnResidentialDevice dut;
 
@@ -1249,7 +1300,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_enable )
+BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile_enable )
 {
     test_RfnResidentialDevice dut;
 
@@ -1267,7 +1318,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_enable )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_disable )
+BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile_disable )
 {
     test_RfnResidentialDevice dut;
 
@@ -1285,7 +1336,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_disable 
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_voltage_profile )
+BOOST_AUTO_TEST_CASE( test_getconfig_voltage_profile )
 {
     test_RfnResidentialDevice dut;
 
@@ -1303,7 +1354,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_voltage_profile )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getvalue_voltage_profile_state )
+BOOST_AUTO_TEST_CASE( test_getvalue_voltage_profile_state )
 {
     test_RfnResidentialDevice dut;
 
@@ -1321,7 +1372,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getvalue_voltage_profile_state )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_immediate_demand_freeze )
+BOOST_AUTO_TEST_CASE( test_immediate_demand_freeze )
 {
     test_RfnResidentialDevice    dev;
 
@@ -1354,7 +1405,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_immediate_demand_freeze )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_cancel )
+BOOST_AUTO_TEST_CASE( test_tou_critical_peak_cancel )
 {
     test_RfnResidentialDevice    dev;
 
@@ -1387,7 +1438,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_cancel )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_today )
+BOOST_AUTO_TEST_CASE( test_tou_critical_peak_today )
 {
     test_RfnResidentialDevice    dev;
 
@@ -1420,7 +1471,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_today )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_tomorrow )
+BOOST_AUTO_TEST_CASE( test_tou_critical_peak_tomorrow )
 {
     test_RfnResidentialDevice    dev;
 
@@ -1452,7 +1503,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_tomorrow )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
+BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
 {
     test_RfnResidentialDevice dut;
 
@@ -1503,7 +1554,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_channel_configuration )
+BOOST_AUTO_TEST_CASE( test_putconfig_install_channel_configuration )
 {
     test_RfnResidentialDevice dut;
 
@@ -1661,7 +1712,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_channel_configur
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_device )
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
 {
     using boost::assign::list_of;
     using boost::assign::map_list_of;
@@ -1845,7 +1896,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_device )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_groupMessageCount )
+BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 {
     using boost::assign::list_of;
     using boost::assign::map_list_of;
@@ -2124,7 +2175,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_groupMessageCoun
     BOOST_CHECK_EQUAL( 0, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle() ) );
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_all_disconnect_meter )
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 {
     using boost::assign::list_of;
     using boost::assign::map_list_of;

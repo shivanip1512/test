@@ -13,7 +13,7 @@ using namespace Cti::Config;
 struct test_RfnResidentialVoltageDevice : RfnResidentialVoltageDevice
 {
     using RfnResidentialDevice::handleCommandResult;
-    using CtiTblPAOLite::_type;
+    using CtiDeviceBase::setDeviceType;
 
     double test_nmCompatibility = 6.5;
 
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getconfig_install_ovuv_mete
 
     for ( DeviceTypes type : rfnTypes )
     {
-        dev._type = type;
+        dev.setDeviceType(type);
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv )
 {
     test_RfnResidentialVoltageDevice    dut;
 
-    dut._type = TYPE_RFN420FX;
+    dut.setDeviceType(TYPE_RFN420FX);
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_mete
 
         for ( DeviceTypes type : rfnTypes )
         {
-            dut._type = type;
+            dut.setDeviceType(type);
 
             BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_inva
 {
     test_RfnResidentialVoltageDevice    dut;
 
-    dut._type = TYPE_RFN420FX;
+    dut.setDeviceType(TYPE_RFN420FX);
 
     {
         ///// Missing config data /////
@@ -409,7 +409,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
 
     test_RfnResidentialVoltageDevice    dut;
 
-    dut._type = TYPE_RFN420FX;
+    dut.setDeviceType(TYPE_RFN420FX);
 
     using CategoryItems      = std::map<std::string, std::string>;
     using CategoryDefinition = std::pair<std::string, CategoryItems>;
@@ -610,7 +610,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
 
     test_RfnResidentialVoltageDevice    dut;
 
-    dut._type = TYPE_RFN420FX;
+    dut.setDeviceType(TYPE_RFN420FX);
 
     using CategoryItems      = std::map<std::string, std::string>;
     using CategoryDefinition = std::pair<std::string, CategoryItems>;
@@ -905,7 +905,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
 
     test_RfnResidentialVoltageDevice    dut;
 
-    dut._type = TYPE_RFN420CD;
+    dut.setDeviceType(TYPE_RFN420CD);
 
     using CategoryItems      = std::map<std::string, std::string>;
     using CategoryDefinition = std::pair<std::string, CategoryItems>;
@@ -1235,7 +1235,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
 {
     test_RfnResidentialVoltageDevice    dut;
 
-    dut._type = TYPE_RFN420FX;
+    dut.setDeviceType(TYPE_RFN420FX);
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
@@ -1264,7 +1264,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
     test_RfnResidentialVoltageDevice    dut;
 
     dut.test_nmCompatibility = 7.0;
-    dut._type = TYPE_RFN420FX;
+    dut.setDeviceType(TYPE_RFN420FX);
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
@@ -1327,7 +1327,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
     test_RfnResidentialVoltageDevice    dut;
 
     dut.test_nmCompatibility = 7.0;
-    dut._type = TYPE_RFN420FX;
+    dut.setDeviceType(TYPE_RFN420FX);
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 

@@ -47,9 +47,12 @@ protected:
     void handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand          & cmd ) override;
     void handleCommandResult( const Commands::RfnRemoteDisconnectConfigurationCommand    & cmd ) override;
 
-private:
+protected:
 
-    bool disconnectConfigSupported() const;
+    static bool isDisconnectConfigSupported(DeviceTypes t);
+    bool isDisconnectConfigSupported() const;
+
+private:
 
     std::string getDisconnectModeString( Commands::RfnRemoteDisconnectConfigurationCommand::DisconnectMode disconnectMode );
     std::string getReconnectParamString( Commands::RfnRemoteDisconnectConfigurationCommand::Reconnect reconnectParam );
