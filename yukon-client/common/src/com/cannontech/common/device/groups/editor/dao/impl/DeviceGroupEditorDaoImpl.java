@@ -2,6 +2,7 @@ package com.cannontech.common.device.groups.editor.dao.impl;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -493,6 +494,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
 
         List<String> jobProperties = ImmutableList.of("deviceGroup",
                                                       "deviceGroupNames");
+        
+        List<SqlStatementBuilder> updateStatement = new ArrayList<>();
         SqlStatementBuilder update = new SqlStatementBuilder();
         update.append("UPDATE JobProperty");
         update.append("SET Value = REPLACE(Value,")
@@ -502,18 +505,21 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
               .append(")");
         update.append("WHERE Value").contains(previousGroupName);
         update.append("AND Name").in(jobProperties);
-
-        update.append(";");
+        updateStatement.add(update);
+        
         for (String tableName : tablesToUpdate) {
-            update.append("UPDATE ").append(tableName);
-            update.append("SET GroupName").eq(group.getFullName());
-            update.append("WHERE GroupName").eq(previousGroupName);
-            update.append(";");
+            SqlStatementBuilder updatetable = new SqlStatementBuilder();
+            updatetable.append("UPDATE ").append(tableName);
+            updatetable.append("SET GroupName").eq(group.getFullName());
+            updatetable.append("WHERE GroupName").eq(previousGroupName);
+            updateStatement.add(updatetable);
         }
 
         try {
             jdbcTemplate.update(sql);
-            jdbcTemplate.update(update);
+            for (SqlStatementBuilder statement : updateStatement) {
+                jdbcTemplate.update(statement);
+            }
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Cannot change group name to the same name as an existing group with the same parent.", e);
         }
