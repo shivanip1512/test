@@ -3,7 +3,7 @@ package com.cannontech.web.tools.points.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-
+import org.apache.commons.lang3.StringUtils;
 import com.cannontech.common.util.LazyList;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -78,11 +78,8 @@ public class PointModel<T extends PointBase> {
             if (!translation.isEmpty()) {
                 fdrTranslation.setTranslation(translation);
                 fdrTranslation.setPointID(id);
-                String temp = fdrTranslation.getTranslation();
-                temp = temp.toLowerCase();
-                if (temp.contains("destination")) {
-                    temp = FDRTranslation.getDestinationField(fdrTranslation.getTranslation());
-                    fdrTranslation.setDestination(temp);
+                if (StringUtils.containsIgnoreCase(translation, "destination")) {
+                    fdrTranslation.setDestination(FDRTranslation.getDestinationField(fdrTranslation.getTranslation()));
                 }
                 newFdrs.add(fdrTranslation);
             }

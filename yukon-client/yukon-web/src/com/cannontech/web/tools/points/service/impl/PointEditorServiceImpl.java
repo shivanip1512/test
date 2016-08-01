@@ -298,6 +298,9 @@ public class PointEditorServiceImpl implements PointEditorService {
             case TEXT:
                 String[] value = field.getOptionValues();
                 optionInfo.put("value", value == null ? "(none)" : value[0]);
+                if (field.getOptionLabel() == FdrInterfaceOption.INET_DESTINATION_SOURCE.getOptionLabel()) {
+                    optionInfo.put("maxLength", 256);
+                }
                 break;
             }
             result.add(optionInfo);
@@ -344,6 +347,9 @@ public class PointEditorServiceImpl implements PointEditorService {
                 optionInfo.put("options", field.getOptionValues());
                 break;
             case TEXT:
+                if (field.getOptionLabel() == FdrInterfaceOption.INET_DESTINATION_SOURCE.getOptionLabel()) {
+                    optionInfo.put("maxLength", 256);
+                }
                 break;
             }
             result.add(optionInfo);

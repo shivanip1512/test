@@ -193,6 +193,9 @@ yukon.tools.point = (function () {
                 }
 
                 optionInput.attr('name', field.name);
+                if(field.maxLength !== undefined) {
+                   optionInput.attr('maxlength', field.maxLength);
+                }
                 optionInput.val(field.value);
 
                 var li = $('<li>');

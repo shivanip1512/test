@@ -551,7 +551,9 @@
                                                         </select>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <input name="${field.name}" value="${field.value}" size="${fn:length(field.value)}">
+                                                        <input name="${field.name}" value="${field.value}"
+                                                            size="${fn:length(field.value)}"
+                                                            <c:if test="${not empty field.maxLength}"> maxlength="${field.maxLength}"</c:if>>
                                                     </c:otherwise>
                                                 </c:choose>
                                                 ;
