@@ -34,7 +34,6 @@ public:
 
    CtiMessage* replicateMessage() const override;
 
-   // If list is empty, I assume you wanted them all!.
    size_t getCount() const;
 
    void insert(const long ptId);
