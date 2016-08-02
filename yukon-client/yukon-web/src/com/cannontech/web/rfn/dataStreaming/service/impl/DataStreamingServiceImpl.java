@@ -18,13 +18,14 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
-import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
+import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
@@ -97,7 +98,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Resource(name = "recentResultsCache") private RecentResultsCache<DataStreamingConfigResult> resultsCache;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
-    @Autowired private DeviceGroupCollectionHelper collectionHelper;
+    @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
 
     @Override
     public DataStreamingConfigResult findDataStreamingResult(String resultKey) {
@@ -131,10 +132,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         List<Integer> configIds = configs.stream().map(config -> config.getId()).collect(Collectors.toList());
         Multimap<Integer, Integer> deviceIdsByBehaviorIds = deviceBehaviorDao.getDeviceIdsByBehaviorIds(configIds);
         configs.forEach(config -> {
-            Collection<SimpleMeter> deviceIds = deviceIdsByBehaviorIds.get(config.getId()).stream().map(
-                id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
-                    Collectors.toList());
-            DeviceCollection collection = collectionHelper.createDeviceGroupCollection(deviceIds.iterator(), "");
+            List<Integer> deviceIds = deviceIdsByBehaviorIds.get(config.getId()).stream().collect(Collectors.toList());
+            DeviceCollection collection = dcProducer.createDeviceCollection(deviceIds, null);
             configToDeviceCollection.put(config, collection);
         });
         return configToDeviceCollection;
