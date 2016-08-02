@@ -1,16 +1,19 @@
 package com.cannontech.common.device.streaming.dao.impl;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -19,7 +22,10 @@ import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
@@ -28,7 +34,10 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
@@ -36,6 +45,34 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     @Autowired private NextValueHelper nextValueHelper;
     private final static Logger log = YukonLogManager.getLogger(DeviceBehaviorDaoImpl.class);
 
+    @Override
+    public Multimap<Integer, Integer> getDeviceIdsByBehaviorIds(Iterable<Integer> behaviorIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT behaviorId, deviceId");
+                sql.append("FROM DeviceBehaviorMap");
+                sql.append("WHERE behaviorId").in(behaviorIds);
+                return sql;
+            }
+        };
+
+        RowMapper<Map.Entry<Integer, Integer>> rowMapper = new RowMapper<Entry<Integer, Integer>>() {
+            @Override
+            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Integer behaviorId = rs.getInt("behaviorId");
+                Integer deviceId = rs.getInt("deviceId");
+                return Maps.immutableEntry(behaviorId, deviceId);
+            }
+        };
+
+        Multimap<Integer, Integer> retVal = template.multimappedQuery(sqlGenerator, behaviorIds, rowMapper, Functions.identity());
+        return retVal;
+    }
+    
     @Override
     @Transactional
     public void deleteUnusedBehaviors() {
