@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
 
 /**
  * Response to DataStreamingConfigRequest.
@@ -17,10 +18,9 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
  
     private DeviceDataStreamingConfigResponseType responseType;
     private String responseMessage;
- 
-    // The following is used when responseType is REJECTED
-    private Map<RfnIdentifier, ConfigError> errorConfigedDevices;  // Map<Device, configError>
-    private Map<RfnIdentifier, Double> overSubscribedGateways; // Map<overSubscribedGateway, overSubscriptedBy>
+    private Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways; // Map<Device, GatewayDataStreamingInfo> is provided in both ACCEPTED and REJECTED cases
+    
+    private Map<RfnIdentifier, ConfigError> errorConfigedDevices;  // Map<Device, configError> only used when responseType is rejected
     
     public DeviceDataStreamingConfigResponseType getResponseType() {
         return responseType;
@@ -46,20 +46,20 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
         this.errorConfigedDevices = errorConfigedDevices;
     }
 
-    public Map<RfnIdentifier, Double> getOverSubscribedGateways() {
-        return overSubscribedGateways;
+    public Map<RfnIdentifier, GatewayDataStreamingInfo> getAffectedGateways() {
+        return affectedGateways;
     }
 
-    public void setOverSubscribedGateways(Map<RfnIdentifier, Double> overSubscribedGateways) {
-        this.overSubscribedGateways = overSubscribedGateways;
+    public void setAffectedGateways(Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways) {
+        this.affectedGateways = affectedGateways;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((affectedGateways == null) ? 0 : affectedGateways.hashCode());
         result = prime * result + ((errorConfigedDevices == null) ? 0 : errorConfigedDevices.hashCode());
-        result = prime * result + ((overSubscribedGateways == null) ? 0 : overSubscribedGateways.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((responseType == null) ? 0 : responseType.hashCode());
         return result;
@@ -77,18 +77,18 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
             return false;
         }
         DeviceDataStreamingConfigResponse other = (DeviceDataStreamingConfigResponse) obj;
+        if (affectedGateways == null) {
+            if (other.affectedGateways != null) {
+                return false;
+            }
+        } else if (!affectedGateways.equals(other.affectedGateways)) {
+            return false;
+        }
         if (errorConfigedDevices == null) {
             if (other.errorConfigedDevices != null) {
                 return false;
             }
         } else if (!errorConfigedDevices.equals(other.errorConfigedDevices)) {
-            return false;
-        }
-        if (overSubscribedGateways == null) {
-            if (other.overSubscribedGateways != null) {
-                return false;
-            }
-        } else if (!overSubscribedGateways.equals(other.overSubscribedGateways)) {
             return false;
         }
         if (responseMessage == null) {
@@ -107,8 +107,8 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
     @Override
     public String toString() {
         return "DeviceDataStreamingConfigResponse [responseType=" + responseType + ", responseMessage="
-               + responseMessage + ", errorConfigedDevices=" + errorConfigedDevices + ", overSubscribedGateways="
-               + overSubscribedGateways + "]";
+               + responseMessage + ", affectedGateways=" + affectedGateways + ", errorConfigedDevices="
+               + errorConfigedDevices + "]";
     }
 
     public static class ConfigError implements Serializable {

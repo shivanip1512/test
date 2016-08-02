@@ -53,6 +53,7 @@ import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamin
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse.ConfigError;
+import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.NotFoundException;
@@ -169,18 +170,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         //(Some devices may only support some of the configured attributes)
         Multimap<DataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, configInfo);
         
-        // Calculate estimated gateway loading
-        List<GatewayLoading> gatewayLoadings = getEstimatedGatewayLoading(configToDeviceIds);
-        configInfo.gatewayLoading = gatewayLoadings;
-        for (GatewayLoading gatewayLoading : gatewayLoadings) {
-            if (gatewayLoading.getProposedPercent() > 100) {
-                //Estimate shows overloaded gateways. Skip sending to Network Manager since we know it will fail.
-                configInfo.exceptions.add(new DataStreamingConfigException("Gateways oversubscribed", "gatewaysOversubscribed"));
-                VerificationInformation verificationInfo = buildVerificationInformation(configInfo);
-                return verificationInfo;
-            }
-        }
-        
         //Build verification message for NM
         DeviceDataStreamingConfigRequest verificationRequest = dataStreamingCommService.buildVerificationRequest(configToDeviceIds);
         
@@ -195,16 +184,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         //Build VerificationInfo from response message
         VerificationInformation verificationInfo = buildVerificationInformation(configInfo);
         return verificationInfo;
-    }
-    
-    private List<GatewayLoading> getEstimatedGatewayLoading(Multimap<DataStreamingConfig, Integer> configToDeviceIds) {
-        //TODO replace with real data
-        GatewayLoading loading = new GatewayLoading();
-        loading.setGatewayName("Gateway 1");
-        loading.setCurrentPercent(93.5);
-        loading.setProposedPercent(85.5);
-        //loading.setDetail("");
-        return Lists.newArrayList(loading);
     }
     
     /**
@@ -593,71 +572,88 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             DeviceUnsupported unsupported = new DeviceUnsupported();
             unsupported.setAttributes(attributes);
             unsupported.setDeviceIds(deviceIds);
-            // TODO Can we add these in the controller?
-            // unsupported.setDetail(detail);
-            // unsupported.setDeviceCollection(deviceCollection);
             deviceUnsupported.add(unsupported);
         }
         
         public void processVerificationResponse(DeviceDataStreamingConfigResponse response) {
             switch (response.getResponseType()) {
                 case ACCEPTED:
-                    // No need to do anything, the response was success
+                    setGatewayLoading(response);
                     break;
                 case REJECTED:
-                    success = false;
-                    Map<RfnIdentifier, Double> oversubscribedGateways = response.getOverSubscribedGateways();
-                    if (oversubscribedGateways.size() > 0) {
-                        log.debug("Data streaming verification response - gateways oversubscribed.");
-                        exceptions.add(new DataStreamingConfigException("Gateways oversubscribed", "gatewaysOversubscribed"));
-                        for (Entry<RfnIdentifier, Double> entry : oversubscribedGateways.entrySet()) {
-                            RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(entry.getKey());
-                            boolean gatewayLoadingFound = false;
-                            for (GatewayLoading loading : gatewayLoading) {
-                                if (loading.getGatewayName().equals(gateway.getName())) {
-                                    loading.setProposedPercent(entry.getValue());
-                                    gatewayLoadingFound = true;
-                                    break;
-                                }
-                            }
-                            if (!gatewayLoadingFound) {
-                                //TODO replace with real data
-                                GatewayLoading loading = new GatewayLoading();
-                                loading.setGatewayName(gateway.getName());
-                                loading.setCurrentPercent(12.3);
-                                loading.setProposedPercent(entry.getValue());
-                                gatewayLoading.add(loading);
-                            }
-                        }
-                    }
-                    
-                    for (Entry<RfnIdentifier, ConfigError> errorDeviceEntry : response.getErrorConfigedDevices().entrySet()) {
-                        DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
-                        //Ignore Gateway overloaded errors, those are covered above
-                        if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
-                            RfnDevice deviceName = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
-                            log.debug("Data streaming verification response - device error: " + deviceName + ", " + errorType.name());
-                            String deviceError = "Device error for " + deviceName + ": " + errorType;
-                            String i18nKey = "device." + errorType.name();
-                            exceptions.add(new DataStreamingConfigException(deviceError , i18nKey, deviceName));
-                        }
-                    }
+                    handleRejectedResponse(response);
                     break;
                 case NETWORK_MANAGER_FAILURE:
                     // Exception was thrown in NM processing and it couldn't complete the task
-                    success = false;
-                    String nmError = "Network Manager encountered an error during data streaming configuration verification. ";
-                    log.error(nmError + response.getResponseMessage());
-                    exceptions.add(new DataStreamingConfigException(nmError, "networkManagerFailure"));
+                    handleNmErrorResponse(response);
                     break;
                 case OTHER_ERROR:
                 default:
                     //unknown error
-                    success = false;
-                    String unknownError = "Unknown error during data streaming configuration verification. ";
-                    log.error(unknownError + response.getResponseMessage()); 
-                    exceptions.add(new DataStreamingConfigException(unknownError, "unknownError"));
+                    handleUnknownErrorResponse(response);
             }
+        }
+        
+        private void handleRejectedResponse(DeviceDataStreamingConfigResponse response) {
+            success = false;
+            boolean gatewaysOverloaded = setGatewayLoading(response);
+            
+            if (gatewaysOverloaded) {
+                log.debug("Data streaming verification response - gateways oversubscribed.");
+                exceptions.add(new DataStreamingConfigException("Gateways oversubscribed", "gatewaysOversubscribed"));
+            }
+            
+            for (Entry<RfnIdentifier, ConfigError> errorDeviceEntry : response.getErrorConfigedDevices().entrySet()) {
+                DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
+                //Ignore Gateway overloaded errors, those are covered above
+                if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
+                    RfnDevice deviceName = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
+                    log.debug("Data streaming verification response - device error: " + deviceName + ", " + errorType.name());
+                    String deviceError = "Device error for " + deviceName + ": " + errorType;
+                    String i18nKey = "device." + errorType.name();
+                    exceptions.add(new DataStreamingConfigException(deviceError , i18nKey, deviceName));
+                }
+            }
+        }
+        
+        private void handleNmErrorResponse(DeviceDataStreamingConfigResponse response) {
+            success = false;
+            String nmError = "Network Manager encountered an error during data streaming configuration verification. ";
+            log.error(nmError + response.getResponseMessage());
+            exceptions.add(new DataStreamingConfigException(nmError, "networkManagerFailure"));
+        }
+        
+        private void handleUnknownErrorResponse(DeviceDataStreamingConfigResponse response) {
+            success = false;
+            String unknownError = "Unknown error during data streaming configuration verification. ";
+            log.error(unknownError + response.getResponseMessage()); 
+            exceptions.add(new DataStreamingConfigException(unknownError, "unknownError"));
+        }
+        
+        /**
+         * Add GatewayLoading objects to this object's list for each affected gateway in the response message.
+         * @return True if the response estimates that gateways will be overloaded.
+         */
+        private boolean setGatewayLoading(DeviceDataStreamingConfigResponse response) {
+            boolean gatewaysOversubscribed = false;
+            Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = response.getAffectedGateways();
+            for (RfnIdentifier rfnId : affectedGateways.keySet()) {
+                RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(rfnId);
+                GatewayDataStreamingInfo info = affectedGateways.get(rfnId);
+                double currentPercent = (info.getCurrentLoading() / info.getMaxCapacity()) * 100;
+                double proposedPercent = (info.getResultLoading() / info.getMaxCapacity()) * 100;
+                
+                GatewayLoading loading = new GatewayLoading();
+                loading.setGatewayName(gateway.getName());
+                loading.setCurrentPercent(currentPercent);
+                loading.setProposedPercent(proposedPercent);
+                gatewayLoading.add(loading);
+                
+                if (proposedPercent > 100) {
+                    gatewaysOversubscribed = true;
+                }
+            }
+            return gatewaysOversubscribed;
         }
     }
     

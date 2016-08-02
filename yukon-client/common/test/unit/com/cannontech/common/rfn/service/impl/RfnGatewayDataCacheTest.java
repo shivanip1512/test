@@ -207,7 +207,9 @@ public class RfnGatewayDataCacheTest {
                .sequences(sequences)
                .softwareVersion("1.0.0.4")
                .upperStackVersion("1.0.0.5")
-               .versionConflicts(versionConflicts);
+               .versionConflicts(versionConflicts)
+               .currentDataStreamingLoading(25.0)
+               .maxDataStreamingLoading(100.0);
         return builder.build();
     }
     

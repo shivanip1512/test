@@ -39,7 +39,8 @@ public final class RfnGatewayData {
     private final short routeColor;
     private final String updateServerUrl;
     private final Authentication updateServerLogin;
-    
+    private final double currentDataStreamingLoading;
+    private final double maxDataStreamingLoading;
     
     public RfnGatewayData(GatewayDataResponse dataResponse) {
         
@@ -66,7 +67,8 @@ public final class RfnGatewayData {
         routeColor = dataResponse.getRouteColor();
         updateServerUrl = dataResponse.getUpdateServerUrl(); 
         updateServerLogin = dataResponse.getUpdateServerLogin();
-        
+        currentDataStreamingLoading = dataResponse.getCurrentGatewayDataStreamingLoading();
+        maxDataStreamingLoading = dataResponse.getMaxGatewayDataStreamingCapacity();
     }
     
     /** Private constructor for builder */
@@ -76,7 +78,8 @@ public final class RfnGatewayData {
                            ConnectionStatus connectionStatus, LastCommStatus lastCommStatus, 
                            long lastCommStatusTimestamp, Set<Radio> radios, Authentication admin,
                            Authentication superAdmin, String collectionSchedule, Set<DataSequence> sequences, 
-                           short routeColor, String updateServerUrl, Authentication updateServerLogin ) {
+                           short routeColor, String updateServerUrl, Authentication updateServerLogin,
+                           double currentDataStreamingLoading, double maxDataStreamingLoading) {
         this.name = name;
         this.hardwareVersion = hardwareVersion;
         this.softwareVersion = softwareVersion;
@@ -99,6 +102,8 @@ public final class RfnGatewayData {
         this.routeColor = routeColor;
         this.updateServerUrl = updateServerUrl;
         this.updateServerLogin = updateServerLogin;
+        this.currentDataStreamingLoading = currentDataStreamingLoading;
+        this.maxDataStreamingLoading = maxDataStreamingLoading;
     }
     
     public String getName() {
@@ -189,20 +194,32 @@ public final class RfnGatewayData {
         return updateServerLogin;
     }
 
-    @Override
-    public String toString() {
-        return String
-            .format("RfnGatewayData [name=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, " +
-                    "radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, " +
-                    "port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, user=%s, " +
-                    "admin=%s, superAdmin=%s, collectionSchedule=%s, sequences=%s, routeColor=%s, updateServerUrl=%s, " +
-                     "updateServerLogin=%s]",
-                    name, hardwareVersion, softwareVersion, upperStackVersion, radioVersion, releaseVersion,
-                    versionConflicts, mode, connectionType, ipAddress, port, connectionStatus, lastCommStatus,
-                    lastCommStatusTimestamp, radios, admin, superAdmin, collectionSchedule, sequences, routeColor,
-                    updateServerUrl,updateServerLogin);
+    public double getCurrentDataStreamingLoading() {
+        return currentDataStreamingLoading;
+    }
+
+    public double getMaxDataStreamingLoading() {
+        return maxDataStreamingLoading;
     }
     
+    public double getDataStreamingLoadingPercent() {
+        return (currentDataStreamingLoading / maxDataStreamingLoading) * 100;
+    }
+    
+    @Override
+    public String toString() {
+        return "RfnGatewayData [name=" + name + ", hardwareVersion=" + hardwareVersion + ", softwareVersion="
+               + softwareVersion + ", upperStackVersion=" + upperStackVersion + ", radioVersion=" + radioVersion
+               + ", releaseVersion=" + releaseVersion + ", versionConflicts=" + versionConflicts + ", mode=" + mode
+               + ", connectionType=" + connectionType + ", ipAddress=" + ipAddress + ", port=" + port
+               + ", connectionStatus=" + connectionStatus + ", lastCommStatus=" + lastCommStatus
+               + ", lastCommStatusTimestamp=" + lastCommStatusTimestamp + ", radios=" + radios + ", admin=" + admin
+               + ", superAdmin=" + superAdmin + ", collectionSchedule=" + collectionSchedule + ", sequences="
+               + sequences + ", routeColor=" + routeColor + ", updateServerUrl=" + updateServerUrl
+               + ", updateServerLogin=" + updateServerLogin + ", currentDataStreamingLoading="
+               + currentDataStreamingLoading + ", maxDataStreamingLoading=" + maxDataStreamingLoading + "]";
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -211,10 +228,15 @@ public final class RfnGatewayData {
         result = prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
         result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
         result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(currentDataStreamingLoading);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
         result = prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
+        temp = Double.doubleToLongBits(maxDataStreamingLoading);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((port == null) ? 0 : port.hashCode());
@@ -225,10 +247,10 @@ public final class RfnGatewayData {
         result = prime * result + ((sequences == null) ? 0 : sequences.hashCode());
         result = prime * result + ((softwareVersion == null) ? 0 : softwareVersion.hashCode());
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
+        result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
+        result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
-        result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
-        result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
         return result;
     }
 
@@ -264,6 +286,10 @@ public final class RfnGatewayData {
         if (connectionType != other.connectionType) {
             return false;
         }
+        if (Double.doubleToLongBits(currentDataStreamingLoading) != Double
+            .doubleToLongBits(other.currentDataStreamingLoading)) {
+            return false;
+        }
         if (hardwareVersion == null) {
             if (other.hardwareVersion != null) {
                 return false;
@@ -282,6 +308,9 @@ public final class RfnGatewayData {
             return false;
         }
         if (lastCommStatusTimestamp != other.lastCommStatusTimestamp) {
+            return false;
+        }
+        if (Double.doubleToLongBits(maxDataStreamingLoading) != Double.doubleToLongBits(other.maxDataStreamingLoading)) {
             return false;
         }
         if (mode != other.mode) {
@@ -346,6 +375,20 @@ public final class RfnGatewayData {
         } else if (!superAdmin.equals(other.superAdmin)) {
             return false;
         }
+        if (updateServerLogin == null) {
+            if (other.updateServerLogin != null) {
+                return false;
+            }
+        } else if (!updateServerLogin.equals(other.updateServerLogin)) {
+            return false;
+        }
+        if (updateServerUrl == null) {
+            if (other.updateServerUrl != null) {
+                return false;
+            }
+        } else if (!updateServerUrl.equals(other.updateServerUrl)) {
+            return false;
+        }
         if (upperStackVersion == null) {
             if (other.upperStackVersion != null) {
                 return false;
@@ -358,20 +401,6 @@ public final class RfnGatewayData {
                 return false;
             }
         } else if (!versionConflicts.equals(other.versionConflicts)) {
-            return false;
-        }
-        if (updateServerUrl == null) {
-            if (other.updateServerUrl != null) {
-                return false;
-            }
-        } else if (!updateServerUrl.equals(other.updateServerUrl)) {
-            return false;
-        }
-        if (updateServerLogin == null) {
-            if (other.updateServerLogin != null) {
-                return false;
-            }
-        } else if (!versionConflicts.equals(other.updateServerLogin)) {
             return false;
         }
         return true;
@@ -401,6 +430,8 @@ public final class RfnGatewayData {
         private short routeColor;
         private String updateServerUrl;
         private Authentication updateServerLogin;
+        private double currentDataStreamingLoading;
+        private double maxDataStreamingLoading;
         
         public RfnGatewayData build() {
             
@@ -408,7 +439,7 @@ public final class RfnGatewayData {
                                       releaseVersion, versionConflicts, mode, connectionType, ipAddress, port, 
                                       connectionStatus, lastCommStatus, lastCommStatusTimestamp, radios, admin,
                                       superAdmin, collectionSchedule, sequences, routeColor,updateServerUrl,
-                                      updateServerLogin);
+                                      updateServerLogin, currentDataStreamingLoading, maxDataStreamingLoading);
             
         }
         
@@ -436,6 +467,8 @@ public final class RfnGatewayData {
             routeColor = oldData.getRouteColor();
             updateServerUrl = oldData.getUpdateServerUrl();
             updateServerLogin = oldData.getUpdateServerLogin();
+            currentDataStreamingLoading = oldData.currentDataStreamingLoading;
+            maxDataStreamingLoading = oldData.maxDataStreamingLoading;
             return this;
         }
         
@@ -546,6 +579,16 @@ public final class RfnGatewayData {
         
         public Builder updateServerLogin(Authentication updateServerLogin) {
             this.updateServerLogin = updateServerLogin;
+            return this;
+        }
+        
+        public Builder currentDataStreamingLoading(double currentDataStreamingLoading) {
+            this.currentDataStreamingLoading = currentDataStreamingLoading;
+            return this;
+        }
+        
+        public Builder maxDataStreamingLoading(double maxDataStreamingLoading) {
+            this.maxDataStreamingLoading = maxDataStreamingLoading;
             return this;
         }
     }

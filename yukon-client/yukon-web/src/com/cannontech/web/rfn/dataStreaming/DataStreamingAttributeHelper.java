@@ -520,12 +520,16 @@ public class DataStreamingAttributeHelper {
         }
     }
     
+    /**
+     * @return True if the specified paoType supports data streaming for at least one attribute, otherwise false;
+     */
     public boolean supportsDataStreaming(PaoType paoType) {
         return typeToSupportedAttributes.keySet().contains(paoType);
     }
     
     /**
-     * Gets all data streaming attributes supported by the specified type.
+     * Gets all data streaming attributes supported by the specified type. If the type does not support data streaming,
+     * an empty collection will be returned.
      */
     public Collection<BuiltInAttribute> getSupportedAttributes(PaoType paoType) {
         return typeToSupportedAttributes.get(paoType);
