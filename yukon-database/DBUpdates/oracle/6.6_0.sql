@@ -450,6 +450,17 @@ END;
 DELETE FROM YukonServices WHERE ServiceId IN (6, -6);
 /* End YUK-15428 */
 
+/* Start YUK-15548 */
+ALTER TABLE 
+   FDRTranslation 
+MODIFY 
+   ( 
+   Destination VARCHAR2(256),
+   Translation VARCHAR2(500)
+   )
+;
+/* End YUK-15548 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -550,6 +550,20 @@ END;
 DELETE FROM YukonServices WHERE ServiceId IN (6, -6);
 /* End YUK-15428 */
 
+/* Start YUK-15548 */
+ALTER TABLE FDRTranslation 
+ALTER COLUMN Destination VARCHAR(256) NOT NULL;
+
+ALTER TABLE FDRTranslation 
+DROP CONSTRAINT PK_FDRTrans;
+
+ALTER TABLE FDRTranslation 
+ALTER COLUMN Translation VARCHAR(500) NOT NULL;
+
+ALTER TABLE FDRTranslation 
+ADD CONSTRAINT PK_FDRTrans PRIMARY KEY (PointId, DirectionType, InterfaceType, Translation);
+/* End YUK-15548 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

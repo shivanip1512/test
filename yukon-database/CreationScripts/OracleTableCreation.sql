@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/8/2016 9:22:39 AM                          */
+/* Created on:     8/1/2016 12:52:15 PM                         */
 /*==============================================================*/
 
 
@@ -5285,8 +5285,8 @@ create table FDRTranslation  (
    PointId              NUMBER                          not null,
    DirectionType        VARCHAR2(30)                    not null,
    InterfaceType        VARCHAR2(20)                    not null,
-   Destination          VARCHAR2(20)                    not null,
-   Translation          VARCHAR2(200)                   not null,
+   Destination          VARCHAR2(256)                   not null,
+   Translation          VARCHAR2(500)                   not null,
    constraint PK_FDRTrans primary key (PointId, DirectionType, InterfaceType, Translation)
 );
 

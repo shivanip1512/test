@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/8/2016 9:44:55 AM                          */
+/* Created on:     8/1/2016 12:51:27 PM                         */
 /*==============================================================*/
 
 
@@ -5560,8 +5560,8 @@ create table FDRTranslation (
    PointId              numeric              not null,
    DirectionType        varchar(30)          not null,
    InterfaceType        varchar(20)          not null,
-   Destination          varchar(20)          not null,
-   Translation          varchar(200)         not null,
+   Destination          varchar(256)         not null,
+   Translation          varchar(500)         not null,
    constraint PK_FDRTrans primary key (PointId, DirectionType, InterfaceType, Translation)
 )
 go
