@@ -17,6 +17,7 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     private PaoLocation paoLocation;
     private String upgradeVersion;
     private int id;
+    private double loadingPercent;
     
     public RfnGateway(String name, YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData data) {
         super(name, pao, rfnIdentifier);
@@ -174,6 +175,14 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
         setData(data);
 
         return this;
+    }
+
+    public double getLoadingPercent() {
+        return loadingPercent;
+    }
+
+    public void setLoadingPercent(double loadingPercent) {
+        this.loadingPercent = loadingPercent;
     }
 
 }

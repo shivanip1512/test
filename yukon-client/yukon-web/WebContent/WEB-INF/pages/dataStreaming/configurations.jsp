@@ -41,7 +41,7 @@
                    <td>
                         <cm:dropdown icon="icon-cog" triggerClasses="fr">
                             <!-- TODO: Change these to pre-populate with config or devices-->
-                            <cti:url var="summaryUrl" value="/tools/dataStreaming/summary"/>
+                            <cti:url var="summaryUrl" value="/tools/dataStreaming/summary?selectedConfiguration=${config.id}"/>
                             <cm:dropdownOption key=".summary.pageName" href="${summaryUrl}" icon="icon-application-view-columns"/>
                             <cti:url var="configureUrl" value="/bulk/deviceSelection"/>
                             <cm:dropdownOption key=".configure" href="${configureUrl}" icon="icon-cog-edit"/>
