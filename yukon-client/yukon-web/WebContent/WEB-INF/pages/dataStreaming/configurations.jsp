@@ -21,11 +21,12 @@
         <thead>
             <tr>
                 <tags:sort column="${attributes}"/>
-                <tags:sort column="${interval}"/>                
-                <th><i:inline key=".numberOfDevices"/></th>
+                <tags:sort column="${interval}"/>    
+                <tags:sort column="${numberOfDevices}"/>            
             </tr>
         </thead>
         <c:forEach var="config" items="${existingConfigs.resultList}">
+            <c:set var="deviceCollection" value="${configsAndDevices[config]}"/>
             <tr>
                 <td>${config.commaDelimitedAttributes}</td>
                 <td>${config.selectedInterval}
@@ -39,18 +40,28 @@
                     </c:choose>
                    </td>
                    <td>
+                        ${deviceCollection.deviceCount}
                         <cm:dropdown icon="icon-cog" triggerClasses="fr">
-                            <!-- TODO: Change these to pre-populate with config or devices-->
                             <cti:url var="summaryUrl" value="/tools/dataStreaming/summary?selectedConfiguration=${config.id}"/>
                             <cm:dropdownOption key=".summary.pageName" href="${summaryUrl}" icon="icon-application-view-columns"/>
-                            <cti:url var="configureUrl" value="/bulk/deviceSelection"/>
+                            <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
+                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                    <cti:param name="${cp.key}" value="${cp.value}"/>
+                                </c:forEach>
+                            </cti:url>
                             <cm:dropdownOption key=".configure" href="${configureUrl}" icon="icon-cog-edit"/>
-                            <cti:url var="removeUrl" value="/bulk/deviceSelection"/>
+                            <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
+                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                    <cti:param name="${cp.key}" value="${cp.value}"/>
+                                </c:forEach>
+                            </cti:url>                            
                             <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
-                            <cti:url var="collectionActionsUrl" value="/bulk/deviceSelection"/>
+                            <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                    <cti:param name="${cp.key}" value="${cp.value}"/>
+                                </c:forEach>
+                            </cti:url>
                             <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>
-                            <cti:url var="deviceGroupUrl" value="/group/editor/home"/>
-                            <cm:dropdownOption key=".deviceGroup" href="${deviceGroupUrl}" icon="icon-folder-magnify"/>
                         </cm:dropdown>
                    </td>
                 </tr>

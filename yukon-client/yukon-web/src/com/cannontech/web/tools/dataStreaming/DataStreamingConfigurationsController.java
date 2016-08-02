@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
@@ -71,6 +72,7 @@ public class DataStreamingConfigurationsController {
         Builder<ConfigurationSortBy, Comparator<DataStreamingConfig>> builder = ImmutableMap.builder();
         builder.put(ConfigurationSortBy.interval, getIntervalComparator());
         builder.put(ConfigurationSortBy.attributes, getAttributesComparator());
+        builder.put(ConfigurationSortBy.numberOfDevices, getNumberOfDevicesComparator());
         sorters = builder.build();
         Builder<SummarySortBy, Comparator<SummarySearchResult>> summaryBuilder = ImmutableMap.builder();
         summaryBuilder.put(SummarySortBy.deviceName, getDeviceNameComparator());
@@ -90,13 +92,12 @@ public class DataStreamingConfigurationsController {
         Map<DataStreamingConfig, DeviceCollection> configsAndDevices = dataStreamingService.getAllDataStreamingConfigurationsAndDevices();
         Set<DataStreamingConfig> existingConfigs = configsAndDevices.keySet();
 
-        existingConfigs.forEach(config -> config.setAccessor(accessor));
-        existingConfigs.forEach(config -> config.setSelectedInterval(config.getAttributes().get(0).getInterval()));
-        existingConfigs.forEach(config -> config.getName());
-
-        for (DataStreamingConfig config : existingConfigs) {
-            System.out.println( "Attributes=" + config.getName() + " # of Devices=" + configsAndDevices.get(config).getDeviceCount());
-        }
+        existingConfigs.forEach(config -> {
+            config.setAccessor(accessor);
+            config.setSelectedInterval(config.getAttributes().get(0).getInterval());
+            config.getName();
+            config.setNumberOfDevices(configsAndDevices.get(config).getDeviceCount());
+        });
         
         SearchResults<DataStreamingConfig> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
@@ -127,16 +128,13 @@ public class DataStreamingConfigurationsController {
         searchResult.setResultList(itemList);
         
         model.addAttribute("existingConfigs", searchResult);
+        model.addAttribute("configsAndDevices", configsAndDevices);
 
         return "../dataStreaming/configurations.jsp";
     }
     
     @RequestMapping("summary")
     public String summary(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
-        SearchResults<SummarySearchResult> searchResult = new SearchResults<>();
-        int startIndex = paging.getStartIndex();
-        int itemsPerPage = paging.getItemsPerPage();
-        
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
@@ -146,6 +144,23 @@ public class DataStreamingConfigurationsController {
         model.addAttribute("existingConfigs", existingConfigs);
         model.addAttribute("searchAttributes", attributes);
         model.addAttribute("searchIntervals", intervals);
+        getSummaryResults(model, sorting, paging, userContext, request);
+        
+        return "../dataStreaming/summary.jsp";
+    }
+    
+    @RequestMapping("summaryResults")
+    public String summaryResults(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
+        getSummaryResults(model, sorting, paging, userContext, request);
+        return "../dataStreaming/summaryResults.jsp";
+    }
+    
+    private void getSummaryResults(ModelMap model, SortingParameters sorting, PagingParameters paging, YukonUserContext userContext, HttpServletRequest request) {
+        SearchResults<SummarySearchResult> searchResult = new SearchResults<SummarySearchResult>();
+        int startIndex = paging.getStartIndex();
+        int itemsPerPage = paging.getItemsPerPage();
+        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         SummarySearchCriteria searchFilter = new SummarySearchCriteria();
         int selectedConfiguration = ServletRequestUtils.getIntParameter(request, "selectedConfiguration", -1);
         searchFilter.setSelectedConfiguration(selectedConfiguration);
@@ -177,7 +192,7 @@ public class DataStreamingConfigurationsController {
         }
         
         itemList = itemList.subList(startIndex, endIndex);
-        searchResult.setBounds(startIndex, itemsPerPage, existingConfigs.size());
+        searchResult.setBounds(startIndex, itemsPerPage, results.size());
         searchResult.setResultList(itemList);
         
         model.addAttribute("searchResults", searchResult);
@@ -186,13 +201,16 @@ public class DataStreamingConfigurationsController {
         searchResult.getResultList().forEach(device -> deviceIds.add(device.getMeter().getDeviceId()));
         DeviceCollection deviceCollection = dcProducer.createDeviceCollection(deviceIds, null);
         model.addAttribute("deviceCollection", deviceCollection);
+        String deviceIdList = deviceIds.stream()
+                .map(i -> i.toString())
+                .collect(Collectors.joining(","));
+        model.addAttribute("deviceIds", deviceIdList);
         
-        return "../dataStreaming/summary.jsp";
     }
     
     private List<SummarySearchResult> getSearchResults(SummarySearchCriteria criteria, MessageSourceAccessor accessor, ModelMap model) {
         //TODO: hook up to use service
-        List<YukonMeter> meters = meterDao.getMetersForMeterNumbers(Arrays.asList("1000", "10000", "10001", "10002", "10003", "10004", "10005", "10006", "10007", "10008", "10009", "655454"));
+        List<YukonMeter> meters = meterDao.getMetersForMeterNumbers(Arrays.asList("1000", "10000", "10001", "10002", "10003", "10004", "10005", "10006", "10007", "10008", "10009", "10010"));
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         RfnGateway gateway = gateways.get(0);
         gateway.setLoadingPercent(95.5);
@@ -314,7 +332,8 @@ public class DataStreamingConfigurationsController {
     public enum ConfigurationSortBy implements DisplayableEnum {
         
         attributes,
-        interval;
+        interval,
+        numberOfDevices;
 
         @Override
         public String getFormatKey() {
@@ -344,5 +363,17 @@ public class DataStreamingConfigurationsController {
                 }
             });
         return attOrdering;
+    }
+    
+    private Comparator<DataStreamingConfig> getNumberOfDevicesComparator() {
+        Ordering<Integer> normalIntComparer = Ordering.natural();
+        Ordering<DataStreamingConfig> intOrdering = normalIntComparer
+            .onResultOf(new Function<DataStreamingConfig, Integer>() {
+                @Override
+                public Integer apply(DataStreamingConfig from) {
+                    return from.getNumberOfDevices();
+                }
+            });
+        return intOrdering;
     }
 }

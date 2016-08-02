@@ -9,7 +9,7 @@
 
 <cti:standardPage module="tools" page="dataStreaming.summary">
 
-    <style>
+<style>
 .inline {
     display: inline-flex;
 }
@@ -84,60 +84,29 @@
     </form:form>
     
         <h3>
-            <i:inline key=".results" arguments="${searchResults.hitCount}"/>&nbsp;
+            <i:inline key=".results"/>&nbsp;
+            <span class="dn js-results-count">${searchResults.hitCount}</span>
+            <span class="dn js-results-ids">${deviceIds}</span>
+            <span class="dn js-selected-ids">${deviceIds}</span>
+            <span class="badge">${searchResults.hitCount}</span>
+            <span class="fwn"><i:inline key=".devices"/></span>
             <c:if test="${searchResults.hitCount > 0}">
-                <cm:deviceCollectionMenu deviceCollection="${deviceCollection}"
-                    triggerClasses="pull-icon-down"
-                    key="yukon.web.modules.common.contextualMenu.actions"/>
+                <cm:dropdown icon="icon-cog">
+                    <cm:dropdownOption key=".configure" icon="icon-cog-edit" classes="js-selected-configure"/>
+                    <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross" classes="js-selected-remove"/>
+                    <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" classes="js-selected-actions"/>
+                </cm:dropdown>
             </c:if>
         </h3>
-    
-                <cti:url var="dataUrl" value="/tools/dataStreaming/summary">
-                        <cti:param name="selectedConfiguration" value="${searchFilters.selectedConfiguration}"/>
-                </cti:url>
-                <div data-url="${dataUrl}" data-static>
-                <table class="compact-results-table row-highlighting js-select-all-container">
-                    <thead>
-                        <tr>
-                           <th><input type="checkbox" class="js-select-all" checked></th>
-                           <tags:sort column="${deviceName}"/>
-                           <tags:sort column="${deviceType}"/>
-                           <tags:sort column="${meterNumber}"/>
-                           <tags:sort column="${gatewayName}"/>
-                           <tags:sort column="${gatewayLoading}"/>
-                           <tags:sort column="${attributes}"/>
-                           <tags:sort column="${interval}"/>
-                        </tr>
-                    </thead>
-                    <tfoot></tfoot>
-                    <tbody>
-                        <c:forEach var="result" items="${searchResults.resultList}">
-                            <cti:url var="gatewayUrl" value="/stars/gateways/${result.gateway.paoIdentifier.paoId}"/>
-                            <tr>
-                                <td><input class="js-select-all-item" type="checkbox" name="${result.meter.name}" checked></td>
-                                <td><cti:paoDetailUrl yukonPao="${result.meter}">${result.meter.name}</cti:paoDetailUrl></td>
-                                <td>${result.meter.paoType.paoTypeName}</td>
-                                <td>${result.meter.meterNumber}</td>
-                                <td>
-                                    <a href="${gatewayUrl}">${fn:escapeXml(result.gateway.name)}</a>
-                                </td>
-                                <td>${result.gateway.loadingPercent}</td>
-                                <td>${result.config.commaDelimitedAttributes}</td>
-                                <td>${result.config.selectedInterval}
-                                    <c:choose>
-                                        <c:when test="${result.config.selectedInterval > 1}">
-                                            <i:inline key=".minutes"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <i:inline key=".minute"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-                <tags:pagingResultsControls result="${searchResults}" adjustPageCount="true" hundreds="true"/>
-            </div>
+        
+        <cti:url var="dataUrl" value="/tools/dataStreaming/summaryResults">
+                <cti:param name="selectedConfiguration" value="${searchFilters.selectedConfiguration}"/>
+        </cti:url>
+        <div data-url="${dataUrl}">
+            <%@ include file="summaryResults.jsp" %>
+        </div>
+            
+        <cti:includeScript link="/resources/js/pages/yukon.tools.dataStreaming.js"/>
+            
 
 </cti:standardPage>

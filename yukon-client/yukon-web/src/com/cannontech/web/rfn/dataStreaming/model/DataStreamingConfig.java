@@ -17,6 +17,7 @@ public class DataStreamingConfig implements Cloneable {
     private String commaDelimitedAttributes;
     private List<DataStreamingAttribute> attributes = new ArrayList<>();
     private MessageSourceAccessor accessor;
+    private int numberOfDevices;
     
     public boolean isNewConfiguration() {
         return newConfiguration;
@@ -105,6 +106,14 @@ public class DataStreamingConfig implements Cloneable {
         this.accessor = accessor;
     }
     
+    public int getNumberOfDevices() {
+        return numberOfDevices;
+    }
+
+    public void setNumberOfDevices(int numberOfDevices) {
+        this.numberOfDevices = numberOfDevices;
+    }
+    
     /** This implementation doesn't compare all fields! */
     @Override
     public int hashCode() {
@@ -159,4 +168,5 @@ public class DataStreamingConfig implements Cloneable {
         }
         return config;
     }
+
 }
