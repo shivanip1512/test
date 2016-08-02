@@ -7,6 +7,7 @@ import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.core.dao.NotFoundException;
+import com.google.common.collect.Multimap;
 
 public interface DeviceBehaviorDao {
 
@@ -71,4 +72,8 @@ public interface DeviceBehaviorDao {
 
     BehaviorReport getBehaviorReportByDeviceIdAndType(int deviceId, BehaviorType type);
 
+    /**
+     * Returns a multimap of behavior ids to device ids.
+     */
+    Multimap<Integer, Integer> getDeviceIdsByBehaviorIds(Iterable<Integer> behaviorIds);
 }

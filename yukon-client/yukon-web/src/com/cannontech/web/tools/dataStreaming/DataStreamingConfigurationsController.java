@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
@@ -43,9 +44,9 @@ import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.ImmutableMap.Builder;
 
 @Controller
 @RequestMapping("/dataStreaming/*")
@@ -86,12 +87,18 @@ public class DataStreamingConfigurationsController {
     public String configurations(@DefaultSort(dir=Direction.asc, sort="attributes") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        List<DataStreamingConfig> existingConfigs = dataStreamingService.getAllDataStreamingConfigurations();
+        Map<DataStreamingConfig, DeviceCollection> configsAndDevices = dataStreamingService.getAllDataStreamingConfigurationsAndDevices();
+        Set<DataStreamingConfig> existingConfigs = configsAndDevices.keySet();
+
         existingConfigs.forEach(config -> config.setAccessor(accessor));
         existingConfigs.forEach(config -> config.setSelectedInterval(config.getAttributes().get(0).getInterval()));
         existingConfigs.forEach(config -> config.getName());
+
+        for (DataStreamingConfig config : existingConfigs) {
+            System.out.println( "Attributes=" + config.getName() + " # of Devices=" + configsAndDevices.get(config).getDeviceCount());
+        }
         
-        SearchResults<DataStreamingConfig> searchResult = new SearchResults<DataStreamingConfig>();
+        SearchResults<DataStreamingConfig> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
         int endIndex = Math.min(startIndex + itemsPerPage, existingConfigs.size());
@@ -107,7 +114,7 @@ public class DataStreamingConfigurationsController {
         }
         Collections.sort(itemList, comparator);
         
-        List<SortableColumn> columns = new ArrayList<SortableColumn>();
+        List<SortableColumn> columns = new ArrayList<>();
         for (ConfigurationSortBy column : ConfigurationSortBy.values()) {
             String text = accessor.getMessage(column);
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
@@ -126,7 +133,7 @@ public class DataStreamingConfigurationsController {
     
     @RequestMapping("summary")
     public String summary(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
-        SearchResults<SummarySearchResult> searchResult = new SearchResults<SummarySearchResult>();
+        SearchResults<SummarySearchResult> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
         
@@ -161,7 +168,7 @@ public class DataStreamingConfigurationsController {
         }
         Collections.sort(itemList, comparator);
         
-        List<SortableColumn> columns = new ArrayList<SortableColumn>();
+        List<SortableColumn> columns = new ArrayList<>();
         for (SummarySortBy column : SummarySortBy.values()) {
             String text = accessor.getMessage(column);
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
@@ -189,7 +196,7 @@ public class DataStreamingConfigurationsController {
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         RfnGateway gateway = gateways.get(0);
         gateway.setLoadingPercent(95.5);
-        List<SummarySearchResult> results = new ArrayList<SummarySearchResult>();
+        List<SummarySearchResult> results = new ArrayList<>();
         DataStreamingConfig config = dataStreamingService.findDataStreamingConfiguration(criteria.getSelectedConfiguration());
         config.setSelectedInterval(config.getAttributes().get(0).getInterval());
         config.setAccessor(accessor);

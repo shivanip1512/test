@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
@@ -95,6 +97,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Resource(name = "recentResultsCache") private RecentResultsCache<DataStreamingConfigResult> resultsCache;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
+    @Autowired private DeviceGroupCollectionHelper collectionHelper;
 
     @Override
     public DataStreamingConfigResult findDataStreamingResult(String resultKey) {
@@ -119,6 +122,22 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         List<DataStreamingConfig> configs = new ArrayList<>();
         behaviors.forEach(behavior -> configs.add(convertBehaviorToConfig(behavior)));
         return configs;
+    }
+    
+    @Override
+    public Map<DataStreamingConfig, DeviceCollection> getAllDataStreamingConfigurationsAndDevices() {
+        Map<DataStreamingConfig, DeviceCollection> configToDeviceCollection = new HashMap<>();
+        List<DataStreamingConfig> configs = getAllDataStreamingConfigurations();
+        List<Integer> configIds = configs.stream().map(config -> config.getId()).collect(Collectors.toList());
+        Multimap<Integer, Integer> deviceIdsByBehaviorIds = deviceBehaviorDao.getDeviceIdsByBehaviorIds(configIds);
+        configs.forEach(config -> {
+            Collection<SimpleMeter> deviceIds = deviceIdsByBehaviorIds.get(config.getId()).stream().map(
+                id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
+                    Collectors.toList());
+            DeviceCollection collection = collectionHelper.createDeviceGroupCollection(deviceIds.iterator(), "");
+            configToDeviceCollection.put(config, collection);
+        });
+        return configToDeviceCollection;
     }
 
     @Override
@@ -673,7 +692,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
         @Override
         public void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error) {
-            log.debug("Recived a config error for device=" + device + " error=" + error.getDescription());
+            log.debug("Recieved a config error for device=" + device + " error=" + error.getDescription());
             deviceGroupMemberEditorDao.addDevices(failedGroup, device);
             deviceBehaviorDao.updateBehaviorReportStatus(BehaviorType.DATA_STREAMING, BehaviorReportStatus.FAILED,
                 Arrays.asList(device.getDeviceId()));

@@ -1,6 +1,7 @@
 package com.cannontech.web.rfn.dataStreaming.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -49,6 +50,11 @@ public interface DataStreamingService {
     void cancel(String key, LiteYukonUser user);
 
     DataStreamingConfigResult findDataStreamingResult(String resultKey);
+
+    /**
+     * Returns map of configurations to device collection that contains all assigned devices.
+     */
+    Map<DataStreamingConfig, DeviceCollection> getAllDataStreamingConfigurationsAndDevices();
 
     //TODO: retrieve all mismatches (reported config and stored config don't match)
 }
