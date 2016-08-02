@@ -25,7 +25,7 @@ using Config::RfnStrings;
 
 namespace { // anonymous namespace
 
-const std::set<int> disconnectConfigTypes
+const std::set<DeviceTypes> disconnectConfigTypes
 {
     TYPE_RFN410FD,
     TYPE_RFN420CD,
