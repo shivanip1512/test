@@ -912,7 +912,14 @@
             </pages>
           </page>
           <page name="indexes" type="BASIC"/>
-          <page name="systemHealth" type="BASIC"/>
+          <page name="systemHealth" type="BASIC">
+            <link>/support/systemHealth/home</link>
+            <pages>
+              <page name="systemHealth.detail" type="DETAIL">
+                <labelArgument>${title}</labelArgument>
+              </page>
+            </pages>
+          </page>
         </pages>
       </page>
       <page name="siteMap" type="BASIC">
