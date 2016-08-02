@@ -45,7 +45,10 @@
                                         data-metric="${queue.metricIdentifier}" data-action="${action}"
                                         nameKey="favMetricButton"/>
                             <span title="${queue.queueName}">
-                                <i:inline key="${queue}"/>
+                                <cti:url var="detailUrl" value="/support/systemHealth/${queue.metricIdentifier}/detail"/>
+                                <a href="${detailUrl}">
+                                    <i:inline key="${queue}"/>
+                                </a>
                             </span>
                         </td>
                         <td class="tar" id="${queue.metricIdentifier}-arc">${queue.archivedReadingsCount}</td>
@@ -88,7 +91,10 @@
                                         data-metric="${queue.metricIdentifier}" data-action="${action}"
                                         nameKey="favMetricButton"/>
                             <span title="${queue.queueName}">
-                                <i:inline key="${queue}"/>
+                                <cti:url var="detailUrl" value="/support/systemHealth/${queue.metricIdentifier}/detail"/>
+                                <a href="${detailUrl}">
+                                    <i:inline key="${queue}"/>
+                                </a>
                             </span>
                         </td>
                         <td class="tar" id="${queue.metricIdentifier}-enq">${queue.enqueuedCount}</td>

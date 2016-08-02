@@ -1,9 +1,11 @@
 package com.cannontech.web.support.systemMetrics;
 
+import com.cannontech.common.i18n.DisplayableEnum;
+
 /**
  * Indicates the overall health of a system metric. 
  */
-public enum MetricStatus {
+public enum MetricStatus implements DisplayableEnum {
     UNKNOWN("icon-disabled"),       // Waiting for more data (usually shortly after startup)
     GOOD("icon-enabled"),           // All is well
     WARN("icon-error"),             // There may be problems
@@ -29,5 +31,10 @@ public enum MetricStatus {
      */
     public String getIconName() {
         return iconName;
+    }
+    
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.support.systemHealth.metric.status." + name();
     }
 }

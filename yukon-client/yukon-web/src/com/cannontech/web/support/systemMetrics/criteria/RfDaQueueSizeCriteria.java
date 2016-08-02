@@ -18,7 +18,7 @@ public class RfDaQueueSizeCriteria extends MetricHealthCriteriaBase<QueueData> {
     @Autowired SystemMetricCriteriaDao systemMetricCriteriaDao;
     
     public RfDaQueueSizeCriteria() {
-        super(QueueData.class, "rfDaQueueSizeWarn", "rfDaQueueSizeError");
+        super(QueueData.class, "rfDaQueueSize");
     }
     
     @Override

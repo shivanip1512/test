@@ -11,7 +11,7 @@ public class GatewayArchiveRequestQueueSizeCriteria extends MetricHealthCriteria
     private static final Logger log = YukonLogManager.getLogger(GatewayArchiveRequestQueueSizeCriteria.class);
     
     public GatewayArchiveRequestQueueSizeCriteria() {
-        super(ExtendedQueueData.class, "gatewayArchiveQueueSizeWarn", "");
+        super(ExtendedQueueData.class, "gatewayArchiveQueueSize");
     }
     
     @Override

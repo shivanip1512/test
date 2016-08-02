@@ -18,7 +18,7 @@ public class MeterRequestsQueueSizeCriteria extends MetricHealthCriteriaBase<Ext
     @Autowired SystemMetricCriteriaDao systemMetricCriteriaDao;
     
     public MeterRequestsQueueSizeCriteria() {
-        super(ExtendedQueueData.class, "meterQueueSizeWarn", "meterQueueSizeError");
+        super(ExtendedQueueData.class, "meterQueueSize");
     }
     
     @Override

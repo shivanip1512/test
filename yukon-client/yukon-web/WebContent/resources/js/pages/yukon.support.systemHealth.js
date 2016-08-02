@@ -28,7 +28,8 @@ yukon.support.systemHealth = (function() {
             
             for (var i in queueMetrics) {
                 var queue = queueMetrics[i],
-                    id = queue.metricIdentifier;
+                    id = queue.metricIdentifier,
+                    statusText;
                 $('#' + id + '-enq').text(queue.enqueuedCount);
                 $('#' + id + '-deq').text(queue.dequeuedCount);
                 $('#' + id + '-size').text(queue.queueSize);
@@ -37,11 +38,17 @@ yukon.support.systemHealth = (function() {
                                          .addClass('icon')
                                          .addClass(queue.status.iconName)
                                          .prop('title', queue.status.allMessages);
+                //These only apply to the detail page
+                statusText = $('#metric-status-' + queue.status.metricStatus).text();
+                $('#' + id + '-status-name').text(statusText);
+                $('#' + id + '-status-messages').text(queue.status.allMessages);
             }
             
             for (var i in extendedQueueMetrics) {
                 var queue = extendedQueueMetrics[i],
                     id = queue.metricIdentifier;
+                $('#' + id + '-arc').text(queue.archivedReadingsCount !== null ? queue.archivedReadingsCount : '');
+                $('#' + id + '-arp').text(queue.archiveRequestsProcessed);
                 $('#' + id + '-enq').text(queue.enqueuedCount);
                 $('#' + id + '-deq').text(queue.dequeuedCount);
                 $('#' + id + '-size').text(queue.queueSize);
@@ -50,8 +57,10 @@ yukon.support.systemHealth = (function() {
                                          .addClass('icon')
                                          .addClass(queue.status.iconName)
                                          .prop('title', queue.status.allMessages);
-                $('#' + id + '-arc').text(queue.archivedReadingsCount !== null ? queue.archivedReadingsCount : '');
-                $('#' + id + '-arp').text(queue.archiveRequestsProcessed);
+                //These only apply to the detail page
+                statusText = $('#metric-status-' + queue.status.metricStatus).text();
+                $('#' + id + '-status-name').text(statusText);
+                $('#' + id + '-status-messages').text(queue.status.allMessages);
             }
         }).fail(function(xhr, status, error) {
             debug.log('update failed:' + status + ': ' + error);

@@ -100,4 +100,8 @@ public class SystemHealthStatusHelper {
     public MetricStatusWithMessages getStatus(SystemHealthMetricIdentifier metric) {
         return metricStatusCache.get(metric);
     }
+    
+    public Collection<MetricHealthCriteria> getPertinentCriteria(SystemHealthMetricIdentifier metricId) {
+        return metricHealthCriteriaByMetricId.get(metricId);
+    }
 }

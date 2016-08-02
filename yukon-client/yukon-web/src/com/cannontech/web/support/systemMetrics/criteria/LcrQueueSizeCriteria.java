@@ -18,7 +18,7 @@ public class LcrQueueSizeCriteria extends MetricHealthCriteriaBase<ExtendedQueue
     @Autowired SystemMetricCriteriaDao systemMetricCriteriaDao;
     
     public LcrQueueSizeCriteria() {
-        super(ExtendedQueueData.class, "lcrQueueSizeWarn", "lcrQueueSizeError");
+        super(ExtendedQueueData.class, "lcrQueueSize");
     }
     
     @Override

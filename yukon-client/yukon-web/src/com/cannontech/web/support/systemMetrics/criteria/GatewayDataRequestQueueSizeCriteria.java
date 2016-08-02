@@ -18,7 +18,7 @@ public class GatewayDataRequestQueueSizeCriteria extends MetricHealthCriteriaBas
     @Autowired SystemMetricCriteriaDao systemMetricCriteriaDao;
     
     public GatewayDataRequestQueueSizeCriteria() {
-        super(QueueData.class, "gatewayRequestQueueSizeWarn", "gatewayRequestQueueSizeError");
+        super(QueueData.class, "gatewayRequestQueueSize");
     }
     
     @Override

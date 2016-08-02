@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 /**
  * Unique identifiers for each system health metric. 
  */
-public enum SystemHealthMetricIdentifier {
+public enum SystemHealthMetricIdentifier implements DisplayableEnum {
     RFN_METER(SystemHealthMetricType.JMS_QUEUE_EXTENDED, "meterReads", "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest"),
     RFN_LCR(SystemHealthMetricType.JMS_QUEUE_EXTENDED, "lcrReads", "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest"),
     RF_GATEWAY_ARCHIVE(SystemHealthMetricType.JMS_QUEUE_EXTENDED, "gatewayArchive", "yukon.qr.obj.common.rfn.GatewayArchiveRequest"),
@@ -75,5 +76,10 @@ public enum SystemHealthMetricIdentifier {
     
     public String getQueueName() {
         return queueName;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.support.systemHealth.metric." + keySuffix;
     }
 }

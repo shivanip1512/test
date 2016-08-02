@@ -1,5 +1,6 @@
 package com.cannontech.web.support.systemMetrics.criteria;
 
+import com.cannontech.common.i18n.Displayable;
 import com.cannontech.web.support.systemMetrics.MetricStatusWithMessages;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
@@ -8,7 +9,7 @@ import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 /**
  * Interface for objects that measure the 'healthiness' of a metric.
  */
-public interface MetricHealthCriteria {
+public interface MetricHealthCriteria extends Displayable {
     
     public static final String keyPrefix = "yukon.web.modules.support.systemHealth.criteria.";
     

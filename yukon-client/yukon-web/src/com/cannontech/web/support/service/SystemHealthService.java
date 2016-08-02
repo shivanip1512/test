@@ -7,6 +7,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
+import com.cannontech.web.support.systemMetrics.criteria.MetricHealthCriteria;
 import com.google.common.collect.Multimap;
 
 /**
@@ -44,5 +45,10 @@ public interface SystemHealthService {
      * @param isFavorite If true, makes the metric a favorite. If false, un-favorites the metric.
      */
     void setFavorite(LiteYukonUser user, SystemHealthMetricIdentifier metric, boolean isFavorite);
+    
+    /**
+     * Retrieves all MetricHealthCriteria that pertain to the specified metric.
+     */
+    Collection<MetricHealthCriteria> getPertinentCriteria(SystemHealthMetricIdentifier metricId);
     
 }

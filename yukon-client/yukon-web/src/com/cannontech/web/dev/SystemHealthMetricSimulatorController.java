@@ -11,14 +11,17 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.service.SystemHealthMetricMethod;
 import com.cannontech.web.dev.service.SystemHealthMetricSimulatorService;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 
 @Controller
 @RequestMapping("/systemHealthMetricSimulator/*")
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class SystemHealthMetricSimulatorController {
     @Autowired SystemHealthMetricSimulatorService metricSimulator;
     

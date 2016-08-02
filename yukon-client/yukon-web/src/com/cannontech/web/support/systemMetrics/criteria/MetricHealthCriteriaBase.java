@@ -1,8 +1,10 @@
 package com.cannontech.web.support.systemMetrics.criteria;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.support.systemMetrics.MetricStatus;
@@ -17,18 +19,16 @@ public abstract class MetricHealthCriteriaBase<T extends SystemHealthMetric> imp
     
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private Class<T> metricClass;
-    private String warnKeySuffix;
-    private String errorKeySuffix;
+    private String keySuffix;
     
     /**
      * @param metricClass The class representing the type of metric this criteria pertains to.
-     * @param warnKeySuffix The portion of the i18n key after the last period, used when the metric state is WARN.
-     * @param errorKeySuffix The portion of the i18n key after the last period, used when the metric state is ERROR.
+     * @param keySuffix i18n keys for this criteria are composed of keyPrefix + keySuffix + use, where use is "warn", 
+     * "error", "name", or "description".
      */
-    public MetricHealthCriteriaBase(Class<T> metricClass, String warnKeySuffix, String errorKeySuffix) {
+    public MetricHealthCriteriaBase(Class<T> metricClass, String keySuffix) {
         this.metricClass = metricClass;
-        this.warnKeySuffix = warnKeySuffix;
-        this.errorKeySuffix = errorKeySuffix;
+        this.keySuffix = keySuffix;
     }
     
     @Override
@@ -38,15 +38,20 @@ public abstract class MetricHealthCriteriaBase<T extends SystemHealthMetric> imp
             MetricStatus baseStatus = doMetricCheck(metricClass.cast(metric));
             
             if (baseStatus == MetricStatus.WARN){
-                return buildMetricStatusWithMessages(baseStatus, warnKeySuffix);
+                return buildMetricStatusWithMessages(baseStatus, keySuffix + ".warn");
             } else if (baseStatus == MetricStatus.ERROR) {
-                return buildMetricStatusWithMessages(baseStatus, errorKeySuffix);
+                return buildMetricStatusWithMessages(baseStatus, keySuffix + ".error");
             } else {
                 return new MetricStatusWithMessages(baseStatus);
             }
         }
         
         throw new IllegalArgumentException("Criteria only supports " + getPertainsTo() + " metric");
+    }
+    
+    @Override
+    public MessageSourceResolvable getMessage() {
+        return new YukonMessageSourceResolvable(keyPrefix + keySuffix + ".description");
     }
     
     private MetricStatusWithMessages buildMetricStatusWithMessages(MetricStatus status, String keySuffix) {

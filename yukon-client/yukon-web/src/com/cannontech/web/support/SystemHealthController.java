@@ -36,6 +36,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.support.service.SystemHealthService;
+import com.cannontech.web.support.systemMetrics.MetricStatus;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
@@ -49,6 +50,13 @@ public class SystemHealthController {
     
     @Autowired private SystemHealthService systemHealthService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
+    }
     
     @RequestMapping("/home")
     public String home(ModelMap model, LiteYukonUser user) throws MessageConversionException, JMSException {
@@ -96,6 +104,28 @@ public class SystemHealthController {
         }
         
         return metricTypeToMetrics;
+    }
+    
+    @RequestMapping("{metric}/detail")
+    public String metricDetail(ModelMap model, @PathVariable SystemHealthMetricIdentifier metric, YukonUserContext userContext) {
+        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        //Put the i18ned status labels into the DOM for JS to use when updating status
+        Map<MetricStatus, String> metricStatusLabels = new HashMap<>();
+        for(MetricStatus status : MetricStatus.values()) {
+            metricStatusLabels.put(status, accessor.getMessage(status));
+        }
+        model.addAttribute("metricStatusLabels", metricStatusLabels);
+        
+        String pageTitle = accessor.getMessage(metric);
+        model.addAttribute("title", pageTitle);
+        
+        model.addAttribute("metric", systemHealthService.getMetric(metric));
+        model.addAttribute("queue", systemHealthService.getMetric(metric));
+        model.addAttribute("pertinentCriteria", systemHealthService.getPertinentCriteria(metric));//systemHealthService.getPertinentCriteria(metric);
+        
+        return "systemHealthDetail.jsp";
     }
     
     @RequestMapping("sync")
@@ -166,12 +196,5 @@ public class SystemHealthController {
                 setValue(SystemHealthMetricIdentifier.valueOf(text));
             }
         });
-    }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
     }
 }

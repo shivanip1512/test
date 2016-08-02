@@ -115,6 +115,11 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         }
     }
     
+    @Override
+    public Collection<MetricHealthCriteria> getPertinentCriteria(SystemHealthMetricIdentifier metricId) {
+        return statusHelper.getPertinentCriteria(metricId);
+    }
+    
     private ExtendedQueueData getExtendedQueueData(SystemHealthMetricIdentifier metric) {
         try {
             String serviceBeanName = SystemHealthMetricIdentifier.getExtendedJmsQueueBeans(metric).get(0);

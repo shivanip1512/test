@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.jms.ConnectionFactory;
+import javax.management.InstanceNotFoundException;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.servlet.http.HttpServletResponse;
 
@@ -74,6 +76,7 @@ import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusRes
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
@@ -95,6 +98,7 @@ public class NmIntegrationController {
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
+    @Autowired private DataStreamingDevSettings dataStreamingDevSettings;
 
     SimulatorSettings lcrCurrentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 10,
         ReportingInterval.REPORTING_INTERVAL_24_HOURS);
@@ -128,126 +132,48 @@ public class NmIntegrationController {
         
         return getIntegrationData();
     }
-
+    
     private List<Map<String, Object>> getIntegrationData() {
-        
         List<Map<String, Object>> data = new ArrayList<>();
         
+        data.add(getQueueData("Meter Reads", "meter-reads", meterReadQueueBean, meterReadServiceBean));
+        data.add(getQueueData("LCR Reads", "lcr-reads", lcrReadQueueBean, lcrReadServiceBean));
+        data.add(getQueueData("RF DA Archive", "rfda-archive", rfDaArchiveQueueBean, null));
+        data.add(getQueueData("Gateway Archive", "gateway-archive", gatewayArchiveReqQueueBean, gatewayServiceBean));
+        data.add(getQueueData("Gateway Data Request", "gateway-data-rec", gatewayDataReqQueueBean, null));
+        data.add(getQueueData("Gateway Data", "gateway-data", gatewayDataQueueBean, null));
+        
+        return data;
+    }
+    
+    private Map<String, Object> getQueueData(String queueName, String queueIdentifier, String queueBean, String serviceBean) {
+        
+        Map<String, Object> data = new LinkedHashMap<>();
+        
         try {
-            // Meter Read Stats
-            Map<String, Object> meterData = new LinkedHashMap<>();
-            ObjectName meterReadService = ObjectName.getInstance(meterReadServiceBean);
-            meterData.put("meter-reads-archived", ImmutableMap.of(
-                    "name", "Meter Reads Archived", 
-                    "value", jmxQueryService.getTypedValue(meterReadService, "ArchivedReadings", 0, Integer.class)));
-            meterData.put("meter-reads-requests-processed", ImmutableMap.of(
-                    "name", "Meter Reads Requests Processed", 
-                    "value", jmxQueryService.getTypedValue(meterReadService, "ProcessedArchiveRequest", 0, Integer.class)));
-            ObjectName meterReadQueue = ObjectName.getInstance(meterReadQueueBean);
-            meterData.put("meter-reads-enqueue-count", ImmutableMap.of(
-                    "name", "Meter Reads Enqueue Count", 
-                    "value", jmxQueryService.getTypedValue(meterReadQueue, "EnqueueCount", 0L, Long.class)));
-            meterData.put("meter-reads-queue-size", ImmutableMap.of(
-                    "name", "Meter Reads Queue Size", 
-                    "value", jmxQueryService.getTypedValue(meterReadQueue, "QueueSize", 0L, Long.class)));
-            Double mraet = jmxQueryService.getTypedValue(meterReadQueue, "AverageEnqueueTime", 0.0, Double.class);
-            meterData.put("meter-reads-average-enqueue-time", ImmutableMap.of(
-                    "name", "Meter Reads Average Enqueue Time", 
-                    "value", df.format(mraet)));
-            data.add(meterData);
+            if (serviceBean != null) {
+            ObjectName service = ObjectName.getInstance(serviceBean);
+                data.put(queueIdentifier + "-archived", ImmutableMap.of(
+                        "name", queueName + " Archived", 
+                        "value", jmxQueryService.getTypedValue(service, "ArchivedReadings", 0, Integer.class)));
+                data.put(queueIdentifier + "-requests-processed", ImmutableMap.of(
+                        "name", queueName + " Requests Processed", 
+                        "value", jmxQueryService.getTypedValue(service, "ProcessedArchiveRequest", 0, Integer.class)));
+            }
             
-            // LCR Read Stats
-            Map<String, Object> lcrData = new LinkedHashMap<>();
-            ObjectName lcrReadService = ObjectName.getInstance(lcrReadServiceBean);
-            lcrData.put("lcr-reads-archived", ImmutableMap.of(
-                    "name", "LCR Reads Archived", 
-                    "value", jmxQueryService.getTypedValue(lcrReadService, "ArchivedReadings", 0, Integer.class)));
-            lcrData.put("lcr-reads-requests-processed", ImmutableMap.of(
-                    "name", "LCR Reads Requests Processed", 
-                    "value", jmxQueryService.getTypedValue(lcrReadService, "ProcessedArchiveRequest", 0, Integer.class)));
-            ObjectName lcrReadQueue = ObjectName.getInstance(lcrReadQueueBean);
-            lcrData.put("lcr-reads-enqueue-count", ImmutableMap.of(
-                    "name", "LCR Reads Enqueue Count", 
-                    "value", jmxQueryService.getTypedValue(lcrReadQueue, "EnqueueCount", 0L, Long.class)));
-            lcrData.put("lcr-reads-queue-size", ImmutableMap.of(
-                    "name", "LCR Reads Queue Size", 
-                    "value", jmxQueryService.getTypedValue(lcrReadQueue, "QueueSize", 0L, Long.class)));
-            Double lraet = jmxQueryService.getTypedValue(lcrReadQueue, "AverageEnqueueTime", 0.0, Double.class);
-            lcrData.put("lcr-reads-average-enqueue-time", ImmutableMap.of(
-                    "name", "LCR Reads Average Enqueue Time", 
-                    "value", df.format(lraet)));
-            data.add(lcrData);
-            
-            //RF DA Archive Stats
-            Map<String, Object> rfDaData = new LinkedHashMap<>();
-            ObjectName rfDaArchiveQueue = ObjectName.getInstance(rfDaArchiveQueueBean);
-            rfDaData.put("rfda-archive-enqueue-count", ImmutableMap.of(
-                    "name", "RF DA Archive Enqueue Count", 
-                    "value", jmxQueryService.getTypedValue(rfDaArchiveQueue, "EnqueueCount", 0L, Long.class)));
-            rfDaData.put("rfda-archive-queue-size", ImmutableMap.of(
-                    "name", "RF DA Queue Size", 
-                    "value", jmxQueryService.getTypedValue(rfDaArchiveQueue, "QueueSize", 0L, Long.class)));
-            Double rfdaaet = jmxQueryService.getTypedValue(rfDaArchiveQueue, "AverageEnqueueTime", 0.0, Double.class);
-            rfDaData.put("rfda-archive-average-enqueue-time", ImmutableMap.of(
-                    "name", "RF DA Average Enqueue Time", 
-                    "value", df.format(rfdaaet)));
-            data.add(rfDaData);
-            
-            // Gateway Archive Stats
-            Map<String, Object> gatewayArchiveData = new LinkedHashMap<>();
-            ObjectName gatewayService = ObjectName.getInstance(gatewayServiceBean);
-            gatewayArchiveData.put("gateway-archive-requests-processed", ImmutableMap.of(
-                    "name", "Gateway Archive Requests Processed", 
-                    "value", jmxQueryService.getTypedValue(gatewayService, "ProcessedArchiveRequest", 0, Integer.class)));
-            ObjectName gatewayQueue = ObjectName.getInstance(gatewayArchiveReqQueueBean);
-            gatewayArchiveData.put("gateway-archive-enqueue-count", ImmutableMap.of(
-                    "name", "Gateway Archive Enqueue Count", 
-                    "value", jmxQueryService.getTypedValue(gatewayQueue, "EnqueueCount", 0L, Long.class)));
-            gatewayArchiveData.put("gateway-archive-dequeue-count", ImmutableMap.of(
-                    "name", "Gateway Archive Dequeue Count", 
-                    "value", jmxQueryService.getTypedValue(gatewayQueue, "DequeueCount", 0L, Long.class)));
-            gatewayArchiveData.put("gateway-archive-queue-size", ImmutableMap.of(
-                    "name", "Gateway Archive Queue Size", 
-                    "value", jmxQueryService.getTypedValue(gatewayQueue, "QueueSize", 0L, Long.class)));
-            Double gaaet = jmxQueryService.getTypedValue(gatewayQueue, "AverageEnqueueTime", 0.0, Double.class);
-            gatewayArchiveData.put("gateway-archive-average-enqueue-time", ImmutableMap.of(
-                    "name", "Gateway Archive Average Enqueue Time", 
-                    "value", df.format(gaaet)));
-            data.add(gatewayArchiveData);
-            
-            // Gateway Data Stats
-            Map<String, Object> gatewayData = new LinkedHashMap<>();
-            gatewayQueue = ObjectName.getInstance(gatewayDataReqQueueBean);
-            gatewayData.put("gateway-data-req-enqueue-count", ImmutableMap.of(
-                    "name", "Gateway Data Request Enqueue Count", 
-                    "value", jmxQueryService.getTypedValue(gatewayQueue, "EnqueueCount", 0L, Long.class)));
-            gatewayData.put("gateway-data-req-dequeue-count", ImmutableMap.of(
-                    "name", "Gateway Data Request Dequeue Count", 
-                    "value", jmxQueryService.getTypedValue(gatewayQueue, "DequeueCount", 0L, Long.class)));
-            gatewayData.put("gateway-data-req-queue-size", ImmutableMap.of(
-                    "name", "Gateway Data Request Queue Size", 
-                    "value", jmxQueryService.getTypedValue(gatewayQueue, "QueueSize", 0L, Long.class)));
-            Double gdaet = jmxQueryService.getTypedValue(gatewayQueue, "AverageEnqueueTime", 0.0, Double.class);
-            gatewayData.put("gateway-data-req-average-enqueue-time", ImmutableMap.of(
-                    "name", "Gateway Data Request Average Enqueue Time", 
-                    "value", df.format(gdaet)));
-            
-            gatewayQueue = ObjectName.getInstance(gatewayDataQueueBean);
-            gatewayData.put("gateway-data-enqueue-count", ImmutableMap.of(
-                    "name", "Gateway Data Enqueue Count", 
-                    "value", jmxQueryService.getTypedValue(gatewayQueue, "EnqueueCount", 0L, Long.class)));
-            gatewayData.put("gateway-data-dequeue-count", ImmutableMap.of(
-                    "name", "Gateway Data Dequeue Count", 
-                    "value", jmxQueryService.getTypedValue(gatewayQueue, "DequeueCount", 0L, Long.class)));
-            gatewayData.put("gateway-data-queue-size", ImmutableMap.of(
-                    "name", "Gateway Data Queue Size", 
-                    "value", jmxQueryService.getTypedValue(gatewayQueue, "QueueSize", 0L, Long.class)));
-            Double gdraet = jmxQueryService.getTypedValue(gatewayQueue, "AverageEnqueueTime", 0.0, Double.class);
-            gatewayData.put("gateway-data-average-enqueue-time", ImmutableMap.of(
-                    "name", "Gateway Data Average Enqueue Time", 
-                    "value", df.format(gdraet)));
-            data.add(gatewayData);
-            
+            ObjectName queue = ObjectName.getInstance(queueBean);
+            data.put(queueIdentifier + "-enqueue-count", ImmutableMap.of(
+                    "name", queueName + " Enqueue Count", 
+                    "value", jmxQueryService.getTypedValue(queue, "EnqueueCount", 0L, Long.class)));
+            data.put(queueIdentifier + "-queue-size", ImmutableMap.of(
+                    "name", queueName + " Queue Size", 
+                    "value", jmxQueryService.getTypedValue(queue, "QueueSize", 0L, Long.class)));
+            Double aet = jmxQueryService.getTypedValue(queue, "AverageEnqueueTime", 0.0, Double.class);
+            data.put(queueIdentifier + "-average-enqueue-time", ImmutableMap.of(
+                    "name", queueName + " Average Enqueue Time", 
+                    "value", df.format(aet)));
+        } catch (MalformedObjectNameException | InstanceNotFoundException e) {
+            log.info("Unable to retrieve metrics for queue: " + queueName + ". Queue may not have been used yet.");
         } catch (Exception e) {
             log.warn("Couldn't look up value.", e);
         }
@@ -860,7 +786,26 @@ public class NmIntegrationController {
             resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
-
+    
+    @RequestMapping("viewDataStreamingSimulator")
+    public String viewDataStreamingSimulator(ModelMap model, FlashScope flash) {
+        model.addAttribute("simulatePorterConfigResponse", dataStreamingDevSettings.isSimulatePorterConfigResponse());
+        
+        return "dataStreamingSimulator.jsp";
+    }
+    
+    @RequestMapping("togglePorterResponse")
+    public String asdf(ModelMap model, FlashScope flash) {
+        if (dataStreamingDevSettings.isSimulatePorterConfigResponse()) {
+            dataStreamingDevSettings.setSimulatePorterConfigResponse(false);
+            flash.setConfirm(new YukonMessageSourceResolvable(""));
+        } else {
+            dataStreamingDevSettings.setSimulatePorterConfigResponse(true);
+            flash.setConfirm(new YukonMessageSourceResolvable(""));
+        }
+        return "redirect:viewDataStreamingSimulator";
+    }
+    
     @InitBinder
     public void setupBinder(WebDataBinder binder, YukonUserContext userContext) {
         
