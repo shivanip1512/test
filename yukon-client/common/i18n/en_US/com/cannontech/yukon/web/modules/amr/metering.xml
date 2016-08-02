@@ -246,6 +246,7 @@
     <entry key="yukon.web.widgets.touWidget.previousReadings">Previous {0} Readings</entry>
     <entry key="yukon.web.widgets.touWidget.totalConsumption">Total Consumption</entry>
     <entry key="yukon.web.widgets.touWidget.previousReadingsLink">View Historical Readings</entry>
+    <entry key="yukon.web.widgets.touWidget.previousReadings.notFound">No Readings Found.</entry>
 
     <!-- touScheduleWidget/render.jsp --> 
     <entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule.label">Download TOU Schedule</entry>

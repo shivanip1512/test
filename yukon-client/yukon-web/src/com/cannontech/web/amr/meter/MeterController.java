@@ -270,7 +270,7 @@ public class MeterController {
     @CheckRole({ YukonRole.METERING })
     @RequestMapping("touPreviousReadings")
     public String touPreviousReadings(ModelMap model, int deviceId) {
-        
+        boolean previousReadingsExist = false;
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         // Find the existing TOU attributes
         Set<Attribute> existingTouAttributes = 
@@ -283,10 +283,12 @@ public class MeterController {
                 PreviousReadings previousReadings = pointService.getPreviousReadings(touPoint);
                 previousReadings.setAttribute(touAttribute);
                 model.addAttribute(touAttribute.getKey(), previousReadings);
-                
+                if (!previousReadings.getPrevious36().isEmpty() || !previousReadings.getPrevious3Months().isEmpty()) {
+                    previousReadingsExist = true;
+                }
             }
         }
-        
+        model.addAttribute("previousReadingsExist", previousReadingsExist);
         return "touPreviousReadings.jsp";
     }
     
