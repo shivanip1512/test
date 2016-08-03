@@ -27,7 +27,7 @@ public:
     ConnectionFactory();
     virtual ~ConnectionFactory();
 
-    cms::Connection* createConnection( const std::string &brokerUri );
+    std::unique_ptr<cms::Connection> createConnection( const std::string &brokerUri );
 };
 
 
@@ -106,7 +106,7 @@ class IM_EX_MSG ManagedConnection
     boost::condition_variable _closeCond;
     boost::mutex              _closeMux;
 
-    boost::scoped_ptr<cms::Connection> _connection;
+    std::unique_ptr<cms::Connection> _connection;
 
     typedef Cti::readers_writer_lock_t Lock;
     typedef Lock::reader_lock_guard_t  ReaderGuard;
@@ -128,7 +128,7 @@ public:
 
     void setExceptionListener( cms::ExceptionListener *listener );
 
-    cms::Session* createSession();
+    std::unique_ptr<cms::Session> createSession();
 
     bool verifyConnection() const;
 
@@ -170,7 +170,7 @@ public:
 class IM_EX_MSG ManagedProducer : public ManagedDestination
 {
 protected:
-    const boost::scoped_ptr<cms::MessageProducer> _producer;
+    const std::unique_ptr<cms::MessageProducer> _producer;
 
     ManagedProducer ( cms::MessageProducer* producer );
 
@@ -191,7 +191,7 @@ public:
 class IM_EX_MSG ManagedConsumer : public ManagedDestination
 {
 protected:
-    const boost::scoped_ptr<cms::MessageConsumer> _consumer;
+    const std::unique_ptr<cms::MessageConsumer> _consumer;
 
     ManagedConsumer ( cms::MessageConsumer* consumer );
 
@@ -216,7 +216,7 @@ public:
 class IM_EX_MSG DestinationProducer : public ManagedProducer
 {
 protected:
-    const boost::scoped_ptr<cms::Destination> _dest;
+    const std::unique_ptr<cms::Destination> _dest;
 
     DestinationProducer ( cms::MessageProducer* producer, cms::Destination *dest );
 
@@ -235,7 +235,7 @@ public:
 class IM_EX_MSG DestinationConsumer : public ManagedConsumer
 {
 protected:
-    const boost::scoped_ptr<cms::Destination> _dest;
+    const std::unique_ptr<cms::Destination> _dest;
 
     DestinationConsumer ( cms::MessageConsumer* consumer, cms::Destination *dest );
 public:
@@ -297,34 +297,34 @@ public:
   creator functions for Managed destinations message consumer / producer
 -----------------------------------------------------------------------------*/
 
-inline DestinationProducer* createDestinationProducer( cms::Session &session, const cms::Destination *dest )
+inline std::unique_ptr<DestinationProducer> createDestinationProducer( cms::Session &session, const cms::Destination *dest )
 {
-    return new DestinationProducer( session, dest->clone() );
+    return std::make_unique<DestinationProducer>( session, dest->clone() );
 }
 
-inline QueueProducer* createQueueProducer( cms::Session &session, const std::string &queueName )
+inline std::unique_ptr<QueueProducer> createQueueProducer( cms::Session &session, const std::string &queueName )
 {
-    return new QueueProducer( session, session.createQueue( queueName ));
+    return std::make_unique<QueueProducer>( session, session.createQueue( queueName ));
 }
 
-inline QueueConsumer* createQueueConsumer( cms::Session &session, const std::string &queueName )
+inline std::unique_ptr<QueueConsumer> createQueueConsumer( cms::Session &session, const std::string &queueName )
 {
-    return new QueueConsumer( session, session.createQueue( queueName ));
+    return std::make_unique<QueueConsumer>( session, session.createQueue( queueName ));
 }
 
-inline TopicConsumer* createTopicConsumer( cms::Session &session, const std::string &topicName )
+inline std::unique_ptr<TopicConsumer> createTopicConsumer( cms::Session &session, const std::string &topicName )
 {
-    return new TopicConsumer( session, session.createTopic( topicName ));
+    return std::make_unique<TopicConsumer>( session, session.createTopic( topicName ));
 }
 
-inline TopicConsumer* createTopicConsumer( cms::Session &session, const std::string &topicName, const std::string &selector )
+inline std::unique_ptr<TopicConsumer> createTopicConsumer( cms::Session &session, const std::string &topicName, const std::string &selector )
 {
-    return new TopicConsumer( session, session.createTopic( topicName ) , selector );
+    return std::make_unique<TopicConsumer>( session, session.createTopic( topicName ) , selector );
 }
 
-inline TempQueueConsumer* createTempQueueConsumer( cms::Session &session )
+inline std::unique_ptr<TempQueueConsumer> createTempQueueConsumer( cms::Session &session )
 {
-    return new TempQueueConsumer( session, session.createTemporaryQueue());
+    return std::make_unique<TempQueueConsumer>( session, session.createTemporaryQueue());
 }
 
 

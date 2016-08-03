@@ -26,7 +26,7 @@ struct ActiveMQIntializer
     }
 };
 
-boost::scoped_ptr<ActiveMQIntializer> g_activeMQIntializer;
+std::unique_ptr<ActiveMQIntializer> g_activeMQIntializer;
 
 }
 
@@ -50,7 +50,7 @@ void ConnectionFactory::initializeLib()
 
     if( g_activeMQIntializer.get() == NULL )
     {
-        g_activeMQIntializer.reset( new ActiveMQIntializer );
+        g_activeMQIntializer = std::make_unique<ActiveMQIntializer>();
     }
 
     LeaveCriticalSection(&_cs);
@@ -64,16 +64,16 @@ void ConnectionFactory::initializeLib()
     returns:
     pointer to the new connection that the caller owns
 -----------------------------------------------------------------------------*/
-cms::Connection* ConnectionFactory::createConnection( const std::string &brokerUri )
+std::unique_ptr<cms::Connection> ConnectionFactory::createConnection( const std::string &brokerUri )
 {
     if( !_isInitialized )
     {
         initializeLib();
     }
 
-    boost::scoped_ptr<cms::ConnectionFactory> connectionFactory( cms::ConnectionFactory::createCMSConnectionFactory( brokerUri ));
+    std::unique_ptr<cms::ConnectionFactory> connectionFactory { cms::ConnectionFactory::createCMSConnectionFactory( brokerUri ) };
 
-    return connectionFactory->createConnection();
+    return std::unique_ptr<cms::Connection> { connectionFactory->createConnection() };
 }
 
 /*-----------------------------------------------------------------------------
@@ -201,7 +201,7 @@ void ManagedConnection::start()
             // make sure the connection is closed before destroying it
             closeConnection();
 
-            _connection.reset( g_connectionFactory.createConnection( _brokerUri ));
+            _connection = g_connectionFactory.createConnection( _brokerUri );
             _connection->start();
 
             return; // exit if connection succeeded
@@ -261,7 +261,7 @@ void ManagedConnection::setExceptionListener( cms::ExceptionListener *listener )
     _connection->setExceptionListener( listener );
 }
 
-cms::Session* ManagedConnection::createSession()
+std::unique_ptr<cms::Session> ManagedConnection::createSession()
 {
     CTIREADLOCKGUARD(guard, _lock);
 
@@ -270,7 +270,7 @@ cms::Session* ManagedConnection::createSession()
         throw ConnectionException("Connection object is NULL");
     }
 
-    return _connection->createSession();
+    return std::unique_ptr<cms::Session>(_connection->createSession());
 }
 
 bool ManagedConnection::verifyConnection() const

@@ -5,14 +5,10 @@
 #include "StreamableMessage.h"
 #include "connection_base.h"
 
-#include <boost/function.hpp>
 #include <boost/optional.hpp>
-#include <boost/scoped_ptr.hpp>
-#include <boost/ptr_container/ptr_map.hpp>
-#include <boost/ptr_container/ptr_deque.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <chrono>
+#include <queue>
 
 namespace cms {
 class Connection;
@@ -99,7 +95,7 @@ public:
     template<class Msg>
     struct CallbackFor
     {
-        typedef boost::function<void (const Msg &)> type;
+        typedef std::function<void (const Msg &)> type;
     };
 
     ActiveMQConnectionManager(const std::string &broker_uri);
@@ -107,12 +103,12 @@ public:
 
     static void start();
 
-    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message);
     static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message);
 
     template<class Msg>
     static void enqueueMessageWithCallbackFor(
-            const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message,
+            const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message,
             typename CallbackFor<Msg>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
     static void enqueueMessageWithCallback(
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
@@ -134,7 +130,7 @@ protected:
 
     virtual void enqueueOutgoingMessage(
             const std::string &queueName,
-            StreamableMessage::auto_type message,
+            StreamableMessage::auto_type&& message,
             boost::optional<TemporaryListener> callback);
     virtual void enqueueOutgoingMessage(
             const std::string &queueName,
@@ -156,9 +152,9 @@ private:
     const std::string _broker_uri;
 
     //  Connection/session objects
-    boost::scoped_ptr<ActiveMQ::ManagedConnection> _connection;
-    boost::scoped_ptr<cms::Session> _producerSession;
-    boost::scoped_ptr<cms::Session> _consumerSession;
+    std::unique_ptr<ActiveMQ::ManagedConnection> _connection;
+    std::unique_ptr<cms::Session> _producerSession;
+    std::unique_ptr<cms::Session> _consumerSession;
 
     //  Message submission objects and methods
     struct Envelope
@@ -167,12 +163,12 @@ private:
 
         boost::optional<TemporaryListener> replyListener;
 
-        virtual cms::Message *extractMessage(cms::Session &session) const = 0;
+        virtual std::unique_ptr<cms::Message> extractMessage(cms::Session &session) const = 0;
 
         virtual ~Envelope() = default;
     };
 
-    typedef boost::ptr_deque<Envelope> EnvelopeQueue;
+    using EnvelopeQueue = std::deque<std::unique_ptr<Envelope>>;
     CtiCriticalSection _outgoingMessagesMux;
     EnvelopeQueue      _outgoingMessages;
 
@@ -180,7 +176,7 @@ private:
     CtiCriticalSection _newIncomingMessagesMux;
     IncomingPerQueue   _newIncomingMessages;
 
-    typedef boost::ptr_map<const std::string, ActiveMQ::QueueProducer> ProducersByQueueName;
+    using ProducersByQueueName = std::map<std::string, std::unique_ptr<ActiveMQ::QueueProducer>>;
     ProducersByQueueName _producers;
 
     typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback> CallbacksPerQueue;
@@ -191,22 +187,22 @@ private:
     //  Consumer and listener - binds to onInboundMessage
     struct QueueConsumerWithListener
     {
-        boost::scoped_ptr<ActiveMQ::QueueConsumer> managedConsumer;
-        boost::scoped_ptr<cms::MessageListener> listener;
+        std::unique_ptr<ActiveMQ::QueueConsumer> managedConsumer;
+        std::unique_ptr<cms::MessageListener> listener;
     };
 
-    typedef boost::ptr_map<const ActiveMQ::Queues::InboundQueue *, QueueConsumerWithListener> ConsumerMap;
+    using ConsumerMap = std::map<const ActiveMQ::Queues::InboundQueue *, std::unique_ptr<QueueConsumerWithListener>>;
     ConsumerMap _consumers;
 
     //  Temp consumer, listener, and client callback - binds to onTempQueueReply
     struct TempQueueConsumerWithCallback
     {
-        boost::scoped_ptr<ActiveMQ::TempQueueConsumer> managedConsumer;
-        boost::scoped_ptr<cms::MessageListener> listener;
+        std::unique_ptr<ActiveMQ::TempQueueConsumer> managedConsumer;
+        std::unique_ptr<cms::MessageListener> listener;
         MessageCallback callback;
     };
 
-    typedef boost::ptr_map<std::string, TempQueueConsumerWithCallback> TemporaryConsumersByDestination;
+    using TemporaryConsumersByDestination = std::map<std::string, std::unique_ptr<TempQueueConsumerWithCallback>>;
     TemporaryConsumersByDestination _temporaryConsumers;
 
     struct ExpirationHandler
