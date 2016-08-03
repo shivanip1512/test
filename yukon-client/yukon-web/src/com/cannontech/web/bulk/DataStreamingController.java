@@ -130,6 +130,13 @@ public class DataStreamingController {
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
+        //TODO
+//        try {
+//            dataStreamingService.sendNmConfigurationRemove(deviceIds);
+//        } catch (DataStreamingConfigException e) {
+//            //back?
+//        }
+        
         DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
         model.addAttribute("resultsId", result.getResultsId());
 
@@ -147,6 +154,14 @@ public class DataStreamingController {
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
         int configId = verificationInfo.getConfiguration().getId();
+        
+        //TODO
+//        try {
+//            dataStreamingService.sendNmConfiguration(verificationInfo.getConfiguration(), deviceIds);
+//        } catch (DataStreamingConfigException e) {
+//            //back to verification?
+//        }
+        
         DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(configId, deviceCollection, user);
         result.setConfigId(configId);
         

@@ -26,6 +26,7 @@ import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamin
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
@@ -36,19 +37,20 @@ import com.google.common.collect.Multimap;
 public class DataStreamingCommunicationServiceImpl implements DataStreamingCommunicationService {
     
     private static final Logger log = YukonLogManager.getLogger(DataStreamingCommunicationServiceImpl.class);
-    private static final String configRequestCparm = "DATA_STREAMING_CONFIG_REQUEST";
-    private static final String dataStreamingConfigRequestQueue = "com.eaton.eas.yukon.networkmanager.dataStreaming.request";
+    private static final String configRequestCparm = "DATA_STREAMING_REQUEST";
+    private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.dataStreaming.request";
     
     @Autowired private ConfigurationSource configSource;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnDeviceAttributeDao rfnDeviceAttributeDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    private RequestReplyTemplate<DeviceDataStreamingConfigResponse> requestTemplate;
+    @Autowired private RfnGatewayService rfnGatewayService;
+    private RequestReplyTemplate<DeviceDataStreamingConfigResponse> configRequestTemplate;
     
     @PostConstruct
     public void init() {
-        requestTemplate = new RequestReplyTemplateImpl<>(configRequestCparm, 
-                configSource, connectionFactory, dataStreamingConfigRequestQueue, false);
+        configRequestTemplate = new RequestReplyTemplateImpl<>(configRequestCparm, 
+                configSource, connectionFactory, requestQueue, false);
     }
     
     @Override
@@ -72,7 +74,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         //Send the request
         BlockingJmsReplyHandler<DeviceDataStreamingConfigResponse> replyHandler = 
                 new BlockingJmsReplyHandler<>(DeviceDataStreamingConfigResponse.class);
-        requestTemplate.send(request, replyHandler);
+        configRequestTemplate.send(request, replyHandler);
         
         //Wait for the response
         DeviceDataStreamingConfigResponse response;

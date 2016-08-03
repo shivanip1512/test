@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,8 +50,10 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfig;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
+import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequestType;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse.ConfigError;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
@@ -161,6 +164,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         configInfo.addDeviceUnsupported(allConfigAttributes, unsupportedDevices);
         if (deviceIds.size() == 0) {
             // None of the selected devices support data streaming
+            configInfo.success = false;
             configInfo.exceptions.add(new DataStreamingConfigException("No devices support data streaming", "noDevices"));
             VerificationInformation verificationInfo = buildVerificationInformation(configInfo);
             return verificationInfo;
@@ -179,11 +183,104 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             configInfo.processVerificationResponse(response);
         } catch (DataStreamingConfigException e) {
             configInfo.exceptions.add(e);
+            configInfo.success = false;
         }
         
         //Build VerificationInfo from response message
         VerificationInformation verificationInfo = buildVerificationInformation(configInfo);
         return verificationInfo;
+    }
+    
+    @Override
+    public void sendNmConfigurationRemove(List<Integer> deviceIds) throws DataStreamingConfigException {
+        //Remove devices from the list that don't support data streaming
+        removeDataStreamingUnsupportedDevices(deviceIds);
+        
+        DeviceDataStreamingConfig config = new DeviceDataStreamingConfig();
+        config.setDataStreamingOn(false);
+        config.setMetrics(new HashMap<>());
+        
+        List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(deviceIds);
+        Map<RfnIdentifier, Integer> deviceToConfigId = rfnDevices.stream()
+                                                                 .map(device -> device.getRfnIdentifier())
+                                                                 .collect(Collectors.toMap(rfnId -> rfnId, 
+                                                                                           rfnId -> 0));
+        
+        DeviceDataStreamingConfigRequest configRequest = new DeviceDataStreamingConfigRequest();
+        configRequest.setRequestType(DeviceDataStreamingConfigRequestType.CONFIG);
+        configRequest.setExpiration(DateTimeConstants.MINUTES_PER_DAY);
+        configRequest.setConfigs(new DeviceDataStreamingConfig[]{config});
+        configRequest.setDevices(deviceToConfigId);
+        
+        //Send verification message (Block for response message)
+        DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
+        
+        processConfigResponse(response);
+    }
+    
+    @Override
+    public void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds) throws DataStreamingConfigException {
+        //Remove devices from the list that don't support data streaming
+        removeDataStreamingUnsupportedDevices(deviceIds);
+        
+        //Create multiple configurations for different device types if necessary
+        //(Some devices may only support some of the configured attributes)
+        Multimap<DataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, null);
+        
+        //Build config message for NM
+        DeviceDataStreamingConfigRequest configRequest = dataStreamingCommService.buildConfigRequest(configToDeviceIds);
+        
+        //Send verification message (Block for response message)
+        DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
+        
+        processConfigResponse(response);
+    }
+    
+    private void processConfigResponse(DeviceDataStreamingConfigResponse response) throws DataStreamingConfigException {
+        switch (response.getResponseType()) {
+        case ACCEPTED:
+            // NM accepted the configuration. It can now be sent to the devices.
+            break;
+        case REJECTED:
+            boolean gatewaysOverloaded = false;
+            Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = response.getAffectedGateways();
+            for (RfnIdentifier rfnId : affectedGateways.keySet()) {
+                GatewayDataStreamingInfo info = affectedGateways.get(rfnId);
+                if ((info.getResultLoading() / info.getMaxCapacity()) > 1) {
+                    gatewaysOverloaded = true;
+                    break;
+                }
+            }
+            
+            if (gatewaysOverloaded) {
+                log.debug("Data streaming config response - gateways oversubscribed.");
+                throw new DataStreamingConfigException("Gateways oversubscribed", "gatewaysOversubscribed");
+            }
+            
+            for (Entry<RfnIdentifier, ConfigError> errorDeviceEntry : response.getErrorConfigedDevices().entrySet()) {
+                DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
+                //Ignore Gateway overloaded errors, those are covered above
+                if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
+                    RfnDevice deviceName = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
+                    log.debug("Data streaming verification response - device error: " + deviceName + ", " + errorType.name());
+                    String deviceError = "Device error for " + deviceName + ": " + errorType;
+                    String i18nKey = "device." + errorType.name();
+                    throw new DataStreamingConfigException(deviceError , i18nKey, deviceName);
+                }
+            }
+            break;
+        case NETWORK_MANAGER_FAILURE:
+            // Exception was thrown in NM processing and it couldn't complete the task
+            String nmError = "Network Manager encountered an error during data streaming configuration. ";
+            log.error(nmError + response.getResponseMessage());
+            throw new DataStreamingConfigException(nmError, "networkManagerFailure");
+        case OTHER_ERROR:
+        default:
+            //unknown error
+            String unknownError = "Unknown error during data streaming configuration. ";
+            log.error(unknownError + response.getResponseMessage()); 
+            throw new DataStreamingConfigException(unknownError, "unknownError");
+        }
     }
     
     /**
@@ -226,7 +323,9 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             for (PaoType type : unsupportedAttributesToTypes.get(unsupportedAttributes)) {
                 deviceIdsForNewConfig.addAll(paoTypeToDeviceIds.get(type));
                 deviceIds.removeAll(deviceIdsForNewConfig);
-                configInfo.addDeviceUnsupported(Lists.newArrayList(unsupportedAttributes), deviceIdsForNewConfig);
+                if (configInfo != null) {
+                    configInfo.addDeviceUnsupported(Lists.newArrayList(unsupportedAttributes), deviceIdsForNewConfig);
+                }
             }
             
             newConfigToDevices.putAll(newConfig, deviceIdsForNewConfig);
