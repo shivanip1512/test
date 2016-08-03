@@ -556,12 +556,15 @@ ALTER COLUMN Destination VARCHAR(256) NOT NULL;
 
 ALTER TABLE FDRTranslation 
 DROP CONSTRAINT PK_FDRTrans;
+GO
 
 ALTER TABLE FDRTranslation 
 ALTER COLUMN Translation VARCHAR(500) NOT NULL;
+GO
 
 ALTER TABLE FDRTranslation 
 ADD CONSTRAINT PK_FDRTrans PRIMARY KEY (PointId, DirectionType, InterfaceType, Translation);
+GO
 /* End YUK-15548 */
 
 /**************************************************************/
