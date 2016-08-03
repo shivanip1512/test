@@ -7,7 +7,7 @@
     <TCL>$(CPP_LIBRARIES)\tcl\8.6.4-vc140-1</TCL>
     <BOOST>$(CPP_LIBRARIES)\boost\1.60.0-vc140-1</BOOST>
     <SQLAPI>$(CPP_LIBRARIES)\sqlapi\4.1.7-vc140-1</SQLAPI>
-    <ACTIVEMQ>$(CPP_LIBRARIES)\apache\activemq-cpp\3.8.4-vc140-1</ACTIVEMQ>
+    <ACTIVEMQ>$(CPP_LIBRARIES)\apache\activemq-cpp\3.9.3-vc140-1</ACTIVEMQ>
     <APR>$(CPP_LIBRARIES)\apache\apr\1.5.2-vc140-1</APR>
     <APR_UTIL>$(CPP_LIBRARIES)\apache\apr-util\1.5.4-vc140-1</APR_UTIL>
     <APR_ICONV>$(CPP_LIBRARIES)\apache\apr-iconv\1.2.1-vc140-1</APR_ICONV>

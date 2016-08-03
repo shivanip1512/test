@@ -153,7 +153,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
@@ -253,7 +253,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
