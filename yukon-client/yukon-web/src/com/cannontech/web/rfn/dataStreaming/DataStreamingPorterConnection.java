@@ -35,7 +35,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings;
-import com.cannontech.web.dev.dataStreaming.FakeDataStreamingCommandRequestDeviceExecutor;
+import com.cannontech.web.dev.dataStreaming.DataStreamingFakeData;
 import com.cannontech.web.tools.commander.service.CommanderServiceImpl;
 
 /**
@@ -52,12 +52,12 @@ public class DataStreamingPorterConnection {
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
-    private FakeDataStreamingCommandRequestDeviceExecutor fakeCommandExecutor;
+    private DataStreamingFakeData fakeData;
     
     @PostConstruct
     public void init() {
-        fakeCommandExecutor = new FakeDataStreamingCommandRequestDeviceExecutor(deviceBehaviorDao,
-            deviceErrorTranslatorDao, commandRequestExecutionResultDao);
+        fakeData =
+            new DataStreamingFakeData(deviceBehaviorDao, deviceErrorTranslatorDao, commandRequestExecutionResultDao);
     }
 
     /**
@@ -88,7 +88,7 @@ public class DataStreamingPorterConnection {
         if (devSettings.isSimulatePorterConfigResponse()) {
             // If developer settings are set to simulate, replace the real commandExecutor with a simulator.
             log.info("Simulating data streaming configuration via fake executor.");
-            fakeCommandExecutor.execute(result.getExecution(), commandCompletionCallback, commands, user);
+            fakeData.execute(result.getExecution(), commandCompletionCallback, commands, user);
         } else {
             // Otherwise send the commands to Porter
             log.info("Sending data streaming configuration to Porter. " + commands);

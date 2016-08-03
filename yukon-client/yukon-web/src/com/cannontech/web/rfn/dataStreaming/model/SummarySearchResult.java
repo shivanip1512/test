@@ -1,17 +1,17 @@
 package com.cannontech.web.rfn.dataStreaming.model;
 
-import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 
 public class SummarySearchResult {
-    private YukonMeter meter;
+    private RfnDevice meter;
     private RfnGateway gateway;
     private DataStreamingConfig config;
     
-    public YukonMeter getMeter() {
+    public RfnDevice getMeter() {
         return meter;
     }
-    public void setMeter(YukonMeter meter) {
+    public void setMeter(RfnDevice meter) {
         this.meter = meter;
     }
     public RfnGateway getGateway() {

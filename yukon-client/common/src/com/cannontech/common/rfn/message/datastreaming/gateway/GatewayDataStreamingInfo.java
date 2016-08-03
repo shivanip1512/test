@@ -60,6 +60,10 @@ public class GatewayDataStreamingInfo implements Serializable {
     public void setResultLoading(double resultLoading) {
         this.resultLoading = resultLoading;
     }
+    
+    public double getDataStreamingLoadingPercent() {
+        return (currentLoading / maxCapacity) * 100;
+    }
 
     @Override
     public int hashCode() {

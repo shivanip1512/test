@@ -61,6 +61,32 @@ public class SummarySearchCriteria {
     public void setMaxLoadPercent(double maxLoadPercent) {
         this.maxLoadPercent = maxLoadPercent;
     }
-
     
+    public boolean isConfigCriteriaEmpty(){
+       return !isConfigSelected() || !isConfigSelected();
+    }
+    
+    public boolean isConfigIntervalSelected(){
+        return selectedInterval > 0;
+     }
+    
+    public boolean isConfigSelected(){
+        return selectedConfiguration > 0;
+    }
+    
+    public boolean isConfigAttributesSelected() {
+        try {
+            return !"-1".equals(selectedAttributes.get(0));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    public boolean isGatewaySelected() {
+        try {
+            return -1 != selectedGatewayIds.get(0);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

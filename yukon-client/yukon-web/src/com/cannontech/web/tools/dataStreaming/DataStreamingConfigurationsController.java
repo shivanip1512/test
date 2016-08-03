@@ -21,8 +21,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -56,7 +54,6 @@ public class DataStreamingConfigurationsController {
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private MeterDao meterDao;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     
     //TODO: Move these outside to helper
@@ -156,7 +153,7 @@ public class DataStreamingConfigurationsController {
     }
     
     private void getSummaryResults(ModelMap model, SortingParameters sorting, PagingParameters paging, YukonUserContext userContext, HttpServletRequest request) {
-        SearchResults<SummarySearchResult> searchResult = new SearchResults<SummarySearchResult>();
+        SearchResults<SummarySearchResult> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
         
@@ -198,7 +195,7 @@ public class DataStreamingConfigurationsController {
         model.addAttribute("searchResults", searchResult);
         
         List<Integer> deviceIds = new ArrayList<>();
-        searchResult.getResultList().forEach(device -> deviceIds.add(device.getMeter().getDeviceId()));
+        searchResult.getResultList().forEach(device -> deviceIds.add(device.getMeter().getPaoIdentifier().getPaoId()));
         DeviceCollection deviceCollection = dcProducer.createDeviceCollection(deviceIds, null);
         model.addAttribute("deviceCollection", deviceCollection);
         String deviceIdList = deviceIds.stream()
@@ -209,21 +206,10 @@ public class DataStreamingConfigurationsController {
     }
     
     private List<SummarySearchResult> getSearchResults(SummarySearchCriteria criteria, MessageSourceAccessor accessor, ModelMap model) {
-        //TODO: hook up to use service
-        List<YukonMeter> meters = meterDao.getMetersForMeterNumbers(Arrays.asList("1000", "10000", "10001", "10002", "10003", "10004", "10005", "10006", "10007", "10008", "10009", "10010"));
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        RfnGateway gateway = gateways.get(0);
-        gateway.setLoadingPercent(95.5);
-        List<SummarySearchResult> results = new ArrayList<>();
-        DataStreamingConfig config = dataStreamingService.findDataStreamingConfiguration(criteria.getSelectedConfiguration());
-        config.setSelectedInterval(config.getAttributes().get(0).getInterval());
-        config.setAccessor(accessor);
-        for (YukonMeter meter: meters){
-            SummarySearchResult result = new SummarySearchResult();
-            result.setMeter(meter);
-            result.setGateway(gateway);
-            result.setConfig(config);
-            results.add(result);
+        List<SummarySearchResult> results = dataStreamingService.search(criteria);
+        for(SummarySearchResult result: results){
+            result.getConfig().setSelectedInterval(result.getConfig().getAttributes().get(0).getInterval());
+            result.getConfig().setAccessor(accessor);
         }
         return results;
     }
@@ -258,11 +244,11 @@ public class DataStreamingConfigurationsController {
     
     private Comparator<SummarySearchResult> getDeviceTypeComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<SummarySearchResult> typeOrdering = normalStringComparer
-            .onResultOf(new Function<SummarySearchResult, String>() {
+        Ordering<SummarySearchResult> typeOrdering =
+            normalStringComparer.onResultOf(new Function<SummarySearchResult, String>() {
                 @Override
                 public String apply(SummarySearchResult from) {
-                    return from.getMeter().getPaoType().getPaoTypeName();
+                    return from.getMeter().getPaoIdentifier().getPaoType().getPaoTypeName();
                 }
             });
         return typeOrdering;
@@ -274,7 +260,7 @@ public class DataStreamingConfigurationsController {
             .onResultOf(new Function<SummarySearchResult, String>() {
                 @Override
                 public String apply(SummarySearchResult from) {
-                    return from.getMeter().getMeterNumber();
+                    return from.getMeter().getName();
                 }
             });
         return meterNumberOrdering;

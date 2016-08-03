@@ -22,10 +22,10 @@
         <c:forEach var="result" items="${searchResults.resultList}">
             <cti:url var="gatewayUrl" value="/stars/gateways/${result.gateway.paoIdentifier.paoId}"/>
             <tr>
-                <td><input class="js-select-all-item" type="checkbox" name="selectedResult" value="${result.meter.deviceId}" checked></td>
+                <td><input class="js-select-all-item" type="checkbox" name="selectedResult" value="${result.meter.paoIdentifier.paoId}" checked></td>
                 <td><cti:paoDetailUrl yukonPao="${result.meter}">${result.meter.name}</cti:paoDetailUrl></td>
-                <td>${result.meter.paoType.paoTypeName}</td>
-                <td>${result.meter.meterNumber}</td>
+                <td>${result.meter.paoIdentifier.paoType.paoTypeName}</td>
+                <td>${result.meter.name}</td>
                 <td>
                     <a href="${gatewayUrl}">${fn:escapeXml(result.gateway.name)}</a>
                 </td>

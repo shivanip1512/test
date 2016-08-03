@@ -58,10 +58,13 @@ import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamin
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse.ConfigError;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.dev.dataStreaming.DataStreamingFakeData;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection;
@@ -69,6 +72,8 @@ import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.model.DeviceUnsupported;
 import com.cannontech.web.rfn.dataStreaming.model.GatewayLoading;
+import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
+import com.cannontech.web.rfn.dataStreaming.model.SummarySearchResult;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingCommunicationService;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
@@ -102,6 +107,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupCollectionHelper collectionHelper;
+    @Autowired private RfnGatewayService rfnGatewayService;
 
     @Override
     public DataStreamingConfigResult findDataStreamingResult(String resultKey) {
@@ -142,6 +148,55 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             configToDeviceCollection.put(config, collection);
         });
         return configToDeviceCollection;
+    }
+   
+    @Override
+    public List<SummarySearchResult> search(SummarySearchCriteria criteria) {
+        DataStreamingConfig config = findDataStreamingConfiguration(criteria.getSelectedConfiguration());
+        
+        List<SummarySearchResult> results = new ArrayList<>();
+        DataStreamingFakeData fakeData =
+            new DataStreamingFakeData(deviceBehaviorDao, serverDatabaseCache, rfnDeviceDao);
+        List<RfnGateway> gateways;
+        if (criteria.isGatewaySelected()) {
+            gateways = new ArrayList<>(rfnGatewayService.getGatewaysByPaoIds(criteria.getSelectedGatewayIds()));
+        } else {
+            gateways = new ArrayList<>(rfnGatewayService.getAllGateways());
+        }
+        List<GatewayDataStreamingInfo> infos = fakeData.fakeGatewayDataStreamingInfo(gateways);
+
+        for (GatewayDataStreamingInfo info : infos) {
+            for (RfnIdentifier identifier : info.getDeviceRfnIdentifiers().keySet()) {
+                SummarySearchResult result = new SummarySearchResult();
+                result.setMeter(rfnDeviceDao.getDeviceForExactIdentifier(identifier));
+                result.setGateway(gateways.stream().filter(
+                    x -> x.getRfnIdentifier().equals(info.getGatewayRfnIdentifier())).findFirst().get());
+                result.setConfig(config);
+                results.add(result);
+            }
+        }
+
+        /*
+         * List<YukonMeter> meters = meterDao.getMetersForMeterNumbers(Arrays.asList("1000", "10000", "10001", "10002",
+         * "10003", "10004", "10005", "10006", "10007", "10008", "10009", "10010"));
+         * List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+         * RfnGateway gateway = gateways.get(0);
+         * gateway.setLoadingPercent(95.5);
+         * List<SummarySearchResult> results = new ArrayList<>();
+         * DataStreamingConfig config =
+         * dataStreamingService.findDataStreamingConfiguration(criteria.getSelectedConfiguration());
+         * config.setSelectedInterval(config.getAttributes().get(0).getInterval());
+         * config.setAccessor(accessor);
+         * for (YukonMeter meter: meters){
+         * SummarySearchResult result = new SummarySearchResult();
+         * result.setMeter(meter);
+         * result.setGateway(gateway);
+         * result.setConfig(config);
+         * results.add(result);
+         * }
+         * return results;
+         */
+        return results;
     }
 
     @Override

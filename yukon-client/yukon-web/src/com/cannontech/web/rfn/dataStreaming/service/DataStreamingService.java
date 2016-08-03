@@ -8,6 +8,8 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
+import com.cannontech.web.rfn.dataStreaming.model.SummarySearchResult;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 
 public interface DataStreamingService {
@@ -72,5 +74,7 @@ public interface DataStreamingService {
      * Returns map of configurations to device collection that contains all assigned devices.
      */
     Map<DataStreamingConfig, DeviceCollection> getAllDataStreamingConfigurationsAndDevices();
+
+    List<SummarySearchResult> search(SummarySearchCriteria criteria);
 
 }
