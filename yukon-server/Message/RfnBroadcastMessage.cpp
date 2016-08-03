@@ -38,12 +38,12 @@ void RfnBroadcastMessage::streamInto(cms::StreamMessage &message) const
     message.writeBytes  (payload);
 }
 
-std::auto_ptr<const RfnBroadcastMessage> RfnBroadcastMessage::createMessage( int messagePriority,
-                                                                             const string &rfnMessageClass,
-                                                                             unsigned int expirationDuration,
-                                                                             const std::vector<unsigned char> &payload )
+std::unique_ptr<const RfnBroadcastMessage> RfnBroadcastMessage::createMessage( int messagePriority,
+                                                                               const string &rfnMessageClass,
+                                                                               unsigned int expirationDuration,
+                                                                               const std::vector<unsigned char> &payload )
 {
-    std::auto_ptr<RfnBroadcastMessage> retVal(new RfnBroadcastMessage());
+    std::unique_ptr<RfnBroadcastMessage> retVal { new RfnBroadcastMessage() };
 
     // This value is global and shared amongst all RFNBroadcastMessage's. If it needs to be shared with other message types in the future
     // this code will not be sufficient. Currently Java uses all negative values of short and C++ uses all positive values of short
@@ -54,7 +54,7 @@ std::auto_ptr<const RfnBroadcastMessage> RfnBroadcastMessage::createMessage( int
     retVal->expirationDuration = expirationDuration;
     retVal->payload = payload;
 
-    return retVal;
+    return std::move(retVal);  //  move construct a unique_ptr holding a _const_ RfnBroadcastMessage
 }
 
 }

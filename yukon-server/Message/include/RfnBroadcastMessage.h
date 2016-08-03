@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <StreamableMessage.h>
@@ -25,7 +24,7 @@ public:
     std::vector<unsigned char> payload;
 
     // Helper method to fill out the standard fields.
-    static std::auto_ptr<const RfnBroadcastMessage>
+    static std::unique_ptr<const RfnBroadcastMessage>
             createMessage(int messagePriority,
                           const std::string &rfnMessageClass,
                           unsigned int expirationDuration,

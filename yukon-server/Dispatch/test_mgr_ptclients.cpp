@@ -312,9 +312,9 @@ struct Test_CtiListenerConnection : CtiListenerConnection
     {
     }
 
-    std::auto_ptr<cms::Destination> getClientReplyDest() const
+    std::unique_ptr<cms::Destination> getClientReplyDest() const override
     {
-        std::auto_ptr<cms::Destination> d;
+        std::unique_ptr<cms::Destination> d;
         return d;
     }
 };

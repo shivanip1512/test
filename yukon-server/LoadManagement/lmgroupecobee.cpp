@@ -41,15 +41,15 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
     CtiTime now;
     CtiTime utcNow( now - now.secondOffsetToGMT() );
 
-    StreamableMessage::auto_type msg(
-        new LMEcobeeCyclingControlMessage( getPAOId(),
-                                           dutyCycle,
-                                           utcNow.seconds(),
-                                           controlDurationSeconds,
-                                           rampInOption,
-                                           rampOutOption ) );
-
-    ActiveMQConnectionManager::enqueueMessage( OutboundQueue::EcobeeCyclingControl, msg );
+    ActiveMQConnectionManager::enqueueMessage( 
+            OutboundQueue::EcobeeCyclingControl, 
+            std::make_unique<LMEcobeeCyclingControlMessage>( 
+                    getPAOId(),
+                    dutyCycle,
+                    static_cast<int>(utcNow.seconds()),
+                    controlDurationSeconds,
+                    rampInOption,
+                    rampOutOption ));
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -83,11 +83,11 @@ bool LMGroupEcobee::sendStopControl( bool stopImmediately /* unused */ )
     CtiTime now;
     CtiTime utcNow( now - now.secondOffsetToGMT() );
 
-    StreamableMessage::auto_type msg(
-        new LMEcobeeRestoreMessage( getPAOId(),
-                                    utcNow.seconds() ) );
-
-    ActiveMQConnectionManager::enqueueMessage( OutboundQueue::EcobeeRestore, msg );
+    ActiveMQConnectionManager::enqueueMessage( 
+            OutboundQueue::EcobeeRestore, 
+            std::make_unique<LMEcobeeRestoreMessage>( 
+                    getPAOId(), 
+                    static_cast<int>(utcNow.seconds()) ) );
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -112,15 +112,15 @@ bool LMGroupEcobee::sendShedControl( long controlMinutes )
     CtiTime now;
     CtiTime utcNow( now - now.secondOffsetToGMT() );
 
-    StreamableMessage::auto_type msg(
-        new LMEcobeeCyclingControlMessage( getPAOId(),
-                                           100,
-                                           utcNow.seconds(),
-                                           controlMinutes * 60,
-                                           false,
-                                           false ) );
-
-    ActiveMQConnectionManager::enqueueMessage( OutboundQueue::EcobeeCyclingControl, msg );
+    ActiveMQConnectionManager::enqueueMessage( 
+            OutboundQueue::EcobeeCyclingControl,
+            std::make_unique<LMEcobeeCyclingControlMessage>( 
+                    getPAOId(),
+                    100,
+                    static_cast<int>(utcNow.seconds()),
+                    controlMinutes * 60,
+                    false,
+                    false ));
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

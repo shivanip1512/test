@@ -2487,8 +2487,9 @@ void IVVCAlgorithm::sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAna
     using namespace Cti::Messaging;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    StreamableMessage::auto_type msg( message );
-    ActiveMQConnectionManager::enqueueMessage( OutboundQueue::IvvcAnalysisMessage, msg );
+    ActiveMQConnectionManager::enqueueMessage( 
+            OutboundQueue::IvvcAnalysisMessage, 
+            std::unique_ptr<StreamableMessage>(message) );
 }
 
 void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isCommsLost ) const

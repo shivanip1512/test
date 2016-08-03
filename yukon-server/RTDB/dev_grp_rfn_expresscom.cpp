@@ -198,12 +198,12 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
     using namespace Cti::Messaging::Rfn;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    std::auto_ptr<const RfnBroadcastMessage> rfnBroadcastMessage(
+    auto rfnBroadcastMessage =
             RfnBroadcastMessage::createMessage(
                     priority,
                     RfnBroadcastMessage::RfnMessageClass::DemandResponse,
                     expirationDuration,
-                    payload));
+                    payload);
 
     const auto messageId = rfnBroadcastMessage->messageId;
 
@@ -213,11 +213,9 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
             logResponse(messageId, payload, reply);
         };
 
-    StreamableMessage::auto_type streamableMessage(rfnBroadcastMessage);
-
     ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnBroadcastReplyMessage>(
             OutboundQueue::RfnBroadcast,
-            streamableMessage,
+            std::move(rfnBroadcastMessage),
             callback,
             std::chrono::seconds{ expirationDuration },
             []{ /* ignore failures */ });

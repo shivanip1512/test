@@ -27,7 +27,7 @@ struct test_ActiveMQConnectionManager : Cti::Messaging::ActiveMQConnectionManage
     {
     }
 
-    void enqueueOutgoingMessage(const std::string &queueName, Cti::Messaging::StreamableMessage::auto_type message, boost::optional<TemporaryListener> callback) override
+    void enqueueOutgoingMessage(const std::string &queueName, Cti::Messaging::StreamableMessage::auto_type&& message, boost::optional<TemporaryListener> callback) override
     {
         //  ignore message, do not send
     }

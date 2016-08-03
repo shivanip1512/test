@@ -34,9 +34,10 @@ _averageCyclePercent(SEPAverageCycleUnused),
 _standardCyclePercent(SEPStandardCycleUnused)
 {}
 
-LMSepControlMessage *LMSepControlMessage::createMessage(int groupId, unsigned int utcStartTime, unsigned short controlMinutes, unsigned char criticality, bool useRampIn, bool useRampOut)
+auto LMSepControlMessage::createMessage(int groupId, unsigned int utcStartTime, unsigned short controlMinutes, unsigned char criticality, bool useRampIn, bool useRampOut) -> MsgPtr
 {
-    LMSepControlMessage *retVal= new LMSepControlMessage();
+    std::unique_ptr<LMSepControlMessage> retVal { new LMSepControlMessage() };
+    
     retVal->_groupId = groupId;
     retVal->_utcStartTime = utcStartTime;
     retVal->_controlMinutes = controlMinutes;
@@ -46,16 +47,16 @@ LMSepControlMessage *LMSepControlMessage::createMessage(int groupId, unsigned in
     return retVal;
 }
 
-LMSepControlMessage* LMSepControlMessage::createTempOffsetMessage(int            groupId,
-                                                                  unsigned int   utcStartTime,
-                                                                  unsigned short controlMinutes,
-                                                                  unsigned char  criticality,
-                                                                  unsigned char  tempOffset,
-                                                                  bool           isCoolOffset,
-                                                                  bool           useRampIn,
-                                                                  bool           useRampOut)
+auto LMSepControlMessage::createTempOffsetMessage(int            groupId,
+                                                  unsigned int   utcStartTime,
+                                                  unsigned short controlMinutes,
+                                                  unsigned char  criticality,
+                                                  unsigned char  tempOffset,
+                                                  bool           isCoolOffset,
+                                                  bool           useRampIn,
+                                                  bool           useRampOut) -> MsgPtr
 {
-    LMSepControlMessage* retVal = createMessage(groupId, utcStartTime, controlMinutes, criticality, useRampIn, useRampOut);
+    auto retVal = createMessage(groupId, utcStartTime, controlMinutes, criticality, useRampIn, useRampOut);
 
     if(isCoolOffset)
     {
@@ -69,27 +70,27 @@ LMSepControlMessage* LMSepControlMessage::createTempOffsetMessage(int           
     return retVal;
 }
 
-LMSepControlMessage* LMSepControlMessage::createSimpleShedMessage(int            groupId,
-                                                                  unsigned int   utcStartTime,
-                                                                  unsigned short controlMinutes)
+auto LMSepControlMessage::createSimpleShedMessage(int            groupId,
+                                                  unsigned int   utcStartTime,
+                                                  unsigned short controlMinutes) -> MsgPtr
 {
-    LMSepControlMessage* retVal = createMessage(groupId, utcStartTime, controlMinutes, 6, true, true);
+    auto retVal = createMessage(groupId, utcStartTime, controlMinutes, 6, true, true);
 
     retVal->_standardCyclePercent = 100;
 
     return retVal;
 }
 
-LMSepControlMessage* LMSepControlMessage::createCycleMessage(int            groupId,
-                                                             unsigned int   utcStartTime,
-                                                             unsigned short controlMinutes,
-                                                             unsigned char  criticality,
-                                                             char           cyclePercent,
-                                                             bool           isTrueCycle,
-                                                             bool           useRampIn,
-                                                             bool           useRampOut)
+auto LMSepControlMessage::createCycleMessage(int            groupId,
+                                             unsigned int   utcStartTime,
+                                             unsigned short controlMinutes,
+                                             unsigned char  criticality,
+                                             char           cyclePercent,
+                                             bool           isTrueCycle,
+                                             bool           useRampIn,
+                                             bool           useRampOut) -> MsgPtr
 {
-    LMSepControlMessage* retVal = createMessage(groupId, utcStartTime, controlMinutes, criticality, useRampIn, useRampOut);
+    auto retVal = createMessage(groupId, utcStartTime, controlMinutes, criticality, useRampIn, useRampOut);
 
     if(isTrueCycle)
     {
