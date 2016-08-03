@@ -125,14 +125,14 @@ protected:
 
     boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
 
-    boost::scoped_ptr<cms::Session> _sessionIn;
-    boost::scoped_ptr<cms::Session> _sessionOut;
+    std::unique_ptr<cms::Session> _sessionIn;
+    std::unique_ptr<cms::Session> _sessionOut;
 
-    boost::scoped_ptr<Cti::Messaging::ActiveMQ::DestinationProducer> _producer;
-    boost::scoped_ptr<Cti::Messaging::ActiveMQ::TempQueueConsumer>   _consumer;
+    std::unique_ptr<Cti::Messaging::ActiveMQ::DestinationProducer> _producer;
+    std::unique_ptr<Cti::Messaging::ActiveMQ::TempQueueConsumer>   _consumer;
     boost::scoped_ptr<cms::MessageListener>                          _messageListener;
 
-    boost::scoped_ptr<Cti::Messaging::ActiveMQ::TopicConsumer> _advisoryConsumer;
+    std::unique_ptr<Cti::Messaging::ActiveMQ::TopicConsumer> _advisoryConsumer;
     boost::scoped_ptr<cms::MessageListener>                    _advisoryListener;
 
     void onMessage         ( const cms::Message* message );

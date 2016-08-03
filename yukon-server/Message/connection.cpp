@@ -388,10 +388,10 @@ void CtiConnection::setupAdvisoryListener()
     CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
 
     // create advisory topic consumer to monitor if the outbound destination has only 1 message consumer
-    _advisoryConsumer.reset( createTopicConsumer(
+    _advisoryConsumer = createTopicConsumer(
             *_sessionOut,
             "ActiveMQ.Advisory.Producer.Queue." + _consumer->getDestPhysicalName(),
-            "producerCount <> 1" ));
+            "producerCount <> 1" );
 
     _advisoryConsumer->setMessageListener(_advisoryListener.get());
 }

@@ -147,15 +147,15 @@ bool CtiClientConnection::establishConnection()
                     CTILOG_DEBUG(dout, who() << " - connected to the broker");
                 }
 
-                _sessionIn.reset( _connection->createSession() );
-                _sessionOut.reset( _connection->createSession() );
+                _sessionIn  = _connection->createSession();
+                _sessionOut = _connection->createSession();
 
                 // create a temporary producer to initiate talk with the server`s listener connection
                 QueueProducer handshakeProducer(*_sessionOut, _sessionOut->createQueue( _serverQueueName ));
                 handshakeProducer.setTimeToLiveMillis( timeToLiveMillis );
 
                 // Create consumer for inbound traffic
-                _consumer.reset( createTempQueueConsumer( *_sessionIn ));
+                _consumer = createTempQueueConsumer( *_sessionIn );
 
                 while( !_valid && !_dontReconnect && _connection->verifyConnection() )
                 {
@@ -189,7 +189,7 @@ bool CtiClientConnection::establishConnection()
                             break; // something went wrong? - retry connecting from scratch
                         }
 
-                        _producer.reset( createDestinationProducer( *_sessionOut, inMessage->getCMSReplyTo() ));
+                        _producer = createDestinationProducer( *_sessionOut, inMessage->getCMSReplyTo() );
 
                         resetPeer( _producer->getDestPhysicalName() );
 

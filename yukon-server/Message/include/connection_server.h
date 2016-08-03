@@ -7,7 +7,7 @@ class IM_EX_MSG CtiServerConnection : public CtiConnection
 {
     virtual bool establishConnection ();
 
-    const std::auto_ptr<cms::Destination> _replyDest;
+    const std::unique_ptr<cms::Destination> _replyDest;
 
 public:
 

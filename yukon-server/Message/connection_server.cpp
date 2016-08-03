@@ -75,20 +75,20 @@ bool CtiServerConnection::establishConnection()
     {
         _dontReconnect = true;
 
-        _sessionIn.reset( _connection->createSession() );
-        _sessionOut.reset( _connection->createSession() );
+        _sessionIn  = _connection->createSession();
+        _sessionOut = _connection->createSession();
 
         // Create consumer for inbound traffic
-        _consumer.reset( createTempQueueConsumer( *_sessionIn ));
+        _consumer = createTempQueueConsumer( *_sessionIn );
 
         // Create producer for outbound traffic
-        _producer.reset( createDestinationProducer( *_sessionOut, _replyDest.get() ));
+        _producer = createDestinationProducer( *_sessionOut, _replyDest.get() );
 
         // Create advisory topic consumer
         setupAdvisoryListener();
 
         // create a new handshake reply message
-        auto_ptr<cms::Message> outMessage( _sessionOut->createMessage() );
+        std::unique_ptr<cms::Message> outMessage { _sessionOut->createMessage() };
 
         outMessage->setCMSReplyTo( _consumer->getDestination() );
         outMessage->setCMSType( MessageType::serverResp );
@@ -97,7 +97,7 @@ bool CtiServerConnection::establishConnection()
         _producer->send( outMessage.get() );
 
         // We should block here until the delay expires or until the connection is closed
-        auto_ptr<cms::Message> ackMessage( _consumer->receive( receiveMillis ));
+        std::unique_ptr<cms::Message> ackMessage { _consumer->receive( receiveMillis ) };
 
         if( ! ackMessage.get() )
         {

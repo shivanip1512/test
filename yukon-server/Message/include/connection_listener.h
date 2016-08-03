@@ -11,9 +11,9 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
 
     boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
 
-    boost::scoped_ptr<cms::Session>                            _session;
-    boost::scoped_ptr<cms::Destination>                        _clientReplyDest;
-    boost::scoped_ptr<Cti::Messaging::ActiveMQ::QueueConsumer> _consumer;
+    std::unique_ptr<cms::Session>                            _session;
+    std::unique_ptr<cms::Destination>                        _clientReplyDest;
+    std::unique_ptr<Cti::Messaging::ActiveMQ::QueueConsumer> _consumer;
 
     typedef std::map<std::string, CtiTime> DestTimeMap;
     DestTimeMap requestTimeMap;
@@ -45,7 +45,7 @@ public:
 
     boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> getConnection() const;
 
-    virtual std::auto_ptr<cms::Destination> getClientReplyDest() const;
+    virtual std::unique_ptr<cms::Destination> getClientReplyDest() const;
 
     std::string who() const;
     std::string getServerQueueName() const;

@@ -115,10 +115,10 @@ void CtiListenerConnection::start()
                 }
 
                 // Create a Session
-                _session.reset( _connection->createSession() );
+                _session = _connection->createSession();
 
                 // Create managed queue consumer
-                _consumer.reset( createQueueConsumer( *_session, _serverQueueName ));
+                _consumer = createQueueConsumer( *_session, _serverQueueName );
 
                 _valid = true;
             }
@@ -283,9 +283,9 @@ boost::shared_ptr<ManagedConnection> CtiListenerConnection::getConnection() cons
  * Return the accepted client reply destination
  * @return a pointer to a clone of the client reply destination
  */
-auto_ptr<cms::Destination> CtiListenerConnection::getClientReplyDest() const
+std::unique_ptr<cms::Destination> CtiListenerConnection::getClientReplyDest() const
 {
-    auto_ptr<cms::Destination> clone;
+    std::unique_ptr<cms::Destination> clone;
 
     if( _clientReplyDest )
     {
