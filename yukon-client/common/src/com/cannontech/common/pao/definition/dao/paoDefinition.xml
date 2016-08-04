@@ -13443,14 +13443,14 @@
                 <name>Serial Number</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="2">
                 <init>true</init>
                 <name>Last Control Reason</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
                 <analogstategroup value="Last Control" />
             </point>
             <point type="Analog" offset="5">
@@ -13458,42 +13458,42 @@
                 <name>Temperature</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Degrees" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="6">
                 <init>true</init>
                 <name>Delta Voltage</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="7">
                 <init>true</init>
                 <name>High Voltage</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="8">
                 <init>true</init>
                 <name>Low Voltage</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="12">
                 <init>true</init>
                 <name>Average Line Voltage</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="21">
                 <init>true</init>
                 <name>Line Voltage THD</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Percent" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="114">
                 <init>true</init>
@@ -13593,112 +13593,112 @@
                 <name>OV Threshold</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="10002">
                 <init>true</init>
                 <name>UV Threshold</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="10005">
                 <init>true</init>
                 <name>Daily Control Limit</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="10006">
                 <init>true</init>
                 <name>Auto Close Delay Time</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Seconds" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="10007">
                 <init>true</init>
                 <name>Manual Close Delay Time</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Seconds" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="10008">
                 <init>true</init>
                 <name>Open Delay Time</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Seconds" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="10009">
                 <init>true</init>
                 <name>Bank Control Time</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Seconds" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="10010">
                 <init>true</init>
                 <name>Re-Close Delay Time</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Minutes" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="10011">
                 <init>true</init>
                 <name>Comms Loss Time</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Minutes" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="10012">
                 <init>true</init>
                 <name>CVR OV Threshold</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="10013">
                 <init>true</init>
                 <name>CVR UV Threshold</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="10015">
                 <init>true</init>
                 <name>Emergency OV Threshold</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="10016">
                 <init>true</init>
                 <name>Emergency UV Threshold</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="10018">
                 <init>true</init>
                 <name>Comms Loss OV Threshold</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="10019">
                 <init>true</init>
                 <name>Comms Loss UV Threshold</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="1" />
             </point>
             <point type="Analog" offset="10020">
                 <init>true</init>
                 <name>Average Line Voltage Time</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Seconds" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="10318">
                 <init>true</init>
