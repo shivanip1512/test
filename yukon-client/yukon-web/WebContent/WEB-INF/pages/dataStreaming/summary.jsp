@@ -27,10 +27,10 @@
                     <tags:nameValueContainer2>
 
                         <tags:nameValue2 nameKey=".filter.gateway">
-                            <select multiple name="gatewaysSelect" path="selectedGatewayIds" size="6" style="min-width:200px;">
-                                <option value="-1" selected>Any</option>
+                            <select multiple name="gatewaysSelect" size="6" style="min-width:200px;">
+                                <option value="-1" <c:if test="${searchFilters.selectedGatewayIds.size() == 0}">selected</c:if>>Any</option>
                                 <c:forEach var="gateway" items="${gateways}">
-                                    <option value="${gateway.id}">${gateway.name}</option>
+                                    <option value="${gateway.id}" ${(fn:contains(searchFilters.selectedGatewayIds, gateway.id))? 'selected':''}>${gateway.name}</option>
                                 </c:forEach>
                             </select>
                         </tags:nameValue2>
@@ -58,10 +58,10 @@
                             </select>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".filter.attributes" valueClass="inline">
-                            <select multiple id="attributesSelect" name="attributesSelect" path="selectedAttributes" class="js-selected-attInterval" size="6" style="min-width:200px;">
-                                <option value="-1" selected>Any</option>
+                            <select multiple id="attributesSelect" name="attributesSelect" class="js-selected-attInterval" size="6" style="min-width:200px;">
+                                <option value="-1" <c:if test="${searchFilters.selectedAttributes.size() == 0}">selected</c:if>>Any</option>
                                 <c:forEach var="attribute" items="${searchAttributes}">
-                                    <option value="${attribute.key}">${attribute.description}</option>
+                                    <option value="${attribute.key}" ${(fn:contains(searchFilters.selectedAttributes, attribute.key))? 'selected':''}>${attribute.description}</option>
                                 </c:forEach>
                             </select>
                             <span style="margin-left: 40px;"> <i:inline
