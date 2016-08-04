@@ -15,7 +15,9 @@ Things to note about telegyr learned the hard way...
 ==============================================================================================================================*/
 #include "precompiled.h"
 
-#define _WINDLL
+#if !defined(_WINDLL)
+#error _WINDLL is required!
+#endif
 
 #include "ctitime.h"
 #include "ctidate.h"

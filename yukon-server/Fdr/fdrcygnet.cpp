@@ -9,7 +9,9 @@
 --------------------------------------
 */
 
-#define _WINDLL         // needed for Cygnet dcl.h header
+#if !defined(_WINDLL)
+#error _WINDLL is required for Cygnet dcl.h header!
+#endif
 
 #include <dcl.h>
 #include <cvs.h>
