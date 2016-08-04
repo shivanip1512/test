@@ -29,7 +29,6 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -139,10 +138,8 @@ public class DataStreamingConfigurationsController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         existingConfigs.forEach(config -> config.setAccessor(accessor));
         model.addAttribute("existingConfigs", existingConfigs);
-        
-        List<PaoType> types = new ArrayList<PaoType>();
-        types.addAll(PaoType.getRfMeterTypes());
-        List<BuiltInAttribute> attributes = new ArrayList<BuiltInAttribute>(dataStreamingAttributeHelper.getAllSupportedAttributes(types));
+
+        List<BuiltInAttribute> attributes = new ArrayList<BuiltInAttribute>(dataStreamingAttributeHelper.getAllSupportedAttributes());
         attributes.sort((BuiltInAttribute a1, BuiltInAttribute a2) -> a1.getDescription().compareTo(a2.getDescription()));
         model.addAttribute("searchAttributes", attributes);
         
@@ -171,6 +168,9 @@ public class DataStreamingConfigurationsController {
         searchFilter.setSelectedGatewayIds(Arrays.asList(gatewaysSelected));
         String[] attributesSelected = ServletRequestUtils.getStringParameters(request, "attributesSelect");
         searchFilter.setSelectedAttributes(Arrays.asList(attributesSelected));
+        boolean showAll = ServletRequestUtils.getBooleanParameter(request, "showAll", false);
+        searchFilter.setShowAll(showAll);
+
         model.addAttribute("searchFilters", searchFilter);
         List<SummarySearchResult> results = getSearchResults(searchFilter, accessor, model);
         int endIndex = Math.min(startIndex + itemsPerPage, results.size());

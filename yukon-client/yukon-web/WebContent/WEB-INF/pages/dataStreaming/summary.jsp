@@ -76,13 +76,13 @@
 
             <div class="action-area">
                 <cti:button nameKey="search" classes="primary action" type="submit" />
-                <cti:button nameKey="showAll" />
+                <cti:button nameKey="showAll" classes="js-show-all"/>
             </div>
 
         </tags:sectionContainer2>
 
     </form:form>
-    
+        
         <h3>
             <i:inline key=".results"/>&nbsp;
             <span class="dn js-results-count">${searchResults.hitCount}</span>

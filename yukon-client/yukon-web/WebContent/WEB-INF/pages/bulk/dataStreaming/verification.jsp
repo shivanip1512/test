@@ -19,11 +19,8 @@
                 <cti:csrfToken/>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <form:hidden path="configuration.id" />
-                
-                <c:set var="sendDisabled" value="false"/>
-                
+                                
                 <c:forEach var="exception" items="${verificationInfo.exceptions}">
-                    <c:set var="sendDisabled" value="true"/>
                     <div class="user-message error">${exception.message}</div>
                 </c:forEach>
 
@@ -40,7 +37,6 @@
                         <c:forEach var="gateway" varStatus="status" items="${verificationInfo.gatewayLoadingInfo}">
                             <c:set var="msgIcon" value="icon-accept"/>
                             <c:if test="${gateway.proposedPercent >= 100}">
-                                <c:set var="sendDisabled" value="true"/>
                                 <c:set var="msgIcon" value="icon-exclamation"/>
                             </c:if>
                             <div><cti:icon icon="${msgIcon}"/>${gateway.detail}</div>
@@ -54,7 +50,7 @@
                 
                 <div class="page-action-area">
                     <cti:button nameKey="back" href="javascript:window.history.back()" name="backButton" classes="action" />
-                    <cti:button disabled="${sendDisabled}" nameKey="send" type="submit" name="sendButton" classes="primary action" busy="true"/>
+                    <cti:button disabled="${!verificationInfo.verificationPassed}" nameKey="send" type="submit" name="sendButton" classes="primary action" busy="true"/>
                 </div>
             </form:form>
         </div>
