@@ -35,11 +35,6 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
     }
 
     private void validateName(CapBank capbank, Errors errors) {
-        if(!errors.hasFieldErrors("name")){
-            if(!PaoUtils.isValidPaoName(capbank.getName())){
-                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
-            }
-        }
         checkForNameConflicts(capbank, errors, false);
 
     }
