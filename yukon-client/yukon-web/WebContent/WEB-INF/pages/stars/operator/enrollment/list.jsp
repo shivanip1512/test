@@ -87,12 +87,8 @@
                                 <c:if test="${firstRow == 'true'}">
                                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                         <td class="tar" rowspan="${rows}">
-                                            <a href="javascript:void(0)" class="js-edit-enrollment">
-                                                <cti:icon icon="icon-pencil" classes="fn M0"/>
-                                             </a>
-                                            <a href="javascript:void(0)" class="js-unenroll">
-                                                <cti:icon icon="icon-cross" classes="fn M0"/>
-                                            </a>
+                                            <cti:icon icon="icon-pencil" classes="fn M0 js-edit-enrollment cp"/>
+                                            <cti:icon icon="icon-cross" classes="fn M0 js-unenroll cp"/>
                                         </td>
                                     </cti:checkRolesAndProperties>
                                 </c:if>
