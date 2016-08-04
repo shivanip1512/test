@@ -25,6 +25,18 @@ public class GeneralSecurityFilter implements Filter {
         response.addHeader("X-Frame-Options", "SAMEORIGIN"); // click jacking prevention
         response.addHeader("X-Content-Type-Options", "nosniff"); // avoid mime sniffing
         response.setHeader("X-XSS-Protection", "1; mode=block"); // avoid XSS attack
+        response.setHeader(
+            "Content-Security-Policy",
+                "default-src 'self' http://java.sun.com http://cannontech.com http://docs.spring.io "
+                        + "https://getbootstrap.com http://www.springframework.org; "
+                + "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://www.google-analytics.com; "
+                + "connect-src 'self'; " 
+                + "img-src 'self' data: http://www.google-analytics.com; "
+                + "style-src 'self' 'unsafe-inline';"
+                + "plugin-types 'none'"
+                + "media-src 'none'"
+                + "child-src 'self'"
+                + "font-src 'self'");
         response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubdomains");//HTTP Strict Transport Security 1 year as max-age
         chain.doFilter(request, servletResponse);
     }
