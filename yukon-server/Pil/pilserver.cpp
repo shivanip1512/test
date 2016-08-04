@@ -1476,7 +1476,7 @@ vector<long> PilServer::getDeviceGroupMembers( string groupname ) const
     {
         vector<string> groupSegments;
 
-        boost::split(groupSegments, groupname, boost::is_any_of("/"));
+        boost::split(groupSegments, groupname, is_char{'/'});
         groupSegments[0] = ' ';  //  the first group name is actually a single space
 
         std::ostringstream sql;

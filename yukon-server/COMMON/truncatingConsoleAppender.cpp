@@ -82,7 +82,7 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
         log4cxx::spi::LoggingEventPtr consoleEvent = event;
 
         size_t lines = 0;
-        const size_t maxNewlines = 500;
+        const size_t maxNewlines = 100;
 
         static const auto nth_newline = 
                 [&](const log4cxx::LogString::value_type c) 
@@ -98,7 +98,7 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
                 new log4cxx::spi::LoggingEvent(
                     event->getLoggerName(),
                     event->getLevel(),
-                    log4cxx::LogString{event->getMessage().cbegin(), splitPoint} + L"\nLog entry truncated after 500 lines.",
+                    log4cxx::LogString{event->getMessage().cbegin(), splitPoint} + L"\nLog entry truncated after 100 lines.",
                     event->getLocationInformation())};
         }
 

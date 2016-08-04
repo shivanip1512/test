@@ -321,7 +321,7 @@ void PaoDefinitionSAX2Handler::startElement( const XMLCh * const uri,
             if ( name == "inherits" )
             {
                 boost::split( currentPao.inheritsFrom, XmlStringTranscode( attrs.getValue(i) ),
-                              boost::is_any_of(", "), boost::token_compress_on );
+                              is_chars{',',' '}, boost::token_compress_on );
             }
         }
     }

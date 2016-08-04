@@ -312,6 +312,24 @@ namespace Cti
         return boost::algorithm::join(V, sep);
     }
 
+    struct is_char
+    {
+        const char c;
+        bool operator()(const char to_test) const
+        {
+            return to_test == c;
+        }
+    };
+
+    struct is_chars
+    {
+        const char c, d;
+        bool operator()(const char to_test) const
+        {
+            return to_test == c || to_test == d;
+        }
+    };
+    
 namespace Test
 {
     struct use_in_unit_tests_only;  //  tag to prevent unit-test-specific code from being run in production code

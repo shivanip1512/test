@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 #include "date_utility.h"
-#include "ctitokenizer.h"
+#include "utility.h"
 
 #include <boost/optional.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -13,7 +13,7 @@ CtiDate parseDateString(std::string date_str)
 {
     std::vector<std::string> dateParts;
 
-    boost::split(dateParts, date_str, boost::is_any_of("-/"));
+    boost::split(dateParts, date_str, is_chars{'-','/'});
 
     if( dateParts.size() == 3 )
     {
@@ -43,7 +43,7 @@ CtiDate parseDateString(std::string date_str)
 boost::optional<TimeParts> parseTimeString(std::string time_str)
 {
     std::vector<std::string> timeParts;
-    boost::split(timeParts, time_str, boost::is_any_of(":"));
+    boost::split(timeParts, time_str, is_char{':'});
 
     //  make sure none of the strings are empty
     if( ! std::count_if(timeParts.begin(), timeParts.end(), boost::bind(&std::string::empty, _1)) )

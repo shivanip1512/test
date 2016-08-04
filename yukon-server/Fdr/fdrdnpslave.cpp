@@ -135,12 +135,12 @@ bool DnpSlave::readConfig()
 
     using substring_range = boost::iterator_range<std::string::const_iterator>;
     std::vector<substring_range> mappings;
-    boost::algorithm::split(mappings, serverNames, boost::is_any_of(","));
+    boost::algorithm::split(mappings, serverNames, is_char{','});
 
     for( const auto &mapping : mappings)
     {
         std::vector<std::string> name_address;
-        boost::algorithm::split(name_address, mapping, boost::is_any_of("= "));
+        boost::algorithm::split(name_address, mapping, is_chars{'=',' '});
 
         if (name_address.size() >= 2)
         {

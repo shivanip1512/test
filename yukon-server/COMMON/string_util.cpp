@@ -388,7 +388,7 @@ struct FormattedTable::Draft
                 CellLinesType& formattedLines = draftRow[column];
                 const std::string& text = cell._contentSPtr->getText();
 
-                boost::split(formattedLines, text, boost::is_any_of("\n"));
+                boost::split(formattedLines, text, is_char{'\n'});
 
                 if( _rowsHeight[row] < formattedLines.size() )
                 {

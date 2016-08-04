@@ -39,7 +39,7 @@ string CtiInterpreter::escapeQuotationMarks(const string &command)
     std::vector<std::string> input_lines, output_lines;
 
     // The command string may have multiple commands, separated by newline characters.
-    boost::split(input_lines, command, boost::is_any_of("\n"));
+    boost::split(input_lines, command, Cti::is_char{'\n'});
 
     for each( const std::string &input in input_lines )
     {

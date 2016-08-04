@@ -73,6 +73,7 @@ using Cti::containsRegex;
 using Cti::containsString;
 using Cti::icontainsString;
 using Cti::removeRegex;
+using Cti::is_char;
 
 CtiCommandParser::CtiCommandParser(const string str) :
 _wasExternallyModified(false)
@@ -1624,7 +1625,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
                     std::string untilTime = cmdtok();
 
                     std::vector<std::string>    timeComponents;
-                    boost::split( timeComponents, untilTime, boost::is_any_of(":"), boost::token_compress_on );
+                    boost::split( timeComponents, untilTime, is_char{':'}, boost::token_compress_on );
 
                     // regex guarantees at 2 or 3 elements in the vector -- we only care about the first 2
                     _cmd["tou_critical_peak_stop_time_hour"]   = CtiParseValue( atoi( timeComponents[0].c_str() ) );
@@ -3064,10 +3065,10 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                     rolecount++;
                 }
 
-                _cmd["multi_rolefixed"] = boost::trim_copy_if(strFixed,  boost::is_any_of(" "));
-                _cmd["multi_roleout"]   = boost::trim_copy_if(strVarOut, boost::is_any_of(" "));
-                _cmd["multi_rolein"]    = boost::trim_copy_if(strVarIn,  boost::is_any_of(" "));
-                _cmd["multi_rolerpt"]   = boost::trim_copy_if(strStages, boost::is_any_of(" "));
+                _cmd["multi_rolefixed"] = boost::trim_copy_if(strFixed,  is_char{' '});
+                _cmd["multi_roleout"]   = boost::trim_copy_if(strVarOut, is_char{' '});
+                _cmd["multi_rolein"]    = boost::trim_copy_if(strVarIn,  is_char{' '});
+                _cmd["multi_rolerpt"]   = boost::trim_copy_if(strStages, is_char{' '});
                 _cmd["multi_rolecount"] = CtiParseValue(rolecount);
             }
         }
@@ -3652,10 +3653,10 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                                         char *chptr;
                                         std::string startstr = matchRegex(rstr, "[0-9]*");
                                         std::string stopstr = matchRegex(rstr, " *- *[0-9]* *,? *");
-                                        boost::trim_if      (stopstr, boost::is_any_of(" "));
-                                        boost::trim_left_if (stopstr, boost::is_any_of("-"));
-                                        boost::trim_right_if(stopstr, boost::is_any_of(","));
-                                        boost::trim_if      (stopstr, boost::is_any_of(" "));
+                                        boost::trim_if      (stopstr, is_char{' '});
+                                        boost::trim_left_if (stopstr, is_char{'-'});
+                                        boost::trim_right_if(stopstr, is_char{','});
+                                        boost::trim_if      (stopstr, is_char{' '});
 
                                         UINT startaddr = strtoul( startstr.c_str(), &chptr, 10 );
                                         UINT stopaddr = strtoul( stopstr.c_str(), &chptr, 10 );
@@ -4301,10 +4302,10 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
                             char *chptr;
                             std::string startstr = matchRegex(str, "[0-9]*");
                             std::string stopstr = matchRegex(str, " *- *[0-9]* *,? *");
-                            boost::trim_if      (stopstr, boost::is_any_of(" "));
-                            boost::trim_left_if (stopstr, boost::is_any_of("-"));
-                            boost::trim_right_if(stopstr, boost::is_any_of(","));
-                            boost::trim_if      (stopstr, boost::is_any_of(" "));
+                            boost::trim_if      (stopstr, is_char{' '});
+                            boost::trim_left_if (stopstr, is_char{'-'});
+                            boost::trim_right_if(stopstr, is_char{','});
+                            boost::trim_if      (stopstr, is_char{' '});
 
                             UINT startaddr = strtoul( startstr.c_str(), &chptr, 10 );
                             UINT stopaddr = strtoul( stopstr.c_str(), &chptr, 10 );
@@ -4338,10 +4339,10 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
                             char *chptr;
                             std::string startstr = matchRegex(str, "[0-9]*");
                             std::string stopstr = matchRegex(str, " *- *[0-9]* *,? *");
-                            boost::trim_if      (stopstr, boost::is_any_of(" "));
-                            boost::trim_left_if (stopstr, boost::is_any_of("-"));
-                            boost::trim_right_if(stopstr, boost::is_any_of(","));
-                            boost::trim_if      (stopstr, boost::is_any_of(" "));
+                            boost::trim_if      (stopstr, is_char{' '});
+                            boost::trim_left_if (stopstr, is_char{'-'});
+                            boost::trim_right_if(stopstr, is_char{','});
+                            boost::trim_if      (stopstr, is_char{' '});
 
                             UINT startaddr = strtoul( startstr.c_str(), &chptr, 10 );
                             UINT stopaddr = strtoul( stopstr.c_str(), &chptr, 10 );
@@ -4388,10 +4389,10 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
                             char *chptr;
                             std::string startstr = matchRegex(str, "[0-9]*");
                             std::string stopstr = matchRegex(str, " *- *[0-9]* *,? *");
-                            boost::trim_if      (stopstr, boost::is_any_of(" "));
-                            boost::trim_left_if (stopstr, boost::is_any_of("-"));
-                            boost::trim_right_if(stopstr, boost::is_any_of(","));
-                            boost::trim_if      (stopstr, boost::is_any_of(" "));
+                            boost::trim_if      (stopstr, is_char{' '});
+                            boost::trim_left_if (stopstr, is_char{'-'});
+                            boost::trim_right_if(stopstr, is_char{','});
+                            boost::trim_if      (stopstr, is_char{' '});
 
                             UINT startaddr = strtoul( startstr.c_str(), &chptr, 10 );
                             UINT stopaddr = strtoul( stopstr.c_str(), &chptr, 10 );
@@ -5813,8 +5814,8 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                     std::string relay = matchRegex(strnum, "r[0-9]+");
                     std::string cold_time = matchRegex(strnum, "[=][0-9]+[hms]?");
 
-                    boost::trim_left_if(relay,     boost::is_any_of("r"));
-                    boost::trim_left_if(cold_time, boost::is_any_of("="));
+                    boost::trim_left_if(relay,     is_char{'r'});
+                    boost::trim_left_if(cold_time, is_char{'='});
 
                     _num = convertTimeInputToSeconds(cold_time);
                     string identifier = "xccoldload_r";
