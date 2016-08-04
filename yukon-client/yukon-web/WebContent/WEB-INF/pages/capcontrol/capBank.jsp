@@ -103,8 +103,8 @@
                                 <tags:nameValue2 nameKey=".address">
                                     <tags:input path="location"/>
                                 </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".mapLocationID">
-                                    <tags:input path="CapBank.mapLocationID"/>
+                                <tags:nameValue2 nameKey=".mapLocationID" valueClass="wbba">
+                                    <tags:input path="CapBank.mapLocationID" maxlength="64"/>
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".parent">
                                     <c:if test="${empty parent }">

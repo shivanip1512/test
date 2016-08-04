@@ -94,7 +94,7 @@
                         <tags:nameValue2 nameKey=".name" valueClass="wbba">
                             <span>${fn:escapeXml(areaName)}</span>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".geoName">
+                        <tags:nameValue2 nameKey=".geoName" valueClass="wbba">
                             <span>${fn:escapeXml(description)}</span>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".state" rowClass="wsnw">

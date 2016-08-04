@@ -27,6 +27,8 @@ public class BusValidator extends SimpleValidator<CapControlSubBus> {
     public void doValidation(CapControlSubBus bus, Errors errors) {
 
         validateName(bus, errors);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "geoAreaName", bus.getGeoAreaName(), 60);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "capControlSubstationBus.mapLocationID", bus.getCapControlSubstationBus().getMapLocationID(), 64);
     }
 
     private void validateName(CapControlSubBus bus, Errors errors) {

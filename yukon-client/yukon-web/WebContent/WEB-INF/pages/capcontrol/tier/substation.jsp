@@ -105,10 +105,10 @@ $(function() {
                             <tags:input path="name" maxlength="50" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".geoName" valueClass="wbba">
-                            <tags:input path="geoAreaName"/>
+                            <tags:input path="geoAreaName" maxlength="60"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".mapLocationId">
-                            <tags:input path="CapControlSubstation.mapLocationID"/>
+                        <tags:nameValue2 nameKey=".mapLocationId" valueClass="wbba">
+                            <tags:input path="CapControlSubstation.mapLocationID" maxlength="64"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".specialArea">
                             <span>

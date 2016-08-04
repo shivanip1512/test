@@ -63,8 +63,8 @@
                             <tags:switchButton path="disabled" inverse="${true}"
                                 offNameKey=".disabled.label" onNameKey=".enabled.label" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".mapLocationID">
-                            <tags:input path="capControlFeeder.mapLocationID"/>
+                        <tags:nameValue2 nameKey=".mapLocationID" valueClass="wbba">
+                            <tags:input path="capControlFeeder.mapLocationID" maxlength="64"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".parent">
                             <c:if test="${empty parent }">

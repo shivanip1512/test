@@ -27,6 +27,8 @@ public class SubstationValidator extends SimpleValidator<CapControlSubstation> {
     public void doValidation(CapControlSubstation substation, Errors errors) {
 
         validateName(substation, errors);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "geoAreaName", substation.getGeoAreaName(), 60);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "CapControlSubstation.mapLocationID", substation.getCapControlSubstation().getMapLocationID(), 64);
     }
 
     private void validateName(CapControlSubstation substation, Errors errors) {

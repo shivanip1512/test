@@ -301,7 +301,7 @@ public class CapBankController {
             return "redirect:capbanks/create";
         }
 
-        return "redirect:capbanks/" + capbank.getId();
+        return "redirect:capbanks/" + capbank.getId() + "/edit";
     }
 
 

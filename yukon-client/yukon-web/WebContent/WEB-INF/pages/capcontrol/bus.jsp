@@ -63,11 +63,11 @@
                             <tags:switchButton path="disabled" inverse="${true}"
                                 offNameKey=".disabled.label" onNameKey=".enabled.label" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".geoName">
-                            <tags:input path="geoAreaName"/>
+                        <tags:nameValue2 nameKey=".geoName" valueClass="wbba">
+                            <tags:input path="geoAreaName" maxlength="60"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".mapLocationID">
-                            <tags:input path="capControlSubstationBus.mapLocationID"/>
+                        <tags:nameValue2 nameKey=".mapLocationID" valueClass="wbba">
+                            <tags:input path="capControlSubstationBus.mapLocationID" maxlength="64"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".parent">
                             <c:if test="${empty parent }">

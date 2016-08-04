@@ -27,6 +27,7 @@ public class FeederValidator extends SimpleValidator<CapControlFeeder> {
     public void doValidation(CapControlFeeder feeder, Errors errors) {
 
         validateName(feeder, errors);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "capControlFeeder.mapLocationID", feeder.getCapControlFeeder().getMapLocationID(), 64);
     }
 
     private void validateName(CapControlFeeder feeder, Errors errors) {
