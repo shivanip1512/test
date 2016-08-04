@@ -29,6 +29,7 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -36,6 +37,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchResult;
@@ -55,11 +57,9 @@ public class DataStreamingConfigurationsController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
+    @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     
-    //TODO: Move these outside to helper
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
-    private static final List<BuiltInAttribute> attributes = ImmutableList.of(BuiltInAttribute.KVAR,
-        BuiltInAttribute.DEMAND, BuiltInAttribute.DELIVERED_KWH, BuiltInAttribute.RECEIVED_KWH);
     
     private Map<ConfigurationSortBy, Comparator<DataStreamingConfig>> sorters;
     private Map<SummarySortBy, Comparator<SummarySearchResult>> summarySorters;
@@ -139,7 +139,13 @@ public class DataStreamingConfigurationsController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         existingConfigs.forEach(config -> config.setAccessor(accessor));
         model.addAttribute("existingConfigs", existingConfigs);
+        
+        List<PaoType> types = new ArrayList<PaoType>();
+        types.addAll(PaoType.getRfMeterTypes());
+        List<BuiltInAttribute> attributes = new ArrayList<BuiltInAttribute>(dataStreamingAttributeHelper.getAllSupportedAttributes(types));
+        attributes.sort((BuiltInAttribute a1, BuiltInAttribute a2) -> a1.getDescription().compareTo(a2.getDescription()));
         model.addAttribute("searchAttributes", attributes);
+        
         model.addAttribute("searchIntervals", intervals);
         getSummaryResults(model, sorting, paging, userContext, request);
         

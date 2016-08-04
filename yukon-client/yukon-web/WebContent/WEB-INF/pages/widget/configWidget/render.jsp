@@ -78,7 +78,7 @@
         
 </tags:nameValueContainer2>
 
-<div data-dialog id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".dataStreamingConfiguration"/>" class="dn">
+<div id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".dataStreamingConfiguration"/>" class="dn">
     <c:set var="config" value="${dataStreamingConfig}"/>
     <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
 </div>

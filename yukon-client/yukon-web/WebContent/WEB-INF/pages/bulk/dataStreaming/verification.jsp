@@ -20,7 +20,10 @@
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <form:hidden path="configuration.id" />
                 
+                <c:set var="sendDisabled" value="false"/>
+                
                 <c:forEach var="exception" items="${verificationInfo.exceptions}">
+                    <c:set var="sendDisabled" value="true"/>
                     <div class="user-message error">${exception.message}</div>
                 </c:forEach>
 
@@ -34,7 +37,6 @@
                 
                 <tags:sectionContainer2 nameKey="gatewayImpact">
                     <div class="scroll-md">
-                        <c:set var="sendDisabled" value="false"/>
                         <c:forEach var="gateway" varStatus="status" items="${verificationInfo.gatewayLoadingInfo}">
                             <c:set var="msgIcon" value="icon-accept"/>
                             <c:if test="${gateway.proposedPercent >= 100}">
@@ -53,17 +55,12 @@
                 <div class="page-action-area">
                     <cti:button nameKey="back" href="javascript:window.history.back()" name="backButton" classes="action" />
                     <cti:button disabled="${sendDisabled}" nameKey="send" type="submit" name="sendButton" classes="primary action" busy="true"/>
-                    <c:if test="${sendDisabled}">
-                        <div class="warning">
-                            <i:inline key=".gatewayOverloaded"/>
-                        </div>
-                    </c:if>
                 </div>
             </form:form>
         </div>
     </tags:bulkActionContainer>
     
-    <div data-dialog id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".configuration"/>" class="dn">
+    <div id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".configuration"/>" class="dn">
         <c:set var="config" value="${verificationInfo.configuration}"/>
         <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
     </div>

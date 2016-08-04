@@ -214,6 +214,7 @@ yukon.ui = (function () {
                 dir = anchor.is('.desc') ? 'asc' : 'desc',
                 sort = anchor.data('sort'),
                 container = anchor.closest('[data-url]'),
+                loadEvent = container.data('loadEvent'),
                 url = container.data('url'),
                 pagingArea = container.find('.paging-area'),
                 params = {sort: sort, dir: dir};
@@ -229,8 +230,10 @@ yukon.ui = (function () {
             } else {
                 $.get(url, params).done(function (data) {
                     container.html(data);
+                    if (loadEvent) container.trigger(loadEvent);
                 });
             }
+            
         });
 
         /** Paging Handler: Get the next or previous page, or change page size. */
@@ -239,6 +242,7 @@ yukon.ui = (function () {
             var
             target = $(this),
             container = target.closest('[data-url]'),
+            loadEvent = container.data('loadEvent'),
             sortables = container.find('.sortable'),
             url = container.data('url'),
             pagingArea = container.find('.paging-area'),
@@ -280,8 +284,10 @@ yukon.ui = (function () {
                 $.get(url, params).done(function (data) {
                     container.html(data);
                     container.trigger(yg.events.pagingend);
+                    if (loadEvent) container.trigger(loadEvent);
                 });
             }
+
             return false; // return false to stop form submissions
         });
 

@@ -7,7 +7,7 @@
 <table class="compact-results-table row-highlighting js-select-all-container">
     <thead>
         <tr>
-           <th><input type="checkbox" class="js-select-all" checked></th>
+           <th><input type="checkbox" class="js-select-all"></th>
            <tags:sort column="${deviceName}"/>
            <tags:sort column="${deviceType}"/>
            <tags:sort column="${meterNumber}"/>
@@ -22,7 +22,7 @@
         <c:forEach var="result" items="${searchResults.resultList}">
             <cti:url var="gatewayUrl" value="/stars/gateways/${result.gateway.paoIdentifier.paoId}"/>
             <tr>
-                <td><input class="js-select-all-item" type="checkbox" name="selectedResult" value="${result.meter.paoIdentifier.paoId}" checked></td>
+                <td><input class="js-select-all-item" type="checkbox" name="selectedResult" value="${result.meter.paoIdentifier.paoId}"></td>
                 <td><cti:paoDetailUrl yukonPao="${result.meter}">${result.meter.name}</cti:paoDetailUrl></td>
                 <td>${result.meter.paoIdentifier.paoType.paoTypeName}</td>
                 <td>${result.meter.name}</td>
@@ -30,7 +30,7 @@
                     <a href="${gatewayUrl}">${fn:escapeXml(result.gateway.name)}</a>
                 </td>
                 <td>${result.gateway.loadingPercent}</td>
-                <td>${result.config.commaDelimitedAttributes}</td>
+                <td style="max-width:400px;">${result.config.commaDelimitedAttributes}</td>
                 <td>${result.config.selectedInterval}
                     <c:choose>
                         <c:when test="${result.config.selectedInterval > 1}">
