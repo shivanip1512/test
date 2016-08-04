@@ -9,6 +9,7 @@ public class SummarySearchCriteria {
     private int selectedInterval;
     private double minLoadPercent;
     private double maxLoadPercent = 100;
+    private boolean showAll;
     
     public SummarySearchCriteria() {
         
@@ -88,5 +89,13 @@ public class SummarySearchCriteria {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean showAll() {
+        return showAll;
+    }
+
+    public void setShowAll(boolean showAll) {
+        this.showAll = showAll;
     }
 }
