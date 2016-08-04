@@ -7,8 +7,8 @@ public class SummarySearchCriteria {
     private int selectedConfiguration;
     private List<String> selectedAttributes;
     private int selectedInterval;
-    private double minLoadPercent;
-    private double maxLoadPercent = 100;
+    private Double minLoadPercent = new Double(0);
+    private Double maxLoadPercent = new Double(100);
     private boolean showAll;
     
     public SummarySearchCriteria() {
@@ -47,19 +47,19 @@ public class SummarySearchCriteria {
         this.selectedInterval = selectedInterval;
     }
 
-    public double getMinLoadPercent() {
+    public Double getMinLoadPercent() {
         return minLoadPercent;
     }
 
-    public void setMinLoadPercent(double minLoadPercent) {
+    public void setMinLoadPercent(Double minLoadPercent) {
         this.minLoadPercent = minLoadPercent;
     }
 
-    public double getMaxLoadPercent() {
+    public Double getMaxLoadPercent() {
         return maxLoadPercent;
     }
 
-    public void setMaxLoadPercent(double maxLoadPercent) {
+    public void setMaxLoadPercent(Double maxLoadPercent) {
         this.maxLoadPercent = maxLoadPercent;
     }
     
