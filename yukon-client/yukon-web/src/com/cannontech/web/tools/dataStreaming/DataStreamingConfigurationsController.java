@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -62,6 +63,7 @@ public class DataStreamingConfigurationsController {
     
     private Map<ConfigurationSortBy, Comparator<DataStreamingConfig>> sorters;
     private Map<SummarySortBy, Comparator<SummarySearchResult>> summarySorters;
+
     
     @PostConstruct
     public void initialize() {
@@ -167,8 +169,22 @@ public class DataStreamingConfigurationsController {
         Integer[] gatewaysSelected = ArrayUtils.toObject(ServletRequestUtils.getIntParameters(request, "gatewaysSelect"));
         searchFilter.setSelectedGatewayIds(Arrays.asList(gatewaysSelected));
         String[] attributesSelected = ServletRequestUtils.getStringParameters(request, "attributesSelect");
+        int selectedInterval = ServletRequestUtils.getIntParameter(request, "selectedInterval", -1);
+        searchFilter.setSelectedInterval(selectedInterval);
         searchFilter.setSelectedAttributes(Arrays.asList(attributesSelected));
 
+        try {
+            Double minPercent = ServletRequestUtils.getDoubleParameter(request,  "minLoadPercent");
+            searchFilter.setMinLoadPercent(minPercent);
+        } catch (ServletRequestBindingException e) {
+            searchFilter.setMinLoadPercent(null);
+        }
+        try {
+            Double maxPercent = ServletRequestUtils.getDoubleParameter(request,  "maxLoadPercent");
+            searchFilter.setMaxLoadPercent(maxPercent);
+        } catch (ServletRequestBindingException e) {
+            searchFilter.setMaxLoadPercent(null);
+        }
         model.addAttribute("searchFilters", searchFilter);
         List<SummarySearchResult> results = getSearchResults(searchFilter, accessor, model);
         int endIndex = Math.min(startIndex + itemsPerPage, results.size());

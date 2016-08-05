@@ -54,10 +54,17 @@ public class DataStreamingController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("deviceCollection", deviceCollection);
         
+        //check if the selected devices support data streaming
         List<PaoType> types = new ArrayList<PaoType>();
         deviceCollection.getDeviceList().forEach(device -> types.add(device.getDeviceType()));
         List<BuiltInAttribute> attributes = new ArrayList<BuiltInAttribute>(dataStreamingAttributeHelper.getAllSupportedAttributes(types));
         attributes.sort((BuiltInAttribute a1, BuiltInAttribute a2) -> a1.getDescription().compareTo(a2.getDescription()));
+        boolean dsNotSupported = false;
+        if (attributes.size() == 0) {
+            dsNotSupported = true;
+        }
+        model.addAttribute("dataStreamingNotSupported", dsNotSupported);
+
 
         DataStreamingConfig newConfig = new DataStreamingConfig();
         newConfig.setAccessor(accessor);
@@ -67,11 +74,23 @@ public class DataStreamingController {
             newConfig.addAttribute(attribute);
         });
         
+        List<DataStreamingConfig> supportedConfigs = new ArrayList<DataStreamingConfig>();
         List<DataStreamingConfig> existingConfigs = dataStreamingService.getAllDataStreamingConfigurations();
-        existingConfigs.forEach(config -> config.setAccessor(accessor));
-        model.addAttribute("existingConfigs", existingConfigs);
         
-        if (existingConfigs.size() == 0) {
+        //only display configs that have attributes that the selected devices support
+        existingConfigs.forEach(config -> {
+            config.setAccessor(accessor);
+            config.getAttributes().forEach(att ->{
+                if (attributes.contains(att.getAttribute())) {
+                    if (!supportedConfigs.contains(config)) {
+                        supportedConfigs.add(config);
+                    }
+                }
+            });
+        });
+        model.addAttribute("existingConfigs", supportedConfigs);
+        
+        if (supportedConfigs.size() == 0) {
             newConfig.setNewConfiguration(true);
         }
         model.addAttribute("configuration", newConfig);

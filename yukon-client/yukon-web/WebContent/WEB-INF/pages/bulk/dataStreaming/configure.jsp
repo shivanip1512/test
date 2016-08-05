@@ -19,43 +19,53 @@
                 
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".configurationType">
-                         <tags:switchButton path="newConfiguration" offNameKey=".existingConfiguration" onNameKey=".newConfiguration" classes="js-configuration-type" color="false"
-                         toggleGroup="existingConfiguration" toggleAction="hide" toggleInverse="true" checked="${config.newConfiguration}"/>
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".configuration" data-toggle-group="existingConfiguration">
-                        <tags:selectWithItems id="selectedConfiguration" inputClass="js-existing-configuration" path="selectedConfiguration" items="${existingConfigs}" itemValue="id" itemLabel="name" defaultItemValue="0" defaultItemLabel="Please select"/>
-                    </tags:nameValue2>
-                    <c:if test="${existingConfigs.size() > 0}">
-                        <tags:nameValue2 nameKey=".selectedConfiguration" rowClass="dn js-selected-config">
-                            <c:forEach var="config" varStatus="status" items="${existingConfigs}">
-                                <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
-                            </c:forEach>
-                        </tags:nameValue2>
-                    </c:if>
+                <c:choose>
+                    <c:when test="${dataStreamingNotSupported}">
+                        <div class="user-message error"><i:inline key=".dataStreamingNotSupported"/></div>
+                    </c:when>
+                    <c:otherwise>
                     
-                    <tags:nameValue2 nameKey=".interval.label" rowClass="dn js-new-configuration">
-                        <tags:selectWithItems path="selectedInterval" items="${intervals}" />
-                    </tags:nameValue2>
-                    
-                </tags:nameValueContainer2>
-                
-                <tags:nameValueContainer2 tableClass="dn js-new-configuration">
-                     <tags:sectionContainer2 nameKey="attributes" styleClass="dn js-new-configuration">
-                        <c:forEach var="attribute" varStatus="status" items="${configuration.attributes}">
-                            <c:set var="idx" value="${status.index}" />
-                            <form:hidden path="attributes[${idx}].attribute" />
-                            <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.${attribute.attribute}">
-                                <tags:switchButton path="attributes[${idx}].attributeOn" offNameKey=".off.label" onNameKey=".on.label" classes="js-attribute"/>
+                        <tags:nameValueContainer2>
+                            <tags:nameValue2 nameKey=".configurationType">
+                                 <tags:switchButton path="newConfiguration" offNameKey=".existingConfiguration" onNameKey=".newConfiguration" classes="js-configuration-type" color="false"
+                                 toggleGroup="existingConfiguration" toggleAction="hide" toggleInverse="true" checked="${config.newConfiguration}"/>
                             </tags:nameValue2>
-                        </c:forEach>
-                     </tags:sectionContainer2>
-                </tags:nameValueContainer2>
-        
+                            <tags:nameValue2 nameKey=".configuration" data-toggle-group="existingConfiguration">
+                                <tags:selectWithItems id="selectedConfiguration" inputClass="js-existing-configuration" path="selectedConfiguration" items="${existingConfigs}" itemValue="id" itemLabel="name" defaultItemValue="0" defaultItemLabel="Please select"/>
+                            </tags:nameValue2>
+                            <c:if test="${existingConfigs.size() > 0}">
+                                <tags:nameValue2 nameKey=".selectedConfiguration" rowClass="dn js-selected-config">
+                                    <c:forEach var="config" varStatus="status" items="${existingConfigs}">
+                                        <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
+                                    </c:forEach>
+                                </tags:nameValue2>
+                            </c:if>
+                            
+                            <tags:nameValue2 nameKey=".interval.label" rowClass="dn js-new-configuration">
+                                <tags:selectWithItems path="selectedInterval" items="${intervals}" />
+                            </tags:nameValue2>
+                            
+                        </tags:nameValueContainer2>
+                        
+                        <tags:nameValueContainer2 tableClass="dn js-new-configuration">
+                             <tags:sectionContainer2 nameKey="attributes" styleClass="dn js-new-configuration">
+                                <c:forEach var="attribute" varStatus="status" items="${configuration.attributes}">
+                                    <c:set var="idx" value="${status.index}" />
+                                    <form:hidden path="attributes[${idx}].attribute" />
+                                    <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.${attribute.attribute}">
+                                        <tags:switchButton path="attributes[${idx}].attributeOn" offNameKey=".off.label" onNameKey=".on.label" classes="js-attribute"/>
+                                    </tags:nameValue2>
+                                </c:forEach>
+                             </tags:sectionContainer2>
+                        </tags:nameValueContainer2>
+                        
+                    </c:otherwise>
+                </c:choose>
+                                    
                 <div class="page-action-area">
-                    <cti:button nameKey="next" name="nextButton" classes="primary action js-next-button" busy="true"/>
+                    <cti:button nameKey="next" name="nextButton" disabled="${dataStreamingNotSupported}" classes="primary action js-next-button" busy="true"/>
                 </div>
+                        
             </form:form>
         </div>
     </tags:bulkActionContainer>
