@@ -34,7 +34,12 @@ _averageCyclePercent(SEPAverageCycleUnused),
 _standardCyclePercent(SEPStandardCycleUnused)
 {}
 
-auto LMSepControlMessage::createMessage(int groupId, unsigned int utcStartTime, unsigned short controlMinutes, unsigned char criticality, bool useRampIn, bool useRampOut) -> MsgPtr
+auto LMSepControlMessage::createMessage(int            groupId, 
+                                        unsigned int   utcStartTime, 
+                                        unsigned short controlMinutes, 
+                                        unsigned char  criticality, 
+                                        bool           useRampIn, 
+                                        bool           useRampOut) -> MsgPtr
 {
     std::unique_ptr<LMSepControlMessage> retVal { new LMSepControlMessage() };
     
