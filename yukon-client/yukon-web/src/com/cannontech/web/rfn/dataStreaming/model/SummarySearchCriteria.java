@@ -7,9 +7,8 @@ public class SummarySearchCriteria {
     private int selectedConfiguration;
     private List<String> selectedAttributes;
     private int selectedInterval;
-    private Double minLoadPercent = new Double(0);
-    private Double maxLoadPercent = new Double(100);
-    private boolean showAll;
+    private Double minLoadPercent;
+    private Double maxLoadPercent;
     
     public SummarySearchCriteria() {
         
@@ -91,11 +90,4 @@ public class SummarySearchCriteria {
         }
     }
 
-    public boolean showAll() {
-        return showAll;
-    }
-
-    public void setShowAll(boolean showAll) {
-        this.showAll = showAll;
-    }
 }

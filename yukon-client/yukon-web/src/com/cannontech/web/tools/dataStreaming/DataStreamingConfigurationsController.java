@@ -168,8 +168,6 @@ public class DataStreamingConfigurationsController {
         searchFilter.setSelectedGatewayIds(Arrays.asList(gatewaysSelected));
         String[] attributesSelected = ServletRequestUtils.getStringParameters(request, "attributesSelect");
         searchFilter.setSelectedAttributes(Arrays.asList(attributesSelected));
-        boolean showAll = ServletRequestUtils.getBooleanParameter(request, "showAll", false);
-        searchFilter.setShowAll(showAll);
 
         model.addAttribute("searchFilters", searchFilter);
         List<SummarySearchResult> results = getSearchResults(searchFilter, accessor, model);

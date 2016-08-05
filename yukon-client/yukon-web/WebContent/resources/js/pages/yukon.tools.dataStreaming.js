@@ -134,7 +134,7 @@ yukon.tools.dataStreaming = (function () {
             
             /** Show All was clicked */
             $(document).on('click', '.js-show-all', function (ev) {
-                window.location.href = yukon.url('/tools/dataStreaming/summary?showAll=true');
+                window.location.href = yukon.url('/tools/dataStreaming/summary');
             });
 
             _initialized = true;
