@@ -207,7 +207,7 @@ public class InventoryController {
             defaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }
         model.addAttribute("defaultRoute", defaultRoute);
-        model.addAttribute("defaultRouteId",defaultRouteId);
+        model.addAttribute("defaultRouteId", defaultRouteId);
         List<LiteYukonPAObject> routes = ecDao.getAllRoutes(ec);
         model.addAttribute("routes", routes);
         
