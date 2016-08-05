@@ -81,7 +81,10 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Range;
+import com.google.common.collect.Ranges;
 
 public class DataStreamingServiceImpl implements DataStreamingService {
 
@@ -139,7 +142,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Map<DataStreamingConfig, DeviceCollection> configToDeviceCollection = new HashMap<>();
         List<DataStreamingConfig> configs = getAllDataStreamingConfigurations();
         List<Integer> configIds = configs.stream().map(config -> config.getId()).collect(Collectors.toList());
-        Multimap<Integer, Integer> deviceIdsByBehaviorIds = deviceBehaviorDao.getDeviceIdsByBehaviorIds(configIds);
+        Multimap<Integer, Integer> deviceIdsByBehaviorIds = deviceBehaviorDao.getBehaviorIdsToDevicesIdMap(configIds);
         configs.forEach(config -> {
             Collection<SimpleMeter> deviceIds = deviceIdsByBehaviorIds.get(config.getId()).stream().map(
                 id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
@@ -149,54 +152,80 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         });
         return configToDeviceCollection;
     }
-   
+       
+    private Map<RfnIdentifier, RfnGateway> getGatewaysForLoadingRange(SummarySearchCriteria criteria) {
+        List<RfnGateway> gateways = new ArrayList<>();
+        if (criteria.isGatewaySelected()) {
+            gateways.addAll(rfnGatewayService.getGatewaysByPaoIds(criteria.getSelectedGatewayIds()));
+        } else {
+            gateways.addAll(rfnGatewayService.getAllGateways());
+        }
+        Double min = criteria.getMinLoadPercent() == null ? Double.MIN_VALUE : criteria.getMinLoadPercent();
+        Double max = criteria.getMaxLoadPercent() == null ? Double.MAX_VALUE : criteria.getMaxLoadPercent();
+        Range<Double> range = Ranges.closed(min, max);
+        Iterator<RfnGateway> it = gateways.iterator();
+        while (it.hasNext()) {
+            RfnGateway gateway = it.next();
+            // remove
+            gateway.setLoadingPercent(DataStreamingFakeData.getLoadingPercentForGateway());
+            // replace with double loadingPercent RfnGatewayData.getDataStreamingLoadingPercent();
+            double loadingPercent = gateway.getLoadingPercent();
+            if (!range.contains(loadingPercent)) {
+                it.remove();
+            }
+        }
+        return Maps.uniqueIndex(gateways, c -> c.getRfnIdentifier());
+    }
+
     @Override
     public List<SummarySearchResult> search(SummarySearchCriteria criteria) {
-        DataStreamingConfig config = findDataStreamingConfiguration(criteria.getSelectedConfiguration());
-        
         List<SummarySearchResult> results = new ArrayList<>();
         DataStreamingFakeData fakeData =
             new DataStreamingFakeData(deviceBehaviorDao, serverDatabaseCache, rfnDeviceDao);
-        List<RfnGateway> gateways;
-        if (criteria.isGatewaySelected()) {
-            gateways = new ArrayList<>(rfnGatewayService.getGatewaysByPaoIds(criteria.getSelectedGatewayIds()));
-        } else {
-            gateways = new ArrayList<>(rfnGatewayService.getAllGateways());
-        }
-        List<GatewayDataStreamingInfo> infos = fakeData.fakeGatewayDataStreamingInfo(gateways);
+        Map<RfnIdentifier, RfnGateway> gateways = getGatewaysForLoadingRange(criteria);
 
-        for (GatewayDataStreamingInfo info : infos) {
-            for (RfnIdentifier identifier : info.getDeviceRfnIdentifiers().keySet()) {
+        List<GatewayDataStreamingInfo> gatewayInfos =
+            fakeData.fakeGatewayDataStreamingInfo(new ArrayList<>(gateways.values()));
+        if (!gatewayInfos.isEmpty()) {
+            Integer selectedConfigId = criteria.isConfigSelected() ? criteria.getSelectedConfiguration() : null;
+            List<BuiltInAttribute> attributes = criteria.getBuiltInAttributes();
+            Integer interval = criteria.isConfigIntervalSelected() ? criteria.getSelectedInterval() : null;
+
+            Map<Integer, DeviceToGateway> deviceIdToGatewayInfo = new HashMap<>();
+            for (GatewayDataStreamingInfo gatewayInfo : gatewayInfos) {
+                for (RfnIdentifier identifier : gatewayInfo.getDeviceRfnIdentifiers().keySet()) {
+                    DeviceToGateway deviceToGateway = new DeviceToGateway();
+                    // Identifiers are cached
+                    deviceToGateway.device = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
+                    deviceToGateway.gatewayRfnIdentifier = gatewayInfo.getGatewayRfnIdentifier();
+                    deviceIdToGatewayInfo.put(deviceToGateway.device.getPaoIdentifier().getPaoId(), deviceToGateway);
+                }
+            }
+
+            Multimap<Integer, Integer> deviceIdsToBehaviorIds = deviceBehaviorDao.getDeviceIdsToBehaviorIdMap(
+                deviceIdToGatewayInfo.keySet(), BehaviorType.DATA_STREAMING, attributes, interval, selectedConfigId);
+
+            Map<Integer, DataStreamingConfig> configs = deviceIdsToBehaviorIds.values().stream().distinct().collect(
+                Collectors.toMap(id -> id, id -> findDataStreamingConfiguration(id)));
+
+            for (Map.Entry<Integer, Integer> entry : deviceIdsToBehaviorIds.entries()) {
                 SummarySearchResult result = new SummarySearchResult();
-                result.setMeter(rfnDeviceDao.getDeviceForExactIdentifier(identifier));
-                result.setGateway(gateways.stream().filter(
-                    x -> x.getRfnIdentifier().equals(info.getGatewayRfnIdentifier())).findFirst().get());
-                result.setConfig(config);
+                int deviceId = entry.getKey();
+                int configId = entry.getValue();
+                DeviceToGateway deviceToGateway = deviceIdToGatewayInfo.get(deviceId);
+                result.setMeter(deviceToGateway.device);
+                result.setGateway(gateways.get(deviceToGateway.gatewayRfnIdentifier));
+                result.setConfig(configs.get(configId));
                 results.add(result);
             }
         }
 
-        /*
-         * List<YukonMeter> meters = meterDao.getMetersForMeterNumbers(Arrays.asList("1000", "10000", "10001", "10002",
-         * "10003", "10004", "10005", "10006", "10007", "10008", "10009", "10010"));
-         * List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-         * RfnGateway gateway = gateways.get(0);
-         * gateway.setLoadingPercent(95.5);
-         * List<SummarySearchResult> results = new ArrayList<>();
-         * DataStreamingConfig config =
-         * dataStreamingService.findDataStreamingConfiguration(criteria.getSelectedConfiguration());
-         * config.setSelectedInterval(config.getAttributes().get(0).getInterval());
-         * config.setAccessor(accessor);
-         * for (YukonMeter meter: meters){
-         * SummarySearchResult result = new SummarySearchResult();
-         * result.setMeter(meter);
-         * result.setGateway(gateway);
-         * result.setConfig(config);
-         * results.add(result);
-         * }
-         * return results;
-         */
         return results;
+    }
+    
+    private static class DeviceToGateway{
+        RfnIdentifier gatewayRfnIdentifier;
+        RfnDevice device;
     }
 
     @Override

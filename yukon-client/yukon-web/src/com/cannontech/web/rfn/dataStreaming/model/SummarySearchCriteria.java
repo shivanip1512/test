@@ -1,6 +1,9 @@
 package com.cannontech.web.rfn.dataStreaming.model;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public class SummarySearchCriteria {
     private List<Integer> selectedGatewayIds;
@@ -11,7 +14,7 @@ public class SummarySearchCriteria {
     private Double maxLoadPercent;
     
     public SummarySearchCriteria() {
-        
+       
     }
 
     public List<Integer> getSelectedGatewayIds() {
@@ -73,21 +76,24 @@ public class SummarySearchCriteria {
     public boolean isConfigSelected(){
         return selectedConfiguration > 0;
     }
-    
-    public boolean isConfigAttributesSelected() {
-        try {
-            return !"-1".equals(selectedAttributes.get(0));
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
+        
     public boolean isGatewaySelected() {
         try {
-            return -1 != selectedGatewayIds.get(0);
+            return selectedGatewayIds.get(0) != -1;
         } catch (Exception e) {
             return false;
         }
     }
-
+    
+    public List<BuiltInAttribute> getBuiltInAttributes() {
+        try {
+            if (selectedAttributes.get(0).equals("-1")) {
+                return null;
+            }
+            return selectedAttributes.stream().filter(attribute -> !attribute.equals("-1")).map(
+                attribute -> BuiltInAttribute.valueOf(attribute)).collect(Collectors.toList());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

@@ -75,9 +75,12 @@ public class DataStreamingFakeData {
     // fakes nm
     public List<GatewayDataStreamingInfo> fakeGatewayDataStreamingInfo(List<RfnGateway> gateways) {
 
+        if(gateways.isEmpty()){
+            return new ArrayList<>();
+        }
         List<Behavior> configs = deviceBehaviorDao.getBehaviorsByType(BehaviorType.DATA_STREAMING);
         List<Integer> configIds = configs.stream().map(config -> config.getId()).collect(Collectors.toList());
-        Multimap<Integer, Integer> deviceIdsByBehaviorIds = deviceBehaviorDao.getDeviceIdsByBehaviorIds(configIds);
+        Multimap<Integer, Integer> deviceIdsByBehaviorIds = deviceBehaviorDao.getBehaviorIdsToDevicesIdMap(configIds);
 
         List<LiteYukonPAObject> paos = new ArrayList<>();
         for (Integer deviceId : deviceIdsByBehaviorIds.values()) {
@@ -185,5 +188,14 @@ public class DataStreamingFakeData {
         }
 
         return json;
+    }
+    
+    public static double getLoadingPercentForGateway(){
+        boolean isTrue = new Random().nextBoolean();
+        if(isTrue){
+            return 99;
+        }else{
+            return 88;
+        }
     }
 }

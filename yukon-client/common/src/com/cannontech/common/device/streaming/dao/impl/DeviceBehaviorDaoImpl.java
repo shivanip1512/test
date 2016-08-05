@@ -22,6 +22,7 @@ import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -46,7 +47,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     private final static Logger log = YukonLogManager.getLogger(DeviceBehaviorDaoImpl.class);
 
     @Override
-    public Multimap<Integer, Integer> getDeviceIdsByBehaviorIds(Iterable<Integer> behaviorIds) {
+    public Multimap<Integer, Integer> getBehaviorIdsToDevicesIdMap(Iterable<Integer> behaviorIds) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
@@ -55,7 +56,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT behaviorId, deviceId");
                 sql.append("FROM DeviceBehaviorMap");
-                sql.append("WHERE behaviorId").in(behaviorIds);
+                sql.append("WHERE behaviorId").in(subList);
                 return sql;
             }
         };
@@ -70,6 +71,54 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         };
 
         Multimap<Integer, Integer> retVal = template.multimappedQuery(sqlGenerator, behaviorIds, rowMapper, Functions.identity());
+        return retVal;
+    }
+
+    @Override
+    public Multimap<Integer, Integer> getDeviceIdsToBehaviorIdMap(Iterable<Integer> deviceIds, BehaviorType type,
+            List<BuiltInAttribute> attributes, Integer interval, Integer behaviorId) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT dbm.behaviorId, dbm.deviceId");
+                sql.append("FROM Behavior b");
+                if (attributes != null) {
+                    sql.append("JOIN BehaviorValue behaviorAttributes ON b.BehaviorId=behaviorAttributes.BehaviorId");
+                }
+                if (interval != null) {
+                    sql.append("JOIN BehaviorValue behaviorInterval ON b.BehaviorId=behaviorInterval.BehaviorId ");
+                }
+                sql.append("JOIN DeviceBehaviorMap dbm ON b.BehaviorId=dbm.BehaviorId");
+                sql.append("WHERE b.BehaviorType").eq_k(type);
+                if (interval != null) {
+                    sql.append("AND behaviorInterval.name like '%interval%'");
+                    sql.append("AND behaviorInterval.value").eq(interval);
+                }
+                if (attributes != null) {
+                    sql.append("AND behaviorAttributes.name like '%attribute%'");
+                    sql.append("AND behaviorAttributes.value").in_k(attributes);
+                }
+                if (behaviorId != null) {
+                    sql.append("AND b.BehaviorId").eq(behaviorId);
+                }
+                sql.append("AND dbm.DeviceId").in(subList);
+                return sql;
+            }
+        };
+       
+        RowMapper<Map.Entry<Integer, Integer>> rowMapper = new RowMapper<Entry<Integer, Integer>>() {
+            @Override
+            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Integer deviceId = rs.getInt("deviceId");
+                Integer behaviorId = rs.getInt("behaviorId");
+                return Maps.immutableEntry(deviceId, behaviorId);
+            }
+        };
+
+        Multimap<Integer, Integer> retVal = template.multimappedQuery(sqlGenerator, deviceIds, rowMapper, Functions.identity());
         return retVal;
     }
     

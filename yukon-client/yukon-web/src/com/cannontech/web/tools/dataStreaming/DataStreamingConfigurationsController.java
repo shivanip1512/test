@@ -141,7 +141,7 @@ public class DataStreamingConfigurationsController {
         existingConfigs.forEach(config -> config.setAccessor(accessor));
         model.addAttribute("existingConfigs", existingConfigs);
 
-        List<BuiltInAttribute> attributes = new ArrayList<BuiltInAttribute>(dataStreamingAttributeHelper.getAllSupportedAttributes());
+        List<BuiltInAttribute> attributes = new ArrayList<>(dataStreamingAttributeHelper.getAllSupportedAttributes());
         attributes.sort((BuiltInAttribute a1, BuiltInAttribute a2) -> a1.getDescription().compareTo(a2.getDescription()));
         model.addAttribute("searchAttributes", attributes);
         
@@ -226,9 +226,9 @@ public class DataStreamingConfigurationsController {
     }
     
     private List<SummarySearchResult> getSearchResults(SummarySearchCriteria criteria, MessageSourceAccessor accessor, ModelMap model) {
+        System.out.println("-----"+criteria.getSelectedInterval());
         List<SummarySearchResult> results = dataStreamingService.search(criteria);
         for(SummarySearchResult result: results){
-            result.getConfig().setSelectedInterval(result.getConfig().getAttributes().get(0).getInterval());
             result.getConfig().setAccessor(accessor);
         }
         return results;
