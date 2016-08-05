@@ -27,16 +27,16 @@ public class GeneralSecurityFilter implements Filter {
         response.setHeader("X-XSS-Protection", "1; mode=block"); // avoid XSS attack
         response.setHeader(
             "Content-Security-Policy",
-                "default-src 'self' http://java.sun.com http://cannontech.com http://docs.spring.io "
-                        + "https://getbootstrap.com http://www.springframework.org; "
-                + "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://www.google-analytics.com; "
-                + "connect-src 'self'; " 
-                + "img-src 'self' data: http://www.google-analytics.com; "
-                + "style-src 'self' 'unsafe-inline';"
+                "default-src 'self' http://java.sun.com http://cannontech.com http://docs.spring.io " 
+                        + "https://getbootstrap.com http://www.springframework.org http://api.tiles.mapbox.com/ http://*.tiles.mapbox.com/; " // Trusted sites for source
+                + "script-src 'self' https://api.tiles.mapbox.com 'unsafe-inline' 'unsafe-eval' http://www.google-analytics.com; "
+                + "connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com; " 
+                + "img-src 'self' data: http://www.google-analytics.com Access-Control-Allow-Origin: *;" // Access-Control-Allow-Origin: * used for cross origin resource sharing for map images
+                + "style-src 'self' 'unsafe-inline' https://api.tiles.mapbox.com;"
                 + "plugin-types 'none'"
                 + "media-src 'none'"
                 + "child-src 'self'"
-                + "font-src 'self'");
+                + "font-src 'self'"); // header blocks popups, plugins and script execution from unknown source 
         response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubdomains");//HTTP Strict Transport Security 1 year as max-age
         chain.doFilter(request, servletResponse);
     }
