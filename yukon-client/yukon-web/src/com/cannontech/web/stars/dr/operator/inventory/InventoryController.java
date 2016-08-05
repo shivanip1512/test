@@ -198,15 +198,16 @@ public class InventoryController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         String defaultRoute;
+        int defaultRouteId = 0;
         try {
-            int defaultRouteId = defaultRouteService.getDefaultRouteId(ec);
+            defaultRouteId = defaultRouteService.getDefaultRouteId(ec);
             defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
             defaultRoute = accessor.getMessage("yukon.common.route.default", defaultRoute);
         } catch(NotFoundException e) {
             defaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }
         model.addAttribute("defaultRoute", defaultRoute);
-        
+        model.addAttribute("defaultRouteId",defaultRouteId);
         List<LiteYukonPAObject> routes = ecDao.getAllRoutes(ec);
         model.addAttribute("routes", routes);
         
