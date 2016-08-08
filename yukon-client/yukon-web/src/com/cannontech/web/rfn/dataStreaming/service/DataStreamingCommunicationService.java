@@ -1,5 +1,6 @@
 package com.cannontech.web.rfn.dataStreaming.service;
 
+import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
@@ -19,22 +20,32 @@ public interface DataStreamingCommunicationService {
      * potential configuration has been verified, use <code>buildConfigRequest</code> to actually update the
      * configurations.
      */
-    public DeviceDataStreamingConfigRequest buildVerificationRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds);
+    DeviceDataStreamingConfigRequest buildVerificationRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds);
     
     /**
      * Build a data streaming configuration request intended to update actual configurations. Network Manager will
      * approve the request if it has no significant errors and doesn't exceed gateway loading limits. A "verification"
      * request should be sent first to minimize the risk of rejection.
      */
-    public DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds);
+    DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds,
+                                                        String correlationId);
     
     /**
-     * Sends a verification or config request to Network Manager. For a verification request, a successful response
+     * Build a data streaming sync request intended to notify Network Manager of the device's response to data streaming
+     * configuration.
+     */
+    DeviceDataStreamingConfigRequest buildSyncRequest(ReportedDataStreamingConfig reportedConfig, int deviceId,
+                                                      String correlationId);
+    
+    /**
+     * Sends a verification, config or sync request to Network Manager. For a verification request, a successful response
      * means that the config request can be sent. For a config request, a successful response means that Network
      * Manager has updated its records to reflect the data streaming configuration change, and Yukon must now send the 
      * corresponding changes to the devices (via Porter).
      * @throws DataStreamingConfigException if there was a connection problem sending the request.
      */
-    public DeviceDataStreamingConfigResponse sendConfigRequest(DeviceDataStreamingConfigRequest request) throws DataStreamingConfigException;
+    DeviceDataStreamingConfigResponse sendConfigRequest(DeviceDataStreamingConfigRequest request) throws DataStreamingConfigException;
+
+    
 
 }
