@@ -188,7 +188,7 @@ $(function() { updateServiceCompanyInfo();});
                             
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <cti:button nameKey="new" id="newButton"/>
-                        </cti:displayForPageEditModes><form:errors path="deviceId" cssClass="error"/>
+                        </cti:displayForPageEditModes><br><br><form:errors path="deviceId" cssClass="error"/>
                         
                     </div>
                     
@@ -198,7 +198,7 @@ $(function() { updateServiceCompanyInfo();});
                             <form:input path="twoWayDeviceName" id="twoWayDeviceName"  cssClass="${inputToClass}"/>
                             <cti:button nameKey="choose" id="chooseButton"/>
                             <c:if test="${status.error}">
-                                <br>
+                                <br><br>
                                 <form:errors path="twoWayDeviceName" cssClass="error"/>
                             </c:if>
                         </spring:bind>
