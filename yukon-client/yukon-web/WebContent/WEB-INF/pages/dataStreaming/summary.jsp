@@ -27,7 +27,7 @@
                     <tags:nameValueContainer2>
 
                         <tags:nameValue2 nameKey=".filter.gateway">
-                            <select multiple name="gatewaysSelect" size="6" style="min-width:200px;">
+                            <select multiple id="gatewaysSelect" name="gatewaysSelect" size="6" style="min-width:200px;">
                                 <option value="-1" <c:if test="${searchFilters.selectedGatewayIds.size() == 0}">selected</c:if>>Any</option>
                                 <c:forEach var="gateway" items="${gateways}">
                                     <option value="${gateway.id}" ${(fn:contains(searchFilters.selectedGatewayIds, gateway.id))? 'selected':''}>${gateway.name}</option>
@@ -102,8 +102,17 @@
         </h3>
         
         <cti:url var="dataUrl" value="/tools/dataStreaming/summaryResults">
-                <cti:param name="selectedConfiguration" value="${searchFilters.selectedConfiguration}"/>
-                <cti:param name="selectedResults" value="${'.js-selected-results'}"/>
+            <c:forEach var="gateway" items="${searchFilters.selectedGatewayIds}">
+                <cti:param name="gatewaysSelect" value="${gateway}"/>
+            </c:forEach>
+            <c:forEach var="attribute" items="${searchFilters.selectedAttributes}">
+                <cti:param name="attributesSelect" value="${attribute}"/>
+            </c:forEach>
+            <cti:param name="selectedConfiguration" value="${searchFilters.selectedConfiguration}"/>
+            <cti:param name="selectedInterval" value="${searchFilters.selectedInterval}"/>
+            <cti:param name="minLoadPercent" value="${searchFilters.minLoadPercent}"/>
+            <cti:param name="maxLoadPercent" value="${searchFilters.maxLoadPercent}"/>
+            <cti:param name="selectedResults" value="${'.js-selected-results'}"/>
         </cti:url>
         <div data-url="${dataUrl}" data-load-event="yukon:tools:dataStreaming:results:load">
             <%@ include file="summaryResults.jsp" %>
