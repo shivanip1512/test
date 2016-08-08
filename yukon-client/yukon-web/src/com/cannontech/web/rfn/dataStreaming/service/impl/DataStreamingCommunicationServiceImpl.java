@@ -18,6 +18,8 @@ import com.cannontech.amr.rfn.dao.RfnDeviceAttributeDao;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfig;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfig.MetricConfig;
@@ -55,13 +57,57 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     
     @Override
     public DeviceDataStreamingConfigRequest buildVerificationRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds) {
-        DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, DeviceDataStreamingConfigRequestType.TEST_ONLY);
+        
+        DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, 
+                                                                DeviceDataStreamingConfigRequestType.TEST_ONLY,
+                                                                null);
         return request;
     }
     
     @Override
-    public DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds) {
-        DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, DeviceDataStreamingConfigRequestType.TEST_ONLY);
+    public DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds,
+                                                               String correlationId) {
+        
+        DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, 
+                                                                DeviceDataStreamingConfigRequestType.TEST_ONLY,
+                                                                correlationId);
+        return request;
+    }
+    
+    @Override
+    public DeviceDataStreamingConfigRequest buildSyncRequest(ReportedDataStreamingConfig reportedConfig, int deviceId,
+                                                             String correlationId) {
+        
+        DeviceDataStreamingConfig config = new DeviceDataStreamingConfig();
+        config.setDataStreamingOn(reportedConfig.isStreamingEnabled());
+        config.setSequenceNumber(reportedConfig.getSequence());
+        
+        Map<Integer, MetricConfig> metrics = 
+        reportedConfig.getConfiguredMetrics().stream().collect(Collectors.toMap(
+                          attribute -> {
+                              BuiltInAttribute attr = BuiltInAttribute.valueOf(attribute.getAttribute());
+                              return rfnDeviceAttributeDao.getMetricIdForAttribute(attr);
+                          },
+                          attribute -> {
+                              MetricConfig metricConfig = new MetricConfig();
+                              metricConfig.setEnabled(attribute.isEnabled());
+                              metricConfig.setInterval((short)attribute.getInterval());
+                              return metricConfig;
+                          }));
+        config.setMetrics(metrics);
+        
+        DeviceDataStreamingConfigRequest request = new DeviceDataStreamingConfigRequest();
+        request.setConfigs(new DeviceDataStreamingConfig[]{config});
+        
+        RfnIdentifier rfnId = rfnDeviceDao.getDeviceForId(deviceId).getRfnIdentifier();
+        Map<RfnIdentifier, Integer> devices = new HashMap<>();
+        devices.put(rfnId, 0); // Only one config to map to, at index 0
+        request.setDevices(devices);
+        
+        request.setExpiration(DateTimeConstants.MINUTES_PER_DAY);
+        request.setRequestId(correlationId);
+        request.setRequestType(DeviceDataStreamingConfigRequestType.SYNC);
+        
         return request;
     }
     
@@ -93,7 +139,8 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
      * Builds a DeviceDataStreamingConfigRequest with all the specified configs and devices.
      */
     private DeviceDataStreamingConfigRequest buildRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds, 
-                                                          DeviceDataStreamingConfigRequestType requestType) {
+                                                          DeviceDataStreamingConfigRequestType requestType,
+                                                          String correlationId) {
         
         log.debug("Building " + requestType + " data streaming config request");
         
@@ -128,6 +175,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         request.setRequestType(requestType);
         if (requestType == DeviceDataStreamingConfigRequestType.CONFIG) {
             request.setExpiration(DateTimeConstants.MINUTES_PER_DAY);
+            request.setRequestId(correlationId);
         }
         
         return request;

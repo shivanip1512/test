@@ -2,6 +2,7 @@ package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -155,14 +156,15 @@ public class DataStreamingController {
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
+        String correlationId = UUID.randomUUID().toString();
         //TODO
 //        try {
-//            dataStreamingService.sendNmConfigurationRemove(deviceIds);
+//            dataStreamingService.sendNmConfigurationRemove(deviceIds, correlationId);
 //        } catch (DataStreamingConfigException e) {
 //            //back?
 //        }
         
-        DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
+        DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, correlationId, user);
         model.addAttribute("resultsId", result.getResultsId());
 
         return "redirect:dataStreamingResults";
@@ -180,14 +182,15 @@ public class DataStreamingController {
         
         int configId = verificationInfo.getConfiguration().getId();
         
+        String correlationId = UUID.randomUUID().toString();
         //TODO
 //        try {
-//            dataStreamingService.sendNmConfiguration(verificationInfo.getConfiguration(), deviceIds);
+//            dataStreamingService.sendNmConfiguration(verificationInfo.getConfiguration(), deviceIds, correlationId);
 //        } catch (DataStreamingConfigException e) {
 //            //back to verification?
 //        }
         
-        DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(configId, deviceCollection, user);
+        DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(configId, deviceCollection, correlationId, user);
         result.setConfigId(configId);
         
         model.addAttribute("resultsId", result.getResultsId());

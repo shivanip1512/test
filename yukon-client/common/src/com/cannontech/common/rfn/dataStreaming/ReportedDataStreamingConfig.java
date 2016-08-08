@@ -10,7 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ReportedDataStreamingConfig {
     private boolean streamingEnabled;
-    private List<ReportedDataStreamingAttribute> attributes;
+    private List<ReportedDataStreamingAttribute> configuredMetrics;
+    private long sequence;
     
     public boolean isStreamingEnabled() {
         return streamingEnabled;
@@ -20,18 +21,26 @@ public class ReportedDataStreamingConfig {
         this.streamingEnabled = streamingEnabled;
     }
     
-    public List<ReportedDataStreamingAttribute> getAttributes() {
-        return attributes;
+    public List<ReportedDataStreamingAttribute> getConfiguredMetrics() {
+        return configuredMetrics;
     }
     
-    public void setAttributes(List<ReportedDataStreamingAttribute> configuredMetrics) {
-        this.attributes = configuredMetrics;
+    public void setConfiguredMetrics(List<ReportedDataStreamingAttribute> configuredMetrics) {
+        this.configuredMetrics = configuredMetrics;
     }
 
+    public long getSequence() {
+        return sequence;
+    }
+    
+    public void setSequence(long sequence) {
+        this.sequence = sequence;
+    }
+    
     @Override
     public String toString() {
         return "ReportedDataStreamingConfig [streamingEnabled=" + streamingEnabled + ", configuredMetrics="
-               + attributes + "]";
+               + configuredMetrics + "]";
     }
     
 }

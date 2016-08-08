@@ -19,11 +19,12 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
 
     private DeviceDataStreamingConfig[] configs;
     private Map<RfnIdentifier, Integer> devices; // Map<device, configIndex>
+    private int expiration; // Pending time in minutes for data streaming discrepancies. Only use when request type is CONFIG
+    private String requestId; // A randomly generated string to guarantee no duplicates
     
     private DeviceDataStreamingConfigRequestType requestType;
     
-    private int expiration; //Pending time in minutes for data streaming discrepancies. Only use when request type is CONFIG
-
+    
     public DeviceDataStreamingConfig[] getConfigs() {
         return configs;
     }
@@ -55,6 +56,14 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
     public void setExpiration(int expiration) {
         this.expiration = expiration;
     }
+    
+    public String getRequestId() {
+        return requestId;
+    }
+    
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
 
     @Override
     public int hashCode() {
@@ -63,6 +72,7 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
         result = prime * result + Arrays.hashCode(configs);
         result = prime * result + ((devices == null) ? 0 : devices.hashCode());
         result = prime * result + expiration;
+        result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((requestType == null) ? 0 : requestType.hashCode());
         return result;
     }
@@ -92,6 +102,13 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
         if (expiration != other.expiration) {
             return false;
         }
+        if (requestId == null) {
+            if (other.requestId != null) {
+                return false;
+            }
+        } else if (!requestId.equals(other.requestId)) {
+            return false;
+        }
         if (requestType != other.requestType) {
             return false;
         }
@@ -101,7 +118,7 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
     @Override
     public String toString() {
         return "DeviceDataStreamingConfigRequest [configs=" + Arrays.toString(configs) + ", devices=" + devices
-               + ", requestType=" + requestType + ", expiration=" + expiration + "]";
+               + ", expiration=" + expiration + ", requestId=" + requestId + ", requestType=" + requestType + "]";
     }
 
 }

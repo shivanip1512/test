@@ -38,29 +38,34 @@ public interface DataStreamingService {
     
     /**
      * Informs Network Manager of a configuration that Yukon plans to send.
+     * @param correlationId A UUID used to correlate the NM config request and the sync request.
      * @throws DataStreamingConfigException If the configuration is disallowed or there is an error.
      */
-    void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds) throws DataStreamingConfigException;
+    void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException;
     
     /**
      * Informs Network Manager that Yukon plans to disable data streaming for the specified devices.
+     * @param correlationId A UUID used to correlate the NM config request and the sync request.
      * @throws DataStreamingConfigException If the configuration is disallowed or there is an error.
      */
-    void sendNmConfigurationRemove(List<Integer> deviceIds) throws DataStreamingConfigException;
+    void sendNmConfigurationRemove(List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException;
     
     /**
      * Assign an existing data streaming configuration to the devices.
      * @param configId The behaviorId of the existing config.
+     * @param correlationId A UUID used to correlate the NM config request and the sync request.
      * @return The resultId to look up the results in recentResultsCache.
      */
-    DataStreamingConfigResult assignDataStreamingConfig(int configId, DeviceCollection deviceCollection, LiteYukonUser user);
+    DataStreamingConfigResult assignDataStreamingConfig(int configId, DeviceCollection deviceCollection, 
+                                                        String correlationId, LiteYukonUser user);
     
     /**
      * Unassign the data streaming configuration currently assigned to the specified devices. (They will no longer 
      * stream data.)
+     * @param correlationId A UUID used to correlate the NM config request and the sync request.
      * @return The resultId to look up the results in recentResultsCache.
      */
-    DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user);
+    DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, String correlationId, LiteYukonUser user);
 
     int saveConfig(DataStreamingConfig config);
 

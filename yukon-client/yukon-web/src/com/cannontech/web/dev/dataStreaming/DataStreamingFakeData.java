@@ -171,7 +171,7 @@ public class DataStreamingFakeData {
         boolean streamingEnabled = new Boolean(report.getValuesMap().get(STREAMING_ENABLED_STRING));
         List<ReportedDataStreamingAttribute> reportedAttributes = new ArrayList<>();
         config.setStreamingEnabled(streamingEnabled);
-        config.setAttributes(reportedAttributes);
+        config.setConfiguredMetrics(reportedAttributes);
         for (BuiltInAttribute attribute : attributes) {
             ReportedDataStreamingAttribute metric = new ReportedDataStreamingAttribute();
             boolean isAttributeEnabled = new Random().nextBoolean();
