@@ -153,6 +153,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return configToDeviceCollection;
     }
        
+    /**
+     * Finds gateways based on the user selected criteria (User can select 1 or more gateways).
+     * Filters the gateways based on the loading percent selected by the user.
+     * 
+     * @return a map of RfnIdentifier to RFNGateway
+     */
     private Map<RfnIdentifier, RfnGateway> getGatewaysForLoadingRange(SummarySearchCriteria criteria) {
         List<RfnGateway> gateways = new ArrayList<>();
         if (criteria.isGatewaySelected()) {
@@ -168,7 +174,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             RfnGateway gateway = it.next();
             // remove
             gateway.setLoadingPercent(DataStreamingFakeData.getLoadingPercentForGateway());
-            // replace with double loadingPercent RfnGatewayData.getDataStreamingLoadingPercent();
+            // replace with RfnGatewayData.getDataStreamingLoadingPercent();
             double loadingPercent = gateway.getLoadingPercent();
             if (!range.contains(loadingPercent)) {
                 it.remove();
@@ -179,7 +185,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
     @Override
     public List<SummarySearchResult> search(SummarySearchCriteria criteria) {
-        log.info(criteria);
+        log.debug(criteria);
         List<SummarySearchResult> results = new ArrayList<>();
         DataStreamingFakeData fakeData =
             new DataStreamingFakeData(deviceBehaviorDao, serverDatabaseCache, rfnDeviceDao);

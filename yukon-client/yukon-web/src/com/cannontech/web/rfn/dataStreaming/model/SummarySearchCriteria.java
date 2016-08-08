@@ -78,7 +78,7 @@ public class SummarySearchCriteria {
         
     public boolean isGatewaySelected() {
         try {
-            return selectedGatewayIds.get(0) != -1;
+            return selectedGatewayIds.get(0) > 0;
         } catch (Exception e) {
             return false;
         }

@@ -77,9 +77,11 @@ public interface DeviceBehaviorDao {
     /**
      * Returns a multimap of behavior ids to device ids.
      */
-
     Multimap<Integer, Integer> getBehaviorIdsToDevicesIdMap(Iterable<Integer> behaviorIds);
 
+    /**
+     * Returns a multimap of device ids to behavior ids.
+     */
     Multimap<Integer, Integer> getDeviceIdsToBehaviorIdMap(Iterable<Integer> deviceIds, BehaviorType type,
             List<BuiltInAttribute> attributes, Integer interval, Integer behaviorId);
 }

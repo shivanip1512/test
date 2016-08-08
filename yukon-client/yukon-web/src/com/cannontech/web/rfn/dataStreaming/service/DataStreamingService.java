@@ -75,6 +75,11 @@ public interface DataStreamingService {
      */
     Map<DataStreamingConfig, DeviceCollection> getAllDataStreamingConfigurationsAndDevices();
 
+    /**
+     * Attempts to find data streaming summary based on the search criteria selected by the user.
+     * 
+     * @return search result.
+     */
     List<SummarySearchResult> search(SummarySearchCriteria criteria);
 
 }
