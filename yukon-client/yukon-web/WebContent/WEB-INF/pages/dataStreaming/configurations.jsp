@@ -12,7 +12,7 @@
     <div id="page-actions" class="dn">
         <cti:url var="collectionActionsUrl" value="/bulk/deviceSelection"/>
         <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>
-        <cti:url var="configureOthersUrl" value="/bulk/deviceSelection"/>
+        <cti:url var="configureOthersUrl" value="/bulk/deviceSelection?redirectUrl=/bulk/dataStreaming/configure"/>
         <cm:dropdownOption key=".configureOtherDevices" href="${configureOthersUrl}" icon="icon-cog-add"/>
     </div>
 

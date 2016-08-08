@@ -201,8 +201,9 @@ function validateAddressRange() {
             <cti:msg2 var="submitButtonText" key=".selectDevicesByGroupTree.submitButtonText"/>
             <cti:msg2 var="cancelButtonText" key=".selectDevicesByGroupTree.cancelButtonText"/>
             
-            <form id="selectDevicesByGroupForm" method="get" action="${action}">
-                <input type="hidden" name="collectionType" value="group"/>
+            <form id="selectDevicesByGroupForm" method="post" action="${action}">
+                <cti:csrfToken/>
+                <input type="hidden" name="collectionType" value="group"/>                
                 <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
                 <jsTree:nodeValueSelectingPopupTree fieldId="group-name"
                                                     fieldName="group.name"
@@ -229,7 +230,8 @@ function validateAddressRange() {
             <cti:msg2 var="selectAddressPopupTitle" key=".selectAddressPopupTitle"/>
 
             <tags:simplePopup id="${byAddrPopupId}" title="${selectAddressPopupTitle}" styleClass="deviceSelectionPopup"  onClose="clearAddrFields('${byAddrPopupId}');">
-                <form id="addByAddressForm" method="get" action="${action}">
+                <form id="addByAddressForm" method="post" action="${action}">
+                    <cti:csrfToken/>
                     <ul style="color: red">
                         <cti:msg2 key=".errLessThanZero" var="lessThanZero"/>
                         <cti:msg2 key=".errOutOfRange" var="outOfRange"/>

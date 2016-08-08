@@ -127,10 +127,10 @@ public class BulkController {
         try {
         
             DeviceCollection colleciton = deviceCollectionFactory.createDeviceCollection(request);
-            if (isFileUpload) {
+            //if (isFileUpload) {
                 Map<String, String> collectionParameters = colleciton.getCollectionParameters();
                 model.addAllAttributes(collectionParameters);
-            }
+            //}
             view = "collectionActions.jsp";
             model.addAttribute("deviceCollection", colleciton);
             boolean showGroupManagement = rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, user);
@@ -163,6 +163,11 @@ public class BulkController {
             model.addAttribute("errorMsg", errorMsg);
         }
         
+        String redirectUrl = ServletRequestUtils.getStringParameter(request, "redirectUrl", null);
+        if (!StringUtils.isBlank(redirectUrl)) {
+            model.addAttribute("redirectUrl", redirectUrl);
+        }
+        
         return "deviceSelection.jsp";
     }
     
@@ -170,9 +175,14 @@ public class BulkController {
     public String deviceSelectionGetDevices(ModelMap model, HttpServletRequest request,
             @RequestParam(defaultValue = "false") boolean isFileUpload, FlashScope flashScope)
             throws ServletRequestBindingException {
-
+        String redirectUrl = ServletRequestUtils.getStringParameter(request, "redirectUrl", null);
         try {
-            return collectionActions(model, request, isFileUpload, flashScope);
+            String view = collectionActions(model, request, isFileUpload, flashScope);
+            if (!StringUtils.isBlank(redirectUrl)) {
+                return "redirect:" + redirectUrl;
+            } else {
+                return view;
+            }
         } catch (DeviceCollectionCreationException e) {
             model.addAttribute("errorMsg", e.getMessage());
             return "redirect:/bulk/deviceSelection";
