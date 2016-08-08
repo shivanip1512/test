@@ -36,9 +36,11 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.base.Functions;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 
 public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
@@ -75,7 +77,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     }
 
     @Override
-    public Multimap<Integer, Integer> getDeviceIdsToBehaviorIdMap(Iterable<Integer> deviceIds, BehaviorType type,
+    public SetMultimap<Integer, Integer> getDeviceIdsToBehaviorIdMap(Iterable<Integer> deviceIds, BehaviorType type,
             List<BuiltInAttribute> attributes, Integer interval, Integer behaviorId) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
         
@@ -118,7 +120,11 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         };
 
-        Multimap<Integer, Integer> retVal = template.multimappedQuery(sqlGenerator, deviceIds, rowMapper, Functions.identity());
+        Multimap<Integer, Integer> ids =
+            template.multimappedQuery(sqlGenerator, deviceIds, rowMapper, Functions.identity());
+        SetMultimap<Integer, Integer> retVal = HashMultimap.create();
+        retVal.putAll(ids);
+
         return retVal;
     }
     

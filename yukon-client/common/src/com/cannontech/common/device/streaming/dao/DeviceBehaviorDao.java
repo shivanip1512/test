@@ -9,6 +9,7 @@ import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 
 public interface DeviceBehaviorDao {
 
@@ -82,6 +83,6 @@ public interface DeviceBehaviorDao {
     /**
      * Returns a multimap of device ids to behavior ids.
      */
-    Multimap<Integer, Integer> getDeviceIdsToBehaviorIdMap(Iterable<Integer> deviceIds, BehaviorType type,
+    SetMultimap<Integer, Integer> getDeviceIdsToBehaviorIdMap(Iterable<Integer> deviceIds, BehaviorType type,
             List<BuiltInAttribute> attributes, Integer interval, Integer behaviorId);
 }
