@@ -54,10 +54,10 @@ public class DataStreamingController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("deviceCollection", deviceCollection);
         
-        List<PaoType> types = new ArrayList<>();
         //check if the selected devices support data streaming
+        List<PaoType> types = new ArrayList<PaoType>();
         deviceCollection.getDeviceList().forEach(device -> types.add(device.getDeviceType()));
-        List<BuiltInAttribute> attributes = new ArrayList<>(dataStreamingAttributeHelper.getAllSupportedAttributes(types));
+        List<BuiltInAttribute> attributes = new ArrayList<BuiltInAttribute>(dataStreamingAttributeHelper.getAllSupportedAttributes(types));
         attributes.sort((BuiltInAttribute a1, BuiltInAttribute a2) -> a1.getDescription().compareTo(a2.getDescription()));
         boolean dsNotSupported = false;
         if (attributes.size() == 0) {
@@ -125,8 +125,7 @@ public class DataStreamingController {
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
 
-        VerificationInformation verifyInfo = new VerificationInformation();
-        verifyInfo.setVerificationPassed(true);
+        VerificationInformation verifyInfo = dataStreamingService.verifyConfiguration(configId, deviceIds);
         verifyInfo.setConfiguration(modelConfig);
         verifyInfo.getDeviceUnsupported().forEach(device -> {
             device.setDeviceCollection(dcProducer.createDeviceCollection(device.getDeviceIds(), null));
