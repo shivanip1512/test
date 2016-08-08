@@ -64,10 +64,6 @@ public class SummarySearchCriteria {
         this.maxLoadPercent = maxLoadPercent;
     }
     
-    public boolean isConfigCriteriaEmpty(){
-       return !isConfigSelected() || !isConfigSelected();
-    }
-    
     public boolean isConfigIntervalSelected(){
         return selectedInterval > 0;
      }
