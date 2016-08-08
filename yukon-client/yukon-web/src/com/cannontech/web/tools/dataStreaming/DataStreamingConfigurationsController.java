@@ -226,7 +226,6 @@ public class DataStreamingConfigurationsController {
     }
     
     private List<SummarySearchResult> getSearchResults(SummarySearchCriteria criteria, MessageSourceAccessor accessor, ModelMap model) {
-        System.out.println("-----"+criteria.getSelectedInterval());
         List<SummarySearchResult> results = dataStreamingService.search(criteria);
         for(SummarySearchResult result: results){
             result.getConfig().setAccessor(accessor);

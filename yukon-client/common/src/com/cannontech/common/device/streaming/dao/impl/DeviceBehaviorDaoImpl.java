@@ -95,7 +95,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
                 sql.append("WHERE b.BehaviorType").eq_k(type);
                 if (interval != null) {
                     sql.append("AND behaviorInterval.name like '%interval%'");
-                    sql.append("AND behaviorInterval.value").eq(interval);
+                    sql.append("AND behaviorInterval.value").eq(String.valueOf(interval));
                 }
                 if (attributes != null) {
                     sql.append("AND behaviorAttributes.name like '%attribute%'");
@@ -108,10 +108,10 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
                 return sql;
             }
         };
-       
+               
         RowMapper<Map.Entry<Integer, Integer>> rowMapper = new RowMapper<Entry<Integer, Integer>>() {
             @Override
-            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {;
                 Integer deviceId = rs.getInt("deviceId");
                 Integer behaviorId = rs.getInt("behaviorId");
                 return Maps.immutableEntry(deviceId, behaviorId);

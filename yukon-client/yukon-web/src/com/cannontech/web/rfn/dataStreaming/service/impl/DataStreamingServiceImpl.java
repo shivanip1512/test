@@ -215,7 +215,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 DeviceToGateway deviceToGateway = deviceIdToGatewayInfo.get(deviceId);
                 result.setMeter(deviceToGateway.device);
                 result.setGateway(gateways.get(deviceToGateway.gatewayRfnIdentifier));
-                result.setConfig(configs.get(configId));
+                DataStreamingConfig config = configs.get(configId);
+                result.setConfig(config);
                 results.add(result);
             }
         }
@@ -643,17 +644,19 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         DataStreamingConfig config = new DataStreamingConfig();
         config.setId(behavior.getId());
         int i = 0;
+        int intervalValue = 0;
         int channels = behavior.getIntValue(CHANNELS_STRING);
         for (i = 0; i < channels; i++) {
             String key = CHANNELS_STRING + "." + i;
             BuiltInAttribute attributeValue = behavior.getEnumValue(key + ATTRIBUTE_STRING, BuiltInAttribute.class);
-            int intervalValue = behavior.getIntValue(key + INTERVAL_STRING);
+            intervalValue = behavior.getIntValue(key + INTERVAL_STRING);
             DataStreamingAttribute dataStreamingAttribute = new DataStreamingAttribute();
             dataStreamingAttribute.setAttribute(attributeValue);
             dataStreamingAttribute.setInterval(intervalValue);
             dataStreamingAttribute.setAttributeOn(Boolean.TRUE);
             config.addAttribute(dataStreamingAttribute);
         }
+        config.setSelectedInterval(intervalValue);
         return config;
     }
 
