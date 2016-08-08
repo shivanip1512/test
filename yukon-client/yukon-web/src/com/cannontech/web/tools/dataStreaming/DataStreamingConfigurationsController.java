@@ -215,7 +215,7 @@ public class DataStreamingConfigurationsController {
         model.addAttribute("searchResults", searchResult);
         
         List<Integer> deviceIds = new ArrayList<>();
-        searchResult.getResultList().forEach(device -> deviceIds.add(device.getMeter().getPaoIdentifier().getPaoId()));
+        results.forEach(device -> deviceIds.add(device.getMeter().getPaoIdentifier().getPaoId()));
         DeviceCollection deviceCollection = dcProducer.createDeviceCollection(deviceIds, null);
         model.addAttribute("deviceCollection", deviceCollection);
         String deviceIdList = deviceIds.stream()
