@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/1/2016 12:51:27 PM                         */
+/* Created on:     8/5/2016 3:59:54 PM                          */
 /*==============================================================*/
 
 
@@ -8523,6 +8523,22 @@ create table State (
 )
 go
 
+INSERT INTO State VALUES(-26, 0, 'Time of Day', 0, 6, 0);
+INSERT INTO State VALUES(-26, 1, 'Countdown Timer', 1, 6, 0);
+INSERT INTO State VALUES(-25, 0, 'No', 0, 6, 0);
+INSERT INTO State VALUES(-25, 1, 'Yes', 1, 6, 0);
+INSERT INTO State VALUES(-24, 0, 'Trip', 0, 6, 0);
+INSERT INTO State VALUES(-24, 1, 'Close', 1, 6, 0);
+INSERT INTO State VALUES(-23, 0, 'CBC Line', 0, 6, 0);
+INSERT INTO State VALUES(-23, 1, 'Phase A', 1, 6, 0);
+INSERT INTO State VALUES(-23, 2, 'Phase B', 2, 6, 0);
+INSERT INTO State VALUES(-23, 3, 'Phase C', 3, 6, 0);
+INSERT INTO State VALUES(-22, 0, 'N/A', 0, 6, 0);
+INSERT INTO State VALUES(-22, 1, 'Old Board/Old Box', 1, 6, 0);
+INSERT INTO State VALUES(-22, 2, 'New Board/Old Box', 2, 6, 0);
+INSERT INTO State VALUES(-22, 3, 'New Board/New Box', 3, 6, 0);
+INSERT INTO State VALUES(-21, 0, 'Closed', 0, 6, 0);
+INSERT INTO State VALUES(-21, 1, 'Open', 1, 6, 0);
 INSERT INTO State VALUES(-20, 0, 'Manual', 1, 6, 0);
 INSERT INTO State VALUES(-20, 1, 'SCADA Override', 2, 6, 0);
 INSERT INTO State VALUES(-20, 2, 'Fault Current', 3, 6, 0);
@@ -8683,6 +8699,12 @@ create table StateGroup (
 )
 go
 
+INSERT INTO StateGroup VALUES(-26, 'SCADA Override Type', 'Status');
+INSERT INTO StateGroup VALUES(-25, 'YesNo', 'Status');
+INSERT INTO StateGroup VALUES(-24, 'SCADA TripClose', 'Status');
+INSERT INTO StateGroup VALUES(-23, 'Var Voltage Input', 'Status');
+INSERT INTO StateGroup VALUES(-22, 'CBC-8 Hardware Type', 'Status');
+INSERT INTO StateGroup VALUES(-21, 'CBC Door Status', 'Status');
 INSERT INTO StateGroup VALUES(-20, 'Ignored Control', 'Status');
 INSERT INTO StateGroup VALUES(-19, 'RF Demand Reset', 'Status');
 INSERT INTO StateGroup VALUES(-18, 'LCR Service Status', 'Status');
