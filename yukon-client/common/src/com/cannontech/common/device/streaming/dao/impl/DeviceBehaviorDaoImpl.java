@@ -111,7 +111,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
                
         RowMapper<Map.Entry<Integer, Integer>> rowMapper = new RowMapper<Entry<Integer, Integer>>() {
             @Override
-            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {;
+            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer deviceId = rs.getInt("deviceId");
                 Integer behaviorId = rs.getInt("behaviorId");
                 return Maps.immutableEntry(deviceId, behaviorId);
