@@ -35,9 +35,9 @@
     
     <entry key="yukon.web.modules.operator.hardware.sendEnable.label">Send In Service</entry>
     <entry key="yukon.web.modules.operator.hardware.sendDisable.label">Send Out Of Service</entry>
-    <entry key="yukon.web.modules.operator.hardware.confirmEnable.message">Are you sure you want to want to send an in service message for {0}?</entry>
+    <entry key="yukon.web.modules.operator.hardware.confirmEnable.message">Are you sure you want to send an in service message to {0}?</entry>
     <entry key="yukon.web.modules.operator.hardware.confirmEnable.title">Send In Service: {0}</entry>
-    <entry key="yukon.web.modules.operator.hardware.confirmDisable.message">Are you sure you want to send an out of service message for {0}?</entry>
+    <entry key="yukon.web.modules.operator.hardware.confirmDisable.message">Are you sure you want to send an out of service message to {0}?</entry>
     <entry key="yukon.web.modules.operator.hardware.confirmDisable.title">Send Out Of Service: {0}</entry>
     <entry key="yukon.web.modules.operator.hardware.enableCommandSent">Send In Service command sent.</entry>
     <entry key="yukon.web.modules.operator.hardware.enableCommandFailed">Send In Service command failed with error "{0}".</entry>
