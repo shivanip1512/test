@@ -284,7 +284,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
-    public void sendNmConfigurationRemove(List<Integer> deviceIds) throws DataStreamingConfigException {
+    public void sendNmConfigurationRemove(List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException {
         //Remove devices from the list that don't support data streaming
         removeDataStreamingUnsupportedDevices(deviceIds);
         
@@ -303,6 +303,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         configRequest.setExpiration(DateTimeConstants.MINUTES_PER_DAY);
         configRequest.setConfigs(new DeviceDataStreamingConfig[]{config});
         configRequest.setDevices(deviceToConfigId);
+        configRequest.setRequestId(correlationId);
         
         //Send verification message (Block for response message)
         DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
@@ -311,7 +312,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
-    public void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds) throws DataStreamingConfigException {
+    public void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException {
         //Remove devices from the list that don't support data streaming
         removeDataStreamingUnsupportedDevices(deviceIds);
         
@@ -320,7 +321,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Multimap<DataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, null);
         
         //Build config message for NM
-        DeviceDataStreamingConfigRequest configRequest = dataStreamingCommService.buildConfigRequest(configToDeviceIds);
+        DeviceDataStreamingConfigRequest configRequest = dataStreamingCommService.buildConfigRequest(configToDeviceIds, correlationId);
         
         //Send verification message (Block for response message)
         DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
@@ -494,7 +495,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     
     @Override
     public DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection,
-            LiteYukonUser user) {
+                                                                 String correlationId, LiteYukonUser user) {
         if (isValidPorterConnection()) {
             List<Integer> deviceIds =
                     getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
@@ -508,15 +509,15 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 deviceBehaviorDao.saveBehaviorReport(report);
             });
             deviceBehaviorDao.unassignBehavior(BehaviorType.DATA_STREAMING, deviceIds);
-            return sendConfiguration(user, deviceCollection);
+            return sendConfiguration(user, deviceCollection, correlationId);
         } else {
             return createNoPorterConnectionResult(deviceCollection);
         }
     }
     
     @Override
-    public DataStreamingConfigResult assignDataStreamingConfig(int configId, DeviceCollection deviceCollection,
-            LiteYukonUser user) {
+    public DataStreamingConfigResult assignDataStreamingConfig(int configId, DeviceCollection deviceCollection, 
+                                                               String correlationId, LiteYukonUser user) {
         if (isValidPorterConnection()) {
             List<Integer> deviceIds =
                 getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
@@ -527,13 +528,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     deviceBehaviorDao.saveBehaviorReport(report);
                 });
             }
-            return sendConfiguration(user, deviceCollection);
+            return sendConfiguration(user, deviceCollection, correlationId);
         } else {
             return createNoPorterConnectionResult(deviceCollection);
         }
     }
 
-    private DataStreamingConfigResult sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection) {
+    private DataStreamingConfigResult sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection, String correlationId) {
         log.info("Attemting to send configuration command to "+deviceCollection.getDeviceCount()+" devices.");
         final DataStreamingConfigResult result = new DataStreamingConfigResult();
         String resultsId = resultsCache.addResult(result);
@@ -555,7 +556,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         result.setUnsupportedCollection(deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup));
         
         DataStreamingConfigCallback callback = new DataStreamingConfigCallbackImpl(result, successGroup, failedGroup, canceledGroup,
-                                                                                   execution, deviceCollection.getDeviceList());
+                                                                                   execution, deviceCollection.getDeviceList(), correlationId);
         
         result.setConfigCallback(callback);
         List<SimpleDevice> allDevices = deviceCollection.getDeviceList();
@@ -694,7 +695,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         report.setDeviceId(deviceId);
         report.setStatus(BehaviorReportStatus.CONFIRMED);
         report.setTimestamp(new Instant());
-        List<ReportedDataStreamingAttribute> attributes = config.getAttributes();
+        List<ReportedDataStreamingAttribute> attributes = config.getConfiguredMetrics();
         report.addValue(CHANNELS_STRING, attributes.size());
         report.addValue(STREAMING_ENABLED_STRING, config.isStreamingEnabled());
         for (int i = 0; i < attributes.size(); i++) {
@@ -854,6 +855,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
      * Callback to handle data streaming config responses.
      */
     public class DataStreamingConfigCallbackImpl implements DataStreamingConfigCallback {
+        private String correlationId;
         private DataStreamingConfigResult result; 
         private StoredDeviceGroup successGroup;
         private StoredDeviceGroup failedGroup;
@@ -863,20 +865,34 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         
         public DataStreamingConfigCallbackImpl(DataStreamingConfigResult result, StoredDeviceGroup successGroup,
                 StoredDeviceGroup failedGroup, StoredDeviceGroup cancelGroup, CommandRequestExecution execution,
-                List<SimpleDevice> deviceList) {
+                List<SimpleDevice> deviceList, String correlationId) {
             this.result = result;
             this.successGroup = successGroup;
             this.failedGroup = failedGroup;
             this.execution = execution;
             this.deviceList = deviceList;
             this.cancelGroup = cancelGroup;
+            this.correlationId = correlationId;
         }
         
         @Override
         public void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config) {
+            // Add to result
             deviceGroupMemberEditorDao.addDevices(successGroup, device);
+            
+            // Update DB
             BehaviorReport report = buildConfirmedReport(config, device.getDeviceId());
             deviceBehaviorDao.saveBehaviorReport(report);
+            
+            // Send sync to NM
+            DeviceDataStreamingConfigRequest request = dataStreamingCommService.buildSyncRequest(config, 
+                                                                                                 device.getDeviceId(), 
+                                                                                                 correlationId);
+            try {
+                dataStreamingCommService.sendConfigRequest(request);
+            } catch (DataStreamingConfigException e) {
+                log.error("Error sending data streaming sync to Network Manager.", e);
+            }
         }
 
         @Override
