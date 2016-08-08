@@ -179,6 +179,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
     @Override
     public List<SummarySearchResult> search(SummarySearchCriteria criteria) {
+        log.info(criteria);
         List<SummarySearchResult> results = new ArrayList<>();
         DataStreamingFakeData fakeData =
             new DataStreamingFakeData(deviceBehaviorDao, serverDatabaseCache, rfnDeviceDao);

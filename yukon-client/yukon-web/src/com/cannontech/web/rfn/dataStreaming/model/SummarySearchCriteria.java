@@ -3,6 +3,9 @@ package com.cannontech.web.rfn.dataStreaming.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public class SummarySearchCriteria {
@@ -12,10 +15,6 @@ public class SummarySearchCriteria {
     private int selectedInterval;
     private Double minLoadPercent;
     private Double maxLoadPercent;
-    
-    public SummarySearchCriteria() {
-       
-    }
 
     public List<Integer> getSelectedGatewayIds() {
         return selectedGatewayIds;
@@ -95,5 +94,20 @@ public class SummarySearchCriteria {
         } catch (Exception e) {
             return null;
         }
+    }
+    
+    @Override
+    public String toString() {
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        builder.append("selectedGatewayIds", selectedGatewayIds);
+        builder.append("selectedConfiguration", selectedConfiguration);
+        builder.append("selectedAttributes", selectedAttributes);
+        builder.append("selectedInterval", selectedInterval);
+        builder.append("minLoadPercent", minLoadPercent);
+        builder.append("maxLoadPercent", maxLoadPercent);
+        return builder.toString();
     }
 }
