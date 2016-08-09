@@ -166,7 +166,7 @@
       <AdditionalDependencies>..\lib\ctibase.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_iostreams-vc140-mt-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>"C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" ..\bin\test_base.dll</Command>
+      <Command>"$(DevEnvDir)CommonExtensions\Microsoft\TestWindow\vstest.console.exe" $(TargetPath)</Command>
       <Message>Run Unit Test</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
