@@ -12,6 +12,8 @@
 #include "module_util.h"
 #include "database_reader.h"
 
+#include "E2eSimulator.h"
+
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
@@ -151,7 +153,21 @@ int SimulatorMainFunction(int argc, char **argv)
         }
     }
 
+    std::unique_ptr<E2eSimulator> e2eSimulator;
+
+    if( gConfigParms.isTrue("SIMULATOR_RFN_E2E", false) )
+    {
+        e2eSimulator = std::make_unique<E2eSimulator>();
+
+        logger.log("RFN E2E simulator started.");
+    }
+
     threadGroup.join_all();
+
+    if( e2eSimulator )
+    {
+        e2eSimulator->stop();
+    }
 
     logger.log(string(CompileInfo.project) + " exiting");
 

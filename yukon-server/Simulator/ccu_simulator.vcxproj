@@ -131,7 +131,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(APR)\include;$(BOOST)\include;$(SQLAPI)\include;$(ACTIVEMQ)\include;$(LIBCOAP)\include;$(THRIFT)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\include;..\message\Serialization;..\protocol\include;..\rtdb\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ccu_simulator;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -152,7 +152,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;advapi32.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\service.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoapd.lib;advapi32.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\service.lib;..\lib-debug\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -182,7 +182,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(APR)\include;$(BOOST)\include;$(SQLAPI)\include;$(ACTIVEMQ)\include;$(LIBCOAP)\include;$(THRIFT)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\include;..\message\Serialization;..\protocol\include;..\rtdb\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ccu_simulator;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -201,7 +201,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;advapi32.lib;..\lib\ctibase.lib;..\lib\ctiprtdb.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctidevdb.lib;..\lib\ctidbsrc.lib;..\lib\service.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoap.lib;advapi32.lib;..\lib\ctibase.lib;..\lib\ctiprtdb.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctidevdb.lib;..\lib\ctidbsrc.lib;..\lib\service.lib;..\lib\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -367,6 +367,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="DeviceMemoryManager.cpp">
     </ClCompile>
+    <ClCompile Include="E2eSimulator.cpp" />
     <ClCompile Include="EmetconWords.cpp">
     </ClCompile>
     <ClCompile Include="FrozenPeakTimestampBehavior.cpp">
@@ -411,6 +412,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\CommsBehavior.h" />
     <ClInclude Include="include\DelayBehavior.h" />
     <ClInclude Include="include\DeviceMemoryManager.h" />
+    <ClInclude Include="include\E2eSimulator.h" />
     <ClInclude Include="include\EmetconWords.h" />
     <ClInclude Include="include\FrozenPeakTimestampBehavior.h" />
     <ClInclude Include="include\FrozenReadParityBehavior.h" />
