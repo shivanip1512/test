@@ -81,11 +81,7 @@ bool SocketComms::available(unsigned aCount)
 
 bool SocketComms::writeMessage(const bytes &buf)
 {
-    boost::scoped_array<unsigned char> temp(new unsigned char[buf.size()]);
-
-    copy(buf.begin(), buf.end(), temp.get());
-
-    const unsigned bytesWritten = _nexus.write(temp.get(), buf.size(), Chrono::seconds(SocketTimeout));
+    const unsigned bytesWritten = _nexus.write(buf.data(), buf.size(), Chrono::seconds(SocketTimeout));
 
     commDelay(bytesWritten);
 
