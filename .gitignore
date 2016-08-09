@@ -137,11 +137,14 @@ yukon-server/Simulator/Debug
 yukon-server/Simulator/Release
 yukon-server/SimulatorMemoryMaps
 yukon-server/bin
+yukon-server/bin-debug
 yukon-server/ipch
 yukon-server/lib
+yukon-server/lib-debug
 yukon-server/logic/Debug
 yukon-server/logic/Release
 yukon-server/pdb
+yukon-server/pdb-debug
 yukon-server/yukon-server.VC.VC.opendb
 yukon-server/yukon-server.VC.db
 yukon-server/yukon-server.log
