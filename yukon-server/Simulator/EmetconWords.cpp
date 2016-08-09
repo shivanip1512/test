@@ -73,14 +73,14 @@ unsigned EmetconWord::bch_calc(long long source, const unsigned bits)
 
     unsigned char *begin = reinterpret_cast<unsigned char *>(&source);
 
-    unsigned byte_length = (bits + 7) / 8;
+    size_t byte_length = (bits + 7) / 8;
 
-    boost::scoped_array<unsigned char> temp(new unsigned char[byte_length]);
+    bytes temp(byte_length);  //  create a byte_length bytes array
 
     //  copy it out MSB
-    reverse_copy(begin, begin + byte_length, temp.get());
+    reverse_copy(begin, begin + byte_length, temp.begin());
 
-    return BCHCalc_C(temp.get(), bits) >> 2;
+    return BCHCalc_C(temp.data(), bits) >> 2;
 }
 
 
