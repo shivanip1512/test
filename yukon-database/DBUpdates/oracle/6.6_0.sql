@@ -462,43 +462,36 @@ MODIFY
 /* End YUK-15548 */
 
 /* Start YUK-15611 */
-/* @error ignore-begin */
-INSERT INTO StateGroup VALUES ((SELECT MIN(StateGroupId)-1 FROM StateGroup), 'CBC Door Status', 'Status');
-GO
-INSERT INTO StateGroup VALUES ((SELECT MIN(StateGroupId)-1 FROM StateGroup), 'CBC-8 Hardware Type', 'Status');
-GO
-INSERT INTO StateGroup VALUES ((SELECT MIN(StateGroupId)-1 FROM StateGroup), 'Var Voltage Input', 'Status');
-GO
-INSERT INTO StateGroup VALUES ((SELECT MIN(StateGroupId)-1 FROM StateGroup), 'SCADA TripClose', 'Status');
-GO
-INSERT INTO StateGroup VALUES ((SELECT MIN(StateGroupId)-1 FROM StateGroup), 'YesNo', 'Status');
-GO
-INSERT INTO StateGroup VALUES ((SELECT MIN(StateGroupId)-1 FROM StateGroup), 'SCADA Override Type', 'Status');
+INSERT INTO StateGroup VALUES (-21, 'CBC Door Status', 'Status');
+INSERT INTO StateGroup VALUES (-22, 'CBC-8 Hardware Type', 'Status');
+INSERT INTO StateGroup VALUES (-23, 'Var Voltage Input', 'Status');
+INSERT INTO StateGroup VALUES (-24, 'SCADA TripClose', 'Status');
+INSERT INTO StateGroup VALUES (-25, 'YesNo', 'Status');
+INSERT INTO StateGroup VALUES (-26, 'SCADA Override Type', 'Status');
 GO
 
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'CBC Door Status'), 0, 'Closed', 0, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'CBC Door Status'), 1, 'Open', 1, 6, 0);
+INSERT INTO State VALUES (-21, 0, 'Closed', 0, 6, 0);
+INSERT INTO State VALUES (-21, 1, 'Open', 1, 6, 0);
 
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'CBC-8 Hardware Type'), 0, 'N/A', 0, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'CBC-8 Hardware Type'), 1, 'Old Board/Old Box', 1, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'CBC-8 Hardware Type'), 2, 'New Board/Old Box', 2, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'CBC-8 Hardware Type'), 3, 'New Board/New Box', 3, 6, 0);
+INSERT INTO State VALUES (-22, 0, 'N/A', 0, 6, 0);
+INSERT INTO State VALUES (-22, 1, 'Old Board/Old Box', 1, 6, 0);
+INSERT INTO State VALUES (-22, 2, 'New Board/Old Box', 2, 6, 0);
+INSERT INTO State VALUES (-22, 3, 'New Board/New Box', 3, 6, 0);
 
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'Var Voltage Input'), 0, 'CBC Line', 0, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'Var Voltage Input'), 1, 'Phase A', 1, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'Var Voltage Input'), 2, 'Phase B', 2, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'Var Voltage Input'), 3, 'Phase C', 3, 6, 0);
+INSERT INTO State VALUES (-23, 0, 'CBC Line', 0, 6, 0);
+INSERT INTO State VALUES (-23, 1, 'Phase A', 1, 6, 0);
+INSERT INTO State VALUES (-23, 2, 'Phase B', 2, 6, 0);
+INSERT INTO State VALUES (-23, 3, 'Phase C', 3, 6, 0);
 
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'SCADA TripClose'), 0, 'Trip', 0, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'SCADA TripClose'), 1, 'Close', 1, 6, 0);
+INSERT INTO State VALUES (-24, 0, 'Trip', 0, 6, 0);
+INSERT INTO State VALUES (-24, 1, 'Close', 1, 6, 0);
 
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'YesNo'), 0, 'No', 0, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'YesNo'), 1, 'Yes', 1, 6, 0);
+INSERT INTO State VALUES (-25, 0, 'No', 0, 6, 0);
+INSERT INTO State VALUES (-25, 1, 'Yes', 1, 6, 0);
 
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'SCADA Override Type'), 0, 'Time of Day', 0, 6, 0);
-INSERT INTO State VALUES ((SELECT StateGroupId FROM StateGroup WHERE Name = 'SCADA Override Type'), 1, 'Countdown Timer', 1, 6, 0);
+INSERT INTO State VALUES (-26, 0, 'Time of Day', 0, 6, 0);
+INSERT INTO State VALUES (-26, 1, 'Countdown Timer', 1, 6, 0);
 GO
-/* @error ignore-end */
 /* End YUK-15611 */
 
 /* Start YUK-15502 */
