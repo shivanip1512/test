@@ -32,7 +32,8 @@ bool CtiMutex::acquire(unsigned long millis)
 
     if( result == WAIT_OBJECT_0 )
     {
-        std::copy_backward(begin(_threadIDs), end(_threadIDs) - 1, end(_threadIDs));
+        _threadIDs[2] = _threadIDs[1];
+        _threadIDs[1] = _threadIDs[0];
         _threadIDs[0] = GetCurrentThreadId();
 
         return true;
