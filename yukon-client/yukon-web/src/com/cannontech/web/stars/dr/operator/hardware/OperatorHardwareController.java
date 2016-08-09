@@ -666,13 +666,16 @@ public class OperatorHardwareController {
         model.addAttribute("none", accessor.getMessage("yukon.common.none.choice"));
         
         String defaultRoute;
+        int defaultRouteId = 0;
         try {
-            defaultRoute = paoDao.getYukonPAOName(defaultRouteService.getDefaultRouteId(energyCompany));
+            defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
+            defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
             defaultRoute = accessor.getMessage("yukon.common.route.default", defaultRoute);
         } catch(NotFoundException e) {
             defaultRoute = accessor.getMessage("yukon.common.route.default.none");
         }
         model.addAttribute("defaultRoute", defaultRoute);
+        model.addAttribute("defaultRouteId", defaultRouteId);
         
         List<LiteYukonPAObject> routes = ecDao.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
