@@ -40,31 +40,6 @@ struct EmetconWord
     static void     write_bits (long long source, const unsigned bits, byte_appender output);
     static unsigned bch_calc   (long long source, const unsigned bits);
 
-    struct serializer : public std::_Outit
-    {
-        byte_appender *output;
-
-        serializer(byte_appender &output_) : output(&output_) {};
-
-        serializer &operator *()    {  return *this;  };
-        serializer &operator++()    {  return *this;  };
-        serializer &operator++(int) {  return *this;  };
-
-        serializer &operator =(const EmetconWord &word)
-        {
-            word.serialize(*output);
-
-            return *this;
-        };
-
-        serializer &operator =(const word_t &word)
-        {
-            word && word->serialize(*output);
-
-            return *this;
-        };
-    };
-
     virtual bool serialize(byte_appender output) const = 0;
 };
 

@@ -444,13 +444,11 @@ error_t Ccu711::extractQueueEntry(const bytes &command_data, int index, int setl
 error_t Ccu711::validateCrc(const bytes &message) const
 {
     //  this array is for the interface with NCrcCalc_C, which wants a raw buffer
-    boost::scoped_array<unsigned char> buf(new unsigned char[message.size() - 3]);
-
-    std::copy(message.begin() + 1, message.end() - 2, buf.get());
+    bytes buf { message.begin() + 1, message.end() - 2 };
 
     unsigned short message_crc = MAKEUSHORT(*(message.end() - 1), *(message.end() - 2));
 
-    unsigned short crc = NCrcCalc_C(buf.get(), message.size() - 3);
+    unsigned short crc = NCrcCalc_C(buf.data(), buf.size());
 
     if( message_crc != crc )
     {
@@ -650,14 +648,16 @@ void Ccu711::processQueue(Logger &logger)
         _queue.last_transmit += queue_request_dlc_time(entry.request);
 
         bytes request_buf;
+        byte_appender request_appender{request_buf};
 
-        entry.request.b_word.serialize(byte_appender(request_buf));
+        entry.request.b_word.serialize(request_appender);
 
         if( entry.request.write )
         {
-            copy(entry.request.c_words.begin(),
-                 entry.request.c_words.end(),
-                 EmetconWord::serializer(byte_appender(request_buf)));
+            for( const auto& word : entry.request.c_words )
+            {
+                word.serialize(request_appender);
+            }
 
             Grid.oneWayCommand(request_buf, logger);
 
@@ -1474,11 +1474,9 @@ error_t Ccu711::writeReplyStatus(const status_info &status, byte_appender &out_i
 error_t Ccu711::writeIdlcCrc(const bytes &message, byte_appender &out_itr) const
 {
     //  this array is for the interface with NCrcCalc_C, which wants a raw buffer
-    boost::scoped_array<unsigned char> buf(new unsigned char[message.size() - 1]);
+    bytes buf(message.begin() + 1, message.end());
 
-    std::copy(message.begin() + 1, message.end(), buf.get());
-
-    unsigned short crc = NCrcCalc_C(buf.get(), message.size() - 1);
+    unsigned short crc = NCrcCalc_C(buf.data(), buf.size());
 
     *out_itr++ = HIBYTE(crc);
     *out_itr++ = LOBYTE(crc);

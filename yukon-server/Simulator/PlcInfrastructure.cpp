@@ -69,9 +69,12 @@ bool PlcInfrastructure::twoWayCommand(const bytes &request, bytes &reply, Logger
 //  TODO-P4: See PlcInfrastructure::oneWayCommand()
     mct->read(request_words, result_words, scope);
 
-    copy(result_words.begin(),
-         result_words.end(),
-         EmetconWord::serializer(byte_appender(reply)));
+    auto reply_appender = byte_appender { reply };
+
+    for( const auto& word : result_words )
+    {
+        word->serialize(reply_appender);
+    }
 
     {
         ScopedLogger plcInScope = scope.getNewScope(_plcTagIn);

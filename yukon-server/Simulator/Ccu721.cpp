@@ -1142,9 +1142,12 @@ void Ccu721::processQueue(Logger &logger)
 
         if( entry.request.write )
         {
-            copy(entry.request.c_words.begin(),
-                 entry.request.c_words.end(),
-                 EmetconWord::serializer(byte_appender(request_buf)));
+            byte_appender request_appender { request_buf };
+
+            for( const auto& word : entry.request.c_words )
+            {
+                word.serialize(request_appender);
+            }
 
             Grid.oneWayCommand(request_buf, logger);
         }
@@ -1655,13 +1658,11 @@ error_t Ccu721::sendReply(Comms &comms, const idlc_reply &reply, Logger &logger)
 error_t Ccu721::validateCrc(const bytes &message) const
 {
     //  this array is for the interface with NCrcCalc_C, which wants a raw buffer
-    boost::scoped_array<unsigned char> buf(new unsigned char[message.size() - 3]);
-
-    std::copy(message.begin() + 1, message.end() - 2, buf.get());
+    bytes buf { message.begin() + 1, message.end() - 2 };
 
     unsigned short message_crc = MAKEUSHORT(*(message.end() - 1), *(message.end() - 2));
 
-    unsigned short crc = NCrcCalc_C(buf.get(), message.size() - 3);
+    unsigned short crc = NCrcCalc_C(buf.data(), buf.size());
 
     if( message_crc != crc )
     {
@@ -2041,11 +2042,9 @@ error_t Ccu721::writeReplyStatus(const unsigned short &status, byte_appender &ou
 error_t Ccu721::writeIdlcCrc(const bytes &message, byte_appender &out_itr) const
 {
     //  this array is for the interface with NCrcCalc_C, which wants a raw buffer
-    boost::scoped_array<unsigned char> buf(new unsigned char[message.size() - 1]);
+    bytes buf { message.begin() + 1, message.end() };
 
-    std::copy(message.begin() + 1, message.end(), buf.get());
-
-    unsigned short crc = NCrcCalc_C(buf.get(), message.size() - 1);
+    unsigned short crc = NCrcCalc_C(buf.data(), buf.size());
 
     *out_itr++ = HIBYTE(crc);
     *out_itr++ = LOBYTE(crc);

@@ -429,9 +429,10 @@ error_t Ccu710::processRequest(const request_t &request, reply_t &reply, Logger 
             bytes request_buf;
             byte_appender request_oitr(request_buf);
 
-            copy(request.feeder_operation.words.begin(),
-                 request.feeder_operation.words.end(),
-                 EmetconWord::serializer(request_oitr));
+            for( const auto& word : request.feeder_operation.words )
+            {
+                word->serialize(request_oitr);
+            }
 
             Sleep(dlc_time(request_buf.size() * 8) * (request.feeder_operation.repeater_count + 1));
 
