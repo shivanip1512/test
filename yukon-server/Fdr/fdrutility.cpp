@@ -19,7 +19,7 @@ Translation::Translation( const std::string & input )
 
     boost::split( tokenList,
                   input,
-                  boost::algorithm::is_any_of(";") );
+                  is_char{';'} );
 
     for ( const auto & token : tokenList )
     {
