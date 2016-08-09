@@ -2,6 +2,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <div class="info-fragment">
-    <strong class="wbba">${fn:escapeXml(energyCompanyInfoFragment.companyName)}</strong>
+    <strong class="wbba dib">${fn:escapeXml(energyCompanyInfoFragment.companyName)}</strong>
     <tags:address address="${energyCompanyInfoFragment.address}"/>
 </div>

@@ -35,7 +35,7 @@ $(document).on('click', 'button.loginButton',function() {
                                     <cti:url var="viewUrl" value="/admin/energyCompany/general/view">
                                         <cti:param name="ecId" value="${company.energyCompanyId}"/>
                                     </cti:url>
-                                    <a href="${viewUrl}" class="wbba">
+                                    <a href="${viewUrl}" class="wbba dib">
                                         <spring:escapeBody htmlEscape="true">${company.name}</spring:escapeBody>
                                     </a>
                                 </td>
