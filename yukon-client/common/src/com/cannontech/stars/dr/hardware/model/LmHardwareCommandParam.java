@@ -15,7 +15,8 @@ public enum LmHardwareCommandParam {
     FORCE_IN_SERVICE(Boolean.class),
     SPID(Integer.class),
     UNIQUE_MESSAGE_ID(Long.class),
-    RELAY(Integer.class);
+    RELAY(Integer.class),
+    WAITABLE(Boolean.class);
     
     private Class<?> clazz;
     private LmHardwareCommandParam(Class<?> clazz) {

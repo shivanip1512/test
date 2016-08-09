@@ -183,6 +183,12 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                                               (Integer) parameters.getParams().get(LmHardwareCommandParam.RELAY));
         }
         
+        boolean waitable = false;
+        Boolean waitableParam = parameters.findParam(LmHardwareCommandParam.WAITABLE, Boolean.class);
+        if (waitableParam != null) {
+            waitable = waitableParam;
+        }
+        
         Integer param = parameters.findParam(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, Integer.class);
         if (param != null) {
             Integer optionalRouteId = param;
@@ -190,7 +196,13 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                 throw new CommandCompletionException("The route to send the command is not specified.");
             }
             for (String command : commands) {
-                executor.executeOnRoute(command, optionalRouteId, user);
+                try {
+                    executor.executeOnRoute(command, optionalRouteId, user);
+                } catch (CommandCompletionException e) {
+                    if (waitable) {
+                        throw e;
+                    }
+                }
             }
         } else {
             for (String command : commands) {

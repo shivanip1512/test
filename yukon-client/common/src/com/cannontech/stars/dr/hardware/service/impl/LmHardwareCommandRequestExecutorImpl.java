@@ -13,6 +13,7 @@ import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
+import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
@@ -78,7 +79,13 @@ public class LmHardwareCommandRequestExecutorImpl implements LmHardwareCommandRe
     
     @Override
     public void executeOnRoute(String command, int routeId, LiteYukonUser user) throws CommandCompletionException {
-        commandRequestRouteExecutor.execute(routeId, command, DeviceRequestType.LM_HARDWARE_COMMAND, user);
+        CommandResultHolder result = commandRequestRouteExecutor.execute(routeId,
+                                                                         command,
+                                                                         DeviceRequestType.LM_HARDWARE_COMMAND,
+                                                                         user);
+        if (result.isExceptionOccured()) {
+            throw new CommandCompletionException(result.getExceptionReason());
+        }
     }
 
     @Override

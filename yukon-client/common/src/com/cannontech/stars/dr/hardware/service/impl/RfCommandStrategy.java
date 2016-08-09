@@ -1,6 +1,8 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -28,6 +30,7 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
 import com.cannontech.dr.rfn.service.RfnUnicastCallback;
+import com.cannontech.dr.rfn.service.WaitableRfnUnicastCallback;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -90,7 +93,28 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
         if (param != null) {
             sendOnBulk = param;
         }
-        
+        boolean waitable = false;
+        Boolean waitableParam = parameters.findParam(LmHardwareCommandParam.WAITABLE, Boolean.class);
+        if (waitableParam != null) {
+            waitable = waitableParam;
+        }
+        if (!waitable) {
+            sendCommand(request, parameters, sendOnBulk);
+        } else {
+            Map<String, Object> result = sendCommandAndWait(request, parameters);
+            Boolean status = (Boolean)result.get("success");
+            if (!status) {
+                throw new CommandCompletionException(result.get("message").toString());
+            }
+        }
+    }
+    
+    /*
+     * Send command and do not wait for the response.
+     * If error occurs it will be logged.
+     */
+    private void sendCommand(RfnExpressComUnicastRequest request,
+            final LmHardwareCommand parameters, boolean sendOnBulk) {
         if (sendOnBulk) {
             rfnExpressComMessageService.sendUnicastBulkRequest(Collections.singletonList(request));
         } else {
@@ -99,20 +123,68 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
                 public void processingExceptionOccured(MessageSourceResolvable message) {
                     log.error("Unable to send " + parameters.getType() + ": " + message);
                 }
-                
-                @Override public void complete() {}
-                
-                @Override 
+
+                @Override
+                public void complete() {
+                }
+
+                @Override
                 public void receivedStatus(RfnExpressComUnicastReplyType replyType) {
                     log.debug(String.format("Recieved status %s for %s", replyType, parameters.getType()));
                 }
-                
-                @Override 
+
+                @Override
                 public void receivedStatusError(RfnExpressComUnicastReplyType replyType) {
                     log.debug(String.format("Recieved status error %s for %s", replyType, parameters.getType()));
                 }
             });
         }
+    }
+    
+    /*
+     * Send command and wait for the response
+     */
+    private Map<String, Object> sendCommandAndWait(RfnExpressComUnicastRequest request,
+            final LmHardwareCommand parameters) {
+
+        final Map<String, Object> resultMap = new HashMap<>();
+        WaitableRfnUnicastCallback waitableCallback = new WaitableRfnUnicastCallback(new RfnUnicastCallback() {
+
+            @Override
+            public void processingExceptionOccured(MessageSourceResolvable message) {
+                resultMap.put("success", false);
+                resultMap.put("message", "Unable to send command");
+                log.error("Unable to send " + parameters.getType() + ": " + message);
+            }
+
+            @Override
+            public void receivedStatus(RfnExpressComUnicastReplyType status) {
+                boolean success = status == RfnExpressComUnicastReplyType.OK ? true : false;
+                resultMap.put("success", success);
+                if (!success) {
+                    log.debug(String.format("Recieved status %s for %s", status, parameters.getType()));
+                    resultMap.put("message", status);
+                }
+            }
+
+            @Override
+            public void receivedStatusError(RfnExpressComUnicastReplyType replyType) {
+                resultMap.put("success", false);
+                resultMap.put("message", replyType);
+                log.debug(String.format("Recieved status error %s for %s", replyType, parameters.getType()));
+            }
+
+            @Override
+            public void complete() { }
+        });
+
+        rfnExpressComMessageService.sendUnicastRequest(request, waitableCallback);
+
+        try {
+            waitableCallback.waitForCompletion();
+        } catch (InterruptedException e) {/* ignore */}
+        
+        return resultMap;
     }
     
     @Override

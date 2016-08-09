@@ -63,6 +63,7 @@ public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
         command.getParams().put(LmHardwareCommandParam.RELAY, relay);
         command.getParams().put(LmHardwareCommandParam.DURATION, Duration.standardMinutes(duration));
         command.getParams().put(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, routeId);
+        command.getParams().put(LmHardwareCommandParam.WAITABLE, true);
 
         try {
             lmHardwareCommandService.sendShedLoadCommand(command);
