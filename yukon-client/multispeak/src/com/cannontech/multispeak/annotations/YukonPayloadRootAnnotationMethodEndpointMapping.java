@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerFactory;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,8 @@ import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
 import org.springframework.ws.transport.http.HttpServletConnection;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -34,7 +38,7 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends AbstractAnn
      */
     
     private static TransformerFactory transformerFactory;
-
+    @Autowired private ConfigurationSource configurationSource;
     static {
         transformerFactory = TransformerFactory.newInstance();
     }
@@ -107,6 +111,14 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends AbstractAnn
             }
         }
         return methodPart;
+    }
+    
+    @Override
+    protected void initApplicationContext() throws BeansException {
+
+        if (!configurationSource.getBoolean(MasterConfigBoolean.MULTISPEAK_DISABLED, false)) {
+            super.initApplicationContext();
+        }
     }
 
 }

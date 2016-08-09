@@ -2,6 +2,8 @@ package com.cannontech.common.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -182,7 +184,11 @@ public class BootstrapUtils {
     public final static String getApplicationName() {
         if (System.getProperty("cti.app.name") == null) {
             if (CtiUtilities.isRunningAsWebApplication()) {
-                System.setProperty("cti.app.name", "Webserver");
+                try {
+                    System.setProperty("cti.app.name", "Webserver" + InetAddress.getLocalHost().getHostName());
+                } catch (UnknownHostException e) {
+                    System.setProperty("cti.app.name", "Webserver");
+                }
             } else {
                 System.setProperty("cti.app.name", "UnknownApplication");
             }

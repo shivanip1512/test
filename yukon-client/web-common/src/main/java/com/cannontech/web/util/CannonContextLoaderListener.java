@@ -16,6 +16,9 @@
 
 package com.cannontech.web.util;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -50,12 +53,16 @@ public class CannonContextLoaderListener implements ServletContextListener {
      */
     @Override
     public void contextInitialized(ServletContextEvent event) {
-    	String appName = event.getServletContext().getInitParameter("cti.app.name");
-        System.setProperty("cti.app.name", appName);
+         String appName = event.getServletContext().getInitParameter("cti.app.name");
+        try {
+            System.setProperty("cti.app.name", appName + InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            System.setProperty("cti.app.name", appName);
+        }
         
         try {
-        	String contextName = event.getServletContext().getInitParameter("parentContextKey");
-        	YukonSpringHook.setDefaultContext(contextName);
+            String contextName = event.getServletContext().getInitParameter("parentContextKey");
+            YukonSpringHook.setDefaultContext(contextName);
             this.contextLoader = createContextLoader();
             this.contextLoader.initWebApplicationContext(event.getServletContext());
         } catch (Throwable t) {

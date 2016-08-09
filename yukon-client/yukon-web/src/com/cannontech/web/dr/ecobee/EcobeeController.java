@@ -60,6 +60,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.jobs.support.JobManagerException;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
@@ -118,8 +119,10 @@ public class EcobeeController {
     public void init() {
         String defaultCron = "0 0 0 * * ?";// every day at 12am
 
-        List<ScheduledRepeatingJob> reconciliationReportJobs = 
+        try {
+            List<ScheduledRepeatingJob> reconciliationReportJobs =
                 jobManager.getNotDeletedRepeatingJobsByDefinition(ecobeeReconciliationReportJobDef);
+       
         if (reconciliationReportJobs == null || reconciliationReportJobs.isEmpty()) {
             log.info("ecobeeReconciliationReport job doesn't exist. Creating job with default values.");
             ScheduledRepeatingJob job = new ScheduledRepeatingJob();
@@ -132,8 +135,8 @@ public class EcobeeController {
             job.setJobProperties(Collections.<String, String>emptyMap());
             scheduledRepeatingJobDao.save(job);
             jobManager.instantiateTask(job);
-        }
-
+            }
+       
         List<ScheduledRepeatingJob> ecobeePointUpdateJobs  = 
                 jobManager.getNotDeletedRepeatingJobsByDefinition(ecobeePointUpdateJobDef);
         if (ecobeePointUpdateJobs == null || ecobeePointUpdateJobs.isEmpty()) {
@@ -148,7 +151,11 @@ public class EcobeeController {
             job.setJobProperties(Collections.<String, String>emptyMap());
             scheduledRepeatingJobDao.save(job);
             jobManager.instantiateTask(job);
+            }
+        } catch (JobManagerException e) {
+            log.warn(e.getMessage());
         }
+
         dateTimeFormatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATEHM, YukonUserContext.system);
     }
 
