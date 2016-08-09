@@ -558,6 +558,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\ansi_kv2_mtable_000.h" />
     <ClInclude Include="include\ansi_kv2_mtable_070.h" />
     <ClInclude Include="include\ansi_kv2_mtable_110.h" />
+    <ClInclude Include="include\coap_helper.h" />
     <ClInclude Include="include\dnp_application.h" />
     <ClInclude Include="include\dnp_configuration.h" />
     <ClInclude Include="include\dnp_datalink.h" />

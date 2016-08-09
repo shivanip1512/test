@@ -16,11 +16,6 @@ struct NetworkManagerRequestHeader
     char priority : 7;
 };
 
-struct NetworkManagerRequestAck
-{
-    NetworkManagerRequestHeader header;
-};
-
 }
 }
 }

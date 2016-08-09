@@ -256,7 +256,7 @@ MessagePtr<E2eDataIndicationMsg>::type deserialize( const Thrift::RfnE2eDataIndi
 
 const std::string RfnMessagePrefix = "com.eaton.eas.yukon.networkmanager.e2e.rfn.";
 
-Serialization::MessageFactory<E2eMsg> e2eMessageFactory(RfnMessagePrefix);
+Serialization::MessageFactory<E2eMsg> DLLEXPORT e2eMessageFactory(RfnMessagePrefix);
 
 struct RfnMessageRegistration  //  must be named so it can have a constructor
 {

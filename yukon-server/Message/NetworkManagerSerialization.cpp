@@ -163,9 +163,49 @@ MessagePtr<NetworkManagerCancelResponse>::type populateMessage( const Thrift::Ne
 }
 
 
+MessagePtr<Thrift::NetworkManagerRequestAck>::type populateThrift( const NetworkManagerRequestAck& imsg )
+{
+    MessagePtr<Thrift::NetworkManagerRequestAck>::type omsg( new Thrift::NetworkManagerRequestAck );
+
+    Thrift::NetworkManagerRequestHeader hdr;
+
+    hdr.__set_clientGuid( imsg.header.clientGuid );
+    hdr.__set_sessionId ( imsg.header.sessionId );
+    hdr.__set_messageId ( imsg.header.messageId );
+    hdr.__set_groupId   ( imsg.header.groupId );
+    hdr.__set_priority  ( imsg.header.priority );
+    hdr.__set_expiration( imsg.header.expiration );
+
+    //  Default all messages to expire with our session
+    hdr.__set_lifetime  ( Thrift::NetworkManagerMessageLifetime::SESSION );
+
+    omsg->__set_header( hdr );
+
+    return omsg;
+}
+
+MessagePtr<NetworkManagerRequestAck>::type populateMessage( const Thrift::NetworkManagerRequestAck& imsg )
+{
+    MessagePtr<NetworkManagerRequestAck>::type omsg( new NetworkManagerRequestAck );
+
+    NetworkManagerRequestHeader header;
+
+    header.clientGuid = imsg.header.clientGuid;
+    header.expiration = imsg.header.expiration;
+    header.groupId    = imsg.header.groupId;
+    header.messageId  = imsg.header.messageId;
+    header.priority   = imsg.header.priority;
+    header.sessionId  = imsg.header.sessionId;
+
+    omsg->header = header;
+
+    return omsg;
+}
+
+
 const std::string NetworkManagerMessagePrefix = "com.eaton.eas.yukon.networkmanager.";
 
-Serialization::MessageFactory<NetworkManagerBase> nmMessageFactory(NetworkManagerMessagePrefix);
+Serialization::MessageFactory<NetworkManagerBase> DLLEXPORT nmMessageFactory { NetworkManagerMessagePrefix };
 
 struct NetworkManagerMessageRegistration  //  must be named so it can have a constructor
 {
@@ -174,6 +214,7 @@ struct NetworkManagerMessageRegistration  //  must be named so it can have a con
         nmMessageFactory.registerSerializer<NetworkManagerCancelRequest,    Thrift::NetworkManagerCancelRequest>    ( &populateThrift, &populateMessage, "NetworkManagerCancelRequest" );
         nmMessageFactory.registerSerializer<NetworkManagerCancelRequestAck, Thrift::NetworkManagerCancelRequestAck> ( &populateThrift, &populateMessage, "NetworkManagerCancelRequestAck" );
         nmMessageFactory.registerSerializer<NetworkManagerCancelResponse,   Thrift::NetworkManagerCancelResponse>   ( &populateThrift, &populateMessage, "NetworkManagerCancelResponse" );
+        nmMessageFactory.registerSerializer<NetworkManagerRequestAck,       Thrift::NetworkManagerRequestAck>       ( &populateThrift, &populateMessage, "NetworkManagerRequestAck" );
     }
 
 } nmMessageRegistration;

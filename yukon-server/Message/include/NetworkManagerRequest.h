@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "NetworkManagerMessaging.h"
+
 namespace Cti {
 namespace Messaging {
 namespace Rfn {
@@ -44,6 +46,11 @@ struct NetworkManagerCancelResponse : NetworkManagerBase
     std::string clientGuid;
     long long sessionId;
     MessageStatusPerId results;
+};
+
+struct NetworkManagerRequestAck : NetworkManagerBase
+{
+    NetworkManagerRequestHeader header;
 };
 
 }

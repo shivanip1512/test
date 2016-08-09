@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "prot_e2eDataTransfer.h"
+#include "coap_helper.h"
 
 extern "C" {
 #include "coap/pdu.h"
@@ -24,19 +25,6 @@ E2eDataTransferProtocol::E2eDataTransferProtocol() :
     _generator(std::time(0))
 {
 }
-
-
-class scoped_pdu_ptr
-{
-    coap_pdu_t *pdu;
-public:
-    scoped_pdu_ptr(coap_pdu_t *pdu_) : pdu(pdu_) {}
-
-    ~scoped_pdu_ptr() { coap_delete_pdu(pdu); }
-
-    operator coap_pdu_t *()  const { return pdu; }
-    coap_pdu_t *operator->() const { return pdu; }
-};
 
 
 void addToken(coap_pdu_t *pdu, const unsigned long token)
